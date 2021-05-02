@@ -197,17 +197,14 @@ def main() -> None:
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
     client = Client(proxy=proxy,
                     verify=verify_certificate,
                     base_url=base_url,
                     client_id=client_id,
                     client_secret=client_secret)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client.login()
-
         if demisto.command() == 'test-module':
             return_results(test_module(client))
 

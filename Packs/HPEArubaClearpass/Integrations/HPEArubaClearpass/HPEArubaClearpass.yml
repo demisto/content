@@ -25,9 +25,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
-defaultclassifier: 'null'
 description: change it
 display: HPE Aruba Clearpass
 name: HPEArubaClearpass
@@ -35,7 +32,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: MAC Address of the required endpoint. If not given, all the endpoints will be returned.
+      description: MAC Address of the required endpoint. If not given, all the endpoints
+        will be returned.
       isArray: false
       name: mac_address
       required: false
@@ -58,7 +56,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of items to return in range of 1 – 1000. The default value is 25.
+      description: Maximum number of items to return in range of 1 – 1000. The default
+        value is 25.
       isArray: false
       name: limit
       required: false
@@ -84,7 +83,8 @@ script:
       description: List of Device Insight Tags.
       type: Unknown
     - contextPath: HPEArubaClearpass.endpoints.attributes
-      description: Additional attributes (key/value pairs) may be stored with the endpoint.
+      description: Additional attributes (key/value pairs) may be stored with the
+        endpoint.
       type: Unknown
   - arguments:
     - default: false
@@ -94,7 +94,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: MAC Address of the endpoint to be set. If not given, all the endpoints will be returned.
+      description: MAC Address of the endpoint to be set. If not given, all the endpoints
+        will be returned.
       isArray: false
       name: mac_address
       required: false
@@ -123,7 +124,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Additional attributes (key/value pairs) may be stored with the endpoint. An example for an attribute - [{"demisto_test": "aaaaa"},{"test":"good"}]'
+      description: 'Additional attributes (key/value pairs) may be stored with the
+        endpoint. An example for an attribute - [{"demisto_test": "aaaaa"},{"test":"good"}]'
       isArray: true
       name: attributes
       required: false
@@ -149,14 +151,10 @@ script:
       description: List of Device Insight Tags.
       type: Unknown
     - contextPath: HPEArubaClearpass.endpoints.attributes
-      description: Additional attributes (key/value pairs) may be stored with the endpoint.
+      description: Additional attributes (key/value pairs) may be stored with the
+        endpoint.
       type: Unknown
-  dockerimage: demisto/python3:3.9.1.15759
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
+  dockerimage: demisto/python3:3.9.4.18682
   script: '-'
   subtype: python3
   type: python
