@@ -30,9 +30,6 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'{url}'
         )
-    #
-    # def get_url_reputation(self, url: str) -> Dict[str, Any]:
-    #     pass
 
 
 def get_reputation_reliability(reliability):
