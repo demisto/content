@@ -1,5 +1,0 @@
-!ip ip="x.x.x.x" using="TheatCrowdv2_instance_1"
-!file file=file_hash using=TheatCrowdv2_instance_1
-!threat-crowd-antivirus antivirus="plugx" using="TheatCrowdv2_instance_1"
-!email email=example@example.com using=TheatCrowdv2_instance_1
-!domain domain="example.com" using="TheatCrowdv2_instance_1"

@@ -1,0 +1,5 @@
+!ip ip="x.x.x.x"
+!file file=file_hash
+!threat-crowd-antivirus antivirus="plugx"
+!email email=example@example.com
+!domain domain="example.com"
