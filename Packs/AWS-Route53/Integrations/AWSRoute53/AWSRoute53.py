@@ -1,8 +1,7 @@
-import datetime
-
 import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from datetime import date
 
 AWS_DEFAULT_REGION = None
 AWS_roleArn = demisto.params()['roleArn']
@@ -63,12 +62,8 @@ def aws_session(service='route53', region=None, roleArn=None, roleSessionName=No
 
 
 class DatetimeEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, datetime.datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
-        elif isinstance(obj, datetime.date):
-            return obj.strftime('%Y-%m-%d')
-        elif isinstance(obj, datetime):
+    def default(self, obj):  # pylint: disable=E0202
+        if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
@@ -298,7 +293,7 @@ def waiter_resource_record_sets_changed(args):
         return "success"
 
     except Exception as e:
-        return raise_error
+        return raise_error(e)
 
 
 def test_dns_answer(args):
