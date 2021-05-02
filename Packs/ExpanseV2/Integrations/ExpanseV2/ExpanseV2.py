@@ -990,7 +990,7 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     total_results, max_page_size = calculate_limits(args.get('limit', None))
 
     provider = ','.join(argToList(args.get('provider')))
-    business_units = ','.join(argToList(args.get('business_unit')))
+    business_units = ','.join(argToList(args.get('business_unit'), separator='__not_required_here__'))
     assignee = ','.join(argToList(args.get('assignee')))
     issue_type = ','.join(argToList(args.get('issue_type')))
     tags = ','.join(argToList(args.get('tag')))
