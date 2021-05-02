@@ -152,7 +152,7 @@ def handle_analyze_response(response):
 
     context_json = {'Intezer.Analysis(obj.ID === val.ID)': {'ID': analysis_id, 'Status': 'Created', 'type': 'File'}}
 
-    return_outputs('Analysis created successfully', context_json, response)
+    return_outputs('Analysis created successfully: ' + analysis_id, context_json, response)
 
 
 def check_analysis_status_and_get_results_command():
