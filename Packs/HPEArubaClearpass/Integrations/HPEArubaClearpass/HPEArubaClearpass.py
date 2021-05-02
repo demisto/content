@@ -266,6 +266,54 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
+def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    attribute_id = args.get('attribute_id')
+
+    name = args.get('name')
+    entity_name = args.get('entity_name')
+    data_type = args.get('data_type')
+    mandatory = args.get('mandatory', False)
+    attribute_default_value = args.get('default_value', "")
+    allow_multiple_data_type_string = args.get('allow_multiple', False)
+    allowed_list_data_types_value = args.get('allowed_value', "")
+
+    if allow_multiple_data_type_string and data_type != "String":
+        return_error("Note: allow_multiple argument should be true only for data type String.")
+    if allowed_list_data_types_value and data_type != 'List':
+        return_error("Note: allowed_value argument should be set only for data type List.")
+
+    new_attribute_body = {}
+    new_attribute_body.update({"name": name})
+    new_attribute_body.update({"entity_name": entity_name})
+    new_attribute_body.update({"data_type": data_type})
+    new_attribute_body.update({"mandatory": mandatory}) if mandatory else None
+    new_attribute_body.update({"default_value": attribute_default_value}) if attribute_default_value else None
+    new_attribute_body.update(
+        {"allow_multiple": allow_multiple_data_type_string}) if allow_multiple_data_type_string else None
+    new_attribute_body.update(
+        {"allowed_value": allowed_list_data_types_value}) if allowed_list_data_types_value else None
+
+    res = client.prepare_request(method='PATCH', params={}, url_suffix=f'attribute/{attribute_id}',
+                                 body=new_attribute_body)
+
+    outputs = attributes_response_to_dict(res)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass update attribute', outputs, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.attributes.update',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    attribute_id = args.get('attribute_id')
+    client.prepare_request(method='DELETE', params={}, url_suffix=f'attribute/{attribute_id}')
+    human_readable = f"HPE Aruba Clearpass attribute: {attribute_id} deleted successfully."
+    return CommandResults(readable_output=human_readable)
+
+
 def attributes_response_to_dict(response):
     return {
         'ID': response.get('id'),
@@ -309,6 +357,13 @@ def main() -> None:
 
         elif demisto.command() == 'aruba-clearpass-attribute-create':
             return_results(create_attribute_command(client, demisto.args()))
+
+        elif demisto.command() == 'aruba-clearpass-attribute-update':
+            return_results(update_attribute_command(client, demisto.args()))
+
+        elif demisto.command() == 'aruba-clearpass-attribute-delete':
+            return_results(delete_attribute_command(client, demisto.args()))
+
 
     # Log exceptions and return errors
     except Exception as e:

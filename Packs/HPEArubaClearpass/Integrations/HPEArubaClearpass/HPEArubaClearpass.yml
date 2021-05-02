@@ -25,6 +25,9 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
+defaultclassifier: 'null'
 description: change it
 display: HPE Aruba Clearpass
 name: HPEArubaClearpass
@@ -224,8 +227,6 @@ script:
     - contextPath: HPEArubaClearpass.attributes.list.allowed_value
       description: The allowed value for data type list (e.g., example1,example2,example3).
       type: Unknown
-
-
   - arguments:
     - default: false
       description: Name of the attribute to be set.
@@ -266,7 +267,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Whether to make this attribute mandatory for the entity. Default is false.
+      description: Whether to make this attribute mandatory for the entity. Default
+        is false.
       isArray: false
       name: mandatory
       required: false
@@ -278,13 +280,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to allow multiple values of the attribute for data type String. Default is false.
+      description: Whether to allow multiple values of the attribute for data type
+        String. Default is false.
       isArray: false
       name: allow_multiple
       required: false
       secret: false
     - default: false
-      description: Allowed value for data type List (e.g., example1,example2,example3). Default is an empty string.
+      description: Allowed value for data type List (e.g., example1,example2,example3).
+        Default is an empty string.
       isArray: false
       name: allowed_value
       required: false
@@ -316,10 +320,128 @@ script:
       description: Whether to allow multiple values of the attribute for data type
         String.
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.list.allowed_value
+    - contextPath: HPEArubaClearpass.attributes.create.allowed_value
       description: The allowed value for data type list (e.g., example1,example2,example3).
       type: Unknown
+  - arguments:
+    - default: false
+      description: Numeric ID of the attribute to be updated.
+      isArray: false
+      name: attribute_id
+      required: true
+      secret: false
+    - default: false
+      description: Name of the attribute to be set.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Entity Name of the attribute to be set. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
+      isArray: false
+      name: entity_name
+      predefined:
+      - Device
+      - LocalUser
+      - GuestUser
+      - Endpoint
+      - Onboard
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Data Type of the attribute to be set.
+      isArray: false
+      name: data_type
+      predefined:
+      - Boolean
+      - Date
+      - Day
+      - IPv4Address
+      - Integer32
+      - List
+      - MACAddress
+      - String
+      - Text
+      - Time
+      - TimeOfDay
+      required: false
+      secret: false
+    - default: false
+      description: Whether to make this attribute mandatory for the entity. Default
+        is false.
+      isArray: false
+      name: mandatory
+      required: false
+      secret: false
+    - default: false
+      description: Default Value of the attribute. Default is an empty string.
+      isArray: false
+      name: default_value
+      required: false
+      secret: false
+    - default: false
+      description: Whether to allow multiple values of the attribute for data type
+        String. Default is false.
+      isArray: false
+      name: allow_multiple
+      required: false
+      secret: false
+    - default: false
+      description: Allowed value for data type List (e.g., example1,example2,example3).
+        Default is an empty string.
+      isArray: false
+      name: allowed_value
+      required: false
+      secret: false
+    deprecated: false
+    description: Update some fields of an attribute by the attribute's ID.
+    execution: false
+    name: aruba-clearpass-attribute-update
+    outputs:
+    - contextPath: HPEArubaClearpass.attributes.update.id
+      description: The ID of the attribute.
+      type: Number
+    - contextPath: HPEArubaClearpass.attributes.update.name
+      description: The name of the attribute.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.update.entity_name
+      description: The entity Name of the attribute.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.update.data_type
+      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.update.mandatory
+      description: Whether the entity of the attribute is mandatory.
+      type: Boolean
+    - contextPath: HPEArubaClearpass.attributes.update.default_value.
+      description: Default Value of the attribute.
+      type: Unknown
+    - contextPath: HPEArubaClearpass.attributes.update.allow_multiple
+      description: Whether to allow multiple values of the attribute for data type
+        String.
+      type: Boolean
+    - contextPath: HPEArubaClearpass.attributes.update.allowed_value
+      description: The allowed value for data type list (e.g., example1,example2,example3).
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Numeric ID of the attribute.
+      isArray: false
+      name: attribute_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an attribute.
+    execution: false
+    name: aruba-clearpass-attribute-delete
   dockerimage: demisto/python3:3.9.4.18682
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
   script: '-'
   subtype: python3
   type: python
