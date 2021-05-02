@@ -224,6 +224,101 @@ script:
     - contextPath: HPEArubaClearpass.attributes.list.allowed_value
       description: The allowed value for data type list (e.g., example1,example2,example3).
       type: Unknown
+
+
+  - arguments:
+    - default: false
+      description: Name of the attribute to be set.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Entity Name of the attribute to be set. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
+      isArray: false
+      name: entity_name
+      predefined:
+      - Device
+      - LocalUser
+      - GuestUser
+      - Endpoint
+      - Onboard
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Data Type of the attribute to be set.
+      isArray: false
+      name: data_type
+      predefined:
+      - Boolean
+      - Date
+      - Day
+      - IPv4Address
+      - Integer32
+      - List
+      - MACAddress
+      - String
+      - Text
+      - Time
+      - TimeOfDay
+      required: true
+      secret: false
+    - default: false
+      description: Whether to make this attribute mandatory for the entity. Default is false.
+      isArray: false
+      name: mandatory
+      required: false
+      secret: false
+    - default: false
+      description: Default Value of the attribute. Default is an empty string.
+      isArray: false
+      name: default_value
+      required: false
+      secret: false
+    - default: false
+      description: Whether to allow multiple values of the attribute for data type String. Default is false.
+      isArray: false
+      name: allow_multiple
+      required: false
+      secret: false
+    - default: false
+      description: Allowed value for data type List (e.g., example1,example2,example3). Default is an empty string.
+      isArray: false
+      name: allowed_value
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new attribute.
+    execution: false
+    name: aruba-clearpass-attribute-create
+    outputs:
+    - contextPath: HPEArubaClearpass.attributes.create.id
+      description: The ID of the attribute.
+      type: Number
+    - contextPath: HPEArubaClearpass.attributes.create.name
+      description: The name of the attribute.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.create.entity_name
+      description: The entity Name of the attribute.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.create.data_type
+      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      type: string
+    - contextPath: HPEArubaClearpass.attributes.create.mandatory
+      description: Whether the entity of the attribute is mandatory.
+      type: Boolean
+    - contextPath: HPEArubaClearpass.attributes.create.default_value.
+      description: Default Value of the attribute.
+      type: Unknown
+    - contextPath: HPEArubaClearpass.attributes.create.allow_multiple
+      description: Whether to allow multiple values of the attribute for data type
+        String.
+      type: Boolean
+    - contextPath: HPEArubaClearpass.attributes.list.allowed_value
+      description: The allowed value for data type list (e.g., example1,example2,example3).
+      type: Unknown
   dockerimage: demisto/python3:3.9.4.18682
   script: '-'
   subtype: python3

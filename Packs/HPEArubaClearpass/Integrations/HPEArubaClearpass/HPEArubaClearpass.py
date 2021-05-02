@@ -234,20 +234,24 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     data_type = args.get('data_type')
     mandatory = args.get('mandatory', False)
     attribute_default_value = args.get('default_value', "")
-    allow_multiple_data_type_values = args.get('allow_multiple', False)
-    allowed_data_types_value = argToList(args.get('allowed_value', []))
+    allow_multiple_data_type_string = args.get('allow_multiple', False)
+    allowed_list_data_types_value = args.get('allowed_value', "")
+
+    if allow_multiple_data_type_string and data_type != "String":
+        return_error(f"Note: allow_multiple argument should be true only for data type String and not for {data_type}.")
+    if allowed_list_data_types_value and data_type != 'List':
+        return_error(f"Note: allowed_value argument should be set only for data type List and not for {data_type}.")
 
     new_attribute_body = {}
     new_attribute_body.update({"name": name})
     new_attribute_body.update({"entity_name": entity_name})
     new_attribute_body.update({"data_type": data_type})
     new_attribute_body.update({"mandatory": mandatory}) if mandatory else None
-    new_attribute_body.update({"attribute_default_value": attribute_default_value}) if attribute_default_value else None
-    new_attribute_body.update({
-        "allow_multiple_data_type_values": allow_multiple_data_type_values}) if allow_multiple_data_type_values\
-        else None
+    new_attribute_body.update({"default_value": attribute_default_value}) if attribute_default_value else None
     new_attribute_body.update(
-        {"allowed_data_types_value": allowed_data_types_value}) if allowed_data_types_value else None
+        {"allow_multiple": allow_multiple_data_type_string}) if allow_multiple_data_type_string else None
+    new_attribute_body.update(
+        {"allowed_value": allowed_list_data_types_value}) if allowed_list_data_types_value else None
 
     res = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
 
