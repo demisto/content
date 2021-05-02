@@ -35,8 +35,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v2
