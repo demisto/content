@@ -3280,9 +3280,31 @@ def test_return_results_multiple_dict_results(mocker):
     demisto_results_mock = mocker.patch.object(demisto, 'results')
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
-    args, kwargs = demisto_results_mock.call_args_list[0]
+    args, _ = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
     assert [{'MockContext': 0}, {'MockContext': 1}] in args
+
+
+def test_return_results_mixed_results(mocker):
+    """
+    Given:
+      - List containing a CommandResult object and two dictionaries (representing a demisto result entries)
+    When:
+      - Calling return_results()
+    Then:
+      - Assert that demisto.results() is called 2 times .
+      - Assert that the first call was with the CommandResult object.
+      - Assert that the second call was with the two demisto results dicts.
+    """
+    from CommonServerPython import CommandResults, return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results_object = CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0})
+    mock_demisto_results_entry = [{'MockContext': 1}, {'MockContext': 2}]
+    return_results([mock_command_results_object] + mock_demisto_results_entry)
+
+    assert demisto_results_mock.call_count == 2
+    assert demisto_results_mock.call_args_list[0][0][0] == mock_command_results_object.to_context()
+    assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
 def test_arg_to_int__valid_numbers():
