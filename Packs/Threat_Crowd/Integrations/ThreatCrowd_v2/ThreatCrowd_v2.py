@@ -199,7 +199,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def test_module(client: Client) -> str:
     try:
         api_url = 'ip/report/'
-        client._http_request(url_postfix=api_url, **{'ip': '1.1.1.1'})
+        client._http_request(method='GET', url_suffix=api_url, params={'ip': '1.1.1.1'})
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
