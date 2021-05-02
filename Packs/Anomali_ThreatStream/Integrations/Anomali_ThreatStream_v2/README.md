@@ -1704,7 +1704,7 @@ Checks the reputation of the given URL.
 | ThreatStream.URL.Type | String | The indicator type. | 
 | ThreatStream.URL.Source | String | The source of the indicator. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
-| ThreatStream.URL.Tags | Unknown | Tags assigned to the url. |
+| ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. |
 
 #### Command Example
     url url=http://194.147.35.172/mikey.mpsl using-brand="Anomali ThreatStream v2"
@@ -1746,4 +1746,3 @@ Checks the reputation of the given URL.
 | Address | Confidence | Source | Type | Status | Modified | Organization | Country | Severity |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `http://194.147.35.172/mikey.mpsl` | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
-
