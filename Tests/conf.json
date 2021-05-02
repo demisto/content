@@ -3367,7 +3367,9 @@
         "PAN-OS EDL Setup v3 Test": "Issue 35386",
         "Google-Vault-Generic-Test": "Issue 24347",
         "FireEyeNX-Test": "Issue 33216",
-        "GmailTest": "Issue 27057"
+        "GmailTest": "Issue 27057",
+        "Gmail Single User - Test": "Issue 27361",
+        "Microsoft Teams Management - Test": "Issue 33410"
     },
     "skipped_integrations": {
         
