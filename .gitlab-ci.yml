@@ -44,8 +44,8 @@ default:
     - export PATH="${PWD}/node_modules/.bin:${PATH}"
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Installing SDK"
-        pip3 install git+https://github.com/demisto/demisto-sdk@master
+        echo "Installing SDK" >> $ARTIFACTS_FOLDER/logs/installations.log
+        pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
       fi
     - echo "========= Installing SSH keys ========"
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
@@ -56,7 +56,7 @@ default:
     - chmod 700 ~/.ssh
 
     - echo "======= Download configuration ========"
-    - ./Tests/scripts/download_demisto_conf.sh
+    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
 
     - echo "========== Build Parameters =========="
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
@@ -184,6 +184,7 @@ create-instances:
           fi
           python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
+
 
 .test_content_on_server_instances_base:
   needs: ["create-instances"]

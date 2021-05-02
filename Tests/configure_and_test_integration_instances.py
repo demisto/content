@@ -123,7 +123,7 @@ class Build:
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CIRCLECI_RUN
-    env_results_path = './env_results.json'
+    env_results_path = './artifacts/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -882,6 +882,7 @@ def configure_servers_and_restart(build):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
+                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
             configure_types.append('docker hardening')

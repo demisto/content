@@ -5,6 +5,7 @@ echo "starting to install packs ..."
 SECRET_CONF_PATH=$(cat secret_conf_path)
 
 echo "starting configure_and_install_packs ..."
+PREVIOUS_JOB_NUMBER=$(cat create_instances_build_num.txt)
 
 # $1 = INSTANCE_ROLE
 # $2 = gitlab or ''
