@@ -172,6 +172,9 @@ def normalize_command_line(command: str) -> str:
     :param command: command line
     :return: Normalized command line
     """
+
+    if command and isinstance(command, list):
+        command = ' '.join(set(command))
     if command and isinstance(command, str):
         my_string = command.lower()
         my_string = "".join([REPLACE_COMMAND_LINE.get(c, c) for c in my_string])
@@ -189,12 +192,12 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *lis
             if '.' in field:
                 if isinstance(incidents, list):
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
-                    value_list = [' '.join(list(filter(lambda x: x not in ['None', None, 'N/A'], x))) for x in
+                    value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))) for x in
                                   value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
                     value_list = ' '.join(  # type: ignore
-                        list(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))  # type: ignore
+                        set(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list))))  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
 
@@ -400,10 +403,12 @@ class Model:
         """
         remove_list = []
         for field in self.field_for_command_line:
-            if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
-                0] or not isinstance(self.incident_to_match[field].values[0], str) or \
-                    self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
-                    0] == 'N/A':
+            if field not in self.incident_to_match.columns \
+                    or not self.incident_to_match[field].values[0] \
+                    or (not isinstance(self.incident_to_match[field].values[0], str) and not isinstance(
+                    self.incident_to_match[field].values[0], list)) \
+                    or self.incident_to_match[field].values[0] == 'None' \
+                    or self.incident_to_match[field].values[0] == 'N/A':
                 remove_list.append(field)
         self.field_for_command_line = [x for x in self.field_for_command_line if x not in remove_list]
 
