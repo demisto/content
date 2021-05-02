@@ -5033,7 +5033,7 @@ def return_results(results):
         demisto.results(None)
         return
 
-    elif results and isinstance(results, list) and len(results) > 0:
+    elif results and isinstance(results, list):
         result_list = []
         for result in results:
             if isinstance(result, (dict, str)):
