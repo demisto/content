@@ -1,9 +1,9 @@
 IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
 
-## Configure XFE_v2 on Demisto
+## Configure XFE v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for XFE_v2.
+2. Search for XFE v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -19,7 +19,7 @@ IBM X-Force Exchange lets you receive threat intelligence about applications, IP
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
@@ -34,7 +34,7 @@ IP to check
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP to check | Required | 
-| threshold | score treshold  | Optional | 
+| threshold | score threshold  | Optional | 
 
 
 ##### Context Output
@@ -224,7 +224,12 @@ Check file reputation
 | File.SHA1 | String | The file's SHA1 | 
 | File.SHA256 | String | The file's SHA256 | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision | 
-| File.Malicious.Description | String | For malicious files, the reason for the vendor to make the decision | 
+| File.Malicious.Description | String | For malicious files, the reason for the vendor to make the decision |
+| File.Relationships.EntityA | String | The source of the relationship. |
+| File.Relationships.EntityB | String | The destination of the relationship. |
+| File.Relationships.Relationship | String | The name of the relationship. |
+| File.Relationships.EntityAType | String | The type of the source of the relationship. |
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 

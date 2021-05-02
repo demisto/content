@@ -4104,7 +4104,14 @@ class TestIndicatorsSearcher:
         if not searchAfter:
             searchAfter = 0
 
-        return {'searchAfter': searchAfter + 1}
+        if searchAfter < 6:
+            searchAfter += 1
+
+        else:
+            # mock the end of indicators
+            searchAfter = None
+
+        return {'searchAfter': searchAfter}
 
     def test_search_indicators_by_page(self, mocker):
         """
@@ -4150,6 +4157,28 @@ class TestIndicatorsSearcher:
             search_indicators_obj_search_after.search_indicators_by_version()
 
         assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
+
+    def test_search_all_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter until there are no more indicators
+          so search_after is None
+        Then:
+          - The search after param is None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+        for n in range(7):
+            search_indicators_obj_search_after.search_indicators_by_version()
+        assert search_indicators_obj_search_after._search_after_param == None
         assert search_indicators_obj_search_after._page == 0
 
 
