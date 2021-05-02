@@ -260,12 +260,10 @@ run-unittests-and-lint:
   script:
     - echo "====Trigger Private Build===="
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
-        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] || [[ -n SKIP_PRIVATE_BUILD ]]; then
-          echo "Skipping - not running in contribution instance"
-        else
-          python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-        fi
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CIRCLE_BRANCH =~ pull/[0-9]+ ]] || [[ -n SKIP_PRIVATE_BUILD ]]; then
+        echo "Skipping - not running in bucket upload."
+      else
+        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
       fi
     - echo "====Test Infrustracture===="
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -302,12 +300,10 @@ run-unittests-and-lint:
       fi
     - echo "====Get Private Build Status===="
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]]; then
-        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ || -n SKIP_PRIVATE_BUILD ]]; then
-          echo "Skipping - not running in contribution instance"
-        else
-          python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-        fi
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CIRCLE_BRANCH =~ pull/[0-9]+ || -n SKIP_PRIVATE_BUILD ]]; then
+        echo "Skipping - not running in bucket upload"
+      else
+        python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
       fi
     - |
       if ! [ -n "${BUCKET_UPLOAD}" ]; then
@@ -423,37 +419,7 @@ run-validations:
         LogLevel ERROR" >> ~/.ssh/config
     fi
   - echo "Open SSH Tunnel"
-  - |
-    if [ -z $INSTANCE_CREATED ]; then
-      echo "Skipping - instance was not created"
-    else
-      echo "Generating the ips and ports"
-      # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
-      IPS_AND_PORTS=$(cat $ENV_RESULTS_PATH | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
-      # Handling the ip & port pairs line by line
-      echo "Handling the ip & port pairs line by line"
-      echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
-      do
-        # Capturing the IP
-        echo "Capturing the IP"
-        IP=$(echo $IP_AND_PORT | grep -o -E "10\.0\.[0-9]{1,3}\.[0-9]{1,3}")
-        # Capturing the port
-        echo "Capturing the port"
-        PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
-        echo "Opening a tunnel for ip $IP with port $PORT"
-        ssh -4 -o "ServerAliveInterval=15" -f -N "content-build@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
-        echo "Waiting for tunnel to be established"
-        until nc -z 127.0.0.1 $PORT -v;
-        do
-          if [ $COUNT -ge $SSH_TUNNEL_TIMEOUT ]; then
-            echo "ssh tunnel set up timeout on instance with ip $IP";
-            exit 1;
-          fi;
-          ((COUNT++))
-          sleep 1
-        done
-      done
-    fi
+  - Tests/scripts/open_ssh_tunnel.sh
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
   - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
