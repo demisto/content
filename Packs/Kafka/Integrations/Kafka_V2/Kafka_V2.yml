@@ -56,7 +56,7 @@ configuration:
   required: false
   type: 13
 - additionalinfo: |-
-    The max number of bytes of messages to attempt to fetch with each fetch request. Should be in multiples of 1024. If the fetching is taking a long time, you should consider increasing this value. Default is '1048576'.
+    The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process is taking a long time, you should consider increasing this value. Default is '1048576'.
   defaultvalue: '1048576'
   display: Max number of bytes per message
   hidden: false
