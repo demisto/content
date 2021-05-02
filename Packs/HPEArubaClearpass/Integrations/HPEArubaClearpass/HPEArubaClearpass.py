@@ -82,13 +82,14 @@ class Client(BaseClient):
         authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
-    def prepare_request(self, method: str, params: dict, url_suffix: str, body={}):
+    def prepare_request(self, method: str, params: dict, url_suffix: str, body={}, resp_type='json'):
         return self._http_request(
             method=method,
             params=params,
             url_suffix=url_suffix,
             headers=self.headers,
-            json_data=body
+            json_data=body,
+            resp_type=resp_type
         )
 
 
@@ -309,8 +310,8 @@ def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     attribute_id = args.get('attribute_id')
-    client.prepare_request(method='DELETE', params={}, url_suffix=f'attribute/{attribute_id}')
-    human_readable = f"HPE Aruba Clearpass attribute: {attribute_id} deleted successfully."
+    client.prepare_request(method='DELETE', params={}, url_suffix=f'attribute/{attribute_id}', resp_type='content')
+    human_readable = f"HPE Aruba Clearpass attribute with ID: {attribute_id} deleted successfully."
     return CommandResults(readable_output=human_readable)
 
 
