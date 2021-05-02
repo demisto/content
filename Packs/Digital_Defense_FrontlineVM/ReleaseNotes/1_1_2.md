@@ -1,0 +1,3 @@
+#### Integrations
+##### Digital Defense FrontlineVM
+- Upgraded the Docker image to: *demisto/python3:3.9.4.18682*.
