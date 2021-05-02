@@ -35,6 +35,8 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v2
@@ -141,7 +143,10 @@ script:
       description: The vendor that reported the indicator as malicious.
       type: String
     - contextPath: ThreatStream.IP.Tags
-      description: Tags assigned to the IP
+      description: Tags assigned to the IP.
+      type: Unknown
+    - contextPath: IP.Tags
+      description: (List) Tags of the IP.
       type: Unknown
   - arguments:
     - default: true
@@ -258,7 +263,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: ThreatStream.Domain.Tags
-      description: Tags assigned to the domain
+      description: Tags assigned to the domain.
+      type: Unknown
+    - contextPath: Domain.Tags
+      description: (List) Tags of the domain.
       type: Unknown
   - arguments:
     - default: true
@@ -359,7 +367,10 @@ script:
       description: The source of the indicator.
       type: String
     - contextPath: ThreatStream.File.Tags
-      description: Tags assigned to the file
+      description: Tags assigned to the file.
+      type: Unknown
+    - contextPath: File.Tags
+      description: (List) Tags of the file.
       type: Unknown
   - arguments:
     - default: false
@@ -436,7 +447,7 @@ script:
         for time, in UTC time.
       type: String
     - contextPath: ThreatStream.EmailReputation.Tags
-      description: Tags assigned to the email
+      description: Tags assigned to the email.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
@@ -1626,7 +1637,10 @@ script:
       description: The indicator severity ("very-high", "high", "medium", or "low").
       type: String
     - contextPath: ThreatStream.URL.Tags
-      description: Tags assigned to the URL
+      description: Tags assigned to the URL.
+      type: Unknown
+    - contextPath: URL.Tags
+      description: (List) Tags of the URL.
       type: Unknown
   dockerimage: demisto/emoji:1.0.0.19032
   feed: false
