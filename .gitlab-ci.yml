@@ -104,9 +104,13 @@ notify-slack:
     - echo "=====Notify Slack====="
     - |
       if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
-      elif [ -n "${COMMIT_FLOW}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'unittests' $ENV_RESULTS_PATH '$SLACK_CHANNEL' 'gitlab'
+        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
+      else
+        cat $ARTIFACTS_FOLDER/slack_notifier_input.txt | while read slack_input_line
+        do
+          echo "running ./Tests/scripts/slack_notifier.sh "${slack_input_line}
+          ./Tests/scripts/slack_notifier.sh $slack_input_line
+        done
       fi
 
 create-instances:
@@ -215,7 +219,7 @@ create-instances:
     - |
       if [ $INSTANCE_ROLE == "Server Master" ];
         then
-          ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH '$SLACK_CHANNEL' 'gitlab'
+          echo "'test_playbooks' ${ENV_RESULTS_PATH} '${SLACK_CHANNEL}'" >> $ARTIFACTS_FOLDER/slack_notifier_input.txt
       fi
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
@@ -302,6 +306,10 @@ run-unittests-and-lint:
         else
           python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
         fi
+      fi
+    - |
+      if ! [ -n "${BUCKET_UPLOAD}" ]; then
+        echo "'unittests' ${ENV_RESULTS_PATH}" >> $ARTIFACTS_FOLDER/slack_notifier_input.txt
       fi
 
 run-validations:
@@ -483,11 +491,6 @@ run-validations:
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE" "$ARTIFACTS_FOLDER" "gitlab"
     - echo "=====Install Packs====="
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" "gitlab"
-    - echo "=====Notify Slack====="
-    - |
-      if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL" 'gitlab'
-      fi
     - echo "=====Destroy Instances====="
     - |
       if [ -n "${CONTRIB_BRANCH}" ]; then
