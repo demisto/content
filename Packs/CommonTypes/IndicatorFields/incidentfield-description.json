@@ -23,7 +23,8 @@
         "AWS Security Hub",
         "Campaign",
         "Course of Action",
-        "Infrastructure"
+        "Infrastructure",
+        "Intrusion Set"
     ],
     "caseInsensitive": true,
     "columns": null,

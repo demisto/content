@@ -6,7 +6,8 @@
         "Tool",
         "Threat Actor",
         "Campaign",
-        "Infrastructure"
+        "Infrastructure",
+        "Intrusion Set"
     ],
     "breachScript": "",
     "caseInsensitive": true,
