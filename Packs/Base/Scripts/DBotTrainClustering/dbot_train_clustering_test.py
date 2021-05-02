@@ -1,7 +1,7 @@
 import json
 
 from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
-    preprocess_incidents_field, PREFIXES_TO_REMOVE
+    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID
 
 PARAMETERS_DICT = {
     'fromDate': '',
@@ -163,3 +163,23 @@ def test_missing_too_many_values(mocker):
     assert MESSAGE_INVALID_FIELD % 'field_2' in msg
     assert output_clustering_json
     assert model
+
+
+def test_main_incident_nested(mocker):
+    """
+    Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
+    :param mocker:
+    :return:
+    """
+    global FETCHED_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    nested_field = 'xdralerts.cmd'
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': nested_field, 'fieldForClusterName': 'entityname'})
+    mocker.patch.object(demisto, 'args',
+                        return_value=PARAMETERS_DICT)
+    mocker.patch.object(demisto, 'dt', return_value=['nested_val_1', 'nested_val_2'])
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    df, msg = main()
+    assert df.empty
+    assert MESSAGE_CLUSTERING_NOT_VALID in msg

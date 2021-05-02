@@ -12,7 +12,6 @@ from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
-from sklearn import metrics
 import hdbscan
 from datetime import datetime
 from typing import Type
@@ -112,7 +111,8 @@ class PostProcessing(object):
                 dist_total[cluster_number]['distribution'] = dist
                 dist_total[cluster_number]['number_samples'] = self.stats[cluster_number]['number_samples']
                 dist_total[cluster_number]['clusterName'] = 'Cluster %s' % str(cluster_number)
-
+        self.stats['number_of_clusterized_sample_after_selection'] = sum(dist_total[cluster_number]['number_samples']
+                                                                         for cluster_number in dist_total.keys())
         self.selected_clusters = dist_total
 
 
@@ -538,15 +538,23 @@ def create_summary(model_processed: Type[PostProcessing]) -> dict:
     :return: JSON with information about the training
     """
     clustering = model_processed.clustering
+    number_of_sample = model_processed.stats["General"]["Nb sample"]
+    nb_clusterized_after_selection = model_processed.stats['number_of_clusterized_sample_after_selection']
+    nb_clusters = model_processed.stats["General"]["Nb cluster"]
+    number_clusters_selected = len(model_processed.selected_clusters)
+    number_of_clusterized = sum(clustering.model.labels_ != -1)
+    percentage_clusters_selected = round(100*number_clusters_selected/nb_clusters,0)
+    percentage_selected_samples = round(100 * (nb_clusterized_after_selection / number_of_sample),0)
+    percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample),0)
     summary = {
-        'Total number of samples ': str(model_processed.stats["General"]["Nb sample"]),
-        'Maximum number of cluster': str(model_processed.max_number_cluster),
-        'Percentage of clusterized sample': str(
-            round(100 * (sum(clustering.model.labels_ != -1) / model_processed.stats["General"]["Nb sample"]),
-                  0)) + "%",
-        'Total number of non clusterized sample': str(sum(clustering.model.labels_ == -1)),
-        'Total number of cluster: ': str(model_processed.stats["General"]["Nb cluster"]),
-        'Total number of cluster kept: ': str(len(model_processed.selected_clusters)),
+        'Total number of samples ': str(number_of_sample),
+        'Percentage of clusterized samples after selection': "%s  (%s/%s)" %(str(percentage_selected_samples),
+                                                                             str(nb_clusterized_after_selection), str(number_of_sample)),
+        'Percentage of clusterized samples': "%s  (%s/%s)" % (str(percentage_clusterized_samples),
+                                                                              str(number_of_clusterized),
+                                                                              str(number_of_sample)),
+        'Percentage of cluster selected': "%s  (%s/%s)" %(str(percentage_clusters_selected), str(number_clusters_selected),
+                                                         str(nb_clusters)),
         'Training time': str(model_processed.date_training)
     }
     return summary
@@ -568,6 +576,35 @@ def return_entry_clustering(output_clustering: json, tag: str = None) -> None:
     if tag is not None:
         return_entry["Tags"] = ['Clustering_{}'.format(tag)]
     demisto.results(return_entry)
+
+
+def wrapped_list(obj: List) -> List:
+    """
+    Wrapped object into a list if not list
+    :param obj:
+    :return:
+    """
+    if not isinstance(obj, list):
+        return [obj]
+    return obj
+
+
+
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: List[str]) -> \
+        pd.DataFrame:
+    for field_type in list_of_field_list:
+        for field in field_type:
+            if '.' in field:
+                if isinstance(incidents, list):
+                    value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
+                    value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))) for x in
+                                  value_list]
+                else:
+                    value_list = wrapped_list(demisto.dt(incidents, field))
+                    value_list = ' '.join(  # type: ignore
+                        set(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list))))  # type: ignore
+                incidents_df[field] = value_list
+    return incidents_df
 
 
 def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
@@ -618,6 +655,8 @@ def main():
 
     incidents_df = pd.DataFrame(incidents).fillna('')
     incidents_df.index = incidents_df.id
+
+    incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
 
     populate_fields = fields_for_clustering + field_for_cluster_name
     global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
