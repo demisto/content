@@ -867,13 +867,16 @@ def append_to_analysis_iocs_arrays(iocs, dbots, k):
     """
     Helper for appending analysis item to ioc an dbot arrays
     """
-    iocs.append(ioc_to_readable(k))
-    dbots.append({
-        'Vendor': 'ThreatGrid',
-        'Type': 'IOC',
-        'Indicator': k.get('ioc', 'unknown'),
-        'Score': calc_score(k.get('severity', '1'))
-    })
+    if not k:
+        return
+    if k.get('ioc'):
+        iocs.append(ioc_to_readable(k))
+        dbots.append({
+            'Vendor': 'ThreatGrid',
+            'Type': 'IOC',
+            'Indicator': k.get('ioc'),
+            'Score': calc_score(k.get('severity', '1'))
+        })
 
 
 def apply_search_filters():
