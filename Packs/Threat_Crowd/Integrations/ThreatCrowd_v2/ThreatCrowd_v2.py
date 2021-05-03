@@ -255,7 +255,7 @@ def main() -> None:
     base_url = params.get('server_url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    extended_data = bool(params.get('extended_data', False))
+    extended_data = argToBoolean(params.get('extended_data', False))
 
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
