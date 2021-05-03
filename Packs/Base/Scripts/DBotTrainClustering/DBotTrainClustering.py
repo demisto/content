@@ -35,6 +35,8 @@ HDBSCAN_PARAMS = {
     'prediction_data': True
 }
 FAMILY_COLUMN_NAME = 'label'
+UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
+MESSAGE_ERROR_MESSAGE = 'Model cannot be loaded'
 
 
 class PostProcessing(object):
@@ -81,14 +83,13 @@ class PostProcessing(object):
             dist = dict((k, v) for k, v in dist.items() if v >= 1)
             self.stats[number_cluster]['distribution sample'] = dist
 
-
     def compute_dist(self):
         """
         :param cluster: the number of the chosen cluster
         :param threshols: the threshold used to select the family(ies)
         :return:
         """
-        dist_total = {} #type: Dict
+        dist_total = {}  # type: Dict
         if not self.generic_cluster_name:
             for cluster_number in range(0, self.clustering.number_clusters):
                 chosen = {k: v for k, v in self.stats[cluster_number]['distribution sample'].items() if
@@ -99,7 +100,8 @@ class PostProcessing(object):
                 dist = {k: v * 100 / total for k, v in chosen.items()}
                 dist_total[cluster_number] = {}
                 dist_total[cluster_number]['number_samples'] = sum(
-                    self.clustering.raw_data[self.clustering.model.labels_ == cluster_number].label.isin(list(chosen.keys())))
+                    self.clustering.raw_data[self.clustering.model.labels_ == cluster_number].label.isin(
+                        list(chosen.keys())))
                 dist_total[cluster_number]['distribution'] = dist
                 dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])
         else:
@@ -198,13 +200,13 @@ class Clustering(object):
         """
         self.get_data(X, y)
         if hasattr(self.model, 'fit_predict'):
-            self.results = self.model.fit_predict(X) #type: ignore
+            self.results = self.model.fit_predict(X)  # type: ignore
         else:
-            self.model.fit(X) #type: ignore
+            self.model.fit(X)  # type: ignore
             if hasattr(self.model, 'labels_'):
-                self.results = self.model.labels_.astype(np.int) #type: ignore
+                self.results = self.model.labels_.astype(np.int)  # type: ignore
             else:
-                self.results = self.model.predict(X) #type: ignore
+                self.results = self.model.predict(X)  # type: ignore
         self.number_clusters = len(set(self.results[self.results >= 0]))
         return
 
@@ -215,8 +217,8 @@ class Clustering(object):
             self.TSNE_ = True
 
     def compute_centers(self):
-        for cluster in range(self.number_clusters): #type: ignore
-            center = np.mean(self.data_2d[np.where(self.model.labels_ == cluster)], axis=0) #type: ignore
+        for cluster in range(self.number_clusters):  # type: ignore
+            center = np.mean(self.data_2d[np.where(self.model.labels_ == cluster)], axis=0)  # type: ignore
             self.centers[cluster] = center
 
 
@@ -272,12 +274,13 @@ def get_args():  # type: ignore
     debug = demisto.args().get('debug')
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-        max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug
+           max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+           min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
-                                               query_sup: str, limit: int, incident_type: str) -> Union[Union[List, None], str]:
+                                               query_sup: str, limit: int, incident_type: str) -> Union[
+    Union[List, None], str]:
     """
     Get incidents with given parameters and return list of incidents
     :param populate_fields: List of field to populate
@@ -355,7 +358,7 @@ def recursive_filter(item: Union[List[Dict], Dict], regex_patterns: List, *field
         for key, value in item.items():
             value = recursive_filter(value, regex_patterns, *fieldsToRemove)
             if key not in fieldsToRemove and value not in fieldsToRemove and (
-                not match_one_regex(value, regex_patterns)):
+                    not match_one_regex(value, regex_patterns)):
                 result[key] = value
         return result
     return item
@@ -467,8 +470,8 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     :param clustering_model: Clustering model
     :return: Boolean
     """
-    n_labels = len(set(clustering_model.model.labels_)) #type: ignore
-    n_samples = len(clustering_model.raw_data) #type: ignore
+    n_labels = len(set(clustering_model.model.labels_))  # type: ignore
+    n_samples = len(clustering_model.raw_data)  # type: ignore
     if not 1 < n_labels < n_samples:
         return False
     return True
@@ -496,7 +499,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
         d['name'] = model_processed.selected_clusters[cluster_number]['clusterName']
         d['dataType'] = 'incident'
         d['color'] = color[divmod(cluster_number, len(color))[1]]
-        d['pivot'] = str(cluster_number) #type: ignore
+        d['pivot'] = str(cluster_number)  # type: ignore
         d['incidents_ids'] = [x for x in incidents_df[clustering.model.labels_ == cluster_number].id.values.tolist()]
         d['query'] = 'type:%s' % type
         d['data'] = [int(model_processed.stats[cluster_number]['number_samples'])]
@@ -543,18 +546,20 @@ def create_summary(model_processed: Type[PostProcessing]) -> dict:
     nb_clusters = model_processed.stats["General"]["Nb cluster"]
     number_clusters_selected = len(model_processed.selected_clusters)
     number_of_clusterized = sum(clustering.model.labels_ != -1)
-    percentage_clusters_selected = round(100*number_clusters_selected/nb_clusters,0)
-    percentage_selected_samples = round(100 * (nb_clusterized_after_selection / number_of_sample),0)
-    percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample),0)
+    percentage_clusters_selected = round(100 * number_clusters_selected / nb_clusters, 0)
+    percentage_selected_samples = round(100 * (nb_clusterized_after_selection / number_of_sample), 0)
+    percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         'Total number of samples ': str(number_of_sample),
-        'Percentage of clusterized samples after selection': "%s  (%s/%s)" %(str(percentage_selected_samples),
-                                                                             str(nb_clusterized_after_selection), str(number_of_sample)),
-        'Percentage of clusterized samples': "%s  (%s/%s)" % (str(percentage_clusterized_samples),
-                                                                              str(number_of_clusterized),
+        'Percentage of clusterized samples after selection': "%s  (%s/%s)" % (str(percentage_selected_samples),
+                                                                              str(nb_clusterized_after_selection),
                                                                               str(number_of_sample)),
-        'Percentage of cluster selected': "%s  (%s/%s)" %(str(percentage_clusters_selected), str(number_clusters_selected),
-                                                         str(nb_clusters)),
+        'Percentage of clusterized samples': "%s  (%s/%s)" % (str(percentage_clusterized_samples),
+                                                              str(number_of_clusterized),
+                                                              str(number_of_sample)),
+        'Percentage of cluster selected': "%s  (%s/%s)" % (
+        str(percentage_clusters_selected), str(number_clusters_selected),
+        str(nb_clusters)),
         'Training time': str(model_processed.date_training)
     }
     return summary
@@ -589,7 +594,6 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-
 def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: List[str]) -> \
         pd.DataFrame:
     for field_type in list_of_field_list:
@@ -608,7 +612,7 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *lis
 
 
 def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
-                           max_ratio_of_missing_value: float) -> Union[List[str],str]:
+                           max_ratio_of_missing_value: float) -> Union[List[str], str]:
     """
     Remove fields that are not valid (like too small number of sample)
     :param fields_for_clustering: List of field to use for the clustering
@@ -627,14 +631,27 @@ def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.Da
     return valid_field, global_msg
 
 
+def get_model_data(model_name, store_type, is_return_error):
+    res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
+    if not is_error(res_model):
+        model_data = res_model['Contents']['modelData']
+        try:
+            model_type = res_model['Contents']['model']["type"]["type"]
+            return model_data, model_type
+        except Exception:
+            return model_data, UNKNOWN_MODEL_TYPE
+    else:
+        return None, MESSAGE_ERROR_MESSAGE
+
+
 def main():
     global_msg = ""
     generic_cluster_name = False
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-        max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
+    max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})

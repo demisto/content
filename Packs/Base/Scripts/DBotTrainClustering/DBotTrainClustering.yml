@@ -121,6 +121,26 @@ args:
   - 'True'
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Whether to re-train the model in any cases
+  isArray: false
+  name: forceRetrain
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '24'
+  description: Period of time (in hours) before retraining the model
+  isArray: false
+  name: modelExpiration
+  predefined:
+  - ''
+  required: false
+  secret: false
 comment: Train clustering model on incidents.
 commonfields:
   id: 3621593a-3641-4b26-90dc-a660f4b4e68c

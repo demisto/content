@@ -61,11 +61,11 @@ def test_main_regular(mocker):
                         return_value=PARAMETERS_DICT
                         )
     sub_dict_0 = {
-                 'data': [2],
-                 'dataType': 'incident',
-                 'incidents_ids': ['1', '3'],
-                 'name': 'powershell',
-                 'query': 'type:Phishing'
+             'data': [2],
+             'dataType': 'incident',
+             'incidents_ids': ['1', '3'],
+             'name': 'powershell',
+             'query': 'type:Phishing'
     }
     sub_dict_1 = {
                  'data': [2],
@@ -83,7 +83,7 @@ def test_main_regular(mocker):
     assert MESSAGE_INCORRECT_FIELD % 'wrong_field' in msg
     assert (all(item in cluster_0.items() for item in sub_dict_0.items())
             and all(item in cluster_1.items() for item in sub_dict_1.items())) \
-            or (all(item in cluster_0.items() for item in sub_dict_1.items())
+        or (all(item in cluster_0.items() for item in sub_dict_1.items())
             and all(item in cluster_1.items() for item in sub_dict_0.items()))
 
 
@@ -128,8 +128,8 @@ def test_empty_cluster_name(mocker):
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json['data'][0]
     cluster_1 = output_json['data'][1]
-    assert (all(item in cluster_0.items() for item in sub_dict_0.items()) and
-            all(item in cluster_1.items() for item in sub_dict_1.items())) or \
+    assert (all(item in cluster_0.items() for item in sub_dict_0.items())
+            and all(item in cluster_1.items() for item in sub_dict_1.items())) or \
             (all(item in cluster_0.items() for item in sub_dict_1.items()) and
             all(item in cluster_1.items() for item in sub_dict_0.items()))
 
