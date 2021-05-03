@@ -2643,7 +2643,7 @@ tasks:
       travelmaplink: {}
       triggeredsecurityprofile: {}
       type:
-        simple: CDL - FW logging - action required
+        simple: PAN-OS logging to Cortex Data Lake - Action Required
       uniquebiometricdatabreached: {}
       uniqueidentificationnumberbreached: {}
       uniqueports: {}

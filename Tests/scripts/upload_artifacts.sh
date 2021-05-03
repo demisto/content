@@ -42,4 +42,4 @@ fi
 echo "$GCS_ARTIFACTS_KEY"  | gcloud auth activate-service-account --key-file=- > auth.out 2>&1
 TARGET_PATH="content/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/$CIRCLE_NODE_INDEX"
 echo "auth loaded. uploading files at: $ARTIFACTS_DIR to target path: $TARGET_PATH ..."
-gsutil -m cp -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"
+gsutil -m cp -z html,md,json,log,txt -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"
