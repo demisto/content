@@ -87,7 +87,7 @@ class TidyClient:
                     f"ansible_user=\"{self.username}\" ansible_password=\"{self.password}\" " \
                     f"ansible_become_password=\"{self.password}\" ansible_connection=ssh"
         if self.ssh_key:
-            with open('key.pem', "w") as ssh_key_file:
+            with open('key.pem', 'w') as ssh_key_file:
                 ssh_key_file.write(self.ssh_key)
             os.chmod('key.pem', 0o400)
             inventory += f' ansible_ssh_private_key_file=\"{os.path.abspath(ssh_key_file.name)}\"'
@@ -664,11 +664,13 @@ def main() -> None:
     hostname = demisto.getArg("hostname") or demisto.getParam("hostname")
     user = demisto.getArg("user") or demisto.getParam("user")
     password = demisto.getArg("password") or demisto.getParam("password")
-    ssh_key = demisto.getArg("ssh_key") or demisto.getParam("ssh_key")
-    if ssh_key:
-        client = TidyClient(hostname=hostname, user=user, password=password, ssh_key=ssh_key)
-    else:
-        client = TidyClient(hostname=hostname, user=user, password=password)
+    ssh_key = demisto.getParam("ssh_key")
+    client = TidyClient(
+        hostname=hostname,
+        user=user,
+        password=password,
+        ssh_key=ssh_key if ssh_key else ''
+    )
 
     # Command execution
     try:

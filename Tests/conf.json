@@ -3279,7 +3279,17 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "Tidy - Test"
+            "playbookID": "Tidy - Test",
+            "integrations": [
+                "AWS - EC2",
+                "Demisto REST API",
+                "Tidy"
+            ],
+            "instance_names": [
+                "aws_alloacte_host"
+            ],
+            "fromversion": "6.0.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -3291,7 +3301,6 @@
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "RedLockTest": "Issue 24600",
         "SentinelOne V2 - test": "Issue 24933",
-        "Tidy - Test": "Will run manually once a month",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",

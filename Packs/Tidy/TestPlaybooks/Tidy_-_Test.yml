@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 377.5,
           "y": 50
         }
       }
@@ -57,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 377.5,
+          "y": 195
         }
       }
     note: false
@@ -104,7 +104,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 377.5,
           "y": 370
         }
       }
@@ -139,8 +139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 570
+          "x": 377.5,
+          "y": 545
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "13"
     scriptarguments:
       instanceIds:
         simple: ${AWS.EC2.Instances.InstanceId}
@@ -171,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
+          "x": 377.5,
+          "y": 720
         }
       }
     note: false
@@ -182,14 +182,14 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e5dd25b8-69c5-4b68-8732-73bae86f8ecc
+    taskid: c87e21a0-7348-4017-8b50-0d9e9845df63
     type: playbook
     task:
-      id: e5dd25b8-69c5-4b68-8732-73bae86f8ecc
+      id: c87e21a0-7348-4017-8b50-0d9e9845df63
       version: -1
-      name: Content developer setup
+      name: Content developer setup New
       description: Install content working environment.
-      playbookName: Content developer setup
+      playbookName: Content developer setup New
       type: playbook
       iscommand: false
       brand: ""
@@ -213,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 990
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -246,8 +246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1190
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -281,8 +281,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1390
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -313,8 +313,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1590
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -338,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1800
+          "x": 377.5,
+          "y": 1945
         }
       }
     note: false
@@ -376,8 +376,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1190
+          "x": 480,
+          "y": 1420
         }
       }
     note: false
@@ -405,8 +405,176 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1390
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 479e888c-ff96-4812-8d7a-08df2acba027
+    type: regular
+    task:
+      id: 479e888c-ff96-4812-8d7a-08df2acba027
+      version: -1
+      name: Configure Tidy Instance
+      description: send HTTP PUT request
+      script: '|||demisto-api-put'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      body:
+        simple: |-
+          {
+              "brand": "Tidy",
+              "canSample": false,
+              "category": "IT Services",
+              "configtypes": {
+                  "hostname": 0,
+                  "password": 4,
+                  "ssh_key": 9,
+                  "user": 0
+              },
+              "configuration": {
+                  "brand": "",
+                  "canGetSamples": true,
+                  "category": "IT Services",
+                  "display": "Tidy",
+                  "fromServerVersion": "",
+                  "hidden": false,
+                  "id": "Tidy",
+                  "itemVersion": "",
+                  "modified": "2021-05-02T07:26:28.088174Z",
+                  "name": "Tidy",
+                  "packID": "",
+                  "prevName": "Tidy",
+                  "primaryTerm": 1,
+                  "propagationLabels": [
+                      "all"
+                  ],
+                  "sequenceNumber": 1255854,
+                  "sortValues": [
+                      "433064"
+                  ],
+                  "version": 157
+              },
+              "configvalues": {
+                  "hostname": "54.214.111.207",
+                  "user": "ec2-user"
+              },
+              "data": [
+                  {
+                      "defaultValue": "",
+                      "display": "",
+                      "displayPassword": "",
+                      "hasvalue": true,
+                      "hidden": false,
+                      "hiddenPassword": false,
+                      "hiddenUsername": false,
+                      "info": "",
+                      "name": "hostname",
+                      "required": true,
+                      "type": 0,
+                      "value": "54.214.111.207"
+                  },
+                  {
+                      "defaultValue": "",
+                      "display": "",
+                      "displayPassword": "",
+                      "hasvalue": true,
+                      "hidden": false,
+                      "hiddenPassword": false,
+                      "hiddenUsername": false,
+                      "info": "",
+                      "name": "user",
+                      "options": null,
+                      "required": true,
+                      "type": 0,
+                      "value": "ec2-user"
+                  },
+                  {
+                      "defaultValue": "",
+                      "display": "",
+                      "displayPassword": "",
+                      "hasvalue": false,
+                      "hidden": false,
+                      "hiddenPassword": false,
+                      "hiddenUsername": false,
+                      "info": "",
+                      "name": "password",
+                      "options": null,
+                      "required": true,
+                      "type": 4,
+                      "value": ""
+                  }
+              ],
+              "enabled": "true",
+              "hidden": false,
+              "id": "be411a91-400e-4f55-8ba1-e38b5426d90e",
+              "incidentFetchInterval": 0,
+              "incomingMapperId": "",
+              "integrationLogLevel": "",
+              "isIntegrationScript": true,
+              "name": "Tidy_instance_9",
+              "packID": "",
+              "passwordProtected": false,
+              "path": "",
+              "primaryTerm": 1,
+              "sequenceNumber": 1319427
+          }`
+      uri:
+        simple: settings/integration
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 0e9a018f-a8b4-4e1d-8384-b8880aa527ad
+    type: condition
+    task:
+      id: 0e9a018f-a8b4-4e1d-8384-b8880aa527ad
+      version: -1
+      name: Check that Tidy integration enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: Tidy
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1070
         }
       }
     note: false
@@ -419,9 +587,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 840,
-        "x": 450,
+        "height": 1960,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
@@ -429,5 +597,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 6.0.0
-description: Tidy test playbook. This playbook creates MAC machine and runs the content
-  developer playbook on it.
+description: Test Tidy content developer setup on a aws mac machine
