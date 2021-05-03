@@ -15,7 +15,7 @@ DEFAULT_RESOLUTION_LIMIT = 10
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability , extended_data: bool):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability, extended_data: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
         self.extended_data = extended_data
@@ -251,10 +251,9 @@ def main() -> None:
                          'threat-crowd-antivirus': antivirus_command,
                          'file': file_command}
     command = demisto.command()
-    
+
     demisto.debug(f'Command being called is {command}')
     try:
-        
         params = demisto.params()
         base_url = params.get('server_url')
         verify_certificate = not params.get('insecure', False)
@@ -269,7 +268,6 @@ def main() -> None:
         else:
             raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-        
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
