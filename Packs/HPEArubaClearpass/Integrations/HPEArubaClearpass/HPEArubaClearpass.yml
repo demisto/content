@@ -436,6 +436,57 @@ script:
     description: Delete an attribute.
     execution: false
     name: aruba-clearpass-attribute-delete
+  - arguments:
+    - default: false
+      description: ID of the active session.
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    - default: false
+      description: IP address of the client.
+      isArray: false
+      name: device_ip
+      required: false
+      secret: false
+    - default: false
+      description: MAC address of the client device.
+      isArray: false
+      name: device_mac_address
+      required: false
+      secret: false
+    - default: false
+      description: The current state of the session (active, stale, closed).
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: The visitor’s phone number.
+      isArray: false
+      name: visitor_phone
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of active sessions.
+    execution: false
+    name: aruba-clearpass-active-sessions-list
+    outputs:
+    - contextPath: HPEArubaClearpass.sessions.list.id
+      description: ID of the active session.
+      type: String
+    - contextPath: HPEArubaClearpass.sessions.list.device_ip
+      description: IP address of the client.
+      type: String
+    - contextPath: HPEArubaClearpass.sessions.list.mac_address
+      description: MAC address of the client device.
+      type: String
+    - contextPath: HPEArubaClearpass.sessions.list.state
+      description: The current state of the session (active, stale, closed).
+      type: String
+    - contextPath: HPEArubaClearpass.sessions.list.visitor_phone
+      description: The visitor’s phone number.
+      type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
