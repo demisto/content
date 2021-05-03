@@ -2,9 +2,7 @@ import json
 import io
 import HPEArubaClearpass
 from HPEArubaClearpass import *
-from HPEArubaClearpass import Client
 from freezegun import freeze_time
-import demistomock as demisto
 import pytest
 
 CLIENT_ID = "id123"
@@ -35,7 +33,8 @@ def util_load_json(path):
 
 def create_client(proxy: bool = False, verify: bool = False, base_url: str = "https://example.com/api/"
                   , client_id: str = CLIENT_ID, client_secret: str = CLIENT_SECRET):
-    return Client(proxy=proxy, verify=verify, base_url=base_url, client_id=client_id, client_secret=client_secret)
+    return HPEArubaClearpass.Client(proxy=proxy, verify=verify, base_url=base_url, client_id=client_id,
+                                    client_secret=client_secret)
 
 
 @pytest.mark.parametrize('context_data, expected_token', TEST_LOGIN_LIST)
@@ -46,3 +45,86 @@ def test_login(mocker, context_data, expected_token):
     mocker.patch.object(client, "generate_new_access_token", return_value=CLIENT_AUTH)
     client.login()
     assert client.access_token == expected_token
+
+
+def test_get_endpoints_list_command(mocker):
+    client = create_client()
+    mock_endpoints_response = util_load_json("test_data/endpoints_list_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_endpoints_response)
+    results = get_endpoints_list_command(client, {})
+    assert results.outputs_prefix == "HPEArubaClearpass.endpoints.list"
+    assert results.outputs_key_field == "id"
+    assert results.outputs[0]['id'] == 1
+    assert results.outputs[1]['id'] == 2
+    assert results.outputs[0]['mac_address'] == '001234567891'
+    assert results.outputs[1]['mac_address'] == '001234567892'
+
+
+def test_update_endpoint_command(mocker):
+    client = create_client()
+    mock_endpoint_response = util_load_json("test_data/update_endpoint_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
+    args = {"id": '1', "mac_address": "123456789", "description": "test1", "status": "Unknown"}
+    results = update_endpoint_command(client, args)
+    assert results.outputs_prefix == "HPEArubaClearpass.endpoints.update"
+    assert results.outputs_key_field == "id"
+    assert results.outputs['ID'] == 1
+    assert results.outputs['MAC Address'] == '123456789'
+    assert results.outputs['Description'] == 'test1'
+    assert results.outputs['Status'] == 'Unknown'
+
+
+def test_get_attributes_list_command(mocker):
+    client = create_client()
+    mock_attributes_response = util_load_json("test_data/attributes_list_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_attributes_response)
+    results = get_attributes_list_command(client, {})
+    assert results.outputs_prefix == "HPEArubaClearpass.attributes.list"
+    assert results.outputs_key_field == "id"
+    assert results.outputs[0]['id'] == 1
+    assert results.outputs[0]['name'] == 'Controller Id'
+    assert results.outputs[0]['entity_name'] == 'Device'
+    assert results.outputs[0]['data_type'] == 'String'
+    assert results.outputs[0]['mandatory'] is False
+    assert results.outputs[0]['allow_multiple'] is True
+
+
+def test_create_attribute_command(mocker):
+    client = create_client()
+    mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
+    args = {"data_type": "Boolean", "name": "new123", "entity_name": "Device"}
+    results = create_attribute_command(client, args)
+    assert results.outputs_prefix == "HPEArubaClearpass.attributes.create"
+    assert results.outputs_key_field == "id"
+    assert results.outputs['ID'] == 1
+    assert results.outputs['Name'] == args.get('name')
+    assert results.outputs['Entity name'] == args.get('entity_name')
+    assert results.outputs['Data type'] == args.get('data_type')
+    assert results.outputs['Mandatory'] is False
+    assert results.outputs['Allow multiple'] is False
+
+
+def test_update_attribute_command(mocker):
+    client = create_client()
+    mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
+    args = {"attribute_id": "1", "data_type": "Boolean", "name": "new123", "entity_name": "Device"}
+    results = update_attribute_command(client, args)
+    assert results.outputs_prefix == "HPEArubaClearpass.attributes.update"
+    assert results.outputs_key_field == "id"
+    assert results.outputs['ID'] == 1
+    assert results.outputs['Name'] == args.get('name')
+    assert results.outputs['Entity name'] == args.get('entity_name')
+    assert results.outputs['Data type'] == args.get('data_type')
+    assert results.outputs['Mandatory'] is False
+    assert results.outputs['Allow multiple'] is False
+
+
+def test_delete_attribute_command(mocker):
+    client = create_client()
+    args = {"attribute_id": "1"}
+    mocker.patch.object(client, "prepare_request")
+    results = delete_attribute_command(client, args)
+    human_readable = f"HPE Aruba Clearpass attribute with ID: {args.get('attribute_id')} deleted successfully."
+    assert results.readable_output == human_readable

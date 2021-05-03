@@ -146,7 +146,7 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_prefix='HPEArubaClearpass.endpoints.list',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -188,7 +188,7 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_prefix='HPEArubaClearpass.endpoints.update',
         outputs_key_field='id',
         outputs=outputs,
     )

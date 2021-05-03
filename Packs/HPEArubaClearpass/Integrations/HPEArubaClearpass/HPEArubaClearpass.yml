@@ -67,22 +67,22 @@ script:
     execution: false
     name: aruba-clearpass-endpoints-list
     outputs:
-    - contextPath: HPEArubaClearpass.endpoints.id
+    - contextPath: HPEArubaClearpass.endpoints.list.id
       description: The ID of the endpoint.
       type: Number
-    - contextPath: HPEArubaClearpass.endpoints.mac_address
+    - contextPath: HPEArubaClearpass.endpoints.list.mac_address
       description: The MAC Address of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.description
+    - contextPath: HPEArubaClearpass.endpoints.list.description
       description: The description of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.status
+    - contextPath: HPEArubaClearpass.endpoints.list.status
       description: The status of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.device_insight_tags
+    - contextPath: HPEArubaClearpass.endpoints.list.device_insight_tags
       description: List of Device Insight Tags.
       type: Unknown
-    - contextPath: HPEArubaClearpass.endpoints.attributes
+    - contextPath: HPEArubaClearpass.endpoints.list.attributes
       description: Additional attributes (key/value pairs) may be stored with the
         endpoint.
       type: Unknown
@@ -135,22 +135,22 @@ script:
     execution: false
     name: aruba-clearpass-endpoint-update
     outputs:
-    - contextPath: HPEArubaClearpass.endpoints.id
+    - contextPath: HPEArubaClearpass.endpoints.update.id
       description: The ID of the endpoint.
       type: Number
-    - contextPath: HPEArubaClearpass.endpoints.mac_address
+    - contextPath: HPEArubaClearpass.endpoints.update.mac_address
       description: The MAC Address of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.description
+    - contextPath: HPEArubaClearpass.endpoints.update.description
       description: The description of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.status
+    - contextPath: HPEArubaClearpass.endpoints.update.status
       description: The status of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.device_insight_tags
+    - contextPath: HPEArubaClearpass.endpoints.update.device_insight_tags
       description: List of Device Insight Tags.
       type: Unknown
-    - contextPath: HPEArubaClearpass.endpoints.attributes
+    - contextPath: HPEArubaClearpass.endpoints.update.attributes
       description: Additional attributes (key/value pairs) may be stored with the
         endpoint.
       type: Unknown
