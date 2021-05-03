@@ -467,7 +467,7 @@ tasks:
                   "version": 157
               },
               "configvalues": {
-                  "hostname": "54.214.111.207",
+                  "hostname": "${AWS.EC2.Instances.PublicIpAddress}",
                   "user": "ec2-user"
               },
               "data": [
@@ -483,7 +483,7 @@ tasks:
                       "name": "hostname",
                       "required": true,
                       "type": 0,
-                      "value": "54.214.111.207"
+                      "value": "${AWS.EC2.Instances.PublicIpAddress}"
                   },
                   {
                       "defaultValue": "",
