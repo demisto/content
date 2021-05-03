@@ -2888,13 +2888,13 @@
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_currently__active",
-            "playbookID": "playbook-feodotrackeripblock_test",
+            "playbookID": "playbook-feodotrackeripblock_test_currently__active",
             "fromversion": "5.5.0"
         },
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_30_days",
-            "playbookID": "playbook-feodotrackeripblock_test",
+            "playbookID": "playbook-feodotrackeripblock_test_30_days",
             "fromversion": "5.5.0"
         },
         {
@@ -3319,7 +3319,7 @@
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
         "Cortex XDR - IOC - Test": "Issue 25598",
-        "Cherwell Example Scripts - test": "Issue 27107",
+        "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
@@ -3368,8 +3368,7 @@
         "Google-Vault-Generic-Test": "Issue 24347",
         "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
-        "Gmail Single User - Test": "Issue 27361",
-        "Microsoft Teams Management - Test": "Issue 33410"
+        "Gmail Single User - Test": "Issue 27361"
     },
     "skipped_integrations": {
         
@@ -3500,7 +3499,7 @@
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "SecurityAndCompliance": "Integration doesn't support proxy",
-        "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
+        "Cherwell": "Submits a file - tests that send files shouldn't be mocked. this problem was fixed but the test is not running anymore because the integration is skipped",
         "Maltiverse": "issue 24335",
         "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
