@@ -15,6 +15,6 @@ scripttarget: 0
 subtype: python3
 tags: []
 type: python
-fromversion: 666666.0.0
+fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
