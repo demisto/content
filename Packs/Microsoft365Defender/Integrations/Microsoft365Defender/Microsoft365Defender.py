@@ -46,7 +46,7 @@ class Client(BaseClient):
             - $filter: OData query to filter the the list on the properties:
                                                                 lastUpdateTime, createdTime, status, and assignedTo
         Args:
-            limit: how many incidents to receive, maximum value is 100
+            limit (int): how many incidents to receive, the maximum value is 100
             status: filter list to contain only incidents with the given status (Active, Resolved or Redirected)
             assigned_to: Owner of the incident, or None if no owner is assigned.
             timeout: The amount of time (in seconds) that a request will wait for a client to
