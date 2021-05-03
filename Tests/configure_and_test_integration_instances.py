@@ -583,18 +583,11 @@ def __set_server_keys(client, integration_params, integration_name):
     for key, value in integration_params.get('server_keys').items():
         data['data'][key] = value
 
-    response_data, status_code, _ = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                                        method='POST', body=data)
-
-    try:
-        result_object = ast.literal_eval(response_data)
-    except ValueError:
-        logging.exception(f'failed to parse response from demisto. response is {response_data}')
-        return
-
-    if status_code >= 300 or status_code < 200:
-        message = result_object.get('message', '')
-        logging.error(f'Failed to set server keys, status_code: {status_code}, message: {message}')
+    update_server_configuration(
+        client=client,
+        server_configuration=data,
+        error_msg='Failed to set server keys'
+    )
 
 
 def set_integration_instance_parameters(integration_configuration,
@@ -888,6 +881,7 @@ def configure_servers_and_restart(build):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
                 configurations.update(NO_PROXY_CONFIG)
+                configurations['python.pass.extra.keys'] += "##--network=slirp4netns:cidr=192.168.0.0/16"
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
             configure_types.append('docker hardening')
