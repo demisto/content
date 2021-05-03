@@ -14,10 +14,10 @@ args:
 comment: This is a widget script returning MITRE indicators information for top indicators
   shown in incidents.
 commonfields:
-  id: MITREIndicatorsByOpenIncidentsv2
+  id: MITREIndicatorsByOpenIncidentsV2
   version: -1
 enabled: true
-name: MITREIndicatorsByOpenIncidentsv2
+name: MITREIndicatorsByOpenIncidentsV2
 script: '-'
 subtype: python3
 system: false
