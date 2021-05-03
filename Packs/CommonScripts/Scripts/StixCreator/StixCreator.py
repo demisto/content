@@ -1,3 +1,5 @@
+import dateparser as dateparser
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -29,8 +31,8 @@ for indicator_fields in all_args:
         value = all_args[indicator_fields].get('value', '')
     source_system = all_args[indicator_fields].get('source', '')
     demisto_score = all_args[indicator_fields].get('score', '')
-    first_seen = all_args[indicator_fields].get('firstSeen', '1970-01-01T00:00:00+00:00')
-    last_seen = all_args[indicator_fields].get('lastSeen', '1970-01-01T00:00:00+00:00')
+    first_seen = dateparser.parse(all_args[indicator_fields].get('firstSeen', '1970-01-01T00:00:00+00:00'))
+    last_seen = dateparser.parse(all_args[indicator_fields].get('lastSeen', '1970-01-01T00:00:00+00:00'))
     stix_type_and_value = ""
 
     if "File MD5".lower() in demisto_indicator_type.lower():
@@ -81,7 +83,8 @@ for indicator_fields in all_args:
                                   created=first_seen,
                                   modified=last_seen,
                                   score=demisto_score,
-                                  allow_custom=True)
+                                  allow_custom=True,
+                                  pattern_type='stix')
         except Exception as ex:
             demisto.info("Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type, value))
             demisto.info("Export failure excpetion: {}".format(ex))
