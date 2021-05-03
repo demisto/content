@@ -87,7 +87,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>Analysis created successfully</p>
+<p>Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7</p>
 <h3 id="h_353b4e58-45be-474d-b171-b8b803d216d0">2. Check file reputation by latest report</h3>
 <hr>
 <p>Checks file reputation of the given hash, supports SHA256, SHA1, and MD5.</p>
@@ -127,7 +127,7 @@
         "Metadata": {
             "analysis_id": "9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
             "sub_verdict": "file_type_not_supported", 
-            "analysis_url": "https://analyze.intezer.com/#/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
+            "analysis_url": "https://analyze.intezer.com/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
             "verdict": "not_supported", 
             "sha256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
             "is_private": true, 
@@ -200,7 +200,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>Analysis created successfully</p>
+<p>Analysis created successfully: 675515a1-62e9-4d55-880c-fd46a7963a56</p>
 <h3 id="h_89b3941d-6b65-4083-96b6-f67d0c2cb528">4. Check analysis status and results</h3>
 <hr>
 <p>Checks the analysis status and gets the analysis result, supports file and endpoint analysis.</p>
@@ -307,7 +307,7 @@
         "Metadata": {
             "analysis_id": "9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
             "sub_verdict": "file_type_not_supported", 
-            "analysis_url": "https://analyze.intezer.com/#/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
+            "analysis_url": "https://analyze.intezer.com/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
             "verdict": "not_supported", 
             "sha256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
             "is_private": true, 
