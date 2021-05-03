@@ -4,9 +4,9 @@ from CommonServerPython import *  # noqa: F401
 
 def main():
     value = demisto.args().get("value", None)
-    
+
     res = demisto.executeCommand("getIndicator", {"value": value})
-    
+
     if len(res[0]["Contents"]) > 0:
         data = res[0]["Contents"][0]
         score = data["score"]
@@ -14,7 +14,7 @@ def main():
         reliability = data["aggregatedReliability"]
         indicatorType = data["indicator_type"]
         expirationStatus = False if data["expirationStatus"] == "active" else True
-    
+
         dbotscore = {
             "Indicator": value,
             "Type": indicatorType,
@@ -23,9 +23,9 @@ def main():
             "Reliability": reliability,
             "Expired": expirationStatus
         }
-    
+
         md = tableToMarkdown("Indicator", dbotscore)
-    
+
         entry = {
             "Type": entryTypes["note"],
             "ReadableContentsFormat": formats['markdown'],
@@ -34,9 +34,9 @@ def main():
             "EntryContext": {"DBotScoreCache": dbotscore},
             "HumanReadable": md
         }
-    
+
         return_results(entry)
-    
+
     else:
         return_results(f"Could not find {value} in cache")
 
