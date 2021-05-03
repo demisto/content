@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: TheatCrowdv2
+  id: ThreatCrowdv2
   version: -1
 configuration:
 - defaultvalue: https://www.threatcrowd.org/searchApi/v2/
