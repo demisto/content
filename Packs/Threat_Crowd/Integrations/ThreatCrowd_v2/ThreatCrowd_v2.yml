@@ -23,7 +23,7 @@ configuration:
   required: true
   type: 15
 - additionalinfo: Whether to get all the resolution information. If disabled only the 10 most recent entries will be displayed.
-  display: Use Extended Data
+  display: Return extended Data
   name: extended_data
   required: false
   type: 8
