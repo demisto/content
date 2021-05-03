@@ -128,7 +128,7 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
         report['fields'] = {
             'stixid': report_object.get('id'),
             'published': report_object.get('published'),
-            'stixdescription': report_object.get('description', ''),
+            'description': report_object.get('description', ''),
             "reportedby": 'Unit42',
             "tags": list((set(report_object.get('labels'))).union(set(feed_tags))),
         }
@@ -157,6 +157,7 @@ def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
             "value": campaign.get('name'),
             "type": 'Campaign',
             "rawJSON": campaign,
+            "score": 3,
             "fields": {
                 'stixid': campaign.get('id'),
                 "firstseenbysource": campaign.get('created'),
@@ -194,9 +195,9 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
-def get_publication_for_attack_indicator(attack_indicator):
+def get_indicator_publication(indicator):
     publications = []
-    for external_reference in attack_indicator.get('external_references', []):
+    for external_reference in indicator.get('external_references', []):
         if external_reference.get('external_id'):
             continue
         url = external_reference.get('url')
@@ -205,14 +206,16 @@ def get_publication_for_attack_indicator(attack_indicator):
     return publications
 
 
-def get_indicator_value(attack_indicator):
+def get_attack_id_and_value_from_name(attack_indicator):
     """
-    Remove the "Txxxx" from the indicator value: 'T1108: Redundant Access' -> 'Redundant Access'.
+    Split indicator name into MITRE ID and indicator value: 'T1108: Redundant Access' -> MITRE ID = T1108,
+    indicator value = 'Redundant Access'.
     """
     ind_name = attack_indicator.get('name')
     idx = ind_name.index(':')
+    ind_id = ind_name[:idx]
     value = ind_name[idx + 2:]
-    return value
+    return ind_id, value
 
 
 def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
@@ -227,8 +230,8 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
 
     for attack_indicator in attack_indicator_objects:
 
-        publications = get_publication_for_attack_indicator(attack_indicator)
-        value = get_indicator_value(attack_indicator)
+        publications = get_indicator_publication(attack_indicator)
+        mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
         indicator = {
             "value": value,
@@ -240,6 +243,7 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
                 'description': attack_indicator.get('description'),
                 'operatingsystemrefs': attack_indicator.get('x_mitre_platforms'),
                 "publications": publications,
+                "mitreid": mitre_id,
                 "reportedby": 'Unit42',
                 "tags": feed_tags,
             }
@@ -252,7 +256,32 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
 
 
 def create_course_of_action_indicators(client, feed_tags, tlp_color):
-    pass
+    course_of_action_indicators = []
+    course_of_action_objects = client.objects_data['course-of-action']
+
+    for coa_indicator in course_of_action_objects:
+
+        publications = get_indicator_publication(coa_indicator)
+
+        indicator = {
+            "value": coa_indicator.get('name'),
+            "type": 'Attack Pattern',
+            "score": 0,
+            "fields": {
+                'stixid': coa_indicator.get('id'),
+                "firstseenbysource": handle_multiple_dates_in_one_field('created', coa_indicator.get('created')),
+                "modified": handle_multiple_dates_in_one_field('modified', coa_indicator.get('modified')),
+                'description': coa_indicator.get('description', ''),
+                "publications": publications,
+                "reportedby": 'Unit42',
+                "tags": feed_tags,
+            }
+        }
+        if tlp_color:
+            indicator['fields']['trafficlightprotocol'] = tlp_color
+
+        course_of_action_indicators.append(indicator)
+    return course_of_action_indicators
 
 
 def get_ioc_type(indicator, id_to_object):
@@ -368,6 +397,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     demisto.debug(f'{len(reports)} XSOAR STIX Reports Indicators were created.')
     demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
     demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
+    demisto.debug(f'{len(course_of_actions)} Course of Actions Indicators were created.')
 
     return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions
 
