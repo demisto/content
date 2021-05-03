@@ -52,7 +52,7 @@ class Client(BaseClient):
             timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
             from_date (datetime): get incident with creation date more recent than from_date
-            skip: how many entries to skip
+            skip (int): how many entries to skip
 
         Returns: request results as dict:
                     { '@odata.context',
