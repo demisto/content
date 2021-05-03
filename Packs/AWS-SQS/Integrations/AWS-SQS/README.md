@@ -1,5 +1,5 @@
 Amazon Web Services Simple Queuing Service (SQS)
-This integration was integrated and tested with version xx of AWS - SQS
+
 ## Configure AWS - SQS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
