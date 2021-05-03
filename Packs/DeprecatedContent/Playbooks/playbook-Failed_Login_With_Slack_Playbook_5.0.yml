@@ -341,4 +341,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-  - no test - manual task
+  - no test - manual taskdeprecated: true

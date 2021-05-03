@@ -527,3 +527,4 @@ outputs:
   description: Value of hits.
 tests:
 - block_indicators_-_generic_-_test
+deprecated: true

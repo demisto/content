@@ -680,3 +680,4 @@ outputs:
 fromversion: 5.0.0
 tests:
 - Dedup - Generic v2 - Test
+deprecated: true
