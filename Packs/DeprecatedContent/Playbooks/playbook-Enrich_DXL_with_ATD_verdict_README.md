@@ -1,18 +1,18 @@
-DEPRECATED. Use "Enrich DXL with ATD verdict v2" playbook instead. Detonates a file in ATD and if malicious, pushes its MD5, SHA1 and SHA256 hashes to McAfee DXL. An example of using McAfee ATD and pushing any malicious verdicts over DXL.
-
+Deprecated. Use "Enrich DXL with ATD verdict v2" playbook instead. Example of using McAfee ATD and pushing any malicious verdicts over DXL.
+Detonates a file in ATD and if malicious - push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-This playbook does not use any sub-playbooks.
+* 
 
 ### Integrations
 * McAfee DXL
 
 ### Scripts
-* CloseInvestigation
 * Exists
+* CloseInvestigation
 
 ### Commands
 * dxl-send-event
@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Enrich_DXL_with_ATD_verdict](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_DXL_with_ATD_verdict.png)
+![Enrich DXL with ATD verdict](Insert the link to your image here)

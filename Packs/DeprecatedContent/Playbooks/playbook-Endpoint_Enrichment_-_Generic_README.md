@@ -1,4 +1,4 @@
-DEPRECATED. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enriches an Endpoint hostname using one or more integrations.
+Deprecated. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enrich an Endpoint Hostname using one or more integrations
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -12,34 +12,34 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cylance Protect
 
 ### Scripts
+* EPOFindSystem
 * Exists
 * ADGetComputer
-* EPOFindSystem
 
 ### Commands
-* so-agents-query
 * cb-sensor-info
 * cylance-protect-get-devices
+* so-agents-query
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Hostname | The hostname to enrich. | ${Endpoint.Hostname} |Optional |
+| Hostname | The hostname to enrich | ${Endpoint.Hostname} | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Endpoint | The Endpoint's object. | unknown |
-| Endpoint.Hostname | The hostname to enrich. | string |
-| Endpoint.OS | The Endpoint OS. | string |
-| Endpoint.IP | The list of Endpoint IP addresses. | unknown |
-| Endpoint.MAC | The list of Endpoint MAC addresses. | unknown |
-| Endpoint.Domain | The Endpoint domain name. | string |
+| Endpoint | The Endpoint's object | unknown |
+| Endpoint.Hostname | The hostname to enrich | string |
+| Endpoint.OS | Endpoint OS | string |
+| Endpoint.IP | List of endpoint IP addresses | unknown |
+| Endpoint.MAC | List of endpoint MAC addresses | unknown |
+| Endpoint.Domain | Endpoint domain name | string |
 
 ## Playbook Image
 ---
-![Endpoint_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Generic.png)
+![Endpoint Enrichment - Generic](Insert the link to your image here)

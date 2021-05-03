@@ -1,5 +1,4 @@
-DEPRECATED. Use "Domain Enrichment - Generic v2" playbook instead. Enriches domains using one or more integrations.
-
+Deprecated. Use "Domain Enrichment - Generic v2" playbook instead. Enrich Domain using one or more integrations.
 Domain enrichment includes:
 * Domain reputation
 * Threat information
@@ -22,19 +21,19 @@ This playbook does not use any sub-playbooks.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| Domain | The domain name to enrich. | Name | Domain | Optional |
-| GetReputation | Whether the playbook should get the reputation for the domain. | True | - | Required |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Domain | The domain name to enrich | Domain.Name | Optional |
+| GetReputation | Should the playbook get reputation for the Domain | True | Required |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Domain | The domain objects. | unknown |
-| DBotScore | The indicator, score, type, and vendor. | unknown |
+| Domain | The domain objects | unknown |
+| DBotScore | Indicator, Score, Type, Vendor | unknown |
 
 ## Playbook Image
 ---
-![Domain_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Domain_Enrichment_Generic.png)
+![Domain Enrichment - Generic](Insert the link to your image here)

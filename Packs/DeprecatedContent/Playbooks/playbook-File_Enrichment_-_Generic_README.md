@@ -1,4 +1,4 @@
-DEPRECATED. Use "File Enrichment - Generic v2" playbook instead. Enriches a file using one or more integrations.
+Deprecated. Use "File Enrichment - Generic v2" playbook instead. Enrich a file using one or more integrations.
 
 File enrichment includes:
 * File history
@@ -9,8 +9,8 @@ File enrichment includes:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* File Enrichment - File reputation
 * File Enrichment - Virus Total private API
+* File Enrichment - File reputation
 
 ### Integrations
 * Cylance Protect v2
@@ -24,32 +24,32 @@ This playbook does not use any scripts.
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| MD5 | The MD5 hash to enrich. | MD5 | File | Optional |
-| SHA256 | The SHA256 hash to enrich. | SHA256 | File | Optional |
-| SHA1 | The SHA1 hash to enrich. | SHA1 | File | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| MD5 | File MD5 hash to enrich. | File.MD5 | Optional |
+| SHA256 | File SHA-256 hash to enrich. | File.SHA256 | Optional |
+| SHA1 | File SHA-1 hash to enrich. | File.SHA1 | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| DBotScore.Indicator | The tested indicator. | string |
-| DBotScore.Type | The type of the indicator. | string |
-| File.SHA1 | The SHA1 hash of the file. | string |
-| File.SHA256 | The SHA256 hash of the file. | string |
-| File.Malicious.Vendor | The vendor that made the decision that the file is malicious. | string |
-| File.MD5 | The MD5 hash of the file. | string |
-| DBotScore | The DBotScore's object. | unknown |
-| File | The file's object. | unknown |
-| DBotScore.Vendor | The vendor used to calculate the score. | string |
-| DBotScore.Score | The actual score. | number |
-| File.VirusTotal.Scans | The scan object. | unknown |
-| File.VirusTotal.Scans.Source | The scan vendor for this hash. | unknown |
-| File.VirusTotal.Scans.Detected | The scan detection for this hash. Can be, "True" or "False". | unknown |
-| File.VirusTotal.Scans.Result | The scan result for this hash. For example, signature, etc. | unknown |
+| DBotScore.Indicator | The tested indicator | string |
+| DBotScore.Type | The type of the indicator | string |
+| File.SHA1 | SHA1 hash of the file | string |
+| File.SHA256 | SHA256 hash of the file | string |
+| File.Malicious.Vendor | For malicious files, the vendor that made the decision | string |
+| File.MD5 | MD5 hash of the file | string |
+| DBotScore | The DBotScore's object | unknown |
+| File | The file's object | unknown |
+| DBotScore.Vendor | Vendor used to calculate the score | string |
+| DBotScore.Score | The actual score | number |
+| File.VirusTotal.Scans | the scan object | unknown |
+| File.VirusTotal.Scans.Source | Scan vendor for this hash | unknown |
+| File.VirusTotal.Scans.Detected | Scan detection for this hash \(True,False\) | unknown |
+| File.VirusTotal.Scans.Result | Scan result for this hash - signature, etc. | unknown |
 
 ## Playbook Image
 ---
-![File_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_Generic.png)
+![File Enrichment - Generic](Insert the link to your image here)

@@ -1,5 +1,4 @@
-DEPRECATED. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enriches an endpoint by hostname using one or more integrations.
-
+Deprecated. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enrich an endpoint by hostname using one or more integrations.
 Currently, the following integrations are supported:
 - Active Directory
 - McAfee ePolicy Orchestrator
@@ -14,8 +13,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * CrowdStrike Endpoint Enrichment
 
 ### Integrations
-* Cylance Protect
 * epo
+* Cylance Protect
 * carbonblack
 
 ### Scripts
@@ -23,16 +22,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Exists
 
 ### Commands
-* cb-sensor-info
 * epo-find-system
 * cylance-protect-get-devices
+* cb-sensor-info
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| Hostname | The hostname of the endpoint to enrich. | Hostname | Endpoint | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
 
 ## Playbook Outputs
 ---
@@ -48,4 +47,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Endpoint_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Generic_v2.png)
+![Endpoint Enrichment - Generic v2](Insert the link to your image here)

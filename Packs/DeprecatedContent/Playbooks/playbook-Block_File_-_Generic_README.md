@@ -1,18 +1,18 @@
-DEPRECATED. Use "Block File - Generic v2" playbook instead. Blocks files from running on endpoints. This playbook currently supports Carbon Black Enterprise Response.
+Deprecated. Use "Block File - Generic v2" playbook instead. A generic playbook for blocking files from running on endpoints. This playbook currently supports Carbon Black Enterprise Response.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
 * Block File - Carbon Black Response
 
-## Integrations
+### Integrations
 This playbook does not use any integrations.
 
-## Scripts
+### Scripts
 This playbook does not use any scripts.
 
-## Commands
+### Commands
 This playbook does not use any commands.
 
 ## Playbook Inputs
@@ -27,10 +27,10 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| CbResponse.BlockedHashes.LastBlock.Time | The last block time. | unknown |
-| CbResponse.BlockedHashes.LastBlock.Hostname | The last block hostname. | unknown |
-| CbResponse.BlockedHashes.LastBlock.CbSensorID | The last block sensor ID. | unknown |
+| CbResponse.BlockedHashes.LastBlock.Time | Last block time | unknown |
+| CbResponse.BlockedHashes.LastBlock.Hostname | Last block hostname | unknown |
+| CbResponse.BlockedHashes.LastBlock.CbSensorID | Last block sensor ID | unknown |
 
 ## Playbook Image
 ---
-![Block_File_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Generic.png)
+![Block File - Generic](Insert the link to your image here)

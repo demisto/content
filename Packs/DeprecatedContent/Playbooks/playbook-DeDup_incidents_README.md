@@ -1,39 +1,40 @@
-DEPRECATED. Checks for duplicate incidents for the current incident, and close it if any duplicate has found. 
+Deprecated. Check for duplicate incidents for the current incident, and close it if any duplicate has found.
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
 This playbook does not use any integrations.
 
-## Scripts
+### Scripts
 * CloseInvestigationAsDuplicate
 * FindSimilarIncidents
 
-## Commands
+### Commands
 This playbook does not use any commands.
 
-## Playbook Inputs  
+## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- | 
-| similarIncidentKeys | The identical incident keys. | - | Optional |
-| similarLabels | The identical similar labels keys. You allow difference in X words between labels. For example, the input: Email\\subject:2,Email\\from Will demand: 1. Email\\from to be identical 2. Email\\subject to be similar with 2 max words difference | - | Optional |
-| similarContextKeys | Identical Similar context keys. You allow difference in X words between values.  | - | Optional |
-| similarCustomFields | Identical Similar custom fields. You allow difference in X words between values. | - | Optional |
-| hoursBack | Checks incidents within X hours back. | 24 | Optional |
+| --- | --- | --- | --- |
+| similarIncidentKeys | Identical incident keys |  | Optional |
+| similarLabels | Identical\\Similar labels keys.<br/>You allow difference in X words between labels. For example, the input:<br/>Email\\subject:2,Email\\from<br/>Will demand:<br/>1. Email\\from to be identical <br/>2. Email\\subject to be similar with 2 max words difference<br/> |  | Optional |
+| similarContextKeys | Identical\\Similar context keys.<br/>You allow difference in X words between values.  |  | Optional |
+| similarCustomFields | Identical\\Similar custom fields.<br/>You allow difference in X words between values. |  | Optional |
+| hoursBack | Check incidents within X hours back. | 24 | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| isSimilarIncidentFound | Whether the similar incident was found. Must be, "true" or "false". | unknown |
+| isSimilarIncidentFound | Is similar incident found? \(true\\false\) | unknown |
 
 ## Playbook Image
 ---
-![DeDup_incidents](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DeDup_incidents.png)
+![DeDup incidents](Insert the link to your image here)

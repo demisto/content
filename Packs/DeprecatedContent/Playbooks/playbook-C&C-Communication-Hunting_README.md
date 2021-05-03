@@ -1,19 +1,20 @@
-Deprecated. Uses the latest Threat Intelligence to look for malicious C&C communications.
+Deprecated. A playbook to use the latest Threat Intelligence to hunt across your infrastructure and look for malicious C&C communications.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
+### Sub-playbooks
 This playbook does not use any sub-playbooks.
 
-## Integrations
+### Integrations
 * slack
 
-## Scripts
+### Scripts
 * IsIntegrationAvailable
 * Exists
+* ExposeModules
 
-## Commands
+### Commands
 * slack-send
 
 ## Playbook Inputs
@@ -26,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![C_and_C_Communication_Hunting](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/C_and_C_Communication_Hunting.png)
+![Hunting C&C Communication Playbook](Insert the link to your image here)

@@ -1,4 +1,4 @@
-DEPRECATED. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discovers endpoints that are not using the latest McAfee AV Signatures.
+Deprecated. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discover endpoints that are not using the latest McAfee AV Signatures
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,19 +7,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* ServiceNow
 * epo
+* ServiceNow
 
 ### Scripts
+* IncidentSet
 * CloseInvestigation
 * commentsToContext
-* IncidentSet
 
 ### Commands
-* servicenow-incidents-query
 * epo-update-client-dat
-* servicenow-incident-create
+* servicenow-incidents-query
 * epo-get-current-dat
+* servicenow-incident-create
 * epo-get-latest-dat
 
 ## Playbook Inputs
@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![McAfee_ePO_Endpoint_Compliance_Playbook](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/McAfee_ePO_Endpoint_Compliance_Playbook.png)
+![McAfee ePO Endpoint Compliance Playbook](Insert the link to your image here)

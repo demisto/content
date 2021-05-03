@@ -1,4 +1,4 @@
-DEPRECATED. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assigns the incident severity based on the highest returned severity level from the following severity calculations:
+Deprecated. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
 
 * Indicators DBotScore - Calculates the incident severity level according to the highest indicator DBotScore.
 * Critical assets - Determines if a critical assest is associated with the invesigation.
@@ -9,30 +9,30 @@ NOTE: the new severity level overwrites the previous severity level even if the 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
-* Calculate Severity - DBotScore
+### Sub-playbooks
 * Calculate Severity - 3rd-party integrations
 * Calculate Severity - Critical assets
+* Calculate Severity - DBotScore
 
-## Integrations
-* Builtin
+### Integrations
+This playbook does not use any integrations.
 
-## Scripts
+### Scripts
 This playbook does not use any scripts.
 
-## Commands
+### Commands
 * setIncident
 
 ## Playbook Inputs
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| QualysSeverity | The qualys vulnerability severity score (1-5). | Severity | Qualys | Optional |
-| DBotScore | The array of all indicators associated with the incident.  | None | DBotScore | Optional |
-| Endpoint | The endpoint to check against the critical lists. | None | Endpoint | Optional |
-| Account | The user account to check against the critical lists. | None | Account | Optional |
-| NexposeSeverity | The Nexpose vulnerability severity score. Can be, "Moderate", "Severe", or "Critical". | Asset.Vulnerability.Severity | Nexpose | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| QualysSeverity | Qualys Vulnerability Severity score \(1-5\) | Qualys.Severity | Optional |
+| DBotScore | Array of all indicators associated with the incident.  | DBotScore.None | Optional |
+| Endpoint | A Endpoint to check against the critical lists. | Endpoint.None | Optional |
+| Account | A User account to check against the critical lists. | Account.None | Optional |
+| NexposeSeverity | Nexpose Vulnerability Severity score \(Moderate, Severe, Critical\) | Nexpose.Asset.Vulnerability.Severity | Optional |
 
 ## Playbook Outputs
 ---
@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Calculate_Severity_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Generic.png)
+![Calculate Severity - Generic](Insert the link to your image here)
