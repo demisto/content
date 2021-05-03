@@ -62,6 +62,12 @@ Intelligence feeds
 | IP.Tags | String | Tags related the IP use \(hosting, proxy, tor, vpn\) | 
 | IP.FeedRelatedIndicators.value | String | Names of indicators associated with the IP | 
 | IP.FeedRelatedIndicators.type | String | Types of indicators associated with the IP | 
+| IP.Relationships.EntityA | String | The source of the relationship. | 
+| IP.Relationships.EntityB | String | The destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
+| IP.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| IP.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| IP.Relationships.Relationship | String | The name of the relationship. | 
 | IP.Geo.Location | String | The IP geographic location \(coordinates as lat:lon\) | 
 | IP.Geo.Country | String | The IP Country | 
 | IP.Geo.Description | String | The IP location as &lt;City, Region, Postal Code, Country&gt; | 

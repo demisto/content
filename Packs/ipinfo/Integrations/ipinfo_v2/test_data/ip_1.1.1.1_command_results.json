@@ -33,6 +33,15 @@
               "type": "URL",
               "description": "Hostname"
             }
+          ],
+          "Relations": [
+            {
+              "Relationship": "resolves-to",
+              "EntityA": "1.1.1.1",
+              "EntityAType": "IP",
+              "EntityB": "one.one.one.one",
+              "EntityBType": "Domain"
+            }
           ]
         }
       ],
@@ -89,6 +98,15 @@
               "value": "one.one.one.one",
               "type": "URL",
               "description": "Hostname"
+            }
+          ],
+          "Relations": [
+            {
+              "Relationship": "resolves-to",
+              "EntityA": "1.1.1.1",
+              "EntityAType": "IP",
+              "EntityB": "one.one.one.one",
+              "EntityBType": "Domain"
             }
           ]
         }

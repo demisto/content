@@ -10,8 +10,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
-    def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool,
-                 reliability: DBotScoreReliability):
+    def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool, reliability: str):
         """
         Client to use in the IPinfo integration. Uses BaseClient
         """
@@ -40,21 +39,27 @@ def ipinfo_ip_command(client: Client, ip: str) -> List[CommandResults]:
     return parse_results(ip, response, client.reliability)
 
 
-def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreReliability) -> List[CommandResults]:
+def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     # default values
     asn = as_owner = None
     feed_related_indicators: List[Common.FeedRelatedIndicators] = []
+    indicator_relations = []
 
     if not raw_result:
         return command_results
 
     hostname = str(raw_result.get('hostname', ''))
-    feed_related_indicators.append(
-        Common.FeedRelatedIndicators(hostname,
-                                     FeedIndicatorType.URL if urlRegex.find(hostname) else FeedIndicatorType.Domain,
-                                     'Hostname'))
+    hostname_indicator_type = FeedIndicatorType.URL if urlRegex.find(hostname) else FeedIndicatorType.Domain
+    feed_related_indicators.append(Common.FeedRelatedIndicators(hostname, hostname_indicator_type, 'Hostname'))
+
+    indicator_relations.append(EntityRelation(name=EntityRelation.Relations.RESOLVES_TO,
+                                              entity_a=ip,
+                                              entity_a_type=FeedIndicatorType.IP,
+                                              entity_b=hostname,
+                                              entity_b_type=FeedIndicatorType.Domain,
+                                              brand='IPinfo'))
 
     if 'org' in raw_result:
         org = raw_result.get('org', '')
@@ -79,9 +84,8 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
 
     company_domain = demisto.get(raw_result, 'company.domain')
     if company_domain is not None:
-        feed_related_indicators.append(Common.FeedRelatedIndicators(company_domain,
-                                                                    FeedIndicatorType.Domain,
-                                                                    'Company domain'))
+        feed_related_indicators.append(
+            Common.FeedRelatedIndicators(company_domain, FeedIndicatorType.Domain, 'Company domain'))
 
     abuse = {
         'Address': demisto.get(raw_result, 'abuse.address'),
@@ -125,12 +129,17 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
 
     outputs_key_field = 'Address'  # marks the ip address
 
+    if DBotScoreReliability.is_valid_type(reliability):
+        dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
     indicator = Common.IP(
         ip=ip,
         dbot_score=Common.DBotScore(indicator=ip,
                                     indicator_type=DBotScoreType.IP,
                                     integration_name='IPinfo_v2',
-                                    reliability=reliability,
+                                    reliability=dbot_reliability,
                                     score=Common.DBotScore.NONE),
         asn=asn,
         hostname=hostname,
@@ -139,15 +148,18 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: DBotScoreRel
         geo_longitude=str(lon) if lon else None,
         geo_description=description or None,
         geo_country=country,
-        tags=','.join(tags))
+        tags=','.join(tags),
+        relations=indicator_relations)
 
-    command_results.append(CommandResults(
-        readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
-        raw_response=raw_result,
-        outputs_prefix='IPinfo.IP',
-        outputs=entry_context,
-        outputs_key_field=outputs_key_field,
-        indicator=indicator))
+    command_results.append(
+        CommandResults(readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
+                       raw_response=raw_result,
+                       outputs_prefix='IPinfo.IP',
+                       outputs=entry_context,
+                       outputs_key_field=outputs_key_field,
+                       indicator=indicator
+                       )
+    )
 
     if lat and lon:
         map_output = CommandResults(raw_response={'lat': lat, 'lng': lon},
@@ -174,11 +186,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        if DBotScoreReliability.is_valid_type(reliability):
-            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-        else:
-            raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
         client = Client(api_key=api_key,
                         verify_certificate=insecure,
                         proxy=proxy,
