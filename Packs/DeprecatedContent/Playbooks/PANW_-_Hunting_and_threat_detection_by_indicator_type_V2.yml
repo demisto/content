@@ -3437,3 +3437,4 @@ outputs:
   type: string
 tests:
 - No tests
+deprecated: true

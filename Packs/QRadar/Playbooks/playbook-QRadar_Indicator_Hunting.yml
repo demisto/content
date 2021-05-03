@@ -3440,3 +3440,4 @@ outputs:
 
 tests:
 - QRadar Indicator Hunting Test
+deprecated: true

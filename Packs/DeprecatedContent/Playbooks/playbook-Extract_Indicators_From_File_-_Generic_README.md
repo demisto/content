@@ -1,4 +1,4 @@
-Extracts indicators from a file.
+Deprecated. Extracts indicators from a file.
 
 Supported file types:
 - PDF

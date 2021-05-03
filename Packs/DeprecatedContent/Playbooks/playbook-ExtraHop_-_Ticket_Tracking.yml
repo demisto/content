@@ -734,3 +734,4 @@ outputs: []
 fromversion: 5.0.0
 tests:
 - ExtraHop_v2-Test
+deprecated: true
