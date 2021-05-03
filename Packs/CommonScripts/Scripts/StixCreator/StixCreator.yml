@@ -42,7 +42,7 @@ outputs:
   type: date
 scripttarget: 0
 runonce: false
-dockerimage: demisto/stix2:1.0.0.204
+dockerimage: demisto/stix2:1.0.0.19258
 subtype: python3
 runas: DBotWeakRole
 tests:
