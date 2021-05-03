@@ -6,7 +6,7 @@ import traceback
 from typing import Dict, Any, List, Optional, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
