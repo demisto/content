@@ -1,7 +1,5 @@
 import json
 import io
-# from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DBotScoreReliability
-# from Packs.Threat_Crowd.Integrations.ThreatCrowdV2.ThreatCrowd_v2 import Client
 import pytest
 from CommonServerPython import DBotScoreReliability
 from ThreatCrowd_v2 import Client
