@@ -30,11 +30,6 @@ RELATIONS_TYPE_TO_DEMISTO_TYPES = {
 
 }
 
-COURSE_OF_ACTION_U42 = ['Cortex XDR Prevent', 'DNS Security', 'XSOAR']
-COURSE_OF_ACTION_BP = ['URL Filtering', 'NGFW', 'Wildfire', 'Threat Prevention']
-COURSE_OF_ACTION_HEADERS = ['name', 'title', 'description', 'impact statement', 'recommendation number',
-                            'remediation procedure']
-
 
 class Client(BaseClient):
 
@@ -199,6 +194,27 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
         return f"{max(dates_as_datetime).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]}Z"
 
 
+def get_publication_for_attack_indicator(attack_indicator):
+    publications = []
+    for external_reference in attack_indicator.get('external_references', []):
+        if external_reference.get('external_id'):
+            continue
+        url = external_reference.get('url')
+        description = external_reference.get('description')
+        publications.append({'Link': url, 'Title': description})
+    return publications
+
+
+def get_indicator_value(attack_indicator):
+    """
+    Remove the "Txxxx" from the indicator value: 'T1108: Redundant Access' -> 'Redundant Access'.
+    """
+    ind_name = attack_indicator.get('name')
+    idx = ind_name.index(':')
+    value = ind_name[idx + 2:]
+    return value
+
+
 def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
     """Creates Attack Pattern indicators with the related mitre course of action.
 
@@ -211,16 +227,11 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
 
     for attack_indicator in attack_indicator_objects:
 
-        publications = []
-        for external_reference in attack_indicator.get('external_references', []):
-            if external_reference.get('external_id'):
-                continue
-            url = external_reference.get('url')
-            description = external_reference.get('description')
-            publications.append({'Link': url, 'Title': description})
+        publications = get_publication_for_attack_indicator(attack_indicator)
+        value = get_indicator_value(attack_indicator)
 
         indicator = {
-            "value": attack_indicator.get('name'),
+            "value": value,
             "type": 'Attack Pattern',
             "fields": {
                 'stixid': attack_indicator.get('id'),
@@ -238,6 +249,10 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
+
+
+def create_course_of_action_indicators(client, feed_tags, tlp_color):
+    pass
 
 
 def get_ioc_type(indicator, id_to_object):
@@ -328,6 +343,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
     campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client, feed_tags, tlp_color)
+    course_of_actions = create_course_of_action_indicators(client, feed_tags, tlp_color)
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -353,7 +369,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
     demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
 
-    return ioc_indicators + reports + campaigns + attack_patterns
+    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
