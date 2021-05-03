@@ -37,17 +37,38 @@ def create_client(proxy: bool = False, verify: bool = False, base_url: str = "ht
                                     client_secret=client_secret)
 
 
-@pytest.mark.parametrize('context_data, expected_token', TEST_LOGIN_LIST)
+@pytest.mark.parametrize('integration_context, expected_token', TEST_LOGIN_LIST)
 @freeze_time("2021-05-03T11:00:00Z")
-def test_login(mocker, context_data, expected_token):
+def test_login(mocker, integration_context, expected_token):
+    """
+    Given:
+    - Integration context which includes access token and it's expiration time.
+
+    When:
+    - Calling any command.
+
+    Then:
+    - Ensures that access token exists and is not expired.
+    - Ensures that if access token is expired, a new one is generated.
+    """
     client = create_client()
-    mocker.patch.object(HPEArubaClearpass, "get_integration_context", return_value=context_data)
+    mocker.patch.object(HPEArubaClearpass, "get_integration_context", return_value=integration_context)
     mocker.patch.object(client, "generate_new_access_token", return_value=CLIENT_AUTH)
     client.login()
     assert client.access_token == expected_token
 
 
 def test_get_endpoints_list_command(mocker):
+    """
+    Given:
+    - This command has no mandatory args.
+
+    When:
+    - Calling that command in order to get list of endpoints.
+
+    Then:
+    - Ensures that command outputs are valid.
+    """
     client = create_client()
     mock_endpoints_response = util_load_json("test_data/endpoints_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoints_response)
@@ -61,6 +82,16 @@ def test_get_endpoints_list_command(mocker):
 
 
 def test_update_endpoint_command(mocker):
+    """
+    Given:
+    - Arguments to set the new endpoint with.
+
+    When:
+    - Calling that command in order to create a new endpoint.
+
+    Then:
+    - Ensures that new endpoint has the required fields.
+    """
     client = create_client()
     mock_endpoint_response = util_load_json("test_data/update_endpoint_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
@@ -75,6 +106,16 @@ def test_update_endpoint_command(mocker):
 
 
 def test_get_attributes_list_command(mocker):
+    """
+    Given:
+    - This command has no mandatory args.
+
+    When:
+    - Calling that command in order to get list of attributes.
+
+    Then:
+    - Ensures that command outputs are valid.
+    """
     client = create_client()
     mock_attributes_response = util_load_json("test_data/attributes_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_attributes_response)
@@ -90,6 +131,16 @@ def test_get_attributes_list_command(mocker):
 
 
 def test_create_attribute_command(mocker):
+    """
+    Given:
+    - Arguments to set the new attribute with.
+
+    When:
+    - Calling that command in order to create a new attribute.
+
+    Then:
+    - Ensures that new attribute has the required fields.
+    """
     client = create_client()
     mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
@@ -106,6 +157,16 @@ def test_create_attribute_command(mocker):
 
 
 def test_update_attribute_command(mocker):
+    """
+    Given:
+    - Arguments to update an attribute with.
+
+    When:
+    - Calling that command in order to update fields of an attribute.
+
+    Then:
+    - Ensures that the attribute fields were updated as required.
+    """
     client = create_client()
     mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
@@ -122,6 +183,16 @@ def test_update_attribute_command(mocker):
 
 
 def test_delete_attribute_command(mocker):
+    """
+    Given:
+    - Attribute id to be deleted
+
+    When:
+    - Calling that command in order to delete an attribute.
+
+    Then:
+    - Ensures that the attribute was deleted successfully.
+    """
     client = create_client()
     args = {"attribute_id": "1"}
     mocker.patch.object(client, "prepare_request")
