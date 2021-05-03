@@ -341,7 +341,7 @@ Searches for and returns issues that match a given query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query line for the search. For more information see the GitHub documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests. | Required | 
-| limit | The number of issues to return. Default is 50. Maximum is 200. Default is 50. | Optional | 
+| limit | The number of issues to return. Default is 50. Maximum is 100. Default is 50. | Optional | 
 
 #### Context Output
 
