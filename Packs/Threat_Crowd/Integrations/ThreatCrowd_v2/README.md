@@ -1,9 +1,9 @@
 Query threat crowd for reports.
 This integration was integrated and tested with version v2 of TheatCrowdv2
-## Configure TheatCrowdv2 on Cortex XSOAR
+## Configure ThreatCrowdv2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TheatCrowdv2.
+2. Search for ThreatCrowdv2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -442,4 +442,3 @@ Get a report of a hash.
 >|domains|ips|md5|permalink|references|response_code|scans|sha1|value|
 >|---|---|---|---|---|---|---|---|---|
 >| example.com | x.x.x.x | hash_example | https://www.threatcrowd.org/malware.php?md5=hash_example |  | 1 | ,<br/>Trojan/W32.Small.34304.EG,<br/>Trojan.Win32.Cossta!O | hash_example_sha1 | hash_example |
-
