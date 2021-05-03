@@ -129,7 +129,14 @@ def module_test(client, default_bucket):
     else:
         # in case default bucket was not specified in the instance parameters
         demisto.debug('default bucket was not specified, querying bucket list instead.')
-        next(client.list_buckets().pages)
+        try:
+            next(client.list_buckets().pages)
+        except Exception as exc:
+            if 'does not have storage.buckets.list access' in str(exc):
+                raise DemistoException('Either specify a default bucket or add storage.buckets.list access '
+                                       'to the service account.', exception=exc)
+
+            raise
 
 
 ''' Bucket management '''
