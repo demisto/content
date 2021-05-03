@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
@@ -290,7 +290,7 @@ def get_ioc_type(indicator, id_to_object):
     pattern = indicator_obj.get('pattern', '')
     for unit42_type in UNIT42_TYPES_TO_DEMISTO_TYPES:
         if unit42_type in pattern:
-            ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)
+            ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)  # type: ignore
             break
     return ioc_type
 
