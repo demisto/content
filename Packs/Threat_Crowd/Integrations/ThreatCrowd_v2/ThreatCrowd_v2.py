@@ -230,7 +230,7 @@ def test_module(client: Client) -> str:
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: make sure API Key is correctly set.'
         else:
             raise e
     return message
