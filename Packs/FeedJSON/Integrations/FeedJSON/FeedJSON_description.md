@@ -9,6 +9,12 @@ These fields also support the use of API key headers. To use API key headers, sp
 * **JMESPath Extractor** - JMESPath expression for extracting the indicators from. You can check the expression in 
 the [JMESPath site](http://jmespath.org/) to verify this expression will return the following array of objects.
 * **JSON Indicator Attribute** - JSON attribute whose value is the indicator. Default is 'indicator'.
+* **Headers** - Headers to add to the http request. Specify each header on a single line in the format: 'Name: Value'. For example: `Content-Type: application/json`. 
+* **POST Data** - Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the **Headers** config param.
+  ```
+  User-Agent: XSOAR Feed
+  Pragma: no-cache
+  ```
 
 ## Step by step configuration
 As an example, we'll be looking at the IP ranges from Amazon AWS. This feed will ingest indicators of type CIDR. These are the feed instance configuration parameters for our example.

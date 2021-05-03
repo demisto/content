@@ -521,12 +521,40 @@ def test_hash_djb2():
 
 def test_camelize():
     non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
-    expected_output = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
-    assert camelize(non_camalized, '_') == expected_output
+    expected_output_upper_camel = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
+    expected_output_lower_camel = [{'chookityBop': 'asdasd'}, {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}]
+    assert camelize(non_camalized, '_') == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=True) == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=False) == expected_output_lower_camel
 
     non_camalized2 = {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}
-    expected_output2 = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
-    assert camelize(non_camalized2, '_') == expected_output2
+    expected_output2_upper_camel = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
+    expected_output2_lower_camel = {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}
+    assert camelize(non_camalized2, '_') == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=True) == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=False) == expected_output2_lower_camel
+
+
+def test_camelize_string():
+    from CommonServerPython import camelize_string
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert camelize_string(non_camalized[i], '_') == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=True) == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=False) == expected_output_lower_camel[i]
+
+
+def test_underscoreToCamelCase():
+    from CommonServerPython import underscoreToCamelCase
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert underscoreToCamelCase(non_camalized[i]) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=True) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=False) == expected_output_lower_camel[i]
 
 
 # Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
@@ -3252,9 +3280,31 @@ def test_return_results_multiple_dict_results(mocker):
     demisto_results_mock = mocker.patch.object(demisto, 'results')
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
-    args, kwargs = demisto_results_mock.call_args_list[0]
+    args, _ = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
     assert [{'MockContext': 0}, {'MockContext': 1}] in args
+
+
+def test_return_results_mixed_results(mocker):
+    """
+    Given:
+      - List containing a CommandResult object and two dictionaries (representing a demisto result entries)
+    When:
+      - Calling return_results()
+    Then:
+      - Assert that demisto.results() is called 2 times .
+      - Assert that the first call was with the CommandResult object.
+      - Assert that the second call was with the two demisto results dicts.
+    """
+    from CommonServerPython import CommandResults, return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results_object = CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0})
+    mock_demisto_results_entry = [{'MockContext': 1}, {'MockContext': 2}]
+    return_results([mock_command_results_object] + mock_demisto_results_entry)
+
+    assert demisto_results_mock.call_count == 2
+    assert demisto_results_mock.call_args_list[0][0][0] == mock_command_results_object.to_context()
+    assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
 def test_arg_to_int__valid_numbers():
@@ -3537,7 +3587,26 @@ class TestCommonTypes:
                 value='8.8.8.8',
                 indicator_type="IP",
                 description='test'
-            )]
+            )],
+            domain_idn_name='domain_idn_name',
+            port='port',
+            internal="False",
+            category='category',
+            campaign='campaign',
+            traffic_light_protocol='traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            geo_location='geo_location',
+            geo_country='geo_country',
+            geo_description='geo_description',
+            tech_country='tech_country',
+            tech_name='tech_name',
+            tech_organization='tech_organization',
+            tech_email='tech_email',
+            billing='billing'
         )
 
         results = CommandResults(
@@ -3548,8 +3617,8 @@ class TestCommonTypes:
         )
 
         assert results.to_context() == {
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
+            'Type': 1,
+            'ContentsFormat': 'json',
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
@@ -3592,6 +3661,38 @@ class TestCommonTypes:
                         "Tags": ["tag1", "tag2"],
                         "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
                         "MalwareFamily": ["malware_family1", "malware_family2"],
+                        "DomainIDNName": "domain_idn_name",
+                        "Port": "port",
+                        "Internal": "False",
+                        "Category": "category",
+                        "Campaign": "campaign",
+                        "TrafficLightProtocol": "traffic_light_protocol",
+                        "ThreatTypes": [{
+                            "threatcategory": "threat_category",
+                            "threatcategoryconfidence": "threat_category_confidence"
+                        }],
+                        "CommunityNotes": [{
+                            "note": "note",
+                            "timestamp": "2019-01-01T00:00:00"
+                        }],
+                        "Publications": [{
+                            "source": "source",
+                            "title": "title",
+                            "link": "link",
+                            "timestamp": "2019-01-01T00:00:00"
+                        }],
+                        "Geo": {
+                            "Location": "geo_location",
+                            "Country": "geo_country",
+                            "Description": "geo_description"
+                        },
+                        "Tech": {
+                            "Country": "tech_country",
+                            "Name": "tech_name",
+                            "Organization": "tech_organization",
+                            "Email": "tech_email"
+                        },
+                        "Billing": "billing",
                         "WHOIS": {
                             "Registrar": {
                                 "Name": "Mr Registrar",
@@ -3624,16 +3725,16 @@ class TestCommonTypes:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': 'somedomain.com',
+                        'Type': 'domain',
                         'Vendor': 'Virus Total',
-                        'Score': 1,
-                        'Type': 'domain'
+                        'Score': 1
                     }
                 ]
             },
             'IndicatorTimeline': [],
-            'Relationships': [],
             'IgnoreAutoExtract': False,
-            'Note': False
+            'Note': False,
+            'Relationships': []
         }
 
     def test_create_certificate(self):
@@ -4076,7 +4177,14 @@ class TestIndicatorsSearcher:
         if not searchAfter:
             searchAfter = 0
 
-        return {'searchAfter': searchAfter + 1}
+        if searchAfter < 6:
+            searchAfter += 1
+
+        else:
+            # mock the end of indicators
+            searchAfter = None
+
+        return {'searchAfter': searchAfter}
 
     def test_search_indicators_by_page(self, mocker):
         """
@@ -4122,6 +4230,28 @@ class TestIndicatorsSearcher:
             search_indicators_obj_search_after.search_indicators_by_version()
 
         assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
+
+    def test_search_all_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter until there are no more indicators
+          so search_after is None
+        Then:
+          - The search after param is None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+        for n in range(7):
+            search_indicators_obj_search_after.search_indicators_by_version()
+        assert search_indicators_obj_search_after._search_after_param == None
         assert search_indicators_obj_search_after._page == 0
 
 
