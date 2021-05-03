@@ -72,7 +72,22 @@
     "IndicatorTimeline": [],
     "IgnoreAutoExtract": false,
     "Note": false,
-    "Relationships": []
+    "Relationships": [
+      {
+        "name": "resolves-to",
+        "reverseName": "resolved-from",
+        "type": "IndicatorToIndicator",
+        "entityA": "1.1.1.1",
+        "entityAFamily": "Indicator",
+        "entityAType": "IP",
+        "entityB": "one.one.one.one",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {},
+        "reliability": "C - Fairly reliable",
+        "brand": "IPinfo"
+      }
+    ]
   },
   {
     "Type": 15,
