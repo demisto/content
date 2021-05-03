@@ -43,7 +43,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Name of the bucket to retrieve.
+      description: Name of the bucket to retrieve. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -70,7 +70,7 @@ script:
       description: Name of the bucket to create.
       isArray: false
       name: bucket_name
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
@@ -108,7 +108,7 @@ script:
       description: Name of the bucket to delete.
       isArray: false
       name: bucket_name
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
@@ -127,7 +127,7 @@ script:
     name: gcs-delete-bucket
   - arguments:
     - default: true
-      description: Name of the bucket in which to list objects.
+      description: Name of the bucket in which to list objects. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -175,7 +175,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -204,7 +204,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the bucket in which to upload the object.
+      description: Name of the bucket in which to upload the object. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -235,7 +235,7 @@ script:
     name: gcs-upload-file
   - arguments:
     - default: true
-      description: Name of the bucket for the Access Control List.
+      description: Name of the bucket for the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -262,7 +262,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the bucket in which to modify the Access Control List.
+      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -299,7 +299,7 @@ script:
     name: gcs-create-bucket-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which to modify the Access Control List.
+      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -336,7 +336,7 @@ script:
     name: gcs-put-bucket-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which to modify the Access Control List.
+      description: Name of the bucket in which to modify the Access Control List. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -360,7 +360,7 @@ script:
     name: gcs-delete-bucket-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -396,7 +396,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -438,7 +438,7 @@ script:
     name: gcs-create-bucket-object-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false
@@ -480,7 +480,7 @@ script:
     name: gcs-put-bucket-object-policy
   - arguments:
     - default: false
-      description: Name of the bucket in which the object resides.
+      description: Name of the bucket in which the object resides. If not specified, operation will be performed on the default bucket parameter.
       isArray: false
       name: bucket_name
       required: false

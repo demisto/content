@@ -179,14 +179,10 @@ def gcs_get_bucket(client, default_bucket, args):
     )
 
 
-def gcs_create_bucket(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
+def gcs_create_bucket(client, args):
+    bucket_name = args['bucket_name']
     bucket_acl = args.get('bucket_acl', '')
     default_object_acl = args.get('default_object_acl', '')
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
 
     bucket = client.create_bucket(bucket_name)
     if bucket_acl:
@@ -201,13 +197,9 @@ def gcs_create_bucket(client, default_bucket, args):
     })
 
 
-def gcs_delete_bucket(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
+def gcs_delete_bucket(client, args):
+    bucket_name = args['bucket_name']
     force = args.get('force', '') == 'true'
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
 
     bucket = client.get_bucket(bucket_name)
     bucket.delete(force)
@@ -552,7 +544,7 @@ def main():
     default_bucket = params.get('default_bucket')
     insecure = params.get('insecure', False)
 
-    LOG('Command being called is ' + command)
+    LOG(f'Command being called is {command}')
 
     try:
         client: storage.Client = initialize_module(service_account, insecure)
@@ -571,10 +563,10 @@ def main():
             gcs_get_bucket(client, default_bucket, args)
 
         elif command == 'gcs-create-bucket':
-            gcs_create_bucket(client, default_bucket, args)
+            gcs_create_bucket(client, args)
 
         elif command == 'gcs-delete-bucket':
-            gcs_delete_bucket(client, default_bucket, args)
+            gcs_delete_bucket(client, args)
 
         #
         # Object operations
