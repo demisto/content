@@ -45,7 +45,7 @@ def aws_session(service='sqs', region=None, roleArn=None, roleSessionName=None, 
     elif AWS_rolePolicy is not None:
         kwargs.update({'Policy': AWS_rolePolicy})
 
-    if kwargs and not AWS_ACCESS_KEY_ID:  # login with Role ARN and Role session name
+    if kwargs and not AWS_ACCESS_KEY_ID:  # login with Role ARN
         if not AWS_ACCESS_KEY_ID:
             sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
@@ -91,7 +91,7 @@ def aws_session(service='sqs', region=None, roleArn=None, roleSessionName=None, 
             verify=VERIFY_CERTIFICATE,
             config=config
         )
-    else:  # login with access key id, anf if is None than permissions pulled from the EC2 metadata
+    else:  # login with access key id, anf if is None than permissions pulled from the metadata
         if region is not None:
             client = boto3.client(service_name=service,
                                   region_name=region,
