@@ -35,10 +35,10 @@ def main():
             "HumanReadable": md
         }
     
-        demisto.results(entry)
+        return_results(entry)
     
     else:
-        demisto.results(f"Could not find {value} in cache")
+        return_results(f"Could not find {value} in cache")
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
