@@ -14,15 +14,15 @@
     "mergeContext": false,
     "manualMapping": {
         "action": {
-            "simple": "CourseOfAction.action",
+            "simple": "CourseofAction.action",
             "complex": null
         },
         "description": {
-            "simple": "CourseOfAction.description",
+            "simple": "CourseofAction.description",
             "complex": null
         },
         "stixid": {
-            "simple": "CourseOfAction.stixid",
+            "simple": "CourseofAction.stixid",
             "complex": null
         }
     },
