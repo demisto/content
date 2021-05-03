@@ -31,6 +31,7 @@ ATTACK_PATTERN = {
         'modified': "2020-05-13T22:50:51.258Z",
         'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
+        'mitreid': 'T1047',
         'publications': [{'Link': "https://en.wikipedia.org/wiki/Server_Message_Block",
                           'Title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016."},
                          {'Link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",

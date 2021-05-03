@@ -169,6 +169,10 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         description = external_reference.get('description')
         publications.append({'Link': url, 'Title': description})
 
+    mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
+                if external.get('source_name', '') == 'mitre-attack']
+    mitre_id = mitre_id[0] if mitre_id else None
+
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
@@ -179,6 +183,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
 
     mapping_by_type = {
         "STIX Attack Pattern": {
+            'mitreid': mitre_id,
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Intrusion Set": {
