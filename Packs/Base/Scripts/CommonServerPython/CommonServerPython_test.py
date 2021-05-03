@@ -3641,7 +3641,26 @@ class TestCommonTypes:
                 value='8.8.8.8',
                 indicator_type="IP",
                 description='test'
-            )]
+            )],
+            domain_idn_name='domain_idn_name',
+            port='port',
+            internal="False",
+            category='category',
+            campaign='campaign',
+            traffic_light_protocol='traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            geo_location='geo_location',
+            geo_country='geo_country',
+            geo_description='geo_description',
+            tech_country='tech_country',
+            tech_name='tech_name',
+            tech_organization='tech_organization',
+            tech_email='tech_email',
+            billing='billing'
         )
 
         results = CommandResults(
@@ -3652,8 +3671,8 @@ class TestCommonTypes:
         )
 
         assert results.to_context() == {
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
+            'Type': 1,
+            'ContentsFormat': 'json',
             'Contents': None,
             'HumanReadable': None,
             'EntryContext': {
@@ -3696,6 +3715,38 @@ class TestCommonTypes:
                         "Tags": ["tag1", "tag2"],
                         "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
                         "MalwareFamily": ["malware_family1", "malware_family2"],
+                        "DomainIDNName": "domain_idn_name",
+                        "Port": "port",
+                        "Internal": "False",
+                        "Category": "category",
+                        "Campaign": "campaign",
+                        "TrafficLightProtocol": "traffic_light_protocol",
+                        "ThreatTypes": [{
+                            "threatcategory": "threat_category",
+                            "threatcategoryconfidence": "threat_category_confidence"
+                        }],
+                        "CommunityNotes": [{
+                            "note": "note",
+                            "timestamp": "2019-01-01T00:00:00"
+                        }],
+                        "Publications": [{
+                            "source": "source",
+                            "title": "title",
+                            "link": "link",
+                            "timestamp": "2019-01-01T00:00:00"
+                        }],
+                        "Geo": {
+                            "Location": "geo_location",
+                            "Country": "geo_country",
+                            "Description": "geo_description"
+                        },
+                        "Tech": {
+                            "Country": "tech_country",
+                            "Name": "tech_name",
+                            "Organization": "tech_organization",
+                            "Email": "tech_email"
+                        },
+                        "Billing": "billing",
                         "WHOIS": {
                             "Registrar": {
                                 "Name": "Mr Registrar",
@@ -3728,16 +3779,16 @@ class TestCommonTypes:
                 'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
                     {
                         'Indicator': 'somedomain.com',
+                        'Type': 'domain',
                         'Vendor': 'Virus Total',
-                        'Score': 1,
-                        'Type': 'domain'
+                        'Score': 1
                     }
                 ]
             },
             'IndicatorTimeline': [],
-            'Relationships': [],
             'IgnoreAutoExtract': False,
-            'Note': False
+            'Note': False,
+            'Relationships': []
         }
 
     def test_create_certificate(self):
