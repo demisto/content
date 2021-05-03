@@ -23,7 +23,7 @@ if [[ "$BRANCH" =~ pull/[0-9]+ ]]; then
 fi
 
 if [[ -z "$CI_BUILD_ID" ]]; then
-    echo "BUILD_NUM not set aborting!"
+    echo "CI_BUILD_ID not set aborting!"
     exit 1
 fi
 
