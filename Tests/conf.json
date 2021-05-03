@@ -3368,7 +3368,8 @@
         "Google-Vault-Generic-Test": "Issue 24347",
         "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
-        "Gmail Single User - Test": "Issue 27361"
+        "Gmail Single User - Test": "Issue 27361",
+        "TAXII_Feed_Test": "Issue 32567"
     },
     "skipped_integrations": {
         
