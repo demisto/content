@@ -436,6 +436,7 @@ def get_schedule_metadata(context):
         )
     return schedule_metadata
 
+
 def auto_detect_indicator_type(indicator_value):
     """
       Infer the type of the indicator.
@@ -4767,7 +4768,7 @@ class Common(object):
 
             return ret_value
 
-    class ScheduledCommandConfiguration:
+class ScheduledCommand:
         """
         ScheduledCommand configuration class
         Holds the scheduled command configuration for the command result - managing the way the command should be polled.
@@ -4797,6 +4798,7 @@ class Common(object):
                 args=None,  # type: Optional[Dict[str, Any]]
                 timeout_in_seconds=None,  # type: Optional[int]
         ):
+            self.raise_error_if_not_supported()
             self._command = command
             if next_run_in_seconds < 10:
                 demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
@@ -4810,20 +4812,18 @@ class Common(object):
         @staticmethod
         def raise_error_if_not_supported():
             if not is_demisto_version_ge('6.2.0'):
-                raise DemistoException(Common.ScheduledCommandConfiguration.VERSION_MISMATCH_ERROR)
+                raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
 
         def to_results(self):
             """
             Returns the result dictionary of the polling command
             """
-            self.raise_error_if_not_supported()
             return assign_params(
                 PollingCommand=self._command,
                 NextRun=self._next_run,
                 PollingArgs=self._args,
                 Timeout=self._timeout
             )
-
 
 def camelize_string(src_str, delim='_', upper_camel=True):
     """
@@ -5431,7 +5431,7 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
-    :type scheduled_command: ``Common.ScheduledCommandConfiguration``
+    :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
     :return: None
@@ -5441,7 +5441,7 @@ class CommandResults:
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, relations=None, scheduled_command=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list, Common.ScheduledCommandConfiguration) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, list, ScheduledCommand) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -5473,7 +5473,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.scheduled_command = scheduled_command  # type: Optional[Common.ScheduledCommandConfiguration]
+        self.scheduled_command = scheduled_command  # type: Optional[ScheduledCommand]
 
         self.relations = relations
 
@@ -6278,13 +6278,12 @@ class DebugLogger(object):
         sm = get_schedule_metadata(context=callingContext)
         if sm.get('is_polling'):
             msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
-                   "date: [{}]".format(
-                sm.get('polling_command'),
-                sm.get('polling_args'),
-                sm.get('times_ran'),
-                sm.get('start_date'),
-                sm.get('end_date')
-            )
+                   "date: [{}]".format(sm.get('polling_command'),
+                                       sm.get('polling_args'),
+                                       sm.get('times_ran'),
+                                       sm.get('start_date'),
+                                       sm.get('end_date')
+                                       )
         self.int_logger.write(msg)
 
 

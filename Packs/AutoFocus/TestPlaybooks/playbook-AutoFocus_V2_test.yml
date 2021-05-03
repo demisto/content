@@ -2378,7 +2378,7 @@ tasks:
         simple: 8.8.8.8
       max_results:
         simple: "1"
-      with_results:
+      polling:
         simple: "true"
     separatecontext: false
     view: |-

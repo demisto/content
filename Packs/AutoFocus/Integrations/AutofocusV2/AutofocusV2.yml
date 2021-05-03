@@ -45,7 +45,7 @@ script:
       default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
       isArray: false
-      name: with_results
+      name: polling
       predefined:
         - 'true'
         - 'false'
@@ -109,7 +109,7 @@ script:
         - Private
         - Public
         - Global
-      required: false
+      required: true
       secret: false
     - default: false
       description: The MD5, SHA1 or SHA256 hash of the file.
@@ -275,7 +275,7 @@ script:
       default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
       isArray: false
-      name: with_results
+      name: polling
       predefined:
         - 'true'
         - 'false'
