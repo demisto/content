@@ -7,6 +7,10 @@ configuration:
   name: service_account_json
   required: true
   type: 4
+- display: Default Bucket
+  name: default_bucket
+  required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -42,7 +46,7 @@ script:
       description: Name of the bucket to retrieve.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves bucket information.
@@ -66,7 +70,7 @@ script:
       description: Name of the bucket to create.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -104,7 +108,7 @@ script:
       description: Name of the bucket to delete.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -126,7 +130,7 @@ script:
       description: Name of the bucket in which to list objects.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves the list of objects in a bucket.
@@ -174,7 +178,7 @@ script:
       description: Name of the bucket in which the object resides.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: Name of the object to download.
@@ -203,7 +207,7 @@ script:
       description: Name of the bucket in which to upload the object.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the uploaded object within the bucket.
@@ -234,7 +238,7 @@ script:
       description: Name of the bucket for the Access Control List.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Retrieves the Access Control List of a bucket.
@@ -261,7 +265,7 @@ script:
       description: Name of the bucket in which to modify the Access Control List.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: |-
@@ -298,7 +302,7 @@ script:
       description: Name of the bucket in which to modify the Access Control List.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: |-
@@ -335,7 +339,7 @@ script:
       description: Name of the bucket in which to modify the Access Control List.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: |-
@@ -359,7 +363,7 @@ script:
       description: Name of the bucket in which the object resides.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: true
       description: Name of the object in which to list access controls.
@@ -395,7 +399,7 @@ script:
       description: Name of the bucket in which the object resides.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the object in which to modify the Access control List.
@@ -437,7 +441,7 @@ script:
       description: Name of the bucket in which the object resides.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the object in which to modify access controls.
@@ -479,7 +483,7 @@ script:
       description: Name of the bucket in which the object resides.
       isArray: false
       name: bucket_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: Name of the object in which to modify access controls.
@@ -504,7 +508,7 @@ script:
     description: Removes an entity from an object's Access Control List.
     execution: false
     name: gcs-delete-bucket-object-policy
-  dockerimage: demisto/google-cloud-storage:1.0.0.1734
+  dockerimage: demisto/google-cloud-storage:1.0.0.19032
   isfetch: false
   longRunning: false
   longRunningPort: false
