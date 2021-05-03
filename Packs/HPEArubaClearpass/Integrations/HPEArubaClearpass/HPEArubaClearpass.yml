@@ -507,7 +507,7 @@ script:
       description: Error status code of response (non-zero if a problem occurred).
       type: Number
     - contextPath: HPEArubaClearpass.sessions.disconnect.message
-      description: ' Describes the result of the disconnect operation.'
+      description: Describes the result of the disconnect operation.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
