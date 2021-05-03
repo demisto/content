@@ -35,18 +35,18 @@ def test_validate_arguments(mocker):
         assert 'entity_b_query can not be used with entity_b and/or entity_b_type' in e.args[0]
 
     args = {
-            'entity_a': '1.1.1.1',
-            'entity_a_type': 'IP',
-            'entity_b': '2.2.2.2,3.3.3.3',
-            'entity_b_type': 'Domain',
-            'entity_b_query': '',
-            'description': 'Test',
-            'last_seen': '',
-            'source_reliability': '',
-            'relationship': 'compromises',
-            'reverse_relationship': '',
-            'create_indicator': 'false'
-        }
+        'entity_a': '1.1.1.1',
+        'entity_a_type': 'IP',
+        'entity_b': '2.2.2.2,3.3.3.3',
+        'entity_b_type': 'Domain',
+        'entity_b_query': '',
+        'description': 'Test',
+        'last_seen': '',
+        'source_reliability': '',
+        'relationship': 'compromises',
+        'reverse_relationship': '',
+        'create_indicator': 'false'
+    }
     mocker.patch.object(demisto, 'args', return_value=args)
     try:
         validate_arguments()
@@ -145,9 +145,9 @@ def test_create_relation_command_using_query(mocker):
     mocker.patch('CreateIndicatorRelationship.find_indicators_by_query', return_value=find_indicators_by_query)
     relationships = create_relation_command_using_query(args)
     relationships_entry = [relation.to_entry() for relation in relationships]
-    for entry in relationships_entry:
+    for entry, expected_relationship in zip(relationships_entry, expected_relationships):
         entry.pop('fields')
-        assert entry in expected_relationships
+        assert entry.items() <= expected_relationship.items()
 
 
 def test_create_relation_command_using_args():
@@ -172,16 +172,15 @@ def test_create_relation_command_using_args():
         'entity_a_type': 'IP',
         'entity_b': '4.4.4.4',
         'entity_b_type': 'IP',
-        'source_reliability': '',
         'relationship': 'compromises',
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
     relationships = create_relationships_with_args(args)
     relationships_entry = [relation.to_entry() for relation in relationships]
-    for entry in relationships_entry:
+    for entry, expected_relationship in zip(relationships_entry, expected_relationships):
         entry.pop('fields')
-        assert entry in expected_relationships
+        assert entry.items() <= expected_relationship.items()
 
 
 def test_remove_existing_entity_b_indicators_with_query():

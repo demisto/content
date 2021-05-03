@@ -26,29 +26,8 @@ def build_create_relationships_result(relationships, human_readable):
     }
 
 
-def validate_arguments() -> Dict[str, str]:
-    """Returns a simple python dict with the information provided
-    in the input (dummy).
-
-    :return: raise an error if one of the validations fail.
-    :rtype: ``None``
-    """
-    args = demisto.args()
-    if len(argToList(args.get('entity_a'))) > 1:
-        raise Exception("entity_a is a list, Please insert a single entity_a to create the relationship")
-    if len(argToList(args.get('entity_b_type'))) > 1:
-        raise Exception("entity_b_type is a list, Please insert a single type to create the relationship")
-    if args.get('entity_b') and args.get('entity_b_type') and args.get('entity_b_query'):
-        raise Exception("entity_b_query can not be used with entity_b and/or entity_b_type")
-    if not args.get('entity_b_query') and not args.get('entity_b'):
-        raise Exception("Missing entity_b in the create relationships")
-    if args.get('entity_b') and not args.get('entity_b_type'):
-        raise Exception("Missing entity_b_type in the create relationships")
-    return args
-
-
 def find_indicators_by_query(query):
-    indicators = []
+    indicators: List[dict] = []
     search_indicators = IndicatorsSearcher()
 
     # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
@@ -167,6 +146,25 @@ def create_relationship(name, entity_a, entity_a_type, entity_b, entity_b_type, 
     )
 
 
+def validate_arguments() -> Dict[str, str]:
+    """Get the args of the command and validate the arguments.
+
+    :return: raise an error if one of the validations fail.
+    :rtype: ``None``
+    """
+    args = demisto.args()
+    if len(argToList(args.get('entity_a'))) > 1:
+        raise Exception("entity_a is a list, Please insert a single entity_a to create the relationship")
+    if len(argToList(args.get('entity_b_type'))) > 1:
+        raise Exception("entity_b_type is a list, Please insert a single type to create the relationship")
+    if args.get('entity_b') and args.get('entity_b_type') and args.get('entity_b_query'):
+        raise Exception("entity_b_query can not be used with entity_b and/or entity_b_type")
+    if not args.get('entity_b_query') and not args.get('entity_b'):
+        raise Exception("Missing entity_b in the create relationships")
+    if args.get('entity_b') and not args.get('entity_b_type'):
+        raise Exception("Missing entity_b_type in the create relationships")
+    return args
+
 ''' MAIN FUNCTION '''
 
 
@@ -179,11 +177,10 @@ def main():
         demisto.results(build_create_relationships_result(relationships, human_readable))
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute create-relation automation. Error: {str(e)}')
+        return_error(f'Failed to execute CreateIndicatorRelationships automation. Error: {str(e)}')
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

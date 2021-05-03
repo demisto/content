@@ -5198,7 +5198,10 @@ class EntityRelation:
             raise ValueError("Invalid relation: " + name)
         self._name = name
 
+
         if reverse_name:
+            if not EntityRelation.Relations.is_valid(reverse_name):
+                raise ValueError("Invalid reverse relation: " + reverse_name)
             self._reverse_name = reverse_name
         else:
             self._reverse_name = EntityRelation.Relations.get_reverse(name)
