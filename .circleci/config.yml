@@ -200,7 +200,6 @@ references:
         mkdir -p $CIRCLE_ARTIFACTS/logs
 
         chmod +x ./Tests/scripts/*
-        chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
         if [ ! -e "venv" ]; then
           echo "installing venv"
@@ -231,14 +230,7 @@ references:
     run:
       name: Download Configuration
       when: always
-      command: |
-        if ./Tests/scripts/is_ami.sh ;
-          then
-            ./Tests/scripts/download_demisto_conf.sh
-
-          else
-            ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
-        fi
+      command: ./Tests/scripts/download_demisto_conf.sh
 
   create_instance: &create_instance
     run:

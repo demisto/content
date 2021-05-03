@@ -17,18 +17,23 @@ default:
   before_script:
     - echo "=== Running before script ==="
     - git checkout $CI_COMMIT_BRANCH
+    - git config diff.renameLimit 6000
     - mkdir -p -m 777 $ARTIFACTS_FOLDER/
     - |
       if [[ -f "$BASH_ENV" ]]; then
         source "$BASH_ENV"
       fi
     - source .circleci/content_release_vars.sh
+    - export PATH="${PWD}/node_modules/.bin:${PATH}"
+
     - echo "=== Creating new clean logs folder ==="
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
+
     - echo "=== Granting execute permissions on files ==="
     - chmod +x ./Tests/scripts/*
     - chmod +x ./Tests/Marketplace/*
+
     - echo "=== Installing Virtualenv ==="
     - |
      if [ -f "./venv/bin/activate" ]; then
@@ -37,18 +42,15 @@ default:
       echo "installing venv"
       NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
      fi
-     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-     venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-     source ./venv/bin/activate
-    - git config diff.renameLimit 6000
-    - export PATH="${PWD}/node_modules/.bin:${PATH}"
+    - venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+    - venv/bin/pip2 install -r dev-requirements-py2.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+    - source ./venv/bin/activate
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Installing SDK" >> $ARTIFACTS_FOLDER/logs/installations.log
+        echo "Installing SDK from master branch" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
         pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
       fi
     - echo "========= Installing SSH keys ========"
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - chmod 400 $OREGON_CI_KEY
     - ssh-add $OREGON_CI_KEY
@@ -91,17 +93,17 @@ stages:
 create-instances:
   stage: create-instances
   script:
-    - demisto-sdk create-id-set -o ./Tests/id_set.json
+    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/create-id-set.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION > $ARTIFACTS_FOLDER/logs/create-content-artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     - echo $successful_feature_branch_build
     - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
-    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* > $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - python3 ./Tests/scripts/update_conf_json.py
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"

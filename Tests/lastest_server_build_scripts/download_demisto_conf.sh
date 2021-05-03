@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+]#!/usr/bin/env bash
 set +e
 
 # replace slashes ('/') in the branch name, if exist, with underscores ('_')
