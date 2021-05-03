@@ -3437,7 +3437,6 @@ outputs:
 - contextPath: QRadar.DetectedHosts
   description: 'Hosts detected based on hosts in your assets table. Note that the data accuracy depends on how the Asset mapping is configured in QRadar.'
   type: string
-
 tests:
-- QRadar Indicator Hunting Test
+- No tests
 deprecated: true
