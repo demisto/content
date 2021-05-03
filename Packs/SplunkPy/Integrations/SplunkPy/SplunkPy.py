@@ -2002,7 +2002,7 @@ def kv_store_collection_add_entries(service):
     timeline = None
     if indicator_path:
         kv_store_data = json.loads(kv_store_data)
-        indicator = extract_indicator(indicator_path, [kv_store_data] if not isinstance(kv_store_data, List) else kv_store_data)
+        indicator = extract_indicator(indicator_path, [kv_store_data] if not isinstance(kv_store_data, list) else kv_store_data)
         timeline = {
             'Value': indicator,
             'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),
