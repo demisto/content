@@ -31,8 +31,8 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def create_client(proxy: bool = False, verify: bool = False, base_url: str = "https://example.com/api/"
-                  , client_id: str = CLIENT_ID, client_secret: str = CLIENT_SECRET):
+def create_client(proxy: bool = False, verify: bool = False, base_url: str = "https://example.com/api/",
+                  client_id: str = CLIENT_ID, client_secret: str = CLIENT_SECRET):
     return HPEArubaClearpass.Client(proxy=proxy, verify=verify, base_url=base_url, client_id=client_id,
                                     client_secret=client_secret)
 

@@ -491,10 +491,6 @@ script:
       name: session_id
       required: true
       secret: false
-    - default: false
-      isArray: false
-      required: false
-      secret: false
     deprecated: false
     description: Disconnect active session.
     execution: false

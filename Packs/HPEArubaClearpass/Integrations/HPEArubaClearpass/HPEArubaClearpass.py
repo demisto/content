@@ -22,7 +22,7 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = ""
-        self.headers = {}
+        self.headers: Dict[str, str] = {}
 
     def generate_new_access_token(self):
         body = {
@@ -36,7 +36,7 @@ class Client(BaseClient):
             json_data=body
         )
 
-    def save_access_token_to_context(self, auth_response):
+    def save_access_token_to_context(self, auth_response: dict):
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         if access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int):
             access_token_expiration_datetime = datetime.now() + timedelta(seconds=access_token_expiration_in_seconds)
@@ -80,7 +80,8 @@ class Client(BaseClient):
         authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
-    def prepare_request(self, method: str, params: dict, url_suffix: str, body={}, resp_type='json'):
+    def prepare_request(self, method: str, params: dict, url_suffix: str, body: dict = {},
+                        resp_type: str = 'json'):
         return self._http_request(
             method=method,
             params=params,
@@ -91,23 +92,9 @@ class Client(BaseClient):
         )
 
 
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client) -> str:
+def test_module(client: Client):
     """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
     """
-
     try:
         params = {"filter": {}, "offset": 0, "limit": 25}
         client.prepare_request(method='GET', params=params, url_suffix='endpoint')
@@ -120,12 +107,12 @@ def test_module(client: Client) -> str:
     return message
 
 
-def parse_items_response(response, parsing_function):
+def parse_items_response(response: dict, parsing_function):  # type:ignore
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
     if items_list:
         for item in items_list:
-            human_readable.append(parsing_function(item))
+            human_readable.append(parsing_function(item))  # type: ignore
     return human_readable, items_list
 
 
@@ -152,7 +139,7 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def endpoints_response_to_dict(response):
+def endpoints_response_to_dict(response: dict) -> dict:
     return {
         'ID': response.get('id'),
         'MAC Address': response.get('mac_address'),
@@ -228,6 +215,21 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    new_attribute_body = create_new_attribute_body(args)
+    res = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
+
+    outputs = attributes_response_to_dict(res)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass new attribute', outputs, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.attributes.create',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def create_new_attribute_body(args: Dict[str, Any]):
     name = args.get('name')
     entity_name = args.get('entity_name')
     data_type = args.get('data_type')
@@ -252,46 +254,12 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     new_attribute_body.update(
         {"allowed_value": allowed_list_data_types_value}) if allowed_list_data_types_value else None
 
-    res = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
-
-    outputs = attributes_response_to_dict(res)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass new attribute', outputs, removeNull=True)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes.create',
-        outputs_key_field='id',
-        outputs=outputs,
-    )
+    return new_attribute_body
 
 
 def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     attribute_id = args.get('attribute_id')
-
-    name = args.get('name')
-    entity_name = args.get('entity_name')
-    data_type = args.get('data_type')
-    mandatory = args.get('mandatory', False)
-    attribute_default_value = args.get('default_value', "")
-    allow_multiple_data_type_string = args.get('allow_multiple', False)
-    allowed_list_data_types_value = args.get('allowed_value', "")
-
-    if allow_multiple_data_type_string and data_type != "String":
-        return_error("Note: allow_multiple argument should be true only for data type String.")
-    if allowed_list_data_types_value and data_type != 'List':
-        return_error("Note: allowed_value argument should be set only for data type List.")
-
-    new_attribute_body = {}
-    new_attribute_body.update({"name": name})
-    new_attribute_body.update({"entity_name": entity_name})
-    new_attribute_body.update({"data_type": data_type})
-    new_attribute_body.update({"mandatory": mandatory}) if mandatory else None
-    new_attribute_body.update({"default_value": attribute_default_value}) if attribute_default_value else None
-    new_attribute_body.update(
-        {"allow_multiple": allow_multiple_data_type_string}) if allow_multiple_data_type_string else None
-    new_attribute_body.update(
-        {"allowed_value": allowed_list_data_types_value}) if allowed_list_data_types_value else None
-
+    new_attribute_body = create_new_attribute_body(args)
     res = client.prepare_request(method='PATCH', params={}, url_suffix=f'attribute/{attribute_id}',
                                  body=new_attribute_body)
 
@@ -313,7 +281,7 @@ def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     return CommandResults(readable_output=human_readable)
 
 
-def attributes_response_to_dict(response):
+def attributes_response_to_dict(response: dict) -> dict:
     return {
         'ID': response.get('id'),
         'Name': response.get('name'),
@@ -371,7 +339,7 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
     )
 
 
-def active_sessions_response_to_dict(response):
+def active_sessions_response_to_dict(response: dict) -> dict:
     return {
         'ID': response.get('id'),
         'Device IP': response.get('framedipaddress'),
