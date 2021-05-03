@@ -67,7 +67,7 @@ class Client:
         indicators: List[Dict] = list()
         mitre_id_list: Set[str] = set()
         relationships_list = []
-        id_to_name = {}
+        id_to_name: Dict = {}
         counter = 0
 
         # For each collection
@@ -110,7 +110,7 @@ class Client:
                     mitre_item_json = json.loads(str(mitre_item))
                     if mitre_item_json.get('id') not in mitre_id_list:
                         value = mitre_item_json.get('name')
-                        indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))
+                        indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))  # type: ignore
 
                         if indicator_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
@@ -121,13 +121,13 @@ class Client:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
                                 continue
                             id_to_name[mitre_item_json.get('id')] = value
-                            indicator_score = INDICATOR_TYPE_TO_SCORE.get(indicator_type)
+                            indicator_score = INDICATOR_TYPE_TO_SCORE.get(indicator_type)  # type: ignore
                             indicator_obj = {
                                 "value": value,
                                 "score": indicator_score,
                                 "type": indicator_type,
                                 "rawJSON": mitre_item_json,
-                                "fields": map_fields_by_type(indicator_type, mitre_item_json)
+                                "fields": map_fields_by_type(indicator_type, mitre_item_json)  # type: ignore
                             }
 
                             if indicator_obj['fields'].get('tags'):
@@ -158,8 +158,8 @@ def is_indicator_deprecated_or_revoked(indicator_json):
 
 
 def map_fields_by_type(indicator_type: str, indicator_json: dict):
-    created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))
-    modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))
+    created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))  # type: ignore
+    modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))  # type: ignore
 
     publications = []
     for external_reference in indicator_json.get('external_references', []):
@@ -309,21 +309,20 @@ def main():
     try:
         client = Client(url, proxies, verify_certificate, tags, tlp_color)
         client.initialise()
-        commands = {
-            'mitre-get-indicators': get_indicators_command,
-            'mitre-show-feeds': show_feeds_command,
-        }
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == 'mitre-get-indicators':
+            get_indicators_command(client, args)
+
+        elif demisto.command() == 'mitre-show-feeds':
+            show_feeds_command(client)
+
+        elif demisto.command() == 'test-module':
             test_module(client)
 
         elif demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, create_relationships)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
-
-        else:
-            commands[command](client, args)
 
     # Log exceptions
     except Exception as e:
