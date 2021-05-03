@@ -2294,6 +2294,54 @@ class Common(object):
         :type asn: ``str``
         :param asn: The autonomous system name for the IP address, for example: "AS8948".
 
+        :type as_owner: ``str``
+        :param as_owner: The autonomous system owner of the IP.
+
+        :type region: ``str``
+        :param region: The region in which the IP is located.
+
+        :type port: ``str``
+        :param port: Ports that are associated with the IP.
+
+        :type internal: ``bool``
+        :param internal: Whether or not the IP is internal or external.
+
+        :type updated_date: ``date``
+        :param updated_date: The date that the IP was last updated.
+
+        :type registrar_abuse_name: ``str``
+        :param registrar_abuse_name: The name of the contact for reporting abuse.
+
+        :type registrar_abuse_address: ``str``
+        :param registrar_abuse_address: The address of the contact for reporting abuse.
+
+        :type registrar_abuse_country: ``str``
+        :param registrar_abuse_country: The country of the contact for reporting abuse.
+
+        :type registrar_abuse_network: ``str``
+        :param registrar_abuse_network: The network of the contact for reporting abuse.
+
+        :type registrar_abuse_phone: ``str``
+        :param registrar_abuse_phone: The phone number of the contact for reporting abuse.
+
+        :type registrar_abuse_email: ``str``
+        :param registrar_abuse_email: The email address of the contact for reporting abuse.
+
+        :type campaign: ``str``
+        :param campaign: The campaign associated with the IP.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the IP.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes: Notes on the IP that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: Publications on the ip that was published.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
         :type hostname: ``str``
         :param hostname: The hostname that is mapped to this IP address.
 
@@ -2341,12 +2389,33 @@ class Common(object):
         """
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
+        def __init__(self, ip, dbot_score, asn=None, as_owner=None, region=None, port=None, internal=None,
+                     updated_date=None, registrar_abuse_name=None, registrar_abuse_address=None,
+                     registrar_abuse_country=None, registrar_abuse_network=None, registrar_abuse_phone=None,
+                     registrar_abuse_email=None, campaign=None, traffic_light_protocol=None,
+                     community_notes=None, publications=None, threat_types=None,
+                     hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
                      organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
                      malware_family=None, relations=None):
             self.ip = ip
             self.asn = asn
+            self.as_owner = as_owner
+            self.region = region
+            self.port = port
+            self.internal = internal
+            self.updated_date = updated_date
+            self.registrar_abuse_name = registrar_abuse_name
+            self.registrar_abuse_address = registrar_abuse_address
+            self.registrar_abuse_country = registrar_abuse_country
+            self.registrar_abuse_network = registrar_abuse_network
+            self.registrar_abuse_phone = registrar_abuse_phone
+            self.registrar_abuse_email = registrar_abuse_email
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.community_notes = community_notes
+            self.publications = publications
+            self.threat_types = threat_types
             self.hostname = hostname
             self.geo_latitude = geo_latitude
             self.geo_longitude = geo_longitude
@@ -2373,6 +2442,61 @@ class Common(object):
 
             if self.asn:
                 ip_context['ASN'] = self.asn
+
+            if self.as_owner:
+                ip_context['ASOwner'] = self.as_owner
+
+            if self.region:
+                ip_context['Region'] = self.region
+
+            if self.port:
+                ip_context['Port'] = self.port
+
+            if self.internal:
+                ip_context['Internal'] = self.internal
+
+            if self.updated_date:
+                ip_context['UpdatedDate'] = self.updated_date
+
+            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
+                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                ip_context['Registrar'] = {'Abuse': {}}
+                if self.registrar_abuse_name:
+                    ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
+                if self.registrar_abuse_address:
+                    ip_context['Registrar']['Abuse']['Address'] = self.registrar_abuse_address
+                if self.registrar_abuse_country:
+                    ip_context['Registrar']['Abuse']['Country'] = self.registrar_abuse_country
+                if self.registrar_abuse_network:
+                    ip_context['Registrar']['Abuse']['Network'] = self.registrar_abuse_network
+                if self.registrar_abuse_phone:
+                    ip_context['Registrar']['Abuse']['Phone'] = self.registrar_abuse_phone
+                if self.registrar_abuse_email:
+                    ip_context['Registrar']['Abuse']['Email'] = self.registrar_abuse_email
+
+            if self.campaign:
+                ip_context['Campaign'] = self.campaign
+
+            if self.traffic_light_protocol:
+                ip_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                ip_context['CommunityNotes'] = community_notes
+
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                ip_context['Publications'] = publications
+
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                ip_context['ThreatTypes'] = threat_types
 
             if self.hostname:
                 ip_context['Hostname'] = self.hostname
@@ -2502,6 +2626,120 @@ class Common(object):
                 'description': self.description
             }
 
+    class CommunityNotes(object):
+        """
+        CommunityNotes class
+         Implements Subject Community Notes of a indicator
+
+        :type note: ``str``
+        :param note: Notes on the indicator that were given by the community.
+
+        :type timestamp: ``Timestamp``
+        :param timestamp: The time in which the note was published.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, note=None, timestamp=None):
+            self.note = note
+            self.timestamp = timestamp
+
+        def to_context(self):
+            return {
+                'note': self.note,
+                'timestamp': self.timestamp,
+            }
+
+    class Publications(object):
+        """
+        Publications class
+         Implements Subject Publications of a indicator
+
+        :type source: ``str``
+        :param source: The source in which the article was published.
+
+        :type title: ``str``
+        :param title: The name of the article.
+
+        :type link: ``str``
+        :param link: A link to the original article.
+
+        :type timestamp: ``Timestamp``
+        :param timestamp: The time in which the article was published.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, source=None, title=None, link=None, timestamp=None):
+            self.source = source
+            self.title = title
+            self.link = link
+            self.timestamp = timestamp
+
+        def to_context(self):
+            return {
+                'source': self.source,
+                'title': self.title,
+                'link': self.link,
+                'timestamp': self.timestamp,
+            }
+
+    class Behaviors(object):
+        """
+        Behaviors class
+         Implements Subject Behaviors of a indicator
+
+        :type details: ``str``
+        :param details:
+
+        :type action: ``str``
+        :param action:
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, details=None, action=None):
+            self.details = details
+            self.action = action
+
+        def to_context(self):
+            return {
+                'details': self.details,
+                'title': self.action,
+            }
+
+    class ThreatTypes(object):
+        """
+        ThreatTypes class
+         Implements Subject ThreatTypes of a indicator
+
+        :type threat_category: ``str``
+        :param threat_category: The threat category associated to this indicator by the source vendor. For example,
+         Phishing, Control, TOR, etc.
+
+        :type threat_category_confidence: ``str``
+        :param threat_category_confidence: Threat Category Confidence is the confidence level provided by the vendor
+         for the threat type category
+         For example a confidence of 90 for threat type category "malware" means that the vendor rates that this
+         is 90% confidence of being a malware.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, threat_category=None, threat_category_confidence=None):
+            self.threat_category = threat_category
+            self.threat_category_confidence = threat_category_confidence
+
+        def to_context(self):
+            return {
+                'threatcategory': self.threat_category,
+                'threatcategoryconfidence': self.threat_category_confidence,
+            }
+
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
@@ -2565,6 +2803,36 @@ class Common(object):
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the File.
 
+        :type campaign: ``str``
+        :param campaign:
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol:
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  Notes on the file that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: Publications on the file that was published.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
+        :type imphash: ``str``
+        :param imphash: The Imphash hash of the file.
+
+        :type quarantined: ``bool``
+        :param quarantined: Is the file quarantined or not.
+
+        :type organization: ``str``
+        :param organization: The organization of the file.
+
+        :type associated_file_names: ``str``
+        :param associated_file_names: File names that are known as associated to the file.
+
+        :type behaviors: ``Behaviors``
+        :param behaviors: list of behaviors associated with the file.
+
         :type relations: ``list of EntityRelation``
         :param relations: List of relations of the indicator.
 
@@ -2582,7 +2850,9 @@ class Common(object):
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
                      product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
-                     feed_related_indicators=None, malware_family=None, relations=None):
+                     feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
+                     associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
+                     publications=None, threat_types=None, behaviors=None, relations=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2604,6 +2874,16 @@ class Common(object):
             self.tags = tags
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.community_notes = community_notes
+            self.publications = publications
+            self.threat_types = threat_types
+            self.imphash = imphash
+            self.quarantined = quarantined
+            self.organization = organization
+            self.associated_file_names = associated_file_names
+            self.behaviors = behaviors
             self.relations = relations
 
             self.dbot_score = dbot_score
@@ -2658,6 +2938,39 @@ class Common(object):
 
             if self.malware_family:
                 file_context['MalwareFamily'] = self.malware_family
+
+            if self.campaign:
+                file_context['Campaign'] = self.campaign
+            if self.traffic_light_protocol:
+                file_context['TrafficLightProtocol'] = self.traffic_light_protocol
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                file_context['CommunityNotes'] = community_notes
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                file_context['Publications'] = publications
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                file_context['ThreatTypes'] = threat_types
+            if self.imphash:
+                file_context['Imphash'] = self.imphash
+            if self.quarantined:
+                file_context['Quarantined'] = self.quarantined
+            if self.organization:
+                file_context['Organization'] = self.organization
+            if self.associated_file_names:
+                file_context['AssociatedFileNames'] = self.associated_file_names
+            if self.behaviors:
+                behaviors = []
+                for behavior in self.behaviors:
+                    behaviors.append(behavior.to_context())
+                file_context['Behavior'] = behaviors
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
@@ -2812,6 +3125,39 @@ class Common(object):
         :type tags: ``str``
         :param tags: Tags of the URL.
 
+        :type port: ``str``
+        :param port: Ports that are associated with the URL.
+
+        :type internal: ``bool``
+        :param internal: Whether or not the URL is internal or external.
+
+        :type campaign: ``str``
+        :param campaign: The campaign associated with the URL.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
+        :type asn: ``str``
+        :param asn: The autonomous system name for the URL, for example: 'AS8948'.
+
+        :type as_owner: ``str``
+        :param as_owner: The autonomous system owner of the URL.
+
+        :type geo_country: ``str``
+        :param geo_country: The country in which the URL is located.
+
+        :type organization: ``str``
+        :param organization: The organization of the URL.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  List of notes on the URL that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: List of publications on the URL that was published.
+
         :type relations: ``list of EntityRelation``
         :param relations: List of relations of the indicator.
 
@@ -2824,7 +3170,9 @@ class Common(object):
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
         def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
-                     feed_related_indicators=None, tags=None, malware_family=None, relations=None):
+                     feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
+                     campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
+                     geo_country=None, organization=None, community_notes=None, publications=None, relations=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
@@ -2832,6 +3180,17 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.tags = tags
             self.malware_family = malware_family
+            self.port = port
+            self.internal = internal
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.threat_types = threat_types
+            self.asn = asn
+            self.as_owner = as_owner
+            self.geo_country = geo_country
+            self.organization = organization
+            self.community_notes = community_notes
+            self.publications = publications
             self.relations = relations
 
             self.dbot_score = dbot_score
@@ -2861,6 +3220,38 @@ class Common(object):
 
             if self.malware_family:
                 url_context['MalwareFamily'] = self.malware_family
+
+            if self.port:
+                url_context['Port'] = self.port
+            if self.internal:
+                url_context['Internal'] = self.internal
+            if self.campaign:
+                url_context['Campaign'] = self.campaign
+            if self.traffic_light_protocol:
+                url_context['TrafficLightProtocol'] = self.traffic_light_protocol
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                url_context['ThreatTypes'] = threat_types
+            if self.asn:
+                url_context['ASN'] = self.asn
+            if self.as_owner:
+                url_context['ASOwner'] = self.as_owner
+            if self.geo_country:
+                url_context['Geo'] = {'Country': self.geo_country}
+            if self.organization:
+                url_context['Organization'] = self.organization
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                url_context['CommunityNotes'] = community_notes
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                url_context['Publications'] = publications
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
@@ -2893,7 +3284,12 @@ class Common(object):
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
                      admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
-                     relations=None):
+                     domain_idn_name=None, port=None,
+                     internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
+                     community_notes=None, publications=None, geo_location=None, geo_country=None,
+                     geo_description=None, tech_country=None, tech_name=None, tech_email=None, tech_organization=None,
+                     billing=None, relations=None):
+
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2923,6 +3319,23 @@ class Common(object):
             self.name_servers = name_servers
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
+            self.domain_idn_name = domain_idn_name
+            self.port = port
+            self.internal = internal
+            self.category = category
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.threat_types = threat_types
+            self.community_notes = community_notes
+            self.publications = publications
+            self.geo_location = geo_location
+            self.geo_country = geo_country
+            self.geo_description = geo_description
+            self.tech_country = tech_country
+            self.tech_name = tech_name
+            self.tech_organization = tech_organization
+            self.tech_email = tech_email
+            self.billing = billing
             self.relations = relations
 
             self.dbot_score = dbot_score
@@ -3011,6 +3424,53 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+            if self.domain_idn_name:
+                domain_context['DomainIDNName'] = self.domain_idn_name
+            if self.port:
+                domain_context['Port'] = self.port
+            if self.internal:
+                domain_context['Internal'] = self.internal
+            if self.category:
+                domain_context['Category'] = self.category
+            if self.campaign:
+                domain_context['Campaign'] = self.campaign
+            if self.traffic_light_protocol:
+                domain_context['TrafficLightProtocol'] = self.traffic_light_protocol
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                domain_context['ThreatTypes'] = threat_types
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                domain_context['CommunityNotes'] = community_notes
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                domain_context['Publications'] = publications
+            if self.geo_location or self.geo_country or self.geo_description:
+                domain_context['Geo'] = {}
+                if self.geo_location:
+                    domain_context['Geo']['Location'] = self.geo_location
+                if self.geo_country:
+                    domain_context['Geo']['Country'] = self.geo_country
+                if self.geo_description:
+                    domain_context['Geo']['Description'] = self.geo_description
+            if self.tech_country or self.tech_name or self.tech_organization or self.tech_email:
+                domain_context['Tech'] = {}
+                if self.tech_country:
+                    domain_context['Tech']['Country'] = self.tech_country
+                if self.tech_name:
+                    domain_context['Tech']['Name'] = self.tech_name
+                if self.tech_organization:
+                    domain_context['Tech']['Organization'] = self.tech_organization
+                if self.tech_email:
+                    domain_context['Tech']['Email'] = self.tech_email
+            if self.billing:
+                domain_context['Billing'] = self.billing
 
             if whois_context:
                 domain_context['WHOIS'] = whois_context
@@ -5033,36 +5493,38 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
+    elif results and isinstance(results, list):
+        result_list = []
         for result in results:
-            demisto.results(result.to_context())
-        return
+            if isinstance(result, (dict, str)):
+                # Results of type dict or str are of the old results format and work with demisto.results()
+                result_list.append(result)
+            else:
+                # The rest are of the new format and have a corresponding function (to_context, to_display, etc...)
+                return_results(result)
+        if result_list:
+            demisto.results(result_list)
 
-    if isinstance(results, CommandResults):
+    elif isinstance(results, CommandResults):
         demisto.results(results.to_context())
-        return
 
-    if isinstance(results, BaseWidget):
+    elif isinstance(results, BaseWidget):
         demisto.results(results.to_display())
-        return
 
-    if isinstance(results, GetMappingFieldsResponse):
+    elif isinstance(results, GetMappingFieldsResponse):
         demisto.results(results.extract_mapping())
-        return
 
-    if isinstance(results, GetRemoteDataResponse):
+    elif isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
-        return
 
-    if isinstance(results, GetModifiedRemoteDataResponse):
+    elif isinstance(results, GetModifiedRemoteDataResponse):
         demisto.results(results.to_entry())
-        return
 
-    if hasattr(results, 'to_entry'):
+    elif hasattr(results, 'to_entry'):
         demisto.results(results.to_entry())
-        return
 
-    demisto.results(results)
+    else:
+        demisto.results(results)
 
 
 # deprecated
