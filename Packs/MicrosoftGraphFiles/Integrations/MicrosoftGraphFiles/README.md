@@ -3,7 +3,7 @@ Use the Microsoft Graph Files integration to enable your app to get authorized a
 ## Authentication
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
- ### Required Permissions</h3>
+ ### Required Permissions
 - Directory.Read.All - Delegated
 - Files.ReadWrite.All - Application
 - Files.ReadWrite.All - Delegated
