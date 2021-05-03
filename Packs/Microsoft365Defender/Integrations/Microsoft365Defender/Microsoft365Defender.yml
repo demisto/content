@@ -146,7 +146,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Owner of the incident.\t"
+      description: Owner of the incident.
       isArray: false
       name: assigned_to
       required: false
