@@ -22,7 +22,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Whether to get full Resolution section. If disabled only 10 most recent entries will be fetched.
+- additionalinfo: Whether to get all the resolution information. If disabled only the 10 most recent entries will be displayed.
   display: Use Extended Data
   name: extended_data
   required: false
