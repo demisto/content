@@ -23,7 +23,7 @@ configuration:
 description: Query routable IPv4 addresses in the GreyNoise Community API
 display: GreyNoise Community
 name: greynoise_community
-fromversion: 5.0.0
+fromversion: 5.5.0
 script:
   commands:
   - arguments:

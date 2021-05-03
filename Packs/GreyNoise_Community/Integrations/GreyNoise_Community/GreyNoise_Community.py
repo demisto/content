@@ -288,7 +288,7 @@ def main() -> None:
             timeout=10,
             proxy=handle_proxy("proxy", proxy).get("https", ""),
             use_cache=False,
-            integration_name=f"xsoar-community-integration-v{demisto.demistoVersion()['version']}",
+            integration_name=f"xsoar-community-integration-v{get_demisto_version_as_str()}",
             offering="community",
         )
 

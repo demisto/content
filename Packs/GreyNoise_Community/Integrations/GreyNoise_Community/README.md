@@ -7,7 +7,7 @@ GreyNoise Community API.  The [GreyNoise Pack](https://github.com/demisto/conten
 should be used by customers with a paid subscription to GreyNoise.
 
 This integration was integrated and tested with version 0.8.0 of GreyNoise Python SDK.
-Supported Cortex XSOAR versions: 5.0.0 and later.
+Supported Cortex XSOAR versions: 5.5.0 and later.
 
 ## Configure GreyNoise on Cortex XSOAR
 
