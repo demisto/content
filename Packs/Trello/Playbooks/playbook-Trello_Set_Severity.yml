@@ -1,0 +1,395 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Trello Set Severity
+inputs: []
+name: Trello Set Severity
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8a2d9988-c242-4995-80b3-193b056f9eee
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8a2d9988-c242-4995-80b3-193b056f9eee
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -10
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      label: Unknown
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0.5"
+      label: Informational
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "1"
+      label: Low
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: isEqualString
+          right:
+            value:
+              simple: "2"
+      label: Medium
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: isEqualString
+          right:
+            value:
+              simple: "3"
+      label: High
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.severity
+          operator: isEqualString
+          right:
+            value:
+              simple: "4"
+      label: Critical
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      Critical:
+      - "8"
+      High:
+      - "7"
+      Informational:
+      - "5"
+      Low:
+      - "4"
+      Medium:
+      - "6"
+      Unknown:
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Check Severity
+      brand: ""
+      id: 98fb624b-0c79-4dd0-87a0-c79f8c8dbf40
+      iscommand: false
+      name: Severity Switch
+      type: condition
+      version: -1
+    taskid: 98fb624b-0c79-4dd0-87a0-c79f8c8dbf40
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 100
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      board_id: {}
+      color:
+        simple: black
+      name:
+        simple: Unknown
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Create the Unknown label in Trello 
+      brand: ""
+      id: 6a3aae7c-d0b0-4177-8e34-d068121ce905
+      iscommand: true
+      name: Create Unknown Label
+      script: '|||trello-create-label'
+      type: regular
+      version: -1
+    taskid: 6a3aae7c-d0b0-4177-8e34-d068121ce905
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 270
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      card_id:
+        simple: ${incident.trellocardid}
+      closed: {}
+      idLabels:
+        simple: ${Trello.CreatedLabel.Id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Update an existing card
+      id: 8d944857-b8fc-4bb7-8588-aae322992c4c
+      iscommand: true
+      name: Update Card
+      script: '|||trello-update-card'
+      type: regular
+      version: -1
+    taskid: 8d944857-b8fc-4bb7-8588-aae322992c4c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 460
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      board_id: {}
+      color:
+        simple: green
+      name:
+        simple: Low
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Create the low label in Trello
+      brand: ""
+      id: bca5d7c8-6882-472a-8ebf-c09f11eaffc0
+      iscommand: true
+      name: Create Low Label
+      script: '|||trello-create-label'
+      type: regular
+      version: -1
+    taskid: bca5d7c8-6882-472a-8ebf-c09f11eaffc0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 270
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      board_id: {}
+      color:
+        simple: blue
+      name:
+        simple: Informational
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Create the informational label in Trello
+      brand: ""
+      id: 105ecd74-c985-407c-837d-49eb9ce53bb2
+      iscommand: true
+      name: Create Informational Label;
+      script: '|||trello-create-label'
+      type: regular
+      version: -1
+    taskid: 105ecd74-c985-407c-837d-49eb9ce53bb2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 270
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      board_id: {}
+      color:
+        simple: yellow
+      name:
+        simple: Medium
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Create the medium label in Trello
+      brand: ""
+      id: b774aa2f-0ae9-4c1b-871d-4ba3dab9fde1
+      iscommand: true
+      name: Create Medium Label
+      script: '|||trello-create-label'
+      type: regular
+      version: -1
+    taskid: b774aa2f-0ae9-4c1b-871d-4ba3dab9fde1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 270
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      board_id: {}
+      color:
+        simple: orange
+      name:
+        simple: High
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Create the high label in Trello
+      brand: ""
+      id: 15b67a4a-d0f2-45ad-8f0b-7b9be222f15b
+      iscommand: true
+      name: Create High Label
+      script: '|||trello-create-label'
+      type: regular
+      version: -1
+    taskid: 15b67a4a-d0f2-45ad-8f0b-7b9be222f15b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 270
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      board_id: {}
+      color:
+        simple: red
+      name:
+        simple: Critical
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: Create the critical label in Trello
+      brand: ""
+      id: 5742394b-a672-41bd-8628-0fc9cdc602e2
+      iscommand: true
+      name: Create Critical Label
+      script: '|||trello-create-label'
+      type: regular
+      version: -1
+    taskid: 5742394b-a672-41bd-8628-0fc9cdc602e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 270
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 2520,
+        "x": -650,
+        "y": -10
+      }
+    }
+  }
+tests:
+- No tests
+fromversion: 6.0.0
+description: Updates the Severity of a trello card by setting, and creating if required, a Trello Label.
