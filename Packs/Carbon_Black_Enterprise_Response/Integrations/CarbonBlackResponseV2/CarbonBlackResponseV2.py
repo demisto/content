@@ -20,13 +20,14 @@ class Client(BaseClient):
         headers = {'X-Auth-Token': apitoken, 'Accept': 'application/json', 'Content-Type': 'application/json'}
         super().__init__(base_url, headers=headers, verify=use_ssl, proxy=use_proxy)
 
-    def http_request(self, url: str, method: str, params: dict = None, json_data: dict = None):
+    def http_request(self, url: str, method: str, params: dict = None, json_data: dict = None,
+                     ok_codes: tuple = (200, 204)):
         """
         initiates a http request to openphish
         """
         data = self._http_request(
             method=method,
-            ok_codes=(200, 204),
+            ok_codes=ok_codes,
             url_suffix=url,
             params=params,
             return_empty_response=True,
@@ -79,28 +80,38 @@ def quarantine_device_command(client: Client, sensor_id: str):
         raise Exception('could not run')
 
 
-def sensors_list_command(client: Client, sensor_id: str = None, hostname: str = None, ip: str = None,
-                         group_id: str = None, inactive_filter_days: str = None):
-    url = f'/v1/sensor/{sensor_id}' if sensor_id else '/v1/sensor'
-    query_fields = ['hostname', 'ip', 'group_id', 'inactive_filter_days']
-    query_params: dict = {key: val for key, val in locals().items() if key in query_fields and val is not None}
+def sensors_list_command(client: Client, id: str = None, hostname: str = None, ip: str = None,
+                         group_id: str = None, inactive_filter_days: str = None, limit=None):
+    url = f'/v1/sensor/{id}' if id else '/v1/sensor'
+    query_fields = {'ip': 'ipaddr', 'hostname': 'hostname', 'group_id': 'groupid',
+                    'inactive_filter_days': 'inactive_filter_days'}
+    query_params: dict = {query_fields[key]: val for key, val in locals().items() if
+                          key in query_fields and val is not None}
     res = client.http_request(url=url, method='GET', params=query_params)
+
+    # When querying specific sensor without filters, the api returns dictionary.
+    if not isinstance(res, list):
+        res = [res]
+
+    res = res[:limit]
+
     return CommandResults(outputs=res, outputs_prefix='CBSensors', outputs_key_field='id',
                           readable_output=tableToMarkdown('Sensors', res), raw_response=res)
 
 
-def watchlist_delete_command(client: Client, watchlist_id: str):
-    res = client.http_request(url=f'/v1/watchlist/{watchlist_id}', method='DELETE')
+def watchlist_delete_command(client: Client, id: str):
+    res = client.http_request(url=f'/v1/watchlist/{id}', method='DELETE')
     return CommandResults(readable_output=res.get('result'))
 
 
-def watchlist_update_command(client: Client, watchlist_id: str, search_query: str, description: str, enabled: bool):
+def watchlist_update_command(client: Client, id: str, search_query: str, description: str, enabled: bool):
     params = assign_params(enabled=enabled, search_query=search_query, description=description)
-    res = client.http_request(url=f'/v1/watchlist/{watchlist_id}', method='PUT', json_data=params)
+    res = client.http_request(url=f'/v1/watchlist/{id}', method='PUT', json_data=params)
     return CommandResults(readable_output=res.get('result'))
 
 
-def watchlist_create_command(client: Client, name: str, search_query: str, description: str, index_type: str):
+def watchlist_create_command(client: Client, name: str, search_query: str, index_type: str = 'events',
+                             description: str = ''):
     params = assign_params(name=name, search_query=search_query, description=description, index_type=index_type)
     res = client.http_request(url='/v1/watchlist', method='POST', json_data=params)
     id = res.get('id')
@@ -110,8 +121,8 @@ def watchlist_create_command(client: Client, name: str, search_query: str, descr
     return CommandResults(readable_output=f"Could not create new watchlist.")
 
 
-def get_watchlist_list_command(client: Client, watchlist_id: str = None):
-    url = f'/v1/watchlist/{watchlist_id}' if watchlist_id else '/v1/watchlist'
+def get_watchlist_list_command(client: Client, id: str = None):
+    url = f'/v1/watchlist/{id}' if id else '/v1/watchlist'
     res = client.http_request(url=url, method='GET')
     return CommandResults(outputs=res, outputs_prefix='CBWatchList', outputs_key_field='id',
                           readable_output=tableToMarkdown(res))
@@ -119,7 +130,7 @@ def get_watchlist_list_command(client: Client, watchlist_id: str = None):
 
 def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str, ban_count: str, last_ban_host: str,
                        enabled: bool) -> CommandResults:
-    body = assign_params(md5=md5,
+    body = assign_params(md5hash=md5,
                          text=text, last_ban_time=last_ban_time, ban_count=ban_count,
                          last_ban_host=last_ban_host, enabled=enabled)
     res = client.http_request(url='/v1/banning/blacklist', method='POST', json_data=body)
@@ -134,9 +145,9 @@ def binary_bans_list_command(client: Client) -> CommandResults:
 
 def alert_update_command(client: Client, alert_ids: str, status: str = None, set_ignored: bool = None,
                          query: str = None):
-    url = '/v2/alert'
+    url = '/v1/alerts'
     body = assign_params(alert_ids=argToList(alert_ids),
-                         status=status,
+                         requested_status=status,
                          set_ignored=set_ignored,
                          query=query
                          )
@@ -147,7 +158,7 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
 
 def alert_search_command(client: Client, status: str = None, username: str = None, feedname: str = None,
                          hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                         facet: str = None, facet_field: str = None, rows: str = None, start: str = None):
+                         facet: str = None, rows: str = None, start: str = None):
     query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
     query_params: dict = {key: val for key, val in locals().items() if key in query_fields and val is not None}
     query_string = _create_query_string(query_params)
@@ -159,8 +170,8 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
 
     result_section = res.get('results', [])
     facet_results = res.get('facets', {})
-    if facet:
-        facet_results = facet_results.get(facet_field)
+
+    # TODO return
 
 
 def binary_summary_command(client: Client, md5: str) -> CommandResults:
@@ -175,24 +186,27 @@ def binary_summary_command(client: Client, md5: str) -> CommandResults:
 
 def binary_download_command(client: Client, md5: str) -> CommandResults:
     url = f'/v1/binary/{md5}'
-    res = client.http_request(url=url, method='GET')
+    res = client.http_request(url=url, method='GET', ok_codes=(200, 204, 404))
     if not res:
         return CommandResults(
             readable_output=f'Could not find data for file {md5}.')
+    # todo: handle 404
     # todo: add file to command results
 
 
-def binary_search_command(client: Client, product_name: str = None, digital_signature: str = None, group: str = None,
+def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None, group: str = None,
                           hostname: str = None, publisher: str = None, company_name: str = None, sort: str = None,
                           observed_filename: str = None, query: str = None, facet: str = None,
                           facet_field: str = None, rows: str = None, start: str = None) -> CommandResults:
-    query_fields = ['product_name', 'digital_signature', 'group', 'hostname', 'publisher', 'company_name',
-                    'observed_filename', 'query']
-    query_params: dict = {key: val for key, val in locals().items() if key in query_fields and val is not None}
+    query_fields = {'product_name': 'product_name', 'digital_signature': 'signed',
+                    'group': 'group', 'hostname': 'hostname', 'publisher': 'digsig_publisher',
+                    'company_name': 'company_name', 'observed_filename': 'observed_filename',
+                    'query': 'query'}
+    query_params: dict = {query_fields[key]: val for key, val in locals().items() if key in query_fields and val is not None}
     query_string = _create_query_string(query_params)
 
     res = client.http_request(url='/v1/binary', method='GET',
-                              params={'q': current_query, 'rows': rows, 'start': start, 'sort': sort, 'facet': facet,
+                              params={'q': query_string, 'rows': rows, 'start': start, 'sort': sort, 'facet': facet,
                                       'facet.field': facet_field})
     if not res:
         raise Exception('Request cannot be processed.')
@@ -260,6 +274,22 @@ def processes_search_command(client: Client, process_name: str = None, group: st
     ]
 
 
+def sensor_installer_download_command(client: Client, os_type: str, group_id: str):
+    url = f"/v1/group/{group_id}/installer/{os_type.replace('_', '/')}"
+    res = client.http_request(url=url, method='GET')
+    if not res:
+        return CommandResults(
+            readable_output=f'Could not find installer for group id {group_id} which compatible with {os_type}.')
+    # todo return file
+
+def endpoint_command(client: Client, id: str, ip: str, hostname: str):
+    if not id or not ip or not hostname:
+        raise Exception('In order to run this command, please provide valid id, ip and hostname')
+
+    res = sensors_list_command(client, id=id, ip=ip, hostname=hostname)
+
+
+
 def test_module(client: Client) -> str:
     message: str = ''
     try:
@@ -291,8 +321,6 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
 
-        headers: Dict = {}
-
         client = Client(
             base_url=base_url,
             use_ssl=verify_certificate,
@@ -317,7 +345,10 @@ def main() -> None:
                     'cb-edr-sensors-list': sensors_list_command,
                     'cb-edr-quarantine-device': quarantine_device_command,
                     'cb-edr-unquarantine-device': unquarantine_device_command,
-                    'cb-edr-sensor-installer-download': ''}
+                    'cb-edr-sensor-installer-download': sensor_installer_download_command,
+                    'fetch-incidents': '',
+                    'endpoint': ''
+                    }
 
         if command == 'test-module':
             result = test_module(client)
