@@ -250,24 +250,26 @@ def main() -> None:
                          'ip': ip_command,
                          'threat-crowd-antivirus': antivirus_command,
                          'file': file_command}
-
-    params = demisto.params()
-    base_url = params.get('server_url')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    extended_data = argToBoolean(params.get('extended_data', False))
-
-    reliability = params.get('integrationReliability')
-    reliability = reliability if reliability else DBotScoreReliability.C
-
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    
+    demisto.debug(f'Command being called is {command}')
     try:
+        
+        params = demisto.params()
+        base_url = params.get('server_url')
+        verify_certificate = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+        extended_data = argToBoolean(params.get('extended_data', False))
 
+        reliability = params.get('integrationReliability')
+        reliability = reliability if reliability else DBotScoreReliability.C
+
+        if DBotScoreReliability.is_valid_type(reliability):
+            reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+        
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
@@ -276,20 +278,20 @@ def main() -> None:
             extended_data=extended_data
         )
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
 
         else:
-            if demisto.command() in command_functions:
-                return_results(command_functions[demisto.command()](client, demisto.args()))
+            if command in command_functions:
+                return_results(command_functions[command](client, demisto.args()))
             else:
-                raise NotImplementedError(f'command {demisto.command()} is not implemented.')
+                raise NotImplementedError(f'command {command} is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
