@@ -1,5 +1,5 @@
 Amazon Web Services Managed Cloud DNS Service.
-This integration was integrated and tested with version xx of AWS - Route53
+
 ## Configure AWS - Route53 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
