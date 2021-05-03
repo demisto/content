@@ -64,11 +64,11 @@ for indicator_fields in all_args:
     else:
         stix_type_and_value = "[{}:value = '{}']".format(demisto_indicator_type.lower(), value)
     label_as_type = demisto_indicator_type.lower()
-    if demisto_score.lower() == "bad":
+    if demisto_score.lower() in ["bad", "malicious"]:
         demisto_score = "High"
     elif demisto_score.lower() == "suspicious":
         demisto_score = "Medium"
-    elif demisto_score.lower() == "good":
+    elif demisto_score.lower() in ["good", "benign"]:
         demisto_score = "None"
     else:
         demisto_score = "Not Specified"
