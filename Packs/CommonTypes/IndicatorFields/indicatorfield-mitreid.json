@@ -24,7 +24,8 @@
     "group": 2,
     "hidden": false,
     "associatedTypes": [
-        "MITRE ATT&CK"
+        "MITRE ATT&CK",
+        "Attack Pattern"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,
