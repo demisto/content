@@ -47,7 +47,7 @@ class Client(BaseClient):
                                                                 lastUpdateTime, createdTime, status, and assignedTo
         Args:
             limit (int): how many incidents to receive, the maximum value is 100
-            status: filter list to contain only incidents with the given status (Active, Resolved or Redirected)
+            status (str): filter list to contain only incidents with the given status (Active, Resolved, or Redirected)
             assigned_to: Owner of the incident, or None if no owner is assigned.
             timeout: The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
