@@ -4,7 +4,7 @@ The Cofense Triage content pack integrates with Cortex XSOAR to ingest reported 
 
 **What does this pack do?**
 
-The integration allows Cortex XSOAR to ingest from Cofense Triage phishing threats and to run response playbooks based on email attributes.
+The integration allows Cortex XSOAR to ingest phishing threats from Cofense Triage and run response playbooks based on email attributes.
 - Ingest from Cofense Triage inbox and processed locations
 - Create security incidents in Cortex XSOAR based on processed location categories, such as crimeware, advanced threats, and credential phishing.
 - Ingest phishing threat indicators based on severity from Cofense Triage - hashes, URLs, domains
