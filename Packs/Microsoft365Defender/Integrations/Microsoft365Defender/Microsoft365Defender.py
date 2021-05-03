@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-from typing import Dict
+from typing import Dict, Optional, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -210,6 +210,9 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
     alerts_list = raw_incident.get('alerts', [])
 
     alerts_status = [alert.get('status') for alert in alerts_list]
+    first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
+    last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
+
     return {
         'Incident name': raw_incident.get('incidentName'),
         'Tags': ', '.join(raw_incident.get('tags', [])),
@@ -219,12 +222,12 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
         'Categories': ', '.join({alert.get('category') for alert in alerts_list}),
         'Impacted entities': ', '.join({entity.get('accountName') for alert in alerts_list
                                         for entity in alert.get('entities') if entity.get('entityType') == 'User'}),
-        'Active alerts': f'{alerts_status.count("Active")} / {len(alerts_status)}',
+        'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
         'Service sources': ', '.join({alert.get('serviceSource') for alert in alerts_list}),
         'Detection sources': ', '.join({alert.get('detectionSource') for alert in alerts_list}),
         # Data sensitivity - is not relevant
-        'First activity': alerts_list[0].get('firstActivity') if alerts_list else '',
-        'Last activity': alerts_list[-1].get('lastActivity') if alerts_list else '',
+        'First activity': min(first_activity_list, key=lambda x: dateparser.parse(x)) if alerts_list else '',
+        'Last activity': max(last_activity_list, key=lambda x: dateparser.parse(x)) if alerts_list else '',
         'Status': raw_incident.get('status'),
         'Assigned to': raw_incident.get('assignedTo', 'Unassigned'),
         'Classification': raw_incident.get('classification', 'Not set'),
@@ -445,6 +448,8 @@ def main() -> None:
             return_results(test_connection(client))
 
         elif command == 'microsoft-365-defender-incidents-list':
+            start_auth(client)
+            complete_auth(client)
             return_results(microsoft_365_defender_incidents_list_command(client, args))
 
         elif command == 'microsoft-365-defender-incident-update':

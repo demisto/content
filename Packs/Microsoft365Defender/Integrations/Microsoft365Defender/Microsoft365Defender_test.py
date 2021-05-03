@@ -83,6 +83,14 @@ def fetch_check(mocker, client, last_run, first_fetch_time, fetch_limit, mock_re
 
 
 def test_fetch_incidents(mocker):
+    """
+    This test check for 4 fetch cycles.
+        First - get all the incidents and fill the queue 127, returns 50
+        Second - get 50 incidents from the queue
+        Third - tries to fill the queue with new incidents but there are no new ones so returns all the remaining
+                incidents in the queue
+        Forth - tries to fill the queue with new incidents but there are no new ones so returns empty list
+    """
     response_dict = util_load_json('./test_data/fetch_response.json')
     client = Client(
         app_id='app_id',
@@ -98,6 +106,6 @@ def test_fetch_incidents(mocker):
     fetch_limit = 50
     results = util_load_json('./test_data/fetch_results.json')
 
-    for i in ['first', 'second', 'third', 'forth']:
-        fetch_check(mocker, client, response_dict[f'{i}_last_run'], first_fetch_time, fetch_limit,
-                    results[f'{i}_result'])
+    for current_flow in ['first', 'second', 'third', 'forth']:
+        fetch_check(mocker, client, response_dict[f'{current_flow}_last_run'], first_fetch_time, fetch_limit,
+                    results[f'{current_flow}_result'])
