@@ -356,9 +356,9 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
 
 
 def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    device_id = args.get('id')
-    url_suffix = f"/session/{device_id}/disconnect"
-    body = {"id": device_id, "confirm_disconnect": True}
+    session_id = args.get('session_id')
+    url_suffix = f"/session/{session_id}/disconnect"
+    body = {"id": session_id, "confirm_disconnect": True}
     res = client.prepare_request(method='POST', params={}, url_suffix=url_suffix, body=body)
     outputs = {"Error Code": res.get('error'), "Response message": res.get('message')}
     human_readable = tableToMarkdown('HPE Aruba Clearpass disconnect active session', outputs, removeNull=True)

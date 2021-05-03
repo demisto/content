@@ -487,6 +487,28 @@ script:
     - contextPath: HPEArubaClearpass.sessions.list.visitor_phone
       description: The visitor’s phone number.
       type: String
+  - arguments:
+    - default: false
+      description: ID of the session to disconnect
+      isArray: false
+      name: session_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Disconnect active session.
+    execution: false
+    name: aruba-clearpass-active-session-disconnect
+    outputs:
+    - contextPath: HPEArubaClearpass.sessions.disconnect.error
+      description: Error status code of response (non-zero if a problem occurred).
+      type: Number
+    - contextPath: HPEArubaClearpass.sessions.disconnect.message
+      description: ' Describes the result of the disconnect operation.'
+      type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
