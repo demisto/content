@@ -49,7 +49,7 @@ class Client(BaseClient):
             limit (int): how many incidents to receive, the maximum value is 100
             status (str): filter list to contain only incidents with the given status (Active, Resolved, or Redirected)
             assigned_to (str): Owner of the incident, or None if no owner is assigned
-            timeout: The amount of time (in seconds) that a request will wait for a client to
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
             from_date: get incident with creation date more recent than from_date
             skip: how many entries to skip
