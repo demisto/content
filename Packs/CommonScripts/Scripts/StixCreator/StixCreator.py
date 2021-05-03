@@ -10,12 +10,13 @@ indicators = []
 
 userArgs = demisto.args().get('indicators', 'Unknown')
 doubleBackslash = demisto.args().get('doubleBackslash', True)
-if isinstance(userArgs, dict) == True:
+all_args = {}
+if isinstance(userArgs, dict):
     all_args = json.loads(json.dumps(userArgs))
 else:
     try:
         all_args = json.loads(demisto.args().get('indicators', 'Unknown'))
-    except:
+    except:     # noqa: E722
         return_error('indicators argument is invalid json object')
 
 counter = 0
@@ -91,7 +92,8 @@ for indicator_fields in all_args:
             vulnerability = Vulnerability(name=stix_type_and_value,
                                           description=label_as_type,
                                           labels=[label_as_type],
-                                          external_references=[ExternalReference(source_name="cve", external_id=stix_type_and_value)])
+                                          external_references=[ExternalReference(source_name="cve",
+                                                                                 external_id=stix_type_and_value)])
         except Exception as ex:
             demisto.info("Indicator type: {}, with the value: {} is not STIX compatible".format(demisto_indicator_type, value))
             demisto.info("Export failure excpetion: {}".format(ex))
