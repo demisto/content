@@ -38,7 +38,7 @@ configuration:
   type: 8
 description: Query threat crowd for reports.
 display: Threat Crowd v2
-name: TheatCrowdv2
+name: ThreatCrowdv2
 script:
   commands:
   - arguments:
