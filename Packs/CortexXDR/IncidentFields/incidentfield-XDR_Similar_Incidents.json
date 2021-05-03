@@ -47,11 +47,11 @@
             "width": 160
         },
         {
-            "displayName": "Similarity Incident",
+            "displayName": "Incident Similarity",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "similarityincident",
+            "key": "incidentsimilarity",
             "required": false,
             "script": "",
             "selectValues": null,

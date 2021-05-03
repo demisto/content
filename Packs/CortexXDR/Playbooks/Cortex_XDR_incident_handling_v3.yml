@@ -1812,7 +1812,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       columns:
-        simple: Incident Id,Created,Name,Similarity Incident
+        simple: Incident Id,Created,Name,Incident Similarity
       context_path:
         simple: DBotFindSimilarIncidents.similarIncident
       grid_id:
