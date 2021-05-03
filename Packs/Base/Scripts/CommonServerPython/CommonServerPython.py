@@ -4768,62 +4768,64 @@ class Common(object):
 
             return ret_value
 
+
 class ScheduledCommand:
+    """
+    ScheduledCommand configuration class
+    Holds the scheduled command configuration for the command result - managing the way the command should be polled.
+
+    :type command: ``str``
+    :param command: The command that'll run after next_run_in_seconds has passed.
+
+    :type next_run_in_seconds: ``int``
+    :param next_run_in_seconds: How long to wait before executing the command.
+
+    :type args: ``Optional[Dict[str, Any]]``
+    :param args: Arguments to use when executing the command.
+
+    :type timeout_in_seconds: ``Optional[int]``
+    :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
+
+    :return: None
+    :rtype: ``None``
+    """
+    VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server ' \
+                             'version to 6.2.0 or later.'
+
+    def __init__(
+            self,
+            command,  # type: str
+            next_run_in_seconds,  # type: int
+            args=None,  # type: Optional[Dict[str, Any]]
+            timeout_in_seconds=None,  # type: Optional[int]
+    ):
+        self.raise_error_if_not_supported()
+        self._command = command
+        if next_run_in_seconds < 10:
+            demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
+                         '{} is '.format(next_run_in_seconds) + 'too low - minimum interval is 10 seconds. '
+                                                                'next_run_in_seconds was set to 10 seconds.')
+            next_run_in_seconds = 10
+        self._next_run = str(next_run_in_seconds)
+        self._args = args
+        self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+
+    @staticmethod
+    def raise_error_if_not_supported():
+        if not is_demisto_version_ge('6.2.0'):
+            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+
+    def to_results(self):
         """
-        ScheduledCommand configuration class
-        Holds the scheduled command configuration for the command result - managing the way the command should be polled.
-
-        :type command: ``str``
-        :param command: The command that'll run after next_run_in_seconds has passed.
-
-        :type next_run_in_seconds: ``int``
-        :param next_run_in_seconds: How long to wait before executing the command.
-
-        :type args: ``Optional[Dict[str, Any]]``
-        :param args: Arguments to use when executing the command.
-
-        :type timeout_in_seconds: ``Optional[int]``
-        :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
-
-        :return: None
-        :rtype: ``None``
+        Returns the result dictionary of the polling command
         """
-        VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server ' \
-                                 'version to 6.2.0 or later.'
+        return assign_params(
+            PollingCommand=self._command,
+            NextRun=self._next_run,
+            PollingArgs=self._args,
+            Timeout=self._timeout
+        )
 
-        def __init__(
-                self,
-                command,  # type: str
-                next_run_in_seconds,  # type: int
-                args=None,  # type: Optional[Dict[str, Any]]
-                timeout_in_seconds=None,  # type: Optional[int]
-        ):
-            self.raise_error_if_not_supported()
-            self._command = command
-            if next_run_in_seconds < 10:
-                demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
-                             '{} is '.format(next_run_in_seconds) + 'too low - minimum interval is 10 seconds. '
-                                                                    'next_run_in_seconds was set to 10 seconds.')
-                next_run_in_seconds = 10
-            self._next_run = str(next_run_in_seconds)
-            self._args = args
-            self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
-
-        @staticmethod
-        def raise_error_if_not_supported():
-            if not is_demisto_version_ge('6.2.0'):
-                raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
-
-        def to_results(self):
-            """
-            Returns the result dictionary of the polling command
-            """
-            return assign_params(
-                PollingCommand=self._command,
-                NextRun=self._next_run,
-                PollingArgs=self._args,
-                Timeout=self._timeout
-            )
 
 def camelize_string(src_str, delim='_', upper_camel=True):
     """
