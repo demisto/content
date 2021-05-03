@@ -1,5 +1,4 @@
 import json
-import sys
 from datetime import datetime, timedelta
 
 import demistomock as demisto
@@ -63,16 +62,15 @@ class Client(BaseClient):
                 self.access_token = access_token
                 self.set_request_headers()
                 return
+        # if the access is expired or not exist, generate a new one
+        auth_response = self.generate_new_access_token()
+        access_token = auth_response.get("access_token")
+        if access_token:
+            self.access_token = access_token
+            self.save_access_token_to_context(auth_response)
+            self.set_request_headers()
         else:
-            # if the access is expired or not exist, generate a new one
-            auth_response = self.generate_new_access_token()
-            access_token = auth_response.get("access_token")
-            if access_token:
-                self.access_token = access_token
-                self.save_access_token_to_context(auth_response)
-                self.set_request_headers()
-            else:
-                return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
+            return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
 
     def set_request_headers(self):
         """
@@ -328,6 +326,45 @@ def attributes_response_to_dict(response):
     }
 
 
+def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    session_id = args.get('session_id')  # id (string, optional): Accounting identifier of the record,
+    device_ip = args.get('device_ip')  # framedipaddress (string, optional): IP address of the client,
+    device_mac_address = args.get(
+        'device_mac_address')  # mac_address (string, optional): MAC address of the client device,
+    state = args.get('state')  # state (string, optional): The current state of the session (active, stale, closed).,
+    visitor_phone = args.get('visitor_phone')  # visitor_phone (string, optional): The visitor’s phone number,
+
+    session_filter = {}
+    session_filter.update({"id": session_id}) if session_id else None
+    session_filter.update({"framedipaddress": device_ip}) if device_ip else None
+    session_filter.update({"mac_address": device_mac_address}) if device_mac_address else None
+    session_filter.update({"state": state}) if state else None
+    session_filter.update({"visitor_phone": visitor_phone}) if visitor_phone else None
+    params = {"filter": json.dumps(session_filter)}
+
+    res = client.prepare_request(method='GET', params=params, url_suffix='session')
+
+    readable_output, outputs = parse_items_response(res, active_sessions_response_to_dict)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass active sessions', readable_output, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.sessions.list',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def active_sessions_response_to_dict(response):
+    return {
+        'ID': response.get('id'),
+        'Device IP': response.get('framedipaddress'),
+        'Device MAC address': response.get('mac_address'),
+        'Device state': response.get('state'),
+        'Visitor phone': response.get('visitor_phone', False)
+    }
+
+
 def main() -> None:
     params = demisto.params()
     base_url = urljoin(params.get('url'), '/api')
@@ -365,6 +402,14 @@ def main() -> None:
         elif demisto.command() == 'aruba-clearpass-attribute-delete':
             return_results(delete_attribute_command(client, demisto.args()))
 
+        elif demisto.command() == 'aruba-clearpass-active-sessions-list':
+            return_results(get_active_sessions_list_command(client, demisto.args()))
+
+        elif demisto.command() == 'aruba-clearpass-active-session-disconnect':
+            return_results(disconnect_from_active_session_command(client, demisto.args()))
+
+        else:
+            raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
