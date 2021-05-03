@@ -1,32 +1,19 @@
+from typing import Tuple
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 import traceback
 
-''' STANDALONE FUNCTION '''
-
 BRAND = "XSOAR"
 PAGE_SIZE = 2000
 
 
-def build_create_relationships_result(relationships, human_readable):
-    if relationships:
-        relationships = [relation.to_entry() for relation in relationships]
-    return {
-        'Type': 1,
-        'ContentsFormat': 'json',
-        'Contents': None,
-        'HumanReadable': human_readable,
-        'EntryContext': {},
-        'IndicatorTimeline': [],
-        'IgnoreAutoExtract': False,
-        'Relationships': relationships,
-        'Note': False
-    }
+# --------------------------------------------------- Helper functions---------------------------------------------
 
 
-def find_indicators_by_query(query):
+def find_indicators_by_query(query: str) -> List[dict]:
     indicators: List[dict] = []
     search_indicators = IndicatorsSearcher()
 
@@ -44,22 +31,7 @@ def find_indicators_by_query(query):
     return indicators
 
 
-def create_relationships(args):
-    if args.get('entity_b_query'):
-        relationships = create_relation_command_using_query(args)
-    else:
-        relationships = create_relationships_with_args(args)
-
-    if len(relationships) == 1:
-        human_readable = f"Relationship for {args.get('entity_a')} was created successfully."
-    elif len(relationships) > 1:
-        human_readable = f"Relationships for {args.get('entity_a')} were created successfully."
-    else:
-        human_readable = f"Relationships were not created for {args.get('entity_a')}."
-    return relationships, human_readable
-
-
-def remove_existing_entity_b_indicators(args):
+def remove_existing_entity_b_indicators(args: dict) -> list:
     entity_b_list = argToList(args.get('entity_b'))
     if args.get('entity_b_query'):
         return []
@@ -74,52 +46,30 @@ def remove_existing_entity_b_indicators(args):
     return entity_b_list
 
 
-def create_indicators(args):
-    entity_b_to_create = remove_existing_entity_b_indicators(args)
-    indicators = []
-    for entity_b in entity_b_to_create:
-        indicator = {
-            'value': entity_b,
-            'type': args.get('entity_b_type'),
-        }
-        indicators.append(indicator)
-    errors = list()
-    for indicator in indicators:
-        res = demisto.executeCommand("createNewIndicator", indicator)
-        if is_error(res[0]):
-            errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
-    return_outputs(
-        "Create Indicators From CreateIndicatorRelationship automation: {} indicators were created.".format(
-            len(indicators) - len(errors)
-        )
-    )
-    if errors:
-        return_error(json.dumps(errors, indent=4))
-
-
-def create_relation_command_using_query(args):
+def create_relation_command_using_query(args: dict) -> List[EntityRelation]:
     relationships = []
-    indicators = find_indicators_by_query(args.get('entity_b_query'))
+    indicators = find_indicators_by_query(args.get('entity_b_query', ''))
     for indicator in indicators:
-        relationships.append(create_relationship(name=args.get('relationship'), entity_a=args.get('entity_a'),
-                                                 entity_a_type=args.get('entity_a_type'),
-                                                 entity_b=indicator.get('entity_b'),
-                                                 entity_b_type=indicator.get('entity_b_type'),
+        relationships.append(create_relationship(name=args.get('relationship', ''), entity_a=args.get('entity_a', ''),
+                                                 entity_a_type=args.get('entity_a_type', ''),
+                                                 entity_b=indicator.get('entity_b', ''),
+                                                 entity_b_type=indicator.get('entity_b_type', ''),
                                                  source_reliability=args.get('source_reliability', ''),
                                                  reverse_name=args.get('reverse_relationship', ''),
-                                                 first_seen=args.get('first_seen'),
-                                                 description=args.get('description')
+                                                 first_seen=args.get('first_seen', ''),
+                                                 description=args.get('description', '')
                                                  ))
     return relationships
 
 
-def create_relationships_with_args(args):
+def create_relationships_with_args(args: dict) -> List[EntityRelation]:
     relationships = []
     entity_b_list = argToList(args.get('entity_b'))
     for entity_b in entity_b_list:
-        relationships.append(create_relationship(name=args.get('relationship'), entity_a=args.get('entity_a'),
-                                                 entity_a_type=args.get('entity_a_type'),
-                                                 entity_b=entity_b, entity_b_type=args.get('entity_b_type'),
+        relationships.append(create_relationship(name=args.get('relationship', ''), entity_a=args.get('entity_a', ''),
+                                                 entity_a_type=args.get('entity_a_type', ''),
+                                                 entity_b=entity_b,
+                                                 entity_b_type=args.get('entity_b_type', ''),
                                                  source_reliability=args.get('source_reliability', ''),
                                                  reverse_name=args.get('reverse_relationship', ''),
                                                  first_seen=args.get('first_seen', ''),
@@ -127,8 +77,9 @@ def create_relationships_with_args(args):
     return relationships
 
 
-def create_relationship(name, entity_a, entity_a_type, entity_b, entity_b_type, source_reliability='', reverse_name='',
-                        first_seen='', description=''):
+def create_relationship(name: str, entity_a: str, entity_a_type: str, entity_b: str, entity_b_type: str,
+                        source_reliability: str = '', reverse_name: str = '', first_seen: str = '',
+                        description: str = '') -> EntityRelation:
     return EntityRelation(
         name=name,
         reverse_name=reverse_name,
@@ -146,13 +97,15 @@ def create_relationship(name, entity_a, entity_a_type, entity_b, entity_b_type, 
     )
 
 
-def validate_arguments() -> Dict[str, str]:
+# --------------------------------------------------- Main functions---------------------------------------------
+
+
+def validate_arguments(args: dict) -> Dict[str, str]:
     """Get the args of the command and validate the arguments.
 
     :return: raise an error if one of the validations fail.
     :rtype: ``None``
     """
-    args = demisto.args()
     if len(argToList(args.get('entity_a'))) > 1:
         raise Exception("entity_a is a list, Please insert a single entity_a to create the relationship")
     if len(argToList(args.get('entity_b_type'))) > 1:
@@ -165,16 +118,73 @@ def validate_arguments() -> Dict[str, str]:
         raise Exception("Missing entity_b_type in the create relationships")
     return args
 
+
+def create_indicators(args: dict):
+    """
+    When the create_indicator argument is set to True, create the new indicator first.
+
+    :type args: ``dict``
+    :param args: dict of arguments of the command.
+
+    :return: return a list of errors, empty if no errors.
+    :rtype: ``None``
+    """
+    entity_b_to_create = remove_existing_entity_b_indicators(args)
+    indicators = []
+    for entity_b in entity_b_to_create:
+        indicator = {
+            'value': entity_b,
+            'type': args.get('entity_b_type'),
+        }
+        indicators.append(indicator)
+    errors = list()
+    for indicator in indicators:
+        res = demisto.executeCommand("createNewIndicator", indicator)
+        if is_error(res[0]):
+            errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
+    demisto.debug(
+        f"Create Indicators From CreateIndicatorRelationship automation: {len(indicators) - len(errors)}"
+        f" indicators were created with values {str(indicators)}"
+    )
+    if errors:
+        demisto.debug(f'Errors were found while creating indicators from CreateIndicatorRelationships automation:'
+                      f' {json.dumps(errors, indent=4)}')
+
+
+def create_relationships(args: dict) -> Tuple[List[EntityRelation], str]:
+    """
+    Create relationships from given arguments.
+
+    :type args: ``dict``
+    :param args: dict of arguments of the command.
+
+    :return: relationships object with human readable output.
+    :rtype: ``tuple``
+    """
+    if args.get('entity_b_query'):
+        relationships = create_relation_command_using_query(args)
+    else:
+        relationships = create_relationships_with_args(args)
+
+    if len(relationships) == 1:
+        human_readable = f"Relationship for {args.get('entity_a')} was created successfully."
+    elif len(relationships) > 1:
+        human_readable = f"Relationships for {args.get('entity_a')} were created successfully."
+    else:
+        human_readable = f"Relationships were not created for {args.get('entity_a')}."
+    return relationships, human_readable
+
+
 ''' MAIN FUNCTION '''
 
 
 def main():
     try:
-        args = validate_arguments()
+        args = validate_arguments(demisto.args())
         if argToBoolean(args.get('create_indicator')):
             create_indicators(args)
         relationships, human_readable = create_relationships(args)
-        demisto.results(build_create_relationships_result(relationships, human_readable))
+        return_results(CommandResults(readable_output=human_readable, relations=relationships))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute CreateIndicatorRelationships automation. Error: {str(e)}')

@@ -1,7 +1,5 @@
-import demistomock as demisto
 
-
-def test_validate_arguments(mocker):
+def test_validate_arguments():
     """
     Test that all the error occur in each scenario.
     Given:
@@ -28,9 +26,8 @@ def test_validate_arguments(mocker):
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
-    mocker.patch.object(demisto, 'args', return_value=args)
     try:
-        validate_arguments()
+        validate_arguments(args)
     except Exception as e:
         assert 'entity_b_query can not be used with entity_b and/or entity_b_type' in e.args[0]
 
@@ -47,9 +44,8 @@ def test_validate_arguments(mocker):
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
-    mocker.patch.object(demisto, 'args', return_value=args)
     try:
-        validate_arguments()
+        validate_arguments(args)
     except Exception as e:
         assert 'entity_b_type is a list, Please insert a single type to create the relationship' in e.args[0]
 
@@ -66,9 +62,8 @@ def test_validate_arguments(mocker):
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
-    mocker.patch.object(demisto, 'args', return_value=args)
     try:
-        validate_arguments()
+        validate_arguments(args)
     except Exception as e:
         assert "Missing entity_b_type in the create relationships" in e.args[0]
 
@@ -85,9 +80,8 @@ def test_validate_arguments(mocker):
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
-    mocker.patch.object(demisto, 'args', return_value=args)
     try:
-        validate_arguments()
+        validate_arguments(args)
     except Exception as e:
         assert "Missing entity_b in the create relationships" in e.args[0]
 
@@ -104,9 +98,8 @@ def test_validate_arguments(mocker):
         'reverse_relationship': '',
         'create_indicator': 'false'
     }
-    mocker.patch.object(demisto, 'args', return_value=args)
     try:
-        validate_arguments()
+        validate_arguments(args)
     except Exception as e:
         assert "entity_a is a list, Please insert a single entity_a to create the relationship" in e.args[0]
 
