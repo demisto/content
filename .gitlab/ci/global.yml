@@ -1,3 +1,7 @@
+.default-image:
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18863
+
+
 .default-cache:
   cache:
     key:
@@ -74,5 +78,7 @@
 
 .default-job-settings:
   extends:
+    - .default-image
     - .default-cache
+    - .default-artifacts
     - .default-before_script
