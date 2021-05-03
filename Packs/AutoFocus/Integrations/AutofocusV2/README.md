@@ -1191,11 +1191,6 @@ Returns the reputation of an IP address.
 | IP.Address | String | The IP address. | 
 | IP.Tags | String | Tags that are associated with the IP. | 
 | IP.MalwareFamily | String | The malware family associated with the IP. |
-| IP.Relations.EntityA | String | The source of the relationship. |
-| IP.Relations.EntityAType | String | The type of the source of the relationship. |
-| IP.Relations.EntityB | String | The destination of the relationship. |
-| IP.Relations.EntityBType | String | The type of the destination of the relationship. |
-| IP.Relations.Relationship | String |  The name of the relationship. |
 | AutoFocus.IP.IndicatorValue | String | The IP address value. | 
 | AutoFocus.IP.IndicatorType | String | The indicator type. | 
 | AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1279,11 +1274,6 @@ Returns the reputation of a URL.
 | URL.Data | String | The URL address. | 
 | URL.Tags | String | Tags that are associated with the URL. | 
 | URL.MalwareFamily | String | The malware family associated with the URL. |
-| URL.Relations.EntityA | String | The source of the relationship. |
-| URL.Relations.EntityAType | String | The type of the source of the relationship. |
-| URL.Relations.EntityB | String | The destination of the relationship. |
-| URL.Relations.EntityBType | String | The type of the destination of the relationship. |
-| URL.Relations.Relationship | String |  The name of the relationship. |
 | AutoFocus.URL.IndicatorValue | String | The URL value. | 
 | AutoFocus.URL.IndicatorType | String | The indicator type. | 
 | AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1370,11 +1360,6 @@ Returns the reputation of a file.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | Tags that are associated with the file. | 
 | File.MalwareFamily | String | The malware family associated with the file. |
-| File.Relations.EntityA | String | The source of the relationship. |
-| File.Relations.EntityAType | String | The type of the source of the relationship. |
-| File.Relations.EntityB | String | The destination of the relationship. |
-| File.Relations.EntityBType | String | The type of the destination of the relationship. |
-| File.Relations.Relationship | String |  The name of the relationship. |
 | AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. | 
 | AutoFocus.File.IndicatorType | String | The indicator type. | 
 | AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
@@ -1467,11 +1452,6 @@ Returns the reputation of a domain.
 | Domain.Name | String | The name of the domain. | 
 | Domain.Tags | String | Tags that are associated with the domain. | 
 | Domain.MalwareFamily | String | The malware family associated with the domain. |
-| Domain.Relations.EntityA | String | The source of the relationship. |
-| Domain.Relations.EntityAType | String | The type of the source of the relationship. |
-| Domain.Relations.EntityB | String | The destination of the relationship. |
-| Domain.Relations.EntityBType | String | The type of the destination of the relationship. |
-| Domain.Relations.Relationship | String |  The name of the relationship. |
 | AutoFocus.Domain.IndicatorValue | String | The value of the domain. | 
 | AutoFocus.Domain.IndicatorType | String | The indicator type. | 
 | AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 

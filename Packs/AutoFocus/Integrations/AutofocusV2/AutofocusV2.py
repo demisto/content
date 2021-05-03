@@ -29,16 +29,7 @@ VENDOR_NAME = 'AutoFocus V2'
 HEADERS = {
     'Content-Type': 'application/json'
 }
-RELATIONSHIP_TYPE_BY_TAG_CLASS_ID = {
-    1: {'entity_b_type': 'STIX Threat Actor',
-        'name': 'indicator-of'},
-    2: {'entity_b_type': 'Campaign',  # ??????????????????????????????
-        'name': 'indicator-of'},
-    3: {'entity_b_type': 'STIX Malware',
-        'name': 'indicator-of'},
-    5: {'entity_b_type': 'STIX Attack Pattern',
-        'name': 'indicator-of'}
-}
+
 API_PARAM_DICT = {
     'scope': {
         'Private': 'private',
@@ -1320,12 +1311,11 @@ def top_tags_results_command():
     })
 
 
-def search_ip_command(ip, reliability, create_relationships):
+def search_ip_command(ip, reliability):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
     command_results = []
-    relationships = []
 
     for ip_address in ip_list:
         raw_res = search_indicator('ipv4_address', ip_address)
@@ -1343,15 +1333,12 @@ def search_ip_command(ip, reliability, create_relationships):
             score=score,
             reliability=reliability
         )
-        if create_relationships:
-            relationships = create_relationships_list(entity_a=ip_address, entity_a_type=indicator_type, tags=raw_tags,
-                                                      reliability=reliability)
+
         ip = Common.IP(
             ip=ip_address,
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=relationships
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1373,19 +1360,17 @@ def search_ip_command(ip, reliability, create_relationships):
             outputs=autofocus_ip_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=ip,
-            relations=relationships
+            indicator=ip
         ))
 
     return command_results
 
 
-def search_domain_command(domain, reliability, create_relationships):
+def search_domain_command(domain, reliability):
     indicator_type = 'Domain'
     domain_name_list = argToList(domain)
 
     command_results = []
-    relationships = []
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
@@ -1401,10 +1386,6 @@ def search_domain_command(domain, reliability, create_relationships):
                 score=score,
                 reliability=reliability
             )
-            if create_relationships:
-                relationships = create_relationships_list(entity_a=domain_name, entity_a_type=indicator_type,
-                                                          tags=raw_tags,
-                                                          reliability=reliability)
             domain = Common.Domain(
                 domain=domain_name,
                 dbot_score=dbot_score,
@@ -1417,8 +1398,7 @@ def search_domain_command(domain, reliability, create_relationships):
                 registrar_name=indicator.get('whoisRegistrar'),
                 registrant_name=indicator.get('whoisRegistrant'),
                 malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-                tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-                relations=relationships
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
             )
             autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
             # create human readable markdown for ip
@@ -1452,18 +1432,16 @@ def search_domain_command(domain, reliability, create_relationships):
             outputs=autofocus_domain_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=domain,
-            relations=relationships
+            indicator=domain
         ))
     return command_results
 
 
-def search_url_command(url, reliability, create_relationships):
+def search_url_command(url, reliability):
     indicator_type = 'URL'
     url_list = argToList(url)
 
     command_results = []
-    relationships = []
 
     for url_name in url_list:
 
@@ -1483,16 +1461,12 @@ def search_url_command(url, reliability, create_relationships):
             score=score,
             reliability=reliability
         )
-        if create_relationships:
-            relationships = create_relationships_list(entity_a=url_name, entity_a_type=indicator_type,
-                                                      tags=raw_tags,
-                                                      reliability=reliability)
+
         url = Common.URL(
             url=url_name,
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
-            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=relationships
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1513,19 +1487,17 @@ def search_url_command(url, reliability, create_relationships):
             outputs=autofocus_url_output,
             readable_output=md,
             raw_response=raw_res,
-            indicator=url,
-            relations=relationships
+            indicator=url
         ))
 
     return command_results
 
 
-def search_file_command(file, reliability, create_relationships):
+def search_file_command(file, reliability):
     indicator_type = 'File'
     file_list = argToList(file)
 
     command_results = []
-    relationships = []
 
     for sha256 in file_list:
         raw_res = search_indicator('filehash', sha256.lower())
@@ -1543,10 +1515,7 @@ def search_file_command(file, reliability, create_relationships):
             score=score,
             reliability=reliability
         )
-        if create_relationships:
-            relationships = create_relationships_list(entity_a=sha256, entity_a_type=indicator_type,
-                                                      tags=raw_tags,
-                                                      reliability=reliability)
+
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
 
         tags = autofocus_file_output.get('Tags')
@@ -1564,7 +1533,6 @@ def search_file_command(file, reliability, create_relationships):
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
             tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=relationships
         )
 
         command_results.append(CommandResults(
@@ -1574,8 +1542,7 @@ def search_file_command(file, reliability, create_relationships):
 
             readable_output=md,
             raw_response=raw_res,
-            indicator=file,
-            relations=relationships
+            indicator=file
         ))
 
     return command_results
@@ -1615,37 +1582,6 @@ def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware
                 results.append(group.get('tag_group_name'))
     # Returns a list without duplicates and empty elements
     return list(set(filter(None, results)))
-
-
-def create_relationships_list(entity_a, entity_a_type, tags, reliability):
-    """
-    Create a list of relationships objects from the tags.
-
-    entity_a (str): the entity a of the relation which is the current indicator.
-    entity_a_type (str): the entity a type which is the type of the current indicator (IP/Domain/URL/File)
-    tags (list): list of tags returned from the api.
-    reliability (str): reliability of the source.
-
-    return:
-    list of EntityRelation objects containing all the relations from the enricher.
-    """
-    if not tags:
-        return []
-    relationships = []
-    for tag in tags:
-        tag_class = tag.get('tag_class_id')
-        entity_b = tag.get('tag_name')
-        relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
-        if entity_b and relation_by_type:
-            relationships.append(EntityRelation(relation_by_type.get('name'),
-                                                entity_a=entity_a,
-                                                entity_a_type=entity_a_type,
-                                                entity_b=entity_b,
-                                                entity_b_type=relation_by_type.get('entity_b_type'),
-                                                source_reliability=reliability,
-                                                brand=VENDOR_NAME))
-
-    return relationships
 
 
 def get_export_list_command(args):
@@ -1737,7 +1673,7 @@ def get_export_list_command(args):
 def main():
     demisto.debug('Command being called is %s' % (demisto.command()))
     reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
-    create_relationships = PARAMS.get('create_relationships', True)
+
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -1749,7 +1685,6 @@ def main():
         active_command = demisto.command()
         args = {k: v for (k, v) in demisto.args().items() if v}
         args['reliability'] = reliability
-        args['create_relationships'] = create_relationships
         if active_command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
