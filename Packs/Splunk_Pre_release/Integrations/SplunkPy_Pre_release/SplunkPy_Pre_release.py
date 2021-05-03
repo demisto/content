@@ -1,4 +1,4 @@
-from splunklib.binding import HTTPError, namespace
+from splunklib.binding import HTTPError, namespace, AuthenticationError
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -1107,10 +1107,20 @@ def get_reader(stream):
     return results.ResultsReader(io.BufferedReader(ResponseReaderWrapper(stream)))
 
 
-def splunk_realtime(service, query):
+def get_generator(service, query):
     job_kwargs = {"search_mode": "realtime", "earliest_time": "rt", "latest_time": "rt"}
+
     try:
-        for item in get_reader(service.jobs.export(query=query, **job_kwargs)):
+        stream = service.jobs.export(query=query, **job_kwargs)
+    except AuthenticationError:
+        service.login()
+        stream = service.jobs.export(query=query, **job_kwargs)
+    return get_reader(stream)
+
+
+def splunk_realtime(service, query):
+    try:
+        for item in get_generator(service, query):
             if isinstance(item, results.Message):
                 demisto.debug(item.message)
             else:
@@ -1118,6 +1128,7 @@ def splunk_realtime(service, query):
 
     except Exception:
         demisto.error(traceback.format_exc())
+        raise Exception()
 
 
 def get_splunk_query(demisto_params):
