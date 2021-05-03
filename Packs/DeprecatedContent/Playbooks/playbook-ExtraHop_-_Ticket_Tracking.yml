@@ -733,5 +733,5 @@ inputs:
 outputs: []
 fromversion: 5.0.0
 tests:
-- ExtraHop_v2-Test
+- No test - Deprecated playbook
 deprecated: true
