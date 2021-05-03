@@ -91,7 +91,7 @@ def aws_session(service='sqs', region=None, roleArn=None, roleSessionName=None, 
             verify=VERIFY_CERTIFICATE,
             config=config
         )
-    else:  # login with access key id, anf if is None than permissions pulled from the EC2 metadata
+    else:  # login with access key id, and if region is None than permissions pulled from the EC2 metadata
         if region is not None:
             client = boto3.client(service_name=service,
                                   region_name=region,
