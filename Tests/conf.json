@@ -1847,11 +1847,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
             "fromversion": "5.5.0",
