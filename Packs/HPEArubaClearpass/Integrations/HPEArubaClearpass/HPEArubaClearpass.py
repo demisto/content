@@ -355,6 +355,22 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
+def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    device_id = args.get('id')
+    url_suffix = f"/session/{device_id}/disconnect"
+    body = {"id": device_id, "confirm_disconnect": True}
+    res = client.prepare_request(method='POST', params={}, url_suffix=url_suffix, body=body)
+    outputs = {"Error Code": res.get('error'), "Response message": res.get('message')}
+    human_readable = tableToMarkdown('HPE Aruba Clearpass disconnect active session', outputs, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.sessions.disconnect',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
 def active_sessions_response_to_dict(response):
     return {
         'ID': response.get('id'),
@@ -406,7 +422,7 @@ def main() -> None:
             return_results(get_active_sessions_list_command(client, demisto.args()))
 
         elif demisto.command() == 'aruba-clearpass-active-session-disconnect':
-            return_results(disconnect_from_active_session_command(client, demisto.args()))
+            return_results(disconnect_active_session_command(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
