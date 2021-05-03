@@ -1,5 +1,4 @@
-Use the IPinfo.io API to get data about an IP address. This integration was integrated and tested with version xx of
-ipinfo_v2
+Use the IPinfo.io API to get data about an IP address. 
 
 ## Configure ipinfo_v2 on Cortex XSOAR
 
