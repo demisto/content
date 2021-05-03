@@ -46,13 +46,13 @@ class Client(BaseClient):
             - $filter: OData query to filter the the list on the properties:
                                                                 lastUpdateTime, createdTime, status, and assignedTo
         Args:
-            limit: how many incidents to receive, maximum value is 100
-            status: filter list to contain only incidents with the given status (Active, Resolved or Redirected)
-            assigned_to: Owner of the incident, or None if no owner is assigned.
-            timeout: The amount of time (in seconds) that a request will wait for a client to
+            limit (int): how many incidents to receive, the maximum value is 100
+            status (str): filter list to contain only incidents with the given status (Active, Resolved, or Redirected)
+            assigned_to (str): Owner of the incident, or None if no owner is assigned
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
-            from_date: get incident with creation date more recent than from_date
-            skip: how many entries to skip
+            from_date (datetime): get incident with creation date more recent than from_date
+            skip (int): how many entries to skip
 
         Returns: request results as dict:
                     { '@odata.context',
@@ -245,7 +245,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     Returns list of the latest incidents in microsoft 365 defender in readable table.
     The list can be filtered using the following arguments:
         - limit - number of incidents in the list, integer between 0 to 100.
-        - status - fetch only incidents with the given status (
+        - status - fetch only incidents with the given status.
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
@@ -260,7 +260,9 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     offset = arg_to_number(args.get('offset'))
+
     response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to, skip=offset)
+    
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
     # the table headers are the incident keys. creates dummy incident to manage a situation of empty list.
