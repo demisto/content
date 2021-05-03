@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "Course Of Action",
+    "id": "Course of Action",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -123,7 +123,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Course Of Action Details",
+                        "name": "Course of Action Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -256,7 +256,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Course Of Action Description",
+                        "name": "Course of Action Description",
                         "static": false,
                         "w": 3,
                         "x": 0,
@@ -472,7 +472,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Course Of Action Details",
+                        "name": "Course of Action Details",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -499,7 +499,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Course Of Action Description",
+                        "name": "Course of Action Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -533,7 +533,7 @@
             }
         ]
     },
-    "name": "Course Of Action",
+    "name": "Course of Action",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
