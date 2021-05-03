@@ -643,8 +643,7 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -842,6 +841,40 @@
                         "w": 2,
                         "x": 0,
                         "y": 9
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "lthdv5gwt9",
+                "name": "Similar Incidents",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 6,
+                        "hideName": true,
+                        "i": "lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "xdrsimilarincidents",
+                                "height": 106,
+                                "id": "e18d8a70-abfc-11eb-9d9c-cffd34bfbbb3",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
