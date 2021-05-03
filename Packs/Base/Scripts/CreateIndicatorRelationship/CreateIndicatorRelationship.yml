@@ -253,7 +253,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The timestamp on which the relationship was seen. If left empty the default value will be the time the relationship was created.'
+  description: 'The time on which the relationship was seen. If left empty the default value will be the time the relationship was created. Format (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
   isArray: false
   name: first_seen
   required: false
