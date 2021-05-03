@@ -25,9 +25,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
-defaultclassifier: 'null'
 description: change it
 display: HPE Aruba Clearpass
 name: HPEArubaClearpass
@@ -510,11 +507,6 @@ script:
       description: Describes the result of the disconnect operation.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
-  runonce: false
   script: '-'
   subtype: python3
   type: python

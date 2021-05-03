@@ -1,17 +1,31 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
+import HPEArubaClearpass
+from HPEArubaClearpass import *
+from HPEArubaClearpass import Client
+from freezegun import freeze_time
+import demistomock as demisto
+import pytest
+
+CLIENT_ID = "id123"
+CLIENT_SECRET = "secret123"
+CLIENT_AUTH = \
+    {
+        "access_token": "auth123",
+        "expires_in": 28800,
+        "token_type": "Bearer",
+        "scope": None
+    }
+NEW_ACCESS_TOKEN = "new123"
+
+TEST_LOGIN_LIST = \
+    [
+        ({}, "auth123"),  # no integration context, should generate new access token
+        ({"access_token": "old123", "expires_in": "2021-05-03T12:00:00Z"},  # access token valid
+         "old123"),
+        ({"access_token": "old123", "expires_in": "2021-05-03T10:00:00Z"},  # access token expired
+         "auth123"),
+    ]
 
 
 def util_load_json(path):
@@ -19,24 +33,16 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def create_client(proxy: bool = False, verify: bool = False, base_url: str = "https://example.com/api/"
+                  , client_id: str = CLIENT_ID, client_secret: str = CLIENT_SECRET):
+    return Client(proxy=proxy, verify=verify, base_url=base_url, client_id=client_id, client_secret=client_secret)
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+@pytest.mark.parametrize('context_data, expected_token', TEST_LOGIN_LIST)
+@freeze_time("2021-05-03T11:00:00Z")
+def test_login(mocker, context_data, expected_token):
+    client = create_client()
+    mocker.patch.object(HPEArubaClearpass, "get_integration_context", return_value=context_data)
+    mocker.patch.object(client, "generate_new_access_token", return_value=CLIENT_AUTH)
+    client.login()
+    assert client.access_token == expected_token
