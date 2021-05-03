@@ -273,7 +273,7 @@ args:
 comment: '[Enter a description of the script, including what function it performs
   and any important information users need to know, for example required permissions.]'
 commonfields:
-  id: Create Relationship
+  id: CreateIndicatorRelationship
   version: -1
 enabled: false
 name: CreateIndicatorRelationship
@@ -285,5 +285,5 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.9.1.15759
+dockerimage: demisto/python3:3.9.4.18682
 fromversion: 6.1.0
