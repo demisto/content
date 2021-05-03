@@ -415,7 +415,7 @@ class TestCleanPacks:
         - Ensure that task is skipped and blob form master bucket are not deleted
         """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
-        from Tests.Marketplace.marketplace_services import GCPConfig
+        from Tests.Marketplace.marketplace_constants import GCPConfig
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
@@ -469,7 +469,7 @@ class TestCleanPacks:
          - Ensure that not valid pack is deleted from index
          """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
-        from Tests.Marketplace.marketplace_services import GCPConfig
+        from Tests.Marketplace.marketplace_constants import GCPConfig
         import os
         import shutil
 

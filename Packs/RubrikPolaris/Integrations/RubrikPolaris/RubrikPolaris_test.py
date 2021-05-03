@@ -107,7 +107,7 @@ def test_fetch_incidents(mocker, requests_mock):
     current_time, response = fetch_incidents(client, 200)
     mock_response = [{
         "name": f'Rubrik Radar Anomaly - {mock_incident["objectName"]}',
-        "occurred": current_time,
+        "occurred": mock_incident["lastUpdated"],
         "rawJSON": json.dumps(mock_incident)
     }]
 

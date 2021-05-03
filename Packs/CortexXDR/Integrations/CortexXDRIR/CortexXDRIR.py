@@ -21,6 +21,7 @@ API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -367,7 +368,7 @@ class Client(BaseClient):
 
             if alias_name:
                 filters.append({
-                    'field': 'alias_name',
+                    'field': 'alias',
                     'operator': 'in',
                     'value': alias_name
                 })
@@ -772,7 +773,7 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
+    def endpoint_scan(self, url_suffix, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
                       lte_first_seen=None,
                       lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None,
                       hostname: list = None):
@@ -816,7 +817,7 @@ class Client(BaseClient):
 
         if alias:
             filters.append({
-                'field': 'alias_name',
+                'field': 'alias',
                 'operator': 'in',
                 'value': alias
             })
@@ -871,7 +872,7 @@ class Client(BaseClient):
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
             method='POST',
-            url_suffix='/endpoints/scan/',
+            url_suffix=url_suffix,
             json_data={'request_data': request_data},
             ok_codes=(200, 201),
             timeout=self.timeout
@@ -1430,7 +1431,8 @@ def get_indicators_context(incident):
         file_details = {
             'Name': alert.get('action_file_name'),
             'Path': alert.get('action_file_path'),
-            'SHA265': alert.get('action_file_sha256'),
+            'SHA265': alert.get('action_file_sha256'),  # Here for backward compatibility
+            'SHA256': alert.get('action_file_sha256'),
             'MD5': alert.get('action_file_md5'),
         }
         remove_nulls_from_dictionary(file_details)
@@ -1492,7 +1494,7 @@ def get_last_mirrored_in_time(args):
 
     else:  # handling 6.0 version
         last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
 
     return last_mirrored_in_timestamp
 
@@ -1680,9 +1682,16 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
+
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False)
+    endpoint_context_list = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        endpoint_context_list.append(endpoint_context)
+
     context = {
         f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -1694,17 +1703,77 @@ def get_endpoints_command(client, args):
     )
 
 
-def return_endpoint_standard_context(endpoints):
-    endpoints_context_list = []
-    for endpoint in endpoints:
-        endpoints_context_list.append(assign_params(**{
-            "Hostname": (endpoint['host_name'] if endpoint.get('host_name', '') else endpoint.get('endpoint_name')),
-            "ID": endpoint.get('endpoint_id'),
-            "IPAddress": endpoint.get('ip'),
-            "Domain": endpoint.get('domain'),
-            "OS": endpoint.get('os_type'),
-        }))
-    return endpoints_context_list
+def convert_os_to_standard(endpoint_os):
+    os_type = ''
+    endpoint_os = endpoint_os.lower()
+    if 'windows' in endpoint_os:
+        os_type = "Windows"
+    elif 'linux' in endpoint_os:
+        os_type = "Linux"
+    elif 'macos' in endpoint_os:
+        os_type = "Macos"
+    elif 'android' in endpoint_os:
+        os_type = "Android"
+    return os_type
+
+
+def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
+    standard_endpoints = []
+    for single_endpoint in endpoints:
+        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
+        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
+            'endpoint_name')
+        ip = single_endpoint.get('ip')
+        # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
+        # in the `endpoint` command we use the standard
+        if ip_as_string and isinstance(ip, list):
+            ip = ip[0]
+        os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
+        endpoint = Common.Endpoint(
+            id=single_endpoint.get('endpoint_id'),
+            hostname=hostname,
+            ip_address=ip,
+            os=os_type,
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_endpoint.get('mac_address'),
+            domain=single_endpoint.get('domain'),
+            vendor=INTEGRATION_NAME)
+
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
+
+
+def endpoint_command(client, args):
+    endpoint_id_list = argToList(args.get('id'))
+    endpoint_ip_list = argToList(args.get('ip'))
+    endpoint_hostname_list = argToList(args.get('hostname'))
+
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        ip_list=endpoint_ip_list,
+        hostname=endpoint_hostname_list,
+    )
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
+    command_results = []
+    if standard_endpoints:
+        for endpoint in standard_endpoints:
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+            hr = tableToMarkdown('Cortex XDR Endpoint', endpoint_context)
+
+            command_results.append(CommandResults(
+                readable_output=hr,
+                raw_response=endpoints,
+                indicator=endpoint
+            ))
+
+    else:
+        command_results.append(CommandResults(
+            readable_output="No endpoints were found",
+            raw_response=endpoints,
+        ))
+    return command_results
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -2227,35 +2296,23 @@ def get_quarantine_status_command(client, args):
 
 
 def endpoint_scan_command(client, args):
-    endpoint_id_list = args.get('endpoint_id_list')
-    dist_name = args.get('dist_name')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
     gte_first_seen = args.get('gte_first_seen')
     gte_last_seen = args.get('gte_last_seen')
     lte_first_seen = args.get('lte_first_seen')
     lte_last_seen = args.get('lte_last_seen')
-    ip_list = args.get('ip_list')
-    group_name = args.get('group_name')
-    platform = args.get('platform')
-    alias = args.get('alias')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
-    all_ = argToBoolean(args.get('all', 'false'))
 
-    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
-    err_msg = 'To scan all the endpoints run this command with the \'all\' argument as True ' \
-              'and without any other filters. This may cause performance issues.\n' \
-              'To scan some of the endpoints, please use the filter arguments.'
-    if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-                or ip_list or group_name or platform or alias or hostname:
-            raise Exception(err_msg)
-    else:
-        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
-                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
-                and not alias and not hostname:
-            raise Exception(err_msg)
+    validate_args_scan_commands(args)
 
     reply = client.endpoint_scan(
+        url_suffix='/endpoints/scan/',
         endpoint_id_list=argToList(endpoint_id_list),
         dist_name=dist_name,
         gte_first_seen=gte_first_seen,
@@ -2272,13 +2329,95 @@ def endpoint_scan_command(client, args):
 
     action_id = reply.get("action_id")
 
+    context = {
+        "actionId": action_id,
+        "aborted": False
+    }
+
     return (
         tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
         },
         reply
     )
+
+
+def endpoint_scan_abort_command(client, args):
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+
+    validate_args_scan_commands(args)
+
+    reply = client.endpoint_scan(
+        url_suffix='endpoints/abort_scan/',
+        endpoint_id_list=argToList(endpoint_id_list),
+        dist_name=dist_name,
+        gte_first_seen=gte_first_seen,
+        gte_last_seen=gte_last_seen,
+        lte_first_seen=lte_first_seen,
+        lte_last_seen=lte_last_seen,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias=alias,
+        isolate=isolate,
+        hostname=hostname
+    )
+
+    action_id = reply.get("action_id")
+
+    context = {
+        "actionId": action_id,
+        "aborted": True
+    }
+
+    return (
+        tableToMarkdown('Endpoint abort scan', {'Action Id': action_id}, ['Action Id']),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
+        },
+        reply
+    )
+
+
+def validate_args_scan_commands(args):
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
+    hostname = argToList(args.get('hostname'))
+    all_ = argToBoolean(args.get('all', 'false'))
+
+    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan/abort scan some of the endpoints, please use the filter arguments.'
+    if all_:
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
+                or ip_list or group_name or platform or alias or hostname:
+            raise Exception(err_msg)
+    else:
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+                and not alias and not hostname:
+            raise Exception(err_msg)
 
 
 def sort_by_key(list_to_sort, main_key, fallback_key):
@@ -2522,9 +2661,9 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes')
+        update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
 
 def get_update_args(delta, inc_status):
@@ -2538,10 +2677,12 @@ def get_update_args(delta, inc_status):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.delta and remote_args.incident_changed:
-            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
-                          f'incident {remote_args.remote_incident_id}')
+        if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
             update_args['incident_id'] = remote_args.remote_incident_id
@@ -2902,6 +3043,8 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
             parameters = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    else:
+        parameters = {}
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
     return CommandResults(
@@ -3150,6 +3293,9 @@ def main():
         elif demisto.command() == 'xdr-endpoint-scan':
             return_outputs(*endpoint_scan_command(client, args))
 
+        elif demisto.command() == 'xdr-endpoint-scan-abort':
+            return_outputs(*endpoint_scan_abort_command(client, args))
+
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
 
@@ -3218,6 +3364,9 @@ def main():
 
         elif demisto.command() == 'xdr-run-script-kill-process':
             return_results(run_script_kill_process_command(client, args))
+
+        elif demisto.command() == 'endpoint':
+            return_results(endpoint_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':
