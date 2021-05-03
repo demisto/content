@@ -67,7 +67,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Categorize incidents (as Active,  Resolved or Redirected).
+      description: Categorize incidents (as Active, Resolved or Redirected).
       isArray: false
       name: status
       predefined:
