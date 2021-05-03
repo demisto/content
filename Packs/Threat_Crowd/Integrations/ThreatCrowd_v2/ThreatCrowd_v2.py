@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import requests
-import traceback
 from typing import Dict, Any, List, Optional, Tuple
 
 # Disable insecure warnings
@@ -17,7 +15,7 @@ DEFAULT_RESOLUTION_LIMIT = 10
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, verify, proxy, reliability, extended_data):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability , extended_data: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
         self.extended_data = extended_data
