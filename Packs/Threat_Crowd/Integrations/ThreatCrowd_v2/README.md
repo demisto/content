@@ -3,7 +3,7 @@ This integration was integrated and tested with version v2 of TheatCrowdv2
 ## Configure ThreatCrowdv2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TheatCrowdv2.
+2. Search for ThreatCrowdv2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
