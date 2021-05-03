@@ -854,7 +854,7 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete the object.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not get the network groups.')
 
 
 def get_url_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -877,7 +877,7 @@ def get_url_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dic
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete the object.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not get the URL groups.')
 
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:

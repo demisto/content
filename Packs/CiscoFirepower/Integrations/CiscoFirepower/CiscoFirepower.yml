@@ -1833,6 +1833,28 @@ script:
       required: true
     description: Updates the ID of a group of url objects.
     name: ciscofp-update-url-groups-objects
+    outputs:
+    - contextPath: CiscoFP.URLGroups.Addresses.Type
+      description: The addresses type in the group object.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Addresses.Url
+      description: The addresses url in the group object.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Description
+      description: The group description.
+      type: string
+    - contextPath: CiscoFP.URLGroups.ID
+      description: The group ID.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Name
+      description: The group name.
+      type: string
+    - contextPath: CiscoFP.URLGroups.Objects
+      description: The group object information.
+      type: unknown
+    - contextPath: CiscoFP.URLGroups.Overridable
+      description: Boolean indicating whether objects can be overridden.
+      type: string
   dockerimage: demisto/python3:3.9.4.18682
   runonce: false
   script: ''
