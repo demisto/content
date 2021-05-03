@@ -51,11 +51,11 @@ script:
     - contextPath: iLert.Event.responseCode
       description: Response code
   - arguments:
-    - description: The API key of the alert source.
-      name: IntegrationKey
     - description: The incident key is used to reference the open incident which is
         to be accepted or resolved by this event.
       name: incidentKey
+    - description: The event summary. Will be used as the incident event reason.
+      name: summary
     description: Acknowledges an existing event in iLert
     name: ilert-acknowledge-event
     outputs:
@@ -66,11 +66,11 @@ script:
     - contextPath: iLert.Event.responseCode
       description: Response code
   - arguments:
-    - description: The API key of the alert source.
-      name: IntegrationKey
     - description: The incident key is used to reference the open incident which is
         to be accepted or resolved by this event.
       name: incidentKey
+    - description: The event summary. Will be used as the incident event reason.
+      name: summary
     description: Resolves an existing event in iLert
     name: ilert-resolve-event
     outputs:
