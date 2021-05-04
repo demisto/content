@@ -261,4 +261,3 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
 >|Timestamp|AlertId|Title|Category|Severity|ServiceSource|DetectionSource|AttackTechniques|
 >|---|---|---|---|---|---|---|---|
 >| 2021-04-25T10:11:00Z | alertId | eDiscovery search started or exported | InitialAccess | Medium | Microsoft Defender for Office 365 | Microsoft Defender for Office 365 |  |
-
