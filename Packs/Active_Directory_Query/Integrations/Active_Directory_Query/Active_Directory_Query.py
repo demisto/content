@@ -544,10 +544,11 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         )
 
         if not entries.get('flat'):
-            iam_user_profile.set_result(success=False,
-                                        error_message="No user was found",
-                                        action=IAMActions.GET_USER
-                                        )
+            error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+            iam_user_profile.set_result(action=IAMActions.GET_USER,
+                                        success=False,
+                                        error_code=error_code,
+                                        error_message=error_message)
         else:
             user_account_control = get_user_activity_by_samaccountname(default_base_dn, value)
             ad_user["userAccountControl"] = user_account_control
@@ -562,7 +563,9 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.GET_USER
                                     )
@@ -764,7 +767,13 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
+            raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
+                                   "exists in \"" + mapper_out + "\" outgoing mapper.")
+        if not ad_user.get('ou'):
+            raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
+                                   "transformer script which determines the OU of the user "
+                                   "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
+                                   "and schema type, under the \"ou\" field.")
 
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
@@ -782,18 +791,19 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                             username=ad_user.get('name'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
-                                            active=True)
+                                            active=False)  # the user should be activated with the IAMInitADUser script
 
             else:
-                iam_user_profile.set_result(success=False,
-                                            error_message="Failed to create user",
-                                            action=IAMActions.CREATE_USER
-                                            )
+                error_msg = 'Please validate your instance configuration and make sure all of the ' \
+                            'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.'
+                raise DemistoException(error_msg)
 
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.CREATE_USER,
                                     )
@@ -822,7 +832,13 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
+            raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
+                                   "exists in \"" + mapper_out + "\" outgoing mapper.")
+        if not ad_user.get('ou'):
+            raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
+                                   "transformer script which determines the OU of the user "
+                                   "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
+                                   "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
@@ -857,11 +873,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
             if fail_to_modify:
                 error_list = '\n'.join(fail_to_modify)
-                error_message = f"Fail to modify the following attributes: {error_list}"
-                iam_user_profile.set_result(success=False,
-                                            error_message=error_message,
-                                            action=IAMActions.UPDATE_USER,
-                                            )
+                error_message = f"Failed to modify the following attributes: {error_list}"
+                raise DemistoException(error_message)
 
             else:
                 active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
@@ -874,7 +887,9 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.UPDATE_USER
                                     )
@@ -1059,9 +1074,12 @@ def expire_user_password(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def set_user_password(default_base_dn):
+def set_user_password(default_base_dn, port):
     assert conn is not None
     args = demisto.args()
+
+    if port != 636:
+        raise DemistoException('Port 636 is required for this action.')
 
     # get user DN
     sam_account_name = args.get('username')
@@ -1159,7 +1177,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
 
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
+            raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
+                                   "exists in \"" + mapper_out + "\" outgoing mapper.")
 
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if not user_exists:
@@ -1174,31 +1193,34 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
             'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
         }
 
-        command_failed = False
-        modify_object(dn, modification)
+        try:
+            modify_object(dn, modification)
+        except Exception as e:
+            error_msg = 'Please validate your instance configuration and make sure all of the ' \
+                        'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.\n' \
+                        'Error is: ' + str(e)
+            raise DemistoException(error_msg)
+
         if disabled_users_group_cn:
 
             grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
             if not success:
-                command_failed = True
-                e = 'Failed to remove user from {} group'.format(disabled_users_group_cn)
-                iam_user_profile.set_result(success=False,
-                                            error_message=e,
-                                            action=IAMActions.DISABLE_USER,
-                                            )
-        if not command_failed:
-            iam_user_profile.set_result(success=True,
-                                        email=ad_user.get('email'),
-                                        username=ad_user.get('name'),
-                                        action=IAMActions.DISABLE_USER,
-                                        details=ad_user,
-                                        active=False)
+                raise DemistoException('Failed to remove user from the group "' + disabled_users_group_cn + '".')
+
+        iam_user_profile.set_result(success=True,
+                                    email=ad_user.get('email'),
+                                    username=ad_user.get('name'),
+                                    action=IAMActions.DISABLE_USER,
+                                    details=ad_user,
+                                    active=False)
 
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.DISABLE_USER
                                     )
@@ -1450,7 +1472,7 @@ def main():
             expire_user_password(DEFAULT_BASE_DN)
 
         if demisto.command() == 'ad-set-new-password':
-            set_user_password(DEFAULT_BASE_DN)
+            set_user_password(DEFAULT_BASE_DN, PORT)
 
         if demisto.command() == 'ad-unlock-account':
             unlock_account(DEFAULT_BASE_DN)

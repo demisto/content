@@ -6,6 +6,7 @@
       {
         "value": "bitcoin:1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG",
         "type": "Cryptocurrency Address",
+        "relationships": [],
         "rawJSON": {
           "id": "205658",
           "address": "1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG",

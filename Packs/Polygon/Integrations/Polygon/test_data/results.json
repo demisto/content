@@ -13,6 +13,7 @@
             }
         },
         "IndicatorTimeline": [],
+        "Relationships": [],
         "IgnoreAutoExtract": false,
         "Note": false
     },
@@ -29,6 +30,7 @@
             }
         },
         "IndicatorTimeline": [],
+        "Relationships": [],
         "IgnoreAutoExtract": false,
         "Note": false
     },
@@ -99,6 +101,7 @@
                 }
             },
             "IndicatorTimeline": [],
+            "Relationships": [],
             "IgnoreAutoExtract": false,
             "Note": false
         }
@@ -329,6 +332,7 @@
             }
         },
         "IndicatorTimeline": [],
+        "Relationships": [],
         "IgnoreAutoExtract": false,
         "Note": false
     }]

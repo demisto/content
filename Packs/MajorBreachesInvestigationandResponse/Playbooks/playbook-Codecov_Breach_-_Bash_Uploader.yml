@@ -6,6 +6,10 @@ description: |-
   - Search for the Security Notice email sent from Codecov.
   - Collect indicators to be used in your threat hunting process.
   - Query network logs to detect related activity.
+  - Search for the use of Codecov bash uploader in GitHub repositories
+  - Query Panorama to search for logs with related anti-spyware signatures
+      - Data Exfiltration Traffic Detection
+      - Malicious Modified Shell Script Detection
   Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
   More information:
@@ -30,8 +34,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -760
+          "x": 220,
+          "y": -870
         }
       }
     note: false
@@ -58,8 +62,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 370
+          "x": -710,
+          "y": 325
         }
       }
     note: false
@@ -87,7 +91,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -710,
           "y": 680
         }
       }
@@ -139,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -310
+          "x": 220,
+          "y": -420
         }
       }
     note: false
@@ -167,8 +171,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -610
+          "x": 220,
+          "y": -700
         }
       }
     note: false
@@ -195,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": -450
+          "x": 220,
+          "y": -560
         }
       }
     note: false
@@ -238,8 +242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": -140
+          "x": -710,
+          "y": -245
         }
       }
     note: false
@@ -278,8 +282,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 20
+          "x": -710,
+          "y": -55
         }
       }
     note: false
@@ -313,8 +317,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 180,
-          "y": 190
+          "x": 220,
+          "y": 140
         }
       }
     note: false
@@ -324,20 +328,27 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 54ff6e36-7560-42cd-80c1-23e80a1bf31e
+    taskid: ef392ad7-52b6-4bd7-8ecf-0169f82fdcf6
     type: playbook
     task:
-      id: 54ff6e36-7560-42cd-80c1-23e80a1bf31e
+      id: ef392ad7-52b6-4bd7-8ecf-0169f82fdcf6
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
+      description: "This is a multipurpose playbook used for hunting and threat detection.\
+        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
+        \ provided manually or from outputs by other playbooks. \nWith the received\
+        \ indicators, the playbook leverages data received by PANW products including,\
+        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
+        \ names and users related to the provided indicators.\nThe output provided\
+        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
+        \ or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       IPAddresses:
         complex:
@@ -371,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -960,
           "y": 960
         }
       }
@@ -395,7 +406,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       IPAddress:
         complex:
@@ -439,7 +450,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -480,
+          "x": -470,
           "y": 960
         }
       }
@@ -463,7 +474,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "22"
+      - "29"
     scriptarguments:
       HostFieldsToReturn: {}
       IPAddress:
@@ -514,7 +525,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": -20,
           "y": 960
         }
       }
@@ -554,12 +565,12 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: b5dc6ded-d51b-4ab1-879f-6569a930bbbf
+    taskid: 3b9ef253-5901-48dc-89c8-39decba4f79c
     type: title
     task:
-      id: b5dc6ded-d51b-4ab1-879f-6569a930bbbf
+      id: 3b9ef253-5901-48dc-89c8-39decba4f79c
       version: -1
-      name: Search in network logs
+      name: Hunt Network Logs
       type: title
       iscommand: false
       brand: ""
@@ -567,11 +578,12 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+      - "28"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -950,
+          "x": -1190,
           "y": 820
         }
       }
@@ -615,8 +627,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 510
+          "x": -710,
+          "y": 500
         }
       }
     note: false
@@ -643,8 +655,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1140
+          "x": -710,
+          "y": 1650
         }
       }
     note: false
@@ -673,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1300
+          "x": -710,
+          "y": 1800
         }
       }
     note: false
@@ -704,8 +716,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1470
+          "x": -710,
+          "y": 1970
         }
       }
     note: false
@@ -734,8 +746,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 1630
+          "x": -710,
+          "y": 2140
         }
       }
     note: false
@@ -766,8 +778,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -220,
-          "y": 1800
+          "x": -50,
+          "y": 2320
         }
       }
     note: false
@@ -792,7 +804,173 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 2010
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 85040bc3-ccf8-4ba8-85e4-232a4883733b
+    type: playbook
+    task:
+      id: 85040bc3-ccf8-4ba8-85e4-232a4883733b
+      version: -1
+      name: Panorama Query Logs
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log_type:
+        simple: threat
+      port-dst: {}
+      query:
+        simple: (threatid eq 86353) or (threatid eq 86355)
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c98e4231-26b8-449f-8945-8e196fc386d9
+    type: title
+    task:
+      id: c98e4231-26b8-449f-8945-8e196fc386d9
+      version: -1
+      name: Scope affected repositories
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: dd1a3428-8653-4ff2-8a93-79806337b6ae
+    type: regular
+    task:
+      id: dd1a3428-8653-4ff2-8a93-79806337b6ae
+      version: -1
+      name: Search Codecov in Git repository
+      description: Searches for code in repositories that match a given query.
+      script: '|||GitHub-search-code'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      limit: {}
+      page_number: {}
+      page_size: {}
+      query:
+        complex:
+          root: inputs.Github_Code_Search_query
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 3e428184-fcd8-4c78-830d-01779ad8f0b5
+    type: condition
+    task:
+      id: 3e428184-fcd8-4c78-830d-01779ad8f0b5
+      version: -1
+      name: Is GitHub integration enabled?
+      description: Checks if GitHub integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GitHub
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1310
         }
       }
     note: false
@@ -803,21 +981,23 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "12_13_#default#": 0.23,
+      "12_13_#default#": 0.2,
       "12_1_yes": 0.46,
       "13_1_Yes": 0.24,
       "13_27_#default#": 0.1,
       "25_26_Yes": 0.43,
       "25_27_#default#": 0.2,
-      "6_11_yes": 0.3,
-      "6_13_#default#": 0.21
+      "31_22_#default#": 0.56,
+      "31_30_yes": 0.54,
+      "6_11_yes": 0.17,
+      "6_13_#default#": 0.28
     },
     "paper": {
       "dimensions": {
-        "height": 2835,
-        "width": 1550,
-        "x": -950,
-        "y": -760
+        "height": 3475,
+        "width": 2030,
+        "x": -1430,
+        "y": -870
       }
     }
   }
@@ -845,6 +1025,12 @@ inputs:
     simple: "50"
   required: false
   description: The limit of results to return from the search
+  playbookInputQuery:
+- key: Github_Code_Search_query
+  value:
+    simple: https://codecov.io/bash+in:file
+  required: false
+  description: Github query to search for Codecov bash uploader use.
   playbookInputQuery:
 outputs: []
 tests:

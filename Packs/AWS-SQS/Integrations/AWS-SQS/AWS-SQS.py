@@ -1,13 +1,25 @@
 import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from botocore.config import Config
 
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
+AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
+AWS_roleArn = demisto.params().get('roleArn')
+AWS_roleSessionName = demisto.params().get('roleSessionName')
+AWS_roleSessionDuration = demisto.params().get('sessionDuration')
 AWS_rolePolicy = None
-AWS_QUEUEURL = demisto.params()['queueUrl']
+AWS_QUEUEURL = demisto.params().get('queueUrl')
+AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
+AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
+VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+config = Config(
+    connect_timeout=1,
+    retries=dict(
+        max_attempts=5
+    ),
+    proxies=proxies
+)
 
 
 def aws_session(service='sqs', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
@@ -33,30 +45,69 @@ def aws_session(service='sqs', region=None, roleArn=None, roleSessionName=None, 
     elif AWS_rolePolicy is not None:
         kwargs.update({'Policy': AWS_rolePolicy})
 
-    if kwargs:
-        sts_client = boto3.client('sts')
+    if kwargs and not AWS_ACCESS_KEY_ID:  # login with Role ARN
+        if not AWS_ACCESS_KEY_ID:
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_response = sts_client.assume_role(**kwargs)
+            if region is not None:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+            else:
+                client = boto3.client(
+                    service_name=service,
+                    region_name=AWS_DEFAULT_REGION,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=VERIFY_CERTIFICATE,
+                    config=config
+                )
+    elif AWS_ACCESS_KEY_ID and AWS_roleArn:  # login with Access Key ID and Role ARN
+        sts_client = boto3.client(
+            service_name='sts',
+            aws_access_key_id=AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+        kwargs.update({
+            'RoleArn': AWS_roleArn,
+            'RoleSessionName': AWS_roleSessionName,
+        })
         sts_response = sts_client.assume_role(**kwargs)
+        client = boto3.client(
+            service_name=service,
+            region_name=AWS_DEFAULT_REGION,
+            aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+            aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+            aws_session_token=sts_response['Credentials']['SessionToken'],
+            verify=VERIFY_CERTIFICATE,
+            config=config
+        )
+    else:  # login with access key id, and if access key is None than permissions pulled from the service metadata
         if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
+            client = boto3.client(service_name=service,
+                                  region_name=region,
+                                  aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                  aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                                  verify=VERIFY_CERTIFICATE,
+                                  config=config
+                                  )
         else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service, region_name=region)
-        else:
-            client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
+            client = boto3.client(service_name=service,
+                                  region_name=AWS_DEFAULT_REGION,
+                                  aws_access_key_id=AWS_ACCESS_KEY_ID,
+                                  aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                                  verify=VERIFY_CERTIFICATE,
+                                  config=config
+                                  )
 
     return client
 

@@ -887,11 +887,15 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
-| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
-| Endpoint.IPAddress | String | The IP address of the endpoint. | 
-| Endpoint.Domain | String | The domain of the endpoint. | 
-| Endpoint.OS | String | Endpoint OS. | 
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
 
 ##### Command Example
 ```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
@@ -907,7 +911,10 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
             "IPAddress": [
                 "172.31.11.11"
             ],
-            "OS": "AGENT_OS_WINDOWS"
+            "OS": "Windows",
+            "Status" : "Online",
+            "IsIsolated" : "No",
+            "Vendor": "Cortex XDR - IR"
         },
         {
             "Domain": "WORKGROUP",
@@ -916,7 +923,10 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
             "IPAddress": [
                 "2.2.2.2"
             ],
-            "OS": "AGENT_OS_WINDOWS"
+            "OS": "Windows",
+            "Status" : "Online",
+            "IsIsolated" : "No",
+            "Vendor": "Cortex XDR - IR"
         }
     ],
     "PaloAltoNetworksXDR.Endpoint": [
@@ -2626,4 +2636,53 @@ Cancel the scan of selected endpoints. A scan can only be aborted if the selecte
 >|---|
 >| 4227 |
 
+
+#### Base Command
+
+`endpoint`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Endpoint.Hostname | String | The endpoint's hostname. | 
+| Endpoint.OS | String | The endpoint's operation system. | 
+| Endpoint.IPAddress | String | The endpoint's IP address. | 
+| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Status | String | The endpoint's status. | 
+| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
+| Endpoint.MACAddress | String | The endpoint's MAC address. | 
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+
+#### Command Example
+```!endpoint id=15dbb9d5fe9f61eb46e829d986```
+
+#### Context Example
+```json
+{
+  "Endpoint":
+    {
+      "Hostname": "Hostname",
+      "ID": "15dbb9d5fe9f61eb46e829d986",
+      "IPAddress": "1.1.1.1",
+      "OS": "Windows",
+      "Status": "Online",
+      "Domain": "WORK",
+      "IsIsolated" : "No",
+      "Vendor": "Cortex XDR - IR"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Endpoints
+>|ID|IP|OS|Hostname|Status|Domain|IsIsolated|Vendor|
+>|---|---|---|---|---|---|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Hostname | Online | WORK | No | Cortex XDR - IR |\n"
 

@@ -1,0 +1,20 @@
+[
+    {
+        "closed": false,
+        "id": "6031cc2b75d8d78a5de7e3a8",
+        "idBoard": "602f2f91cc8a4e23e393556a",
+        "name": "XSOAR Created List",
+        "pos": 65535,
+        "softLimit": null,
+        "subscribed": false
+    },
+    {
+        "closed": false,
+        "id": "603c6dcfe6f2ef24e161d31f",
+        "idBoard": "602f2f91cc8a4e23e393556a",
+        "name": "Fetch List",
+        "pos": 131071,
+        "softLimit": null,
+        "subscribed": false
+    }
+]

@@ -30,6 +30,8 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
   required: false
   type: 15
 - display: Role Session Duration
@@ -3532,7 +3534,7 @@ script:
         modifying the subnet associations for a firewall that is in use. When you
         create a firewall, the operation initializes this setting to TRUE.
       type: Unknown
-  dockerimage: demisto/boto3py3:1.0.0.14548
+  dockerimage: demisto/boto3py3:1.0.0.19032
   feed: false
   isfetch: false
   longRunning: false
