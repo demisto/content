@@ -169,6 +169,27 @@ outputs:
 - contextPath: Relationships.ID
   description: The ID of the relationship.
   type: string
+- contextPath: Relationships.Relatability
+  description: The Relatability of the relationship.
+  type: string
+- contextPath: Relationships.Brand
+  description: The Brand of the relationship.
+  type: string
+- contextPath: Relationships.Revoked
+  description: True if the relationship is revoked.
+  type: string
+- contextPath: Relationships.FirstSeenBySource
+  description: The first seen time by source of the relationship.
+  type: string
+- contextPath: Relationships.LastSeenBySource
+  description: The last seen time by sourch of the relationship.
+  type: string
+- contextPath: Relationships.Description
+  description: The Description of the relationship.
+  type: string
+- contextPath: Relationships.Type
+  description: The Type of the relationship.
+  type: string
 script: '-'
 system: false
 tags:
