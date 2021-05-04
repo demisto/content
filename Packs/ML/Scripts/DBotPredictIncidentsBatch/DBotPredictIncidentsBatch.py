@@ -71,8 +71,6 @@ def main():
             'emailBody': email_body_list,
             'emailBodyHTML': email_html_list,
             'modelName': model_name}
-    demisto.results('got to prediction')
-
     res = demisto.executeCommand("DBotPredictPhishingWords", args)
     if is_error(res):
         return_error(get_error(res))
