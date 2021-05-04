@@ -4,28 +4,28 @@ from CommonServerPython import *
 import demistomock as demisto
 
 
-def test_module(params):
-    params_public_key = params.get('public_key')
-    params_private_key = params.get('private_key')
-
-    if any([params_public_key, params_private_key]):
-        return 'ok'
-
+def test_module():
     try:
         get_public_key()
+        get_private_key()
     except Exception:
-        return_error('You can either enter public and/or private key in the instance configuration or run the '
-                     '"encryption-create-keys" to create the keys for the instance.')
+        raise DemistoException('You can either enter public and/or private key in the instance configuration or run the '
+                               '"encryption-create-keys" to create the keys for the instance.')
 
     return 'ok'
 
 
 def get_public_key() -> rsa.PublicKey:
+    """Gets the public key from the instance configuration. If none was provided it takes it from the integration context.
+
+    Returns:
+        rsa.PublicKey. The public key to be used with the integration.
+    """
     params = demisto.params()
     params_public_key = params.get('public_key')
 
     if params_public_key:
-        return params_public_key
+        return rsa.PublicKey.load_pkcs1(params_public_key)
 
     integration_context = get_integration_context()
     public_key = integration_context.get('public_key')
@@ -39,11 +39,16 @@ def get_public_key() -> rsa.PublicKey:
 
 
 def get_private_key() -> rsa.PrivateKey:
+    """Gets the private key from the instance configuration. If none was provided it takes it from the integration context.
+
+    Returns:
+        rsa.PrivateKey. The private key to be used with the integration.
+    """
     params = demisto.params()
     params_private_key = params.get('private_key')
 
     if params_private_key:
-        return params_private_key
+        return rsa.PrivateKey.load_pkcs1(params_private_key)
 
     integration_context = get_integration_context()
     private_key = integration_context.get('private_key')
@@ -57,6 +62,19 @@ def get_private_key() -> rsa.PrivateKey:
 
 
 def create_keys(params, args):
+    """Creates new private and public keys that will be saved to the integration context.
+
+    Args:
+        params:
+            - public_key (str): The public key provided in the instance configuration. (Optional)
+            - private_key (str): The private key provided in the instance configuration. (Optional)
+        args:
+            - override_keys (bool): Whether to override the existing keys or not.
+
+    Note:
+        - This function will fail if any of the keys are already set in the instance configuration,
+        or provided in the integration context and the "override_keys" argument is not set to "True".
+    """
     params_public_key = params.get('public_key')
     params_private_key = params.get('private_key')
 
@@ -87,6 +105,15 @@ def create_keys(params, args):
 
 
 def encrypt_text(args) -> str:
+    """Encrypts text into base64 string.
+
+    Args:
+        args:
+            - text_to_encrypt (str): The string to encrypt.
+
+    Returns:
+        str. The encrypted base64 string.
+    """
     text_to_encrypt = args.get('text_to_encrypt').encode('utf-8')
     public_key = get_public_key()
 
@@ -101,6 +128,15 @@ def encrypt_text(args) -> str:
 
 
 def decrypt_text(args) -> str:
+    """Decrypts a base64 text.
+
+    Args:
+        args:
+            - base64_to_decrypt (str): The base64 string to decrypt.
+
+    Returns:
+        str. The decrypted text.
+    """
     base64_to_decrypt = args.get('base64_to_decrypt')
     private_key = get_private_key()
 
@@ -116,6 +152,12 @@ def decrypt_text(args) -> str:
 
 
 def encrypt_file(args) -> None:
+    """Encrypts a file and creates a war-room file entry with the encrypted content.
+
+    Args:
+        args:
+            - entry_id (str): The entry ID of the file to encrypt.
+    """
     entry_id = args.get('entry_id')
 
     try:
@@ -136,6 +178,12 @@ def encrypt_file(args) -> None:
 
 
 def decrypt_file(args) -> None:
+    """Decrypts a file and creates a war-room file entry with the decrypted content.
+
+    Args:
+        args:
+            - entry_id (str): The entry ID of the file to decrypt.
+    """
     entry_id = args.get('entry_id')
 
     try:
@@ -171,7 +219,7 @@ def main() -> None:
 
     try:
         if command == 'test-module':
-            test_module(params)
+            test_module()
 
         if command == 'encryption-create-keys':
             create_keys(params, args)
@@ -185,7 +233,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
