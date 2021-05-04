@@ -507,5 +507,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- HPEArubaClearpass_TestPlaybook
 fromversion: 6.0.0
