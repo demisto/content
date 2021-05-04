@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Microsoft365Defender
+  id: Microsoft 365 Defender
   version: -1
 configuration:
 - additionalinfo: The API Key to use for connection
@@ -50,7 +50,7 @@ description: Microsoft 365 Defender is a unified pre- and post-breach enterprise
   across endpoints, identities, email, and applications to provide integrated protection
   against sophisticated attacks.
 display: Microsoft 365 Defender
-name: Microsoft365Defender
+name: Microsoft 365 Defender
 script:
   commands:
   - deprecated: false

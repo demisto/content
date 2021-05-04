@@ -3,7 +3,7 @@
     "color": "#F8C89A",
     "days": 0,
     "daysR": 0,
-    "default": true,
+    "default": false,
     "detached": false,
     "disabled": false,
     "extractSettings": {
