@@ -49,7 +49,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest avaialble report
+    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
     execution: false
     name: intezer-get-latest-report
     outputs:
