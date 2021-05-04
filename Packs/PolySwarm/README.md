@@ -2,7 +2,7 @@ PolySwarm - Real-time threat intelligence from a crowdsourced network of securit
 
 ## Detailed Description
 
-PolySwarm is a crowdsourced malware threat intelligence and scanning platform. Our Cortex XSOAR integration allows you to use PolySwarm's dataset over millions of malware samples to enrich your existing indicators.
+PolySwarm is a crowdsourced malware threat intelligence and scanning platform. Our Cortex XSOAR integration allows you to use PolySwarm's dataset over millions of malware samples to enrich your existing indicators. This integration is updated and ready for PolySwarm API version 2.
 
 ##### What does this pack do?
 - Submit a File, URL, IP or Domain, and get enriched threat intelligence information about the artifact.
