@@ -159,39 +159,90 @@ REPORTS_DATA = [
     }
 ]
 
+CAMPAIGN_RESPONSE = [{
+    "type": "campaign",
+    "id": "campaign--f69de074-6abd-45a1-909f-51ef8fce808a",
+    "created": "2020-04-24T13:40:41.386Z",
+    "modified": "2020-08-03T14:55:56.362Z",
+    "name": "Campaign 1 - [Endor] Maze Ransomware",
+    "description": "Since the beginning of the calendar year",
+    "first_seen": "2020-04-01T00:00:00.000Z",
+    "last_seen": "2020-04-28T15:48:29.713Z"
+}]
+
+CAMPAIGN_INDICATOR = [{'fields': {'description': 'Since the beginning of the calendar year',
+                                  'firstseenbysource': '2020-04-24T13:40:41.386Z',
+                                  'modified': '2020-08-03T14:55:56.362Z',
+                                  'reportedby': 'Unit42',
+                                  'stixid': 'campaign--f69de074-6abd-45a1-909f-51ef8fce808a',
+                                  'tags': []},
+                       'rawJSON': {'created': '2020-04-24T13:40:41.386Z',
+                                   'description': 'Since the beginning of the calendar year',
+                                   'first_seen': '2020-04-01T00:00:00.000Z',
+                                   'id': 'campaign--f69de074-6abd-45a1-909f-51ef8fce808a',
+                                   'last_seen': '2020-04-28T15:48:29.713Z',
+                                   'modified': '2020-08-03T14:55:56.362Z',
+                                   'name': 'Campaign 1 - [Endor] Maze Ransomware',
+                                   'type': 'campaign'},
+                       'score': 3,
+                       'type': 'Campaign',
+                       'value': 'Campaign 1 - [Endor] Maze Ransomware'}]
+
 REPORTS_INDICATORS = [
-    [{'fields': {'published': '1994-08-12T11:00:00.000Z',
-                 'reportedby': 'Unit42',
-                 'stixdescription': 'A description of the report',
-                 'stixid': 'report--a',
-                 'tags': ['intrusion-set']},
-      'rawJSON': {
-          'unit42_created_date': '1993-06-17T11:00:00.000Z',
-          'unit42_description': 'A description of the report',
-          'unit42_id': 'report--a',
-          'unit42_labels': ['intrusion-set'],
-          'unit42_modified_date': '1993-06-17T11:00:00.000Z',
-          'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
-          'unit42_published': '1994-08-12T11:00:00.000Z'},
-      'type': 'STIX Report',
-      'value': 'Main Report'}]
-    ,
-    [{'fields': {'published': '1994-08-12T11:00:00.000Z',
-                 'reportedby': 'Unit42',
-                 'stixdescription': 'A description of the report',
-                 'stixid': 'report--a',
-                 'tags': ['intrusion-set'],
-                 'trafficlightprotocol': 'AMBER'},
-      'rawJSON': {'unit42_created_date': '1993-06-17T11:00:00.000Z',
-                  'unit42_description': 'A description of the report',
-                  'unit42_id': 'report--a',
-                  'unit42_labels': ['intrusion-set'],
-                  'unit42_modified_date': '1993-06-17T11:00:00.000Z',
-                  'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
-                  'unit42_published': '1994-08-12T11:00:00.000Z'},
-      'type': 'STIX Report',
-      'value': 'Main Report'}]
+    {'fields': {'description': 'A description of the report',
+                'published': '1994-08-12T11:00:00.000Z',
+                'reportedby': 'Unit42',
+                'stixid': 'report--a',
+                'tags': ['intrusion-set']},
+     'rawJSON': {'unit42_created_date': '1993-06-17T11:00:00.000Z',
+                 'unit42_description': 'A description of the report',
+                 'unit42_id': 'report--a',
+                 'unit42_labels': ['intrusion-set'],
+                 'unit42_modified_date': '1993-06-17T11:00:00.000Z',
+                 'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
+                 'unit42_published': '1994-08-12T11:00:00.000Z'},
+     'type': 'STIX Report',
+     'value': '[Unit42 ATOM] Main Report'},
+    {'fields': {'description': 'A description of the report',
+                'published': '1994-08-12T11:00:00.000Z',
+                'reportedby': 'Unit42',
+                'stixid': 'report--ab',
+                'tags': ['campaign']},
+     'rawJSON': {'unit42_created_date': '1993-06-17T11:00:00.000Z',
+                 'unit42_description': 'A description of the report',
+                 'unit42_id': 'report--ab',
+                 'unit42_labels': ['campaign'],
+                 'unit42_modified_date': '1993-06-17T11:00:00.000Z',
+                 'unit42_object_refs': ['attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
+                                        'campaign--95c0884b-71e7-40fd-9307-626634425a93',
+                                        'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59',
+                                        'identity--c6f27733-7387-4685-946e-3159d72ba15f',
+                                        'indicator--13a5365a-894f-47a3-9ce4-6cf85718419f',
+                                        'indicator--f2eb1d6c-df89-49e2-97f8-5c58706e9519',
+                                        'intrusion-set--98e7093d-a86a-44b5-b7b3-d89ca457ec78',
+                                        'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9',
+                                        'relationship--ff0a724d-2a3d-4ac1-9c7f-6340bded0d6f'],
+                 'unit42_published': '1994-08-12T11:00:00.000Z'},
+     'type': 'STIX Report',
+     'value': '[Unit42 ATOM] Sub Report'}
 ]
+
+INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
+                                'indicatoridentification': 'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be',
+                                'modified': '2020-05-12T13:02:30.000000Z',
+                                'reportedby': 'Unit42',
+                                'tags': ['malicious-activity']},
+                     'rawJSON': {'created': '2019-07-30T09:29:07.724Z',
+                                 'id': 'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be',
+                                 'labels': ['malicious-activity'],
+                                 'modified': '2020-05-12T13:02:30.000000Z',
+                                 'name': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839',
+                                 'pattern': "[file:hashes.'SHA-256' = "
+                                            "'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839']",
+                                 'type': 'indicator',
+                                 'valid_from': '2019-07-30T09:29:07.724Z'},
+                     'type': 'File',
+                     'value': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839'}
 
 MATCHED_RELATIONSHIPS = {
     'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {
@@ -221,3 +272,14 @@ ID_TO_OBJECT = {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {'extern
                 'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': {'name': 'Deploy XSOAR Playbook',
                                                                            'x_panw_coa_bp_description': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
                                                                            'x_panw_coa_bp_title': 'Deploy XSOAR Playbook'}}
+
+PUBLICATIONS = [{'Link': 'example.com', 'Title': 'Ballenthin'},
+                {'Link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
+                 'Title': 'Microsoft. (n.d.). Windows Management Instrumentation. Retrieved '
+                          'April 27, 2016.'},
+                {'Link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                 'Title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, '
+                          '2016.'},
+                {'Link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
+                 'Title': 'Wikipedia. (2016, June 12). Server Message Block. Retrieved June '
+                          '12, 2016.'}]
