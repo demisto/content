@@ -1,7 +1,6 @@
 Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection,
 prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated
-protection against sophisticated attacks. This integration was integrated and tested with version xx of
-Microsoft365Defender
+protection against sophisticated attacks.
 
 ## Configure Microsoft365Defender on Cortex XSOAR
 
