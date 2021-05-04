@@ -74,7 +74,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Categorize incidents (as Active,  Resolved or Redirected).
+      description: Categorize incidents (as Active, Resolved or Redirected).
       isArray: false
       name: status
       predefined:
@@ -84,7 +84,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Owner of the incident.\t"
+      description: Owner of the incident.
       isArray: false
       name: assigned_to
       required: false
@@ -149,7 +149,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Categorize incidents (as Active,  Resolved or Redirected).
+      description: Categorize incidents (as Active, Resolved or Redirected).
       isArray: false
       name: status
       predefined:
@@ -159,7 +159,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Owner of the incident.\t"
+      description: Owner of the incident.
       isArray: false
       name: assigned_to
       required: false
