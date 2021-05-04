@@ -110,6 +110,8 @@ def validate_arguments(args: dict) -> Dict[str, str]:
         raise Exception("entity_a is a list, Please insert a single entity_a to create the relationship")
     if len(argToList(args.get('entity_b_type'))) > 1:
         raise Exception("entity_b_type is a list, Please insert a single type to create the relationship")
+    if len(argToList(args.get('entity_a_type'))) > 1:
+        raise Exception("entity_a_type is a list, Please insert a single type to create the relationship")
     if args.get('entity_b') and args.get('entity_b_type') and args.get('entity_b_query'):
         raise Exception("entity_b_query can not be used with entity_b and/or entity_b_type")
     if not args.get('entity_b_query') and not args.get('entity_b'):
@@ -169,7 +171,7 @@ def create_relationships(args: dict) -> Tuple[List[EntityRelation], str]:
     if len(relationships) == 1:
         human_readable = f"Relationship for {args.get('entity_a')} was created successfully."
     elif len(relationships) > 1:
-        human_readable = f"Relationships for {args.get('entity_a')} were created successfully."
+        human_readable = f"{str(len(relationships))} Relationships for {args.get('entity_a')} were created successfully."
     else:
         human_readable = f"Relationships were not created for {args.get('entity_a')}."
     return relationships, human_readable
