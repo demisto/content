@@ -91,10 +91,12 @@ class NetscoutClient(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def http_request(self, method: str, url_suffix: Optional[str] = None, params: Optional[dict] = None,
-                     json_data: Optional[dict] = None, return_empty_response: Optional[bool] = None):
+                     json_data: Optional[dict] = None, return_empty_response: Optional[bool] = None,
+                     status_list_to_retry: list = None):
 
         return super()._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                     error_handler=self.error_handler, return_empty_response=return_empty_response)
+                                     error_handler=self.error_handler, return_empty_response=return_empty_response,
+                                     status_list_to_retry=status_list_to_retry)
 
     @staticmethod
     def error_handler(res: requests.Response):
@@ -148,7 +150,7 @@ class NetscoutClient(BaseClient):
         params_dict.update(time_attributes_dict)
         data_attribute_filter = self.build_data_attribute_filter(params_dict)
         page_size = 1
-        results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter)
+        results = self.list_alerts(page_size=page_size, search_filter=data_attribute_filter, status_list_to_retry=[500])
         last_page_link = results.get('links', {}).get('last')
         if last_page_link:
             last_page_number_matcher = re.match(r'.*&page=(\d+)', last_page_link)
@@ -273,7 +275,8 @@ class NetscoutClient(BaseClient):
                 f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
                 f'search_filter={data_attribute_filter}')
 
-            results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter)
+            results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter,
+                                       status_list_to_retry=[500])
             all_alerts = results.get('data')
             short_alert_list = all_alerts[-1 * self.max_fetch:]
             if short_alert_list:
@@ -322,10 +325,11 @@ class NetscoutClient(BaseClient):
         return incidents, new_last_start_time
 
     def list_alerts(self, page: Optional[int] = None, page_size: Optional[int] = None,
-                    search_filter: Optional[str] = None) -> dict:
+                    search_filter: Optional[str] = None, status_list_to_retry: list = None) -> dict:
         return self.http_request(
             method='GET',
             url_suffix='alerts',
+            status_list_to_retry=status_list_to_retry,
             params=assign_params(page=page, perPage=page_size, filter=search_filter)
         )
 
