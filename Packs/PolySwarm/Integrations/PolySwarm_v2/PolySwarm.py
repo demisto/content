@@ -1,7 +1,7 @@
+''' IMPORTS '''
 import demistomock as demisto
 from CommonServerPython import *
 
-''' IMPORTS '''
 from polyswarm_api.api import PolyswarmAPI
 
 import socket
