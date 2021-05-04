@@ -199,3 +199,48 @@ def test_delete_attribute_command(mocker):
     results = delete_attribute_command(client, args)
     human_readable = f"HPE Aruba Clearpass attribute with ID: {args.get('attribute_id')} deleted successfully."
     assert results.readable_output == human_readable
+
+
+def test_get_active_sessions_list_command(mocker):
+    """
+    Given:
+    - This command has no mandatory args.
+
+    When:
+    - Calling that command in order to get list of active sessions.
+
+    Then:
+    - Ensures that command outputs are valid.
+    """
+    client = create_client()
+    mock_sessions_response = util_load_json("test_data/active_sessions_list_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
+    results = get_active_sessions_list_command(client, {})
+    assert results.outputs_prefix == "HPEArubaClearpass.sessions.list"
+    assert results.outputs_key_field == "id"
+    assert results.outputs[0]['ID'] == 1
+    assert results.outputs[0]['Device_IP'] == "1.2.3.4"
+    assert results.outputs[0]['Device_mac_address'] == "001234567891"
+    assert results.outputs[0]['State'] == "active"
+    assert results.outputs[0]['Visitor_phone'] == "+972512345678"
+
+
+def test_disconnect_active_session_command(mocker):
+    """
+    Given:
+    - Active session id to be disconnected.
+
+    When:
+    - Calling that command in order to disconnect an active session.
+
+    Then:
+    - Ensures that the attribute session disconnected successfully.
+    """
+    client = create_client()
+    mock_sessions_response = util_load_json("test_data/disconnect_active_session_response.json")
+    mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
+    results = disconnect_active_session_command(client, {})
+    assert results.outputs_prefix == "HPEArubaClearpass.sessions.disconnect"
+    assert results.outputs_key_field == "id"
+    assert results.outputs['Error_code'] == 0
+    assert results.outputs['Response_message'] == "Success"

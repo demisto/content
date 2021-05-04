@@ -142,7 +142,8 @@ def parse_items_response(response: dict, parsing_function):  # type:ignore
 
         Return:
             human_readable (list): List of dictionaries. Each dict represents a parsed item.
-            items_list (list): List of all items from the response, going to be set as outputs (context data).
+            items_list (list): List (of dictionaries) of all items from the response,
+            going to be set as outputs (context data).
     """
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
@@ -368,7 +369,8 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     params = {"filter": json.dumps(session_filter)}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='session')
-    readable_output, outputs = parse_items_response(res, active_sessions_response_to_dict)
+    readable_output, all_active_sessions_list = parse_items_response(res, active_sessions_response_to_dict)
+    outputs = [active_sessions_response_to_dict(item) for item in all_active_sessions_list]
     human_readable = tableToMarkdown('HPE Aruba Clearpass Active Sessions', readable_output, removeNull=True)
 
     return CommandResults(
