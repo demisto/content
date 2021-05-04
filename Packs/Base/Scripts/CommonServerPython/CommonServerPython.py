@@ -6971,8 +6971,14 @@ class IndicatorsSearcher:
         :rtype: ``dict``
         """
         if self._can_use_search_after:
-            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
-                                           searchAfter=self._search_after_param)
+            if self._search_after_param:
+                # if search_after_param exists use it for paging, else use the page number
+                res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
+                                               searchAfter=self._search_after_param)
+            else:
+                res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size,
+                                               page=self._page, value=value)
+
             self._search_after_param = res[self._search_after_title]
 
             if res[self._search_after_title] is None:
