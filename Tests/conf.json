@@ -253,6 +253,12 @@
             "instance_names": "JSON Feed_auto_detect"
         },
         {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed_post"
+        },
+        {
             "integrations": "Google Cloud Functions",
             "playbookID": "test playbook - Google Cloud Functions",
             "fromversion": "5.0.0"
@@ -1257,10 +1263,6 @@
         },
         {
             "playbookID": "Test IP Indicator Fields",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Dedup - Generic v2 - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -3362,7 +3364,12 @@
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
-        "PAN-OS EDL Setup v3 Test": "Issue 35386"
+        "PAN-OS EDL Setup v3 Test": "Issue 35386",
+        "Google-Vault-Generic-Test": "Issue 24347",
+        "FireEyeNX-Test": "Issue 33216",
+        "GmailTest": "Issue 27057",
+        "Gmail Single User - Test": "Issue 27361",
+        "Microsoft Teams Management - Test": "Issue 33410"
     },
     "skipped_integrations": {
         
@@ -3656,6 +3663,9 @@
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 40,
                 "memory_threshold": 200
+            },
+            "demisto/boto3": {
+                "memory_threshold": 90
             }
         }
     }
