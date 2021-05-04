@@ -114,29 +114,60 @@ RELATIONSHIP_DATA = [
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce",
      "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"},
-    {"created": "2019-05-21T18:21:23.550Z", "id": "intrusion-set--eeef6603-d891-476a-a600-0096b6fe072f",
-     "modified": "2020-05-12T13:02:30.000000Z", "name": "Emissary Panda", "type": "intrusion-set"},
     {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
      "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
      "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
-     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"},
-    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
-     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
-     "source_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be",
-     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335b", "type": "relationship"},
-    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a8",
-     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
-     "source_ref": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
-     "target_ref": "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be", "type": "relationship"},
-    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a7",
-     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
-     "source_ref": "malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9",
-     "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"},
-    {"created": "2019-10-11T18:43:46.039Z", "id": "relationship--001323c2-fc4f-4d4a-914c-2d556fc585a7",
-     "modified": "2020-05-12T13:02:30.000000Z", "relationship_type": "indicates",
-     "source_ref": "course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59",
-     "target_ref": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055", "type": "relationship"}
+     "target_ref": "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a", "type": "relationship"}
 ]
+
+RELATIONSHIP_OBJECTS = [{'entityA': 'http://91.218.114.31/yyxtqylcto',
+                         'entityAFamily': 'Indicator',
+                         'entityAType': 'URL',
+                         'entityB': 'T1564.004: NTFS File Attributes',
+                         'entityBFamily': 'Indicator',
+                         'entityBType': 'Attack Pattern',
+                         'fields': {'firstseenbysource': '2019-10-11T18:43:46.039Z',
+                                    'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
+                         'name': 'indicated-by',
+                         'reverseName': 'indicator-of',
+                         'type': 'IndicatorToIndicator'},
+                        {'entityA': '92.63.32.52',
+                         'entityAFamily': 'Indicator',
+                         'entityAType': 'IP',
+                         'entityB': 'Maze',
+                         'entityBFamily': 'Indicator',
+                         'entityBType': 'Malware',
+                         'fields': {'firstseenbysource': '2019-10-11T18:43:46.039Z',
+                                    'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
+                         'name': 'indicated-by',
+                         'reverseName': 'indicator-of',
+                         'type': 'IndicatorToIndicator'}]
+
+ID_TO_OBJ_RELATIONS = {
+    "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce": {
+        "type": "indicator",
+        "id": "indicator--01e860b3-67a6-4bf7-a885-c296c4fa5243",
+        "name": "http://91.218.114.31/yyxtqylcto",
+        "pattern": "[url:value = 'http://91.218.114.31/yyxtqylcto']",
+    },
+    "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055": {
+        "type": "attack-pattern",
+        "id": "attack-pattern--f2857333-11d4-45bf-b064-2c28d8525be5",
+        "name": "T1564.004: NTFS File Attributes",
+    },
+    "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be": {
+        "type": "indicator",
+        "id": "indicator--003b9bb9-947c-458f-94ef-407345018e1a",
+        "name": "92.63.32.52",
+        "pattern": "[ipv4-addr:value = '92.63.32.52']"
+    },
+    "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a": {
+        "type": "malware",
+        "id": "malware--53e619f7-936e-4f40-b518-9d3000102d44",
+        "name": "Maze",
+    }
+
+}
 
 REPORTS_DATA = [
     {"type": "report", "id": "report--a", "created": "1993-06-17T11:00:00.000Z", "modified": "1993-06-17T11:00:00.000Z",
@@ -244,34 +275,44 @@ INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
                      'type': 'File',
                      'value': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839'}
 
-MATCHED_RELATIONSHIPS = {
-    'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {
-        'indicator--010bb9ad-5686-485d-97e5-93c2187e56ce',
-        'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9',
-        'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59'},
-    'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be': {
-        'malware--00811855-d9b9-420d-9bd6-8fd63fbd335a',
-        'malware--00811855-d9b9-420d-9bd6-8fd63fbd335b',
-        'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9'},
-    'indicator--010bb9ad-5686-485d-97e5-93c2187e56ce': {
-        'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'},
-    'malware--00811855-d9b9-420d-9bd6-8fd63fbd335a': {
-        'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'},
-    'malware--00811855-d9b9-420d-9bd6-8fd63fbd335b': {
-        'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'},
-    'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9': {
-        'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-        'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be'},
-    'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': {
-        'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'}
+ID_TO_OBJECT = {
+    'indicator--01a5a209-b94c-450b-b7f9-946497d91055': {
+        'external_references': '8.8.8.8',
+        'description': 'description',
+        'name': 'T111: Software Discovery',
+        'pattern': "[ipv4-addr:value = '92.63.32.52']"},
+    'indicator--fd0da09e-a0b2-4018-9476-1a7edd809b59': {
+        'name': 'Deploy XSOAR Playbook',
+        'x_panw_coa_bp_description': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
+        'x_panw_coa_bp_title': 'Deploy XSOAR Playbook',
+        'pattern': "[url:value = 'http://91.218.114.31/yyxtqylcto']"},
+    'report--0f86dccd-29bd-46c6-83fd-e79ba040bf0': {
+        "type": "report",
+        "name": "Maze Ransomware"
+    },
+    "indicator--010bb9ad-5686-485d-97e5-93c2187e56ce": {
+        "type": "indicator",
+        "id": "indicator--01e860b3-67a6-4bf7-a885-c296c4fa5243",
+        "name": "http://91.218.114.31/yyxtqylcto",
+        "pattern": "[url:value = 'http://91.218.114.31/yyxtqylcto']",
+    },
+    "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055": {
+        "type": "attack-pattern",
+        "id": "attack-pattern--f2857333-11d4-45bf-b064-2c28d8525be5",
+        "name": "T1564.004: NTFS File Attributes",
+    },
+    "indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be": {
+        "type": "indicator",
+        "id": "indicator--003b9bb9-947c-458f-94ef-407345018e1a",
+        "name": "92.63.32.52",
+        "pattern": "[ipv4-addr:value = '92.63.32.52']"
+    },
+    "malware--00811855-d9b9-420d-9bd6-8fd63fbd335a": {
+        "type": "malware",
+        "id": "malware--53e619f7-936e-4f40-b518-9d3000102d44",
+        "name": "Maze",
+    }
 }
-
-ID_TO_OBJECT = {'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055': {'external_references': '8.8.8.8',
-                                                                         'description': 'description',
-                                                                         'name': 'T111: Software Discovery'},
-                'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': {'name': 'Deploy XSOAR Playbook',
-                                                                           'x_panw_coa_bp_description': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2',
-                                                                           'x_panw_coa_bp_title': 'Deploy XSOAR Playbook'}}
 
 PUBLICATIONS = [{'Link': 'example.com', 'Title': 'Ballenthin'},
                 {'Link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
@@ -283,3 +324,108 @@ PUBLICATIONS = [{'Link': 'example.com', 'Title': 'Ballenthin'},
                 {'Link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
                  'Title': 'Wikipedia. (2016, June 12). Server Message Block. Retrieved June '
                           '12, 2016.'}]
+
+ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
+                                        'firstseenbysource': '2018-08-03T19:54:02.821Z',
+                                        'mitreid': 'T1047',
+                                        'modified': '2020-05-12T13:02:30.000Z',
+                                        'operatingsystemrefs': ['Windows'],
+                                        'publications': [{'Link': 'example.com', 'Title': 'Ballenthin'},
+                                                         {
+                                                             'Link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
+                                                             'Title': 'Microsoft. (n.d.). Windows Management '
+                                                                      'Instrumentation. Retrieved April 27, '
+                                                                      '2016.'},
+                                                         {
+                                                             'Link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                                                             'Title': 'Microsoft. (2003, March 28). What Is '
+                                                                      'RPC?. Retrieved June 12, 2016.'},
+                                                         {'Link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
+                                                          'Title': 'Wikipedia. (2016, June 12). Server '
+                                                                   'Message Block. Retrieved June 12, '
+                                                                   '2016.'}],
+                                        'reportedby': 'Unit42',
+                                        'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
+                                        'tags': []},
+                             'type': 'Attack Pattern',
+                             'value': 'Windows Management Instrumentation'}]
+
+COURSE_OF_ACTION_DATA = [{
+    "type": "course-of-action",
+    "id": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+    "name": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+    "created": "2020-06-23T19:50:31.722Z",
+    "modified": "2020-09-04T13:59:35.883Z"
+},
+    {
+        "type": "course-of-action",
+        "id": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+        "name": "Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.",
+        "created": "2020-06-23T19:50:31.722Z",
+        "modified": "2020-06-26T19:00:21.151Z",
+        "description": "Enable all three scan options in a Zone Protection profile.",
+        "x_panw_coa_bp_section_number": "6",
+        "x_panw_coa_bp_recommendation_number": "6.18",
+        "x_panw_coa_bp_title": "Ensure that all zones have Zone Protection Profiles.",
+        "x_panw_coa_bp_status": "published",
+        "x_panw_coa_bp_scoring_status": "full",
+        "x_panw_coa_bp_description": "Enable all three scan options in a Zone Protection profile.",
+        "x_panw_coa_bp_rationale_statement": "Port scans and host sweeps are common in the reconnaissance phase.",
+        "x_panw_coa_bp_remediation_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+        "x_panw_coa_bp_audit_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+        "x_panw_coa_bp_impact_statement": "Not configuring a Network Zone Protection Profile leaves an organization.",
+        "x_panw_coa_bp_cis_controls": [
+            "TITLE:Boundary Defense CONTROL:v7 12 DESCRIPTION:Boundary."
+        ],
+        "x_panw_coa_bp_references": [
+            "network-network-profiles-zone-protection/reconnaissance-protection."
+        ]
+    }]
+
+COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
+                                           'firstseenbysource': '2020-06-23T19:50:31.722Z',
+                                           'modified': '2020-09-04T13:59:35.883Z',
+                                           'publications': [],
+                                           'reportedby': 'Unit42',
+                                           'stixid': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
+                                           'tags': []},
+                                'score': 0,
+                                'type': 'Attack Pattern',
+                                'value': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2'},
+                               {'fields': {'description': 'Enable all three scan options in a Zone '
+                                                          'Protection profile.',
+                                           'firstseenbysource': '2020-06-23T19:50:31.722Z',
+                                           'modified': '2020-06-26T19:00:21.151Z',
+                                           'publications': [],
+                                           'reportedby': 'Unit42',
+                                           'stixid': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
+                                           'tags': []},
+                                'score': 0,
+                                'type': 'Attack Pattern',
+                                'value': 'Ensure that all zones have Zone Protection Profiles with all '
+                                         'Reconnaissance Protection settings enabled.'}]
+
+DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
+    'relationships': [{'entityA': '0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92',
+                       'entityAFamily': 'Indicator',
+                       'entityAType': 'File',
+                       'entityB': 'T1047: Windows Management Instrumentation',
+                       'entityBFamily': 'Indicator',
+                       'entityBType': 'Attack Pattern',
+                       'fields': {'firstseenbysource': '2019-10-11T18:43:46.039Z',
+                                  'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
+                       'name': 'indicated-by',
+                       'reverseName': 'indicator-of',
+                       'type': 'IndicatorToIndicator'},
+                      {'entityA': 'c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839',
+                       'entityAFamily': 'Indicator',
+                       'entityAType': 'File',
+                       'entityB': 'Muirim',
+                       'entityBFamily': 'Indicator',
+                       'entityBType': 'Malware',
+                       'fields': {'firstseenbysource': '2019-10-11T18:43:46.039Z',
+                                  'lastseenbysource': '2020-05-12T13:02:30.000000Z'},
+                       'name': 'indicated-by',
+                       'reverseName': 'indicator-of',
+                       'type': 'IndicatorToIndicator'}],
+    'value': '$$DummyIndicator$$'}

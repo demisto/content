@@ -218,7 +218,7 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
+def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_color) -> List:
     """Creates Attack Pattern indicators with the related mitre course of action.
 
     Returns:
@@ -226,7 +226,6 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
     """
 
     attack_pattern_indicators = []
-    attack_indicator_objects = client.objects_data['attack-pattern']
 
     for attack_indicator in attack_indicator_objects:
 
@@ -255,9 +254,8 @@ def create_attack_pattern_indicator(client, feed_tags, tlp_color) -> List:
     return attack_pattern_indicators
 
 
-def create_course_of_action_indicators(client, feed_tags, tlp_color):
+def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_color):
     course_of_action_indicators = []
-    course_of_action_objects = client.objects_data['course-of-action']
 
     for coa_indicator in course_of_action_objects:
 
@@ -301,9 +299,9 @@ def get_ioc_value(ioc, id_to_obj):
         return f"[Unit42 ATOM] {ioc_obj.get('name')}" if ioc_obj.get('type') == 'report' else ioc_obj.get('name')
 
 
-def create_list_relationships(client, id_to_object):
+def create_list_relationships(relationships_objects, id_to_object):
     relationships_list = []
-    relationships_objects = client.objects_data['relationship']
+
     for relationships_object in relationships_objects:
         a_type = relationships_object.get('source_ref').split('--')[0]
         a_type = RELATIONS_TYPE_TO_DEMISTO_TYPES.get(a_type)
@@ -371,8 +369,9 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
     campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
-    attack_patterns = create_attack_pattern_indicator(client, feed_tags, tlp_color)
-    course_of_actions = create_course_of_action_indicators(client, feed_tags, tlp_color)
+    attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'], feed_tags, tlp_color)
+    course_of_actions = create_course_of_action_indicators(client.objects_data['course-of-action'],
+                                                           feed_tags, tlp_color)
 
     id_to_object = {
         obj.get('id'): obj for obj in
@@ -383,7 +382,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
 
     dummy_indicator = {}
     if create_relationships:
-        list_relationships = create_list_relationships(client, id_to_object)
+        list_relationships = create_list_relationships(client.objects_data['relationship'], id_to_object)
 
         dummy_indicator = {
             "value": "$$DummyIndicator$$",
