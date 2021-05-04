@@ -406,7 +406,7 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
     query = args.get('query')
 
     response = client.advanced_hunting(query)
-    
+
     results = response.get('Results')
     schema = response.get('Schema', {})
     headers = [item.get('Name') for item in schema]
