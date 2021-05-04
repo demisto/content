@@ -31,7 +31,6 @@ class Client(BaseClient):
             return_empty_response=True,
             json_data=json_data,
             timeout=30,
-            # empty_valid_codes=(204,404)
         )
         return data
 
@@ -313,8 +312,10 @@ def sensor_installer_download_command(client: Client, os_type: str, group_id: st
 
 
 def endpoint_command(client: Client, id: str, ip: str, hostname: str):
+
     if not id or not ip or not hostname:
         raise Exception('In order to run this command, please provide valid id, ip and hostname')
+
     res = sensors_list_command(client, id=id, ip=ip, hostname=hostname)
     endpoints = []
     command_results = []
@@ -327,10 +328,11 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
             mac_address=_parse_field(sensor.get('network_adapters',''), index_after_split=1, chars_to_remove='|'),
             os_version=sensor.get('os_environment_display_string'),
             memory=sensor.get('physical_memory_size'),
-            status=sensor.get('status'),
-            is_isolated=sensor.get('is_isolating'),
+            status='Online' if sensor.get('status') else 'Offline',
+            is_isolated=is_isolated,
             vendor='Carbon Black Response')
         endpoints.append(endpoint)
+
         endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
         md = tableToMarkdown(f'Carbon Black Response Endpoint: {id}', endpoint_context)
 
