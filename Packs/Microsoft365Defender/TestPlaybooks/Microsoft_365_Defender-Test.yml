@@ -1,19 +1,19 @@
 id: Microsoft_365_Defender-Test
-version: 15
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Microsoft_365_Defender-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3f02e109-e4b0-4319-8688-a219b1425e65
+    taskid: ecbd1aea-3116-453e-8e0e-6114c0fdff77
     type: start
     task:
-      id: 3f02e109-e4b0-4319-8688-a219b1425e65
+      id: ecbd1aea-3116-453e-8e0e-6114c0fdff77
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -30,14 +30,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: eec37948-2e57-403b-81d5-4ad4d1fc2e49
+    taskid: 7768faec-5dfa-4d44-8592-e257ba10ce56
     type: regular
     task:
-      id: eec37948-2e57-403b-81d5-4ad4d1fc2e49
+      id: 7768faec-5dfa-4d44-8592-e257ba10ce56
       version: -1
       name: microsoft-365-defender-incidents-list
       script: '|||microsoft-365-defender-incidents-list'
@@ -60,14 +58,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0631457d-ffb0-48fa-81a0-87c1522c79d6
+    taskid: e65579a5-8d38-4af4-8890-764ee4fcdc82
     type: condition
     task:
-      id: 0631457d-ffb0-48fa-81a0-87c1522c79d6
+      id: e65579a5-8d38-4af4-8890-764ee4fcdc82
       version: -1
       name: Verify Outputs
       type: condition
@@ -147,14 +143,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9a77749c-6a75-480b-81c0-d5c3bb4c6863
+    taskid: 35130915-473c-4baf-8108-dba0d3cf680a
     type: regular
     task:
-      id: 9a77749c-6a75-480b-81c0-d5c3bb4c6863
+      id: 35130915-473c-4baf-8108-dba0d3cf680a
       version: -1
       name: microsoft-365-defender-incident-update
       script: '|||microsoft-365-defender-incident-update'
@@ -164,6 +158,9 @@ tasks:
     nexttasks:
       '#none#':
       - "9"
+    scriptarguments:
+      id:
+        simple: ${Microsoft365Defender.Incident.incidentId}
     separatecontext: false
     view: |-
       {
@@ -177,14 +174,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 2d545994-8aa5-4954-8412-b09493b99447
+    taskid: d004e289-ee92-4ecd-8abe-025738dc1ded
     type: condition
     task:
-      id: 2d545994-8aa5-4954-8412-b09493b99447
+      id: d004e289-ee92-4ecd-8abe-025738dc1ded
       version: -1
       name: Verify Outputs
       type: condition
@@ -264,14 +259,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: aff480df-455e-4a2d-824c-32c1b6f7c4fb
+    taskid: 74e0e32c-65cc-4167-8715-ad7786b96699
     type: regular
     task:
-      id: aff480df-455e-4a2d-824c-32c1b6f7c4fb
+      id: 74e0e32c-65cc-4167-8715-ad7786b96699
       version: -1
       name: microsoft-365-defender-advanced-hunting
       script: '|||microsoft-365-defender-advanced-hunting'
@@ -281,6 +274,9 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
+    scriptarguments:
+      query:
+        simple: AlertInfo
     separatecontext: false
     view: |-
       {
@@ -294,14 +290,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 76d6383a-1040-4c9a-8703-2efbe6c55b42
+    taskid: 9ef22412-9f99-4d4f-8261-fbd9bc2c99b7
     type: condition
     task:
-      id: 76d6383a-1040-4c9a-8703-2efbe6c55b42
+      id: 9ef22412-9f99-4d4f-8261-fbd9bc2c99b7
       version: -1
       name: Verify Outputs
       type: condition
@@ -336,19 +330,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: a1789996-5928-4c7b-84f1-a8ccaf79c909
+    taskid: 49c2e090-213d-411f-8d04-cea79deb7a9d
     type: title
     task:
-      id: a1789996-5928-4c7b-84f1-a8ccaf79c909
+      id: 49c2e090-213d-411f-8d04-cea79deb7a9d
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -362,40 +355,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 514e9805-9d6e-457f-809e-d7e433e21d22
-    type: regular
-    task:
-      id: 514e9805-9d6e-457f-809e-d7e433e21d22
-      version: -1
-      name: Untitled Task
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1705,
+        "height": 1495,
         "width": 380,
         "x": 50,
         "y": 970
@@ -404,3 +369,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
+description: Test playbook

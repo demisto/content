@@ -1,8 +1,4 @@
 {
-    "close": null,
-    "description": "",
-    "detached": false,
-    "details": null,
     "detailsV2": {
         "tabs": [
             {
@@ -400,20 +396,11 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
-    "id": "7157528b-7d0b-4dc3-8a4e-34d0a2f29e9e",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
+    "id": "Microsoft 365 Defender - Layout ",
     "name": "Microsoft 365 Defender - Layout ",
-    "packID": "",
-    "quickView": null,
     "system": false,
-    "toServerVersion": "",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "description": ""
 }
