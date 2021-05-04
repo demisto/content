@@ -53,7 +53,7 @@ def test_module(sg):
         ok if successful
     """
     try:
-        response = sg.client.categories.get()
+        sg.client.categories.get()
     except Exception as e:
         raise DemistoException(
             f"Test failed. Please check your parameters. \n {e}")
@@ -232,8 +232,9 @@ def get_global_email_stats(args: dict, sg):
             res['unsubscribes'] = metrics['unsubscribes']
             mail_stats.append(res)
 
-        md = tableToMarkdown("Global Email Statistics", mail_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
-                                                                     'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+        md = tableToMarkdown("Global Email Statistics", mail_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks',
+                                                                     'deferred', 'delivered', 'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports',
+                                                                     'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
         ec = {'Sendgrid.GlobalEmailStats': mail_stats}
         return {
             'ContentsFormat': formats['json'],
@@ -299,8 +300,9 @@ def get_category_stats(args: dict, sg):
             res['unsubscribes'] = metrics['unsubscribes']
             cat_stats.append(res)
 
-        md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
-                                                                                            'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+        md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, ['date', 'blocks', 'bounce_drops', 'bounces',
+                                                                                            'clicks', 'deferred', 'delivered', 'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports',
+                                                                                            'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
         ec = {'Sendgrid.CategoryStats': cat_stats}
         return {
             'ContentsFormat': formats['json'],
@@ -372,8 +374,9 @@ def get_all_categories_stats(args: dict, sg):
                 res['unsubscribes'] = metrics['unsubscribes']
                 cat_stats.append(res)
 
-            md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, ['category', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
-                                                                                                      'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+            md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, ['category', 'blocks', 'bounce_drops',
+                                                                                                      'bounces', 'clicks', 'deferred', 'delivered', 'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops',
+                                                                                                      'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
             ec = {'Sendgrid.AllCategoriesStats': body}
             return {
                 'ContentsFormat': formats['json'],
