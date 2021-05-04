@@ -940,7 +940,7 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false

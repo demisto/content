@@ -358,7 +358,12 @@ class McAfeeESMClient(BaseClient):
 
     def edit_case_status(self) -> Tuple[str, Dict, Dict]:
         path = 'caseEditCaseStatus'
-        status_id = self.__status_and_id(status_name=self.args.get('original_name')).get('id')
+        name = self.args.get('original_name')
+        status_id = self.__status_and_id(status_name=name).get('id')
+        if not status_id:
+            return_warning(f'could not find case {name}.')
+            return '', {}, {}
+
         status_details = {
             'status': {
                 'id': status_id,
@@ -374,7 +379,12 @@ class McAfeeESMClient(BaseClient):
 
     def delete_case_status(self) -> Tuple[str, Dict, Dict]:
         path = 'caseDeleteCaseStatus'
-        status_id = self.__status_and_id(status_name=self.args.get('name')).get('id')
+        name = self.args.get('name')
+        status_id = self.__status_and_id(status_name=name).get('id')
+        if not status_id:
+            return_warning(f'could not find case {name}.')
+            return '', {}, {}
+
         self.__request(path, data={'statusId': {'value': status_id}})
         self.__cache['status'] = {}
         return f'Deleted case status with ID: {status_id}', {}, {}
