@@ -25,7 +25,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: change it
+description: Aruba ClearPass Policy Manager provides role and devicebased network
+  access control for employees, contractors and guests across any multivendor wired,
+  wireless and VPN infrastructure.
 display: HPE Aruba Clearpass
 name: HPEArubaClearpass
 script:
