@@ -1149,6 +1149,11 @@ def main():
         elif demisto.command() == 'mad-get-escalations':
             return_results(get_escalations_command(rest_client, demisto.args()))
 
+        else:
+            raise NotImplementedError('Command not implemented')
+
+    except NotImplementedError:
+        raise
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(err)}')
