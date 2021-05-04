@@ -1591,7 +1591,7 @@
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
-            "internalMapping": null
+            "internalMapping": {}
         }
     },
     "name": "Group-IB Threat Intelligence & Attribution (mapper)",
