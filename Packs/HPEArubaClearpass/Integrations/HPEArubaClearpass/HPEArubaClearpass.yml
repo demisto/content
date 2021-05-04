@@ -469,19 +469,19 @@ script:
     execution: false
     name: aruba-clearpass-active-sessions-list
     outputs:
-    - contextPath: HPEArubaClearpass.sessions.list.id
+    - contextPath: HPEArubaClearpass.sessions.list.ID
       description: ID of the active session.
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.device_ip
+    - contextPath: HPEArubaClearpass.sessions.list.Device_IP
       description: IP address of the client.
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.mac_address
+    - contextPath: HPEArubaClearpass.sessions.list.Device_mac_address
       description: MAC address of the client device.
       type: String
     - contextPath: HPEArubaClearpass.sessions.list.state
       description: The current state of the session (active, stale, closed).
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.visitor_phone
+    - contextPath: HPEArubaClearpass.sessions.list.Visitor_phone
       description: The visitor’s phone number.
       type: String
   - arguments:
@@ -496,10 +496,10 @@ script:
     execution: false
     name: aruba-clearpass-active-session-disconnect
     outputs:
-    - contextPath: HPEArubaClearpass.sessions.disconnect.error
+    - contextPath: HPEArubaClearpass.sessions.disconnect.Error_code
       description: Error status code of response (non-zero if a problem occurred).
       type: Number
-    - contextPath: HPEArubaClearpass.sessions.disconnect.message
+    - contextPath: HPEArubaClearpass.sessions.disconnect.Response_message
       description: Describes the result of the disconnect operation.
       type: String
   dockerimage: demisto/python3:3.9.4.18682

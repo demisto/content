@@ -17,14 +17,28 @@ TOKEN_TYPE = "Bearer"
 
 
 class Client(BaseClient):
+    """
+    Client to use in the HPE Aruba Clearpass integration. Overrides BaseClient.
+
+        Args:
+           proxy (bool): Whether the client should use proxies.
+           verify (bool): Whether to check for SSL certificate validity.
+           base_url (str) : Base URL for the service.
+           client_id (str): HPE Aruba Clearpass client identifier.
+           client_secret (str): HPE Aruba Clearpass client secret.
+   """
+
     def __init__(self, proxy: bool, verify: bool, base_url: str, client_id: str, client_secret: str):
         super().__init__(proxy=proxy, verify=verify, base_url=base_url)
         self.client_id = client_id
         self.client_secret = client_secret
-        self.access_token = ""
-        self.headers: Dict[str, str] = {}
+        self.access_token = ""  # will be generated
+        self.headers: Dict[str, str] = {}  # will be set
 
     def generate_new_access_token(self):
+        """
+        Makes an HTTP request in order to get back a new access token.
+        """
         body = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
@@ -37,8 +51,16 @@ class Client(BaseClient):
         )
 
     def save_access_token_to_context(self, auth_response: dict):
+        """
+        Saves a new access token to the integration context.
+
+            Args:
+               auth_response (dict): A dict includes the new access token and its expiration (in seconds).
+       """
         access_token_expiration_in_seconds = auth_response.get("expires_in")
-        if access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int):
+        is_access_token_expiration_valid = access_token_expiration_in_seconds and isinstance(
+            auth_response.get("expires_in"), int)
+        if is_access_token_expiration_valid:
             access_token_expiration_datetime = datetime.now() + timedelta(seconds=access_token_expiration_in_seconds)
             context = {"access_token": self.access_token,
                        "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
@@ -52,6 +74,10 @@ class Client(BaseClient):
                          f"from type: {type(access_token_expiration_in_seconds)}")
 
     def login(self):
+        """
+        Checks if a valid access token is set to integration context. Otherwise, generates one and save to it
+        to integration context.
+       """
         integration_context = get_integration_context()
         if integration_context:
             access_token_expiration = integration_context.get('expires_in')
@@ -59,6 +85,7 @@ class Client(BaseClient):
             is_context_has_access_token = access_token and access_token_expiration
             access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
             if is_context_has_access_token and access_token_expiration_datetime > datetime.now():
+                # access token is valid and not expired
                 self.access_token = access_token
                 self.set_request_headers()
                 return
@@ -93,8 +120,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client):
-    """Tests API connectivity and authentication'
-    """
+    """Tests HPE Aruba API connectivity and authentication' by getting list of endpoints"""
     try:
         params = {"filter": {}, "offset": 0, "limit": 25}
         client.prepare_request(method='GET', params=params, url_suffix='endpoint')
@@ -108,6 +134,16 @@ def test_module(client: Client):
 
 
 def parse_items_response(response: dict, parsing_function):  # type:ignore
+    """
+    Parses the HTTP response by the given function.
+        Args:
+            response (dict): The HTTP dict response.
+            parsing_function: The function to be called over the given response.
+
+        Return:
+            human_readable (list): List of dictionaries. Each dict represents a parsed item.
+            items_list (list): List of all items from the response, going to be set as outputs (context data).
+    """
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
     if items_list:
@@ -117,6 +153,9 @@ def parse_items_response(response: dict, parsing_function):  # type:ignore
 
 
 def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets a list of endpoints. If mac_address was not given, all the endpoints will be returned.
+    """
     mac_address = args.get('mac_address')
     status = args.get('status')
     offset = args.get('offset', 0)
@@ -124,10 +163,10 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     endpoints_filter = {}
     endpoints_filter.update({"status": status}) if status else None
     endpoints_filter.update({"mac_address": mac_address}) if mac_address else None
-    endpoints_filter = json.dumps(endpoints_filter)
+    endpoints_filter = json.dumps(endpoints_filter)  # the API requires the value of 'filter' to be a json object.
     params = {"filter": endpoints_filter, "limit": limit, "offset": offset}
-    res = client.prepare_request(method='GET', params=params, url_suffix='endpoint')
 
+    res = client.prepare_request(method='GET', params=params, url_suffix='endpoint')
     readable_output, outputs = parse_items_response(res, endpoints_response_to_dict)
     human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', readable_output, removeNull=True)
 
@@ -151,15 +190,17 @@ def endpoints_response_to_dict(response: dict) -> dict:
 
 
 def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates an endpoint by its endpoint_id. Only endpoint_id is a mandatory field.
+    """
     endpoint_id = args.get('endpoint_id')
     mac_address = args.get('mac_address')
     status = args.get('status')
     description = args.get('description')
     device_insight_tags = argToList(args.get('device_insight_tags'))
-
     attributes = argToList(args.get('attributes'))
     attributes_values = {}
-    for attribute in attributes:
+    for attribute in attributes:  # converting the given list of attributes pairs to a a dict
         attributes_values.update(attribute)
 
     request_body = {}
@@ -182,6 +223,9 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets a list of attributes. If attribute_id was not given, all the attributes will be returned.
+    """
     attribute_id = args.get('attribute_id')
     try:
         if attribute_id:
@@ -198,11 +242,10 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
     attribute_filter.update({"id": attribute_id}) if attribute_id else None
     attribute_filter.update({"name": name}) if name else None
     attribute_filter.update({"entity_name": entity_name}) if entity_name else None
-    attribute_filter = json.dumps(attribute_filter)
+    attribute_filter = json.dumps(attribute_filter)  # the API requires the value of 'filter' to be a json object.
     params = {"filter": attribute_filter, "offset": offset, "limit": limit}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='attribute')
-
     readable_output, outputs = parse_items_response(res, attributes_response_to_dict)
     human_readable = tableToMarkdown('HPE Aruba Clearpass attributes', readable_output, removeNull=True)
 
@@ -214,10 +257,25 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
+def attributes_response_to_dict(response: dict) -> dict:
+    return {
+        'ID': response.get('id'),
+        'Name': response.get('name'),
+        'Entity_name': response.get('entity_name'),
+        'Data_type': response.get('data_type'),
+        'Mandatory': response.get('mandatory', False),
+        'Default_value': response.get('default_value'),
+        'Allow_multiple': response.get('allow_multiple', False),
+        'Allowed_value': response.get('allowed_value', False)
+    }
+
+
 def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Creates an attribute by the given name, entity_name, data_type which are all mandatory fields.
+    """
     new_attribute_body = create_new_attribute_body(args)
     res = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
-
     outputs = attributes_response_to_dict(res)
     human_readable = tableToMarkdown('HPE Aruba Clearpass new attribute', outputs, removeNull=True)
 
@@ -230,6 +288,9 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def create_new_attribute_body(args: Dict[str, Any]):
+    """
+    Creates a new attribute body for creating and updating an attribute.
+    """
     name = args.get('name')
     entity_name = args.get('entity_name')
     data_type = args.get('data_type')
@@ -258,11 +319,13 @@ def create_new_attribute_body(args: Dict[str, Any]):
 
 
 def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Updates an attribute fields by the attribute_id which is a mandatory field.
+    """
     attribute_id = args.get('attribute_id')
     new_attribute_body = create_new_attribute_body(args)
     res = client.prepare_request(method='PATCH', params={}, url_suffix=f'attribute/{attribute_id}',
                                  body=new_attribute_body)
-
     outputs = attributes_response_to_dict(res)
     human_readable = tableToMarkdown('HPE Aruba Clearpass update attribute', outputs, removeNull=True)
 
@@ -275,32 +338,25 @@ def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Deletes an attribute by the attribute_id which is a mandatory field.
+    """
     attribute_id = args.get('attribute_id')
     client.prepare_request(method='DELETE', params={}, url_suffix=f'attribute/{attribute_id}', resp_type='content')
+
     human_readable = f"HPE Aruba Clearpass attribute with ID: {attribute_id} deleted successfully."
     return CommandResults(readable_output=human_readable)
 
 
-def attributes_response_to_dict(response: dict) -> dict:
-    return {
-        'ID': response.get('id'),
-        'Name': response.get('name'),
-        'Entity_name': response.get('entity_name'),
-        'Data_type': response.get('data_type'),
-        'Mandatory': response.get('mandatory', False),
-        'Default_value': response.get('default_value'),
-        'Allow_multiple': response.get('allow_multiple', False),
-        'Allowed_value': response.get('allowed_value', False)
-    }
-
-
 def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    session_id = args.get('session_id')  # id (string, optional): Accounting identifier of the record,
-    device_ip = args.get('device_ip')  # framedipaddress (string, optional): IP address of the client,
-    device_mac_address = args.get(
-        'device_mac_address')  # mac_address (string, optional): MAC address of the client device,
-    state = args.get('state')  # state (string, optional): The current state of the session (active, stale, closed).,
-    visitor_phone = args.get('visitor_phone')  # visitor_phone (string, optional): The visitor’s phone number,
+    """
+    Gets a list of active sessions. If session_id was not given, all the active sessoions will be returned.
+    """
+    session_id = args.get('session_id')
+    device_ip = args.get('device_ip')
+    device_mac_address = args.get('device_mac_address')
+    state = args.get('state')
+    visitor_phone = args.get('visitor_phone')
 
     session_filter = {}
     session_filter.update({"id": session_id}) if session_id else None
@@ -308,12 +364,12 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     session_filter.update({"mac_address": device_mac_address}) if device_mac_address else None
     session_filter.update({"state": state}) if state else None
     session_filter.update({"visitor_phone": visitor_phone}) if visitor_phone else None
+    session_filter = json.dumps(session_filter)  # the API requires the value of 'filter' to be a json object.
     params = {"filter": json.dumps(session_filter)}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='session')
-
     readable_output, outputs = parse_items_response(res, active_sessions_response_to_dict)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass active sessions', readable_output, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass Active Sessions', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
@@ -323,13 +379,27 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     )
 
 
+def active_sessions_response_to_dict(response: dict) -> dict:
+    return {
+        'ID': response.get('id'),
+        'Device_IP': response.get('framedipaddress'),
+        'Device_mac_address': response.get('mac_address'),
+        'State': response.get('state'),
+        'Visitor_phone': response.get('visitor_phone', False)
+    }
+
+
 def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Disconnects an active session by the session_id which is a mandatory field.
+    """
     session_id = args.get('session_id')
     url_suffix = f"/session/{session_id}/disconnect"
     body = {"id": session_id, "confirm_disconnect": True}
+
     res = client.prepare_request(method='POST', params={}, url_suffix=url_suffix, body=body)
-    outputs = {"Error Code": res.get('error'), "Response message": res.get('message')}
-    human_readable = tableToMarkdown('HPE Aruba Clearpass disconnect active session', outputs, removeNull=True)
+    outputs = {"Error_code": res.get('error'), "Response_message": res.get('message')}
+    human_readable = tableToMarkdown('HPE Aruba Clearpass Disconnect active session', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
@@ -337,16 +407,6 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
         outputs_key_field='id',
         outputs=outputs,
     )
-
-
-def active_sessions_response_to_dict(response: dict) -> dict:
-    return {
-        'ID': response.get('id'),
-        'Device IP': response.get('framedipaddress'),
-        'Device MAC address': response.get('mac_address'),
-        'Device state': response.get('state'),
-        'Visitor phone': response.get('visitor_phone', False)
-    }
 
 
 def main() -> None:
