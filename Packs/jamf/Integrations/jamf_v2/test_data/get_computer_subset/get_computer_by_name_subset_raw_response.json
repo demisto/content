@@ -1,0 +1,16 @@
+{
+  "computer": {
+    "location": {
+      "username": "user91",
+      "realname": "User 91",
+      "real_name": "User 91",
+      "email_address": "User91@email.com",
+      "position": "",
+      "phone": "612-605-6625",
+      "phone_number": "612-605-6625",
+      "department": "",
+      "building": "",
+      "room": "100 Walker Street\t \r\nLevel 14, Suite 3"
+    }
+  }
+}

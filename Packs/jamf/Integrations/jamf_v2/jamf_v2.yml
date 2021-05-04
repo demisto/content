@@ -1,0 +1,420 @@
+category: Endpoint
+commonfields:
+  id: jamf_v2
+  version: -1
+configuration:
+- defaultvalue: https://paloaltonfr3.jamfcloud.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  hidden: false
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: EMM for apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control
+  various configurations via different policies, Install/Uninstall applications, lock
+  devices, smart groups searches and more.
+display: JAMF Pro V2
+name: jamf_v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: When querying for a specific id, jamf will return a response with
+        all of the computer’s subsets. Default output for a specific computer should
+        only include the “general” section (or subset).
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Default  “false”. If “true”, it will return the “basic” subset
+        for all of the computers.
+      isArray: false
+      name: basic_subset
+      predefined:
+      - 'True'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: 'Match computers by specific characteristics like: name, udid,
+        serial_number, mac_address, username, realname, email. Supports wildcards'
+      isArray: false
+      name: match
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of results in each page (default should be 50, max is
+        1000. relevant when no id is provided)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: ' number of requested page (relevant when no id is provided)'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: This command will return a list of computers or a single computer
+      based on the parameters being passed. In case no parameter are passed, a list
+      of all computers with their associated IDs will be returned. Please note that
+      only one of the parameters should be passed. By default, will return the first
+      50 computers to the context (id + name).
+    execution: false
+    name: jamf-computers-get
+    outputs:
+    - contextPath: Jamf.Computers
+      description: computers
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        should be configured: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serial_number
+      - mac_address
+      required: true
+      secret: false
+    - default: false
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a computer id should be passed. If we choose the “mac_address”
+        identifier, a value of a computer’s mac address should be passed, etc.
+      isArray: false
+      name: identifier_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Available Subsets: General, Location, Purchasing, Peripherals,
+        Hardware, Certificates, Software, ExtensionAttributes, GroupsAccounts, iphones,
+        ConfigurationProfiles.'
+      isArray: false
+      name: subset
+      predefined:
+      - General
+      - Location
+      - Purchasing
+      - Peripherals
+      - ' Hardware'
+      - Certificates
+      - Software
+      - ' ExtensionAttributes'
+      - GroupsAccounts
+      - iphones
+      - ' ConfigurationProfiles'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a specific subset for a specific computer.
+    execution: false
+    name: jamf-get-computer-subset
+    outputs:
+    - contextPath: Jamf.Computer.Subset
+      description: Computer subset
+      type: String
+  - arguments:
+    - default: false
+      description: a 6 digits value.
+      isArray: false
+      name: passcode
+      required: true
+      secret: false
+    - default: false
+      description: The computer id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: ' A message to display on the lock screen.'
+      isArray: false
+      name: lock_message
+      required: false
+      secret: false
+    deprecated: false
+    description: Will send a "DeviceLock" command to a computer which will then reboot
+      it and lock the computer with a passcode.
+    execution: false
+    name: jamf-computer-lock
+    outputs:
+    - contextPath: Jamf.ComputeCommands.DeviceLock
+      description: Computer lock
+      type: String
+  - arguments:
+    - default: false
+      description: ' a 6 digits value.'
+      isArray: false
+      name: passcode
+      required: true
+      secret: false
+    - default: false
+      description: The computer id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Will send a "EraseDevice" command to a computer which will then reboot
+      it and lock the computer with a passcode.
+    execution: false
+    name: jamf-computer-erase
+    outputs:
+    - contextPath: Jamf.ComputerCommands.EraseDevice
+      description: Erase device
+      type: String
+  - arguments:
+    - default: false
+      description: The user id.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: The user name.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The user email.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of users to retrieve (maximal value is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Return a list of users with their IDs or a specific user with general
+      data about the user.
+    execution: false
+    name: jamf-get-users
+    outputs:
+    - contextPath: Jamf.Users
+      description: users
+      type: String
+  - arguments:
+    - default: false
+      description: When querying for a specific id, jamf will return a response with
+        all of the device’s subsets. Default output for a specific device should only
+        include the “general” section (or subset).
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: match
+      isArray: false
+      name: match
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of users to retrieve (maximal value is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Will return a list of all devices with general information on each
+      of them.
+    execution: false
+    name: jamf-get-mobile-devices
+    outputs:
+    - contextPath: Jamf.Mobile
+      description: mobile
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'In order to identify which computer is requested, one of these
+        should be configured: id, name, udid, serial_number, mac_address.'
+      isArray: false
+      name: identifier
+      predefined:
+      - id
+      - name
+      - udid
+      - serial_number
+      - mac_address
+      required: false
+      secret: false
+    - default: false
+      description: ' the value of the “identifier”. For example, if we choose the
+        “id” identifier, a value of a mobile device’s id should be passed. If we choose
+        the “mac_address” identifier, a value of a mobile device’s mac address should
+        be passed, etc.'
+      isArray: false
+      name: Identifier_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: General
+      description: ' Available Subsets: General, Location, Purchasing, Applications,
+        Security, Network, Certificates, ExtensionAttributes, ProvisioningProfiles,
+        MobileDeviceGroups, ConfigurationProfiles.'
+      isArray: false
+      name: subset
+      predefined:
+      - General
+      - Location
+      - Purchasing
+      - Applications
+      - Security_object
+      - Network
+      - Certificates
+      - ExtensionAttributes
+      - ProvisioningProfiles
+      - MobileDeviceGroups
+      - ConfigurationProfiles
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a specific subset for a specific mobile device.
+    execution: false
+    name: jamf-get-mobile-device-subset
+    outputs:
+    - contextPath: Jamf.MobileDevice.Subset
+      description: Mobile device subset
+      type: String
+  - arguments:
+    - default: false
+      description: the application’s name (supports wildcards)
+      isArray: false
+      name: application
+      required: true
+      secret: false
+    - default: false
+      description: the application’s version (supports wildcards) - applicable only
+        when “application” parameter value is set.
+      isArray: false
+      name: version
+      required: false
+      secret: false
+    deprecated: false
+    description: Will return a list of computers with basic information based on an
+      application filter.
+    execution: false
+    name: jamf-get-computers-by-application
+    outputs:
+    - contextPath: Jamf.Applications
+      description: app
+      type: String
+  - arguments:
+    - default: false
+      description: the mobile device’s id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: A message that will be displayed on the device’s lock screen.
+      isArray: false
+      name: lost_mode_message
+      required: false
+      secret: false
+    deprecated: false
+    description: Will enable “lost mode” on a specific device. Lost Mode is a feature
+      that allows you to lock a mobile device and track the device's location. The
+      device will report the GPS coordinates of the point where the device receives
+      the command. This feature adds additional protection to mobile devices and their
+      data in the event that a device is lost or stolen.
+    execution: false
+    name: jamf-mobile-device-lost-mode
+    outputs:
+    - contextPath: Jamf.Device
+      description: device
+      type: String
+  - arguments:
+    - default: false
+      description: The device’s id
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Retain cellular data plans (iOS 11 or later)
+      isArray: false
+      name: preserve_data_plan
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Clear Activation Lock on the device
+      isArray: false
+      name: clear_activation_code
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Permanently erases all data on the device and deactivates the device.
+    execution: false
+    name: jamf-mobile-device-erase
+    outputs:
+    - contextPath: Jamf.ComputeCommands.EraseDevice
+      description: Erase device
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
