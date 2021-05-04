@@ -1759,6 +1759,8 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
     response = requests.post(base_url + 'show-api-versions',
                              headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
                              verify=verify_certificate, json={})
+    if response.status_code == 500:
+        return f'Connection failed.\nFull response: {response}'
     reason = ''
     if response.json().get('message') == "Missing header: [X-chkp-sid]":
         reason = '\nWrong credentials! Please check the username and password you entered and try' \
