@@ -1756,15 +1756,16 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     """
-    response = requests.post(base_url + 'show-api-versions',
-                             headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
-                             verify=verify_certificate, json={})
-    if response.status_code == 500:
-        return f'Connection failed.\nFull response: {response}'
-    reason = ''
-    if response.json().get('message') == "Missing header: [X-chkp-sid]":
-        reason = '\nWrong credentials! Please check the username and password you entered and try' \
-                 ' again.\n'
+    try:
+        response = requests.post(base_url + 'show-api-versions',
+                                 headers={'Content-Type': 'application/json', 'X-chkp-sid': sid},
+                                 verify=verify_certificate, json={})
+        reason = ''
+        if response.json().get('message') == "Missing header: [X-chkp-sid]":
+            reason = '\nWrong credentials! Please check the username and password you entered and try' \
+                     ' again.\n'
+    except Exception as e:
+        raise e
     return 'ok' if response else f'Connection failed.{reason}\nFull response: {response.json()}'
 
 
