@@ -3,7 +3,7 @@ commonfields:
   id: ThycoticDSV
   version: -1
 configuration:
-- display: Server URL (e.g. https://example.com)
+- display: Server URL to DSV (e.g. https://example.com)
   name: url
   required: true
   type: 0
@@ -15,12 +15,12 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Client ID for authenticate
+- display: Client ID for client-credential authenticate
   hidden: false
   name: client_id
   required: true
   type: 0
-- display: Client Secret for authenticate
+- display: Client Secret for client-credential authenticate
   hidden: false
   name: client_secret
   required: true
@@ -39,12 +39,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieved secret from DSV
+    description: Getting a secret fom DSV
     execution: false
     name: dsv-secret-get
     outputs:
     - contextPath: secret
-      description: JSON object secret
+      description: Received JSON object secret
       type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
