@@ -3194,5 +3194,8 @@ def main():
             code=type(e), message=e.message))
 
 
+from AWSApiModule import *  # noqa: E402
+
+
 if __name__ in ['__builtin__', 'builtins', '__main__']:
     main()
