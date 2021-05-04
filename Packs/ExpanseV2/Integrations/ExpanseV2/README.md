@@ -1423,6 +1423,893 @@ Retrieve Expanse issue by issue ID.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2b0ea80c-2277-34dd-9c55-005922ba640a | Insecure TLS at 52.6.192.223:443 | id: InsecureTLS<br/>name: Insecure TLS<br/>archived: null | Attack Surface Reduction | 52.6.192.223 | TCP | 443 |  | id: 81d4479a-4c66-3b05-a969-4b40ba07ba21<br/>md5Hash: gdRHmkxmGwWpaUtAuge6IQ==<br/>issuer: C=US,O=GeoTrust Inc.,CN=GeoTrust SSL CA - G3<br/>issuerAlternativeNames: <br/>issuerCountry: US<br/>issuerEmail: null<br/>issuerLocality: null<br/>issuerName: GeoTrust SSL CA - G3<br/>issuerOrg: GeoTrust Inc.<br/>formattedIssuerOrg: GeoTrust<br/>issuerOrgUnit: null<br/>issuerState: null<br/>publicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv8cw0HvfztMNtUU6tK7TSo0Ij1k+MwL+cYSTEl7f5Lc/v0Db9Bg3YI7ALlw3VLnJ3oWxiwwCJMLbOBmVr7tSrPBU7dFUh0UIS6LulVYe16fKb1MBUmMq9WckGHF6+bnXrP/xb9X77RiqP0HhRbv7s/3m2ZruIHZ334mm1shnO65vyCvrOHXZQWl8SSk7fHBebRgEcqBM+w0VKV1Uy6U3b7AKWAsbibEHHCuGYFV+OaJxO7/18tJBNwJSX7lDnMOOxoCY2Jcafr/j5gb8O75OH2uxyg2bV7huwm7obYWP9Glw6b9KMdl55CsQHPNW3NW1AnCbAJFvDszl+Op96XNcHQIDAQAB<br/>publicKeyAlgorithm: RSA<br/>publicKeyRsaExponent: 65537<br/>signatureAlgorithm: SHA256withRSA<br/>subject: C=IN,ST=Maharashtra,L=Pune,O=Sears IT and Management Services India Pvt. Ltd.,OU=Management Services,CN=*.thespeedyou.com<br/>subjectAlternativeNames: *.thespeedyou.com thespeedyou.com<br/>subjectCountry: IN<br/>subjectEmail: null<br/>subjectLocality: Pune<br/>subjectName: *.thespeedyou.com<br/>subjectOrg: Sears IT and Management Services India Pvt. Ltd.<br/>subjectOrgUnit: Management Services<br/>subjectState: Maharashtra<br/>serialNumber: 34287766128589078095374161204025316200<br/>validNotBefore: 2015-01-19T00:00:00Z<br/>validNotAfter: 2017-01-18T23:59:59Z<br/>version: 3<br/>publicKeyBits: 2048<br/>pemSha256: w_LuhDoJupBuXxDW5gzATkB6TL0IsdQK09fuQsLGj-g=<br/>pemSha1: p0y_sHlFdp5rPOw8aWrH2Qc331Q=<br/>publicKeyModulus: bfc730d07bdfced30db5453ab4aed34a8d088f593e3302fe718493125edfe4b73fbf40dbf41837608ec02e5c3754b9c9de85b18b0c0224c2db381995afbb52acf054edd1548745084ba2ee95561ed7a7ca6f530152632af5672418717af9b9d7acfff16fd5fbed18aa3f41e145bbfbb3fde6d99aee207677df89a6d6c8673bae6fc82beb3875d941697c49293b7c705e6d180472a04cfb0d15295d54cba5376fb00a580b1b89b1071c2b8660557e39a2713bbff5f2d2413702525fb9439cc38ec68098d8971a7ebfe3e606fc3bbe4e1f6bb1ca0d9b57b86ec26ee86d858ff46970e9bf4a31d979e42b101cf356dcd5b502709b00916f0ecce5f8ea7de9735c1d<br/>publicKeySpki: 5yD3VMYLV6A4CelOIlekrA1ByPGO769aG16XHfMixnA= | Medium | InProgress | Active | {'id': 'AWS', 'name': 'Amazon Web Services'} | Unassigned | {'id': 'f738ace6-f451-4f31-898d-a12afa204b2a', 'name': 'PANW VanDelay Dev'} | 2020-09-23T01:44:37.415249Z | 2020-12-18T18:13:24.311442Z | tags:  | {'id': '724a1137-ee3f-381f-95f2-ea0441db22d0', 'assetKey': 'gdRHmkxmGwWpaUtAuge6IQ==', 'assetType': 'Certificate', 'displayName': '*.thespeedyou.com'} | This service should not be visible on the public Internet. |
 
+### expanse-get-service
+***
+Retrieve Expanse issue by service ID.
+
+
+#### Base Command
+
+`expanse-get-service`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| service_id | ID of the Expanse service to retrieve. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.Service.activityStatus | String | Activity status of service, whether the service is active or inactive | 
+| Expanse.Service.annotations.tags.id | String | The Internal Expanse tag id of the customer added tag | 
+| Expanse.Service.annotations.tags.name | String | The tag name of the customer added tag | 
+| Expanse.Service.assets.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.Service.assets.assetType | String | The type of asset the issue primarily relates to | 
+| Expanse.Service.assets.displayName | String | A friendly name for the asset | 
+| Expanse.Service.assets.id | String | Internal Expanse ID the asset | 
+| Expanse.Service.assets.referenceReason.id | String | ID for asset reference type | 
+| Expanse.Service.assets.referenceReason.name | String | Description for asset reference reason | 
+| Expanse.Service.businessUnits.id | String | The internal Expanse ID for the business unit the affected asset belongs to | 
+| Expanse.Service.businessUnits.name | String | The name of the business unit the affected asset belongs to | 
+| Expanse.Service.certificates.assetId | String | Internal Asset ID of certificate | 
+| Expanse.Service.certificates.firstObserved | Date | First observation of certificate | 
+| Expanse.Service.certificates.lastObserved | Date | Most recent observation of certificate | 
+| Expanse.Service.certificates.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate | 
+| Expanse.Service.certificates.certificate.id | String | The Internal Expanse certificate ID | 
+| Expanse.Service.certificates.certificate.issuer | String | The issuer in the certificate | 
+| Expanse.Service.certificates.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate | 
+| Expanse.Service.certificates.certificate.issuerCountry | String | The issuer country in the certificate | 
+| Expanse.Service.certificates.certificate.issuerEmail | String | The issuer email in the certificate | 
+| Expanse.Service.certificates.certificate.issuerLocality | String | The issuer locality in the certificate | 
+| Expanse.Service.certificates.certificate.issuerName | String | The issuer name in the certificate | 
+| Expanse.Service.certificates.certificate.issuerOrg | String | The issuer org in the certificate | 
+| Expanse.Service.certificates.certificate.issuerOrgUnit | String | The issuer org unit in the certificate | 
+| Expanse.Service.certificates.certificate.issuerState | String | The issuer state in the certificate | 
+| Expanse.Service.certificates.certificate.md5Hash | String | The md5hash in the certificate | 
+| Expanse.Service.certificates.certificate.pemSha1 | String | The pemSha1 in the certificate | 
+| Expanse.Service.certificates.certificate.pemSha256 | String | The pemSha256 in the certificate | 
+| Expanse.Service.certificates.certificate.publicKey | String | The public key in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyAlgorithm | String | The public key algorithm in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyBits | Number | The public key bits in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyModulus | String | The public key modulus in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyRsaExponent | Number | The public key RSA exponent in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeySpki | String | The public key Spki in the certificate | 
+| Expanse.Service.certificates.certificate.serialNumber | String | The serial number in the certificate | 
+| Expanse.Service.certificates.certificate.signatureAlgorithm | String | The signature algorithm in the certificate | 
+| Expanse.Service.certificates.certificate.subject | String | The subject in the certificate | 
+| Expanse.Service.certificates.certificate.subjectAlternativeNames | String | The subject alternative names in the certificate | 
+| Expanse.Service.certificates.certificate.subjectCountry | String | The subject country in the certificate | 
+| Expanse.Service.certificates.certificate.subjectEmail | String | The subject email in the certificate | 
+| Expanse.Service.certificates.certificate.subjectLocality | String | The subject locality in the certificate | 
+| Expanse.Service.certificates.certificate.subjectName | String | The subject name in the certificate | 
+| Expanse.Service.certificates.certificate.subjectOrg | String | The subject org in the certificate | 
+| Expanse.Service.certificates.certificate.subjectOrgUnit | String | The subject org unit in the certificate | 
+| Expanse.Service.certificates.certificate.subjectState | String | The subject state in the certificate | 
+| Expanse.Service.certificates.certificate.validNotAfter | Date | The valid not after date in the certificate | 
+| Expanse.Service.certificates.certificate.validNotBefore | Date | The valid not before date in the certificate | 
+| Expanse.Service.certificates.certificate.version | String | The version in the certificate | 
+| Expanse.Service.classifications.details.firstObserved | Date | When the service instance was first observed | 
+| Expanse.Service.classifications.details.lastObserved | Date | When the service instance was last observed | 
+| Expanse.Service.classifications.details.value.applicationServerSoftware | String | Application Server Software value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpOpenResponse | String | BGP Open value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpNotificationResponse.data | String | BGP Notification Data value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpNotificationResponse.errorCode | String | BGP Notification Error Code value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpNotificationResponse.errorSubCode | String | BGP Notification Sub-Error Code value of the service classification | 
+| Expanse.Service.classifications.details.value.bindVersions | String | Bind version value of the service classification | 
+| Expanse.Service.classifications.details.value.certificateId | String | Certificate Id value of the service classification | 
+| Expanse.Service.classifications.details.value.connectResponse.statusCode | String | Connect Response Status Code value of the service classification | 
+| Expanse.Service.classifications.details.value.connectResponse.responseLines | String | Connect Response Response value of the service classification | 
+| Expanse.Service.classifications.details.value.credSspProtocol | Boolean | Cred SSP Protocol of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.request.arguments | String | Exchange Request Arguments value of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.request.command | String | Exchange Request Command value of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.response.statusCode | String | Connect Response Status Code value of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.response.responseLines | String | Connect Response Response value of the service classification | 
+| Expanse.Service.classifications.details.value.extraInfo | String | Extra Info about the service classification | 
+| Expanse.Service.classifications.details.value.htmlPasswordAction | String | HTML Password Action value of the service classification | 
+| Expanse.Service.classifications.details.value.htmlPasswordField | String | HTML Password Field value of the service classification | 
+| Expanse.Service.classifications.details.value.htmlPasswordAction | String | HTML Password Action value of the service classification | 
+| Expanse.Service.classifications.details.value.httpAuthenticationMethods | String | HTTP Authentication Methods value of the service classification | 
+| Expanse.Service.classifications.details.value.httpAuthenticationRealm | String | HTTP Authentication Realm value of the service classification | 
+| Expanse.Service.classifications.details.value.httpHeaders.name | String | HTTP Header name included in the service classification | 
+| Expanse.Service.classifications.details.value.httpHeaders.value | String | HTTP Header value included in the service classification | 
+| Expanse.Service.classifications.details.value.httpStatusCode | String | HTTP Status code of the service classification | 
+| Expanse.Service.classifications.details.value.isEncrypted | Boolean | Is Encrypted service classification | 
+| Expanse.Service.classifications.details.value.isImplicit | Boolean | Is Implicit service classification | 
+| Expanse.Service.classifications.details.value.loadBalancer | String | Load Balancer value of the service classification | 
+| Expanse.Service.classifications.details.value.loadBalancerPool | String | Load Balancer Pool value of the service classification | 
+| Expanse.Service.classifications.details.value.nativeRdpAlgorithms | String | Native RDP Algorithms of the service classification | 
+| Expanse.Service.classifications.details.value.nativeRdpProtocol | Boolean | Native RDP Algorithms of the service classification | 
+| Expanse.Service.classifications.details.value.serverSoftware | String | Detected Server Software the service classification | 
+| Expanse.Service.classifications.details.value.serverVersion | String | Server Version details for the service classification | 
+| Expanse.Service.classifications.details.value.sslProtocol | Boolean | SSL Protocol for the service classification | 
+| Expanse.Service.classifications.details.value.validWhenScanned | Boolean | Whether a certificate on the service was valid at scan time | 
+| Expanse.Service.classifications.details.value.version | String | Version details for the service classification | 
+| Expanse.Service.classifications.firstObserved | Date | First observation of the service classification | 
+| Expanse.Service.classifications.id | String | Service classification ID | 
+| Expanse.Service.classifications.lastObserved | Date | Last observation of the service classification | 
+| Expanse.Service.classifications.name | String | Service classification name | 
+| Expanse.Service.cloudManagementStatus.id | String | The Internal ID of the cloud management status | 
+| Expanse.Service.cloudManagementStatus.name | String | Name of the cloud management status | 
+| Expanse.Service.domain.assetId | String | The Internal Asset ID of the domain related to the service | 
+| Expanse.Service.domain.domain | String | The domain name related to the service | 
+| Expanse.Service.domain.firstObserved | Date | The first observation of a domain related to the service | 
+| Expanse.Service.domain.lastObserved | Date | The last observation of a domain related to the service | 
+| Expanse.Service.discoveryInfo.type | String | Whether the service was directly discovered or colocated | 
+| Expanse.Service.firstObserved | Date | First observation of the service | 
+| Expanse.Service.id | String | The internal Expanse ID of the service | 
+| Expanse.Service.ips.assetId | String | The Internal Asset ID of the ip related to the service | 
+| Expanse.Service.ips.firstObserved | Date | First observation of the ip related to the service | 
+| Expanse.Service.ips.geolocation.city | String | Geolocation city of the ip related to the service | 
+| Expanse.Service.ips.geolocation.countryCode | String | Geolocation country of the ip related to the service | 
+| Expanse.Service.ips.geolocation.latitude | Number | Geolocation latitude of the ip related to the service | 
+| Expanse.Service.ips.geolocation.longitude | Number | Geolocation longitude of the ip related to the service | 
+| Expanse.Service.ips.geolocation.regionCode | String | Geolocation region of the ip related to the service | 
+| Expanse.Service.ips.geolocation.timeZone | String | Geolocation timeZone of the ip related to the service | 
+| Expanse.Service.ips.ip | String | IPv4 Address of the ip related to the service | 
+| Expanse.Service.ips.lastObserved | Date | Last observation of the ip related to the service | 
+| Expanse.Service.ips.provider.id | String | Provider ID of the ip related to the service | 
+| Expanse.Service.ips.provider.name | String | provider name of the ip related to the service | 
+| Expanse.Service.ips.transportProtocol | String | Transport protocol of the ip related to the service | 
+| Expanse.Service.lastObserved | Date | Last observation of the service | 
+| Expanse.Service.name | String | Summary of the service observation | 
+| Expanse.Service.portNumber | Number | Summary of the service observation | 
+| Expanse.Service.tlsVersions.cipherSuite | String | Cipher suite of the TLS version observed on the service | 
+| Expanse.Service.tlsVersions.firstObserved | Date | First observation of the TLS version observed on the service | 
+| Expanse.Service.tlsVersions.lastObserved | Date | Last observation of the TLS version observed on the service | 
+| Expanse.Service.tlsVersions.tlsVersion | String | TLS version observed on the service | 
+
+
+#### Command Example
+```!expanse-get-service service_id="99ea2dce-248a-3adb-937b-b46841825581"```
+
+#### Context Example
+```json
+{
+    "Expanse": {
+        "Service": {
+            "activityStatus": "Active",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "2c156327-522e-33ef-aa15-fc8549b2446f",
+                    "assetType": "IpRange",
+                    "displayName": "198.51.100.220-198.51.100.232",
+                    "id": "f58ccbb6-33df-3332-a2da-7e1f01d93af5",
+                    "referenceReason": {
+                        "id": "WithinOwnedIpRange",
+                        "name": "The IP Range this service is running on is attributed to your organization."
+                    }
+                }
+            ],
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export"
+                }
+            ],
+            "certificates": [],
+            "classifications": [
+                {
+                    "details": [
+                        {
+                            "firstObserved": "2020-08-29T09:21:34Z",
+                            "lastObserved": "2021-03-23T05:07:51Z",
+                            "value": {
+                                "bindVersions": [
+                                    "Forbidden"
+                                ]
+                            }
+                        }
+                    ],
+                    "firstObserved": "2020-07-03T02:13:39Z",
+                    "id": "DnsServer",
+                    "lastObserved": "2021-03-23T05:07:51Z",
+                    "name": "DNS Server"
+                }
+            ],
+            "cloudManagementStatus": {
+                "id": "NotApplicable",
+                "name": ""
+            },
+            "discoveryInfo": {
+                "details": [],
+                "type": "DirectlyDiscovered"
+            },
+            "domains": [],
+            "firstObserved": "2020-07-03T02:13:39Z",
+            "id": "99ea2dce-248a-3adb-937b-b46841825581",
+            "ips": [
+                {
+                    "assetId": "f58ccbb6-33df-3332-a2da-7e1f01d93af5",
+                    "firstObserved": "2020-08-29T09:21:34Z",
+                    "geolocation": {
+                        "city": "MELBOURNE",
+                        "countryCode": "AU",
+                        "latitude": -37.82,
+                        "longitude": 144.97,
+                        "regionCode": "VIC",
+                        "timeZone": null
+                    },
+                    "ip": "198.51.100.230",
+                    "lastObserved": "2021-03-23T05:07:51Z",
+                    "provider": {
+                        "id": "OnPrem",
+                        "name": "On Prem"
+                    },
+                    "transportProtocol": "UDP"
+                }
+            ],
+            "lastObserved": "2021-03-23T05:07:51Z",
+            "name": "DNS Server at 198.51.100.230:53",
+            "portNumber": 53,
+            "tlsVersions": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Expanse Services
+>|Id|Name|Ips|Domains|Port Number|Activity Status|Business Units|Certificates|Tls Versions|Classifications|First Observed|Last Observed|Annotations|Assets|Discovery Info|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 99ea2dce-248a-3adb-937b-b46841825581 | DNS Server at 198.51.100.230:53 | {'ip': '198.51.100.230', 'assetId': 'f58ccbb6-33df-3332-a2da-7e1f01d93af5', 'transportProtocol': 'UDP', 'geolocation': {'countryCode': 'AU', 'latitude': -37.82, 'longitude': 144.97, 'city': 'MELBOURNE', 'timeZone': None, 'regionCode': 'VIC'}, 'provider': {'id': 'OnPrem', 'name': 'On Prem'}, 'firstObserved': '2020-08-29T09:21:34Z', 'lastObserved': '2021-03-23T05:07:51Z'} |  | 53 | Active | {'id': 'a1f0f39b-f358-3c8c-947b-926887871b88', 'name': 'VanDelay Import-Export'} |  |  | {'id': 'DnsServer', 'name': 'DNS Server', 'details': [{'value': {'bindVersions': ['Forbidden']}, 'firstObserved': '2020-08-29T09:21:34Z', 'lastObserved': '2021-03-23T05:07:51Z'}], 'firstObserved': '2020-07-03T02:13:39Z', 'lastObserved': '2021-03-23T05:07:51Z'} | 2020-07-03T02:13:39Z | 2021-03-23T05:07:51Z | tags:  | {'id': 'f58ccbb6-33df-3332-a2da-7e1f01d93af5', 'assetKey': '2c156327-522e-33ef-aa15-fc8549b2446f', 'assetType': 'IpRange', 'displayName': '198.51.100.220-198.51.100.232', 'referenceReason': {'id': 'WithinOwnedIpRange', 'name': 'The IP Range this service is running on is attributed to your organization.'}} | type: DirectlyDiscovered<br/>details:  |
+
+
+
+### expanse-get-services
+***
+Retrieve services
+
+
+#### Base Command
+
+`expanse-get-services`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of services to retrieve. | Optional | 
+| content_search | Returns only results whose contents match the given query. | Optional | 
+| provider | Returns only results that were found on the given providers (comma separated string). | Optional | 
+| business_unit | Returns only results with a business unit whose name falls in the provided list (comma separated string). | Optional | 
+| service_type | Returns only results whose service type name (or classification ID) matches one of the given types (comma separated string). | Optional | 
+| inet_search | Returns results whose identifier includes an IP matching the query. Search for results in a given IP/CIDR block using a single IP (d.d.d.d), a dashed IP range (d.d.d.d-d.d.d.d), a CIDR block (d.d.d.d/m), a partial CIDR (d.d.), or a wildcard (d.d.*.d). | Optional | 
+| domain_search | Returns results whose identifier includes a domain matching the query. | Optional | 
+| port_number | Returns only results whose identifier includes one of the given port numbers (comma separated list). | Optional | 
+| discovery_type | Returns only results whose discovery type matches one of the given values (comma separated string, options are 'ColocatedOnIp', 'DirectlyDiscovered'). | Optional | 
+| country_code | Returns only results whose country code matches one of the given ISO-3166 two character country codes (comma separated list). | Optional | 
+| activity_status | Returns only results whose activity status matches one of the given values. Possible values are: Active, Inactive. | Optional | 
+| tag | Returns only results that are associated with the provided tag names (comma separated string). | Optional | 
+| sort | Sort by specified properties. Possible values are: firstObserved, -firstObserved, lastObserved, -lastObserved, name, -name. Default is firstObserved. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.Service.activityStatus | String | Activity status of service, whether the service is active or inactive | 
+| Expanse.Service.annotations.tags.id | String | The Internal Expanse tag id of the customer added tag | 
+| Expanse.Service.annotations.tags.name | String | The tag name of the customer added tag | 
+| Expanse.Service.assets.assetKey | String | Key used to access the asset in the respective Expanse asset API | 
+| Expanse.Service.assets.assetType | String | The type of asset the issue primarily relates to | 
+| Expanse.Service.assets.displayName | String | A friendly name for the asset | 
+| Expanse.Service.assets.id | String | Internal Expanse ID the asset | 
+| Expanse.Service.assets.referenceReason.id | String | ID for asset reference type | 
+| Expanse.Service.assets.referenceReason.name | String | Description for asset reference reason | 
+| Expanse.Service.businessUnits.id | String | The internal Expanse ID for the business unit the affected asset belongs to | 
+| Expanse.Service.businessUnits.name | String | The name of the business unit the affected asset belongs to | 
+| Expanse.Service.certificates.assetId | String | Internal Asset ID of certificate | 
+| Expanse.Service.certificates.firstObserved | Date | First observation of certificate | 
+| Expanse.Service.certificates.lastObserved | Date | Most recent observation of certificate | 
+| Expanse.Service.certificates.certificate.formattedIssuerOrg | String | The formatted issuer org in the certificate | 
+| Expanse.Service.certificates.certificate.id | String | The Internal Expanse certificate ID | 
+| Expanse.Service.certificates.certificate.issuer | String | The issuer in the certificate | 
+| Expanse.Service.certificates.certificate.issuerAlternativeNames | String | The issuer alternative names in the certificate | 
+| Expanse.Service.certificates.certificate.issuerCountry | String | The issuer country in the certificate | 
+| Expanse.Service.certificates.certificate.issuerEmail | String | The issuer email in the certificate | 
+| Expanse.Service.certificates.certificate.issuerLocality | String | The issuer locality in the certificate | 
+| Expanse.Service.certificates.certificate.issuerName | String | The issuer name in the certificate | 
+| Expanse.Service.certificates.certificate.issuerOrg | String | The issuer org in the certificate | 
+| Expanse.Service.certificates.certificate.issuerOrgUnit | String | The issuer org unit in the certificate | 
+| Expanse.Service.certificates.certificate.issuerState | String | The issuer state in the certificate | 
+| Expanse.Service.certificates.certificate.md5Hash | String | The md5hash in the certificate | 
+| Expanse.Service.certificates.certificate.pemSha1 | String | The pemSha1 in the certificate | 
+| Expanse.Service.certificates.certificate.pemSha256 | String | The pemSha256 in the certificate | 
+| Expanse.Service.certificates.certificate.publicKey | String | The public key in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyAlgorithm | String | The public key algorithm in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyBits | Number | The public key bits in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyModulus | String | The public key modulus in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeyRsaExponent | Number | The public key RSA exponent in the certificate | 
+| Expanse.Service.certificates.certificate.publicKeySpki | String | The public key Spki in the certificate | 
+| Expanse.Service.certificates.certificate.serialNumber | String | The serial number in the certificate | 
+| Expanse.Service.certificates.certificate.signatureAlgorithm | String | The signature algorithm in the certificate | 
+| Expanse.Service.certificates.certificate.subject | String | The subject in the certificate | 
+| EExpanse.Service.certificates.certificate.subjectAlternativeNames | String | The subject alternative names in the certificate | 
+| Expanse.Service.certificates.certificate.subjectCountry | String | The subject country in the certificate | 
+| Expanse.Service.certificates.certificate.subjectEmail | String | The subject email in the certificate | 
+| Expanse.Service.certificates.certificate.subjectLocality | String | The subject locality in the certificate | 
+| Expanse.Service.certificates.certificate.subjectName | String | The subject name in the certificate | 
+| Expanse.Service.certificates.certificate.subjectOrg | String | The subject org in the certificate | 
+| Expanse.Service.certificates.certificate.subjectOrgUnit | String | The subject org unit in the certificate | 
+| Expanse.Service.certificates.certificate.subjectState | String | The subject state in the certificate | 
+| Expanse.Service.certificates.certificate.validNotAfter | Date | The valid not after date in the certificate | 
+| Expanse.Service.certificates.certificate.validNotBefore | Date | The valid not before date in the certificate | 
+| Expanse.Service.certificates.certificate.version | String | The version in the certificate | 
+| Expanse.Service.classifications.details.firstObserved | Date | When the service instance was first observed | 
+| Expanse.Service.classifications.details.lastObserved | Date | When the service instance was last observed | 
+| Expanse.Service.classifications.details.value.applicationServerSoftware | String | Application Server Software value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpOpenResponse | String | BGP Open value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpNotificationResponse.data | String | BGP Notification Data value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpNotificationResponse.errorCode | String | BGP Notification Error Code value of the service classification | 
+| Expanse.Service.classifications.details.value.bgpNotificationResponse.errorSubCode | String | BGP Notification Sub-Error Code value of the service classification | 
+| Expanse.Service.classifications.details.value.bindVersions | String | Bind version value of the service classification | 
+| Expanse.Service.classifications.details.value.certificateId | String | Certificate Id value of the service classification | 
+| Expanse.Service.classifications.details.value.connectResponse.statusCode | String | Connect Response Status Code value of the service classification | 
+| Expanse.Service.classifications.details.value.connectResponse.responseLines | String | Connect Response Response value of the service classification | 
+| Expanse.Service.classifications.details.value.credSspProtocol | Boolean | Cred SSP Protocol of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.request.arguments | String | Exchange Request Arguments value of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.request.command | String | Exchange Request Command value of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.response.statusCode | String | Connect Response Status Code value of the service classification | 
+| Expanse.Service.classifications.details.value.exchanges.response.responseLines | String | Connect Response Response value of the service classification | 
+| Expanse.Service.classifications.details.value.extraInfo | String | Extra Info about the service classification | 
+| Expanse.Service.classifications.details.value.htmlPasswordAction | String | HTML Password Action value of the service classification | 
+| Expanse.Service.classifications.details.value.htmlPasswordField | String | HTML Password Field value of the service classification | 
+| Expanse.Service.classifications.details.value.htmlPasswordAction | String | HTML Password Action value of the service classification | 
+| Expanse.Service.classifications.details.value.httpAuthenticationMethods | String | HTTP Authentication Methods value of the service classification | 
+| Expanse.Service.classifications.details.value.httpAuthenticationRealm | String | HTTP Authentication Realm value of the service classification | 
+| Expanse.Service.classifications.details.value.httpHeaders.name | String | HTTP Header name included in the service classification | 
+| Expanse.Service.classifications.details.value.httpHeaders.value | String | HTTP Header value included in the service classification | 
+| Expanse.Service.classifications.details.value.httpStatusCode | String | HTTP Status code of the service classification | 
+| Expanse.Service.classifications.details.value.isEncrypted | Boolean | Is Encrypted service classification | 
+| Expanse.Service.classifications.details.value.isImplicit | Boolean | Is Implicit service classification | 
+| Expanse.Service.classifications.details.value.loadBalancer | String | Load Balancer value of the service classification | 
+| Expanse.Service.classifications.details.value.loadBalancerPool | String | Load Balancer Pool value of the service classification | 
+| Expanse.Service.classifications.details.value.nativeRdpAlgorithms | String | Native RDP Algorithms of the service classification | 
+| Expanse.Service.classifications.details.value.nativeRdpProtocol | Boolean | Native RDP Algorithms of the service classification | 
+| Expanse.Service.classifications.details.value.serverSoftware | String | Detected Server Software the service classification | 
+| Expanse.Service.classifications.details.value.serverVersion | String | Server Version details for the service classification | 
+| Expanse.Service.classifications.details.value.sslProtocol | Boolean | SSL Protocol for the service classification | 
+| Expanse.Service.classifications.details.value.validWhenScanned | Boolean | Whether a certificate on the service was valid at scan time | 
+| Expanse.Service.classifications.details.value.version | String | Version details for the service classification | 
+| Expanse.Service.classifications.firstObserved | Date | First observation of the service classification | 
+| Expanse.Service.classifications.id | String | Service classification ID | 
+| Expanse.Service.classifications.lastObserved | Date | Last observation of the service classification | 
+| Expanse.Service.classifications.name | String | Service classification name | 
+| Expanse.Service.cloudManagementStatus.id | String | The Internal ID of the cloud management status | 
+| Expanse.Service.cloudManagementStatus.name | String | Name of the cloud management status | 
+| Expanse.Service.domain.assetId | String | The Internal Asset ID of the domain related to the service | 
+| Expanse.Service.domain.domain | String | The domain name related to the service | 
+| Expanse.Service.domain.firstObserved | Date | The first observation of a domain related to the service | 
+| Expanse.Service.domain.lastObserved | Date | The last observation of a domain related to the service | 
+| Expanse.Service.discoveryInfo.type | String | Whether the service was directly discovered or colocated | 
+| Expanse.Service.firstObserved | Date | First observation of the service | 
+| Expanse.Service.id | String | The internal Expanse ID of the service | 
+| Expanse.Service.ips.assetId | String | The Internal Asset ID of the ip related to the service | 
+| Expanse.Service.ips.firstObserved | Date | First observation of the ip related to the service | 
+| Expanse.Service.ips.geolocation.city | String | Geolocation city of the ip related to the service | 
+| Expanse.Service.ips.geolocation.countryCode | String | Geolocation country of the ip related to the service | 
+| Expanse.Service.ips.geolocation.latitude | Number | Geolocation latitude of the ip related to the service | 
+| Expanse.Service.ips.geolocation.longitude | Number | Geolocation longitude of the ip related to the service | 
+| Expanse.Service.ips.geolocation.regionCode | String | Geolocation region of the ip related to the service | 
+| Expanse.Service.ips.geolocation.timeZone | String | Geolocation timeZone of the ip related to the service | 
+| Expanse.Service.ips.ip | String | IPv4 Address of the ip related to the service | 
+| Expanse.Service.ips.lastObserved | Date | Last observation of the ip related to the service | 
+| Expanse.Service.ips.provider.id | String | Provider ID of the ip related to the service | 
+| Expanse.Service.ips.provider.name | String | provider name of the ip related to the service | 
+| Expanse.Service.ips.transportProtocol | String | Transport protocol of the ip related to the service | 
+| Expanse.Service.lastObserved | Date | Last observation of the service | 
+| Expanse.Service.name | String | Summary of the service observation | 
+| Expanse.Service.portNumber | Number | Summary of the service observation | 
+| Expanse.Service.tlsVersions.cipherSuite | String | Cipher suite of the TLS version observed on the service | 
+| Expanse.Service.tlsVersions.firstObserved | Date | First observation of the TLS version observed on the service | 
+| Expanse.Service.tlsVersions.lastObserved | Date | Last observation of the TLS version observed on the service | 
+| Expanse.Service.tlsVersions.tlsVersion | String | TLS version observed on the service | 
+
+
+#### Command Example
+```!expanse-get-services limit="1" provider="Amazon Web Services"```
+
+#### Context Example
+```json
+{
+    "Expanse": {
+        "Service": {
+            "activityStatus": "Active",
+            "annotations": {
+                "tags": []
+            },
+            "assets": [
+                {
+                    "assetKey": "ec73a0b3-a5e2-3a37-b718-06bff21546e6",
+                    "assetType": "Certificate",
+                    "displayName": "*.thespeedyou.com",
+                    "id": "ec73a0b3-a5e2-3a37-b718-06bff21546e6",
+                    "referenceReason": {
+                        "id": "CertificateAdvertisedOnService",
+                        "name": "This certificate \u2014 which is attributed to your organization \u2014 was advertised by this service."
+                    }
+                }
+            ],
+            "businessUnits": [
+                {
+                    "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+                    "name": "VanDelay Industries"
+                }
+            ],
+            "certificates": [
+                {
+                    "assetId": "ec73a0b3-a5e2-3a37-b718-06bff21546e6",
+                    "certificate": {
+                        "formattedIssuerOrg": "COMODO",
+                        "issuer": "C=GB,ST=Greater Manchester,L=Salford,O=COMODO CA Limited,CN=COMODO RSA Organization Validation Secure Server CA",
+                        "issuerAlternativeNames": "",
+                        "issuerCountry": "GB",
+                        "issuerEmail": null,
+                        "issuerLocality": "Salford",
+                        "issuerName": "COMODO RSA Organization Validation Secure Server CA",
+                        "issuerOrg": "COMODO CA Limited",
+                        "issuerOrgUnit": null,
+                        "issuerState": "Greater Manchester",
+                        "md5Fingerprint": "6aec4d4a43851a0e2e0b15464c031de8",
+                        "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Wc7WbUjdzK8EyX85hYPq0kUdiaZYIdy92Qdic6Ng0EJwLDEvaWv6tjkmLofBu/XsbUwr8J3Qp9Glih8fudkBzHqUxjPHxiEnyPWIXJKZNoiEFKWuRhzvWwJYNYh842Jnam+sK2vC2PxusLuM0WAaRmGPdv3yGth309xesbc83hL7RlvKAbRMsQNu0JYjwYkXtBjl+pXIrxFuVOj73UxijJgte2yieP4nhKd6vIYLAWq7sIEN58xqzD0ovObRR7mKXuEwpt04aq0+E9acCBVdIGRmk7UZ9YfH6znXjPrNaM0NPJUEfUk+M92r1ZyjQstXfIz9NeQmkA9mYIse+aQtwIDAQAB",
+                        "publicKeyAlgorithm": "RSA",
+                        "publicKeyBits": 2048,
+                        "publicKeyModulus": "dd673b59b5237732bc1325fce6160fab4914762699608772f7641d89ce8d834109c0b0c4bda5afead8e498ba1f06efd7b1b530afc277429f4696287c7ee7640731ea5318cf1f18849f23d621724a64da22105296b91873bd6c0960d621f38d899da9beb0adaf0b63f1bac2ee3345806919863ddbf7c86b61df4f717ac6dcf3784bed196f2806d132c40dbb42588f06245ed06397ea5722bc45b953a3ef75318a3260b5edb289e3f89e129deaf2182c05aaeec204379f31ab30f4a2f39b451ee6297b84c29b74e1aab4f84f5a7020557481919a4ed467d61f1face75e33eb35a33434f25411f524f8cf76af56728d0b2d5df233f4d7909a403d99822c7be690b7",
+                        "publicKeyRsaExponent": 65537,
+                        "publicKeySpki": "xmID8gn_JKlzrzuEoyaqLmdNlx5Xv3fFA6v_wpM6aSA=",
+                        "serialNumber": "42792794729857115395309499847024762482",
+                        "sha1Fingerprint": "2594a1428dae54eeaf6140a7de97680121c89fff",
+                        "sha256Fingerprint": "4dcf9d18c10c6f9f09b71bad3cf1079a31c5c2ebb2eced23373aac8b9f3dc72e",
+                        "signatureAlgorithm": "SHA256withRSA",
+                        "subject": "C=US,PostalCode=60179,ST=Illinois,L=Hoffman Estates,STREET=3333 Beverly Road,O=Sears IT and Management Services India Pvt. Ltd.,OU=Home Services,OU=PlatinumSSL Wildcard,CN=*.shs-core.com",
+                        "subjectAlternativeNames": "*.thespeedyou.com",
+                        "subjectCountry": "US",
+                        "subjectEmail": null,
+                        "subjectLocality": "Hoffman Estates",
+                        "subjectName": "*.thespeedyou.com",
+                        "subjectOrg": "Sears IT and Management Services India Pvt. Ltd.",
+                        "subjectOrgUnit": "Home Services,PlatinumSSL Wildcard",
+                        "subjectState": "Illinois",
+                        "validNotAfter": "2017-11-10T23:59:59Z",
+                        "validNotBefore": "2016-11-10T00:00:00Z",
+                        "version": "3"
+                    },
+                    "firstObserved": "2021-01-12T06:56:51Z",
+                    "lastObserved": "2021-03-23T18:37:05Z"
+                }
+            ],
+            "classifications": [
+                {
+                    "details": [],
+                    "firstObserved": null,
+                    "id": "NginxWebServer",
+                    "lastObserved": null,
+                    "name": "NginxWebServer"
+                },
+                {
+                    "details": [],
+                    "firstObserved": null,
+                    "id": "ServerSoftware",
+                    "lastObserved": null,
+                    "name": "ServerSoftware"
+                },
+                {
+                    "details": [],
+                    "firstObserved": null,
+                    "id": "WildcardCertificate",
+                    "lastObserved": null,
+                    "name": "WildcardCertificate"
+                },
+                {
+                    "details": [],
+                    "firstObserved": null,
+                    "id": "HttpServer",
+                    "lastObserved": null,
+                    "name": "HttpServer"
+                },
+                {
+                    "details": [],
+                    "firstObserved": null,
+                    "id": "ExpiredWhenScannedCertificate",
+                    "lastObserved": null,
+                    "name": "ExpiredWhenScannedCertificate"
+                }
+            ],
+            "cloudManagementStatus": {
+                "id": "NotApplicable",
+                "name": ""
+            },
+            "discoveryInfo": {
+                "details": [],
+                "type": "DirectlyDiscovered"
+            },
+            "domains": [],
+            "firstObserved": "2020-11-09T19:15:45Z",
+            "id": "c561a0f4-b5a2-3ab8-864b-b57a48aa2d12",
+            "ips": [
+                {
+                    "assetId": null,
+                    "firstObserved": "2021-01-12T06:56:51Z",
+                    "geolocation": null,
+                    "ip": "203.0.113.102",
+                    "lastObserved": "2021-03-23T18:37:05Z",
+                    "provider": {
+                        "id": "AWS",
+                        "name": "Amazon Web Services"
+                    },
+                    "transportProtocol": "TCP"
+                }
+            ],
+            "lastObserved": "2021-03-23T18:37:05Z",
+            "name": "HTTP Server at 203.0.113.102:443",
+            "portNumber": 443,
+            "tlsVersions": [
+                {
+                    "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+                    "firstObserved": "2021-01-12T06:56:51Z",
+                    "lastObserved": "2021-03-23T18:37:05Z",
+                    "tlsVersion": "TLS 1.2"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Expanse Services
+>|Id|Name|Ips|Domains|Port Number|Activity Status|Business Units|Certificates|Tls Versions|Classifications|First Observed|Last Observed|Annotations|Assets|Discovery Info|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| c561a0f4-b5a2-3ab8-864b-b57a48aa2d12 | HTTP Server at 203.0.113.102:443 | {'ip': '203.0.113.102', 'assetId': None, 'transportProtocol': 'TCP', 'geolocation': None, 'provider': {'id': 'AWS', 'name': 'Amazon Web Services'}, 'firstObserved': '2021-01-12T06:56:51Z', 'lastObserved': '2021-03-23T18:37:05Z'} |  | 443 | Active | {'id': '04b5140e-bbe2-3e9c-9318-a39a3b547ed5', 'name': 'VanDelay Industries'} | {'certificate': {'issuer': 'C=GB,ST=Greater Manchester,L=Salford,O=COMODO CA Limited,CN=COMODO RSA Organization Validation Secure Server CA', 'issuerAlternativeNames': '', 'issuerCountry': 'GB', 'issuerEmail': None, 'issuerLocality': 'Salford', 'issuerName': 'COMODO RSA Organization Validation Secure Server CA', 'issuerOrg': 'COMODO CA Limited', 'formattedIssuerOrg': 'COMODO', 'issuerOrgUnit': None, 'issuerState': 'Greater Manchester', 'publicKey': 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3Wc7WbUjdzK8EyX85hYPq0kUdiaZYIdy92Qdic6Ng0EJwLDEvaWv6tjkmLofBu/XsbUwr8J3Qp9Glih8fudkBzHqUxjPHxiEnyPWIXJKZNoiEFKWuRhzvWwJYNYh842Jnam+sK2vC2PxusLuM0WAaRmGPdv3yGth309xesbc83hL7RlvKAbRMsQNu0JYjwYkXtBjl+pXIrxFuVOj73UxijJgte2yieP4nhKd6vIYLAWq7sIEN58xqzD0ovObRR7mKXuEwpt04aq0+E9acCBVdIGRmk7UZ9YfH6znXjPrNaM0NPJUEfUk+M92r1ZyjQstXfIz9NeQmkA9mYIse+aQtwIDAQAB', 'publicKeyAlgorithm': 'RSA', 'publicKeyRsaExponent': 65537, 'signatureAlgorithm': 'SHA256withRSA', 'subject': 'C=US,PostalCode=60179,ST=Illinois,L=Hoffman Estates,STREET=3333 Beverly Road,O=Sears Brands LLC,OU=Home Services,OU=PlatinumSSL Wildcard,CN=*.shs-core.com', 'subjectAlternativeNames': '*.shs-core.com', 'subjectCountry': 'US', 'subjectEmail': None, 'subjectLocality': 'Hoffman Estates', 'subjectName': '*.shs-core.com', 'subjectOrg': 'Sears Brands LLC', 'subjectOrgUnit': 'Home Services,PlatinumSSL Wildcard', 'subjectState': 'Illinois', 'serialNumber': '42792794729857115395309499847024762482', 'validNotBefore': '2016-11-10T00:00:00Z', 'validNotAfter': '2017-11-10T23:59:59Z', 'version': '3', 'publicKeyBits': 2048, 'publicKeyModulus': 'dd673b59b5237732bc1325fce6160fab4914762699608772f7641d89ce8d834109c0b0c4bda5afead8e498ba1f06efd7b1b530afc277429f4696287c7ee7640731ea5318cf1f18849f23d621724a64da22105296b91873bd6c0960d621f38d899da9beb0adaf0b63f1bac2ee3345806919863ddbf7c86b61df4f717ac6dcf3784bed196f2806d132c40dbb42588f06245ed06397ea5722bc45b953a3ef75318a3260b5edb289e3f89e129deaf2182c05aaeec204379f31ab30f4a2f39b451ee6297b84c29b74e1aab4f84f5a7020557481919a4ed467d61f1face75e33eb35a33434f25411f524f8cf76af56728d0b2d5df233f4d7909a403d99822c7be690b7', 'publicKeySpki': 'xmID8gn_JKlzrzuEoyaqLmdNlx5Xv3fFA6v_wpM6aSA=', 'sha1Fingerprint': '2594a1428dae54eeaf6140a7de97680121c89fff', 'sha256Fingerprint': '4dcf9d18c10c6f9f09b71bad3cf1079a31c5c2ebb2eced23373aac8b9f3dc72e', 'md5Fingerprint': '6aec4d4a43851a0e2e0b15464c031de8'}, 'assetId': 'ec73a0b3-a5e2-3a37-b718-06bff21546e6', 'firstObserved': '2021-01-12T06:56:51Z', 'lastObserved': '2021-03-23T18:37:05Z'} | {'tlsVersion': 'TLS 1.2', 'cipherSuite': 'TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256', 'firstObserved': '2021-01-12T06:56:51Z', 'lastObserved': '2021-03-23T18:37:05Z'} | {'id': 'NginxWebServer', 'name': 'NginxWebServer', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'ServerSoftware', 'name': 'ServerSoftware', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'WildcardCertificate', 'name': 'WildcardCertificate', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'HttpServer', 'name': 'HttpServer', 'details': [], 'firstObserved': None, 'lastObserved': None},<br/>{'id': 'ExpiredWhenScannedCertificate', 'name': 'ExpiredWhenScannedCertificate', 'details': [], 'firstObserved': None, 'lastObserved': None} | 2020-11-09T19:15:45Z | 2021-03-23T18:37:05Z | tags:  | {'id': 'ec73a0b3-a5e2-3a37-b718-06bff21546e6', 'assetKey': 'ec73a0b3-a5e2-3a37-b718-06bff21546e6', 'assetType': 'Certificate', 'displayName': '*.shs-core.com', 'referenceReason': {'id': 'CertificateAdvertisedOnService', 'name': 'This certificate — which is attributed to your organization — was advertised by this service.'}} | type: DirectlyDiscovered<br/>details:  |
+
+### expanse-list-pocs
+***
+List available Point of Contacts from Expanse.
+
+
+#### Base Command
+
+`expanse-list-pocs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of results to retrieve. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.PointOfContact.created | Date | The date in which the Point of Contact was first created | 
+| Expanse.PointOfContact.email | String | Email address of Point of Contact | 
+| Expanse.PointOfContact.firstName | String | First Name of Point of Contact | 
+| Expanse.PointOfContact.id | String | Internal ID of Point of Contact | 
+| Expanse.PointOfContact.lastName | String | Last Name of Point of Contact | 
+| Expanse.PointOfContact.modified | Date | The date in which the Point of Contact was last modified | 
+| Expanse.PointOfContact.phone | String | Phone number of Point of Contact | 
+| Expanse.PointOfContact.role | String | Role of Point of Contact | 
+
+
+#### Command Example
+```!expanse-list-pocs limit=1```
+
+#### Context Example
+```json
+{
+    "Expanse": {
+        "PointOfContact": {
+            "created": "2019-05-22T00:59:28.919496Z",
+            "email": "analyst@expanseinc.com",
+            "firstName": "Test",
+            "id": "f491b7ef-a7b9-4644-af90-36dc0a6b2000",
+            "lastName": "User",
+            "modified": "2019-05-22T00:59:28.919937Z",
+            "phone": "4157066803",
+            "role": "analyst"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|created|email|firstName|id|lastName|modified|phone|role|
+>|---|---|---|---|---|---|---|---|
+>| 2019-05-22T00:59:28.919496Z | analyst@expanseinc.com | Test | f491b7ef-a7b9-4644-af90-36dc0a6b2000 | User | 2019-05-22T00:59:28.919937Z | 4157066803 | analyst |
+
+
+### expanse-create-poc
+***
+Create a new Point of Contact in Expanse.
+
+
+#### Base Command
+
+`expanse-create-poc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | Email for Point of Contact. | Required | 
+| first_name | First name of Point of Contact. | Optional | 
+| last_name | Last name of Point of Contact. | Optional | 
+| phone | Phone number of Point of Contact. | Optional | 
+| role | Role of Point of Contact. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Expanse.PointOfContact.created | Date | The date in which the Point of Contact was first created | 
+| Expanse.PointOfContact.email | String | Email address of Point of Contact | 
+| Expanse.PointOfContact.firstName | String | First Name of Point of Contact | 
+| Expanse.PointOfContact.id | String | Internal ID of Point of Contact | 
+| Expanse.PointOfContact.lastName | String | Last Name of Point of Contact | 
+| Expanse.PointOfContact.modified | Date | The date in which the Point of Contact was last modified | 
+| Expanse.PointOfContact.phone | String | Phone number of Point of Contact | 
+| Expanse.PointOfContact.role | String | Role of Point of Contact | 
+
+
+#### Command Example
+```!expanse-create-tag email="analyst@expanse.inc"```
+
+#### Human Readable Output
+```json
+{}
+```
+
+
+### expanse-assign-pocs-to-asset
+***
+Assign Point of Contacts to an Expanse asset.
+
+
+#### Base Command
+
+`expanse-assign-pocs-to-asset`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_type | Type of Expanse asset to assign the poc to. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_id | ID of the asset to assign the poc to. | Required | 
+| pocs | IDs of the pocs to assign to the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Email Addresses of the pocs to assign to the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-assign-pocs-to-asset asset_type="IpRange" asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
+### expanse-unassign-pocs-from-asset
+***
+Unassign Point of Contacts from an Expanse Asset.
+
+
+#### Base Command
+
+`expanse-unassign-pocs-from-asset`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_type | Type of Expanse asset to unassign the pocs from. Possible values are: IpRange, Certificate, Domain. | Required | 
+| asset_id | ID of the asset to unassign the pocs from. | Required | 
+| pocs | IDs of the pocs to unassign from the asset (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Names of the pocs to unassign from the asset (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### expanse-assign-pocs-to-iprange
+***
+Assign Point of Contacts to an Expanse IP range.
+
+
+#### Base Command
+
+`expanse-assign-pocs-to-iprange`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the IP range to assign pocs to. | Required | 
+| pocs | IDs of the pocs to assign to the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Emails of the pocs to assign to the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-assign-pocs-to-iprange asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
+### expanse-unassign-pocs-from-iprange
+***
+Unassign Point of Contacts from an Expanse IP range.
+
+
+#### Base Command
+
+`expanse-unassign-pocs-from-iprange`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the IP range to unassign pocs from. | Required | 
+| pocs | IDs of the pocs to unassign from the IP range (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Names of the pocs to unassign from the IP range (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-unassign-pocs-from-iprange asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
+### expanse-assign-pocs-to-certificate
+***
+Assign pocs to an Expanse certificate.
+
+
+#### Base Command
+
+`expanse-assign-pocs-to-certificate`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the certificate to assign pocs to. | Required | 
+| pocs | IDs of the pocs to assign to the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Emails of the pocs to assign to the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-assign-pocs-to-certificate asset_id="1834b291-7be6-3161-a5f5-78207a548596" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
+### expanse-unassign-pocs-from-certificate
+***
+Unassign pocs from an Expanse certificate.
+
+
+#### Base Command
+
+`expanse-unassign-pocs-from-certificate`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the certificate to assign pocs to. | Required | 
+| pocs | IDs of the pocs to unassign from the certificate (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Emails of the pocs to unassign from the certificate (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-unassign-pocs-from-certificate asset_id="1834b291-7be6-3161-a5f5-78207a548596" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
+### expanse-assign-pocs-to-domain
+***
+Assign pocs to an Expanse domain.
+
+
+#### Base Command
+
+`expanse-assign-pocs-to-domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the domain to assign pocs to. | Required | 
+| pocs | IDs of the pocs to assign to the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Emails of the pocs to assign to the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-assign-pocs-to-domain asset_id="3e65e20d-51eb-364c-bfa9-c54746131098" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
+### expanse-unassign-pocs-from-domain
+***
+Unassign pocs from an Expanse domain.
+
+
+#### Base Command
+
+`expanse-unassign-pocs-from-domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | ID of the domain to unassign pocs from. | Required | 
+| pocs | IDs of the pocs to unassign from the domain (comma separated string). If used in combination with 'poc_emails' the lists of pocs are merged. | Optional | 
+| poc_emails | Emails of the pocs to unassign from the domain (comma separated string). If used in combination with 'pocs' the lists of pocs are merged. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+
+
+#### Command Example
+```!expanse-unassign-pocs-from-domain asset_id="3e65e20d-51eb-364c-bfa9-c54746131098" poc_emails="analyst@expanseinc.com"```
+
+#### Human Readable Output
+
+>Operation complete
+
 
 ### expanse-list-businessunits
 ***

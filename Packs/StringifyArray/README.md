@@ -5,5 +5,5 @@ A transformer to encode an array or any value given as JSON text.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | javascript |
 | Tags | transformer, entirelist, general |

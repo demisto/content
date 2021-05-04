@@ -94,11 +94,23 @@ def get_matter_by_id(service, matter_id):
     return matter
 
 
-def get_matters_by_state(service, state):
+def get_matters_by_state(service, state, first_page_only=False):
     state = state.upper()
     matter_state = state if state in ('OPEN', 'CLOSED', 'DELETED') else 'STATE_UNSPECIFIED'
-    matter_list = service.matters().list(state=matter_state).execute()
-    return matter_list
+
+    request = service.matters().list(state=matter_state)
+    response = request.execute()
+    matter_list_results = response['matters']
+
+    if not first_page_only:
+        while response.get('nextPageToken'):
+            request = service.matters().list_next(request, response)
+            response = request.execute()
+
+            for matter in response['matters']:
+                matter_list_results.append(matter)
+
+    return matter_list_results
 
 
 def delete_matter(service, matter_id):
@@ -563,7 +575,7 @@ def list_matters_command():
         service = connect()
         state = demisto.args().get('state', 'STATE_UNSPECIFIED')
         validate_input_values([state], ['All', 'Open', 'Closed', 'Deleted', 'STATE_UNSPECIFIED', ''])
-        matters = (get_matters_by_state(service, state))['matters']
+        matters = (get_matters_by_state(service, state))
 
         if not matters:
             demisto.results('No matters found.')
@@ -833,7 +845,7 @@ def search_matter_command():
         else:
             demisto.results('No name or ID were specified. Please specify at least one of them.')
             sys.exit(0)
-        matters = get_matters_by_state(service, state='STATE_UNSPECIFIED')['matters']
+        matters = get_matters_by_state(service, state='STATE_UNSPECIFIED')
         output = []
         markdown_matters = []
         found_anything = False
@@ -1458,7 +1470,7 @@ def test_module():
     """
     try:
         service = connect()
-        get_matters_by_state(service, 'STATE_UNSPECIFIED')
+        get_matters_by_state(service, 'STATE_UNSPECIFIED', first_page_only=True)
         demisto.results('ok')
         sys.exit(0)
     except Exception as ex:
