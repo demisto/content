@@ -14,7 +14,8 @@ PARAMETERS_DICT = {
     'storeModel': 'False',
     'minHomogeneityCluster': 0.6,
     'incidentType': 'Phishing',
-    'maxRatioOfMissingValue': 0.5
+    'maxRatioOfMissingValue': 0.5,
+    'storeModel': 'True'
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [

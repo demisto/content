@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import collections
 import dill as pickle
+import builtins
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn import cluster
@@ -49,7 +50,7 @@ class PostProcessing(object):
         Instantiate class object for visualization
         :param clustering: Object Clustering
         """
-        self.model = model
+        self.preprocessor = model.named_steps['preprocessor']
         self.clustering = model.named_steps['clustering']
         self.threshold = threshold
         self.max_number_cluster = max_number_cluster
@@ -455,7 +456,20 @@ class Tfidf(BaseEstimator, TransformerMixin):
 
 
 def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool) -> None:
-    model_data = base64.b64encode(pickle.dumps(model))
+    model_ = vars(model)
+    model_['clustering'] = base64.b64encode(pickle.dumps(model_['clustering'])).decode('utf-8')
+    #model_['preprocessor'] = base64.b64encode(pickle.dumps(model_['preprocessor'])).decode('utf-8')
+    model_['preprocessor'] = vars(model_['preprocessor'])
+
+    model_['preprocessor']['transformers'][0] = base64.b64encode(
+        pickle.dumps(model_['preprocessor']['transformers'][0])).decode('utf-8')
+
+    model_['preprocessor']['transformers'][1] = base64.b64encode(
+        pickle.dumps(model_['preprocessor']['transformers'][1])).decode('utf-8')
+
+    model_data = base64.b64encode(pickle.dumps(model_)).decode('utf-8')
+
+    # model_data = base64.b64encode(pickle.dumps(model.clustering)).decode('utf-8')
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
@@ -558,8 +572,8 @@ def create_summary(model_processed: Type[PostProcessing]) -> dict:
                                                               str(number_of_clusterized),
                                                               str(number_of_sample)),
         'Percentage of cluster selected': "%s  (%s/%s)" % (
-        str(percentage_clusters_selected), str(number_clusters_selected),
-        str(nb_clusters)),
+            str(percentage_clusters_selected), str(number_clusters_selected),
+            str(nb_clusters)),
         'Training time': str(model_processed.date_training)
     }
     return summary
@@ -645,6 +659,9 @@ def get_model_data(model_name, store_type, is_return_error):
 
 
 def main():
+    builtins.Clustering = Clustering
+    builtins.Tfidf = Tfidf
+
     global_msg = ""
     generic_cluster_name = False
 

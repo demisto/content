@@ -8,7 +8,7 @@ args:
   secret: false
 - default: false
   description: Incident field which represent the family name for each cluster formed.
-  isArray: false
+  isArray: true
   name: fieldForClusterName
   required: false
   secret: false
