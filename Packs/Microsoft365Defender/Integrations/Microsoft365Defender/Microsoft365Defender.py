@@ -20,6 +20,12 @@ TIMEOUT = 30
 class Client(BaseClient):
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool):
+        if '@' in app_id:
+            app_id, refresh_token = app_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
+
         client_args = {
             'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
@@ -449,7 +455,6 @@ def main() -> None:
             app_id=app_id,
             verify=verify_certificate,
             proxy=proxy)
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
