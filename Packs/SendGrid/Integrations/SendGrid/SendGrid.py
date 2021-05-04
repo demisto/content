@@ -44,20 +44,16 @@ def process_attachments(message, attachIDs="", attachNames=""):
         file_type = mimetypes.guess_type(attachment_name)[0]
         message.attachment = Attachment(FileContent(encoded_data), FileName(
             attachment_name), FileType(file_type), Disposition('attachment'))
-
     return 'ok'
 
 
-def test_module():
+def test_module(sg):
     """test function
-    Args:
-        client:
     Returns:
         ok if successful
     """
     try:
-        print("test module")
-
+        response = sg.client.categories.get()
     except Exception as e:
         raise DemistoException(
             f"Test failed. Please check your parameters. \n {e}")
@@ -68,44 +64,61 @@ def test_module():
 
 
 def create_batch_id(sg):
-    try:
-        response = sg.client.mail.batch.post()
-
-        if response.status_code == 201:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            ec = {'Sendgrid.Batchid': body['batch_id']}
-            md = tableToMarkdown('Batch Id: ', body)
-            return {
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': body,
-                'HumanReadable': md,
-                'EntryContext': ec
-            }
-        else:
-            return 'Batch ID creation failed: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+    response = sg.client.mail.batch.post()
+    if response.status_code == 201:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.Batchid': body['batch_id']}
+        md = tableToMarkdown('Batch Id: ', body)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Batch ID creation failed: ' + str(response.body)
 
 
 """Cancel/Pause a scheduled send"""
 
 
 def scheduled_send_status_change(args: dict, sg):
-    try:
-        batch_id = args.get('batch_id')
-        status = args.get('status')
-        data = {"batch_id": batch_id, 'status': status}
+    batch_id = args.get('batch_id')
+    status = args.get('status')
+    data = {"batch_id": batch_id, 'status': status}
 
-        response = sg.client.user.scheduled_sends.post(request_body=data)
+    response = sg.client.user.scheduled_sends.post(request_body=data)
+    if response.status_code == 201:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.SceduledSendStatus': body}
+        md = tableToMarkdown('Scheduled status changed: ', body)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'scheduled send status change failed: ' + str(response.body)
 
-        if response.status_code == 201:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            ec = {'Sendgrid.SceduledSendStatus': body}
-            md = tableToMarkdown('Scheduled status changed: ', body)
+
+"""Retrieve all scheduled sends"""
+
+
+def retrieve_all_scheduled_sends(args: dict, sg):
+    response = sg.client.user.scheduled_sends.get()
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        if not body:
+            return "No scheduled sends found"
+        else:
+            md = tableToMarkdown('List of Scheduled sends: ', body)
+            ec = {'Sendgrid.ScheduledSends': body}
             return {
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
@@ -113,233 +126,234 @@ def scheduled_send_status_change(args: dict, sg):
                 'HumanReadable': md,
                 'EntryContext': ec
             }
-        else:
-            return 'scheduled send status change failed: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
-
-
-"""Retrieve all scheduled sends"""
-
-
-def retrieve_all_scheduled_sends(args: dict, sg):
-    try:
-        response = sg.client.user.scheduled_sends.get()
-
-        if response.status_code == 200:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            if not body:
-                return "No scheduled sends found"
-            else:
-                md = tableToMarkdown('List of Scheduled sends: ', body)
-                ec = {'Sendgrid.ScheduledSends': body}
-                return {
-                    'ContentsFormat': formats['json'],
-                    'Type': entryTypes['note'],
-                    'Contents': body,
-                    'HumanReadable': md,
-                    'EntryContext': ec
-                }
-        else:
-            return 'Retrieval of scheduled sends list is failed: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+    else:
+        return 'Retrieval of scheduled sends list is failed: ' + str(response.body)
 
 
 """Retrieve scheduled send"""
 
 
 def retrieve_scheduled_send(args: dict, sg):
-    try:
-        batch_id = args.get("batch_id")
-        response = sg.client.user.scheduled_sends._(batch_id).get()
+    batch_id = args.get("batch_id")
 
-        if response.status_code == 200:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            if not body:
-                return "No scheduled sends found for the given batch id"
-            else:
-                md = tableToMarkdown('List of Scheduled sends for a given Batch Id: ', body)
-                ec = {'Sendgrid.ScheduledSend': body}
-                return {
-                    'ContentsFormat': formats['json'],
-                    'Type': entryTypes['note'],
-                    'Contents': body,
-                    'HumanReadable': md,
-                    'EntryContext': ec
-                }
+    response = sg.client.user.scheduled_sends._(batch_id).get()
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        if not body:
+            return "No scheduled sends found for the given batch id"
         else:
-            return 'Retrieval of scheduled sends for a given batch_id is failed ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+            md = tableToMarkdown('List of Scheduled sends for a given Batch Id: ', body)
+            ec = {'Sendgrid.ScheduledSend': body}
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': body,
+                'HumanReadable': md,
+                'EntryContext': ec
+            }
+    else:
+        return 'Retrieval of scheduled sends for a given batch_id is failed ' + str(response.body)
 
 
 """Update the status of a scheduled send for the given batch_id"""
 
 
 def update_scheduled_send(args: dict, sg):
-    try:
-        batch_id = args.get("batch_id")
-        status = args.get('status')
-        data = {'status': status}
-        response = sg.client.user.scheduled_sends._(batch_id).patch(request_body=data)
+    batch_id = args.get("batch_id")
+    status = args.get('status')
+    data = {'status': status}
 
-        if response.status_code == 204:
-            return 'Status of a scheduled send is updated to: ' + status
-        else:
-            return 'Update the status of a scheduled send for the given batch_id is failed ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+    response = sg.client.user.scheduled_sends._(batch_id).patch(request_body=data)
+    if response.status_code == 204:
+        return 'Status of a scheduled send is updated to: ' + status
+    else:
+        return 'Update the status of a scheduled send for the given batch_id is failed ' + str(response.body)
 
 
 """Delete the cancellation/pause of a scheduled send"""
 
 
 def delete_scheduled_send(args: dict, sg):
-    try:
-        batch_id = args.get("batch_id")
-        response = sg.client.user.scheduled_sends._(batch_id).delete()
+    batch_id = args.get("batch_id")
 
-        if response.status_code == 204:
-            return 'scheduled send is deleted'
-        else:
-            return 'Delete of a scheduled send for the given batch_id is failed ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
-
-
-"""Validate a Batch ID"""
-
-
-def validate_batch_id(args: dict, sg):
-    try:
-        batch_id = args.get("batch_id")
-        response = sg.client.mail.batch._(batch_id).get()
-
-        if response.status_code == 200:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            return 'Batch ID ' + body['batch_id'] + ' is valid'
-        else:
-            return 'Batch ID is not valid ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+    response = sg.client.user.scheduled_sends._(batch_id).delete()
+    if response.status_code == 204:
+        return 'scheduled send is deleted'
+    else:
+        return 'Delete of a scheduled send for the given batch_id is failed ' + str(response.body)
 
 
 """Get Global Email Stats"""
 
 
 def get_global_email_stats(args: dict, sg):
-    try:
-        params = {}
-        limit = args.get('limit')
-        if limit:
-            params['limit'] = int(limit)
-        offset = args.get('offset')
-        if offset:
-            params['offset'] = int(offset)
-        aggregated_by = args.get('aggregated_by')
-        if aggregated_by:
-            params['aggregated_by'] = aggregated_by
-        start_date = args.get('start_date')
-        if start_date:
-            params['start_date'] = start_date
-        end_date = args.get('end_date')
-        if end_date:
-            params['end_date'] = end_date
+    params = {}
+    limit = args.get('limit')
+    if limit:
+        params['limit'] = int(limit)
+    offset = args.get('offset')
+    if offset:
+        params['offset'] = int(offset)
+    aggregated_by = args.get('aggregated_by')
+    if aggregated_by:
+        params['aggregated_by'] = aggregated_by
+    start_date = args.get('start_date')
+    if start_date:
+        params['start_date'] = start_date
+    end_date = args.get('end_date')
+    if end_date:
+        params['end_date'] = end_date
 
-        response = sg.client.stats.get(query_params=params)
+    response = sg.client.stats.get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        res_stats = json.loads(rBody.decode("utf-8"))
+        mail_stats: list = []
+        for day in res_stats:
+            res = {}
+            res['date'] = day['date']
+            metrics = day['stats'][0]['metrics']
+            res['blocks'] = metrics['blocks']
+            res['bounce_drops'] = metrics['bounce_drops']
+            res['bounces'] = metrics['bounces']
+            res['clicks'] = metrics['clicks']
+            res['deferred'] = metrics['deferred']
+            res['delivered'] = metrics['delivered']
+            res['invalid_emails'] = metrics['invalid_emails']
+            res['opens'] = metrics['opens']
+            res['processed'] = metrics['processed']
+            res['requests'] = metrics['requests']
+            res['spam_report_drops'] = metrics['spam_report_drops']
+            res['spam_reports'] = metrics['spam_reports']
+            res['unique_clicks'] = metrics['unique_clicks']
+            res['unique_opens'] = metrics['unique_opens']
+            res['unsubscribe_drops'] = metrics['unsubscribe_drops']
+            res['unsubscribes'] = metrics['unsubscribes']
+            mail_stats.append(res)
 
-        if response.status_code == 200:
-            rBody = response.body
-            res_stats = json.loads(rBody.decode("utf-8"))
-
-            mail_stats: list = []
-            for day in res_stats:
-                res = {}
-                res['date'] = day['date']
-                metrics = day['stats'][0]['metrics']
-                res['blocks'] = metrics['blocks']
-                res['bounce_drops'] = metrics['bounce_drops']
-                res['bounces'] = metrics['bounces']
-                res['clicks'] = metrics['clicks']
-                res['deferred'] = metrics['deferred']
-                res['delivered'] = metrics['delivered']
-                res['invalid_emails'] = metrics['invalid_emails']
-                res['opens'] = metrics['opens']
-                res['processed'] = metrics['processed']
-                res['requests'] = metrics['requests']
-                res['spam_report_drops'] = metrics['spam_report_drops']
-                res['spam_reports'] = metrics['spam_reports']
-                res['unique_clicks'] = metrics['unique_clicks']
-                res['unique_opens'] = metrics['unique_opens']
-                res['unsubscribe_drops'] = metrics['unsubscribe_drops']
-                res['unsubscribes'] = metrics['unsubscribes']
-                mail_stats.append(res)
-
-            md = tableToMarkdown("Global Email Statistics", mail_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
-                                                                         'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
-
-            ec = {'Sendgrid.GlobalEmailStats': mail_stats}
-            return {
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': mail_stats,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': md,
-                'EntryContext': ec
-            }
-        else:
-            return 'Global email stat retrieval error: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+        md = tableToMarkdown("Global Email Statistics", mail_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
+                                                                     'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+        ec = {'Sendgrid.GlobalEmailStats': mail_stats}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': mail_stats,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Global email stat retrieval error: ' + str(response.body)
 
 
 """Get Category Stats"""
 
 
 def get_category_stats(args: dict, sg):
-    try:
-        params = {}
-        limit = args.get('limit')
-        if limit:
-            params['limit'] = int(limit)
-        offset = args.get('offset')
-        if offset:
-            params['offset'] = int(offset)
-        aggregated_by = args.get('aggregated_by')
-        if aggregated_by:
-            params['aggregated_by'] = aggregated_by
-        start_date = args.get('start_date')
-        if start_date:
-            params['start_date'] = start_date
-        end_date = args.get('end_date')
-        if end_date:
-            params['end_date'] = end_date
-        category = args.get('category')
-        if category:
-            params['categories'] = category
+    params = {}
+    limit = args.get('limit')
+    if limit:
+        params['limit'] = int(limit)
+    offset = args.get('offset')
+    if offset:
+        params['offset'] = int(offset)
+    aggregated_by = args.get('aggregated_by')
+    if aggregated_by:
+        params['aggregated_by'] = aggregated_by
+    start_date = args.get('start_date')
+    if start_date:
+        params['start_date'] = start_date
+    end_date = args.get('end_date')
+    if end_date:
+        params['end_date'] = end_date
+    category = args.get('category')
+    if category:
+        params['categories'] = category
 
-        response = sg.client.categories.stats.get(query_params=params)
+    response = sg.client.categories.stats.get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        res_stats = json.loads(rBody.decode("utf-8"))
+        cat_stats: list = []
+        for day in res_stats:
+            res = {}
+            res['date'] = day['date']
+            res['category'] = day['stats'][0]['name']
+            metrics = day['stats'][0]['metrics']
+            res['blocks'] = metrics['blocks']
+            res['bounce_drops'] = metrics['bounce_drops']
+            res['bounces'] = metrics['bounces']
+            res['clicks'] = metrics['clicks']
+            res['deferred'] = metrics['deferred']
+            res['delivered'] = metrics['delivered']
+            res['invalid_emails'] = metrics['invalid_emails']
+            res['opens'] = metrics['opens']
+            res['processed'] = metrics['processed']
+            res['requests'] = metrics['requests']
+            res['spam_report_drops'] = metrics['spam_report_drops']
+            res['spam_reports'] = metrics['spam_reports']
+            res['unique_clicks'] = metrics['unique_clicks']
+            res['unique_opens'] = metrics['unique_opens']
+            res['unsubscribe_drops'] = metrics['unsubscribe_drops']
+            res['unsubscribes'] = metrics['unsubscribes']
+            cat_stats.append(res)
 
-        if response.status_code == 200:
-            rBody = response.body
-            res_stats = json.loads(rBody.decode("utf-8"))
+        md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
+                                                                                            'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+        ec = {'Sendgrid.CategoryStats': cat_stats}
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': cat_stats,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Category stat retrieval error: ' + str(response.body)
+
+
+""" Sum of email statistics for all categories """
+
+
+def get_all_categories_stats(args: dict, sg):
+    params = {}
+    limit = args.get('limit')
+    if limit:
+        params['limit'] = int(limit)
+    offset = args.get('offset')
+    if offset:
+        params['offset'] = int(offset)
+    aggregated_by = args.get('aggregated_by')
+    if aggregated_by:
+        params['aggregated_by'] = aggregated_by
+    start_date = args.get('start_date')
+    if start_date:
+        params['start_date'] = start_date
+    end_date = args.get('end_date')
+    if end_date:
+        params['end_date'] = end_date
+    sort_by_direction = args.get('sort_by_direction')
+    if sort_by_direction:
+        params['sort_by_direction'] = sort_by_direction
+    sort_by_metric = args.get('sort_by_metric')
+    if sort_by_metric:
+        params['sort_by_metric'] = sort_by_metric
+
+    response = sg.client.categories.stats.sums.get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        if not body['stats']:
+            return "No Categories Statistics found for the given date range"
+        else:
+            res_stats = body['stats']
             cat_stats: list = []
-            for day in res_stats:
+            for category in res_stats:
                 res = {}
-                res['date'] = day['date']
-                res['category'] = day['stats'][0]['name']
-                metrics = day['stats'][0]['metrics']
+                res['category'] = category['name']
+                metrics = category['metrics']
                 res['blocks'] = metrics['blocks']
                 res['bounce_drops'] = metrics['bounce_drops']
                 res['bounces'] = metrics['bounces']
@@ -358,313 +372,220 @@ def get_category_stats(args: dict, sg):
                 res['unsubscribes'] = metrics['unsubscribes']
                 cat_stats.append(res)
 
-            md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, ['date', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
-                                                                                                'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
-
-            ec = {'Sendgrid.CategoryStats': cat_stats}
+            md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, ['category', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
+                                                                                                      'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+            ec = {'Sendgrid.AllCategoriesStats': body}
             return {
                 'ContentsFormat': formats['json'],
                 'Type': entryTypes['note'],
-                'Contents': cat_stats,
+                'Contents': body,
                 'ReadableContentsFormat': formats['markdown'],
                 'HumanReadable': md,
                 'EntryContext': ec
             }
-        else:
-            return 'Category stat retrieval error: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
-
-
-""" Sum of email statistics for all categories """
-
-
-def get_all_categories_stats(args: dict, sg):
-    try:
-        params = {}
-        limit = args.get('limit')
-        if limit:
-            params['limit'] = int(limit)
-        offset = args.get('offset')
-        if offset:
-            params['offset'] = int(offset)
-        aggregated_by = args.get('aggregated_by')
-        if aggregated_by:
-            params['aggregated_by'] = aggregated_by
-        start_date = args.get('start_date')
-        if start_date:
-            params['start_date'] = start_date
-        end_date = args.get('end_date')
-        if end_date:
-            params['end_date'] = end_date
-        sort_by_direction = args.get('sort_by_direction')
-        if sort_by_direction:
-            params['sort_by_direction'] = sort_by_direction
-        sort_by_metric = args.get('sort_by_metric')
-        if sort_by_metric:
-            params['sort_by_metric'] = sort_by_metric
-
-        response = sg.client.categories.stats.sums.get(query_params=params)
-
-        if response.status_code == 200:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            if not body['stats']:
-                return "No Categories Statistics found for the given date range"
-            else:
-                res_stats = body['stats']
-                cat_stats: list = []
-                for category in res_stats:
-                    res = {}
-                    res['category'] = category['name']
-                    metrics = category['metrics']
-                    res['blocks'] = metrics['blocks']
-                    res['bounce_drops'] = metrics['bounce_drops']
-                    res['bounces'] = metrics['bounces']
-                    res['clicks'] = metrics['clicks']
-                    res['deferred'] = metrics['deferred']
-                    res['delivered'] = metrics['delivered']
-                    res['invalid_emails'] = metrics['invalid_emails']
-                    res['opens'] = metrics['opens']
-                    res['processed'] = metrics['processed']
-                    res['requests'] = metrics['requests']
-                    res['spam_report_drops'] = metrics['spam_report_drops']
-                    res['spam_reports'] = metrics['spam_reports']
-                    res['unique_clicks'] = metrics['unique_clicks']
-                    res['unique_opens'] = metrics['unique_opens']
-                    res['unsubscribe_drops'] = metrics['unsubscribe_drops']
-                    res['unsubscribes'] = metrics['unsubscribes']
-                    cat_stats.append(res)
-
-                md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, ['category', 'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered',
-                                                                                                          'invalid_emails', 'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
-
-                ec = {'Sendgrid.AllCategoriesStats': body}
-                return {
-                    'ContentsFormat': formats['json'],
-                    'Type': entryTypes['note'],
-                    'Contents': body,
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': md,
-                    'EntryContext': ec
-                }
-        else:
-            return 'Categories stat retrieval error: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+    else:
+        return 'Categories stat retrieval error: ' + str(response.body)
 
 
 """ List of categories """
 
 
 def get_categories_list(args: dict, sg):
-    try:
-        params = {}
-        limit = args.get('limit')
-        if limit:
-            params['limit'] = int(limit)
-        offset = args.get('offset')
-        if offset:
-            params['offset'] = int(offset)
-        category = args.get('category')
-        if category:
-            params['category'] = category
+    params = {}
+    limit = args.get('limit')
+    if limit:
+        params['limit'] = int(limit)
+    offset = args.get('offset')
+    if offset:
+        params['offset'] = int(offset)
+    category = args.get('category')
+    if category:
+        params['category'] = category
 
-        response = sg.client.categories.get(query_params=params)
-
-        if response.status_code == 200:
-            rBody = response.body
-            body = json.loads(rBody.decode("utf-8"))
-            if not body:
-                return "No Categories found"
-            else:
-                md = tableToMarkdown("List of Categories", body, ['category'])
-                ec = {'Sendgrid.CategoriesList': body}
-                return {
-                    'ContentsFormat': formats['json'],
-                    'Type': entryTypes['note'],
-                    'Contents': body,
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': md,
-                    'EntryContext': ec
-                }
+    response = sg.client.categories.get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        if not body:
+            return "No Categories found"
         else:
-            return 'Categories list retrieval error: ' + str(response.body)
-
-    except Exception as e:
-        return_error(e)
+            md = tableToMarkdown("List of Categories", body, ['category'])
+            ec = {'Sendgrid.CategoriesList': body}
+            return {
+                'ContentsFormat': formats['json'],
+                'Type': entryTypes['note'],
+                'Contents': body,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': md,
+                'EntryContext': ec
+            }
+    else:
+        return 'Categories list retrieval error: ' + str(response.body)
 
 
 def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
-    try:
-        message = Mail()
+    message = Mail()
 
-        attach_ids = args.get('AttachIDs')
-        attach_names = args.get('AttachNames') or ""
+    attach_ids = args.get('AttachIDs')
+    attach_names = args.get('AttachNames') or ""
 
-        if attach_ids:
-            process_attachments(message, attach_ids, attach_names)
+    if attach_ids:
+        process_attachments(message, attach_ids, attach_names)
 
-        categories = args.get('Categories')
-        if categories:
-            categories = categories.split(",")
-            for category in categories:
-                message.category = Category(category)
+    categories = args.get('Categories')
+    if categories:
+        categories = categories.split(",")
+        for category in categories:
+            message.category = Category(category)
 
-        batch_id = args.get('BatchID')
-        if batch_id:
-            message.batch_id = BatchId(batch_id)
+    batch_id = args.get('BatchID')
+    if batch_id:
+        message.batch_id = BatchId(batch_id)
 
-        send_at = args.get('SendAt')
-        if send_at:
-            t = dateutil.parser.parse(send_at)
-            send_time = time.mktime(t.timetuple())
-            message.send_at = SendAt(int(send_time))
+    send_at = args.get('SendAt')
+    if send_at:
+        t = dateutil.parser.parse(send_at)
+        send_time = time.mktime(t.timetuple())
+        message.send_at = SendAt(int(send_time))
 
-        asm = args.get('Asm')
-        if asm:
-            asm = asm if type(asm) is dict else json.loads(asm)
-            message.asm = Asm(GroupId(asm["group_id"]), GroupsToDisplay(asm["groups_to_display"]))
+    asm = args.get('Asm')
+    if asm:
+        asm = asm if type(asm) is dict else json.loads(asm)
+        message.asm = Asm(GroupId(asm["group_id"]), GroupsToDisplay(asm["groups_to_display"]))
 
-        custom_args = args.get('CustomArgs')
-        if custom_args:
-            custom_args = custom_args if type(custom_args) is dict else json.loads(custom_args)
-            for key in custom_args:
-                message.custom_arg = CustomArg(key, custom_args[key])
+    custom_args = args.get('CustomArgs')
+    if custom_args:
+        custom_args = custom_args if type(custom_args) is dict else json.loads(custom_args)
+        for key in custom_args:
+            message.custom_arg = CustomArg(key, custom_args[key])
 
-        ip_pool_name = args.get('IPPoolName')
-        if ip_pool_name:
-            message.ip_pool_name = IpPoolName(ip_pool_name)
+    ip_pool_name = args.get('IPPoolName')
+    if ip_pool_name:
+        message.ip_pool_name = IpPoolName(ip_pool_name)
 
-        # Mail Tracking settings
-        tracking_settings = TrackingSettings()
-        click_tracking = args.get('ClickTracking')
-        if click_tracking:
-            click_tracking = click_tracking if type(click_tracking) is dict else json.loads(click_tracking)
-            tracking_settings.click_tracking = ClickTracking(click_tracking["enable"], click_tracking["enable_text"])
+    # Mail Tracking settings
+    tracking_settings = TrackingSettings()
+    click_tracking = args.get('ClickTracking')
+    if click_tracking:
+        click_tracking = click_tracking if type(click_tracking) is dict else json.loads(click_tracking)
+        tracking_settings.click_tracking = ClickTracking(click_tracking["enable"], click_tracking["enable_text"])
 
-        open_tracking = args.get('OpenTracking')
-        if open_tracking:
-            open_tracking = open_tracking if type(open_tracking) is dict else json.loads(open_tracking)
-            tracking_settings.open_tracking = OpenTracking(
-                open_tracking["enable"],
-                OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]))
+    open_tracking = args.get('OpenTracking')
+    if open_tracking:
+        open_tracking = open_tracking if type(open_tracking) is dict else json.loads(open_tracking)
+        tracking_settings.open_tracking = OpenTracking(
+            open_tracking["enable"],
+            OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]))
 
-        subscription_tracking = args.get('SubscriptionTracking')
-        if subscription_tracking:
-            subscription_tracking = subscription_tracking if type(
-                subscription_tracking) is dict else json.loads(subscription_tracking)
-            tracking_settings.subscription_tracking = SubscriptionTracking(
-                subscription_tracking["enable"],
-                SubscriptionText(subscription_tracking["text"]),
-                SubscriptionHtml(subscription_tracking["html"]),
-                SubscriptionSubstitutionTag(subscription_tracking["substitution_tag"]))
+    subscription_tracking = args.get('SubscriptionTracking')
+    if subscription_tracking:
+        subscription_tracking = subscription_tracking if type(
+            subscription_tracking) is dict else json.loads(subscription_tracking)
+        tracking_settings.subscription_tracking = SubscriptionTracking(
+            subscription_tracking["enable"],
+            SubscriptionText(subscription_tracking["text"]),
+            SubscriptionHtml(subscription_tracking["html"]),
+            SubscriptionSubstitutionTag(subscription_tracking["substitution_tag"]))
 
-        ganalytics = args.get('GAnalytics')
-        if ganalytics:
-            ganalytics = ganalytics if type(ganalytics) is dict else json.loads(ganalytics)
-            tracking_settings.ganalytics = Ganalytics(
-                ganalytics["enable"],
-                UtmSource(ganalytics["utm_source"]),
-                UtmMedium(ganalytics["utm_medium"]),
-                UtmTerm(ganalytics["utm_term"]),
-                UtmContent(ganalytics["utm_content"]),
-                UtmCampaign(ganalytics["utm_campaign"]))
+    ganalytics = args.get('GAnalytics')
+    if ganalytics:
+        ganalytics = ganalytics if type(ganalytics) is dict else json.loads(ganalytics)
+        tracking_settings.ganalytics = Ganalytics(
+            ganalytics["enable"],
+            UtmSource(ganalytics["utm_source"]),
+            UtmMedium(ganalytics["utm_medium"]),
+            UtmTerm(ganalytics["utm_term"]),
+            UtmContent(ganalytics["utm_content"]),
+            UtmCampaign(ganalytics["utm_campaign"]))
 
-        message.tracking_settings = tracking_settings
+    message.tracking_settings = tracking_settings
 
-        # Mail Settings
-        mail_settings = MailSettings()
-        bcc_mail_settings = args.get('BccSettings')
-        if bcc_mail_settings:
-            bcc_mail_settings = bcc_mail_settings if type(bcc_mail_settings) is dict else json.loads(bcc_mail_settings)
-            mail_settings.bcc_settings = BccSettings(
-                bcc_mail_settings["enable"],
-                BccSettingsEmail(bcc_mail_settings["email"]))
+    # Mail Settings
+    mail_settings = MailSettings()
+    bcc_mail_settings = args.get('BccSettings')
+    if bcc_mail_settings:
+        bcc_mail_settings = bcc_mail_settings if type(bcc_mail_settings) is dict else json.loads(bcc_mail_settings)
+        mail_settings.bcc_settings = BccSettings(
+            bcc_mail_settings["enable"],
+            BccSettingsEmail(bcc_mail_settings["email"]))
 
-        footer = args.get('Footer')
-        if footer:
-            footer = footer if type(footer) is dict else json.loads(footer)
-            mail_settings.footer_settings = FooterSettings(
-                footer["enable"],
-                FooterText(footer["text"]),
-                FooterHtml(footer["html"]))
+    footer = args.get('Footer')
+    if footer:
+        footer = footer if type(footer) is dict else json.loads(footer)
+        mail_settings.footer_settings = FooterSettings(
+            footer["enable"],
+            FooterText(footer["text"]),
+            FooterHtml(footer["html"]))
 
-        spam_check = args.get('SpamCheck')
-        if spam_check:
-            spam_check = spam_check if type(spam_check) is dict else json.loads(spam_check)
-            mail_settings.spam_check = SpamCheck(
-                spam_check["enable"],
-                SpamThreshold(spam_check["threshold"]),
-                SpamUrl(spam_check["post_to_url"]))
+    spam_check = args.get('SpamCheck')
+    if spam_check:
+        spam_check = spam_check if type(spam_check) is dict else json.loads(spam_check)
+        mail_settings.spam_check = SpamCheck(
+            spam_check["enable"],
+            SpamThreshold(spam_check["threshold"]),
+            SpamUrl(spam_check["post_to_url"]))
 
-        sandbox_mode = args.get('SandboxMode')
-        if sandbox_mode:
-            sandbox_mode = False if sandbox_mode == 'False' else True
-            mail_settings.sandbox_mode = SandBoxMode(sandbox_mode)
+    sandbox_mode = args.get('SandboxMode')
+    if sandbox_mode:
+        sandbox_mode = False if sandbox_mode == 'False' else True
+        mail_settings.sandbox_mode = SandBoxMode(sandbox_mode)
 
-        bypass_list_management = args.get('BypassListManagement')
-        if bypass_list_management:
-            bypass_list_management = False if bypass_list_management == 'False' else True
-            mail_settings.bypass_list_management = BypassListManagement(bypass_list_management)
+    bypass_list_management = args.get('BypassListManagement')
+    if bypass_list_management:
+        bypass_list_management = False if bypass_list_management == 'False' else True
+        mail_settings.bypass_list_management = BypassListManagement(bypass_list_management)
 
-        message.mail_settings = mail_settings
+    message.mail_settings = mail_settings
 
-        headers = args.get('Headers')
-        if headers:
-            headers = headers if type(headers) is dict else json.loads(headers)
-            for key in headers:
-                message.header = Header(key, headers[key])
+    headers = args.get('Headers')
+    if headers:
+        headers = headers if type(headers) is dict else json.loads(headers)
+        for key in headers:
+            message.header = Header(key, headers[key])
 
-        template_id = args.get('TemplateID')
-        if template_id:
-            message.template_id = TemplateId(template_id)
+    template_id = args.get('TemplateID')
+    if template_id:
+        message.template_id = TemplateId(template_id)
 
-        subject = args.get('Subject')
-        message.subject = Subject(subject)
+    subject = args.get('Subject')
+    message.subject = Subject(subject)
 
-        email_body = args.get('HtmlBody')
-        if email_body:
-            message.content = Content(MimeType.html, email_body)
+    email_body = args.get('HtmlBody')
+    if email_body:
+        message.content = Content(MimeType.html, email_body)
 
-        raw_body = args.get('RawBody')
-        if raw_body:
-            message.content = Content(MimeType.text, raw_body)
+    raw_body = args.get('RawBody')
+    if raw_body:
+        message.content = Content(MimeType.text, raw_body)
 
-        reply_to_email = args.get('ReplyTo')
-        if reply_to_email:
-            message.reply_to = ReplyTo(reply_to_email, None)
+    reply_to_email = args.get('ReplyTo')
+    if reply_to_email:
+        message.reply_to = ReplyTo(reply_to_email, None)
 
-        message.from_email = From(sg_from_email, sg_sender_name)
+    message.from_email = From(sg_from_email, sg_sender_name)
 
-        to_emails = args.get('ToEmails')
-        to_emails = to_emails if isinstance(to_emails, list) else to_emails.split(",")
-        for email in to_emails:
-            message.to = To(email, None, p=0)
+    to_emails = args.get('ToEmails')
+    to_emails = to_emails if isinstance(to_emails, list) else to_emails.split(",")
+    for email in to_emails:
+        message.to = To(email, None, p=0)
 
-        cc_emails = args.get('Cc')
-        if cc_emails:
-            cc_emails = cc_emails if isinstance(cc_emails, list) else cc_emails.split(",")
-            for email in cc_emails:
-                message.cc = Cc(email, None, p=0)
+    cc_emails = args.get('Cc')
+    if cc_emails:
+        cc_emails = cc_emails if isinstance(cc_emails, list) else cc_emails.split(",")
+        for email in cc_emails:
+            message.cc = Cc(email, None, p=0)
 
-        bcc_emails = args.get('Bcc')
-        if bcc_emails:
-            bcc_emails = bcc_emails if isinstance(bcc_emails, list) else bcc_emails.split(",")
-            for email in bcc_emails:
-                message.bcc = Bcc(email, None, p=0)
+    bcc_emails = args.get('Bcc')
+    if bcc_emails:
+        bcc_emails = bcc_emails if isinstance(bcc_emails, list) else bcc_emails.split(",")
+        for email in bcc_emails:
+            message.bcc = Bcc(email, None, p=0)
 
-        print(message)
-        response = sg.send(message)
-        if response.status_code == 202:
-            return "Email Sent successfully"
-        else:
-            return "Failed to send email " + response.status_code
-
-    except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+    response = sg.send(message)
+    if response.status_code == 202:
+        return "Email Sent successfully"
+    else:
+        return "Failed to send email " + response.status_code
 
 
 def main():
@@ -684,7 +605,7 @@ def main():
         args = demisto.args()
 
         if command == 'test-module':
-            result = test_module()
+            result = test_module(sg)
 
         elif demisto.command() == 'sg-send-email':
             result = send_mail(args, sg_from_email, sg_sender_name, sg)
@@ -703,9 +624,6 @@ def main():
 
         elif demisto.command() == 'sg-create-batch-id':
             result = create_batch_id(sg)
-
-        elif demisto.command() == 'sg-validate-batch-id':
-            result = validate_batch_id(args, sg)
 
         elif demisto.command() == 'sg-scheduled-status-change':
             result = scheduled_send_status_change(args, sg)

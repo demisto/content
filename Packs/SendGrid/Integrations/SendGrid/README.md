@@ -1,4 +1,4 @@
-Send, manage emails.
+SendGrid provides a cloud-based service that assists businesses with email delivery. It allows companies to track email opens, unsubscribes, bounces, and spam reports. Our SendGrid pack utilize these SendGrid use cases to help you send and manage your emails.
 This integration was integrated and tested with version xx of SendGrid
 ## Configure SendGrid on Cortex XSOAR
 
@@ -220,32 +220,6 @@ Generates a new batch ID.
 | --- | --- | --- |
 | Sendgrid.Batchid | unknown | Returns a batch id, which can be used manage scheduled sends. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
-### sg-validate-batch-id
-***
-Validates the provided batch id.
-
-
-#### Base Command
-
-`sg-validate-batch-id`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| batch_id | ID to manage multiple scheduled sends. | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
 
 #### Command Example
 ``` ```
