@@ -433,6 +433,6 @@
     "typeId": "Microsoft 365 Defender Incident",
     "version": -1,
     "toVersion": "5.9.9",
-    "fromVersion": "5.0.0",
+    "fromVersion": "5.5.0",
     "description": ""
 }
