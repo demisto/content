@@ -44,7 +44,7 @@ def create_jwt(private_key: str, integration_id: str):
     """
     Create a JWT token used for getting access token. It's needed for github bots.
     POSTs https://api.github.com/app/installations/<installation_id>/access_tokens
-    :param private_key: bytes: github's private key
+    :param private_key: str: github's private key
     :param integration_id: str: ID of the github integration (bot)
     """
     import jwt
@@ -1010,7 +1010,7 @@ def get_stale_prs(stale_time: str, label: str) -> list:
     query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
     if label:
         query += f' label:{label}'
-    matching_issues = search_issue(query).get('items', [])
+    matching_issues = search_issue(query, 100).get('items', [])
     relevant_prs = [get_pull_request(issue.get('number')) for issue in matching_issues]
     return relevant_prs
 
@@ -1215,20 +1215,20 @@ def search_code_command():
     return_results(results)
 
 
-def search_issue(query):
+def search_issue(query, limit):
     response = http_request(method='GET',
                             url_suffix='/search/issues',
-                            params={'q': query})
+                            params={'q': query, 'per_page': limit})
     return response
 
 
 def search_command():
     q = demisto.args().get('query')
     limit = int(demisto.args().get('limit'))
-    if limit > 200:
-        limit = 200
+    if limit > 100:
+        limit = 100  # per GitHub limitation.
 
-    response = search_issue(q)
+    response = search_issue(q, limit)
     create_issue_table(response['items'], response, limit)
 
 
@@ -1520,7 +1520,7 @@ def main():
         try:
             import jwt  # noqa
         except Exception:
-            return_error("You need to update the docket image so that the jwt package could be used")
+            return_error("You need to update the docker image so that the jwt package could be used")
 
         generated_jwt_token = create_jwt(PRIVATE_KEY, INTEGRATION_ID)
         TOKEN = get_installation_access_token(INSTALLATION_ID, generated_jwt_token)
@@ -1543,5 +1543,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ == '__builtin__' or __name__ == 'builtins' or __name__ == '__main__':
     main()

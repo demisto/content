@@ -1,0 +1,41 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "TIM - Campaign"
+    ],
+    "caseInsensitive": true,
+    "cliName": "timcampaignthreatalias",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_timcampaignthreatalias",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "TIM Campaign Threat Alias",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "calypso",
+        "ChaCha",
+        "fin7",
+        "UNC1878",
+        "Egregor",
+        "SolarGroup",
+        "UNC2452"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
