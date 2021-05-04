@@ -398,7 +398,7 @@ class TestCleanPacks:
     """ Test for clean_non_existing_packs function scenarios.
     """
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'dummy_branch'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'dummy_branch'})
     def test_clean_non_existing_packs_skip_non_master(self, mocker):
         """
         Scenario: running clean_non_existing_packs function on CI environment but not on master branch
@@ -425,7 +425,7 @@ class TestCleanPacks:
 
         assert skipped_cleanup
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'master'})
     def test_clean_non_existing_packs_skip_non_production_bucket(self, mocker):
         """
         Scenario: running clean_non_existing_packs function on CI environment on master branch but not on production
@@ -452,7 +452,7 @@ class TestCleanPacks:
 
         assert skipped_cleanup
 
-    @patch.dict('os.environ', {'CI': 'true', 'CIRCLE_BRANCH': 'master'})
+    @patch.dict('os.environ', {'CI': 'true', 'CI_COMMIT_BRANCH': 'master'})
     def test_clean_non_existing_packs(self, mocker):
         """
          Scenario: deleting pack that is not part of content repo or paid packs from index
