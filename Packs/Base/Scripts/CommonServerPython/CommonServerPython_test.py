@@ -4185,7 +4185,7 @@ class TestIndicatorsSearcher:
             searchAfter = None
 
         if page == 17:
-            #checking a unique case
+            # checking a unique case
             searchAfter = 200
 
         return {'searchAfter': searchAfter}
