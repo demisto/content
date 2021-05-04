@@ -142,11 +142,11 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 def endpoints_response_to_dict(response: dict) -> dict:
     return {
         'ID': response.get('id'),
-        'MAC Address': response.get('mac_address'),
+        'MAC_Address': response.get('mac_address'),
         'Status': response.get('status', ""),
         'Attributes': response.get('attributes', ""),
         'Description': response.get('description', ""),
-        'Device insight tags': response.get('device_insight_tags', "")
+        'Device_insight_tags': response.get('device_insight_tags', "")
     }
 
 
@@ -285,12 +285,12 @@ def attributes_response_to_dict(response: dict) -> dict:
     return {
         'ID': response.get('id'),
         'Name': response.get('name'),
-        'Entity name': response.get('entity_name'),
-        'Data type': response.get('data_type'),
+        'Entity_name': response.get('entity_name'),
+        'Data_type': response.get('data_type'),
         'Mandatory': response.get('mandatory', False),
-        'Default value': response.get('default_value'),
-        'Allow multiple': response.get('allow_multiple', False),
-        'Allowed value': response.get('allowed_value', False)
+        'Default_value': response.get('default_value'),
+        'Allow_multiple': response.get('allow_multiple', False),
+        'Allowed_value': response.get('allowed_value', False)
     }
 
 

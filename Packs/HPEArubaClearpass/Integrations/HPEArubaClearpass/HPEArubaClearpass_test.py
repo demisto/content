@@ -100,7 +100,7 @@ def test_update_endpoint_command(mocker):
     assert results.outputs_prefix == "HPEArubaClearpass.endpoints.update"
     assert results.outputs_key_field == "id"
     assert results.outputs['ID'] == 1
-    assert results.outputs['MAC Address'] == '123456789'
+    assert results.outputs['MAC_Address'] == '123456789'
     assert results.outputs['Description'] == 'test1'
     assert results.outputs['Status'] == 'Unknown'
 
@@ -150,10 +150,10 @@ def test_create_attribute_command(mocker):
     assert results.outputs_key_field == "id"
     assert results.outputs['ID'] == 1
     assert results.outputs['Name'] == args.get('name')
-    assert results.outputs['Entity name'] == args.get('entity_name')
-    assert results.outputs['Data type'] == args.get('data_type')
+    assert results.outputs['Entity_name'] == args.get('entity_name')
+    assert results.outputs['Data_type'] == args.get('data_type')
     assert results.outputs['Mandatory'] is False
-    assert results.outputs['Allow multiple'] is False
+    assert results.outputs['Allow_multiple'] is False
 
 
 def test_update_attribute_command(mocker):
@@ -176,10 +176,10 @@ def test_update_attribute_command(mocker):
     assert results.outputs_key_field == "id"
     assert results.outputs['ID'] == 1
     assert results.outputs['Name'] == args.get('name')
-    assert results.outputs['Entity name'] == args.get('entity_name')
-    assert results.outputs['Data type'] == args.get('data_type')
+    assert results.outputs['Entity_name'] == args.get('entity_name')
+    assert results.outputs['Data_type'] == args.get('data_type')
     assert results.outputs['Mandatory'] is False
-    assert results.outputs['Allow multiple'] is False
+    assert results.outputs['Allow_multiple'] is False
 
 
 def test_delete_attribute_command(mocker):
