@@ -52,23 +52,23 @@ script:
     - description: The IP Pool that you would like to send this email from.
       name: IPPoolName
     - description: 'Allows you to track if a recipient clicked a link in your email.
-        For ex: {"enable": True,"enable_text": True}'
+        For ex: {"enable": "True","enable_text": True}'
       name: ClickTracking
     - description: 'Allows you to enable tracking provided by Google Analytics. For
-        ex: {"enable": True,"utm_campaign": "[NAME OF YOUR REFERRER SOURCE]","utm_content":
+        ex: {"enable": "True","utm_campaign": "[NAME OF YOUR REFERRER SOURCE]","utm_content":
         "[USE THIS SPACE TO DIFFERENTIATE YOUR EMAIL FROM ADS]","utm_medium": "[NAME
         OF YOUR MARKETING MEDIUM e.g. email]","utm_name": "[NAME OF YOUR CAMPAIGN]","utm_term":
-        "[IDENTIFY PAID KEYWORDS HERE]"}'
+        "[IDENTIFY PAID KEYWORDS HERE]","utm_source":"[Name of the referrer source]"}'
       name: GAnalytics
     - description: 'Allows you to track if the email was opened by including a single
         pixel image in the body of the content. When the pixel is loaded, Twilio SendGrid
-        can log that the email was opened. For ex: {"enable": True,"substitution_tag":
+        can log that the email was opened. For ex: {"enable": "True","substitution_tag":
         "%opentrack"}'
       name: OpenTracking
     - description: 'Allows you to insert a subscription management link at the bottom
         of the text and HTML bodies of your email. If you would like to specify the
         location of the link within your email, you may use the substitution_tag.
-        For ex: {"enable": True,"html": "If you would like to unsubscribe and stop
+        For ex: {"enable": "True","html": "If you would like to unsubscribe and stop
         receiving these emails <% clickhere %>.","substitution_tag": "<%click here%>","text":
         "If you would like to unsubscribe and stop receiving these emails <% click
         here %>."}'
@@ -91,11 +91,11 @@ script:
       - "True"
       - "False"
     - description: 'The default footer that you would like included on every email.
-        For ex: {"enable": True,"html": "<p>Thanks</br>The SendGrid Team</p>","text":
+        For ex: {"enable": "True","html": "<p>Thanks</br>The SendGrid Team</p>","text":
         "Thanks,/n The SendGrid Team"}'
       name: Footer
     - description: 'Spam Check allows you to test the content of your email for spam.
-        For ex: {"enable": True,"post_to_url": "http://example.com/compliance","threshold":
+        For ex: {"enable": "True","post_to_url": "http://example.com/compliance","threshold":
         3}'
       name: SpamCheck
     - description: 'A collection of JSON key/value pairs allowing you to specify handling
