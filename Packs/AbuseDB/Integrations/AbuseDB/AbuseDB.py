@@ -8,6 +8,7 @@ import csv
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+
 ''' GLOBALS '''
 VERBOSE = True
 SERVER = demisto.params().get('server')
