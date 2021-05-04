@@ -15,6 +15,13 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- additionalinfo: The time limit in seconds for fetch incidents to run. Leave this
+    empty to cancel timeout limit.
+  display: Fetch incidents timeout
+  hidden: false
+  name: fetch_timeout
+  required: false
+  type: 0
 - additionalinfo: Due to API limitation the maximum is 100
   defaultvalue: '10'
   display: Number of incidents for each fetch.
@@ -87,6 +94,12 @@ script:
       description: Number of incidents in the list (Max 100).
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Number of entries to skip.
+      isArray: false
+      name: offset
       required: false
       secret: false
     deprecated: false

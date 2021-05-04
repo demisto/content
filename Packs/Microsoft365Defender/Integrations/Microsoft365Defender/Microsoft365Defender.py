@@ -54,7 +54,7 @@ class Client(BaseClient):
             from_date (datetime): get incident with creation date more recent than from_date
             skip (int): how many entries to skip
 
-        Returns: request results as dict:
+        Returns (Dict): request results as dict:
                     { '@odata.context',
                       'value': list of incidents,
                       '@odata.nextLink'
@@ -91,17 +91,17 @@ class Client(BaseClient):
         """
         PATCH request to update single incident.
         Args:
-            incident_id: incident's id
-            status: Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
-            assigned_to: Owner of the incident.
-            classification: Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
-            determination:  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+            incident_id (int): incident's id
+            status (str): Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+            assigned_to (str): Owner of the incident.
+            classification (str): Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+            determination (str):  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
-            tags: Custom tags associated with an incident. Separated by commas without spaces (CSV)
+            tags (list): Custom tags associated with an incident. Separated by commas without spaces (CSV)
                  for example: tag1,tag2,tag3.
-            timeout: The amount of time (in seconds) that a request will wait for a client to
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
-       Returns: request results as dict:
+       Returns( Dict): request results as dict:
                     { '@odata.context',
                       'value': updated incident,
                     }
@@ -118,8 +118,8 @@ class Client(BaseClient):
         """
         POST request to the advanced hunting API:
         Args:
-            query: query advanced hunting query language
-            timeout: The amount of time (in seconds) that a request will wait for a client to
+            query (str): query advanced hunting query language
+            timeout (int): The amount of time (in seconds) that a request will wait for a client to
                      establish a connection to a remote machine before a timeout occurs.
 
         Returns:
@@ -200,7 +200,7 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
     """
     Converts incident received from microsoft 365 defender to readable format
     Args:
-        raw_incident: The incident as received from microsoft 365 defender
+        raw_incident (Dict): The incident as received from microsoft 365 defender
 
     Returns: new dictionary with keys mapping.
 
@@ -244,15 +244,15 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     """
     Returns list of the latest incidents in microsoft 365 defender in readable table.
     The list can be filtered using the following arguments:
-        - limit - number of incidents in the list, integer between 0 to 100.
-        - status - fetch only incidents with the given status.
+        - limit (int) - number of incidents in the list, integer between 0 to 100.
+        - status (str) - fetch only incidents with the given status.
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
-              - limit - integer between 0 to 100
-              - status - get incidents with the given status (Active, Resolved or Redirected)
-              - assigned_to - get incidents assigned to the given user
-              - offset - skip the first N entries of the list
+              - limit (int) - integer between 0 to 100
+              - status (str) - get incidents with the given status (Active, Resolved or Redirected)
+              - assigned_to (str) - get incidents assigned to the given user
+              - offset (int) - skip the first N entries of the list
     Returns: CommandResults
 
     """
@@ -262,7 +262,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     offset = arg_to_number(args.get('offset'))
 
     response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to, skip=offset)
-    
+
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
     # the table headers are the incident keys. creates dummy incident to manage a situation of empty list.
@@ -280,11 +280,11 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
-              - id - incident's id (required)
-              - status - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
-              - assigned_to - Owner of the incident.
-              - classification - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
-              - determination -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
+              - id (int) - incident's id (required)
+              - status (str) - Specifies the current status of the alert. Possible values are: (Active, Resolved or Redirected)
+              - assigned_to (str) - Owner of the incident.
+              - classification (str) - Specification of the alert. Possible values are: Unknown, FalsePositive, TruePositive.
+              - determination (str) -  Specifies the determination of the alert. Possible values are: NotAvailable, Apt,
                                  Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.
               - tags - Custom tags associated with an incident. Separated by commas without spaces (CSV)
                        for example: tag1,tag2,tag3.
@@ -314,7 +314,7 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
 
 
 @logger
-def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> List[Dict]:
+def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[Dict]:
     """
     Uses to fetch incidents into Demisto
     Documentation: https://xsoar.pan.dev/docs/integrations/fetching-incidents#the-fetch-incidents-command
@@ -331,11 +331,12 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> 
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         first_fetch_time(str): From when to fetch if first time, e.g. `3 days`.
         fetch_limit(int): The number of incidents in each fetch.
-
+        timeout(int): The time limit in seconds for this function to run.
+            Note: exceeding the time doesnt kill the function just prevents the next api call.
     Returns:
         incidents, new last_run
     """
-
+    start_time = time.time()
     test_context_for_token()
 
     last_run_dict = demisto.getLastRun()
@@ -348,13 +349,26 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> 
     incidents_queue = last_run_dict.get('incidents_queue', [])
 
     if len(incidents_queue) < fetch_limit:
-        # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
-        # incident we skip the number of incidents we already fetched.
 
-        skip = 0
         incidents = list()
-        while True:  # as long as there are incidents to fetch run this loop.
-            response = client.incidents_list(from_date=last_run, skip=skip)
+
+        # The API is limited to MAX_ENTRIES incidents for each requests, if we are trying to get more than MAX_ENTRIES
+        # incident we skip (offset) the number of incidents we already fetched.
+        offset = 0
+
+        # This loop fetches all the incidents that had been created after last_run, due to API limitations the fetching
+        # occurs in batches. If timeout was given, exceeding the time will result an error.
+        # Note: Because the list is cannot be ordered by creation date, reaching timeout will force to re-run this
+        #       function from the start.
+
+        while True:
+            time_delta = time.time() - start_time
+            if timeout and time_delta > timeout:
+                raise DemistoException(
+                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent")
+
+            # HTTP request
+            response = client.incidents_list(from_date=last_run, skip=offset)
             raw_incidents = response.get('value')
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
@@ -365,7 +379,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int) -> 
             # raw_incidents length is less than MAX_ENTRIES than we fetch all the relevant incidents
             if len(raw_incidents) < int(MAX_ENTRIES):
                 break
-            skip += int(MAX_ENTRIES)
+            offset += int(MAX_ENTRIES)
 
         incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # sort the incidents by the creation time
         incidents_queue += incidents
@@ -384,7 +398,7 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
     Args:
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
-              - query - The query to run (required)
+              - query (str) - The query to run (required)
 
     Returns:
 
@@ -422,6 +436,7 @@ def main() -> None:
     app_id = demisto.params().get('app_id')
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     fetch_limit = demisto.params().get('max_fetch', 10)
+    fetch_timeout = demisto.params().get('fetch_timeout')
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()
@@ -450,8 +465,6 @@ def main() -> None:
             return_results(test_connection(client))
 
         elif command == 'microsoft-365-defender-incidents-list':
-            start_auth(client)
-            complete_auth(client)
             return_results(microsoft_365_defender_incidents_list_command(client, args))
 
         elif command == 'microsoft-365-defender-incident-update':
@@ -462,7 +475,8 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             fetch_limit = arg_to_number(fetch_limit)
-            incidents = fetch_incidents(client, first_fetch_time, fetch_limit)
+            fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
+            incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
             demisto.incidents(incidents)
         else:
             raise NotImplementedError
