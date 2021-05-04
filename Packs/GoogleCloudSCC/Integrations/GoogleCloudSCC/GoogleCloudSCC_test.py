@@ -390,8 +390,8 @@ def test_findings_list_command(client):
     from GoogleCloudSCC import finding_list_command
     with open('TestData/list_finding_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/list_finding_ec.json') as f:
-        finding_ec = json.load(f)
+    # with open('./TestData/list_finding_ec.json') as f:
+    #     finding_ec = json.load(f)
     client.get_findings = Mock(return_value=mock_data)
 
     arguments = {
@@ -484,8 +484,8 @@ def test_asset_list_command(client):
     from GoogleCloudSCC import asset_list_command
     with open('TestData/list_asset_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/list_asset_ec.json') as f:
-        asset_ec = json.load(f)
+    # with open('./TestData/list_asset_ec.json') as f:
+    #     asset_ec = json.load(f)
     client.get_assets = Mock(return_value=mock_data)
 
     arguments = {
@@ -599,8 +599,8 @@ def test_finding_update_command(client, mocker):
     from GoogleCloudSCC import finding_update_command, demisto
     with open('TestData/update_finding_response.json') as file:
         mock_data = json.load(file)
-    with open('./TestData/update_finding_ec.json') as f:
-        finding_ec = json.load(f)
+    # with open('./TestData/update_finding_ec.json') as f:
+    #     finding_ec = json.load(f)
     client.update_finding = Mock(return_value=mock_data)
     params = {
         "organization_id": "123",

@@ -40,10 +40,10 @@ class MyTestCase(unittest.TestCase):
         command_result = domain_lookup_command(self.client, TEST_SCAN_DOMAIN)
         resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
-        ec = command_result.to_context().get('EntryContext')
-
-        with open("./TestData/domain_ec.json", encoding='utf-8') as f:
-            expected_ec = json.load(f)
+        # ec = command_result.to_context().get('EntryContext')
+        #
+        # with open("./TestData/domain_ec.json", encoding='utf-8') as f:
+        #     expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_DOMAIN
@@ -62,10 +62,10 @@ class MyTestCase(unittest.TestCase):
         command_result = ip_lookup_command(self.client, TEST_SCAN_IP)
         resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
-        ec = command_result.to_context().get('EntryContext')
-
-        with open("./TestData/ip_ec.json", encoding='utf-8') as f:
-            expected_ec = json.load(f)
+        # ec = command_result.to_context().get('EntryContext')
+        #
+        # with open("./TestData/ip_ec.json", encoding='utf-8') as f:
+        #     expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_IP
@@ -104,10 +104,10 @@ class MyTestCase(unittest.TestCase):
         command_result = url_lookup_command(self.client, TEST_SCAN_URL)
         resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
-        ec = command_result.to_context().get('EntryContext')
-
-        with open("./TestData/url_ec.json", encoding='utf-8') as f:
-            expected_ec = json.load(f)
+        # ec = command_result.to_context().get('EntryContext')
+        #
+        # with open("./TestData/url_ec.json", encoding='utf-8') as f:
+        #     expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_URL
@@ -126,10 +126,10 @@ class MyTestCase(unittest.TestCase):
         command_result = file_lookup_command(self.client, TEST_SCAN_FILE)
         resp = command_result.to_context().get('Contents')
         result = self.get_result(resp)
-        ec = command_result.to_context().get('EntryContext')
-
-        with open("./TestData/file_ec.json", encoding='utf-8') as f:
-            expected_ec = json.load(f)
+        # ec = command_result.to_context().get('EntryContext')
+        #
+        # with open("./TestData/file_ec.json", encoding='utf-8') as f:
+        #     expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_FILE
