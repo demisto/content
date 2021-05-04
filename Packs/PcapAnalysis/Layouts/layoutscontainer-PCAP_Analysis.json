@@ -974,8 +974,8 @@
         ]
     },
     "group": "incident",
-    "id": "PCAP Analysis Incident",
-    "name": "PCAP Analysis Incident",
+    "id": "PCAP Analysis",
+    "name": "PCAP Analysis",
     "quickView": {
         "sections": [
             {
