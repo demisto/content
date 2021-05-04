@@ -49,7 +49,7 @@ description: Microsoft 365 Defender is a unified pre- and post-breach enterprise
   suite that natively coordinates detection, prevention, investigation, and response
   across endpoints, identities, email, and applications to provide integrated protection
   against sophisticated attacks.
-display: Microsoft365Defender
+display: Microsoft 365 Defender
 name: Microsoft365Defender
 script:
   commands:
