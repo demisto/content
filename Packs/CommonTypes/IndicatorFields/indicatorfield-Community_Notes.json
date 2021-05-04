@@ -1,0 +1,55 @@
+{
+ "associatedToAll": true,
+ "caseInsensitive": true,
+ "cliName": "communitynotes",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "Notes",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "notes",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 541
+  },
+  {
+   "displayName": "Timestamp",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "timestamp",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "date",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {}
+ ],
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_communitynotes",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Community Notes",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.5.0"
+}
