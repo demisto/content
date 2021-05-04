@@ -15,7 +15,8 @@ PARAMETERS_DICT = {
     'minHomogeneityCluster': 0.6,
     'incidentType': 'Phishing',
     'maxRatioOfMissingValue': 0.5,
-    'storeModel': 'True'
+    'modelExpiration': 24,
+    'forceRetrain': 'True'
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [
@@ -47,6 +48,10 @@ def executeCommand(command, args):
     global FETCHED_INCIDENT
     if command == 'GetIncidentsByQuery':
         return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
+    # elif command == 'getMLModel':
+    #     return [{'Contents': {'modelData': "ModelDataML",
+    #                           'model': {'type': {'type': ''}}},
+    #              'Type': 'note'}]
 
 
 def test_preprocess_incidents_field():
@@ -57,23 +62,24 @@ def test_preprocess_incidents_field():
 def test_main_regular(mocker):
     global FETCHED_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    PARAMETERS_DICT.update({'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname'})
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname'})
     mocker.patch.object(demisto, 'args',
                         return_value=PARAMETERS_DICT
                         )
     sub_dict_0 = {
-             'data': [2],
-             'dataType': 'incident',
-             'incidents_ids': ['1', '3'],
-             'name': 'powershell',
-             'query': 'type:Phishing'
+        'data': [2],
+        'dataType': 'incident',
+        'incidents_ids': ['1', '3'],
+        'name': 'powershell',
+        'query': 'type:Phishing'
     }
     sub_dict_1 = {
-                 'data': [2],
-                 'dataType': 'incident',
-                 'incidents_ids': ['2', '4'],
-                 'name': 'nmap',
-                 'query': 'type:Phishing'
+        'data': [2],
+        'dataType': 'incident',
+        'incidents_ids': ['2', '4'],
+        'name': 'nmap',
+        'query': 'type:Phishing'
     }
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -84,7 +90,7 @@ def test_main_regular(mocker):
     assert MESSAGE_INCORRECT_FIELD % 'wrong_field' in msg
     assert (all(item in cluster_0.items() for item in sub_dict_0.items())
             and all(item in cluster_1.items() for item in sub_dict_1.items())) \
-        or (all(item in cluster_0.items() for item in sub_dict_1.items())
+           or (all(item in cluster_0.items() for item in sub_dict_1.items())
             and all(item in cluster_1.items() for item in sub_dict_0.items()))
 
 
@@ -92,7 +98,8 @@ def test_main_regular(mocker):
 def test_wrong_cluster_name(mocker):
     global FETCHED_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
-    PARAMETERS_DICT.update({'fieldsForClustering': 'field_1, field_2', 'fieldForClusterName': 'wrong_cluster_name_field'})
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': 'field_1, field_2', 'fieldForClusterName': 'wrong_cluster_name_field'})
     mocker.patch.object(demisto, 'args',
                         return_value=PARAMETERS_DICT)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -111,19 +118,19 @@ def test_empty_cluster_name(mocker):
     mocker.patch.object(demisto, 'args',
                         return_value=PARAMETERS_DICT)
     sub_dict_0 = {
-                 'data': [2],
-                 'dataType': 'incident',
-                 'incidents_ids': ['1', '3'],
-                 'name': 'Cluster 0',
-                 'query': 'type:Phishing'
-        }
+        'data': [2],
+        'dataType': 'incident',
+        'incidents_ids': ['1', '3'],
+        'name': 'Cluster 0',
+        'query': 'type:Phishing'
+    }
     sub_dict_1 = {
-                 'data': [2],
-                 'dataType': 'incident',
-                 'incidents_ids': ['2', '4'],
-                 'name': 'Cluster 1',
-                 'query': 'type:Phishing'
-        }
+        'data': [2],
+        'dataType': 'incident',
+        'incidents_ids': ['2', '4'],
+        'name': 'Cluster 1',
+        'query': 'type:Phishing'
+    }
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
@@ -131,7 +138,7 @@ def test_empty_cluster_name(mocker):
     cluster_1 = output_json['data'][1]
     assert (all(item in cluster_0.items() for item in sub_dict_0.items())
             and all(item in cluster_1.items() for item in sub_dict_1.items())) or \
-            (all(item in cluster_0.items() for item in sub_dict_1.items()) and
+           (all(item in cluster_0.items() for item in sub_dict_1.items()) and \
             all(item in cluster_1.items() for item in sub_dict_0.items()))
 
 
@@ -185,3 +192,6 @@ def test_main_incident_nested(mocker):
     assert not model
     assert not output_clustering_json
     assert MESSAGE_CLUSTERING_NOT_VALID in msg
+
+
+

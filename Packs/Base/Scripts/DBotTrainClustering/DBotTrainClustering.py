@@ -45,13 +45,13 @@ class PostProcessing(object):
     Class to analyze the clustering
     """
 
-    def __init__(self, model, threshold, max_number_cluster, generic_cluster_name):
+    def __init__(self, clustering, threshold, max_number_cluster, generic_cluster_name):
         """
         Instantiate class object for visualization
         :param clustering: Object Clustering
         """
-        self.preprocessor = model.named_steps['preprocessor']
-        self.clustering = model.named_steps['clustering']
+        #self.preprocessor = model.named_steps['preprocessor']
+        self.clustering = clustering #model.named_steps['clustering']
         self.threshold = threshold
         self.max_number_cluster = max_number_cluster
         self.generic_cluster_name = generic_cluster_name
@@ -59,8 +59,9 @@ class PostProcessing(object):
         self.silhouette = None
         self.statistics()
         self.compute_dist()
-        self.date_training = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
         self.summary = None
+        self.json = None
 
     def statistics(self):
         """
@@ -273,10 +274,12 @@ def get_args():  # type: ignore
     store_model = demisto.args().get('storeModel')
     model_override = demisto.args().get('overrideExistingModel', 'False') == 'True'
     debug = demisto.args().get('debug')
+    force_retrain = demisto.args().get('forceRetrain', 'False') == 'True'
+    model_expiration = int(demisto.args().get('modelExpiration'))
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
            max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-           min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug
+           min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
@@ -456,20 +459,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
 
 
 def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool) -> None:
-    model_ = vars(model)
-    model_['clustering'] = base64.b64encode(pickle.dumps(model_['clustering'])).decode('utf-8')
-    #model_['preprocessor'] = base64.b64encode(pickle.dumps(model_['preprocessor'])).decode('utf-8')
-    model_['preprocessor'] = vars(model_['preprocessor'])
-
-    model_['preprocessor']['transformers'][0] = base64.b64encode(
-        pickle.dumps(model_['preprocessor']['transformers'][0])).decode('utf-8')
-
-    model_['preprocessor']['transformers'][1] = base64.b64encode(
-        pickle.dumps(model_['preprocessor']['transformers'][1])).decode('utf-8')
-
-    model_data = base64.b64encode(pickle.dumps(model_)).decode('utf-8')
-
-    # model_data = base64.b64encode(pickle.dumps(model.clustering)).decode('utf-8')
+    model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
@@ -645,7 +635,7 @@ def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.Da
     return valid_field, global_msg
 
 
-def get_model_data(model_name, store_type, is_return_error):
+def get_model_data(model_name):
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if not is_error(res_model):
         model_data = res_model['Contents']['modelData']
@@ -658,98 +648,133 @@ def get_model_data(model_name, store_type, is_return_error):
         return None, MESSAGE_ERROR_MESSAGE
 
 
+def is_model_needs_retrain(force_retrain, model_expiration, model_name):
+    if force_retrain:
+        return None, True
+    model_data, model_type = get_model_data(model_name)
+    if not model_data:
+        return None, True
+    else:
+        model = load_model64(model_data)
+        model_training_time = pd.to_datetime(model.date_training)
+        return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
+
+
+def load_model64(model_base64):
+    try:
+        model = pickle.loads(base64.b64decode(model_base64))
+        return model
+    except pickle.UnpicklingError:
+        return_error("Model exist but cannot be loaded")
+
+
 def main():
     builtins.Clustering = Clustering
+    builtins.PostProcessing = PostProcessing
     builtins.Tfidf = Tfidf
 
-    global_msg = ""
+    global_msg   = ""
     generic_cluster_name = False
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
     max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
-    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug = get_args()
+    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration = get_args()
+
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
 
-    # Check arguments
-    if not field_for_cluster_name:
-        generic_cluster_name = True
+    #Check if need to retrain
+    model_processed, retrain = is_model_needs_retrain(force_retrain, model_expiration, model_name)
+    # demisto.results(model_processed.json)
+    # demisto.results(retrain)
 
-    # Get all the incidents from query, date and field similarity and field family
+    if not retrain:
+        if debug == 'True':
+            return_outputs(readable_output=global_msg + tableToMarkdown("Summary", model_processed.summary))
+        return_entry_clustering(output_clustering=model_processed.json, tag="trained")
+        return model_processed, model_processed.json, ""
 
-    populate_fields = fields_for_clustering + field_for_cluster_name
-    incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query,
-                                                                limit, incident_type)
-    global_msg += "%s \n" % msg
-    if not incidents:
-        demisto.results(global_msg)
-        return None, {}, global_msg
-
-    incidents_df = pd.DataFrame(incidents).fillna('')
-    incidents_df.index = incidents_df.id
-
-    incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
-
-    populate_fields = fields_for_clustering + field_for_cluster_name
-    global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
-
-    fields_for_clustering, field_for_cluster_name = \
-        remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, incorrect_fields=incorrect_fields)
-
-    fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
-                                                               max_percentage_of_missing_value)
-
-    # case where no field for clustrering or field for cluster name if not empty and incorrect)
-    if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
-        demisto.results(global_msg)
-        return None, {}, global_msg
-
-    # Create data for training
-    if generic_cluster_name:
-        incidents_df[FAMILY_COLUMN_NAME] = ""
-        labels = incidents_df[FAMILY_COLUMN_NAME]
     else:
-        labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: FAMILY_COLUMN_NAME})
+        # Check arguments
+        if not field_for_cluster_name:
+            generic_cluster_name = True
 
-    # Model
-    tfidf_pipe = Pipeline(steps=[
-        ('tfidf', Tfidf(normalize_function=normalize_global))
-    ])
+        # Get all the incidents from query, date and field similarity and field family
 
-    # preprocessor
-    transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
-    preprocessor = ColumnTransformer(
-        transformers=transformers_list)
+        populate_fields = fields_for_clustering + field_for_cluster_name
+        incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query,
+                                                                    limit, incident_type)
+        global_msg += "%s \n" % msg
+        if not incidents:
+            demisto.results(global_msg)
+            return None, {}, global_msg
 
-    # pipeline
+        incidents_df = pd.DataFrame(incidents).fillna('')
+        incidents_df.index = incidents_df.id
 
-    model = Pipeline(steps=[('preprocessor', preprocessor),
-                            ('clustering', Clustering(HDBSCAN_PARAMS))
-                            ])
-    model.fit(incidents_df, labels)
-    if not is_clustering_valid(model.named_steps['clustering']):
-        global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
-        demisto.results(global_msg)
-        return None, {}, global_msg
-    model.named_steps['clustering'].reduce_dimension()
-    model.named_steps['clustering'].compute_centers()
-    model_processed = PostProcessing(model, min_homogeneity_cluster, max_number_of_clusters, generic_cluster_name)
+        incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
 
-    # store model
-    summary = create_summary(model_processed)
-    model_processed.summary = summary
-    if store_model == 'True':
-        store_model_in_demisto(model_processed, model_name, model_override)
+        populate_fields = fields_for_clustering + field_for_cluster_name
+        global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
 
-    if debug == 'True':
-        return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
+        fields_for_clustering, field_for_cluster_name = \
+            remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, incorrect_fields=incorrect_fields)
 
-    # return Entry and summary
-    output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
-    return_entry_clustering(output_clustering=output_clustering_json, tag="trained")
-    return model_processed, output_clustering_json, global_msg
+        fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
+                                                                   max_percentage_of_missing_value)
+
+        # case where no field for clustrering or field for cluster name if not empty and incorrect)
+        if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
+            demisto.results(global_msg)
+            return None, {}, global_msg
+
+        # Create data for training
+        if generic_cluster_name:
+            incidents_df[FAMILY_COLUMN_NAME] = ""
+            labels = incidents_df[FAMILY_COLUMN_NAME]
+        else:
+            labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: FAMILY_COLUMN_NAME})
+
+        # Model
+        tfidf_pipe = Pipeline(steps=[
+            ('tfidf', Tfidf(normalize_function=lambda x: x))
+        ])
+
+        # preprocessor
+        transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
+        preprocessor = ColumnTransformer(
+            transformers=transformers_list)
+
+        # pipeline
+
+        model = Pipeline(steps=[('preprocessor', preprocessor),
+                                ('clustering', Clustering(HDBSCAN_PARAMS))
+                                ])
+        model.fit(incidents_df, labels)
+        if not is_clustering_valid(model.named_steps['clustering']):
+            global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
+            demisto.results(global_msg)
+            return None, {}, global_msg
+        model.named_steps['clustering'].reduce_dimension()
+        model.named_steps['clustering'].compute_centers()
+        model_processed = PostProcessing(model.named_steps['clustering'], min_homogeneity_cluster, max_number_of_clusters, generic_cluster_name)
+
+        # store model
+        summary = create_summary(model_processed)
+        model_processed.summary = summary
+
+        if debug == 'True':
+            return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
+
+        # return Entry and summary
+        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
+        model_processed.json = output_clustering_json
+        return_entry_clustering(output_clustering=model_processed.json, tag="trained")
+        if store_model == 'True':
+            store_model_in_demisto(model_processed, model_name, model_override)
+        return model_processed, output_clustering_json, global_msg
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
