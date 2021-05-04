@@ -2,8 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
-import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -31,7 +29,9 @@ class Client(BaseClient):
             url_suffix=url,
             params=params,
             return_empty_response=True,
-            json_data=json_data
+            json_data=json_data,
+            timeout=30,
+            # empty_valid_codes=(204,404)
         )
         return data
 
@@ -60,6 +60,26 @@ def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolat
     new_sensor_data['network_isolation_enabled'] = new_isolation
     return new_sensor_data
 
+def _parse_field(raw_field, sep=',', index_after_split=0, chars_to_remove=''):
+
+    new_field = raw_field.split(sep)
+    try:
+        new_field = new_field[index_after_split]
+    except IndexError:
+        raise IndexError(f'raw: {raw_field}, splitted by {delimeter} has no index {index_after_split}')
+    chars_to_remove = set(chars_to_remove)
+    for char in chars_to_remove:
+        new_field = new_field.replace(char, '')
+    return new_field
+
+def _get_isolation_status_field(isolation_activated, is_isolated):
+    sensor_isolation_status = ''
+    if isolation_activated:
+        sensor_isolation_status = 'Yes' if is_isolated else 'Pending isolation'
+    else:
+        sensor_isolation_status = 'Pending unisolation' if is_isolated else 'No'
+
+    return sensor_isolation_status
 
 ''' COMMAND FUNCTIONS '''
 
@@ -85,18 +105,25 @@ def sensors_list_command(client: Client, id: str = None, hostname: str = None, i
     url = f'/v1/sensor/{id}' if id else '/v1/sensor'
     query_fields = {'ip': 'ipaddr', 'hostname': 'hostname', 'group_id': 'groupid',
                     'inactive_filter_days': 'inactive_filter_days'}
-    query_params: dict = {query_fields[key]: val for key, val in locals().items() if
-                          key in query_fields and val is not None}
-    res = client.http_request(url=url, method='GET', params=query_params)
+    query_params: dict = {query_fields[key]: locals().get(key) for key in query_fields if
+                          locals().get(key)}
+    try:
+        res = client.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
+        if not isinstance(res, list):
+            res = [res]
 
+        res = res[:limit]
+
+        return CommandResults(outputs=res, outputs_prefix='CBSensors', outputs_key_field='id',
+                              readable_output=tableToMarkdown('Sensors', res), raw_response=res)
+    except DemistoException as e:
+        if '404' in e.message:
+            raise Exception(f'The sensor {id} could not be found. Please try using a different sensor.')
+        else:
+            raise Exception(f'Error connecting to API. Error: {e.message}')
+    # if id and res.status_code == 404:
+    #     raise Exception(f'The sensor {id} could not be found. Please try using a different sensor.')
     # When querying specific sensor without filters, the api returns dictionary.
-    if not isinstance(res, list):
-        res = [res]
-
-    res = res[:limit]
-
-    return CommandResults(outputs=res, outputs_prefix='CBSensors', outputs_key_field='id',
-                          readable_output=tableToMarkdown('Sensors', res), raw_response=res)
 
 
 def watchlist_delete_command(client: Client, id: str):
@@ -194,7 +221,8 @@ def binary_download_command(client: Client, md5: str) -> CommandResults:
     # todo: add file to command results
 
 
-def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None, group: str = None,
+def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None,
+                          group: str = None,
                           hostname: str = None, publisher: str = None, company_name: str = None, sort: str = None,
                           observed_filename: str = None, query: str = None, facet: str = None,
                           facet_field: str = None, rows: str = None, start: str = None) -> CommandResults:
@@ -202,7 +230,8 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
                     'group': 'group', 'hostname': 'hostname', 'publisher': 'digsig_publisher',
                     'company_name': 'company_name', 'observed_filename': 'observed_filename',
                     'query': 'query'}
-    query_params: dict = {query_fields[key]: val for key, val in locals().items() if key in query_fields and val is not None}
+    query_params: dict = {query_fields[key]: val for key, val in locals().items() if
+                          key in query_fields and val is not None}
     query_string = _create_query_string(query_params)
 
     res = client.http_request(url='/v1/binary', method='GET',
@@ -282,12 +311,34 @@ def sensor_installer_download_command(client: Client, os_type: str, group_id: st
             readable_output=f'Could not find installer for group id {group_id} which compatible with {os_type}.')
     # todo return file
 
+
 def endpoint_command(client: Client, id: str, ip: str, hostname: str):
     if not id or not ip or not hostname:
         raise Exception('In order to run this command, please provide valid id, ip and hostname')
-
     res = sensors_list_command(client, id=id, ip=ip, hostname=hostname)
+    endpoints = []
+    command_results = []
+    for sensor in res.raw_response:
+        is_isolated = _get_isolation_status_field(sensor.get('network_isolation_enabled'), sensor.get('is_isolating'))
+        endpoint = Common.Endpoint(
+            id=id,
+            hostname=hostname,
+            ip_address=ip,
+            mac_address=_parse_field(sensor.get('network_adapters',''), index_after_split=1, chars_to_remove='|'),
+            os_version=sensor.get('os_environment_display_string'),
+            memory=sensor.get('physical_memory_size'),
+            status=sensor.get('status'),
+            is_isolated=sensor.get('is_isolating'),
+            vendor='Carbon Black Response')
+        endpoints.append(endpoint)
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        md = tableToMarkdown(f'Carbon Black Response Endpoint: {id}', endpoint_context)
 
+        command_results.append(CommandResults(
+            readable_output=md,
+            raw_response=res,
+            indicator=endpoint
+        ))
 
 
 def test_module(client: Client) -> str:
@@ -318,6 +369,7 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     command = demisto.command()
+    args = demisto.args() if demisto.args() else {}
     demisto.debug(f'Command being called is {command}')
     try:
 
@@ -347,7 +399,7 @@ def main() -> None:
                     'cb-edr-unquarantine-device': unquarantine_device_command,
                     'cb-edr-sensor-installer-download': sensor_installer_download_command,
                     'fetch-incidents': '',
-                    'endpoint': ''
+                    'endpoint': endpoint_command
                     }
 
         if command == 'test-module':
@@ -358,7 +410,7 @@ def main() -> None:
             return
             # return_results(baseintegration_dummy_command(client, demisto.args()))
         elif command in commands:
-            return_results(commands[command](client, **demisto.args()))
+            return_results(commands[command](client, **args))
         else:
             raise NotImplementedError(f'command {command} was not implemented in this integration.')
     # Log exceptions and return errors
