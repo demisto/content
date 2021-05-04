@@ -4173,7 +4173,7 @@ class TestCommonTypes:
 
 
 class TestIndicatorsSearcher:
-    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+    def mock_search_after_output(self, fromDate, toDate, query, size, value, page, searchAfter):
         if not searchAfter:
             searchAfter = 0
 
@@ -4225,9 +4225,11 @@ class TestIndicatorsSearcher:
 
         search_indicators_obj_search_after = IndicatorsSearcher()
         search_indicators_obj_search_after._can_use_search_after = True
-
-        for n in range(5):
-            search_indicators_obj_search_after.search_indicators_by_version()
+        try:
+            for n in range(5):
+                search_indicators_obj_search_after.search_indicators_by_version()
+        except Exception as e:
+            print(e)
 
         assert search_indicators_obj_search_after._search_after_param == 5
         assert search_indicators_obj_search_after._page == 0
