@@ -60,7 +60,7 @@ MARKET_PLACE_CONFIGURATION = {
 AVOID_DOCKER_IMAGE_VALIDATION = {
     'content.validate.docker.images': 'false'
 }
-ID_SET_PATH = './Tests/id_set.json'
+ID_SET_PATH = './artifacts/id_set.json'
 
 
 class Running(IntEnum):
@@ -123,7 +123,7 @@ class Build:
     test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CIRCLECI_RUN
-    env_results_path = './env_results.json'
+    env_results_path = './artifacts/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #
@@ -233,9 +233,9 @@ def options_handler():
                         default='/home/runner/work/content-private/content-private/content')
     parser.add_argument('--id_set_path', help='Path to the ID set.')
     parser.add_argument('-l', '--tests_to_run', help='Path to the Test Filter.',
-                        default='./Tests/filter_file.txt')
+                        default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
-                        default='./Tests/content_packs_to_install.txt')
+                        default='./artifacts/content_packs_to_install.txt')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -739,7 +739,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
         # check that the content installation updated
         # verify the asset id matches the circleci build number / asset_id in the content-descriptor.json
         release, asset_id = get_content_version_details(client, ami_name)
-        with open('content-descriptor.json', 'r') as cd_file:
+        with open('./artifacts/content-descriptor.json', 'r') as cd_file:
             cd_json = json.loads(cd_file.read())
             cd_release = cd_json.get('release')
             cd_asset_id = cd_json.get('assetId')
@@ -965,7 +965,7 @@ def get_changed_integrations(build: Build) -> tuple:
 
 def get_pack_ids_to_install():
     if Build.run_environment == Running.CIRCLECI_RUN:
-        with open('./Tests/content_packs_to_install.txt', 'r') as packs_stream:
+        with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
     else:
