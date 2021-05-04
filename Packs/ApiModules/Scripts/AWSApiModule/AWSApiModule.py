@@ -112,7 +112,7 @@ class AWSClient:
                 verify=self.verify_certificate,
                 config=self.config
             )
-        else:
+        elif self.aws_access_key_id and not self.aws_role_arn:
             if region is not None:
                 client = boto3.client(
                     service_name=service,
@@ -131,5 +131,10 @@ class AWSClient:
                     verify=self.verify_certificate,
                     config=self.config
                 )
+        else:
+            if region is not None:
+                client = boto3.client(service_name=service, region_name=region)
+            else:
+                client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
 
         return client
