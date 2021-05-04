@@ -22,7 +22,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Whether to get all the resolution information. If disabled only the 10 most recent entries will be displayed.
+- additionalinfo: Whether to get all the resolution information. If disabled, only the 10 most recent entries will be displayed.
   display: Return extended Data
   name: extended_data
   required: false
@@ -36,25 +36,25 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Query threat crowd for reports.
+description: Query Threat Crowd for reports.
 display: Threat Crowd v2
 name: ThreatCrowdv2
 script:
   commands:
   - arguments:
     - default: true
-      description: Get a report of an IP.
+      description: An IP address for which to retrieve a report.
       isArray: true
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: Get a report of an IP.
+    description: Get a report of an IP address.
     execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -86,31 +86,31 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: IP.Tags
-      description: (List) Tags of the IP.
+      description: (List) Tags of the IP address.
       type: String
     - contextPath: IP.FeedRelatedIndicators.value
-      description: Indicators that are associated with the IP.
+      description: Indicators that are associated with the IP address.
       type: String
     - contextPath: IP.FeedRelatedIndicators.type
-      description: The type of the indicators that are associated with the IP.
+      description: The type of the indicators that are associated with the IP address.
       type: String
     - contextPath: IP.FeedRelatedIndicators.description
       description: The description of the indicators that are associated with the
-        IP.
+        IP address.
       type: String
     - contextPath: IP.MalwareFamily
-      description: The malware family associated with the IP.
+      description: The malware family associated with the IP address.
       type: String
     - contextPath: IP.Organization.Name
-      description: The organization of the IP.
+      description: The organization of the IP address.
       type: String
     - contextPath: IP.Organization.Type
-      description: The organization type of the IP.
+      description: The organization type of the IP address.
       type: String
 
   - arguments:
     - default: true
-      description: Get a report of a domain.
+      description: The domain for which to retrieve a report.
       isArray: true
       name: domain
       required: true
@@ -219,13 +219,13 @@ script:
       description: The phone number of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: 'The name of the registrar, for example: ''GoDaddy'''
+      description: 'The name of the registrar, for example: "GoDaddy".'
       type: String
     - contextPath: Domain.WHOIS.Registrar.AbuseEmail
       description: The email address of the contact for reporting abuse.
       type: String
     - contextPath: Domain.WHOIS.Registrar.AbusePhone
-      description: The phone number of contact for reporting abuse.
+      description: The phone number of the contact for reporting abuse.
       type: String
     - contextPath: Domain.WHOIS.Admin.Name
       description: The name of the domain administrator.
@@ -237,7 +237,7 @@ script:
       description: The phone number of the domain administrator.
       type: String
     - contextPath: Domain.WHOIS/History
-      description: List of Whois objects
+      description: List of Whois objects.
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -247,7 +247,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Get a report of an email address.
+      description: The email address for which to retrieve a report.
       isArray: true
       name: email
       required: true
@@ -262,7 +262,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Get a report of an antivirus.
+      description: The antivirus for which to retrieve a report.
       isArray: true
       name: antivirus
       required: true
@@ -273,7 +273,7 @@ script:
     name: threat-crowd-antivirus
   - arguments:
     - default: true
-      description: Get a report of a hash.
+      description: The hash for which to retrieve a report.
       isArray: true
       name: file
       required: true
@@ -299,7 +299,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: The SHA1 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
       description: The SHA512 hash of the file.
@@ -308,7 +308,7 @@ script:
       description: The ssdeep hash of the file (same as displayed in file entries).
       type: String
     - contextPath: File.Extension
-      description: 'The file extension, for example: ''xls''.'
+      description: 'The file extension, for example: "xls".'
       type: String
     - contextPath: File.Type
       description: The file type, as determined by libmagic (same as displayed in
