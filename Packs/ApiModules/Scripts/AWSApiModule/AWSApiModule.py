@@ -135,6 +135,6 @@ class AWSClient:
             if region is not None:
                 client = boto3.client(service_name=service, region_name=region)
             else:
-                client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
+                client = boto3.client(service_name=service, region_name=self.aws_default_region)
 
         return client
