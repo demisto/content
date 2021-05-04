@@ -4184,6 +4184,10 @@ class TestIndicatorsSearcher:
             # mock the end of indicators
             searchAfter = None
 
+        if page == 17:
+            #checking a unique case
+            searchAfter = 200
+
         return {'searchAfter': searchAfter}
 
     def test_search_indicators_by_page(self, mocker):
@@ -4256,6 +4260,27 @@ class TestIndicatorsSearcher:
         assert search_indicators_obj_search_after._search_after_param == None
         assert search_indicators_obj_search_after._page == 0
 
+    def test_search_indicators_in_certain_page(self, mocker):
+        """
+        Given:
+          - Searching indicators in a specific page that is mot 0
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators in this specific page
+          so search_after is None
+        Then:
+          - The search after param is not None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        res = search_indicators_obj_search_after = IndicatorsSearcher(page=17)
+        search_indicators_obj_search_after._can_use_search_after = True
+        search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 200
+        assert search_indicators_obj_search_after._page == 17
 
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
