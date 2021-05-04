@@ -1,4 +1,4 @@
-Query threat crowd for reports.
+Query Threat Crowd for reports.
 This integration was integrated and tested with version v2 of TheatCrowdv2
 ## Configure ThreatCrowdv2 on Cortex XSOAR
 
@@ -20,7 +20,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***
-Get a report of an IP.
+Get a report of an IP address.
 
 
 #### Base Command
@@ -30,14 +30,14 @@ Get a report of an IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | Get a report of an IP. | Required | 
+| ip | An IP address for which to retrieve a report. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | IP address | 
+| IP.Address | String | IP address. | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Hostname | String | The hostname that is mapped to this IP address. | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
@@ -47,13 +47,13 @@ Get a report of an IP.
 | IP.PositiveDetections | Number | The number of engines that positively detected the indicator as malicious. | 
 | IP.Malicious.Vendor | String | The vendor reporting the IP address as malicious. | 
 | IP.Malicious.Description | String | A description explaining why the IP address was reported as malicious. | 
-| IP.Tags | Unknown | \(List\) Tags of the IP. | 
-| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP. | 
-| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP. | 
-| IP.MalwareFamily | String | The malware family associated with the IP. | 
-| IP.Organization.Name | String | The organization of the IP. | 
-| IP.Organization.Type | String | The organization type of the IP. | 
+| IP.Tags | Unknown | \(List\) Tags of the IP address. | 
+| IP.FeedRelatedIndicators.value | String | Indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.type | String | The type of the indicators that are associated with the IP address. | 
+| IP.FeedRelatedIndicators.description | String | The description of the indicators that are associated with the IP address. | 
+| IP.MalwareFamily | String | The malware family associated with the IP address. | 
+| IP.Organization.Name | String | The organization of the IP address. | 
+| IP.Organization.Type | String | The organization type of the IP address. | 
 
 
 #### Command Example
@@ -122,7 +122,7 @@ Get a report of a domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Get a report of a domain. | Required | 
+| domain | The domain for which to retrieve a report. | Required | 
 
 
 #### Context Output
@@ -167,7 +167,7 @@ Get a report of a domain.
 | Domain.WHOIS.Admin.Name | String | The name of the domain administrator. | 
 | Domain.WHOIS.Admin.Email | String | The email address of the domain administrator. | 
 | Domain.WHOIS.Admin.Phone | String | The phone number of the domain administrator. | 
-| Domain.WHOIS/History | String | List of Whois objects | 
+| Domain.WHOIS/History | String | List of Whois objects. | 
 | Domain.Malicious.Vendor | String | The vendor reporting the domain as malicious. | 
 | Domain.Malicious.Description | String | A description explaining why the domain was reported as malicious. | 
 
@@ -246,7 +246,7 @@ Get a report of an email address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | Get a report of an email address. | Required | 
+| email | The email address for which to retrieve a report. | Required | 
 
 
 #### Context Output
@@ -308,7 +308,7 @@ Get a report of an antivirus.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| antivirus | Get a report of an antivirus. | Required | 
+| antivirus | The antivirus for which to retrieve a report. | Required | 
 
 
 #### Context Output
@@ -357,7 +357,7 @@ Get a report of a hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | Get a report of a hash. | Required | 
+| file | The hash for which to retrieve a report. | Required | 
 
 
 #### Context Output
@@ -369,7 +369,7 @@ Get a report of a hash.
 | File.Size | Number | The size of the file in bytes. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
 | File.SHA512 | String | The SHA512 hash of the file. | 
 | File.SSDeep | String | The ssdeep hash of the file \(same as displayed in file entries\). | 
 | File.Extension | String | The file extension, for example: 'xls'. | 
