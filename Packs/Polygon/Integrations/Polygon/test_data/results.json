@@ -5,7 +5,7 @@
         "Contents": "F100",
         "HumanReadable": "### File uploaded successfully\n|EntryID|FileName|ID|Status|\n|---|---|---|---|\n| 12345 | abc | F100 | In Progress |\n",
         "EntryContext": {
-            "Polygon.Analysis(val.ID == obj.ID)": {
+            "Polygon.Analysis(val.ID && val.ID == obj.ID)": {
                 "ID": "F100",
                 "EntryID": "12345",
                 "FileName": "abc",
@@ -23,7 +23,7 @@
         "Contents": "U100",
         "HumanReadable": "### Url uploaded successfully\n|ID|Status|URL|\n|---|---|---|\n| U100 | In Progress | http://test.com |\n",
         "EntryContext": {
-            "Polygon.Analysis(val.ID == obj.ID)": {
+            "Polygon.Analysis(val.ID && val.ID == obj.ID)": {
                 "ID": "U100",
                 "URL": "http://test.com",
                 "Status": "In Progress"
@@ -89,7 +89,7 @@
             },
             "HumanReadable": "### Analysis F2118597\n|ID|MD5|Name|SHA1|SHA256|Size|Status|\n|---|---|---|---|---|---|---|\n| F2118597 | ba9fe2cb8ee2421ea24a55306ce9d923 | link.pdf | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697 | 36375 | In Progress |\n",
             "EntryContext": {
-                "Polygon.Analysis(val.ID == obj.ID)": {
+                "Polygon.Analysis(val.ID && val.ID == obj.ID)": {
                     "ID": "F2118597",
                     "Status": "In Progress",
                     "Result": null,
@@ -321,7 +321,7 @@
                 "Vendor": "Group-IB TDS Polygon",
                 "Score": 3
             }],
-            "Polygon.Analysis(val.SHA1 == obj.SHA1)": {
+            "Polygon.Analysis(val.SHA1 && val.SHA1 == obj.SHA1)": {
                 "SHA1": "44b3f79dfd7c5861501a19a3bac89f544c7ff815",
                 "Found": true,
                 "Verdict": true,
