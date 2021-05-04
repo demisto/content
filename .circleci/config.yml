@@ -819,11 +819,8 @@ jobs:
                     exit 0
                   fi
 
-                  GCS_PATH=$(mktemp)
                   ZIP_FOLDER=$(mktemp -d)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
-                  rm $GCS_PATH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
                 when: always
             - run:
                 name: Store Artifacts to GCS
