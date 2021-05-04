@@ -20,7 +20,7 @@
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_6feb063f-66b1-45e5-89f0-1b6ff5142114" target="_self">Check file reputation by hash: intezer-analyze-by-hash</a></li>
-<li><a href="#h_353b4e58-45be-474d-b171-b8b803d216d0" target="_self">Check file reputation by latest report: intezer-get-analysis-result</a></li>
+<li><a href="#h_353b4e58-45be-474d-b171-b8b803d216d0" target="_self">Check file reputation by latest report: intezer-get-latest-report</a></li>
 <li><a href="#h_9127d647-9bbd-43c7-b567-812e4138e652" target="_self"> Check file reputation by uploading a file: intezer-analyze-by-file </a></li>
 <li><a href="#h_89b3941d-6b65-4083-96b6-f67d0c2cb528" target="_self"> Check analysis status and results: intezer-get-analysis-result </a></li>
 </ol>
