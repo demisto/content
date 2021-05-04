@@ -59,8 +59,8 @@ def _get_sensor_isolation_change_body(client: Client, sensor_id: str, new_isolat
     new_sensor_data['network_isolation_enabled'] = new_isolation
     return new_sensor_data
 
-def _parse_field(raw_field, sep=',', index_after_split=0, chars_to_remove=''):
 
+def _parse_field(raw_field, sep=',', index_after_split=0, chars_to_remove=''):
     new_field = raw_field.split(sep)
     try:
         new_field = new_field[index_after_split]
@@ -71,14 +71,15 @@ def _parse_field(raw_field, sep=',', index_after_split=0, chars_to_remove=''):
         new_field = new_field.replace(char, '')
     return new_field
 
+
 def _get_isolation_status_field(isolation_activated, is_isolated):
-    sensor_isolation_status = ''
     if isolation_activated:
         sensor_isolation_status = 'Yes' if is_isolated else 'Pending isolation'
     else:
         sensor_isolation_status = 'Pending unisolation' if is_isolated else 'No'
 
     return sensor_isolation_status
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -89,7 +90,7 @@ def unquarantine_device_command(client: Client, sensor_id: str):
                               json_data=_get_sensor_isolation_change_body(client, sensor_id, False))
     if not res:
         raise Exception('could not run')
-
+    return CommandResults(readable_output='Sensor was un-isolated successfully.')
 
 def quarantine_device_command(client: Client, sensor_id: str):
     url = f'/v1/sensor/{sensor_id}'
@@ -97,6 +98,7 @@ def quarantine_device_command(client: Client, sensor_id: str):
                               json_data=_get_sensor_isolation_change_body(client, sensor_id, True))
     if not res:
         raise Exception('could not run')
+    return CommandResults(readable_output='Sensor was isolated successfully.')
 
 
 def sensors_list_command(client: Client, id: str = None, hostname: str = None, ip: str = None,
@@ -180,13 +182,14 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
     res = client.http_request(url=url, method='POST', json_data=body)
     if not res:
         raise Exception('Could not find alert.')
-
+    return CommandResults(readable_output='Alert was updated successfully.')
 
 def alert_search_command(client: Client, status: str = None, username: str = None, feedname: str = None,
                          hostname: str = None, report: str = None, sort: str = None, query: str = None,
                          facet: str = None, rows: str = None, start: str = None):
     query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
-    query_params: dict = {key: val for key, val in locals().items() if key in query_fields and val is not None}
+    query_params: dict = {key: locals().get(key) for key in query_fields if
+                          locals().get(key)}
     query_string = _create_query_string(query_params)
 
     res = client.http_request(url='/v2/alert', method='GET',
@@ -212,12 +215,18 @@ def binary_summary_command(client: Client, md5: str) -> CommandResults:
 
 def binary_download_command(client: Client, md5: str) -> CommandResults:
     url = f'/v1/binary/{md5}'
-    res = client.http_request(url=url, method='GET', ok_codes=(200, 204, 404))
-    if not res:
-        return CommandResults(
-            readable_output=f'Could not find data for file {md5}.')
-    # todo: handle 404
-    # todo: add file to command results
+    try:
+        res = client.http_request(url=url, method='GET', ok_codes=(200, 204, 404))
+        if not res:
+            return CommandResults(
+                readable_output=f'Could not find data for file {md5}.')
+        # todo: add file to command results
+
+    except DemistoException as e:
+        if '404' in e.message:
+            return CommandResults(readable_output=f'File {md5} could not be found')
+        else:
+            raise Exception(f'Error connecting to API. Error: {e.message}')
 
 
 def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None,
@@ -229,13 +238,18 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
                     'group': 'group', 'hostname': 'hostname', 'publisher': 'digsig_publisher',
                     'company_name': 'company_name', 'observed_filename': 'observed_filename',
                     'query': 'query'}
-    query_params: dict = {query_fields[key]: val for key, val in locals().items() if
-                          key in query_fields and val is not None}
+    query_params: dict = {query_fields[key]: locals().get(key) for key in query_fields if
+                          locals().get(key)}
     query_string = _create_query_string(query_params)
-
-    res = client.http_request(url='/v1/binary', method='GET',
-                              params={'q': query_string, 'rows': rows, 'start': start, 'sort': sort, 'facet': facet,
-                                      'facet.field': facet_field})
+    params = assign_params(q=query_string,
+                           rows=rows,
+                           start=start,
+                           sort=sort,
+                           facet=facet,
+                           )
+    if facet_field:
+        params['facet.field'] = facet_field
+    res = client.http_request(url='/v1/binary', method='GET', params=params)
     if not res:
         raise Exception('Request cannot be processed.')
 
@@ -280,12 +294,13 @@ def processes_search_command(client: Client, process_name: str = None, group: st
                              facet_field: str = None, rows: str = None, start: str = None):
     # Create query
     query_fields = ['process_name', 'group', 'hostname', 'parent_name', 'process_path', 'md5', 'query']
-    query_params = {key: val for key, val in locals().items() if key in query_fields and val is not None}
+    query_params = {key: locals().get(key) for key in query_fields if
+                    locals().get(key)}
     query_string = _create_query_string(query_params)
 
     res = client.http_request(url='/v1/process', method='GET',
-                              params={'q': query_string, 'rows': rows, 'start': start, 'sort': sort, 'facet': facet,
-                                      'facet.field': facet_field, 'cb.group': group_by})
+                              params='q': query_string, 'rows': rows, 'start': start, 'sort': sort, 'facet': facet,
+    'facet.field': facet_field, 'cb.group': group_by})
     if not res:
         raise Exception('Request cannot be processed.')
 
@@ -312,7 +327,6 @@ def sensor_installer_download_command(client: Client, os_type: str, group_id: st
 
 
 def endpoint_command(client: Client, id: str, ip: str, hostname: str):
-
     if not id or not ip or not hostname:
         raise Exception('In order to run this command, please provide valid id, ip and hostname')
 
@@ -325,7 +339,7 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
             id=id,
             hostname=hostname,
             ip_address=ip,
-            mac_address=_parse_field(sensor.get('network_adapters',''), index_after_split=1, chars_to_remove='|'),
+            mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
             os_version=sensor.get('os_environment_display_string'),
             memory=sensor.get('physical_memory_size'),
             status='Online' if sensor.get('status') else 'Offline',
@@ -341,6 +355,7 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
             raw_response=res,
             indicator=endpoint
         ))
+    return command_results
 
 
 def test_module(client: Client) -> str:
