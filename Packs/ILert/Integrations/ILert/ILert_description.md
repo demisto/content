@@ -1,3 +1,5 @@
 ### iLert Integration
 
-Full documentation for this integration is available at [iLert docs](https://docs.ilert.com/integrations/cortex-xsoar).
+iLert is a modern uptime platform with advanced on-call and alerting features.
+
+See the full documentation for this integration [here](https://docs.ilert.com/integrations/cortex-xsoar).

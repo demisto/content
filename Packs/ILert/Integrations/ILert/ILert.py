@@ -59,17 +59,17 @@ def http_request(method, url, params_dict=None, data=None):
 
 def create_new_incident_event(eventType="ALERT", summary='', details='No description',
                               incidentKey=None, priority=None, integrationKey=INTEGRATION_KEY):
-    """Create a new incident event in the iLert instance."""
+    """Send incident related event to iLert."""
 
     if integrationKey is None:
-        raise Exception('You must enter a integrationKey at the integration '
+        raise Exception('You must enter an integrationKey as integration '
                         'parameters or in the command to process this action.')
 
     if eventType == 'ALERT' and not summary:
         raise Exception('You must enter a summary in the command to process this action.')
 
     if eventType != 'ALERT' and incidentKey is None:
-        raise Exception('You must enter a incidentKey in the command to process this action.')
+        raise Exception('You must enter an incidentKey in the command to process this action.')
 
     payload = {
         'apiKey': integrationKey,
@@ -85,7 +85,7 @@ def create_new_incident_event(eventType="ALERT", summary='', details='No descrip
 
 def submit_new_event_command(eventType='ALERT', summary='', details='No description',
                              incidentKey=None, priority=None, integrationKey=INTEGRATION_KEY):
-    """Create new incident event."""
+    """Create new incident."""
 
     create_new_incident_event(eventType, summary, details, incidentKey,
                               priority, integrationKey)
@@ -94,7 +94,7 @@ def submit_new_event_command(eventType='ALERT', summary='', details='No descript
 
 
 def submit_acknowledge_event_command(summary, incidentKey=None, integrationKey=INTEGRATION_KEY):
-    """Create new incident acknowledge event."""
+    """Acknowledge existing incident."""
 
     create_new_incident_event(eventType='ACCEPT', summary=summary, incidentKey=incidentKey,
                               integrationKey=integrationKey)
@@ -103,7 +103,7 @@ def submit_acknowledge_event_command(summary, incidentKey=None, integrationKey=I
 
 
 def submit_resolve_event_command(summary, incidentKey=None, integrationKey=INTEGRATION_KEY):
-    """Create new incident resolve event."""
+    """Resolve existing incident."""
 
     create_new_incident_event(eventType='RESOLVE', summary=summary, incidentKey=incidentKey,
                               integrationKey=integrationKey)

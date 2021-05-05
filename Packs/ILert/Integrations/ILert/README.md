@@ -1,5 +1,8 @@
-Alert and notify users using iLert
-This integration was integrated and tested with version v1 of iLert
+iLert is a modern uptime platform with advanced on-call and alerting features.
+
+Alert and notify users using iLert.
+This integration was integrated and tested with API version 1 of iLert.
+
 ## Configure iLert on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -11,17 +14,19 @@ This integration was integrated and tested with version v1 of iLert
     | The API key of the alert source (for triggering events only) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### iLert-submit-event
 ***
-Creates a new event/incident in iLert (In order to use this command  you have to enter the Integration Key in the integration settings)
-
+Creates a new event/incident in iLert (in order to use this command you have to enter the Integration Key in the integration settings)
 
 #### Base Command
 
 `ilert-submit-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -42,15 +47,14 @@ There is no context output for this command.
 #### Human Readable Output
 Incident has been created.
 
-
 ### ilert-acknowledge-event
 ***
 Acknowledges an existing event in iLert
 
-
 #### Base Command
 
 `iLert-acknowledge-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -78,6 +82,7 @@ Resolves an existing event in iLert
 #### Base Command
 
 `ilert-resolve-event`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
