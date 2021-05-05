@@ -128,7 +128,6 @@ def get_static_report(client: Client, **args) -> CommandResults:
         if 'score' in r['analysis']:
             score = map_scores_to_dbot(r['analysis']['score'])
 
-    indicator = None
     if 'sample' in r:
         target = r['sample']['target']
         if r['sample']['kind'] == "file":
@@ -165,19 +164,12 @@ def get_static_report(client: Client, **args) -> CommandResults:
                     url=target,
                     dbot_score=dbot_score
                 )
-    if indicator is not None:
-        results = CommandResults(
-            outputs_prefix="Triage.sample.reports.static",
-            outputs_key_field="sample.sample",
-            outputs=r,
-            indicator=indicator
-        )
-    else:
-        results = CommandResults(
-            outputs_prefix="Triage.sample.reports.static",
-            outputs_key_field="sample.sample",
-            outputs=r
-        )
+    results = CommandResults(
+        outputs_prefix="Triage.sample.reports.static",
+        outputs_key_field="sample.sample",
+        outputs=r,
+        indicator=indicator
+    )
 
     return results
 
@@ -197,7 +189,6 @@ def get_report_triage(client: Client, **args) -> CommandResults:
             score = map_scores_to_dbot(r['sample']['score'])
 
     target = r['sample']['target']
-    indicator = None
     if not "sha256" in r['sample']:
         dbot_score = Common.DBotScore(
             indicator=target,
@@ -224,19 +215,12 @@ def get_report_triage(client: Client, **args) -> CommandResults:
             dbot_score=dbot_score
         )
 
-    if indicator is not None:
-        results = CommandResults(
-            outputs_prefix="Triage.sample.reports.triage",
-            outputs_key_field="sample.id",
-            outputs=r,
-            indicator=indicator
-        )
-    else:
-        results = CommandResults(
-            outputs_prefix="Triage.sample.reports.triage",
-            outputs_key_field="sample.id",
-            outputs=r
-        )
+    results = CommandResults(
+        outputs_prefix="Triage.sample.reports.triage",
+        outputs_key_field="sample.id",
+        outputs=r,
+        indicator=indicator
+    )
     #dbot_score_data = []
     #dbot_score_data.append({
     #    "Indicator": target,
