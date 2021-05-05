@@ -66,7 +66,7 @@ configuration:
     For example, for retrieving the policy:
     {"policyType": "ANOMALY_DETECTION", "id": "5e6fa96cb5172297ca756554", "label": "Impossible travel",
      "type": "policyRule"}"
-    please query on {"entity.policy":{"eq":5e6fa96cb5172297ca756554}}.
+    please query on {"entity.policy":{"eq":1234}}.
     For more information about filter syntax, please refer to
     https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
   display: Custom Filter
