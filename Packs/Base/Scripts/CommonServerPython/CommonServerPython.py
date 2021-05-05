@@ -7442,7 +7442,7 @@ class IndicatorsSearcher:
                                                searchAfter=self._search_after_param)
             else:
                 res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size,
-                                               page=self._page, value=value)
+                                               value=value, page=self._page)
 
             self._search_after_param = res[self._search_after_title]
 
