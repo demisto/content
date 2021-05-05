@@ -87,7 +87,7 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
 # Remove this when branches will sync with github
-  SKIP_PRIVATE_BUILD: "false"
+  SKIP_PRIVATE_BUILD: ""
   FORCE_BUCKET_UPLOAD: "false"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
 
@@ -262,7 +262,7 @@ run-unittests-and-lint:
   script:
     - echo "====Trigger Private Build===="
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CIRCLE_BRANCH =~ pull/[0-9]+ ]] || [[ -n SKIP_PRIVATE_BUILD ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CIRCLE_BRANCH =~ pull/[0-9]+ ]] || [[ -n $SKIP_PRIVATE_BUILD ]]; then
         echo "Skipping - not running in bucket upload."
       else
         python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
@@ -302,7 +302,7 @@ run-unittests-and-lint:
       fi
     - echo "====Get Private Build Status===="
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CIRCLE_BRANCH =~ pull/[0-9]+ || -n SKIP_PRIVATE_BUILD ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CIRCLE_BRANCH =~ pull/[0-9]+ || -n $SKIP_PRIVATE_BUILD ]]; then
         echo "Skipping - not running in bucket upload"
       else
         python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
