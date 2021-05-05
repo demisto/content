@@ -8,11 +8,13 @@ requests.packages.urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
+
 VENDOR = 'Threat Crowd'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_RESOLUTION_LIMIT = 10
-''' CLIENT CLASS '''
 
+
+''' CLIENT CLASS '''
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability, extended_data: bool):
@@ -25,18 +27,19 @@ class Client(BaseClient):
 
 
 def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[dict]:
-    """ Gets a resolution section from response.
-     return a limited sorted list, desc by time.
-     Resolution section should be with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"},"""
+    """ Gets a resolution section from response with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"}]
+        return a sorted list truncated to limit, desc by time."""
+
     resolutions = resolutions[:limit]
     resolutions.sort(key=lambda x: x['last_resolved'], reverse=True)
     return resolutions
 
 
 def _get_dbot_score(json_res: dict) -> Tuple[int, str]:
-    """Gets a json response and calculate the dbot score by the response. Returns both the score in code and as
-    string """
-
+    """
+    Calculates DBot score according to https://github.com/AlienVault-OTX/ApiV2/blob/master/README.md#votes
+    """
+    # checks that response is valid
     if json_res.get('response_code') == '1':
         votes = json_res.get('votes')
         if votes == -1:
@@ -59,22 +62,24 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
+
+        # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = ip
         score, score_str = _get_dbot_score(res)
+
         dbot = Common.DBotScore(
             ip, DBotScoreType.IP, VENDOR, score, reliability=client.reliability)
         ip_object = Common.IP(ip, dbot)
-
-        markdown = f"### Threat crowd report for ip {ip}: \n"
-        markdown += f'DBotScore: {score_str} \n'
 
         if not client.extended_data:
             res_limit = DEFAULT_RESOLUTION_LIMIT
         hashes = res.get('hashes')[:res_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), res_limit)
-        markdown += tableToMarkdown('Resolutions', resolutions)
-        markdown += f"Hashes: \n {hashes} \n"
-        markdown += tableToMarkdown('References', res.get('references'))
+
+        markdown = f"### Threat crowd report for ip {ip}: \n DBotScore: {score_str} \n" \
+                   f"{tableToMarkdown('Resolutions', resolutions)} \n Hashes: \n {hashes} \n" \
+                   f"{tableToMarkdown('References', res.get('references'))}"
+
         outputs = {
             'hashes': hashes,
             'permalink': res.get('permalink'),
@@ -84,13 +89,16 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             'votes': res.get('votes'),
             'value': res.get('value')
         }
+
+        # res.copy() is being used as it passed by ref,
+        # so changing last file's value will also change all previous file's values and so on.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.IP',
             outputs=outputs,
             outputs_key_field='value',
             indicator=ip_object,
             readable_output=markdown,
-            raw_response=res
+            raw_response=res.copy()
 
         ))
 
@@ -103,23 +111,26 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     emails = argToList(args.get('email'))
     for email in emails:
         res = client._http_request(method='GET', url_suffix=api_url, params={'email': email})
+
+        # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = email
         score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             email, DBotScoreType.EMAIL, VENDOR, score, reliability=client.reliability)
         email_object = Common.EMAIL(email, dbot)
 
-        markdown = f"Threat crowd report for Email {email} \n"
-        markdown += f'DBotScore: {score_str} \n'
-        markdown += tableToMarkdown("Results", res)
+        markdown = f"Threat crowd report for Email {email} \n " \
+                   f"'DBotScore: {score_str} \n {tableToMarkdown("Results", res)}'
 
+        # res.copy() is being used as it passed by ref,
+        # so changing last file's value will also change all previous file's values and so on.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Account',
             outputs=res.copy(),
             outputs_key_field='value',
             indicator=email_object,
             readable_output=markdown,
-            raw_response=res
+            raw_response=res.copy()
 
         ))
 
@@ -133,24 +144,24 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
     domains = argToList(args.get('domain'))
     for domain in domains:
         res = client._http_request(method='GET', url_suffix=api_url, params={'domain': domain})
+
+        # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = domain
         score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             domain, DBotScoreType.DOMAIN, VENDOR, score, reliability=client.reliability)
         domain_object = Common.Domain(domain, dbot)
 
-        markdown = f"### Threat crowd report for domain {domain} \n"
-        markdown += f'DBotScore: {score_str} \n'
+        markdown = f"### Threat crowd report for domain {domain} \n DBotScore: {score_str} \n"
 
         if not client.extended_data:
             resolution_limit = DEFAULT_RESOLUTION_LIMIT
 
         subdomains = res.get('subdomains')[:resolution_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), resolution_limit)
-        markdown += tableToMarkdown('Resolutions', resolutions)
-        res_without_resolutions = res.copy()
-        res_without_resolutions.pop('resolutions')
-        markdown += tableToMarkdown("\n", res_without_resolutions)
+
+        markdown += f"{tableToMarkdown('Resolutions', resolutions)} " \
+                    f"{tableToMarkdown('\n', res.copy().pop('resolutions'))}"
 
         outputs = {
             'hashes': res.get('hashes'),
@@ -162,13 +173,16 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             'subdomains': subdomains,
             'value': res.get('value')
         }
+
+        # res.copy() is being used as it passed by ref,
+        # so changing last file's value will also change all previous file's values and so on.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Domain',
             outputs=outputs,
             outputs_key_field='value',
             indicator=domain_object,
             readable_output=markdown,
-            raw_response=res
+            raw_response=res.copy()
 
         ))
 
@@ -181,16 +195,20 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     antivirus_list = argToList(args.get('antivirus'))
     for antivirus in antivirus_list:
         res = client._http_request(method='GET', url_suffix=api_url, params={'antivirus': antivirus})
+
+        # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = antivirus
 
         markdown = tableToMarkdown(f"Threat crowd report for antivirus {antivirus}", res)
 
+        # res.copy() is being used as it passed by ref,
+        # so changing last file's value will also change all previous file's values and so on.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.AntiVirus',
             outputs=res.copy(),
             outputs_key_field='value',
             readable_output=markdown,
-            raw_response=res
+            raw_response=res.copy()
         ))
 
     return command_results
@@ -202,22 +220,27 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     files = argToList(args.get('file'))
     for file_hash in files:
         res = client._http_request(method='GET', url_suffix=api_url, params={'resource': file_hash})
+
+        # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = file_hash
+
         score, score_str = _get_dbot_score(res)
         dbot = Common.DBotScore(
             file_hash, DBotScoreType.FILE, VENDOR, score, reliability=client.reliability)
         file_object = Common.File(dbot, md5=res.get('md5'), sha1=res.get('sha1'))
 
-        markdown = f"Threat crowd report for File {file_hash}: \n Reputation: {score_str} \n"
-        markdown += tableToMarkdown('Results', res)
+        markdown = f"Threat crowd report for File {file_hash}: \n Reputation: {score_str} \n " \
+                   f"{tableToMarkdown('Results', res)}"
 
+        # res.copy() is being used as it passed by ref,
+        # so changing last file's value will also change all previous file's values and so on.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.File',
             outputs=res.copy(),
             outputs_key_field='value',
             indicator=file_object,
             readable_output=markdown,
-            raw_response=res
+            raw_response=res.copy()
         ))
 
     return command_results

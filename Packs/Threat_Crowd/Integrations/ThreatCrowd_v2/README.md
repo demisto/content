@@ -1,6 +1,6 @@
 Query Threat Crowd for reports.
 This integration was integrated and tested with version v2 of TheatCrowdv2
-## Configure ThreatCrowdv2 on Cortex XSOAR
+## Configure ThreatCrowd on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ThreatCrowdv2.
