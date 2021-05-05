@@ -1,7 +1,9 @@
 import json
 
 from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
-    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID, check_list_of_dict
+    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID, check_list_of_dict,\
+    base64, datetime, Clustering
+import dill as pickle
 
 PARAMETERS_DICT = {
     'fromDate': '',
@@ -42,15 +44,23 @@ FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES = [
 
 FETCHED_INCIDENT_EMPTY = []
 
+class PostProcessing():
+    def __init__(self):
+        self.date_training = None
+        self.json = {'data': 'data'}
+
 
 def executeCommand(command, args):
     global FETCHED_INCIDENT
     if command == 'GetIncidentsByQuery':
         return [{'Contents': json.dumps(FETCHED_INCIDENT), 'Type': 'note'}]
-    # elif command == 'getMLModel':
-    #     return [{'Contents': {'modelData': "ModelDataML",
-    #                           'model': {'type': {'type': ''}}},
-    #              'Type': 'note'}]
+    elif command == 'getMLModel':
+        model = PostProcessing()
+        model.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')
+        return [{'Contents': {'modelData': model_data,
+                              'model': {'type': {'type': ''}}},
+                 'Type': 'note'}]
 
 
 def test_preprocess_incidents_field():
@@ -196,3 +206,18 @@ def test_main_incident_nested(mocker):
     assert not model
     assert not output_clustering_json
     assert MESSAGE_CLUSTERING_NOT_VALID in msg
+
+
+def test_model_exist_and_valid(mocker):
+    global FETCHED_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname', 'forceRetrain': 'False'})
+    mocker.patch.object(demisto, 'args',
+                        return_value=PARAMETERS_DICT
+                        )
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    model, output_clustering_json, msg = main()
+    assert not msg
+    assert output_clustering_json == {'data': 'data'}
+

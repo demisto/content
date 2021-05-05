@@ -136,7 +136,7 @@ args:
   secret: false
 comment: Train clustering model on any incidents type.
 commonfields:
-  id: 3621593a-3641-4b26-90dc-a660f4b4e68c
+  id: DBotTrainClustering
   version: -1
 enabled: false
 name: DBotTrainClustering
@@ -149,3 +149,5 @@ timeout: '0'
 type: python
 dockerimage: demisto/mlclustering:1.0.0.19269
 fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
