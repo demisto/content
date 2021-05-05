@@ -1,24 +1,30 @@
-id: 261c457c-b92a-4ad6-8927-2aaa53c28ad3
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
-name: TestIPQualityScorePlaybook
 description: This playbook tests the functionality of the IPQualityScore Integration
+id: TestIPQualityScorePlaybook
+inputs: []
+name: TestIPQualityScorePlaybook
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ca29acc5-6a2a-4111-8a15-c440abb3bacc
-    type: start
-    task:
-      id: ca29acc5-6a2a-4111-8a15-c440abb3bacc
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 759f7594-db5d-441e-8be4-7edd45aa7dfa
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 759f7594-db5d-441e-8be4-7edd45aa7dfa
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -26,27 +32,14 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: fe9fec53-0320-4e67-84b2-f0956399ea25
-    type: regular
-    task:
-      id: fe9fec53-0320-4e67-84b2-f0956399ea25
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
@@ -55,6 +48,19 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: d40f7ac7-897d-4014-8a86-19e197c8b59c
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: d40f7ac7-897d-4014-8a86-19e197c8b59c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -62,30 +68,37 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: ed2cb426-78b0-4886-83fb-1364e2c909c8
-    type: regular
-    task:
-      id: ed2cb426-78b0-4886-83fb-1364e2c909c8
-      version: -1
-      name: ip
-      description: Runs reputation on IPs.
-      script: IPQualityScore|||ip
-      type: regular
-      iscommand: true
-      brand: IPQualityScore
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "3"
+    note: false
+    quietmode: 0
     scriptarguments:
-      ip: {}
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: IPQualityScore
+      description: Runs reputation on IPs.
+      id: 1a5ba2cc-ad3a-4a85-8ee6-8bf333bbff66
+      iscommand: true
+      name: ip
+      script: IPQualityScore|||ip
+      type: regular
+      version: -1
+    taskid: 1a5ba2cc-ad3a-4a85-8ee6-8bf333bbff66
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -93,35 +106,35 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IP.Address
+          operator: isNotEmpty
+      label: "yes"
     id: "3"
-    taskid: 34c93603-762f-487d-8a54-0c77117759e2
-    type: condition
-    task:
-      id: 34c93603-762f-487d-8a54-0c77117759e2
-      version: -1
-      name: Verify Output
-      description: Verify context data set by the previous command.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IP.Address
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify context data set by the previous command.
+      id: 63d74d6c-0f73-4a9b-84ed-fb3cc8504606
+      iscommand: false
+      name: Verify Output
+      type: condition
+      version: -1
+    taskid: 63d74d6c-0f73-4a9b-84ed-fb3cc8504606
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -129,23 +142,24 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "4":
     id: "4"
-    taskid: 54bed444-3e47-480a-8c75-082897e1ed13
-    type: title
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 54bed444-3e47-480a-8c75-082897e1ed13
-      version: -1
+      brand: ""
+      id: fe103ba3-e605-43c8-80a8-7f71ed5552d1
+      iscommand: false
       name: End
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
+      version: -1
+      description: ''
+    taskid: fe103ba3-e605-43c8-80a8-7f71ed5552d1
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -153,30 +167,31 @@ tasks:
           "y": 1420
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "5":
     id: "5"
-    taskid: 8d546a51-f6cf-4b95-8f29-0a9bcb3caa9f
-    type: regular
-    task:
-      id: 8d546a51-f6cf-4b95-8f29-0a9bcb3caa9f
-      version: -1
-      name: email
-      description: Runs reputation on email addresses.
-      script: IPQualityScore|||email
-      type: regular
-      iscommand: true
-      brand: IPQualityScore
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
-      email: {}
+      email:
+        simple: test@example.com
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: IPQualityScore
+      description: Runs reputation on email addresses.
+      id: d7ba5023-8945-4527-8ce9-4e6644936c6d
+      iscommand: true
+      name: email
+      script: IPQualityScore|||email
+      type: regular
+      version: -1
+    taskid: d7ba5023-8945-4527-8ce9-4e6644936c6d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -184,35 +199,35 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IPQualityScore.Email.address
+          operator: isNotEmpty
+      label: "yes"
     id: "6"
-    taskid: 58acd708-f4d0-4f01-801a-465433e31b61
-    type: condition
-    task:
-      id: 58acd708-f4d0-4f01-801a-465433e31b61
-      version: -1
-      name: Verify Output
-      description: Verify context data set by the previous command.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "7"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IPQualityScore.Email.address
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify context data set by the previous command.
+      id: 05b7442d-81ed-4a0f-8b33-58ea41a76f3f
+      iscommand: false
+      name: Verify Output
+      type: condition
+      version: -1
+    taskid: 05b7442d-81ed-4a0f-8b33-58ea41a76f3f
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -220,30 +235,37 @@ tasks:
           "y": 895
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
-    taskid: 4b317a91-aca6-4226-83b3-3621e646c0dd
-    type: regular
-    task:
-      id: 4b317a91-aca6-4226-83b3-3621e646c0dd
-      version: -1
-      name: url
-      description: Runs reputation on URLs.
-      script: IPQualityScore|||url
-      type: regular
-      iscommand: true
-      brand: IPQualityScore
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     scriptarguments:
-      url: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: https://google.com
+      wait: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: IPQualityScore
+      description: Runs reputation on URLs.
+      id: a56e4bf0-4158-4815-8c49-e575270b6c1a
+      iscommand: true
+      name: url
+      script: IPQualityScore|||url
+      type: regular
+      version: -1
+    taskid: a56e4bf0-4158-4815-8c49-e575270b6c1a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -251,35 +273,35 @@ tasks:
           "y": 1070
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IPQualityScore.Email.address
+          operator: isNotEmpty
+      label: "yes"
     id: "8"
-    taskid: 4149de9a-e30f-4c5f-8563-58325063fda7
-    type: condition
-    task:
-      id: 4149de9a-e30f-4c5f-8563-58325063fda7
-      version: -1
-      name: Verify Output
-      description: Verify context data set by the previous command.
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       "yes":
       - "4"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: IPQualityScore.Email.address
-            iscontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Verify context data set by the previous command.
+      id: 452b4134-5486-4fbc-86a6-8f4dfae4da9d
+      iscommand: false
+      name: Verify Output
+      type: condition
+      version: -1
+    taskid: 452b4134-5486-4fbc-86a6-8f4dfae4da9d
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -287,11 +309,7 @@ tasks:
           "y": 1245
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -304,6 +322,4 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: 5.0.0
