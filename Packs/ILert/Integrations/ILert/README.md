@@ -21,7 +21,7 @@ Creates a new event/incident in iLert (In order to use this command  you have to
 
 #### Base Command
 
-`iLert-submit-event`
+`ilert-submit-event`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -32,21 +32,18 @@ Creates a new event/incident in iLert (In order to use this command  you have to
 | details | The event details. Will be used as the incident details if a new incident is created. | Optional | 
 | priority | Must be either HIGH or LOW. Will overwrite the evaluated priority of the alert source. | Optional | 
 
-
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| iLert.Event.incidentKey | string | Incident key | 
-| iLert.Event.incidentUrl | unknown | Incident Url | 
-| iLert.Event.responseCode | unknown | Response code | 
-
+There is no context output for this command.
 
 #### Command Example
-``` !iLert-submit-event summary="Test incident" ```
+``` !ilert-submit-event summary="Test incident" ```
+
+#### Human Readable Output
+Incident has been created.
 
 
-### iLert-acknowledge-event
+### ilert-acknowledge-event
 ***
 Acknowledges an existing event in iLert
 
@@ -59,44 +56,41 @@ Acknowledges an existing event in iLert
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incidentKey | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
+| summary | The event summary. Will be used as the event description in the incident timeline. | Optional | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| iLert.Event.incidentKey | unknown | Incident key | 
-| iLert.Event.incidentUrl | unknown | Incident Url | 
-| iLert.Event.responseCode | unknown | Response code | 
-
+There is no context output for this command.
 
 #### Command Example
-``` !iLert-acknowledge-event incidentKey="ctx312" ```
+``` !ilert-acknowledge-event incidentKey="ctx312" ```
+
+#### Human Readable Output
+Incident has been acknowledged.
 
 
-### iLert-resolve-event
+### ilert-resolve-event
 ***
 Resolves an existing event in iLert
 
 
 #### Base Command
 
-`iLert-resolve-event`
+`ilert-resolve-event`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incidentKey | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
-
+| summary | The event summary. Will be used as the event description in the incident timeline. | Optional | 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| iLert.Event.incidentKey | unknown | Incident key | 
-| iLert.Event.incidentUrl | unknown | Incident Url | 
-| iLert.Event.responseCode | unknown | Response code | 
-
+There is no context output for this command.
 
 #### Command Example
 ``` !iLert-resolve-event incidentKey="ctx312" ```
+
+#### Human Readable Output
+Incident has been resolved.

@@ -87,43 +87,28 @@ def submit_new_event_command(eventType='ALERT', summary='', details='No descript
                              incidentKey=None, priority=None, integrationKey=INTEGRATION_KEY):
     """Create new incident event."""
 
-    res = create_new_incident_event(eventType, summary, details, incidentKey,
-                                    priority, integrationKey)
-    r = CommandResults(
-        outputs_prefix="iLert.Event",
-        outputs=res,
-        readable_output=tableToMarkdown(NEW_EVENT, res),
-        raw_response=res
-    )
-    return r
+    create_new_incident_event(eventType, summary, details, incidentKey,
+                              priority, integrationKey)
+
+    return "Incident has been created"
 
 
 def submit_acknowledge_event_command(summary, incidentKey=None, integrationKey=INTEGRATION_KEY):
     """Create new incident acknowledge event."""
 
-    res = create_new_incident_event(eventType='ACCEPT', summary=summary, incidentKey=incidentKey,
-                                    integrationKey=integrationKey)
-    r = CommandResults(
-        outputs_prefix="iLert.Event",
-        outputs=res,
-        readable_output=tableToMarkdown(ACKNOWLEDGE_EVENT, res),
-        raw_response=res
-    )
-    return r
+    create_new_incident_event(eventType='ACCEPT', summary=summary, incidentKey=incidentKey,
+                              integrationKey=integrationKey)
+
+    return "Incident has been acknowledged"
 
 
 def submit_resolve_event_command(summary, incidentKey=None, integrationKey=INTEGRATION_KEY):
     """Create new incident resolve event."""
 
-    res = create_new_incident_event(eventType='RESOLVE', summary=summary, incidentKey=incidentKey,
-                                    integrationKey=integrationKey)
-    r = CommandResults(
-        outputs_prefix="iLert.Event",
-        outputs=res,
-        readable_output=tableToMarkdown(RESOLVE_EVENT, res),
-        raw_response=res
-    )
-    return r
+    create_new_incident_event(eventType='RESOLVE', summary=summary, incidentKey=incidentKey,
+                              integrationKey=integrationKey)
+
+    return "Incident has been resolved"
 
 
 ''' EXECUTION CODE '''

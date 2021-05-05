@@ -42,14 +42,6 @@ script:
     description: Creates a new event/incident in iLert (In order to use this command  you
       have to enter the Integration Key in the integration settings)
     name: ilert-submit-event
-    outputs:
-    - contextPath: iLert.Event.incidentKey
-      description: Incident key
-      type: string
-    - contextPath: iLert.Event.incidentUrl
-      description: Incident Url
-    - contextPath: iLert.Event.responseCode
-      description: Response code
   - arguments:
     - description: The incident key is used to reference the open incident which is
         to be accepted or resolved by this event.
@@ -58,13 +50,6 @@ script:
       name: summary
     description: Acknowledges an existing event in iLert
     name: ilert-acknowledge-event
-    outputs:
-    - contextPath: iLert.Event.incidentKey
-      description: Incident key
-    - contextPath: iLert.Event.incidentUrl
-      description: Incident Url
-    - contextPath: iLert.Event.responseCode
-      description: Response code
   - arguments:
     - description: The incident key is used to reference the open incident which is
         to be accepted or resolved by this event.
@@ -73,13 +58,6 @@ script:
       name: summary
     description: Resolves an existing event in iLert
     name: ilert-resolve-event
-    outputs:
-    - contextPath: iLert.Event.incidentKey
-      description: Incident key
-    - contextPath: iLert.Event.incidentUrl
-      description: Incident Url
-    - contextPath: iLert.Event.responseCode
-      description: Response code
   dockerimage: demisto/python3:3.9.4.18682
   runonce: false
   script: ''
