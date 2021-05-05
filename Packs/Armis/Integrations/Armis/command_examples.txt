@@ -1,0 +1,8 @@
+!armis-search-alerts status=RESOLVED max_results=10
+!armis-search-alerts alert_id=3819
+!armis-search-devices device_id=165722
+!armis-tag-device device_id=165722 tags=test
+!armis-untag-device device_id=165722 tags=test
+!armis-search-devices-by-aql aql_string="macAddress:(a4:5d:36:c5:32:69)"
+!armis-update-alert-status alert_id=3819 status=RESOLVED
+!armis-search-alerts-by-aql-string aql_string="alertId:(3821)"
