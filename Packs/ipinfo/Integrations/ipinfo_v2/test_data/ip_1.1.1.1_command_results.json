@@ -34,7 +34,7 @@
               "description": "Hostname"
             }
           ],
-          "Relations": [
+          "Relationships": [
             {
               "Relationship": "resolves-to",
               "EntityA": "1.1.1.1",
@@ -54,7 +54,7 @@
           "Reliability": "C - Fairly reliable"
         }
       ],
-      "IPinfo.IP(val.Address == obj.Address)": {
+      "IPinfo.IP(val.Address && val.Address == obj.Address)": {
         "Address": "1.1.1.1",
         "Hostname": "one.one.one.one",
         "ASN": "AS13335",
@@ -115,7 +115,7 @@
               "description": "Hostname"
             }
           ],
-          "Relations": [
+          "Relationships": [
             {
               "Relationship": "resolves-to",
               "EntityA": "1.1.1.1",
