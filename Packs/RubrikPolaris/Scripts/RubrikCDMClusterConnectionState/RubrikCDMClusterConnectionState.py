@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
-import json
 
 
 def main() -> None:
@@ -13,7 +12,7 @@ def main() -> None:
     try:
         cdm_connection_state = demisto.executeCommand("Print", {"value": "${Rubrik.CDM.Cluster.ConnectionState}"})
         cdm_connection_state = cdm_connection_state[0]["Contents"]
-        
+       
         if cdm_connection_state == "Connected":
             html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(cdm_connection_state)}</h1></div>"
         else:
@@ -21,7 +20,7 @@ def main() -> None:
 
     except KeyError:
         html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No State Found</h1></div>"
-        
+
     demisto.results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],

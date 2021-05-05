@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
-import json
 
 def main() -> None:
 
@@ -11,7 +10,7 @@ def main() -> None:
 
     try:
         radar_open_access_files = demisto.context()["Rubrik"]["Sonar"]["openAccessFiles"]
-        
+
         if not radar_open_access_files:
             html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_open_access_files)}</h1></div>"
         else:
@@ -19,7 +18,7 @@ def main() -> None:
 
     except KeyError:
         html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
-        
+
     demisto.results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],

@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
-import json
 
 def main() -> None:
 
@@ -12,7 +11,7 @@ def main() -> None:
     try:
         radar_files_added = demisto.executeCommand("Print", {"value": "${incident.labels.radar_files_added}"})
         radar_files_added = radar_files_added[0]["Contents"]
-        
+     
         if not radar_files_added:
             html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_files_added)}</h1></div>"
         else:
@@ -20,7 +19,7 @@ def main() -> None:
 
     except KeyError:
         html = f"<div style={DIV_HTML_STYLE}><h1 style={ORANGE_HTML_STYLE}No Results Found</h1></div>"
-        
+
     demisto.results({
         'ContentsFormat': formats['html'],
         'Type': entryTypes['note'],
