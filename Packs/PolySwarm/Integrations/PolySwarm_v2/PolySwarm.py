@@ -35,27 +35,18 @@ class PolyswarmConnector():
                      positives: int,
                      permalink: str,
                      artifact: str) -> dict:
-        contxt = makehash()
+        results = {'Scan_UUID': artifact,
+                   'Total': str(total_scans),
+                   'Positives': str(positives),
+                   'Permalink': permalink,
+                   'Artifact': artifact}
+        command_result = CommandResults(
+            outputs_prefix='PolySwarm',
+            outputs_key_field='Scan_UUID',
+            outputs=results
+        )
 
-        contxt['Scan_UUID'] = artifact
-        contxt['Total'] = str(total_scans)
-        contxt['Positives'] = str(positives)
-        contxt['Permalink'] = permalink
-        contxt['Artifact'] = artifact
-
-        human_readable = {'Scan_UUID': artifact,
-                          'Total': str(total_scans),
-                          'Positives': str(positives),
-                          'Permalink': permalink}
-
-        ec = {'PolySwarm(val.Scan_UUID && val.Scan_UUID == obj.UUID)': contxt}
-
-        return {'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'Contents': contxt,
-                'HumanReadable': tableToMarkdown(title, human_readable),
-                'EntryContext': ec,
-                'IgnoreAutoExtract': True}
+        return_results(command_result)
 
     def test_connectivity(self) -> bool:
         EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'  # guardrails-disable-line
