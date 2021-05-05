@@ -211,7 +211,7 @@ script:
       description: The entity Name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.list.data_type
-      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.list.mandatory
       description: Whether the entity of the attribute is mandatory.
@@ -220,11 +220,11 @@ script:
       description: Default Value of the attribute.
       type: Unknown
     - contextPath: HPEArubaClearpass.attributes.list.allow_multiple
-      description: Whether to allow multiple values of the attribute for data type
-        String.
+      description: Whether to allow multiple values of the attribute with data type
+        String only (API limitation).
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.list.allowed_value
-      description: The allowed value for data type list (e.g., example1,example2,example3).
+      description: The allowed value for attribute with data type List (e.g., example1,example2,example3).
       type: Unknown
   - arguments:
     - default: false
@@ -248,7 +248,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Data Type of the attribute to be set.
+      description: Data Type of the attribute to be set. Can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
       isArray: false
       name: data_type
       predefined:
@@ -279,14 +279,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to allow multiple values of the attribute for data type
-        String. Default is false.
+      description: Whether to allow multiple values of the attribute with data type
+        String only (API limitation). Default is false.
       isArray: false
       name: allow_multiple
       required: false
       secret: false
     - default: false
-      description: Allowed value for data type List (e.g., example1,example2,example3).
+      description: Possible value for attribute with data type List only (e.g., example1,example2,example3).
         Default is an empty string.
       isArray: false
       name: allowed_value
@@ -307,7 +307,7 @@ script:
       description: The entity Name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.create.Data_type
-      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.create.Mandatory
       description: Whether the entity of the attribute is mandatory.
@@ -316,11 +316,11 @@ script:
       description: Default Value of the attribute.
       type: Unknown
     - contextPath: HPEArubaClearpass.attributes.create.Allow_multiple
-      description: Whether to allow multiple values of the attribute for data type
-        String.
+      description: Whether to allow multiple values of the attribute with data type
+        String only (API limitation).
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.create.Allowed_value
-      description: The allowed value for data type list (e.g., example1,example2,example3).
+      description: The allowed value for attribute with data type List (e.g., example1,example2,example3).
       type: Unknown
   - arguments:
     - default: false
@@ -350,7 +350,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Data Type of the attribute to be set.
+      description: Data Type of the attribute to be set. Can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
       isArray: false
       name: data_type
       predefined:
@@ -381,14 +381,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to allow multiple values of the attribute for data type
-        String. Default is false.
+      description: Whether to allow multiple values of the attribute with data type
+        String only (API limitation). Default is false.
       isArray: false
       name: allow_multiple
       required: false
       secret: false
     - default: false
-      description: Allowed value for data type List (e.g., example1,example2,example3).
+      description: Possible value for attribute with data type List only (e.g., example1,example2,example3).
         Default is an empty string.
       isArray: false
       name: allowed_value
@@ -409,7 +409,7 @@ script:
       description: The entity Name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.update.Data_type
-      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.update.Mandatory
       description: Whether the entity of the attribute is mandatory.
@@ -418,11 +418,11 @@ script:
       description: Default Value of the attribute.
       type: Unknown
     - contextPath: HPEArubaClearpass.attributes.update.Allow_multiple
-      description: Whether to allow multiple values of the attribute for data type
-        String.
+      description: Whether to allow multiple values of the attribute with data type
+        String only (API limitation).
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.update.Allowed_value
-      description: The allowed value for data type list (e.g., example1,example2,example3).
+      description: The allowed value for attribute with data type List (e.g., example1,example2,example3).
       type: Unknown
   - arguments:
     - default: false

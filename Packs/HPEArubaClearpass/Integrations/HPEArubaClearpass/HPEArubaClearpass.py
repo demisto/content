@@ -57,6 +57,7 @@ class Client(BaseClient):
             Args:
                auth_response (dict): A dict includes the new access token and its expiration (in seconds).
        """
+        self.access_token = auth_response.get("access_token")
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         is_access_token_expiration_valid = access_token_expiration_in_seconds and isinstance(
             auth_response.get("expires_in"), int)
@@ -65,6 +66,7 @@ class Client(BaseClient):
             context = {"access_token": self.access_token,
                        "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
             set_integration_context(context)
+            self.set_request_headers()
             demisto.debug(
                 f"New access token that expires in : {access_token_expiration_datetime.strftime(DATE_FORMAT)} w"
                 f"as set to integration_context.")
@@ -73,31 +75,34 @@ class Client(BaseClient):
                          f"expiration time from the API: {access_token_expiration_in_seconds} "
                          f"from type: {type(access_token_expiration_in_seconds)}")
 
+    def is_access_token_valid(self):
+        integration_context = get_integration_context()
+        access_token_expiration = integration_context.get('expires_in')
+        access_token = integration_context.get('access_token')
+        is_context_has_access_token = access_token and access_token_expiration
+        access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
+        return is_context_has_access_token and access_token_expiration_datetime > datetime.now()
+
+    def set_valid_access_token(self):
+        integration_context = get_integration_context()
+        self.access_token = integration_context.get('access_token')
+        self.set_request_headers()
+
     def login(self):
         """
         Checks if a valid access token is set to integration context. Otherwise, generates one and save to it
         to integration context.
        """
         integration_context = get_integration_context()
-        if integration_context:
-            access_token_expiration = integration_context.get('expires_in')
-            access_token = integration_context.get('access_token')
-            is_context_has_access_token = access_token and access_token_expiration
-            access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
-            if is_context_has_access_token and access_token_expiration_datetime > datetime.now():
-                # access token is valid and not expired
-                self.access_token = access_token
-                self.set_request_headers()
-                return
-        # if the access is expired or not exist, generate a new one
-        auth_response = self.generate_new_access_token()
-        access_token = auth_response.get("access_token")
-        if access_token:
-            self.access_token = access_token
-            self.save_access_token_to_context(auth_response)
-            self.set_request_headers()
+        if integration_context and self.is_access_token_valid():
+            self.set_valid_access_token()
         else:
-            return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
+            # if the access is expired or not exist, generate a new one
+            auth_response_dict = self.generate_new_access_token()
+            if auth_response_dict.get("access_token"):
+                self.save_access_token_to_context(auth_response_dict)
+            else:
+                return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
 
     def set_request_headers(self):
         """
