@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#FA99D0",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "TIM - Campaign",
+    "layout": "TIM - Campaign",
+    "locked": false,
+    "name": "TIM - Campaign",
+    "playbookId": "TIM - Intel Tracking",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

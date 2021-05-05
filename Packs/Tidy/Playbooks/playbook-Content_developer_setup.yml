@@ -209,10 +209,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 37fbae59-8bf0-46d1-8d1b-5722e830b823
+    taskid: 074e26b3-97b2-4bc7-860d-07b4f6327256
     type: regular
     task:
-      id: 37fbae59-8bf0-46d1-8d1b-5722e830b823
+      id: 074e26b3-97b2-4bc7-860d-07b4f6327256
       version: -1
       name: GitHub deploy public ssh key
       description: Generate private/public key, Configure ssh client, and deploy keys
@@ -225,6 +225,10 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
+      access_token:
+        simple: ${inputs.Github token}
+      retry-count:
+        simple: "2"
       user:
         simple: ${inputs.user}
     separatecontext: false
@@ -870,10 +874,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: c283bb4b-06f3-41c3-86ca-a87531d11f21
+    taskid: 9ab4ce4c-c074-4025-851d-e7870c860143
     type: regular
     task:
-      id: c283bb4b-06f3-41c3-86ca-a87531d11f21
+      id: 9ab4ce4c-c074-4025-851d-e7870c860143
       version: -1
       name: Install python environment
       description: Install python environment.
@@ -881,6 +885,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    scriptarguments:
+      execution-timeout:
+        simple: "7200"
     separatecontext: false
     view: |-
       {
@@ -918,6 +925,12 @@ inputs:
     simple: ${incident.tidygithubtoken}
   required: true
   description: Github token with public key admin permissions.
+  playbookInputQuery:
+- key: Host Name
+  value:
+    simple: ${incident.hostname}
+  required: false
+  description: Endpoint IP/URL to be installed.
   playbookInputQuery:
 outputs: []
 tests:
