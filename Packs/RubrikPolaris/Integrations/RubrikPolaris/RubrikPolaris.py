@@ -251,7 +251,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                         # Check if message includes the File Change attributes
                         file_changes_match = re.search(
                             r'File Change: ([0-9]+) Added, ([0-9]+) Modified, ([0-9]+) Removed', m["message"]
-                            )
+                        )
                         if file_changes_match is not None:
                             try:
                                 process_incident["radar_files_added"] = file_changes_match.group(1)
@@ -264,11 +264,11 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 else:
                     process_incident[key] = value
 
-            #Map Severity Level
+            # Map Severity Level
 
             if event["node"]["severity"] == "Critical":
 
-                if demisto.params().get('radar_critical_severity_mapping') == None:
+                if demisto.params().get('radar_critical_severity_mapping') is None:
                     critical_mapping = 'XSOAR LOW'
                 else:
                     critical_mapping = demisto.params().get('radar_critical_severity_mapping')
@@ -277,7 +277,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
 
             elif event["node"]["severity"] == "Warning":
 
-                if demisto.params().get('radar_warning_severity_mapping') == None:
+                if demisto.params().get('radar_warning_severity_mapping') is None:
                     warning_mapping = 'XSOAR LOW'
                 else:
                     warning_mapping = demisto.params().get('radar_warning_severity_mapping')
@@ -498,6 +498,7 @@ def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) ->
         outputs=context
     )
 
+
 def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident().get("CustomFields")
 
@@ -531,8 +532,8 @@ def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) ->
 
     cdm_location_variable = {
         "filter": {
-                "id": [clusterId]
-            }
+            "id": [clusterId]
+        }
     }
 
     cdm_location_detail = client.gql_query(operation_name_object_list, cdm_location_query, cdm_location_variable,
