@@ -8,6 +8,12 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY && $GCS_MARKET_BUCKET == "marketplace-dist"'
 
 
+# copy the conf file that was updated in 'demisto_sdk_nightly:setup' from artifacts to expected location in content repo
+.copy-updated-test-conf: &copy_updated_test_conf
+  - echo "======= Copying Updated Tests Conf ========"
+  - cp "$ARTIFACTS_FOLDER/conf.json" ./Tests/conf.json
+
+
 demisto_sdk_nightly:setup:
   extends: 
     - .default-job-settings
@@ -25,6 +31,18 @@ demisto_sdk_nightly:setup:
     - |
       demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log 2>&1
       cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - |
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+      echo "successfully activated google cloud service account"
+    - |
+      # Download private ID set
+      gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+      echo "successfully downloaded private ID set"
+    - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - |
+      # Merge public and private ID sets
+      demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
+      echo "successfully merged public and private ID sets"
 
 
 demisto_sdk_nightly:check_idset_dependent_commands:
@@ -40,18 +58,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
   variables:
     IS_NIGHTLY: "false"
   script:
-    - |
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
-      echo "successfully activated google cloud service account"
-    - |
-      # Download private ID set
-      gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
-      echo "successfully downloaded private ID set"
-    - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
-    - |
-      # Merge public and private ID sets
-      demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
-      echo "successfully merged public and private ID sets"
     - echo "=== Build Content Descriptor ==="
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
@@ -97,6 +103,7 @@ demisto_sdk_nightly:validate_files:
       # Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting
       ./Tests/scripts/pyflake.sh *.py
     - find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+    - *copy_updated_test_conf
     - ./Tests/scripts/validate.sh
 
 
@@ -118,6 +125,7 @@ demisto_sdk_nightly:lint_and_unittest:
       echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
       echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
       echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+    - *copy_updated_test_conf
     - |
       SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
       mkdir ./unit-tests

@@ -3,6 +3,11 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
 
 
+.download-configuration: &download_demisto_conf
+  - echo "======= Download configuration ========"
+  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+
+
 create-instances:
   extends: 
     - .default-job-settings
@@ -15,6 +20,7 @@ create-instances:
   needs: []
   stage: create-instances
   script:
+    - *download_demisto_conf
     - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
@@ -79,6 +85,7 @@ create-instances:
   dependencies:
     - create-instances
   script:
+    - *download_demisto_conf
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
 # If instance was not created
     - |
