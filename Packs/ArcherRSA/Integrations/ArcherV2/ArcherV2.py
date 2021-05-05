@@ -861,7 +861,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
         level_data = levels[0]
 
     if not level_data:
-        raise DemistoException(f'Got no level by app id. You might be using the wrong application id or level id.')
+        raise DemistoException('Got no level by app id. You might be using the wrong application id or level id.')
 
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
@@ -902,7 +902,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
         level_data = levels[0]
 
     if not level_data:
-        raise DemistoException(f'Got no level by app id. You might be using the wrong application id or level id.')
+        raise DemistoException('Got no level by app id. You might be using the wrong application id or level id.')
 
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
@@ -1095,7 +1095,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
             level_data = levels[0]
 
         if not level_data:
-            raise DemistoException(f'Got no level by app id. You might be using the wrong application id or level id.')
+            raise DemistoException('Got no level by app id. You might be using the wrong application id or level id.')
 
         fields_mapping = level_data['mapping']
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
