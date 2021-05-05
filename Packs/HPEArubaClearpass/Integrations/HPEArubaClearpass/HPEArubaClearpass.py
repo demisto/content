@@ -1,9 +1,6 @@
 import json
 from datetime import datetime, timedelta
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
 
 import requests
 import traceback
@@ -125,7 +122,7 @@ class Client(BaseClient):
         )
 
 
-def test_module(client: Client):
+def command_test_module(client: Client):
     """Tests HPE Aruba API connectivity and authentication' by getting list of endpoints"""
     try:
         params = {"filter": {}, "offset": 0, "limit": 25}
@@ -434,7 +431,7 @@ def main() -> None:
     try:
         client.login()
         if demisto.command() == 'test-module':
-            return_results(test_module(client))
+            return_results(command_test_module(client))
 
         elif demisto.command() == 'aruba-clearpass-endpoints-list':
             return_results(get_endpoints_list_command(client, demisto.args()))
