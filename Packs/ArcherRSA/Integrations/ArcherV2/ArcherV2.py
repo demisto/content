@@ -327,7 +327,7 @@ class Client(BaseClient):
 
     def get_level_by_app_id(self, app_id, specify_level_id=None):
         levels = []
-        cache = demisto.getIntegrationContext()
+        cache = get_integration_context()
 
         if cache.get(app_id):
             levels = cache[app_id]
@@ -352,7 +352,7 @@ class Client(BaseClient):
                     levels.append({'level': level_id, 'mapping': fields})
             if levels:
                 cache[int(app_id)] = levels
-                demisto.setIntegrationContext(cache)
+                set_integration_context(cache)
 
         level_data = None
         if specify_level_id:
@@ -526,7 +526,7 @@ class Client(BaseClient):
         return records
 
     def get_field_value_list(self, field_id):
-        cache = demisto.getIntegrationContext()
+        cache = get_integration_context()
 
         if cache['fieldValueList'].get(field_id):
             return cache.get('fieldValueList').get(field_id)
@@ -549,7 +549,7 @@ class Client(BaseClient):
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
-                demisto.setIntegrationContext(cache)
+                set_integration_context(cache)
                 return field_data
         return {}
 
@@ -936,7 +936,7 @@ def search_options_command(client: Client, args: Dict[str, str]):
 
 
 def reset_cache_command(client: Client, args: Dict[str, str]):
-    demisto.setIntegrationContext({})
+    set_integration_context({})
     return_outputs('', {}, '')
 
 
@@ -1140,7 +1140,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
 
 
 def print_cache_command(client: Client, args: Dict[str, str]):
-    cache = demisto.getIntegrationContext()
+    cache = get_integration_context()
     return_outputs(cache, {}, {})
 
 
@@ -1255,10 +1255,10 @@ def main():
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
 
-    cache = demisto.getIntegrationContext()
+    cache = get_integration_context()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
-        demisto.setIntegrationContext(cache)
+        set_integration_context(cache)
 
     client = Client(
         base_url,
