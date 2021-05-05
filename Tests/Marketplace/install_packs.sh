@@ -8,6 +8,6 @@ echo "starting configure_and_install_packs ..."
 
 # $1 = INSTANCE_ROLE
 
-python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CIRCLE_BRANCH" --build_number "$CI_PIPELINE_ID"
+python3 ./Tests/Marketplace/configure_and_install_packs.py -s "$SECRET_CONF_PATH" --ami_env "$1" --branch "$CI_COMMIT_BRANCH" --build_number "$CI_PIPELINE_ID"
 
 exit $RETVAL
