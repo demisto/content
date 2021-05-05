@@ -4,15 +4,18 @@ commonfields:
   version: -1
 fromversion: 5.5.0
 configuration:
-- additionalinfo: Private url is https://private.tria.ge/api/v0/
+- display: API URL
+  additionalinfo: Private url is https://private.tria.ge/api/v0/
   defaultvalue: https://api.tria.ge/v0/
   name: base_url
   required: true
   type: 0
-- name: API Key
+- display: API Key
+  name: API Key
   required: true
   type: 4
-- defaultvalue: 'true'
+- display: Verify SSL
+  defaultvalue: 'true'
   name: Verify SSL
   required: false
   type: 8
@@ -652,7 +655,7 @@ script:
     execution: false
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false
