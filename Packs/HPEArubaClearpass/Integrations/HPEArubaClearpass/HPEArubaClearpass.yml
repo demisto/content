@@ -248,7 +248,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Data Type of the attribute to be set. Can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      description: Data Type of the attribute to be set. Can be one of the following
+        - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
       isArray: false
       name: data_type
       predefined:
@@ -266,8 +267,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Whether to make this attribute mandatory for the given entity_name. Default
-        is false.
+      description: Whether to make this attribute mandatory for the given entity_name.
+        Default is false.
       isArray: false
       name: mandatory
       required: false
@@ -286,8 +287,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Possible value for attribute with data type List only - API limitation (e.g., example1,example2,example3).
-        Default is an empty string.
+      description: Possible value for attribute with data type List only - API limitation
+        (e.g., example1,example2,example3). Default is an empty string.
       isArray: false
       name: allowed_value
       required: false
@@ -350,7 +351,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Data Type of the attribute to be set. Can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
+      description: Data Type of the attribute to be set. Can be one of the following
+        - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
       isArray: false
       name: data_type
       predefined:
@@ -368,8 +370,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to make this attribute mandatory for the given entity_name. Default
-        is false.
+      description: Whether to make this attribute mandatory for the given entity_name.
+        Default is false.
       isArray: false
       name: mandatory
       required: false
@@ -388,8 +390,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Possible value for attribute with data type List only - API limitation (e.g., example1,example2,example3).
-        Default is an empty string.
+      description: Possible value for attribute with data type List only - API limitation
+        (e.g., example1,example2,example3). Default is an empty string.
       isArray: false
       name: allowed_value
       required: false
