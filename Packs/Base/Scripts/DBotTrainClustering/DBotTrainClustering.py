@@ -158,19 +158,16 @@ class PostProcessing(object):
     Class to analyze the clustering
     """
 
-    def __init__(self, clustering: Type[Clustering], threshold: float, max_number_cluster: int,
-                 generic_cluster_name: bool):
+    def __init__(self, clustering: Type[Clustering], threshold: float, generic_cluster_name: bool):
         """
         Instantiate class object for visualization
         :param clustering: Object Clustering
         :param threshold: Threshold for the cluster homogeneity
-        :param max_number_cluster: Max number of cluster we want
         :param generic_cluster_name: Boolean if cluster don't have name and needs generic naming
         :return: Instantiate class object for visualization
         """
         self.clustering = clustering #type: Type[Clustering]
         self.threshold = threshold #type: float
-        self.max_number_cluster = max_number_cluster #type: int
         self.generic_cluster_name = generic_cluster_name
         self.stats = {}  #type: ignore
         self.statistics()
@@ -278,7 +275,6 @@ def get_args():  # type: ignore
     incident_type = demisto.args().get('incidentType')
     max_percentage_of_missing_value = float(demisto.args().get('maxRatioOfMissingValue'))
 
-    max_number_of_clusters = int(demisto.args().get('maxNumberOfCluster'))
     min_number_of_incident_in_cluster = int(demisto.args().get('minNumberofIncidentPerCluster'))
     model_name = demisto.args().get('modelName')
     store_model = demisto.args().get('storeModel', 'False') == 'True'
@@ -288,7 +284,7 @@ def get_args():  # type: ignore
     model_expiration = int(demisto.args().get('modelExpiration'))
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-           max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+        min_number_of_incident_in_cluster, model_name, store_model, \
            min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration
 
 
@@ -697,7 +693,7 @@ def main():
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-    max_number_of_clusters, min_number_of_incident_in_cluster, model_name, store_model, \
+    min_number_of_incident_in_cluster, model_name, store_model, \
     min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
@@ -777,7 +773,7 @@ def main():
         model.named_steps['clustering'].reduce_dimension()
         model.named_steps['clustering'].compute_centers()
         model_processed = PostProcessing(model.named_steps['clustering'], min_homogeneity_cluster,
-                                         max_number_of_clusters, generic_cluster_name)
+                                         generic_cluster_name)
 
         # Create summary of the training and assign it the the summary attribute of the model
         summary = create_summary(model_processed)

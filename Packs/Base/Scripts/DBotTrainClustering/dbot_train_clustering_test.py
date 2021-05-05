@@ -8,7 +8,6 @@ PARAMETERS_DICT = {
     'toDate': '',
     'limit': '1000',
     'query': '',
-    'maxNumberOfCluster': '1000',
     'minNumberofIncidentPerCluster': '2',
     'modelName': 'model ',
     'storeModel': 'False',

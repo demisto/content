@@ -45,15 +45,6 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '100'
-  description: Maximun number of cluster to show in the final result. It will select
-    the top maxNumberOfCluster. Will be effective only if fieldForClusterName argument
-    is not empty.
-  isArray: false
-  name: maxNumberOfCluster
-  required: false
-  secret: false
-- default: false
   defaultValue: '2'
   description: Minimun number of incident a cluster should contain for it to be retained.
   isArray: false
