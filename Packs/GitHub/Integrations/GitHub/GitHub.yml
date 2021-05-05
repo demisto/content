@@ -7,11 +7,15 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Fetch Pull Requests
+- defaultvalue: Issue
+  display: Select an Issue or PR to Fetch
   hidden: false
-  name: fetch_pull_requests
+  name: fetch_object
+  options:
+  - Issue
+  - PR
   required: false
-  type: 8
+  type: 15
 - display: API Token
   name: token
   required: false
@@ -703,6 +707,7 @@ script:
       isArray: false
       name: organization
       required: false
+      secret: false
     - default: false
       description: The repository of the pull request.
       isArray: false
@@ -2752,22 +2757,22 @@ script:
     outputs:
     - contextPath: GitHub.CheckRuns.CheckRunConclusion
       description: Check Run Conculsion
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunAppName
       description: Check Run App Name
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckExternalID
       description: Check Run External ID
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunName
       description: Check Run Name
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunStatus
       description: Check Run Status
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunID
       description: Check Run ID
-      type: Unknown
+      type: String
   - arguments:
     - default: true
       description: The path of the file.
@@ -2782,25 +2787,25 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: raw
       description: 'The media type in which the file contents will be fetched. Possible
         values are: "raw" and "html". Default value is "raw".'
       isArray: false
-      defaultValue: 'raw'
       name: media_type
       predefined:
-        - raw
-        - html
+      - raw
+      - html
       required: false
       secret: false
     - default: false
+      defaultValue: 'false'
       description: 'Whether to create a file entry in the War Room with the file contents.
         Possible values are: "true" and "false". Default value is "false".'
       isArray: false
-      defaultValue: 'false'
       name: create_file_from_content
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
