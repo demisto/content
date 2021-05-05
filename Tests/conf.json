@@ -3274,10 +3274,6 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
-        },
-        {
-            "integrations": "HPEArubaClearpass",
-            "playbookID": "HPEArubaClearpass_TestPlaybook"
         }
     ],
     "skipped_tests": {
