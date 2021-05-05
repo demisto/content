@@ -6,18 +6,18 @@ from typing import Dict, Any, List, Optional, Tuple
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
 
 VENDOR = 'Threat Crowd'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_RESOLUTION_LIMIT = 10
 
-
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability, extended_data: bool):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability,
+                 extended_data: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
         self.extended_data = extended_data
@@ -90,8 +90,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             'value': res.get('value')
         }
 
-        # res.copy() is being used as it passed by ref,
-        # so changing last file's value will also change all previous file's values and so on.
+        # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.IP',
             outputs=outputs,
@@ -122,8 +121,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         markdown = f"Threat crowd report for Email {email} \n " \
                    f"DBotScore: {score_str} \n {tableToMarkdown('Results', res)}"
 
-        # res.copy() is being used as it passed by ref,
-        # so changing last file's value will also change all previous file's values and so on.
+        # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Account',
             outputs=res.copy(),
@@ -160,8 +158,8 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         subdomains = res.get('subdomains')[:entries_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
-        markdown += f"{tableToMarkdown('Resolutions', resolutions)} " \
-                    f"{tableToMarkdown('\n', res.copy().pop('resolutions'))}"
+        markdown += f'{tableToMarkdown("Resolutions", resolutions)} \n' \
+                    f'{tableToMarkdown("", res.copy().pop("resolutions"))}'
 
         outputs = {
             'hashes': res.get('hashes'),
@@ -174,8 +172,7 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             'value': res.get('value')
         }
 
-        # res.copy() is being used as it passed by ref,
-        # so changing last file's value will also change all previous file's values and so on.
+        # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.Domain',
             outputs=outputs,
@@ -201,8 +198,7 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
 
         markdown = tableToMarkdown(f"Threat crowd report for antivirus {antivirus}", res)
 
-        # res.copy() is being used as it passed by ref,
-        # so changing last file's value will also change all previous file's values and so on.
+        # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.AntiVirus',
             outputs=res.copy(),
@@ -232,8 +228,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         markdown = f"Threat crowd report for File {file_hash}: \n Reputation: {score_str} \n " \
                    f"{tableToMarkdown('Results', res)}"
 
-        # res.copy() is being used as it passed by ref,
-        # so changing last file's value will also change all previous file's values and so on.
+        # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
             outputs_prefix='ThreatCrowd.File',
             outputs=res.copy(),
@@ -263,7 +258,6 @@ def test_module(client: Client) -> str:
 
 
 def main() -> None:
-
     command_functions = {'email': email_command,
                          'domain': domain_command,
                          'ip': ip_command,
@@ -312,7 +306,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
