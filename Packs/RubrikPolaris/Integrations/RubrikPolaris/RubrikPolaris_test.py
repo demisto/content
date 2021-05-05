@@ -1,3 +1,4 @@
+from CommonServerPython import *
 import json
 import io
 
@@ -82,7 +83,6 @@ def test_fetch_incidents(mocker, requests_mock):
     will result in the return value of "ok"
     """
     from RubrikPolaris import Client, fetch_incidents, convert_to_demisto_severity
-    from CommonServerPython import *
     import demistomock as demisto
     from datetime import datetime, timedelta
 
