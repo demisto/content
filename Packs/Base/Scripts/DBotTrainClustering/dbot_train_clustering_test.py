@@ -1,8 +1,8 @@
 import json
 
 from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
-    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID, check_list_of_dict,\
-    base64, datetime, Clustering
+    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID, check_list_of_dict, \
+    base64, datetime
 import dill as pickle
 
 PARAMETERS_DICT = {
@@ -43,6 +43,7 @@ FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES = [
 ]
 
 FETCHED_INCIDENT_EMPTY = []
+
 
 class PostProcessing():
     def __init__(self):
@@ -102,10 +103,11 @@ def test_main_regular(mocker):
     cluster_0 = output_json['data'][0]
     cluster_1 = output_json['data'][1]
     assert MESSAGE_INCORRECT_FIELD % 'wrong_field' in msg
-    assert (all(item in cluster_0.items() for item in sub_dict_0.items())
-            and all(item in cluster_1.items() for item in sub_dict_1.items())) \
-           or (all(item in cluster_0.items() for item in sub_dict_1.items())
-               and all(item in cluster_1.items() for item in sub_dict_0.items()))
+    cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_1.items()))
+    cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_0.items()))
+    assert (cond_1 or cond_2)
 
 
 # Test if wrong cluster name
@@ -150,10 +152,11 @@ def test_empty_cluster_name(mocker):
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json['data'][0]
     cluster_1 = output_json['data'][1]
-    assert (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(
-        item in cluster_1.items() for item in sub_dict_1.items())) or (
-                    all(item in cluster_0.items() for item in sub_dict_1.items()) and all(
-                        item in cluster_1.items() for item in sub_dict_0.items()))
+    cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_1.items()))
+    cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_0.items()))
+    assert (cond_1 or cond_2)
 
 
 # Test if incorrect all incorrrect field name
@@ -186,6 +189,7 @@ def test_missing_too_many_values(mocker):
     assert output_clustering_json
     assert model
 
+
 # Test for nested fields
 def test_main_incident_nested(mocker):
     """
@@ -212,7 +216,8 @@ def test_model_exist_and_valid(mocker):
     global FETCHED_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     PARAMETERS_DICT.update(
-        {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname', 'forceRetrain': 'False'})
+        {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname',
+         'forceRetrain': 'False'})
     mocker.patch.object(demisto, 'args',
                         return_value=PARAMETERS_DICT
                         )
@@ -220,4 +225,3 @@ def test_model_exist_and_valid(mocker):
     model, output_clustering_json, msg = main()
     assert not msg
     assert output_clustering_json == {'data': 'data'}
-
