@@ -1,0 +1,354 @@
+id: Get endpoint details - Generic
+version: -1
+name: Get endpoint details - Generic
+description: 'This playbook use the generic command !endpoint to retrieve details
+  on specific endpoint. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9716b204-62a4-450c-8253-26271fde0c01
+    type: start
+    task:
+      id: 9716b204-62a4-450c-8253-26271fde0c01
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2928e071-19a3-429d-84a0-02510dbd1f99
+    type: condition
+    task:
+      id: 2928e071-19a3-429d-84a0-02510dbd1f99
+      version: -1
+      name: Is the endpoint id was provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 13c0d4ff-16b0-436c-8c1f-69438655e656
+    type: regular
+    task:
+      id: 13c0d4ff-16b0-436c-8c1f-69438655e656
+      version: -1
+      name: Get endpoint by id
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname: {}
+      id:
+        simple: ${inputs.Endpoint_id}
+      ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 691f0991-bd1d-4130-859f-24fe02cbb3d8
+    type: condition
+    task:
+      id: 691f0991-bd1d-4130-859f-24fe02cbb3d8
+      version: -1
+      name: Is the hostname was provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 37f4b6b1-08a3-414c-89bd-db90aa2d0789
+    type: regular
+    task:
+      id: 37f4b6b1-08a3-414c-89bd-db90aa2d0789
+      version: -1
+      name: Get endpoint by hostname
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname:
+        simple: ${inputs.Endpoint_hostname}
+      id: {}
+      ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1eed6e13-e39f-45f2-86f0-021a16a24a66
+    type: title
+    task:
+      id: 1eed6e13-e39f-45f2-86f0-021a16a24a66
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b2a30313-9833-4d82-8aa1-cff4bd80afb2
+    type: condition
+    task:
+      id: b2a30313-9833-4d82-8aa1-cff4bd80afb2
+      version: -1
+      name: Is the endpoint IP was provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Endpoint_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cbe3bcad-8b5f-47df-8460-c516699d8da6
+    type: regular
+    task:
+      id: cbe3bcad-8b5f-47df-8460-c516699d8da6
+      version: -1
+      name: Get endpoint by IP
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname: {}
+      id: {}
+      ip:
+        simple: ${inputs.Endpoint_ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.52,
+      "3_4_yes": 0.46,
+      "6_7_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1395,
+        "width": 1480,
+        "x": 450,
+        "y": 130
+      }
+    }
+  }
+inputs:
+- key: Endpoint_id
+  value: {}
+  required: false
+  description: 'The id of the endpoint that you wish get details on. '
+  playbookInputQuery:
+- key: Endpoint_ip
+  value: {}
+  required: false
+  description: 'The IP of the endpoint that you wish get details on. '
+  playbookInputQuery:
+- key: Endpoint_hostname
+  value: {}
+  required: false
+  description: 'The hostname of the endpoint that you wish get details on. '
+  playbookInputQuery:
+outputs:
+- contextPath: Endpoint.Hostname
+  description: The endpoint's hostname.
+  type: string
+- contextPath: Endpoint.OS
+  description: The endpoint's operation system.
+  type: string
+- contextPath: Endpoint.IPAddress
+  description: The endpoint's IP address.
+  type: string
+- contextPath: Endpoint.ID
+  description: The endpoint's ID.
+  type: string
+- contextPath: Endpoint.Status
+  description: The endpoint's status.
+  type: string
+- contextPath: Endpoint.IsIsolated
+  description: Endpoint isolation status.
+  type: string
+- contextPath: Endpoint.MACAddress
+  description: Endpoint MAC Address.
+  type: string
+- contextPath: Endpoint.Vendor
+  description: Endpoint Vendor, the integration name.
+  type: string
+tests:
+- Account Enrichment - Generic v2.1 - Test
+- Calculate Severity - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Test Convert file hash to corresponding hashes
+- Detonate File - Generic Test
+- Detonate File - No Files test
+- Detonate URL - Generic Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- File Enrichment - Generic v2 - Test
+- Generic Polling Test
+- IP Enrichment - Generic v2 - Test
+- Retrieve File from Endpoint - Generic V2 Test
+- Send Investigation Summary Reports - Test
+- test-domain-indicator
+- URL Enrichment - Generic v2 - Test
+- Wait Until Datetime - Test
+fromversion: 5.5.0
