@@ -1,13 +1,13 @@
 args:
 - default: false
-  description: 'The source or first entity value, for example 1.1.1.1. Only a single value is acceptable.'
+  description: 'The source of the relationship, for example 1.1.1.1. Only a single value is acceptable.'
   isArray: false
   name: entity_a
   required: true
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'The source or first entity type, for example IP,URL the accepted values are only valid indicator types. Only a single value is acceptable.'
+  description: 'The source type of the relationship, for example IP. The accepted values are only valid indicator types. Only a single value is acceptable.'
   isArray: false
   name: entity_a_type
   predefined:
@@ -28,20 +28,20 @@ args:
   - CIDR
   - STIX Attack Pattern
   - STIX Malware
-  - STIX Repor
+  - STIX Report
   - STIX Threat Actor
   - STIX Tool
   required: true
   secret: false
 - default: false
-  description: 'The destination or second entity value , for example 2.2.2.2, can also be a list of comma separated values, for example 1.1.1.1,2.2.2.2. This argument must be used with the entity_b_type argument and cannot be used in conjunction with the entity_b_query argument.'
+  description: 'The destination of the relationship, for example 2.2.2.2. Can also be a list of comma separated values, for example 3.3.3.3,2.2.2.2. This argument must be used with the entity_b_type argument and cannot be used in conjunction with the entity_b_query argument.'
   isArray: true
   name: entity_b
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'The destination or second entity, for example IP, can also be a list of comma separated values, for example 1.1.1.1,2.2.2.2. This argument must be used with the entity_b argument and cannot be used in conjunction with the entity_b_query argument.'
+  description: 'The destination type of the relationship, for example IP. Only a single value is acceptable. This argument must be used with the entity_b argument and cannot be used in conjunction with the entity_b_query argument.'
   isArray: false
   name: entity_b_type
   predefined:
@@ -62,20 +62,20 @@ args:
   - CIDR
   - STIX Attack Pattern
   - STIX Malware
-  - STIX Repor
+  - STIX Report
   - STIX Threat Actor
   - STIX Tool
   required: false
   secret: false
 - default: false
-  description: 'The indicator query for all the entity_b results. All the indicators that are the results of the query will be used as the value. For example type:ip AND tags:mytag. For more examples for queries view the following article . This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.'
+  description: 'The indicator query for all the entity_b results. All the indicators that are the results of the query will be used as the destination of the relationship. For example type:ip AND tags:mytag. For more examples for queries view the following article https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-indicators/understand-indicators/indicators-page.html. This argument cannot be used in conjunction with the entity_b argument or the entity_b_type argument.'
   isArray: false
   name: entity_b_query
   required: false
   secret: false
 - default: false
   auto: PREDEFINED
-  description: 'The name of relationship to be created. Based on the list of allowed relations. (will appear as single select) as provided in this list link to documentation'
+  description: 'The name of relationship to be created.'
   isArray: false
   name: relationship
   defaultValue: 'related-to'
@@ -153,8 +153,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'The reverse name of relationship to be created. Based on the list of allowed relations. (will appear as single select)
-                In case the argument isnt provided by the user the default reverse relation will be created as provided in this list link to documentation'
+  description: "The reverse name of relationship to be created.
+                In case the argument isn't provided by the user the default reverse relation will be created."
   isArray: false
   auto: PREDEFINED
   name: reverse_relationship
@@ -232,7 +232,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: ''
+  description: 'Reliability of the source providing the intelligence data'
   auto: PREDEFINED
   isArray: false
   defaultValue: 'A - Completely reliable'
@@ -270,8 +270,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: 'This automation allows to create a relationship between indicator objects. The user can specify a single value for entity_a (single object) and entity_a type and list of values for entity_b. Entity_b will be provided either by the entity_b argument or by entity_b_query argument. In case the user uses both arguments an error will be provided. The user can specify the relationship name and reverse name (as provided in this list link to documentation
-          ). In case a name is not provided a default relationship of related-to will be created. In case the name is provided without a reverse name the default reverse name will be used from this list. This automation can also create the indicators in case they dont already exist in the system by using the create_indicaotrs argument.'
+comment: 'This automation allows to create a relationship between indicator objects.'
 commonfields:
   id: CreateIndicatorRelationship
   version: -1
