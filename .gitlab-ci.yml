@@ -1,5 +1,5 @@
 default:
-  image: devdemisto/gitlab-content-ci:1.0.0.18999
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18999
   cache:
     key:
       files:
