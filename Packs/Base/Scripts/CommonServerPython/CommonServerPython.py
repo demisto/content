@@ -5040,34 +5040,34 @@ class EntityRelation:
     XSOAR entity relation.
 
     :type name: ``str``
-    :param name: Relation name.
+    :param name: Relationship name.
 
     :type relation_type: ``str``
-    :param relation_type: Relation type.
+    :param relation_type: Relationship type. (e.g. IndicatorToIndicator...).
 
     :type entity_a: ``str``
-    :param entity_a: A value, A aka Source of the relation.
+    :param entity_a: A value, A aka source of the relationship.
 
     :type entity_a_family: ``str``
-    :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
+    :param entity_a_family: Entity family of A, A aka source of the relationship. (e.g. Indicator...)
 
-    :type entity_type_a: ``str``
-    :param entity_type_a: Entity type B, B aka Source of the relation. (For future use).
+    :type entity_a_type: ``str``
+    :param entity_a_type: Entity A type, A aka source of the relationship. (e.g. IP/URL/...).
 
     :type entity_b: ``str``
-    :param entity_b: B value, B aka Source of the relation.
+    :param entity_b: B value, B aka destination of the relationship.
 
     :type entity_b_family: ``str``
-    :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
+    :param entity_b_family: Entity family of B, B aka destination of the relationship. (e.g. Indicator...)
 
-    :type entity_type_b: ``str``
-    :param entity_type_b: Entity type B, B aka Source of the relation. (For future use).
+    :type entity_b_type: ``str``
+    :param entity_b_type: Entity B type, B aka destination of the relationship. (e.g. IP/URL/...).
 
     :type source_reliability: ``str``
-    :param source_reliability: Source_reliability.
+    :param source_reliability: Source reliability.
 
     :type fields: ``dict``
-    :param fields: Custom fields.
+    :param fields: Custom fields. (Optional)
 
     :type brand: ``str``
     :param brand: Source brand name. (Optional)
@@ -5118,14 +5118,14 @@ class EntityRelation:
         :rtype: ``None``
         """
         APPLIED = 'applied'
-        ATTACHEMENT_OF = 'attachement-of'
+        ATTACHMENT_OF = 'attachment-of'
         ATTACHES = 'attaches'
         ATTRIBUTE_OF = 'attribute-of'
         ATTRIBUTED_BY = 'attributed-by'
         ATTRIBUTED_TO = 'attributed-to'
         AUTHORED_BY = 'authored-by'
         BEACONS_TO = 'beacons-to'
-        BUNDELED_IN = 'bundeled-in'
+        BUNDLED_IN = 'bundled-in'
         BUNDLES = 'bundles'
         COMMUNICATED_WITH = 'communicated-with'
         COMMUNICATED_BY = 'communicated-by'
@@ -5142,7 +5142,7 @@ class EntityRelation:
         DROPPED_BY = 'dropped-by'
         DROPS = 'drops'
         DUPLICATE_OF = 'duplicate-of'
-        EMBBEDED_IN = 'embbeded-in'
+        EMBEDDED_IN = 'embedded-in'
         EMBEDS = 'embeds'
         EXECUTED = 'executed'
         EXECUTED_BY = 'executed-by'
@@ -5189,15 +5189,15 @@ class EntityRelation:
         VARIANT_OF = 'variant-of'
 
         RELATIONS_NAMES = {'applied': 'applied-on',
-                           'attachement-of': 'attaches',
-                           'attaches': 'attachement-of',
+                           'attachment-of': 'attaches',
+                           'attaches': 'attachment-of',
                            'attribute-of': 'owns',
                            'attributed-by': 'attributed-to',
                            'attributed-to': 'attributed-by',
                            'authored-by': 'author-of',
                            'beacons-to': 'communicated-by',
-                           'bundeled-in': 'bundles',
-                           'bundles': 'bundeled-in',
+                           'bundled-in': 'bundles',
+                           'bundles': 'bundled-in',
                            'communicated-with': 'communicated-by',
                            'communicated-by': 'communicates-with',
                            'communicates-with': 'communicated-by',
@@ -5213,7 +5213,7 @@ class EntityRelation:
                            'dropped-by': 'drops',
                            'drops': 'dropped-by',
                            'duplicate-of': 'duplicate-of',
-                           'embbeded-in': 'embeds',
+                           'embedded-in': 'embeds',
                            'embeds': 'embedded-on',
                            'executed': 'executed-by',
                            'executed-by': 'executes',
@@ -5272,15 +5272,20 @@ class EntityRelation:
             return EntityRelation.Relations.RELATIONS_NAMES[name]
 
     def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
-                 relation_type='IndicatorToIndicator', entity_a_family='Indicator', entity_b_family='Indicator',
-                 source_reliability="", fields=None, brand=""):
+                 reverse_name='', relation_type='IndicatorToIndicator', entity_a_family='Indicator',
+                 entity_b_family='Indicator', source_reliability="", fields=None, brand=""):
 
         # Relation
         if not EntityRelation.Relations.is_valid(name):
             raise ValueError("Invalid relation: " + name)
         self._name = name
 
-        self._reverse_name = EntityRelation.Relations.get_reverse(name)
+        if reverse_name:
+            if not EntityRelation.Relations.is_valid(reverse_name):
+                raise ValueError("Invalid reverse relation: " + reverse_name)
+            self._reverse_name = reverse_name
+        else:
+            self._reverse_name = EntityRelation.Relations.get_reverse(name)
 
         if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
             raise ValueError("Invalid relation type: " + relation_type)
