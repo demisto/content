@@ -205,8 +205,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         bool: whether cleanup was skipped or not.
     """
     if ('CI' not in os.environ) or (
-            os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
-            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name not in
+            os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
+            os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
@@ -739,11 +739,11 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
             sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
-    branch_name = os.environ.get('CIRCLE_BRANCH')
+    branch_name = os.environ.get('CI_COMMIT_BRANCH')
     if branch_name and branch_name.startswith('pull/'):
         successful_packs_table = build_summary_table_md(successful_packs)
 
-        build_num = os.environ['CIRCLE_BUILD_NUM']
+        build_num = os.environ['CI_BUILD_ID']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
                       f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
@@ -808,8 +808,8 @@ def add_pr_comment(comment: str):
 
     """
     token = os.environ['CONTENT_GITHUB_TOKEN']
-    branch_name = os.environ['CIRCLE_BRANCH']
-    sha1 = os.environ['CIRCLE_SHA1']
+    branch_name = os.environ['CI_COMMIT_BRANCH']
+    sha1 = os.environ['CI_COMMIT_SHA']
 
     query = f'?q={sha1}+repo:demisto/content+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
