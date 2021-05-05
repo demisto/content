@@ -74,10 +74,11 @@ def checked_type(file_path: str, regex_list: Iterable[str]) -> bool:
     return False
 
 
-def is_pytest_file(file_path: str) -> bool:
+def is_code_test_file(file_path: str) -> bool:
     """Whatever is a pytest file or not depends on the file name.
 
     Args:
         file_path: File path to check
     """
-    return '_test' in file_path or 'test_' in file_path
+    # TODO: make it work for ps tests (pester)
+    return '_test' in file_path or 'test_' in file_path or 'Tests.ps1' in file_path
