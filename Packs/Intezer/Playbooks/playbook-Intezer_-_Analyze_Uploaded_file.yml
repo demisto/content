@@ -2,7 +2,7 @@ id: Intezer - Analyze Uploaded file
 version: -1
 name: Intezer - Analyze Uploaded file
 fromversion: 5.0.0
-description: Upload a file to Intezer Analyze to analyze and enrich the file reputation. (up to 32mb)
+description: Upload a file to Intezer Analyze to analyze and enrich the file reputation. (up to 150 MB)
 starttaskid: "0"
 tasks:
   "0":
@@ -118,7 +118,7 @@ tasks:
       id: 44c99bce-45d2-4786-8fee-87fe1be01165
       version: -1
       name: Intezer - Analyze uploaded file
-      description: Checks the file reputation for the uploaded file. Max file size is 32 MB.
+      description: Checks the file reputation for the uploaded file. Max file size is 150 MB.
       script: '|||intezer-analyze-by-file'
       type: regular
       iscommand: true
