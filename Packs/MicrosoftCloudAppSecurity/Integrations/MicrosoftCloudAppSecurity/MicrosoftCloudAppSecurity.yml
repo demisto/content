@@ -64,7 +64,7 @@ configuration:
     instance configuration. Example for Custom Filter: {"severity":{"eq":2}}.
     Note that for filtering by "entity.policy", one should use the id of the policy.
     For example, for retrieving the policy:
-    {"policyType": "ANOMALY_DETECTION", "id": "5e6fa96cb5172297ca756554", "label": "Impossible travel",
+    {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel",
      "type": "policyRule"}"
     please query on {"entity.policy":{"eq":1234}}.
     For more information about filter syntax, please refer to
