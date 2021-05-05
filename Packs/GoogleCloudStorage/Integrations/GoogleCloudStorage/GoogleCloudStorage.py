@@ -62,6 +62,15 @@ def disable_tls_verification():
     urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
 
+def get_bucket_name(args, default_bucket):
+    bucket_name = args.get('bucket_name') or default_bucket
+
+    if not bucket_name:
+        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
+                               ' set a default bucket name as an integration parameter.')
+    return  bucket_name
+
+
 def ec_key(path, *merge_by):
     """Returns the context key and merge logic for the given context path and ID field name(s)."""
 
@@ -164,10 +173,7 @@ def gcs_list_buckets(client):
 
 
 def gcs_get_bucket(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     bucket = client.get_bucket(bucket_name)
     result = bucket2dict(bucket)
@@ -253,11 +259,7 @@ def upload_blob(client, file_path, bucket_name, object_name):
 
 
 def gcs_list_bucket_objects(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     blobs = client.list_blobs(bucket_name)
     result = [blob2dict(blob) for blob in blobs]
@@ -270,13 +272,9 @@ def gcs_list_bucket_objects(client, default_bucket, args):
 
 
 def gcs_download_file(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     blob_name = args['object_name']
     saved_file_name = args.get('saved_file_name', '')
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     bucket = client.get_bucket(bucket_name)
     blob = storage.Blob(blob_name, bucket)
@@ -286,14 +284,10 @@ def gcs_download_file(client, default_bucket, args):
 
 
 def gcs_upload_file(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     entry_id = args['entry_id']
     object_name = args['object_name']
     object_acl = args.get('object_acl', '')
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     context_file = demisto.getFilePath(entry_id)
     file_path = context_file['path']
@@ -349,11 +343,7 @@ def delete_acl_entry(acl, entity):
 
 
 def gcs_list_bucket_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
 
@@ -368,13 +358,9 @@ def gcs_list_bucket_policy(client, default_bucket, args):
 
 
 def gcs_create_bucket_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     entity = args['entity']
     role = args['role']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
     if acl.has_entity(entity):
@@ -391,13 +377,9 @@ def gcs_create_bucket_policy(client, default_bucket, args):
 
 
 def gcs_put_bucket_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     entity = args['entity']
     role = args['role']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
@@ -414,12 +396,8 @@ def gcs_put_bucket_policy(client, default_bucket, args):
 
 
 def gcs_delete_bucket_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     entity = args['entity']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = client.get_bucket(bucket_name).acl
     if not acl.has_entity(entity):
@@ -444,12 +422,8 @@ def get_blob_acl(client, bucket_name, blob_name):
 
 
 def gcs_list_bucket_object_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     blob_name = args['object_name']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = get_blob_acl(client, bucket_name, blob_name)
     acl_entries = get_acl_entries(client, acl)
@@ -463,14 +437,10 @@ def gcs_list_bucket_object_policy(client, default_bucket, args):
 
 
 def gcs_create_bucket_object_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     blob_name = args['object_name']
     entity = args['entity']
     role = args['role']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = get_blob_acl(client, bucket_name, blob_name)
     if acl.has_entity(entity):
@@ -487,14 +457,10 @@ def gcs_create_bucket_object_policy(client, default_bucket, args):
 
 
 def gcs_put_bucket_object_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     blob_name = args['object_name']
     entity = args['entity']
     role = args['role']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = get_blob_acl(client, bucket_name, blob_name)
     if not acl.has_entity(entity):
@@ -511,13 +477,9 @@ def gcs_put_bucket_object_policy(client, default_bucket, args):
 
 
 def gcs_delete_bucket_object_policy(client, default_bucket, args):
-    bucket_name = args.get('bucket_name') or default_bucket
     blob_name = args['object_name']
     entity = args['entity']
-
-    if not bucket_name:
-        raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
-                               ' set a default bucket name as an integration parameter.')
+    bucket_name = get_bucket_name(args, default_bucket)
 
     acl = get_blob_acl(client, bucket_name, blob_name)
     if not acl.has_entity(entity):
@@ -609,6 +571,9 @@ def main():
 
         elif command == 'gcs-delete-bucket-object-policy':
             gcs_delete_bucket_object_policy(client, default_bucket, args)
+
+        else:
+            raise NotImplementedError(f'Command not implemented: {command}')
 
     except Exception as e:
         LOG(traceback.format_exc())
