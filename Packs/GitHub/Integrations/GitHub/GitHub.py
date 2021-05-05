@@ -915,6 +915,20 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
+def get_team_members(organization: str, team_slug: str) -> list:
+    page = 1
+    results = []
+    while True:
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members?page={page}'
+        response = http_request('GET', url_suffix=suffix)
+        if not response:
+            break
+        results.extend(response)
+        page += 1
+
+    return results
+
+
 def get_team_membership_command():
     args = demisto.args()
     team_id = args.get('team_id')
@@ -1309,6 +1323,25 @@ def get_workflow_usage(owner_name, repository_name, workflow_id):
     return workflow_usage
 
 
+def get_team_members_command():
+    args = demisto.args()
+    org = args.get('organization')
+    team_slug = args.get('team_slug')
+    response = get_team_members(org, team_slug)
+    members = []
+    for member in response:
+        ec_object = {
+            'ID': member.get("id"),
+            'Login': member.get("login"),
+        }
+        members.append(ec_object)
+    ec = {
+        'GitHub.TEAMMEMBER(val.ID === obj.ID)': members
+    }
+    human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def get_github_actions_usage():
     """ List github actions workflows usage of private repositories.
 
@@ -1482,6 +1515,7 @@ COMMANDS = {
     'Github-list-files': list_files_command,
     'GitHub-get-file-content': get_file_content_from_repo,
     'GitHub-search-code': search_code_command,
+    'GitHub-list-team-members': get_team_members_command,
 }
 
 

@@ -1658,3 +1658,26 @@ Get list of files from the given path in the repository.
 |--- |--- |--- |--- |--- |
 |README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
 |images|Index/images|dir|0||
+
+### GitHub-list-team-members
+***
+List team members.
+#### Base Command
+`GitHub-list-team-members`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+| team_slug | The name of the team under the organiztion. | Required | 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.TEAMMEMBER.ID | String | The ID of the team member. | 
+| GitHub.TEAMMEMBER.Login | String |he login name of the team member. |
+#### Command Example
+```!GitHub-list-team-members organization=org_name team_slug=test_team```
+#### Human Readable Output
+## Team Member of team test_team in organization org_name
+|ID|Login|
+|--- |---|
+|1234567|username|
