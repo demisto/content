@@ -214,9 +214,8 @@ class PostProcessing(object):
                 dist = {k: v * 100 / total for k, v in chosen.items()}
                 dist_total[cluster_number] = {}
                 dist_total[cluster_number]['number_samples'] = sum(
-                    self.clustering.raw_data[self.clustering.model.labels_ == cluster_number].label.isin(
-                        # type: ignore
-                        list(chosen.keys())))
+                    self.clustering.raw_data[  # type: ignore
+                        self.clustering.model.labels_ == cluster_number].label.isin(list(chosen.keys())))  # type: ignore
                 dist_total[cluster_number]['distribution'] = dist
                 dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])
         else:
@@ -283,7 +282,7 @@ def get_args():  # type: ignore
     model_override = demisto.args().get('overrideExistingModel', 'False') == 'True'
     debug = demisto.args().get('debug', 'False') == 'True'
     force_retrain = demisto.args().get('forceRetrain', 'False') == 'True'
-    model_expiration = int(demisto.args().get('modelExpiration'))
+    model_expiration = float(demisto.args().get('modelExpiration'))
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, \
@@ -512,7 +511,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
         d['color'] = color[divmod(cluster_number, len(color))[1]]
         d['pivot'] = str(cluster_number)  # type: ignore
         d['incidents_ids'] = [x for x in incidents_df[  # type: ignore
-                                                      clustering.model.labels_ == cluster_number].id.values.tolist()]  # type: ignore
+            clustering.model.labels_ == cluster_number].id.values.tolist()]  # type: ignore
         d['query'] = 'type:%s' % type  # type: ignore
         d['data'] = [int(model_processed.stats[cluster_number]['number_samples'])]  # type: ignore
         data['data'].append(d)

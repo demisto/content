@@ -44,6 +44,22 @@ FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES = [
 
 FETCHED_INCIDENT_EMPTY = []
 
+sub_dict_0 = {
+    'data': [2],
+    'dataType': 'incident',
+    'incidents_ids': ['1', '3'],
+    'name': 'powershell',
+    'query': 'type:Phishing'
+}
+
+sub_dict_1 = {
+    'data': [2],
+    'dataType': 'incident',
+    'incidents_ids': ['2', '4'],
+    'name': 'nmap',
+    'query': 'type:Phishing'
+}
+
 
 class PostProcessing():
     def __init__(self):
@@ -74,29 +90,17 @@ def test_check_list_of_dict():
     assert check_list_of_dict({'test': 'value_test'}) is False
 
 
+# Test regular training
 def test_main_regular(mocker):
     global FETCHED_INCIDENT
+    global sub_dict_1
+    global sub_dict_0
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     PARAMETERS_DICT.update(
         {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname'})
     mocker.patch.object(demisto, 'args',
                         return_value=PARAMETERS_DICT
                         )
-    sub_dict_0 = {
-        'data': [2],
-        'dataType': 'incident',
-        'incidents_ids': ['1', '3'],
-        'name': 'powershell',
-        'query': 'type:Phishing'
-    }
-    sub_dict_1 = {
-        'data': [2],
-        'dataType': 'incident',
-        'incidents_ids': ['2', '4'],
-        'name': 'nmap',
-        'query': 'type:Phishing'
-    }
-
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
@@ -212,6 +216,7 @@ def test_main_incident_nested(mocker):
     assert MESSAGE_CLUSTERING_NOT_VALID in msg
 
 
+# Test to validate that if the model is still valid then it won't train again
 def test_model_exist_and_valid(mocker):
     global FETCHED_INCIDENT
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
@@ -225,3 +230,28 @@ def test_model_exist_and_valid(mocker):
     model, output_clustering_json, msg = main()
     assert not msg
     assert output_clustering_json == {'data': 'data'}
+
+
+# Test to validate that if the model has expired then it won't train again
+def test_model_exist_and_expired(mocker):
+    global FETCHED_INCIDENT
+    global sub_dict_1
+    global sub_dict_0
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
+    time = '1e-20'
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': 'field_1, field_2', 'fieldForClusterName': 'entityname',
+         'forceRetrain': 'False', 'modelExpiration': time})
+    mocker.patch.object(demisto, 'args',
+                        return_value=PARAMETERS_DICT
+                        )
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    model, output_clustering_json, msg = main()
+    output_json = json.loads(output_clustering_json)
+    cluster_0 = output_json['data'][0]
+    cluster_1 = output_json['data'][1]
+    cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_1.items()))
+    cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_0.items()))
+    assert (cond_1 or cond_2)
