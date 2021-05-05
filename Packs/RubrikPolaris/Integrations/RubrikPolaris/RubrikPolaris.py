@@ -675,8 +675,6 @@ def main() -> None:
 
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'rubrik-radar-analysis-status':
-            return_results(rubrik_radar_analysis_status_command(client, demisto.args()))
         elif demisto.command() == 'rubrik-sonar-sensitive-hits':
             return_results(rubrik_sonar_sensitive_hits_command(client, demisto.args()))
         elif demisto.command() == 'rubrik-cdm-cluster-location':

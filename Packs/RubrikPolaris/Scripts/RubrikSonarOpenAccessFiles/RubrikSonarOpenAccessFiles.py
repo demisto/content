@@ -8,6 +8,9 @@ def main() -> None:
     RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
 
+    formats = {}
+    entryTypes = {}
+
     try:
         radar_open_access_files = demisto.context()["Rubrik"]["Sonar"]["openAccessFiles"]
         

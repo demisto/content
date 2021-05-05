@@ -8,6 +8,9 @@ def main() -> None:
     RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
 
+    formats = {}
+    entryTypes = {}
+    
     try:
         sonar_total_hits = demisto.context()["Rubrik"]["Sonar"]["totalHits"]
         

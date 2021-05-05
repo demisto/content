@@ -8,6 +8,9 @@ def main() -> None:
     RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
 
+    formats = {}
+    entryTypes = {}
+    
     try:
         radar_files_deleted = demisto.executeCommand("Print", {"value": "${incident.labels.radar_files_deleted}"})
         radar_files_deleted = radar_files_deleted[0]["Contents"]
