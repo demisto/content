@@ -519,7 +519,7 @@ class TestMergeVersionBlocks:
             Ensure the method is valid and returns the layoutscontainer name and the fromversion.
         """
         name, description = get_new_entity_record(os.path.join(TEST_DATA_PATH,
-                                                               'FakePack5', 'layouts', 'layoutscontainer-fake.json'))
+                                                               'FakePack5', 'Layouts', 'layoutscontainer-fake.json'))
 
         assert name == 'layoutscontainer-fake'
         assert description == '(Available from Cortex XSOAR 6.0.0)'
