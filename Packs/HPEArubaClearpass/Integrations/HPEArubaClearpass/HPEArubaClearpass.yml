@@ -171,7 +171,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Entity Name of the required attribute. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
+      description: Entity name of the required attribute. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
       isArray: false
       name: entity_name
       predefined:
@@ -208,13 +208,13 @@ script:
       description: The name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.list.entity_name
-      description: The entity Name of the attribute.
+      description: The entity name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.list.data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.list.mandatory
-      description: Whether the entity of the attribute is mandatory.
+      description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.list.default_value
       description: Default Value of the attribute.
@@ -235,7 +235,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Entity Name of the attribute to be set. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
+      description: Entity name of the attribute to be set. Can be Device/LocalUser/GuestUser/Endpoint/Onboard.
       isArray: false
       name: entity_name
       predefined:
@@ -266,7 +266,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Whether to make this attribute mandatory for the entity. Default
+      description: Whether to make this attribute mandatory for the given entity_name. Default
         is false.
       isArray: false
       name: mandatory
@@ -286,7 +286,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Possible value for attribute with data type List only (e.g., example1,example2,example3).
+      description: Possible value for attribute with data type List only - API limitation (e.g., example1,example2,example3).
         Default is an empty string.
       isArray: false
       name: allowed_value
@@ -304,13 +304,13 @@ script:
       description: The name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.create.Entity_name
-      description: The entity Name of the attribute.
+      description: The entity name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.create.Data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.create.Mandatory
-      description: Whether the entity of the attribute is mandatory.
+      description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.create.Default_value.
       description: Default Value of the attribute.
@@ -368,7 +368,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Whether to make this attribute mandatory for the entity. Default
+      description: Whether to make this attribute mandatory for the given entity_name. Default
         is false.
       isArray: false
       name: mandatory
@@ -388,7 +388,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Possible value for attribute with data type List only (e.g., example1,example2,example3).
+      description: Possible value for attribute with data type List only - API limitation (e.g., example1,example2,example3).
         Default is an empty string.
       isArray: false
       name: allowed_value
@@ -406,13 +406,13 @@ script:
       description: The name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.update.Entity_name
-      description: The entity Name of the attribute.
+      description: The entity name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.update.Data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.update.Mandatory
-      description: Whether the entity of the attribute is mandatory.
+      description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.update.Default_value.
       description: Default Value of the attribute.
