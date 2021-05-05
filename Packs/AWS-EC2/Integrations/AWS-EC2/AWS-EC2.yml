@@ -4801,17 +4801,6 @@ script:
       - 'False'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicates that the fleet launches all Spot Instances into a single
-        Availability Zone.
-      isArray: false
-      name: SpotSingleInstanceType
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
     - default: false
       description: The minimum target capacity for Spot Instances in the fleet. If
         the minimum target capacity is not reached, the fleet launches no instances.
@@ -6779,7 +6768,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3:2.0.0.19155
+  dockerimage: demisto/boto3:2.0.0.19484
   feed: false
   isfetch: false
   longRunning: false
