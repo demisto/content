@@ -87,7 +87,7 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
 # Remove this when branches will sync with github
-  SKIP_PRIVATE_BUILD: "true"
+  SKIP_PRIVATE_BUILD: "false"
   FORCE_BUCKET_UPLOAD: "false"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
 
