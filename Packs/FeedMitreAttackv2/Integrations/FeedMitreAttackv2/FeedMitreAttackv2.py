@@ -22,8 +22,8 @@ INDICATOR_TYPE_TO_SCORE = {
     "Intrusion Set": 3,
     "STIX Attack Pattern": 2,
     "Course of Action": 0,
-    "Malware": 3,
-    "Tool": 2
+    "STIX Malware": 3,
+    "STIX Tool": 2
 }
 
 # Disable insecure warnings

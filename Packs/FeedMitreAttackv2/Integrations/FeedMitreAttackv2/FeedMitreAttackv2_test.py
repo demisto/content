@@ -1,6 +1,25 @@
+import json
 import pytest
+from stix2 import TAXIICollectionSource
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
-    RELATION_1
+    RELATION
+
+
+@pytest.mark.parametrize('indicator, expected_result', [
+    ([ATTACK_PATTERN.get('response')], ATTACK_PATTERN.get('indicator')),
+    ([COURSE_OF_ACTION.get('response')], COURSE_OF_ACTION.get('indicator')),
+    ([INTRUSION_SET.get('response')], INTRUSION_SET.get('indicator')),
+    ([MALWARE.get('response')], MALWARE.get('indicator')),
+    ([TOOL.get('response')], TOOL.get('indicator'))
+])
+def test_fetch_indicators(mocker, indicator, expected_result):
+    from FeedMitreAttackv2 import Client
+    client = Client(url="https://cti-taxii.mitre.org", proxies=False, verify=False, tags=[], tlp_color=None)
+    client.initialise()
+    mocker.patch.object(TAXIICollectionSource, 'query', return_value=indicator)
+    mocker.patch.object(json, 'loads', return_value=indicator[0])
+    indicators = client.build_iterator(create_relationships=True, limit=6)
+    assert indicators == expected_result
 
 
 @pytest.mark.parametrize('field_name, field_value, expected_result', [
@@ -25,11 +44,11 @@ def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
 
 
 @pytest.mark.parametrize('indicator_type, indicator_json, expected_result', [
-    ('STIX Attack Pattern', ATTACK_PATTERN.get('response'), ATTACK_PATTERN.get('result')),
-    ('Course of Action', COURSE_OF_ACTION.get('response'), COURSE_OF_ACTION.get('result')),
-    ('Intrusion Set', INTRUSION_SET.get('response'), INTRUSION_SET.get('result')),
-    ('STIX Malware', MALWARE.get('response'), MALWARE.get('result')),
-    ('STIX Tool', TOOL.get('response'), TOOL.get('result'))
+    ('STIX Attack Pattern', ATTACK_PATTERN.get('response'), ATTACK_PATTERN.get('map_result')),
+    ('Course of Action', COURSE_OF_ACTION.get('response'), COURSE_OF_ACTION.get('map_result')),
+    ('Intrusion Set', INTRUSION_SET.get('response'), INTRUSION_SET.get('map_result')),
+    ('STIX Malware', MALWARE.get('response'), MALWARE.get('map_result')),
+    ('STIX Tool', TOOL.get('response'), TOOL.get('map_result'))
 ])
 def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
     from FeedMitreAttackv2 import map_fields_by_type
@@ -38,7 +57,7 @@ def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
 
 def test_create_relationship():
     from FeedMitreAttackv2 import create_relationship
-    relation = create_relationship(RELATION_1.get('response'), ID_TO_NAME)
+    relation = create_relationship(RELATION.get('response'), ID_TO_NAME)
     relation._entity_a = 'entity a'
     relation._entity_a_type = 'STIX Malware'
     relation._entity_b = 'entity b'
