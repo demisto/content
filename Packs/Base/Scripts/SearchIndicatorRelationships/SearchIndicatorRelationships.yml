@@ -1,13 +1,13 @@
 args:
 - default: false
-  description: 'Search for relationships where the given entity value. The value can be a comma delimited list of entities. For example 192.168.1.1,192.168.1.2. The search applies for both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
+  description: 'A comma-separated list of entities for which to search for relationships. For example: 192.168.1.1,192.168.1.2. The search applies to both entity A or entity B values. This argument can be used in conjunction with the entityType and the relationship arguments and all arguments will be treated with the AND operator.'
   isArray: true
   name: entities
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
-  description: 'Search for relationships for the given entity type. The value can be a comma delimited list of types such as IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
+  description: 'A comma-separated list of entity types for which to search for relationships. For example: IP,URL. This argument can be used in conjunction with the entities and the relationship arguments and all arguments will be treated with the AND operator.'
   isArray: true
   name: entities_types
   required: false
@@ -34,7 +34,7 @@ args:
   - STIX Threat Actor
   - STIX Tool
 - default: false
-  description: 'Search for relationships where for the given relationships types. the value can be a comma delimited list of relationships types such as related-to,contains This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
+  description: 'A comma-separated list of relationship types for which to search for relationships. For example: related-to,contains. This argument can be used in conjunction with the entities and the entitiesTypes arguments and all arguments will be treated with the AND operator.'
   isArray: true
   auto: PREDEFINED
   name: relationships
@@ -113,14 +113,14 @@ args:
   - variant-of
 - default: false
   defaultValue: '20'
-  description: 'The number of results to return. The default is 20.'
+  description: 'The number of results to return. Default is 20.'
   isArray: false
   name: limit
   required: false
   secret: false
 - default: false
   defaultValue: 'false'
-  description: 'This setting specifies if all of the relationships attributes will be returned or just the basics. The default value is false and the returned values will be relationship name, reverse relationship, entity A value, entity A type, entity B value, entity B type and ID of the relationship. If the selected value will be true all the attributes will be returned.'
+  description: 'Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.'
   isArray: false
   name: verbose
   required: false
@@ -131,7 +131,7 @@ args:
   - 'false'
 - default: false
   defaultValue: 'false'
-  description: 'The status of the relationships to return. Values can be true or false, the default value is false.'
+  description: 'The status of the relationships to return. Default is false.'
   isArray: false
   name: revoked
   required: false
@@ -140,7 +140,8 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: 'This automation outputs the indicator relationships to context according to the provided query. Using the entities, entityTypes, relationships arguments.'
+comment: 'This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8
+          entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.'
 commonfields:
   id: SearchIndicatorRelationships
   version: -1
@@ -172,22 +173,22 @@ outputs:
   description: The reliability of the relationship.
   type: string
 - contextPath: Relationships.Brand
-  description: The Brand of the relationship.
+  description: The brand of the relationship.
   type: string
 - contextPath: Relationships.Revoked
   description: True if the relationship is revoked.
   type: string
 - contextPath: Relationships.FirstSeenBySource
-  description: The first seen time by source of the relationship.
+  description: The first time seen by the source of the relationship.
   type: string
 - contextPath: Relationships.LastSeenBySource
-  description: The last seen time by sourch of the relationship.
+  description: The last time seen by the source of the relationship.
   type: string
 - contextPath: Relationships.Description
-  description: The Description of the relationship.
+  description: The description of the relationship.
   type: string
 - contextPath: Relationships.Type
-  description: The Type of the relationship.
+  description: The type of the relationship.
   type: string
 script: '-'
 system: false
