@@ -1,7 +1,7 @@
 import json
 
 from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
-    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID
+    preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID, check_list_of_dict
 
 PARAMETERS_DICT = {
     'fromDate': '',
@@ -56,6 +56,11 @@ def executeCommand(command, args):
 def test_preprocess_incidents_field():
     assert preprocess_incidents_field('incident.commandline', PREFIXES_TO_REMOVE) == 'commandline'
     assert preprocess_incidents_field('commandline', PREFIXES_TO_REMOVE) == 'commandline'
+
+
+def test_check_list_of_dict():
+    assert check_list_of_dict([{'test': 'value_test'}, {'test1': 'value_test1'}]) is True
+    assert check_list_of_dict({'test': 'value_test'}) is False
 
 
 def test_main_regular(mocker):
@@ -171,7 +176,7 @@ def test_missing_too_many_values(mocker):
     assert output_clustering_json
     assert model
 
-
+# Test for nested fields
 def test_main_incident_nested(mocker):
     """
     Test if fetched incident truncated  -  Should return MESSAGE_WARNING_TRUNCATED in the message
