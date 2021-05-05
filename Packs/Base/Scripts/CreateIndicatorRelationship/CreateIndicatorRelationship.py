@@ -14,6 +14,15 @@ PAGE_SIZE = 2000
 
 
 def find_indicators_by_query(query: str) -> List[dict]:
+    """
+    Search indicators in the system using a query.
+
+    :type query: ``str``
+    :param query: A query for the searchIndicators command.
+
+    :return: A list of indicators that exist in the system.
+    :rtype: ``list``
+    """
     indicators: List[dict] = []
     search_indicators = IndicatorsSearcher()
 
@@ -31,9 +40,21 @@ def find_indicators_by_query(query: str) -> List[dict]:
     return indicators
 
 
-def remove_existing_entity_b_indicators(args: dict) -> list:
-    entity_b_list = argToList(args.get('entity_b'))
-    if args.get('entity_b_query'):
+def remove_existing_entity_b_indicators(entity_b_list: list, entity_b_query: str = '') -> list:
+    """
+    We would like to send to the createNewIndicator command only unexisting indicators, as a result this function
+    checks for existing indicator in the system and removed from entity_b the existing indicators.
+
+    :type entity_b_list: ``list``
+    :param entity_b_list: A list of entity_b's arguments to the command.
+
+    :type entity_b_query: ``str``
+    :param entity_b_query: A query that has been given to the command.
+
+    :return: A list of entity_b's that do not exist in the system that we will need to add.
+    :rtype: ``list``
+    """
+    if entity_b_query:
         return []
     else:
         query = f'value:{entity_b_list[0]}'
@@ -131,7 +152,8 @@ def create_indicators(args: dict):
     :return: return a list of errors, empty if no errors.
     :rtype: ``None``
     """
-    entity_b_to_create = remove_existing_entity_b_indicators(args)
+    entity_b_to_create = remove_existing_entity_b_indicators(argToList(args.get('entity_b')),
+                                                             args.get('entity_b_query'))
     indicators = []
     for entity_b in entity_b_to_create:
         indicator = {

@@ -270,8 +270,8 @@ args:
   - 'false'
   required: false
   secret: false
-comment: '[Enter a description of the script, including what function it performs
-  and any important information users need to know, for example required permissions.]'
+comment: 'This automation allows to create a relationship between indicator objects. The user can specify a single value for entity_a (single object) and entity_a type and list of values for entity_b. Entity_b will be provided either by the entity_b argument or by entity_b_query argument. In case the user uses both arguments an error will be provided. The user can specify the relationship name and reverse name (as provided in this list link to documentation
+          ). In case a name is not provided a default relationship of related-to will be created. In case the name is provided without a reverse name the default reverse name will be used from this list. This automation can also create the indicators in case they dont already exist in the system by using the create_indicaotrs argument.'
 commonfields:
   id: CreateIndicatorRelationship
   version: -1
