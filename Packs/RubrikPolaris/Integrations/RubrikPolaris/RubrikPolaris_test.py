@@ -81,7 +81,8 @@ def test_fetch_incidents(mocker, requests_mock):
     Checks the mock_response for a "access_key" token which
     will result in the return value of "ok"
     """
-    from RubrikPolaris import Client, fetch_incidents
+    from RubrikPolaris import Client, fetch_incidents, convert_to_demisto_severity
+    from CommonServerPython import *
     import demistomock as demisto
     from datetime import datetime, timedelta
 
@@ -108,7 +109,7 @@ def test_fetch_incidents(mocker, requests_mock):
     mock_response = [{
         "name": f'Rubrik Radar Anomaly - {mock_incident["objectName"]}',
         "occurred": mock_incident["lastUpdated"],
-        "severity": mock_incident["severity"],
+        "severity": convert_to_demisto_severity(mock_incident["severity"]),
         "rawJSON": json.dumps(mock_incident)
     }]
 
