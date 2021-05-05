@@ -214,6 +214,12 @@ script:
       name: fieldsToValues
       required: true
       secret: false
+    - default: false
+      description: The Level ID to use for create the record.
+      isArray: false
+      name: levelId
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new content record in the given application.
     execution: false
@@ -252,6 +258,12 @@ script:
       isArray: false
       name: contentId
       required: true
+      secret: false
+    - default: false
+      description: The Level ID to use for update the record.
+      isArray: false
+      name: levelId
+      required: false
       secret: false
     deprecated: false
     description: Updates an existing content record in the given application.
@@ -512,6 +524,12 @@ script:
       - "true"
       - "false"
       description: Whether to order by descending order.
+    - default: false
+      description: The Level ID to use for searching. This argument is relevant when fullData is True.
+      isArray: false
+      name: levelId
+      required: false
+      secret: false
     deprecated: false
     description: Searches for records in the given application.
     execution: false
@@ -548,7 +566,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.9.2.17957
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false

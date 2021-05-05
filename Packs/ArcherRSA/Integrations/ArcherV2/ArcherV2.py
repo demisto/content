@@ -325,7 +325,7 @@ class Client(BaseClient):
         self.destroy_token(token)
         return extract_from_xml(res, req_data['outputPath']), res
 
-    def get_level_by_app_id(self, app_id):
+    def get_levels_by_app_id(self, app_id):
         cache = demisto.getIntegrationContext()
         if cache.get(app_id):
             return cache[app_id]
@@ -367,7 +367,7 @@ class Client(BaseClient):
         if res.get('RequestedObject') and res.get('IsSuccessful'):
             content_obj = res.get('RequestedObject')
             level_id = content_obj.get('LevelId')
-            levels = self.get_level_by_app_id(app_id)
+            levels = self.get_levels_by_app_id(app_id)
             level_fields = list(filter(lambda m: m['level'] == level_id, levels))
             if level_fields:
                 level_fields = level_fields[0]['mapping']
@@ -453,7 +453,7 @@ class Client(BaseClient):
         if fields_to_display is None:
             fields_to_display = []
         try:
-            level_data = self.get_level_by_app_id(app_id)[0]
+            level_data = self.get_levels_by_app_id(app_id)[0]
         except IndexError as exc:
             raise DemistoException(
                 'Could not find a level data. You might be using the wrong application id'
@@ -851,12 +851,18 @@ def get_record_command(client: Client, args: Dict[str, str]):
 def create_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     fields_values = args.get('fieldsToValues')
-    try:
-        level_data = client.get_level_by_app_id(app_id)[0]
-    except IndexError as exc:
-        raise DemistoException(
-            'Got no level by app id. You might be using the wrong application id'
-        ) from exc
+    level_id = args.get('levelId')
+    levels = client.get_levels_by_app_id(app_id)
+
+    level_data = None
+    if level_id:
+        level_data = next((level for level in levels if level.get('level') == int(level_id)), None)
+    elif levels:
+        level_data = levels[0]
+
+    if not level_data:
+        raise DemistoException(f'Got no level by app id. You might be using the wrong application id or level id.')
+
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
@@ -886,7 +892,18 @@ def update_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     record_id = args.get('contentId')
     fields_values = args.get('fieldsToValues')
-    level_data = client.get_level_by_app_id(app_id)[0]
+    level_id = args.get('levelId')
+    levels = client.get_levels_by_app_id(app_id)
+
+    level_data = None
+    if level_id:
+        level_data = next((level for level in levels if level.get('level') == int(level_id)), None)
+    elif levels:
+        level_data = levels[0]
+
+    if not level_data:
+        raise DemistoException(f'Got no level by app id. You might be using the wrong application id or level id.')
+
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
@@ -1060,6 +1077,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
     sort_type = 'Descending' if argToBoolean(args.get('isDescending', 'false')) else 'Ascending'
+    level_id = args.get('levelId')
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
@@ -1068,7 +1086,17 @@ def search_records_command(client: Client, args: Dict[str, str]):
         return_error('fields-to-display param should have only values from fields-to-get')
 
     if full_data:
-        level_data = client.get_level_by_app_id(app_id)[0]
+        levels = client.get_levels_by_app_id(app_id)
+
+        level_data = None
+        if level_id:
+            level_data = next((level for level in levels if level.get('level') == int(level_id)), None)
+        elif levels:
+            level_data = levels[0]
+
+        if not level_data:
+            raise DemistoException(f'Got no level by app id. You might be using the wrong application id or level id.')
+
         fields_mapping = level_data['mapping']
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
