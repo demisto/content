@@ -7,11 +7,15 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Fetch Pull Requests
+- defaultvalue: Issue
+  display: Select an Issue or PR to Fetch
   hidden: false
-  name: fetch_pull_requests
+  name: fetch_object
+  options:
+  - Issue
+  - PR
   required: false
-  type: 8
+  type: 15
 - display: API Token
   name: token
   required: false
@@ -2650,22 +2654,22 @@ script:
     outputs:
     - contextPath: GitHub.CheckRuns.CheckRunConclusion
       description: Check Run Conculsion
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunAppName
       description: Check Run App Name
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckExternalID
       description: Check Run External ID
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunName
       description: Check Run Name
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunStatus
       description: Check Run Status
-      type: Unknown
+      type: String
     - contextPath: GitHub.CheckRuns.CheckRunID
       description: Check Run ID
-      type: Unknown
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.16907
   feed: false
   isfetch: true

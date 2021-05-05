@@ -1297,7 +1297,7 @@ def fetch_incidents_command():
     last_time = start_time
     incidents = []
 
-    if demisto.params().get('fetch_pull_requests'):
+    if demisto.params().get('fetch_object') == "PR":
         pr_list = http_request(method='GET',
                                url_suffix=PULLS_SUFFIX,
                                params={
