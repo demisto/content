@@ -150,7 +150,7 @@ if __name__ == "__main__":
     install_simple_logging()
     options = options_handler()
     if options.instance_tests:
-        with open('./env_results.json', 'r') as json_file:
+        with open('./artifacts/env_results.json', 'r') as json_file:
             env_results = json.load(json_file)
             server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 
