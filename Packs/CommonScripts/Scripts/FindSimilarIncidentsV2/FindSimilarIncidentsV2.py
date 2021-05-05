@@ -1,4 +1,5 @@
 # type: ignore
+
 from CommonServerPython import *
 import collections
 from dateutil import parser
@@ -108,18 +109,32 @@ def get_incident_labels_map(labels):
     return labels_map
 
 
+def prepare_value_to_query_with(value):
+    str_value = str(value) if isinstance(value, int) else value
+    str_value = str_value.replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r")
+    str_value = str_value.encode('utf-8') if not isinstance(value, int) else str_value
+    return str_value
+
+
+def build_incident_fields_query(incident_data):
+    similar_keys_list = []
+    for key, value in incident_data.items():
+        str_value = prepare_value_to_query_with(value)
+        query_template = '{}:="{}"' if isinstance(value, int) else '{}="{}"'
+        similar_key = query_template.format(key, str_value)
+        similar_keys_list.append(similar_key) if isinstance(value, int) else \
+            similar_keys_list.append(str(similar_key).decode('utf-8'))  # type: ignore
+
+    return similar_keys_list
+
+
 def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, incident_id, hours_back, ignore_closed,
                           max_number_of_results, extra_query, applied_condition):
     condition_string = ' %s ' % applied_condition.lower()
 
-    similar_keys_list = []
-    for key, value in similar_incident_keys.items():
-        value = value.encode('utf-8')
-        compare_str = '{}:={}' if str(value).isdigit() else '{}="{}"'
-        similar_key = compare_str.format(key, str(value).replace('"', r'\"').replace("\n", "\\n").replace("\r", "\\r"))
-        similar_keys_list.append(similar_key.decode('utf-8'))
+    incident_fields_query = build_incident_fields_query(similar_incident_keys)
 
-    similar_keys_query = condition_string.join(similar_keys_list)
+    similar_keys_query = condition_string.join(incident_fields_query)
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)

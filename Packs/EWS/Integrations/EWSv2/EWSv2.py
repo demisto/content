@@ -949,7 +949,7 @@ def email_ec(item):
         'Subject': item.subject,
         'Text': item.text_body,
         'HTML': item.body,
-        'HeadersMap': {header.name: header.value for header in item.headers},
+        'HeadersMap': dict() if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
@@ -1204,6 +1204,16 @@ def parse_incident_from_item(item, is_fetch):
             except ErrorIrresolvableConflict:
                 time.sleep(0.5)
                 item.save()
+            except ValueError as e:
+                if item.subject and len(item.subject) > 255:
+                    demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
+                                  "cutting the subject.")
+                    sub_subject = "Length of subject greater than 255 characters. " \
+                                  "Partial subject: {}".format(item.subject[:180])
+                    item.subject = sub_subject
+                    item.save()
+                else:
+                    raise e
 
         incident['labels'] = labels
         incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
@@ -2237,7 +2247,8 @@ def main():
         else:
             sub_main()
     except Exception as exc:
-        return_error("Found error in EWSv2", exc)
+        return_error("Found error in EWSv2: {}".format(exc),
+                     error='Error: {}\nTraceback: {}'.format(exc, traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -296,7 +296,7 @@ Returns URL information and reputation.
 | RST.URL.FalsePositive | String | true if it is likely a False Positive | 
 | RST.URL.FalsePositiveDesc | String | Description why we think it may be a False Positive | 
 | RST.URL.Parsed | String | Parsed URL components | 
-| RST.URL.CSE | String | Related CVE \(vulnerabilities\) | 
+| RST.URL.CVE | String | Related CVE \(vulnerabilities\) | 
 
 
 #### Command Example
@@ -351,7 +351,7 @@ Returns URL information and reputation.
 
 #### Human Readable Output
 
->### RST Threat Feed URL Reputation for: https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc
+>### RST Threat Feed URL Reputation for: `https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc`
 >
 >|Description|Last Seen|Relevance|Score|Tags|Threat|
 >|---|---|---|---|---|---|

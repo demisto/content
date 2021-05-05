@@ -17,8 +17,9 @@ from Tests.scripts.collect_tests_and_content_packs import (
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
     remove_ignored_tests, remove_tests_for_non_supported_packs)
-from Tests.scripts.utils.get_modified_files_for_testing import \
-    get_modified_files_for_testing
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, ModifiedFiles
+from Tests.scripts.utils import content_packs_util
+
 from TestSuite import repo, test_tools
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -215,11 +216,20 @@ class TestChangedPlaybook:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+    def test_changed_runnable_test__unmocked_get_modified_files_with_deprecated_pack(self, mocker):
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
+        assert filterd_tests == {self.TEST_ID}
+        assert "FakePack" not in content_packs
+        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
+
+    def test_changed_runnable_test__unmocked_get_modified_files_with_not_deprecated_pack(self, mocker):
+        mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=(True, ''))
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
         assert filterd_tests == {self.TEST_ID}
         assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks", "FakePack"}
 
@@ -260,7 +270,7 @@ class TestChangedTestPlaybook:
             - Create filter_envs.json file with all as true
         """
         create_filter_envs_file('0.0.0', '99.99.99')
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+        with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server 5.5') is True
         assert filter_envs.get('Server Master') is True
@@ -280,14 +290,17 @@ class TestChangedTestPlaybook:
 
         """
         test_path = 'Tests/scripts/infrastructure_tests/tests_data/mock_test_playbooks/fake_test_playbook.yml'
-        modified_files_list, modified_tests_list, changed_common, _, sample_tests, modified_metadata_list, _, _ = \
-            create_get_modified_files_ret(modified_files_list=[test_path], modified_tests_list=[test_path])
-        all_modified_files_paths = set(modified_files_list + modified_tests_list + changed_common + sample_tests)
+        modified_files_instance = create_get_modified_files_ret(modified_files_list=[test_path],
+                                                                modified_tests_list=[test_path])
+        all_modified_files_paths = set(modified_files_instance.modified_files
+                                       + modified_files_instance.modified_tests
+                                       + modified_files_instance.changed_common_files
+                                       + modified_files_instance.sample_tests)
         from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
                                                                               MOCK_ID_SET)
 
         create_filter_envs_file(from_version, to_version)
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+        with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server 5.5') is True
         assert filter_envs.get('Server Master') is True
@@ -399,13 +412,23 @@ class TestChangedIntegrationAndPlaybook:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+    def test_changed_runnable_test__unmocked_get_modified_files_with_deprecated_pack(self, mocker):
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', 'FakePack'}
+        assert "FakePack" not in content_packs
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
+
+    def test_changed_runnable_test__unmocked_get_modified_files_with_not_deprecated_pack(self, mocker):
+        mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=(True, ''))
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+
+        assert filterd_tests == set(self.TEST_ID.split('\n'))
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', "FakePack"}
 
 
 class TestChangedScript:
@@ -547,17 +570,10 @@ A       Packs/Active_Directory_Query/Integrations/Active_Directory_Query/key.pem
 """
 
     def test_changed_runnable_test_non_mocked_get_modified_files(self):
-        (files_list,
-         tests_list,
-         all_tests,
-         is_conf_json,
-         sample_tests,
-         modified_metadata_list,
-         is_reputations_json,
-         is_indicator_json) = get_modified_files_for_testing(self.GIT_DIFF_RET)
-        assert len(sample_tests) == 0
+        modified_files_instance = get_modified_files_for_testing(self.GIT_DIFF_RET)
+        assert len(modified_files_instance.sample_tests) == 0
         assert 'Packs/Active_Directory_Query/Integrations/' \
-               'Active_Directory_Query/Active_Directory_Query.yml' in files_list
+               'Active_Directory_Query/Active_Directory_Query.yml' in modified_files_instance.modified_files
 
 
 class TestNoChange:
@@ -571,11 +587,11 @@ class TestNoChange:
 
 def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=None, changed_common=None,
                                   is_conf_json=False, sample_tests=None, modified_metadata_list=None,
-                                  is_reputations_json=None, is_indicator_json=None):
+                                  is_reputations_json=None, is_indicator_json=None, is_landing_page_sections_json=None):
     """
     Returns return value for get_modified_files() to be used with a mocker patch
     """
-    return (
+    return ModifiedFiles(
         modified_files_list if modified_files_list is not None else [],
         modified_tests_list if modified_tests_list is not None else [],
         changed_common if changed_common is not None else [],
@@ -583,7 +599,8 @@ def create_get_modified_files_ret(modified_files_list=None, modified_tests_list=
         sample_tests if sample_tests is not None else [],
         modified_metadata_list if modified_metadata_list is not None else [],
         is_reputations_json if is_reputations_json is not None else [],
-        is_indicator_json if is_indicator_json is not None else []
+        is_indicator_json if is_indicator_json is not None else [],
+        is_landing_page_sections_json if is_landing_page_sections_json is not None else False
     )
 
 
@@ -934,6 +951,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
     """
     mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                         return_value=(True, ''))
+    mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
 
     from Tests.scripts import collect_tests_and_content_packs
     collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
@@ -966,7 +984,6 @@ def test_modified_integration_content_pack_is_collected(mocker):
             conf=fake_conf,
             id_set=fake_id_set
         )
-
         assert content_packs == {"Base", "DeveloperTools", pack_name}
         assert filtered_tests == {test_name}
         assert not collect_tests_and_content_packs._FAILED

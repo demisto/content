@@ -15,3 +15,6 @@ ignore=IF107
 
 [file:Smokescreen_IllusionBLACK.yml]
 ignore=IN126
+
+[file:layoutscontainer-IllusionBLACK.json]
+ignore=BA101

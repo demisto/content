@@ -64,7 +64,7 @@ script: >
               pickRandomUser(usersRes);
               break;
           default:
-              res = executeCommand("getOwnerSuggestion", { shiftOnly: onCallArg })[0].Contents;
+              res = executeCommand("getOwnerSuggestion", { roles: args.roles, shiftOnly: onCallArg })[0].Contents;
 
               switch (assignBy) {
                   case 'machine-learning':

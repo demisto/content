@@ -1,0 +1,75 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.24.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: GET
+    uri: https://api.recordedfuture.com/v2/info/whoami
+  response:
+    body:
+      string: '{"user": {"name": "Jonathan Sundqvist", "uhash": "1YGOwfGNpV", "email":
+        "jonathan.sundqvist@recordedfuture.com", "role": false, "username": "user-5e17cb63d05e40fc97f31a5fb43f71f7",
+        "enterprise": false, "privileges": ["UseCaseActivate", "ImportByID", "AlertCreate",
+        "EntityStructure", "ShareList", "AdvancedSearch", "web-all-datagroups", "IntelligenceCard",
+        "FusionPublicFileUpload", "DemoEventsAPI", "FuturesPremium", "DataGroupMalware",
+        "CompanyRiskAPI", "DataGroupInternetDomainName", "ViewExtendedSignalData",
+        "DataGroupThreatActor", "AlertRead", "AoDSubscriber", "AlertAPI", "AnalystNoteAPIWrite",
+        "DarkWeb", "Export", "SupportLinks", "RiskListAPI", "EVE", "DashboardViewTypeLocations",
+        "FusionPublicFileAccess", "KobraReportCrud", "API_V2", "Entity", "Mobile",
+        "DataGroupIpAddress", "FusionPrivateFileUpload", "ApiKeys", "ReadNotifications",
+        "FusionScriptBlock", "AnalyzeAppLink", "ReportGroupCrud", "corpsec", "ListRead",
+        "DashboardViewTypeGlobal", "AnalyzeViews", "GraphQLIntrospection", "MakeShareURL",
+        "DashboardViewTypeCompany", "DataGroupHash", "QuickSearch", "FusionCustomBlocks",
+        "InsiktGroupResearchTTPInstances", "GraphQLApi", "Upload", "VulnerabilityAPI",
+        "live", "InsiktGroupResearch", "TmpViewEntityOverview", "AlertDelete", "EntityListAPI",
+        "SOARAPI", "ReportCrud", "AppOverrideParams", "GeoSearch", "SearchShowMore",
+        "ListDelete", "DashboardView", "ShareGroups", "AnalyzePivotLinks", "API",
+        "AnalystNoteCrud", "SearchSource", "FlowAPIUnlimited", "Search", "AlertReviewWorkflow",
+        "UseCaseItemEdit", "EnrichedData", "DataGroupURL", "Enterprise", "Portal",
+        "SOARAPITriage", "RiskScoreHistory", "MalwareAPI", "FuturesDefault", "DashboardViewTypeGlobalSECOP",
+        "DataGroupCyberVulnerability", "AlertManagerDashboard", "FlowAPI", "EntityRequest",
+        "DataGroupCity", "DataGroupSource", "DataGroupCompany", "ListUpdate", "ListCreate"],
+        "roles": ["role-darkweb", "role-internal", "any", "role-analyst", "role-rf",
+        "role-cyber-plus", "role-dhs-ais-data", "role-cyber-basic", "role-geosearch",
+        "role-api-graphql", "role-api-flow", "role-list-xl", "role-aod-subscriber",
+        "role-company-risk", "role-create-customer-notes", "role-mobile", "role-persons",
+        "role-alert-review-workflow", "role-api-query-explain", "role-browserextension",
+        "role-dashboard-global", "role-public", "role-darkweb-crawler-data", "user-5e17cb63d05e40fc97f31a5fb43f71f7",
+        "role-api2", "role-insikt-group-research", "role-geopolitics", "role-organizations",
+        "group-account-rf", "role-enterprise"]}}'
+    headers:
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0, no-transform
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '2590'
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Fri, 06 Nov 2020 11:03:57 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - JSESSIONID=node01jpyb9rgk2oi01s2gskufpgfwj205204.node0;Path=/rfq
+      Strict-Transport-Security:
+      - max-age=86400; includeSubDomains
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

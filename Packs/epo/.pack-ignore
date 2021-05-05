@@ -3,3 +3,6 @@ ignore=PA116
 
 [file:integration-epo.yml]
 ignore=IN135
+
+[file:integration-epo_README.md]
+ignore=RM102

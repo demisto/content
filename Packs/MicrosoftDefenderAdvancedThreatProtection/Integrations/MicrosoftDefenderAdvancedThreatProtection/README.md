@@ -125,8 +125,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 32. microsoft-atp-add-remove-machine-tag
 33. microsoft-atp-indicator-list
 34. microsoft-atp-indicator-get-by-id
-35. microsoft-atp-network-indicator-create
-36. microsoft-atp-file-indicator-create
+35. microsoft-atp-indicator-create-network
+36. microsoft-atp-indicator-create-file
 37. microsoft-atp-indicator-update
 38. microsoft-atp-indicator-delete
 ### 1. microsoft-atp-isolate-machine
@@ -2864,14 +2864,14 @@ Gets an indicator by its ID.
 >| 17 | block | 2 | example.com |
 
 
-### microsoft-atp-network-indicator-create
+### microsoft-atp-indicator-create-network
 ***
 Creates a file indicator.
 
 
 #### Base Command
 
-`microsoft-atp-network-indicator-create`
+`microsoft-atp-indicator-create-network`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2882,7 +2882,7 @@ Creates a file indicator.
 | threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required | 
 | tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional | 
 | confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
-| severity | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5 where 5 is the most severe and zero is not severe at all. Default is 3 | Optional | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
 | tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
 | domain_name | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain (For example, baddomain.domain.net) | Optional | 
 | network_cidr_block | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | Optional | 
@@ -2966,7 +2966,7 @@ Creates a file indicator.
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
 
 #### Command Example
-```!microsoft-atp-network-indicator-create action=unknown description="A description!" expiration_time="7 days" threat_type=CryptoMining domain_name="example.com"```
+```!microsoft-atp-indicator-create-network action=unknown description="A description!" expiration_time="7 days" threat_type=CryptoMining domain_name="example.com"```
 
 #### Context Example
 ```
@@ -2999,14 +2999,14 @@ Creates a file indicator.
 >|---|---|---|---|
 >| 17 | block | 2 | example.com |
 
-### microsoft-atp-file-indicator-create
+### microsoft-atp-indicator-create-file
 ***
 Creates a file indicator
 
 
 #### Base Command
 
-`microsoft-atp-file-indicator-create`
+`microsoft-atp-indicator-create-file`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -3017,7 +3017,7 @@ Creates a file indicator
 | threat_type | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, Cryptomining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, or WatchList. | Required | 
 | tlp_level | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | Optional | 
 | confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
-| severity | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5 where 5 is the most severe and zero is not severe at all. Default is 3 | Optional | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
 | tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
 | file_compile_date_time | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | Optional | 
 | file_created_date_time | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z' | Optional | 
@@ -3093,7 +3093,7 @@ Creates a file indicator
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
 
 #### Command Example
-```!microsoft-atp-file-indicator-create action=allow description="A description" expiration_time="3 days" threat_type=Darknet confidence=23 file_hash_type=sha256 file_hash_value=50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c```
+```!microsoft-atp-indicator-create-file action=allow description="A description" expiration_time="3 days" threat_type=Darknet confidence=23 file_hash_type=sha256 file_hash_value=50d858e0985ecc7f60418aaf0cc5ab587f42c2570a884095a9e8ccacd0f6545c```
 
 #### Context Example
 ```
@@ -3140,7 +3140,7 @@ Updates the specified indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_id | The ID of the indicator to update. | Required | 
-| severity | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5 where 5 is the most severe and zero is not severe at all. Default is 3 | Optional | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all. | Optional | 
 | expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Required | 
 | description | Brief description (100 characters or less) of the threat represented by the indicator. | Optional | 
 

@@ -21,10 +21,6 @@ MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
 
 
-def canonize_label(label):
-    return label.replace(" ", "_")
-
-
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values
@@ -41,7 +37,7 @@ def get_phishing_map_labels(comma_values):
         mapped_value = list(labels_dict.values())[0]
         error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
         return_error('\n'.join(error))
-    return {k: canonize_label(v) for k, v in labels_dict.items()}
+    return {k.encode('utf-8', 'ignore').decode("utf-8"): v for k, v in labels_dict.items()}
 
 
 def read_file(input_data, input_type):
@@ -98,7 +94,7 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     for row in data:
         original_label = row[tag_field]
         if labels_mapping == ALL_LABELS:
-            row[tag_field] = canonize_label(original_label)
+            row[tag_field] = original_label
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
@@ -155,7 +151,8 @@ def find_keywords(data, tag_field, text_field, min_score):
     human_readable = "# Keywords per category\n"
     for category, scores in keywords.items():
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        table_items = [{"Word": word, "Score": score} for word, score in sorted_scores if score >= min_score]
+        table_items = [{"Word": word, "Score": '{:.2f}'.format(score)} for
+                       word, score in sorted_scores if score >= min_score]
         human_readable += tableToMarkdown(category, table_items, ["Word", "Score"])
     demisto.results({
         'Type': entryTypes['note'],
@@ -172,7 +169,13 @@ def set_tag_field(data, tag_fields):
         found_field = False
         for field in tag_fields:
             if d.get(field) is not None:
-                d[DBOT_TAG_FIELD] = str(d[field])
+                label = d[field]
+                if isinstance(label, list) and len(label) > 0:
+                    label = label[0]
+                elif isinstance(label, list) and len(label) == 0:
+                    continue
+                label = label.encode('utf-8', 'ignore').decode("utf-8")
+                d[DBOT_TAG_FIELD] = str(label)
                 found_field = True
                 break
         if not found_field:
@@ -269,7 +272,6 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             'HumanReadableFormat': formats['markdown'],
         }
         demisto.results(entry)
-    demisto.results(set([x[DBOT_TAG_FIELD] for x in data]))
     if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
         single_label = [x[DBOT_TAG_FIELD] for x in data][0]
         if labels_mapping == ALL_LABELS:

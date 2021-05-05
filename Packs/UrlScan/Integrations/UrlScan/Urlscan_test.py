@@ -12,7 +12,7 @@ RESULT_URL = 'https://urlscan.io/api/v1/result/'
 
 @pytest.mark.parametrize('continue_on_blacklisted_urls', [(True), (False)])
 def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_blacklisted_urls):
-    from UrlScan import http_request, BLACKLISTED_URL_ERROR_MESSAGE
+    from UrlScan import http_request, BLACKLISTED_URL_ERROR_MESSAGE, Client
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     response_json = {
         'status': 400,
@@ -27,8 +27,9 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
     }
     requests_mock.post(SCAN_URL, status_code=400, json=response_json)
     mocker.patch.object(demisto, 'args', return_value=args)
+    client = Client()
 
-    http_request('POST', 'scan/', json=json.dumps(data))
+    http_request(client, 'POST', 'scan/', json=json.dumps(data))
     if continue_on_blacklisted_urls:
         assert return_error_mock.call_count == 0
     else:
@@ -44,13 +45,14 @@ def test_endless_loop_on_failed_response(requests_mock, mocker):
     Then
     - Assert it does not enter an endless loop
     """
-    from UrlScan import format_results
+    from UrlScan import format_results, Client
     mocker.patch(RETURN_ERROR_TARGET)
+    client = Client()
 
     with open('./test_data/capitalne.json', 'r') as f:
         response_data = json.loads(f.read())
     requests_mock.get(RESULT_URL + 'uuid', status_code=200, json=response_data)
-    thread = Thread(target=format_results, args=('uuid', ))
+    thread = Thread(target=format_results, args=(client, 'uuid', ))
     thread.start()
     time.sleep(10)
     assert not thread.is_alive(), 'format_results method have probably entered an endless loop'

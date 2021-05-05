@@ -81,7 +81,8 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                url,
                                verify=USE_SSL,
                                data=data,
-                               headers=headers
+                               headers=headers,
+                               timeout=15
                                )
         if res.status_code not in (200, 204):
             if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT:
@@ -711,7 +712,7 @@ def get_categories_command(display_url, custom_only=False):
             'ID': raw_category['id'],
             'CustomCategory': raw_category['customCategory']
         }
-        if raw_category['urls']:
+        if 'urls' in raw_category:
             category['URL'] = raw_category['urls']
         if 'description' in raw_category:
             category['Description'] = raw_category['description']

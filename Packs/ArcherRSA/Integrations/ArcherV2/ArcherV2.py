@@ -13,7 +13,7 @@ urllib3.disable_warnings()
 
 FETCH_PARAM_ID_KEY = 'field_time_id'
 LAST_FETCH_TIME_KEY = 'last_fetch'
-OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 REQUEST_HEADERS = {
     'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
@@ -124,7 +124,8 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-        numeric_operator='', max_results=10
+        numeric_operator='', max_results=10,
+        sort_type: str = 'Ascending'
 ):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
@@ -135,8 +136,8 @@ def search_records_soap_request(
                    f'            <sessionToken>{token}</sessionToken>' + \
                    '            <searchOptions>' + \
                    '                <![CDATA[<SearchReport>' + \
-                   '                <PageSize>100</PageSize>' + \
-                   '                <PageNumber>1</PageNumber>' + \
+                   f'                <PageSize>{max_results}</PageSize>' + \
+                   '                 <PageNumber>1</PageNumber>' + \
                    f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
                    '                <ShowStatSummaries>false</ShowStatSummaries>' + \
                    f'                <DisplayFields>{display_fields}</DisplayFields>' + \
@@ -180,6 +181,14 @@ def search_records_soap_request(
                         '    </DateComparisonFilterCondition >' + \
                         '</Conditions>' + \
                         '</Filter>'
+
+    if field_id:
+        request_body += '<SortFields>' + \
+                        '    <SortField>' + \
+                        f'        <Field>{field_id}</Field>' + \
+                        f'        <SortType>{sort_type}</SortType>' + \
+                        '    </SortField >' + \
+                        '</SortFields>'
 
     request_body += ' </Criteria></SearchReport>]]>' + \
                     '</searchOptions>' + \
@@ -278,8 +287,12 @@ class Client(BaseClient):
             'UserDomain': self.domain,
             'Password': self.password
         }
-
-        res = self._http_request('POST', '/api/core/security/login', json_data=body)
+        try:
+            res = self._http_request('POST', '/api/core/security/login', json_data=body)
+        except DemistoException as e:
+            if '<html>' in str(e):
+                raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
+            raise e
         is_successful_response = res.get('IsSuccessful')
         if not is_successful_response:
             return_error(res.get('ValidationMessages'))
@@ -434,6 +447,7 @@ class Client(BaseClient):
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
             numeric_operator='', date_operator='', max_results=10,
+            sort_type: str = 'Ascending'
     ):
         demisto.debug(f'searching for records {field_to_search}:{search_value}')
         if fields_to_display is None:
@@ -463,7 +477,8 @@ class Client(BaseClient):
             field_id=search_field_id, field_name=search_field_name,
             numeric_operator=numeric_operator,
             date_operator=date_operator, search_value=search_value,
-            max_results=max_results
+            max_results=max_results,
+            sort_type=sort_type,
         )
 
         if not res:
@@ -650,8 +665,14 @@ def generate_field_value(client, field_name, field_data, field_val):
     # when field type is Users/Groups List
     # for example: {"Policy Owner":{"users":[20],"groups":[30]}}
     elif field_type == 8:
-        users = field_val.get('users')
-        groups = field_val.get('groups')
+        try:
+            users = field_val.get('users')
+            groups = field_val.get('groups')
+        except AttributeError:
+            raise DemistoException(f"The value of the field: {field_name} must be a dictionary type and include a list"
+                                   f" under \"users\" key or \"groups\" key e.g: {{\"Policy Owner\":{{\"users\":[20],"
+                                   f"\"groups\":[30]}}}}")
+
         field_val = {'UserList': [], 'GroupList': []}
         if users:
             for user in users:
@@ -1038,6 +1059,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
+    sort_type = 'Descending' if argToBoolean(args.get('isDescending', 'false')) else 'Ascending'
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
@@ -1052,7 +1074,8 @@ def search_records_command(client: Client, args: Dict[str, str]):
 
     records, raw_res = client.search_records(
         app_id, fields_to_get, field_to_search, search_value,
-        numeric_operator, date_operator, max_results=max_results
+        numeric_operator, date_operator, max_results=max_results,
+        sort_type=sort_type,
     )
 
     records = list(map(lambda x: x['record'], records))
@@ -1137,7 +1160,7 @@ def fetch_incidents(
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
     # API Call
-    records, raw_res = client.search_records(
+    records, _ = client.search_records(
         app_id, fields_to_display, date_field,
         from_time.strftime(OCCURRED_FORMAT),
         date_operator='GreaterThan',
@@ -1285,5 +1308,5 @@ def main():
         return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

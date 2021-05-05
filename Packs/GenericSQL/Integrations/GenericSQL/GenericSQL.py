@@ -2,14 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from typing import Any, Tuple, Dict, List, Callable
+from typing import Any, Tuple, Dict, List, Callable, Optional
 import sqlalchemy
 import pymysql
 import traceback
 import hashlib
 import logging
-import urllib.parse
 from sqlalchemy.sql import text
+from sqlalchemy.engine.url import URL
+from urllib.parse import parse_qsl
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
     from expiringdict import ExpiringDict  # pylint: disable=E0401
@@ -38,11 +39,33 @@ class Client:
         self.password = password
         self.port = port
         self.dbname = database
-        self.connect_parameters = connect_parameters
+        self.connect_parameters = self.parse_connect_parameters(connect_parameters, dialect)
         self.ssl_connect = ssl_connect
         self.use_pool = use_pool
         self.pool_ttl = pool_ttl
         self.connection = self._create_engine_and_connect()
+
+    @staticmethod
+    def parse_connect_parameters(connect_parameters: str, dialect: str) -> dict:
+        """
+        Parses a string of the form key1=value1&key2=value2 etc. into a dict with matching keys and values.
+        In addition adds a driver key in accordance to the given 'dialect'
+        Args:
+            connect_parameters: The string with query parameters
+            dialect: Should be one of MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Microsoft SQL Server - MS ODBC Driver
+
+        Returns:
+            A dict with the keys and values.
+        """
+        connect_parameters_tuple_list = parse_qsl(connect_parameters, keep_blank_values=True)
+        connect_parameters_dict = dict()
+        for key, value in connect_parameters_tuple_list:
+            connect_parameters_dict[key] = value
+        if dialect == "Microsoft SQL Server":
+            connect_parameters_dict['driver'] = 'FreeTDS'
+        elif dialect == 'Microsoft SQL Server - MS ODBC Driver':
+            connect_parameters_dict['driver'] = 'ODBC Driver 17 for SQL Server'
+        return connect_parameters_dict
 
     @staticmethod
     def _convert_dialect_to_module(dialect: str) -> str:
@@ -57,7 +80,7 @@ class Client:
             module = "postgresql"
         elif dialect == "Oracle":
             module = "oracle"
-        elif dialect == "Microsoft SQL Server":
+        elif dialect in {"Microsoft SQL Server", 'Microsoft SQL Server - MS ODBC Driver'}:
             module = "mssql+pyodbc"
         else:
             module = str(dialect)
@@ -80,21 +103,15 @@ class Client:
         Creating and engine according to the instance preferences and connecting
         :return: a connection object that will be used in order to execute SQL queries
         """
-        module = self._convert_dialect_to_module(self.dialect)
-        port_part = ''
-        encoded_password = urllib.parse.quote_plus(self.password)
-        if self.port:
-            port_part = f':{self.port}'
-        db_preferences = f'{module}://{self.username}:{encoded_password}@{self.host}{port_part}/{self.dbname}'
         ssl_connection = {}
-        if self.dialect == "Microsoft SQL Server":
-            db_preferences += "?driver=FreeTDS"
-        if self.connect_parameters and self.dialect == "Microsoft SQL Server":
-            db_preferences += f'&{self.connect_parameters}'
-        elif self.connect_parameters and self.dialect != "Microsoft SQL Server":
-            # a "?" was already added when the driver was defined
-            db_preferences += f'?{self.connect_parameters}'
-
+        module = self._convert_dialect_to_module(self.dialect)
+        db_url = URL(drivername=module,
+                     username=self.username,
+                     password=self.password,
+                     host=self.host,
+                     port=self.port,
+                     database=self.dbname,
+                     query=self.connect_parameters)
         if self.ssl_connect:
             ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}
         engine: sqlalchemy.engine.Engine = None
@@ -102,14 +119,14 @@ class Client:
             if 'expiringdict' not in sys.modules:
                 raise ValueError('Usage of connection pool is not support in this docker image')
             cache = self._get_global_cache()
-            cache_key = self._get_cache_string(db_preferences, ssl_connection)
+            cache_key = self._get_cache_string(str(db_url), ssl_connection)
             engine = cache.get(cache_key, None)
             if engine is None:  # (first time or expired) need to initialize
-                engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection)
+                engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
-            engine = sqlalchemy.create_engine(db_preferences, connect_args=ssl_connection,
+            engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
                                               poolclass=sqlalchemy.pool.NullPool)
         return engine.connect()
 
@@ -131,18 +148,17 @@ class Client:
         return results, headers
 
 
-def generate_default_port_by_dialect(dialect: str) -> str:
+def generate_default_port_by_dialect(dialect: str) -> Optional[str]:
     """
     In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
-    Microsoft SQL Server where it seems to be required. For the other drivers an empty port is supported.
+    Microsoft SQL Server and ODBC Driver 17 for SQL Server where it seems to be required.
+    For the other drivers a None port is supported
     :param dialect: sql db type
     :return: default port needed for connection
     """
-    if dialect == "Microsoft SQL Server":
+    if dialect in {'Microsoft SQL Server', 'ODBC Driver 17 for SQL Server'}:
         return "1433"
-    else:
-        # use default port supported by the driver
-        return ""
+    return None
 
 
 def generate_bind_vars(bind_variables_names: str, bind_variables_values: str) -> Any:

@@ -1585,7 +1585,7 @@ Delete an existing scan exclusion.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ScanExclusion.deletedExclusionId | String | The ID of the deleted exclusion. | 
+| SophosCentral.DeletedScanExclusion.deletedExclusionId | String | The ID of the deleted exclusion. | 
 
 
 #### Command Example
@@ -1908,7 +1908,7 @@ Get exploit mitigation settings for a single application.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.cateory | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
 | SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
 | SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
 | SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
@@ -1962,7 +1962,7 @@ Exclude a set of file paths from exploit mitigation.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.cateory | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
 | SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
 | SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
 | SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
@@ -2017,7 +2017,7 @@ Update exploit mitigation settings for an application.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.cateory | String | The Exploit Mitigation category ID. | 
+| SophosCentral.ExploitMitigation.category | String | The Exploit Mitigation category ID. | 
 | SophosCentral.ExploitMitigation.name | String | The name given to this Exploit Mitigation Application. | 
 | SophosCentral.ExploitMitigation.id | String | The ID of this Exploit Mitigation Application. | 
 | SophosCentral.ExploitMitigation.paths | String | Paths included in this Exploit Mitigation Application. | 
@@ -2071,7 +2071,7 @@ Delete a custom (user-defined) exploit mitigation application by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SophosCentral.ExploitMitigation.deletedMitigationId | String | The ID of the deleted mitigation. | 
+| SophosCentral.DeletedExploitMitigation.deletedMitigationId | String | The ID of the deleted mitigation. | 
 
 
 #### Command Example

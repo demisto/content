@@ -61,6 +61,8 @@ COMMON_YML_LIST = ["scripts/script-CommonIntegration.yml", "scripts/script-Commo
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
 
+LANDING_PAGE_SECTIONS_JSON_PATH = 'Tests/Marketplace/landingPage_sections.json'
+
 
 def checked_type(file_path: str, regex_list: Iterable[str]) -> bool:
     """

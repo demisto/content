@@ -16,8 +16,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
-    url_to_clickable_markdown, WarningsHandler
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
+    url_to_clickable_markdown, WarningsHandler, DemistoException
 
 try:
     from StringIO import StringIO
@@ -469,10 +469,21 @@ def test_tbl_to_md_clickable_url(data, expected_table):
     assert table == expected_table
 
 
+def test_tbl_keep_headers_list():
+    headers = ['header_1', 'header_2']
+    data = {
+        'header_1': 'foo'
+    }
+    table = tableToMarkdown('tableToMarkdown test', data, removeNull=True, headers=headers)
+    assert 'header_2' not in table
+    assert headers == ['header_1', 'header_2']
+
+
 @pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
 def test_url_to_clickable_markdown(data, expected_data):
     table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
     assert table == expected_data
+
 
 def test_flatten_cell():
     # sanity
@@ -510,12 +521,40 @@ def test_hash_djb2():
 
 def test_camelize():
     non_camalized = [{'chookity_bop': 'asdasd'}, {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}]
-    expected_output = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
-    assert camelize(non_camalized, '_') == expected_output
+    expected_output_upper_camel = [{'ChookityBop': 'asdasd'}, {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}]
+    expected_output_lower_camel = [{'chookityBop': 'asdasd'}, {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}]
+    assert camelize(non_camalized, '_') == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=True) == expected_output_upper_camel
+    assert camelize(non_camalized, '_', upper_camel=False) == expected_output_lower_camel
 
     non_camalized2 = {'ab_c': 'd e', 'fgh_ijk': 'lm', 'nop': 'qr_st'}
-    expected_output2 = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
-    assert camelize(non_camalized2, '_') == expected_output2
+    expected_output2_upper_camel = {'AbC': 'd e', 'Nop': 'qr_st', 'FghIjk': 'lm'}
+    expected_output2_lower_camel = {'abC': 'd e', 'nop': 'qr_st', 'fghIjk': 'lm'}
+    assert camelize(non_camalized2, '_') == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=True) == expected_output2_upper_camel
+    assert camelize(non_camalized2, '_', upper_camel=False) == expected_output2_lower_camel
+
+
+def test_camelize_string():
+    from CommonServerPython import camelize_string
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert camelize_string(non_camalized[i], '_') == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=True) == expected_output_upper_camel[i]
+        assert camelize_string(non_camalized[i], '_', upper_camel=False) == expected_output_lower_camel[i]
+
+
+def test_underscoreToCamelCase():
+    from CommonServerPython import underscoreToCamelCase
+    non_camalized = ['chookity_bop', 'ab_c', 'fgh_ijk', 'nop']
+    expected_output_upper_camel = ['ChookityBop', 'AbC', 'FghIjk', 'Nop']
+    expected_output_lower_camel = ['chookityBop', 'abC', 'fghIjk', 'nop']
+    for i in range(len(non_camalized)):
+        assert underscoreToCamelCase(non_camalized[i]) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=True) == expected_output_upper_camel[i]
+        assert underscoreToCamelCase(non_camalized[i], upper_camel=False) == expected_output_lower_camel[i]
 
 
 # Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
@@ -818,12 +857,14 @@ SENSITIVE_PARAM = {
 
 def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
+    basic_auth = b64_encode('{}:{}'.format(SENSITIVE_PARAM['authentication']['identifier'], SENSITIVE_PARAM['authentication']['password']))
     ilog = IntegrationLogger()
     # log some secrets
     ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
-         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass:'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC))
+         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass.'
+         ' basic auth: {}'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC, basic_auth))
 
-    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass', basic_auth):
         assert s not in ilog.messages[0]
 
 
@@ -1008,6 +1049,21 @@ def test_return_error_fetch_incidents(mocker):
     assert returned_error
 
 
+def test_return_error_fetch_credentials(mocker):
+    from CommonServerPython import return_error
+    err_msg = "Testing unicode Ё"
+
+    # Test fetch-credentials
+    mocker.patch.object(demisto, 'command', return_value="fetch-credentials")
+    returned_error = False
+    try:
+        return_error(err_msg)
+    except Exception as e:
+        returned_error = True
+        assert str(e) == err_msg
+    assert returned_error
+
+
 def test_return_error_fetch_indicators(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"
@@ -1069,6 +1125,29 @@ def test_exception_in_return_error(mocker):
     assert expected == results
     # IntegrationLogger = LOG (2 times if exception supplied)
     assert IntegrationLogger.__call__.call_count == 2
+
+
+def test_return_error_get_modified_remote_data(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == 'skip update. error: ' + err_msg
+
+
+def test_return_error_get_modified_remote_data_not_implemented(mocker):
+    from CommonServerPython import return_error
+    mocker.patch.object(demisto, 'command', return_value='get-modified-remote-data')
+    mocker.patch.object(demisto, 'results')
+    err_msg = 'Test Error'
+    with raises(SystemExit):
+        try:
+            raise NotImplementedError('Command not implemented')
+        except:
+            return_error(err_msg)
+    assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
 def test_get_demisto_version(mocker, clear_version_cache):
@@ -1210,6 +1289,153 @@ class TestBuildDBotEntry(object):
 
 
 class TestCommandResults:
+    def test_outputs_without_outputs_prefix(self):
+        """
+        Given
+        - outputs as a list without output_prefix
+
+        When
+        - Returins results
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import CommandResults
+        with pytest.raises(ValueError, match='outputs_prefix'):
+            CommandResults(outputs=[])
+
+    def test_dbot_score_is_in_to_context_ip(self):
+        """
+        Given
+        - IP indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and IP output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '1.1.1.1'
+        raw_response = {'id': indicator_id}
+        indicator = Common.IP(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.IP,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='Indicator!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.IP.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_file(self):
+        """
+        Given
+        - File indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = '63347f5d946164a23faca26b78a91e1c'
+        raw_response = {'id': indicator_id}
+        indicator = Common.File(
+            md5=indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.FILE,
+                'Indicator',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.File.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_domain(self):
+        """
+        Given
+        - domain indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = 'example.com'
+        raw_response = {'id': indicator_id}
+        indicator = Common.Domain(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.DOMAIN,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.Domain.CONTEXT_PATH in entry_context
+
+    def test_dbot_score_is_in_to_context_url(self):
+        """
+        Given
+        - domain indicator
+
+        When
+        - Creating a reputation
+
+        Then
+        - Validate the DBOT Score and File output exists in entry context.
+        """
+        from CommonServerPython import Common, DBotScoreType, CommandResults
+        indicator_id = 'https://example.com'
+        raw_response = {'id': indicator_id}
+        indicator = Common.URL(
+            indicator_id,
+            dbot_score=Common.DBotScore(
+                indicator_id,
+                DBotScoreType.URL,
+                'VirusTotal',
+                score=Common.DBotScore.BAD,
+                malicious_description='malicious!'
+            )
+        )
+        entry_context = CommandResults(
+            indicator=indicator,
+            readable_output='output!',
+            outputs={'Indicator': raw_response},
+            raw_response=raw_response
+        ).to_context()['EntryContext']
+        assert Common.DBotScore.CONTEXT_PATH in entry_context
+        assert Common.URL.CONTEXT_PATH in entry_context
+
     def test_multiple_outputs_keys(self):
         """
         Given
@@ -1238,7 +1464,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -1373,6 +1599,7 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -1459,6 +1686,7 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -1487,9 +1715,10 @@ class TestCommandResults:
             'Contents': tickets,
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
-                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+                'Jira.Ticket(val.ticket_id && val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -1524,6 +1753,7 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
+            'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
         })
@@ -1610,540 +1840,6 @@ class TestCommandResults:
                     'Reliability': 'B - Usually reliable'
                 }
             ]
-        }
-
-    def test_create_domain(self):
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
-
-        dbot_score = Common.DBotScore(
-            indicator='somedomain.com',
-            integration_name='Virus Total',
-            indicator_type=DBotScoreType.DOMAIN,
-            score=Common.DBotScore.GOOD
-        )
-
-        domain = Common.Domain(
-            domain='somedomain.com',
-            dbot_score=dbot_score,
-            dns='dns.somedomain',
-            detection_engines=10,
-            positive_detections=5,
-            organization='Some Organization',
-            admin_phone='18000000',
-            admin_email='admin@test.com',
-
-            registrant_name='Mr Registrant',
-
-            registrar_name='Mr Registrar',
-            registrar_abuse_email='registrar@test.com',
-            creation_date='2019-01-01T00:00:00',
-            updated_date='2019-01-02T00:00:00',
-            expiration_date=None,
-            domain_status='ACTIVE',
-            name_servers=[
-                'PNS31.CLOUDNS.NET',
-                'PNS32.CLOUDNS.NET'
-            ],
-            sub_domains=[
-                'sub-domain1.somedomain.com',
-                'sub-domain2.somedomain.com',
-                'sub-domain3.somedomain.com'
-            ]
-        )
-
-        results = CommandResults(
-            outputs_key_field=None,
-            outputs_prefix=None,
-            outputs=None,
-            indicators=[domain]
-        )
-
-        assert results.to_context() == {
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
-            'Contents': None,
-            'HumanReadable': None,
-            'EntryContext': {
-                'Domain(val.Name && val.Name == obj.Name)': [
-                    {
-                        "Name": "somedomain.com",
-                        "DNS": "dns.somedomain",
-                        "DetectionEngines": 10,
-                        "PositiveDetections": 5,
-                        "Registrar": {
-                            "Name": "Mr Registrar",
-                            "AbuseEmail": "registrar@test.com",
-                            "AbusePhone": None
-                        },
-                        "Registrant": {
-                            "Name": "Mr Registrant",
-                            "Email": None,
-                            "Phone": None,
-                            "Country": None
-                        },
-                        "Admin": {
-                            "Name": None,
-                            "Email": "admin@test.com",
-                            "Phone": "18000000",
-                            "Country": None
-                        },
-                        "Organization": "Some Organization",
-                        "Subdomains": [
-                            "sub-domain1.somedomain.com",
-                            "sub-domain2.somedomain.com",
-                            "sub-domain3.somedomain.com"
-                        ],
-                        "DomainStatus": "ACTIVE",
-                        "CreationDate": "2019-01-01T00:00:00",
-                        "UpdatedDate": "2019-01-02T00:00:00",
-                        "NameServers": [
-                            "PNS31.CLOUDNS.NET",
-                            "PNS32.CLOUDNS.NET"
-                        ],
-                        "WHOIS": {
-                            "Registrar": {
-                                "Name": "Mr Registrar",
-                                "AbuseEmail": "registrar@test.com",
-                                "AbusePhone": None
-                            },
-                            "Registrant": {
-                                "Name": "Mr Registrant",
-                                "Email": None,
-                                "Phone": None,
-                                "Country": None
-                            },
-                            "Admin": {
-                                "Name": None,
-                                "Email": "admin@test.com",
-                                "Phone": "18000000",
-                                "Country": None
-                            },
-                            "DomainStatus": "ACTIVE",
-                            "CreationDate": "2019-01-01T00:00:00",
-                            "UpdatedDate": "2019-01-02T00:00:00",
-                            "NameServers": [
-                                "PNS31.CLOUDNS.NET",
-                                "PNS32.CLOUDNS.NET"
-                            ]
-                        }
-                    }
-                ],
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-                    {
-                        'Indicator': 'somedomain.com',
-                        'Vendor': 'Virus Total',
-                        'Score': 1,
-                        'Type': 'domain'
-                    }
-                ]
-            },
-            'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False,
-            'Note': False
-        }
-
-    def test_create_certificate(self):
-        """
-        Given:
-            -  an X509 Certificate with its properties
-        When
-            - creating a CommandResults with the Certificate Standard Context
-        Then
-            - the proper output Context is created
-        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
-
-        dbot_score = Common.DBotScore(
-            indicator='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
-            integration_name='test',
-            indicator_type=DBotScoreType.CERTIFICATE,
-            score=Common.DBotScore.NONE
-        )
-
-        cert_extensions = [
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
-                authority_key_identifier=Common.CertificateExtension.AuthorityKeyIdentifier(
-                    key_identifier="0f80611c823161d52f28e78d4638b42ce1c6d9e2"
-                ),
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER,
-                digest="b34972bb12121b8851cd5564ff9656dcbca3f288",
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
-                subject_alternative_names=[
-                    Common.GeneralName(
-                        gn_type="dNSName",
-                        gn_value="*.paloaltonetworks.com"
-                    ),
-                    Common.GeneralName(
-                        gn_type="dNSName",
-                        gn_value="paloaltonetworks.com"
-                    )
-                ],
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.KEYUSAGE,
-                digital_signature=True,
-                key_encipherment=True,
-                critical=True
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE,
-                usages=[
-                    "serverAuth",
-                    "clientAuth"
-                ],
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS,
-                distribution_points=[
-                    Common.CertificateExtension.DistributionPoint(
-                        full_name=[
-                            Common.GeneralName(
-                                gn_type="uniformResourceIdentifier",
-                                gn_value="http://crl3.digicert.com/ssca-sha2-g7.crl"
-                            )
-                        ]
-                    ),
-                    Common.CertificateExtension.DistributionPoint(
-                        full_name=[
-                            Common.GeneralName(
-                                gn_type="uniformResourceIdentifier",
-                                gn_value="http://crl4.digicert.com/ssca-sha2-g7.crl"
-                            )
-                        ]
-                    )
-                ],
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
-                certificate_policies=[
-                    Common.CertificateExtension.CertificatePolicy(
-                        policy_identifier="2.16.840.1.114412.1.1",
-                        policy_qualifiers=["https://www.digicert.com/CPS"]
-                    ),
-                    Common.CertificateExtension.CertificatePolicy(
-                        policy_identifier="2.23.140.1.2.2"
-                    )
-                ],
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
-                authority_information_access=[
-                    Common.CertificateExtension.AuthorityInformationAccess(
-                        access_method="OCSP",
-                        access_location=Common.GeneralName(
-                            gn_type="uniformResourceIdentifier",
-                            gn_value="http://ocsp.digicert.com"
-                        )
-                    ),
-                    Common.CertificateExtension.AuthorityInformationAccess(
-                        access_method="caIssuers",
-                        access_location=Common.GeneralName(
-                            gn_type="uniformResourceIdentifier",
-                            gn_value="http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
-                        )
-                    )
-                ],
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
-                basic_constraints=Common.CertificateExtension.BasicConstraints(
-                    ca=False
-                ),
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
-                signed_certificate_timestamps=[
-                    Common.CertificateExtension.SignedCertificateTimestamp(
-                        version=0,
-                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
-                        timestamp="2020-10-23T19:31:49.000Z",
-                        entry_type="PreCertificate"
-                    ),
-                    Common.CertificateExtension.SignedCertificateTimestamp(
-                        version=0,
-                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
-                        timestamp="2020-10-23T19:31:49.000Z",
-                        entry_type="PreCertificate"
-                    )
-                ],
-                critical=False
-            ),
-            Common.CertificateExtension(
-                extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
-                signed_certificate_timestamps=[
-                    Common.CertificateExtension.SignedCertificateTimestamp(
-                        version=0,
-                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
-                        timestamp="2020-10-23T19:31:49.000Z",
-                        entry_type="X509Certificate"
-                    ),
-                    Common.CertificateExtension.SignedCertificateTimestamp(
-                        version=0,
-                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
-                        timestamp="2020-10-23T19:31:49.000Z",
-                        entry_type="X509Certificate"
-                    )
-                ],
-                critical=False
-            )
-        ]
-        certificate = Common.Certificate(
-            subject_dn='CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US',
-            dbot_score=dbot_score,
-            serial_number='19290688218337824112020565039390569720',
-            issuer_dn='CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US',
-            validity_not_before='2020-10-23T00:00:00.000Z',
-            validity_not_after='2021-11-21T23:59:59.000Z',
-            sha256='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
-            sha1='2392ea5cd4c2a61e51547570634ef887ab1942e9',
-            md5='22769ae413997b86da4a0934072d9ed0',
-            publickey=Common.CertificatePublicKey(
-                algorithm=Common.CertificatePublicKey.Algorithm.RSA,
-                length=2048,
-                modulus='00:00:00:00',
-                exponent=65537
-            ),
-            spki_sha256='94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9',
-            signature_algorithm='sha256',
-            signature='SIGNATURE',
-            extensions=cert_extensions
-        )
-
-        results = CommandResults(
-            outputs_key_field=None,
-            outputs_prefix=None,
-            outputs=None,
-            indicators=[certificate]
-        )
-
-        CONTEXT_PATH = "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || " \
-                       "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
-
-        assert results.to_context() == {
-            'Type': EntryType.NOTE,
-            'ContentsFormat': EntryFormat.JSON,
-            'Contents': None,
-            'HumanReadable': None,
-            'EntryContext': {
-                CONTEXT_PATH: [{
-                    "SubjectDN": "CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US",
-                    "SubjectAlternativeName": [
-                        {
-                            "Type": "dNSName",
-                            "Value": "*.paloaltonetworks.com"
-                        },
-                        {
-                            "Type": "dNSName",
-                            "Value": "paloaltonetworks.com"
-                        }
-                    ],
-                    "Name": [
-                        "*.paloaltonetworks.com",
-                        "paloaltonetworks.com"
-                    ],
-                    "IssuerDN": "CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US",
-                    "SerialNumber": "19290688218337824112020565039390569720",
-                    "ValidityNotBefore": "2020-10-23T00:00:00.000Z",
-                    "ValidityNotAfter": "2021-11-21T23:59:59.000Z",
-                    "SHA256": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
-                    "SHA1": "2392ea5cd4c2a61e51547570634ef887ab1942e9",
-                    "MD5": "22769ae413997b86da4a0934072d9ed0",
-                    "PublicKey": {
-                        "Algorithm": "RSA",
-                        "Length": 2048,
-                        "Modulus": "00:00:00:00",
-                        "Exponent": 65537
-                    },
-                    "SPKISHA256": "94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9",
-                    "Signature": {
-                        "Algorithm": "sha256",
-                        "Signature": "SIGNATURE"
-                    },
-                    "Extension": [
-                        {
-                            "OID": "2.5.29.35",
-                            "Name": "authorityKeyIdentifier",
-                            "Critical": False,
-                            "Value": {
-                                "KeyIdentifier": "0f80611c823161d52f28e78d4638b42ce1c6d9e2"
-                            }
-                        },
-                        {
-                            "OID": "2.5.29.14",
-                            "Name": "subjectKeyIdentifier",
-                            "Critical": False,
-                            "Value": {
-                                "Digest": "b34972bb12121b8851cd5564ff9656dcbca3f288"
-                            }
-                        },
-                        {
-                            "OID": "2.5.29.17",
-                            "Name": "subjectAltName",
-                            "Critical": False,
-                            "Value": [
-                                {
-                                    "Type": "dNSName",
-                                    "Value": "*.paloaltonetworks.com"
-                                },
-                                {
-                                    "Type": "dNSName",
-                                    "Value": "paloaltonetworks.com"
-                                }
-                            ]
-                        },
-                        {
-                            "OID": "2.5.29.15",
-                            "Name": "keyUsage",
-                            "Critical": True,
-                            "Value": {
-                                "DigitalSignature": True,
-                                "KeyEncipherment": True
-                            }
-                        },
-                        {
-                            "OID": "2.5.29.37",
-                            "Name": "extendedKeyUsage",
-                            "Critical": False,
-                            "Value": {
-                                "Usages": [
-                                    "serverAuth",
-                                    "clientAuth"
-                                ]
-                            }
-                        },
-                        {
-                            "OID": "2.5.29.31",
-                            "Name": "cRLDistributionPoints",
-                            "Critical": False,
-                            "Value": [
-                                {
-                                    "FullName": [
-                                        {
-                                            "Type": "uniformResourceIdentifier",
-                                            "Value": "http://crl3.digicert.com/ssca-sha2-g7.crl"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "FullName": [
-                                        {
-                                            "Type": "uniformResourceIdentifier",
-                                            "Value": "http://crl4.digicert.com/ssca-sha2-g7.crl"
-                                        }
-                                    ]
-                                }
-                            ]
-                        },
-                        {
-                            "OID": "2.5.29.32",
-                            "Name": "certificatePolicies",
-                            "Critical": False,
-                            "Value": [
-                                {
-                                    "PolicyIdentifier": "2.16.840.1.114412.1.1",
-                                    "PolicyQualifiers": [
-                                        "https://www.digicert.com/CPS"
-                                    ]
-                                },
-                                {
-                                    "PolicyIdentifier": "2.23.140.1.2.2"
-                                }
-                            ]
-                        },
-                        {
-                            "OID": "1.3.6.1.5.5.7.1.1",
-                            "Name": "authorityInfoAccess",
-                            "Critical": False,
-                            "Value": [
-                                {
-                                    "AccessMethod": "OCSP",
-                                    "AccessLocation": {
-                                        "Type": "uniformResourceIdentifier",
-                                        "Value": "http://ocsp.digicert.com"
-                                    }
-                                },
-                                {
-                                    "AccessMethod": "caIssuers",
-                                    "AccessLocation": {
-                                        "Type": "uniformResourceIdentifier",
-                                        "Value": "http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
-                                    }
-                                }
-                            ]
-                        },
-                        {
-                            "OID": "2.5.29.19",
-                            "Name": "basicConstraints",
-                            "Critical": False,
-                            "Value": {
-                                "CA": False
-                            }
-                        },
-                        {
-                            "OID": "1.3.6.1.4.1.11129.2.4.2",
-                            "Name": "signedCertificateTimestampList",
-                            "Critical": False,
-                            "Value": [
-                                {
-                                    "Version": 0,
-                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
-                                    "Timestamp": "2020-10-23T19:31:49.000Z",
-                                    "EntryType": "PreCertificate"
-                                },
-                                {
-                                    "Version": 0,
-                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
-                                    "Timestamp": "2020-10-23T19:31:49.000Z",
-                                    "EntryType": "PreCertificate"
-                                }
-                            ]
-                        },
-                        {
-                            "OID": "1.3.6.1.4.1.11129.2.4.5",
-                            "Name": "signedCertificateTimestampList",
-                            "Critical": False,
-                            "Value": [
-                                {
-                                    "Version": 0,
-                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
-                                    "Timestamp": "2020-10-23T19:31:49.000Z",
-                                    "EntryType": "X509Certificate"
-                                },
-                                {
-                                    "Version": 0,
-                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
-                                    "Timestamp": "2020-10-23T19:31:49.000Z",
-                                    "EntryType": "X509Certificate"
-                                }
-                            ]
-                        }
-                    ]
-                }],
-                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
-                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
-                    "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
-                    "Type": "certificate",
-                    "Vendor": "test",
-                    "Score": 0
-                }]
-            },
-            'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False,
-            'Note': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -2414,6 +2110,62 @@ class TestBaseClient:
         res = self.client._http_request('get', 'event', resp_type='response')
         assert isinstance(res, requests.Response)
 
+    def test_http_request_proxy_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'http://testproxy:8899'
+        os.environ['https_proxy'] = 'https://testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=False, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert not m.last_request.proxies
+            assert m.called is True
+
+    def test_http_request_proxy_true(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['http_proxy'] = 'http://testproxy:8899'
+        os.environ['https_proxy'] = 'https://testproxy:8899'
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=True)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify == '/test1.pem'
+            assert m.last_request.proxies == {
+                'http': 'http://testproxy:8899',
+                'https': 'https://testproxy:8899'
+            }
+            assert m.called is True
+
+    def test_http_request_verify_false(self):
+        from CommonServerPython import BaseClient
+        import requests_mock
+
+        os.environ['REQUESTS_CA_BUNDLE'] = '/test1.pem'
+        client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), proxy=True, verify=False)
+
+        with requests_mock.mock() as m:
+            m.get('http://example.com/api/v2/event')
+
+            res = client._http_request('get', 'event', resp_type='response')
+
+            assert m.last_request.verify is False
+            assert m.called is True
+
     def test_http_request_not_ok(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', status_code=500)
@@ -2451,6 +2203,12 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
         with raises(DemistoException, match="SSL Certificate Verification Failed"):
             self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_ssl_error_insecure(cls, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
+        client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
+        with raises(requests.exceptions.SSLError, match="^test ssl$"):
+            client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_proxy_error(self, requests_mock):
         from CommonServerPython import DemistoException
@@ -3522,9 +3280,31 @@ def test_return_results_multiple_dict_results(mocker):
     demisto_results_mock = mocker.patch.object(demisto, 'results')
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
-    args, kwargs = demisto_results_mock.call_args_list[0]
+    args, _ = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
     assert [{'MockContext': 0}, {'MockContext': 1}] in args
+
+
+def test_return_results_mixed_results(mocker):
+    """
+    Given:
+      - List containing a CommandResult object and two dictionaries (representing a demisto result entries)
+    When:
+      - Calling return_results()
+    Then:
+      - Assert that demisto.results() is called 2 times .
+      - Assert that the first call was with the CommandResult object.
+      - Assert that the second call was with the two demisto results dicts.
+    """
+    from CommonServerPython import CommandResults, return_results
+    demisto_results_mock = mocker.patch.object(demisto, 'results')
+    mock_command_results_object = CommandResults(outputs_prefix='Mock', outputs={'MockContext': 0})
+    mock_demisto_results_entry = [{'MockContext': 1}, {'MockContext': 2}]
+    return_results([mock_command_results_object] + mock_demisto_results_entry)
+
+    assert demisto_results_mock.call_count == 2
+    assert demisto_results_mock.call_args_list[0][0][0] == mock_command_results_object.to_context()
+    assert demisto_results_mock.call_args_list[1][0][0] == mock_demisto_results_entry
 
 
 def test_arg_to_int__valid_numbers():
@@ -3761,3 +3541,1036 @@ def test_warnings_handler(mocker):
     msg = demisto.info.call_args[0][0]
     assert 'This is a test' in msg
     assert 'python warning' in msg
+
+
+class TestCommonTypes:
+    def test_create_domain(self):
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='somedomain.com',
+            integration_name='Virus Total',
+            indicator_type=DBotScoreType.DOMAIN,
+            score=Common.DBotScore.GOOD
+        )
+
+        domain = Common.Domain(
+            domain='somedomain.com',
+            dbot_score=dbot_score,
+            dns='dns.somedomain',
+            detection_engines=10,
+            positive_detections=5,
+            organization='Some Organization',
+            admin_phone='18000000',
+            admin_email='admin@test.com',
+
+            registrant_name='Mr Registrant',
+
+            registrar_name='Mr Registrar',
+            registrar_abuse_email='registrar@test.com',
+            creation_date='2019-01-01T00:00:00',
+            updated_date='2019-01-02T00:00:00',
+            expiration_date=None,
+            domain_status='ACTIVE',
+            name_servers=[
+                'PNS31.CLOUDNS.NET',
+                'PNS32.CLOUDNS.NET'
+            ],
+            sub_domains=[
+                'sub-domain1.somedomain.com',
+                'sub-domain2.somedomain.com',
+                'sub-domain3.somedomain.com'
+            ],
+            tags=['tag1', 'tag2'],
+            malware_family=['malware_family1', 'malware_family2'],
+            feed_related_indicators=[Common.FeedRelatedIndicators(
+                value='8.8.8.8',
+                indicator_type="IP",
+                description='test'
+            )],
+            domain_idn_name='domain_idn_name',
+            port='port',
+            internal="False",
+            category='category',
+            campaign='campaign',
+            traffic_light_protocol='traffic_light_protocol',
+            threat_types=[Common.ThreatTypes(threat_category='threat_category',
+                                             threat_category_confidence='threat_category_confidence')],
+            community_notes=[Common.CommunityNotes(note='note', timestamp='2019-01-01T00:00:00')],
+            publications=[Common.Publications(title='title', source='source', timestamp='2019-01-01T00:00:00',
+                                              link='link')],
+            geo_location='geo_location',
+            geo_country='geo_country',
+            geo_description='geo_description',
+            tech_country='tech_country',
+            tech_name='tech_name',
+            tech_organization='tech_organization',
+            tech_email='tech_email',
+            billing='billing'
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[domain]
+        )
+
+        assert results.to_context() == {
+            'Type': 1,
+            'ContentsFormat': 'json',
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                'Domain(val.Name && val.Name == obj.Name)': [
+                    {
+                        "Name": "somedomain.com",
+                        "DNS": "dns.somedomain",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 5,
+                        "Registrar": {
+                            "Name": "Mr Registrar",
+                            "AbuseEmail": "registrar@test.com",
+                            "AbusePhone": None
+                        },
+                        "Registrant": {
+                            "Name": "Mr Registrant",
+                            "Email": None,
+                            "Phone": None,
+                            "Country": None
+                        },
+                        "Admin": {
+                            "Name": None,
+                            "Email": "admin@test.com",
+                            "Phone": "18000000",
+                            "Country": None
+                        },
+                        "Organization": "Some Organization",
+                        "Subdomains": [
+                            "sub-domain1.somedomain.com",
+                            "sub-domain2.somedomain.com",
+                            "sub-domain3.somedomain.com"
+                        ],
+                        "DomainStatus": "ACTIVE",
+                        "CreationDate": "2019-01-01T00:00:00",
+                        "UpdatedDate": "2019-01-02T00:00:00",
+                        "NameServers": [
+                            "PNS31.CLOUDNS.NET",
+                            "PNS32.CLOUDNS.NET"
+                        ],
+                        "Tags": ["tag1", "tag2"],
+                        "FeedRelatedIndicators": [{"value": "8.8.8.8", "type": "IP", "description": "test"}],
+                        "MalwareFamily": ["malware_family1", "malware_family2"],
+                        "DomainIDNName": "domain_idn_name",
+                        "Port": "port",
+                        "Internal": "False",
+                        "Category": "category",
+                        "Campaign": "campaign",
+                        "TrafficLightProtocol": "traffic_light_protocol",
+                        "ThreatTypes": [{
+                            "threatcategory": "threat_category",
+                            "threatcategoryconfidence": "threat_category_confidence"
+                        }],
+                        "CommunityNotes": [{
+                            "note": "note",
+                            "timestamp": "2019-01-01T00:00:00"
+                        }],
+                        "Publications": [{
+                            "source": "source",
+                            "title": "title",
+                            "link": "link",
+                            "timestamp": "2019-01-01T00:00:00"
+                        }],
+                        "Geo": {
+                            "Location": "geo_location",
+                            "Country": "geo_country",
+                            "Description": "geo_description"
+                        },
+                        "Tech": {
+                            "Country": "tech_country",
+                            "Name": "tech_name",
+                            "Organization": "tech_organization",
+                            "Email": "tech_email"
+                        },
+                        "Billing": "billing",
+                        "WHOIS": {
+                            "Registrar": {
+                                "Name": "Mr Registrar",
+                                "AbuseEmail": "registrar@test.com",
+                                "AbusePhone": None
+                            },
+                            "Registrant": {
+                                "Name": "Mr Registrant",
+                                "Email": None,
+                                "Phone": None,
+                                "Country": None
+                            },
+                            "Admin": {
+                                "Name": None,
+                                "Email": "admin@test.com",
+                                "Phone": "18000000",
+                                "Country": None
+                            },
+                            "DomainStatus": "ACTIVE",
+                            "CreationDate": "2019-01-01T00:00:00",
+                            "UpdatedDate": "2019-01-02T00:00:00",
+                            "NameServers": [
+                                "PNS31.CLOUDNS.NET",
+                                "PNS32.CLOUDNS.NET"
+                            ]
+                        }
+                    }
+                ],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                    {
+                        'Indicator': 'somedomain.com',
+                        'Type': 'domain',
+                        'Vendor': 'Virus Total',
+                        'Score': 1
+                    }
+                ]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False,
+            'Note': False,
+            'Relationships': []
+        }
+
+    def test_create_certificate(self):
+        """
+        Given:
+            -  an X509 Certificate with its properties
+        When
+            - creating a CommandResults with the Certificate Standard Context
+        Then
+            - the proper output Context is created
+        """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
+            integration_name='test',
+            indicator_type=DBotScoreType.CERTIFICATE,
+            score=Common.DBotScore.NONE
+        )
+
+        cert_extensions = [
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
+                authority_key_identifier=Common.CertificateExtension.AuthorityKeyIdentifier(
+                    key_identifier="0f80611c823161d52f28e78d4638b42ce1c6d9e2"
+                ),
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER,
+                digest="b34972bb12121b8851cd5564ff9656dcbca3f288",
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
+                subject_alternative_names=[
+                    Common.GeneralName(
+                        gn_type="dNSName",
+                        gn_value="*.paloaltonetworks.com"
+                    ),
+                    Common.GeneralName(
+                        gn_type="dNSName",
+                        gn_value="paloaltonetworks.com"
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.KEYUSAGE,
+                digital_signature=True,
+                key_encipherment=True,
+                critical=True
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE,
+                usages=[
+                    "serverAuth",
+                    "clientAuth"
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS,
+                distribution_points=[
+                    Common.CertificateExtension.DistributionPoint(
+                        full_name=[
+                            Common.GeneralName(
+                                gn_type="uniformResourceIdentifier",
+                                gn_value="http://crl3.digicert.com/ssca-sha2-g7.crl"
+                            )
+                        ]
+                    ),
+                    Common.CertificateExtension.DistributionPoint(
+                        full_name=[
+                            Common.GeneralName(
+                                gn_type="uniformResourceIdentifier",
+                                gn_value="http://crl4.digicert.com/ssca-sha2-g7.crl"
+                            )
+                        ]
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
+                certificate_policies=[
+                    Common.CertificateExtension.CertificatePolicy(
+                        policy_identifier="2.16.840.1.114412.1.1",
+                        policy_qualifiers=["https://www.digicert.com/CPS"]
+                    ),
+                    Common.CertificateExtension.CertificatePolicy(
+                        policy_identifier="2.23.140.1.2.2"
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
+                authority_information_access=[
+                    Common.CertificateExtension.AuthorityInformationAccess(
+                        access_method="OCSP",
+                        access_location=Common.GeneralName(
+                            gn_type="uniformResourceIdentifier",
+                            gn_value="http://ocsp.digicert.com"
+                        )
+                    ),
+                    Common.CertificateExtension.AuthorityInformationAccess(
+                        access_method="caIssuers",
+                        access_location=Common.GeneralName(
+                            gn_type="uniformResourceIdentifier",
+                            gn_value="http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
+                        )
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
+                basic_constraints=Common.CertificateExtension.BasicConstraints(
+                    ca=False
+                ),
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
+                signed_certificate_timestamps=[
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="PreCertificate"
+                    ),
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="PreCertificate"
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                signed_certificate_timestamps=[
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    ),
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    )
+                ],
+                critical=False
+            )
+        ]
+        certificate = Common.Certificate(
+            subject_dn='CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US',
+            dbot_score=dbot_score,
+            serial_number='19290688218337824112020565039390569720',
+            issuer_dn='CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US',
+            validity_not_before='2020-10-23T00:00:00.000Z',
+            validity_not_after='2021-11-21T23:59:59.000Z',
+            sha256='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
+            sha1='2392ea5cd4c2a61e51547570634ef887ab1942e9',
+            md5='22769ae413997b86da4a0934072d9ed0',
+            publickey=Common.CertificatePublicKey(
+                algorithm=Common.CertificatePublicKey.Algorithm.RSA,
+                length=2048,
+                modulus='00:00:00:00',
+                exponent=65537
+            ),
+            spki_sha256='94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9',
+            signature_algorithm='sha256',
+            signature='SIGNATURE',
+            extensions=cert_extensions
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[certificate]
+        )
+
+        CONTEXT_PATH = "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || " \
+                       "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                CONTEXT_PATH: [{
+                    "SubjectDN": "CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US",
+                    "SubjectAlternativeName": [
+                        {
+                            "Type": "dNSName",
+                            "Value": "*.paloaltonetworks.com"
+                        },
+                        {
+                            "Type": "dNSName",
+                            "Value": "paloaltonetworks.com"
+                        }
+                    ],
+                    "Name": [
+                        "*.paloaltonetworks.com",
+                        "paloaltonetworks.com"
+                    ],
+                    "IssuerDN": "CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US",
+                    "SerialNumber": "19290688218337824112020565039390569720",
+                    "ValidityNotBefore": "2020-10-23T00:00:00.000Z",
+                    "ValidityNotAfter": "2021-11-21T23:59:59.000Z",
+                    "SHA256": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
+                    "SHA1": "2392ea5cd4c2a61e51547570634ef887ab1942e9",
+                    "MD5": "22769ae413997b86da4a0934072d9ed0",
+                    "PublicKey": {
+                        "Algorithm": "RSA",
+                        "Length": 2048,
+                        "Modulus": "00:00:00:00",
+                        "Exponent": 65537
+                    },
+                    "SPKISHA256": "94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9",
+                    "Signature": {
+                        "Algorithm": "sha256",
+                        "Signature": "SIGNATURE"
+                    },
+                    "Extension": [
+                        {
+                            "OID": "2.5.29.35",
+                            "Name": "authorityKeyIdentifier",
+                            "Critical": False,
+                            "Value": {
+                                "KeyIdentifier": "0f80611c823161d52f28e78d4638b42ce1c6d9e2"
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.14",
+                            "Name": "subjectKeyIdentifier",
+                            "Critical": False,
+                            "Value": {
+                                "Digest": "b34972bb12121b8851cd5564ff9656dcbca3f288"
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.17",
+                            "Name": "subjectAltName",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Type": "dNSName",
+                                    "Value": "*.paloaltonetworks.com"
+                                },
+                                {
+                                    "Type": "dNSName",
+                                    "Value": "paloaltonetworks.com"
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "2.5.29.15",
+                            "Name": "keyUsage",
+                            "Critical": True,
+                            "Value": {
+                                "DigitalSignature": True,
+                                "KeyEncipherment": True
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.37",
+                            "Name": "extendedKeyUsage",
+                            "Critical": False,
+                            "Value": {
+                                "Usages": [
+                                    "serverAuth",
+                                    "clientAuth"
+                                ]
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.31",
+                            "Name": "cRLDistributionPoints",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "FullName": [
+                                        {
+                                            "Type": "uniformResourceIdentifier",
+                                            "Value": "http://crl3.digicert.com/ssca-sha2-g7.crl"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "FullName": [
+                                        {
+                                            "Type": "uniformResourceIdentifier",
+                                            "Value": "http://crl4.digicert.com/ssca-sha2-g7.crl"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "2.5.29.32",
+                            "Name": "certificatePolicies",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "PolicyIdentifier": "2.16.840.1.114412.1.1",
+                                    "PolicyQualifiers": [
+                                        "https://www.digicert.com/CPS"
+                                    ]
+                                },
+                                {
+                                    "PolicyIdentifier": "2.23.140.1.2.2"
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "1.3.6.1.5.5.7.1.1",
+                            "Name": "authorityInfoAccess",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "AccessMethod": "OCSP",
+                                    "AccessLocation": {
+                                        "Type": "uniformResourceIdentifier",
+                                        "Value": "http://ocsp.digicert.com"
+                                    }
+                                },
+                                {
+                                    "AccessMethod": "caIssuers",
+                                    "AccessLocation": {
+                                        "Type": "uniformResourceIdentifier",
+                                        "Value": "http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "2.5.29.19",
+                            "Name": "basicConstraints",
+                            "Critical": False,
+                            "Value": {
+                                "CA": False
+                            }
+                        },
+                        {
+                            "OID": "1.3.6.1.4.1.11129.2.4.2",
+                            "Name": "signedCertificateTimestampList",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Version": 0,
+                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "PreCertificate"
+                                },
+                                {
+                                    "Version": 0,
+                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "PreCertificate"
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "1.3.6.1.4.1.11129.2.4.5",
+                            "Name": "signedCertificateTimestampList",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Version": 0,
+                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                },
+                                {
+                                    "Version": 0,
+                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                }
+                            ]
+                        }
+                    ]
+                }],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
+                    "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
+                    "Type": "certificate",
+                    "Vendor": "test",
+                    "Score": 0
+                }]
+            },
+            'IndicatorTimeline': [],
+            'Relationships': [],
+            'IgnoreAutoExtract': False,
+            'Note': False
+        }
+
+    def test_email_indicator_type(self, mocker):
+        """
+        Given:
+            - a single email indicator entry
+        When
+           - creating an Common.EMAIL object
+       Then
+           - The context created matches the data entry
+       """
+        from CommonServerPython import Common, DBotScoreType
+        mocker.patch.object(demisto, 'params', return_value={'insecure': True})
+        dbot_score = Common.DBotScore(
+            indicator='user@example.com',
+            integration_name='Test',
+            indicator_type=DBotScoreType.EMAIL,
+            score=Common.DBotScore.GOOD
+        )
+        dbot_context = {'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                   'val.Vendor == obj.Vendor && val.Type == obj.Type)':
+                       {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Test', 'Score': 1}}
+
+        assert dbot_context == dbot_score.to_context()
+
+        email_context = Common.EMAIL(
+            domain='example.com',
+            address='user@example.com',
+            dbot_score=dbot_score
+        )
+        assert email_context.to_context()[email_context.CONTEXT_PATH] == {'Address': 'user@example.com', 'Domain': 'example.com'}
+
+
+class TestIndicatorsSearcher:
+    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+        if not searchAfter:
+            searchAfter = 0
+
+        if searchAfter < 6:
+            searchAfter += 1
+
+        else:
+            # mock the end of indicators
+            searchAfter = None
+
+        return {'searchAfter': searchAfter}
+
+    def test_search_indicators_by_page(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in less than 6.1.0
+        When:
+          - Mocking search indicators using paging
+        Then:
+          - The page number is rising
+          - The searchAfter param is null
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+
+        search_indicators_obj_paging = IndicatorsSearcher()
+        search_indicators_obj_paging._can_use_search_after = False
+
+        for n in range(5):
+            search_indicators_obj_paging.search_indicators_by_version()
+
+        assert search_indicators_obj_paging._page == 5
+        assert not search_indicators_obj_paging._search_after_param
+
+    def test_search_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter
+        Then:
+          - The search after param is rising
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+
+        for n in range(5):
+            search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 5
+        assert search_indicators_obj_search_after._page == 0
+
+    def test_search_all_indicators_by_search_after(self, mocker):
+        """
+        Given:
+          - Searching indicators couple of times
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators using the searchAfter parameter until there are no more indicators
+          so search_after is None
+        Then:
+          - The search after param is None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        search_indicators_obj_search_after = IndicatorsSearcher()
+        search_indicators_obj_search_after._can_use_search_after = True
+        for n in range(7):
+            search_indicators_obj_search_after.search_indicators_by_version()
+        assert search_indicators_obj_search_after._search_after_param == None
+        assert search_indicators_obj_search_after._page == 0
+
+
+class TestAutoFocusKeyRetriever:
+    def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
+        """
+        Given:
+            - giving the api_key parameter
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.2.0
+        Then:
+            - The Auto Focus API Key is the one given to the class
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
+        auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='1234')
+        assert auto_focus_key_retriever.key == '1234'
+
+    def test_instantiate_class_pre_6_2_failed(self, mocker, clear_version_cache):
+        """
+        Given:
+            - not giving the api_key parameter
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.1.0
+        Then:
+            - Validate an exception with appropriate error message is raised.
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.1.0', 'buildNumber': '61000'})
+        with raises(DemistoException, match='For versions earlier than 6.2.0, configure an API Key.'):
+            AutoFocusKeyRetriever(api_key='')
+
+    def test_instantiate_class_without_param_key(self, mocker, clear_version_cache):
+        """
+        Given:
+            - not giving the api_key parameter
+        When:
+            - Mocking getAutoFocusApiKey
+            - Mocking server version to be 6.2.0
+        Then:
+            - The Auto Focus API Key is the one given by the getAutoFocusApiKey method
+        """
+        from CommonServerPython import AutoFocusKeyRetriever
+        mocker.patch.object(demisto, 'getAutoFocusApiKey', return_value='test')
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.2.0', 'buildNumber': '62000'})
+        auto_focus_key_retriever = AutoFocusKeyRetriever(api_key='')
+        assert auto_focus_key_retriever.key == 'test'
+
+
+
+class TestEntityRelation:
+    """Global vars for all of the tests"""
+    name = 'related-to'
+    reverse_name = 'related-to'
+    relation_type = 'IndicatorToIndicator'
+    entity_a = 'test1'
+    entity_a_family = 'Indicator'
+    entity_a_type = 'Domain'
+    entity_b = 'test2'
+    entity_b_family = 'Indicator'
+    entity_b_type = 'Domain'
+    source_reliability = 'F - Reliability cannot be judged'
+
+    def test_entity_relations_context(self):
+        """
+        Given
+        - an EntityRelation object.
+
+        When
+        - running to_context function of the object
+
+        Then
+        - Validate that the expected context is created
+        """
+        from CommonServerPython import EntityRelation
+        relation = EntityRelation(name='related-to',
+                                  relation_type='IndicatorToIndicator',
+                                  entity_a='test1',
+                                  entity_a_family='Indicator',
+                                  entity_a_type='Domain',
+                                  entity_b='test2',
+                                  entity_b_family='Indicator',
+                                  entity_b_type='Domain',
+                                  source_reliability='F - Reliability cannot be judged',
+                                  brand='test')
+
+        expected_context = {
+            "Relationship": 'related-to',
+            "EntityA": 'test1',
+            "EntityAType": 'Domain',
+            "EntityB": 'test2',
+            "EntityBType": 'Domain',
+        }
+        assert relation.to_context() == expected_context
+
+    def test_entity_relations_to_entry(self):
+        """
+        Given
+        - an EntityRelation object.
+
+        When
+        - running to_entry function of the object
+
+        Then
+        - Validate that the expected context is created
+        """
+        from CommonServerPython import EntityRelation
+        relation = EntityRelation(name=TestEntityRelation.name,
+                                  relation_type=TestEntityRelation.relation_type,
+                                  entity_a=TestEntityRelation.entity_a,
+                                  entity_a_family=TestEntityRelation.entity_a_family,
+                                  entity_a_type=TestEntityRelation.entity_a_type,
+                                  entity_b=TestEntityRelation.entity_b,
+                                  entity_b_family=TestEntityRelation.entity_b_family,
+                                  entity_b_type=TestEntityRelation.entity_b_type,
+                                  source_reliability=TestEntityRelation.source_reliability
+                                  )
+
+        expected_entry = {
+            "name": TestEntityRelation.name,
+            "reverseName": TestEntityRelation.reverse_name,
+            "type": TestEntityRelation.relation_type,
+            "entityA": TestEntityRelation.entity_a,
+            "entityAFamily": TestEntityRelation.entity_a_family,
+            "entityAType": TestEntityRelation.entity_a_type,
+            "entityB": TestEntityRelation.entity_b,
+            "entityBFamily": TestEntityRelation.entity_b_family,
+            "entityBType": TestEntityRelation.entity_b_type,
+            "fields": {},
+            "reliability": TestEntityRelation.source_reliability
+        }
+        assert relation.to_entry() == expected_entry
+
+    def test_entity_relations_to_indicator(self):
+        """
+        Given
+        - an EntityRelation object.
+
+        When
+        - running to_indicator function of the object
+
+        Then
+        - Validate that the expected context is created
+        """
+        from CommonServerPython import EntityRelation
+        relation = EntityRelation(name=TestEntityRelation.name,
+                                  relation_type=TestEntityRelation.relation_type,
+                                  entity_a=TestEntityRelation.entity_a,
+                                  entity_a_family=TestEntityRelation.entity_a_family,
+                                  entity_a_type=TestEntityRelation.entity_a_type,
+                                  entity_b=TestEntityRelation.entity_b,
+                                  entity_b_family=TestEntityRelation.entity_b_family,
+                                  entity_b_type=TestEntityRelation.entity_b_type,
+                                  )
+
+        expected_to_indicator = {
+            "name": TestEntityRelation.name,
+            "reverseName": TestEntityRelation.reverse_name,
+            "type": TestEntityRelation.relation_type,
+            "entityA": TestEntityRelation.entity_a,
+            "entityAFamily": TestEntityRelation.entity_a_family,
+            "entityAType": TestEntityRelation.entity_a_type,
+            "entityB": TestEntityRelation.entity_b,
+            "entityBFamily": TestEntityRelation.entity_b_family,
+            "entityBType": TestEntityRelation.entity_b_type,
+            "fields": {},
+        }
+        assert relation.to_indicator() == expected_to_indicator
+
+    def test_invalid_name_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid relation name.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name='ilegal',
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           entity_a_type=TestEntityRelation.entity_a_type,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           entity_b_type=TestEntityRelation.entity_b_type
+                            )
+        except ValueError as exception:
+            assert "Invalid relation: ilegal" in str(exception)
+
+    def test_invalid_relation_type_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid relation type.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           relation_type='TestRelationType',
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           entity_a_type=TestEntityRelation.entity_a_type,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           entity_b_type=TestEntityRelation.entity_b_type
+                           )
+        except ValueError as exception:
+            assert "Invalid relation type: TestRelationType" in str(exception)
+
+    def test_invalid_a_family_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid family type of the source.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family='IndicatorIlegal',
+                           entity_a_type=TestEntityRelation.entity_a_type,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           entity_b_type=TestEntityRelation.entity_b_type
+                            )
+        except ValueError as exception:
+            assert "Invalid entity A Family type: IndicatorIlegal" in str(exception)
+
+    def test_invalid_a_type_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid type of the source.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           entity_a_type='DomainTest',
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           entity_b_type=TestEntityRelation.entity_b_type
+                            )
+        except ValueError as exception:
+            assert "Invalid entity A type: DomainTest" in str(exception)
+
+    def test_invalid_b_family_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid family type of the destination.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           entity_a_type=TestEntityRelation.entity_a_type,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family='IndicatorIlegal',
+                           entity_b_type=TestEntityRelation.entity_b_type
+                            )
+        except ValueError as exception:
+            assert "Invalid entity B Family type: IndicatorIlegal" in str(exception)
+
+    def test_invalid_b_type_init(self):
+        """
+        Given
+        - an EntityRelation object which has a invalid type of the destination.
+
+        When
+        - Creating the EntityRelation object.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import EntityRelation
+        try:
+            EntityRelation(name=TestEntityRelation.name,
+                           relation_type=TestEntityRelation.relation_type,
+                           entity_a=TestEntityRelation.entity_a,
+                           entity_a_family=TestEntityRelation.entity_a_family,
+                           entity_a_type=TestEntityRelation.entity_a_type,
+                           entity_b=TestEntityRelation.entity_b,
+                           entity_b_family=TestEntityRelation.entity_b_family,
+                           entity_b_type='DomainTest'
+                            )
+        except ValueError as exception:
+            assert "Invalid entity B type: DomainTest" in str(exception)

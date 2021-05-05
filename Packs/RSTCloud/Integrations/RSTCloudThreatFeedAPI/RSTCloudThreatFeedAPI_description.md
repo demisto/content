@@ -1,8 +1,3 @@
-### Partner Contributed Integration
-#### Integration Author: RST Cloud
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **URL**: [https://www.rstcloud.net/contact](https://www.rstcloud.net/contact)
-***
 ## RST Threat Feed
 - This section explains how to configure the instance of RST Threat Feed API in Cortex XSOAR.
 - Provide your API Key

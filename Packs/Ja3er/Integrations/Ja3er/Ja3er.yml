@@ -1,0 +1,39 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Ja3er
+  version: -1
+configuration:
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Query the ja3er API for MD5 hashes of JA3 fingerprints.
+display: Ja3er
+name: Ja3er
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: MD5 hash of the JA3 fingerprint.
+      name: JA3
+      required: true
+    description: Search for "User-Agents" matching an MD5 hash of a JA3 fingerprint.
+    name: ja3-search
+    outputs:
+    - contextPath: JA3.Count
+      description: 'Number of times seen'
+      type: Number
+    - contextPath: JA3.Last_seen
+      description: 'Last seen date'
+      type: Date
+    - contextPath: JA3.User-Agent
+      description: 'User-Agent'
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

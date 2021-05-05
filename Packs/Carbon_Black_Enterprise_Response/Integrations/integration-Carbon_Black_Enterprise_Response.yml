@@ -132,7 +132,16 @@ script:
     function quarantineDevice(doQuarantine) {
         let result = getSensorByIdRequest(args.sensor);
         result.network_isolation_enabled = doQuarantine;
-        result = quarantineSensorRequest(args.sensor, result);
+        var filtered_sensor_object = {
+                                'network_isolation_enabled': result.network_isolation_enabled,
+                                'restart_queued': result.restart_queued,
+                                'uninstall': result.uninstall,
+                                'liveresponse_init': result.liveresponse_init,
+                                'group_id': result.group_id,
+                                'notes': result.notes,
+                                'event_log_flush_time': result.event_log_flush_time
+                            }
+        result = quarantineSensorRequest(args.sensor, filtered_sensor_object);
         if (result.StatusCode === 204) {
             let quarantinedStr = (doQuarantine) ? 'quarantined' : 'unquarantined';
             return {
@@ -853,7 +862,10 @@ script:
     function getSensors() {
         let ipAddressDQ = '.=(val.network_adapters.split("|").slice(0, val.network_adapters.split("|").length-1))';
         let result = getSensorsRequest(args.sensor, args.hostname, args.ip, args.groupid);
-
+        if (args.limit) {
+            args.limit = parseInt(args.limit);
+            result.splice(args.limit, result.length - args.limit);
+        }
         let entries = [];
         let title = 'CB Response - Get Sensors';
         let dataMap = [
@@ -863,7 +875,7 @@ script:
             {to: 'IPAddresses', from: ipAddressDQ},
             {to: 'IPAddress', from: 'network_adapters'},
             {to: 'Notes', from: 'notes'},
-            {to: 'Isolated', from: 'network_isolation_enabled'},
+            {to: 'Isolated', from: 'is_isolating'},
             {to: 'OS', from: 'os_environment_display_string'},
             {to: 'Uptime', from: 'sensor_uptime'},
             {to: 'LastUpdate', from: 'last_update'},
@@ -1702,7 +1714,9 @@ script:
       type: date
     description: Query processes based on given parameters
   - name: cb-list-sensors
-    arguments: []
+    arguments:
+    - name: limit
+      description: The maximum amount of sensors to be returned.
     outputs:
     - contextPath: CbResponse.Sensors.Status
       description: Sensor Status

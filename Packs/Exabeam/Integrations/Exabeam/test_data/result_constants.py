@@ -36,3 +36,48 @@ EXPECTED_ASSET_DATA = {
         'Labels': None
     }
 }
+EXPECTED_SESSION_INFO = {
+    'Exabeam.SessionInfo(val.sessionId && val.sessionId === obj.sessionId)': {
+        "numOfAssets": 29,
+        "riskScore": 0,
+        "numOfAccounts": 1,
+        "accounts": [],
+        "zones": [],
+        "endTime": "2020-06-02T04:16:00",
+        "numOfZones": 5,
+        "startTime": "2020-06-01T14:31:00",
+        "loginHost": "lt-dummy-888",
+        "sessionId": "dummy-20200601143100",
+        "numOfReasons": 0,
+        "label": "",
+        "username": "dummy",
+        "numOfSecurityEvents": 0,
+        "numOfEvents": 62,
+        "initialRiskScore": 0
+    }
+}
+
+EXPECTED_MODEL_DATA = {
+    'Exabeam.Model(val.name && val.name === obj.name)': {
+        "agingWindow": 32,
+        "alpha": 0.8,
+        "binWidth": None,
+        "category": "Other",
+        "convergenceFilter": "confidence_factor>=0.8",
+        "cutOff": 5,
+        "description": "Models which security groups users are being added to in the organization",
+        "disabled": "FALSE",
+        "feature": "group_name",
+        "featureName": "group_name",
+        "featureType": "group_name",
+        "histogramEventTypes": "member-added",
+        "iconName": None,
+        "maxNumberOfBins": 1000000,
+        "modelTemplate": "Account management, groups which users are being added to",
+        "modelType": "CATEGORICAL",
+        "name": "dummy",
+        "scopeType": "ORG",
+        "scopeValue": "org",
+        "trainIf": "TRUE"
+    }
+}

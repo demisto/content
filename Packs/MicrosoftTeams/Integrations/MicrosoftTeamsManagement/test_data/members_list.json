@@ -1,0 +1,32 @@
+{
+	"@odata.context": "https://graph.microsoft.com/v1.0/$metadata#teams('ee0f5ae2-8bc6-4ae5-8466-7daeebbfa062')/members",
+	"@odata.count": 3,
+	"value": [
+		{
+			"@odata.type": "#microsoft.graph.aadUserConversationMember",
+			"id": "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=",
+			"roles": [],
+			"displayName": "Adele Vance",
+			"userId": "73761f06-2ac9-469c-9f10-279a8cc267f9",
+			"email": "AdeleV@M365x987948.OnMicrosoft.com"
+		},
+		{
+			"@odata.type": "#microsoft.graph.aadUserConversationMember",
+			"id": "ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM1OThlZmNkNC1lNTQ5LTQwMmEtOTYwMi0wYjUwMjAxZmFlYmU=",
+			"roles": [
+				"owner"
+			],
+			"displayName": "MOD Administrator",
+			"userId": "598efcd4-e549-402a-9602-0b50201faebe",
+			"email": "admin@M365x987948.OnMicrosoft.com"
+		},
+		{
+			"@odata.type": "#microsoft.graph.aadUserConversationMember",
+			"id": "MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI=",
+			"roles": [],
+			"displayName": "Harry Johnson",
+			"userId": "752f50b7-256f-4539-b775-c4d12f2e4722",
+			"email": "harry@M365x987948.OnMicrosoft.com"
+		}
+	]
+}

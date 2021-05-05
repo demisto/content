@@ -46,7 +46,7 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
         new_dict = {key: None for key in keys}
         for (key, value) in dict_obj.items():
             # Check if item satisfies the given condition then add to new dict
-            if value not in {'', None} and key in keys:
+            if value not in ('', None) and key in keys:
                 new_dict[key] = value
 
     else:

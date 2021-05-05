@@ -1,2 +1,2 @@
-[file:integration-AWS-GuardDuty.yml]
+[file:AWS-GuardDuty.yml]
 ignore=IN126

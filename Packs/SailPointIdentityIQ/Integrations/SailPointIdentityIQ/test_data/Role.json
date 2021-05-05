@@ -1,0 +1,41 @@
+{
+    "owner": {
+        "displayName": "Dennis.Barnes",
+        "value": "7f000001705911b4817059d31233035e",
+        "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d31233035e"
+    },
+    "requirements": [],
+    "active": true,
+    "inheritance": [],
+    "type": {
+        "iiq": false,
+        "requirements": false,
+        "permits": false,
+        "displayName": "IT",
+        "manualAssignment": false,
+        "name": "it",
+        "autoAssignment": false,
+        "assignmentSelector": false
+    },
+    "descriptions": [
+        {
+            "locale": "en_US",
+            "value": "Has a user account on the company database."
+        }
+    ],
+    "identAttr": {},
+    "permits": [],
+    "meta": {
+        "created": "2020-02-18T13:42:49.914-06:00",
+        "location": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d31239035f",
+        "lastModified": "2020-02-18T13:43:32.895-06:00",
+        "version": "W/\"1582055012895\"",
+        "resourceType": "Role"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:Role"
+    ],
+    "name": "User - IT",
+    "displayableName": "User - IT",
+    "id": "7f000001705911b4817059d31239035f"
+}

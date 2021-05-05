@@ -1,0 +1,55 @@
+{
+ "associatedToAll": true,
+ "caseInsensitive": true,
+ "cliName": "behavior",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "Action",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "action",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "Details",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": false,
+   "key": "details",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {}
+ ],
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_behavior",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Behavior",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.5.0"
+}
