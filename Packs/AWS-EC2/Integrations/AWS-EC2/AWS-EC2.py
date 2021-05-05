@@ -2945,22 +2945,19 @@ def release_hosts_command(args, aws_client):
         demisto.results("The host was successfully released.")
 
 
-"""COMMAND BLOCK"""
-from AWSApiModule import *  # noqa: E402
-
-
 def main():
     try:
-        aws_default_region = demisto.params().get('defaultRegion')
-        aws_role_arn = demisto.params().get('roleArn')
-        aws_role_session_name = demisto.params().get('roleSessionName')
-        aws_role_session_duration = demisto.params().get('sessionDuration')
+        params = demisto.params()
+        aws_default_region = params.get('defaultRegion')
+        aws_role_arn = params.get('roleArn')
+        aws_role_session_name = params.get('roleSessionName')
+        aws_role_session_duration = dparamsget('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = demisto.params().get('access_key')
-        aws_secret_access_key = demisto.params().get('secret_key')
-        verify_certificate = not demisto.params().get('insecure', True)
-        timeout = demisto.params().get('timeout')
-        retries = demisto.params().get('retries') or 5
+        aws_access_key_id = params.get('access_key')
+        aws_secret_access_key = params.get('secret_key')
+        verify_certificate = not params.get('insecure', True)
+        timeout = params.get('timeout')
+        retries = params.get('retries') or 5
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
