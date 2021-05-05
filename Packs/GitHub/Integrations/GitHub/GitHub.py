@@ -31,8 +31,9 @@ HEADERS: dict
 BASE_URL = 'https://api.github.com'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
-ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
-                 'Assignees', 'Labels']
+ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
+                 'Closed_by', 'Assignees', 'Labels']
+FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -237,8 +238,7 @@ def issue_format(issue):
         'Created_at': issue.get('created_at'),
         'Updated_at': issue.get('updated_at'),
         'Closed_at': issue.get('closed_at'),
-        'Closed_by': closed_by,
-        'User': issue.get('user').get('login') if issue.get('user') else ''
+        'Closed_by': closed_by
     }
     return form
 
@@ -916,7 +916,7 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
-def get_team_members(organization: str, team_slug: str) -> dict:
+def get_team_members(organization: str, team_slug: str) -> list:
     page = 1
     results = []
     while True:
