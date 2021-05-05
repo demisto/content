@@ -25,6 +25,8 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+def _get_list_without_empty(list_to_change: list) -> list:
+    return [entry for entry in list_to_change if entry]
 
 def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[dict]:
     """ Gets a resolution section from response with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"}]
@@ -158,8 +160,10 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         subdomains = res.get('subdomains')[:entries_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
-        markdown += f'{tableToMarkdown("Resolutions", resolutions)} \n' \
-                    f'{tableToMarkdown("", res.copy().pop("resolutions"))}'
+        markdown += f'{tableToMarkdown("Resolutions", resolutions)} \n'
+        res_without_resolution = res.copy()
+        res_without_resolution.pop("resolutions")
+        markdown += f'{tableToMarkdown("", res_without_resolution)}'
 
         outputs = {
             'hashes': res.get('hashes'),
@@ -190,11 +194,16 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     command_results: List[CommandResults] = []
     api_url = 'antivirus/report/'
     antivirus_list = argToList(args.get('antivirus'))
+    entries_limit = None
+    if not client.extended_data:
+        entries_limit = DEFAULT_RESOLUTION_LIMIT
+
     for antivirus in antivirus_list:
         res = client._http_request(method='GET', url_suffix=api_url, params={'antivirus': antivirus})
 
         # adding value to both outputs and raw results as it is not provided in the API response
         res['value'] = antivirus
+        res['hashes'] = res['hashes'][:entries_limit]
 
         markdown = tableToMarkdown(f"Threat crowd report for antivirus {antivirus}", res)
 
@@ -227,6 +236,9 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
         markdown = f"Threat crowd report for File {file_hash}: \n Reputation: {score_str} \n " \
                    f"{tableToMarkdown('Results', res)}"
+
+        # removes empty entries returned by API
+        res['scans'] = _get_list_without_empty(res.get('scans'))
 
         # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
