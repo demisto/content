@@ -17,25 +17,22 @@ Use the IPinfo.io API to get data about an IP address.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
-successfully execute a command, a DBot message appears in the War Room with the command details.
-
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
-
 ***
-Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat
-Intelligence feeds
+Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
+
 
 #### Base Command
 
 `ip`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address to query. E.g. !ip 1.1.1.1. | Required | 
+
 
 #### Context Output
 
@@ -58,7 +55,6 @@ Intelligence feeds
 | IP.Address | String | The IP address | 
 | IP.Hostname | String | The IP Hostname | 
 | IP.ASN | String | The IP ASN | 
-| IP.ASOwner | String | The IP AS Owner | 
 | IP.Tags | String | Tags related the IP use \(hosting, proxy, tor, vpn\) | 
 | IP.FeedRelatedIndicators.value | String | Names of indicators associated with the IP | 
 | IP.FeedRelatedIndicators.type | String | Types of indicators associated with the IP | 
@@ -73,14 +69,81 @@ Intelligence feeds
 | IP.Geo.Description | String | The IP location as &lt;City, Region, Postal Code, Country&gt; | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | How reliable the score is \(for example, _"C - fairly reliable_"\) | 
+| DBotScore.Reliability | String | How reliable the score is \(for example, "C - fairly reliable"\) | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
-#### Command Example
 
+#### Command Example
 ```!ip ip=1.1.1.1```
+
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "1.1.1.1",
+            "Reliability": "C - Fairly reliable",
+            "Score": 0,
+            "Type": "ip",
+            "Vendor": "IPinfo_v2"
+        },
+        {
+            "Indicator": "1.1.1.1",
+            "Reliability": "C - Fairly reliable",
+            "Score": 1,
+            "Type": "ip",
+            "Vendor": "VirusTotal"
+        }
+    ],
+    "IP": {
+        "ASN": 13335,
+        "Address": "1.1.1.1",
+        "FeedRelatedIndicators": [
+            {
+                "description": "Hostname",
+                "type": "URL",
+                "value": "one.one.one.one"
+            }
+        ],
+        "Geo": {
+            "Country": "AU"
+        },
+        "Hostname": "one.one.one.one",
+        "Relationships": [
+            {
+                "EntityA": "1.1.1.1",
+                "EntityAType": "IP",
+                "EntityB": "one.one.one.one",
+                "EntityBType": "Domain",
+                "Relationship": "resolves-to"
+            }
+        ],
+    },
+    "IPinfo": {
+        "IP": {
+            "ASN": "AS13335",
+            "ASOwner": "Cloudflare, Inc.",
+            "Address": "1.1.1.1",
+            "Geo": {
+                "Country": "US",
+                "Description": "Miami, Florida, 33132, US",
+                "Location": "25.7867,-80.1800"
+            },
+            "Hostname": "one.one.one.one",
+            "Organization": null,
+            "Registrar": null,
+            "Tags": []
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>```
+>{
+>    "lat": 25.7867,
+>    "lng": -80.18
+>}
+>```

@@ -107,9 +107,6 @@ script:
       - contextPath: IP.ASN
         description: The IP ASN
         type: String
-      - contextPath: IP.ASOwner
-        description: The IP AS Owner
-        type: String
       - contextPath: IP.Tags
         description: Tags related the IP use (hosting, proxy, tor, vpn)
         type: String
