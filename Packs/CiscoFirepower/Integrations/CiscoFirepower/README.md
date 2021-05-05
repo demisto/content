@@ -4738,7 +4738,7 @@ Updates the ID of a group of url objects.
 | url_objects_id_list | A comma-separated list of object IDs to add the url. | Optional | 
 | url_list | A comma-separated list of url to add the group. | Optional | 
 | description | The new description for the object. | Optional | 
-| overridable | Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
+| overridable | Boolean indicating whether object values can be overridden. Default is false. | Optional | 
 | name | The group name. | Required | 
 
 
