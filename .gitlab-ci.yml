@@ -71,12 +71,8 @@ default:
 
 
 variables:
-  CONTENT_VERSION: "21.3.2"
-  SERVER_VERSION: "6.0.0"
   GIT_SHA1: "6fee942518c6b2275a6cb61c1824574171cf58f9" # guardrails-disable-line disable-secrets-detection
   DONT_CACHE_LAST_RESPONSE: "true"
-  GCS_MARKET_BUCKET: "marketplace-dist-dev"
-  SLACK_CHANNEL: "upload-flow-testing"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
   BASH_ENV: "/builds/xsoar/content/artifacts/bash_env"
@@ -87,7 +83,7 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
 # Remove this when branches will sync with github
-  SKIP_PRIVATE_BUILD: "yes"
+  SKIP_PRIVATE_BUILD: "true"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
 
 stages:
