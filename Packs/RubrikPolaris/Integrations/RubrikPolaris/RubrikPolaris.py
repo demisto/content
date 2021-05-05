@@ -230,7 +230,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
             process_incident = {}  # mypy: ignore
             process_incident["incidentClassification"] = "RubrikRadar"
             process_incident["message"] = []  # type: ignore
-            process_incident["severity"] = 0
+            process_incident["severity"] = 0  # type: ignore
 
             for key, value in event["node"].items():
                 # Simplify the message data
@@ -273,7 +273,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 else:
                     critical_mapping = demisto.params().get('radar_critical_severity_mapping')
 
-                process_incident["severity"] = convert_to_demisto_severity(critical_mapping)
+                process_incident["severity"] = convert_to_demisto_severity(critical_mapping)  # type: ignore
 
             elif event["node"]["severity"] == "Warning":
 
@@ -282,16 +282,16 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 else:
                     warning_mapping = demisto.params().get('radar_warning_severity_mapping')
 
-                process_incident["severity"] = convert_to_demisto_severity(warning_mapping)
+                process_incident["severity"] = convert_to_demisto_severity(warning_mapping)  # type: ignore
             else:
-                process_incident["severity"] = IncidentSeverity.LOW
+                process_incident["severity"] = IncidentSeverity.LOW  # type: ignore
 
             # Check to see if Sonar is enabled and assign context label
 
             if radar_events["data"]["featureFlag"]["variant"] == "true":
-                process_incident["data_classification_enabled"] = True
+                process_incident["data_classification_enabled"] = True  # type: ignore
             else:
-                process_incident["data_classification_enabled"] = False
+                process_incident["data_classification_enabled"] = False  # type: ignore
 
             incidents.append({
                 "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
