@@ -31,7 +31,7 @@ Check IP reputation (when information is available, returns a JSON with details)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to query. E.g. !ip 1.1.1.1. | Required | 
+| ip | IP address to query (e.g. 1.1.1.1) | Required | 
 
 
 #### Context Output

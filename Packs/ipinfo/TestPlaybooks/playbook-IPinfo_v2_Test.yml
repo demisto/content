@@ -1,5 +1,5 @@
 id: IPInfo_v2Test
-version: 5
+version: -1
 fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: IPInfo_v2Test
