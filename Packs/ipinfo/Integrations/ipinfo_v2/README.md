@@ -141,9 +141,8 @@ Check IP reputation (when information is available, returns a JSON with details)
 
 #### Human Readable Output
 
->```
->{
->    "lat": 25.7867,
->    "lng": -80.18
->}
->```
+### IPinfo results for 1.1.1.1
+
+|anycast|city|country|hostname|ip|loc|org|postal|readme|region|timezone|
+|---|---|---|---|---|---|---|---|---|---|---|
+| true | Miami | US | one.one.one.one | 1.1.1.1 | 25.7867,-80.1800 | AS13335 Cloudflare, Inc. | 33132 | https
