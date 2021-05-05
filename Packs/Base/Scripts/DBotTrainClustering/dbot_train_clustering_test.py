@@ -91,7 +91,7 @@ def test_main_regular(mocker):
     assert (all(item in cluster_0.items() for item in sub_dict_0.items())
             and all(item in cluster_1.items() for item in sub_dict_1.items())) \
            or (all(item in cluster_0.items() for item in sub_dict_1.items())
-            and all(item in cluster_1.items() for item in sub_dict_0.items()))
+               and all(item in cluster_1.items() for item in sub_dict_0.items()))
 
 
 # Test if wrong cluster name
@@ -136,10 +136,10 @@ def test_empty_cluster_name(mocker):
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json['data'][0]
     cluster_1 = output_json['data'][1]
-    assert (all(item in cluster_0.items() for item in sub_dict_0.items())
-            and all(item in cluster_1.items() for item in sub_dict_1.items())) or \
-           (all(item in cluster_0.items() for item in sub_dict_1.items()) and \
-            all(item in cluster_1.items() for item in sub_dict_0.items()))
+    assert (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(
+        item in cluster_1.items() for item in sub_dict_1.items())) or (
+                    all(item in cluster_0.items() for item in sub_dict_1.items()) and all(
+                        item in cluster_1.items() for item in sub_dict_0.items()))
 
 
 # Test if incorrect all incorrrect field name
@@ -192,6 +192,3 @@ def test_main_incident_nested(mocker):
     assert not model
     assert not output_clustering_json
     assert MESSAGE_CLUSTERING_NOT_VALID in msg
-
-
-

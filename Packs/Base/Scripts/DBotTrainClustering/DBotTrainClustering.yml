@@ -1,13 +1,13 @@
 args:
 - default: false
-  description: Comma-separated list of incident fields to take into account when trainin
+  description: Comma-separated list of incident fields to take into account when training
     the clustering.
   isArray: false
   name: fieldsForClustering
   required: false
   secret: false
 - default: false
-  description: Incident field which represent the family name for each cluster formed.
+  description: Incident field which represent the family name for each cluster created.
   isArray: true
   name: fieldForClusterName
   required: false
@@ -39,7 +39,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Argument for the query. This helps reduce the query size.
+  description: Argument for the query.
   isArray: false
   name: query
   required: false
@@ -47,7 +47,8 @@ args:
 - default: false
   defaultValue: '100'
   description: Maximun number of cluster to show in the final result. It will select
-    the top maxNumberOfCluster if fieldForClusterName argument is given
+    the top maxNumberOfCluster. Will be effective only if fieldForClusterName argument
+    is not empty.
   isArray: false
   name: maxNumberOfCluster
   required: false
@@ -79,7 +80,7 @@ args:
 - default: false
   defaultValue: '0.4'
   description: We will keep samples in the cluster where the family ratio is above
-    this number.Will be effective only if fieldForClusterName is given.
+    this number . Will be effective only if fieldForClusterName is given.
   isArray: false
   name: minHomogeneityCluster
   required: false
@@ -124,7 +125,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Whether to re-train the model in any cases
+  description: Whether to re-train the model in any cases. Default value if False
   isArray: false
   name: forceRetrain
   predefined:
@@ -134,14 +135,15 @@ args:
   secret: false
 - default: false
   defaultValue: '24'
-  description: Period of time (in hours) before retraining the model
+  description: Period of time (in hours) before retraining the model. Default value
+    if 24 hours
   isArray: false
   name: modelExpiration
   predefined:
   - ''
   required: false
   secret: false
-comment: Train clustering model on incidents.
+comment: Train clustering model on any incidents type.
 commonfields:
   id: 3621593a-3641-4b26-90dc-a660f4b4e68c
   version: -1
