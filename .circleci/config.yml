@@ -1041,6 +1041,47 @@ jobs:
       - *comment_on_contrib_pr
       - *destroy_instances
       - *store_artifacts
+  Performance Server Master:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - *attach_workspace
+      - *add_ssh_keys
+      - *prepare_environment
+      - set-instance-role-env-variable:
+          instance_role: Performance Server Master
+      - *check_if_instance_was_created
+      - start-tunnel
+      - *wait_until_server_ready
+      - *install_content_and_configure_integrations_on_server
+      - run:
+          name: Run Tests - Demisto Master
+          shell: /bin/bash
+          when: always
+          no_output_timeout: 5h
+          command: |
+            if [ -z $INSTANCE_WAS_CREATED ];
+              then
+                echo "Skipping - instance was not created"
+                exit 0
+            fi
+            ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+            export RETVAL=$?
+            if [ -f ./Tests/failed_tests.txt ];
+              then
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+            fi
+            exit $RETVAL
+      - run:
+          name: Slack Notifier
+          shell: /bin/bash
+          command: |
+            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
+          when: always
+      - *comment_on_contrib_pr
+      - *destroy_instances
+      - *store_artifacts
 
   Force Upload Packs To Marketplace:
     <<: *container_config

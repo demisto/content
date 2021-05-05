@@ -3279,6 +3279,12 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": [
+                "EDL",
+                "Create-Mock-Feed"
+            ]
         }
     ],
     "skipped_tests": {
