@@ -1,13 +1,14 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
+
 def main() -> None:
 
     ORANGE_HTML_STYLE = "color:#FF9000;font-size:250%;>"
     GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
     RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
-    
+
     try:
         sonar_total_hits = demisto.context()["Rubrik"]["Sonar"]["totalHits"]
 

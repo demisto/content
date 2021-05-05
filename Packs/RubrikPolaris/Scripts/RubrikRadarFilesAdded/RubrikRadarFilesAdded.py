@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 
+
 def main() -> None:
 
     ORANGE_HTML_STYLE = "color:#FF9000;font-size:275%;>"
@@ -11,7 +12,7 @@ def main() -> None:
     try:
         radar_files_added = demisto.executeCommand("Print", {"value": "${incident.labels.radar_files_added}"})
         radar_files_added = radar_files_added[0]["Contents"]
-     
+
         if not radar_files_added:
             html = f"<div style={DIV_HTML_STYLE}><h1 style={GREEN_HTML_STYLE}{str(radar_files_added)}</h1></div>"
         else:

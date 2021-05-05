@@ -237,7 +237,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 if key == "activityConnection":
                     for m in value["nodes"]:
 
-                        #Convert time to friendly display format
+                        # Convert time to friendly display format
                         display_time = datetime.strptime(m["time"], "%Y-%m-%dT%H:%M:%S.%fZ")
                         display_time = display_time.strftime('%b %d, %Y at %I:%M:%S %p')
 
@@ -248,15 +248,17 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                             "time": display_time
                         })
 
-                        #Check if message includes the File Change attributes
-                        file_changes_match = re.search(r'File Change: ([0-9]+) Added, ([0-9]+) Modified, ([0-9]+) Removed', m["message"])
-                        if file_changes_match != None:
+                        # Check if message includes the File Change attributes
+                        file_changes_match = re.search(
+                            r'File Change: ([0-9]+) Added, ([0-9]+) Modified, ([0-9]+) Removed', m["message"]
+                            )
+                        if file_changes_match is not None:
                             try:
                                 process_incident["radar_files_added"] = file_changes_match.group(1)
                                 process_incident["radar_files_modified"] = file_changes_match.group(2)
                                 process_incident["radar_files_deleted"] = file_changes_match.group(3)
 
-                            except:
+                            except KeyError:
                                 demisto.info("Error Parsing Radar Anomaly File Change attributes")
 
                 else:
@@ -284,7 +286,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
             else:
                 process_incident["severity"] = IncidentSeverity.LOW
 
-            #Check to see if Sonar is enabled and assign context label
+            # Check to see if Sonar is enabled and assign context label
 
             if radar_events["data"]["featureFlag"]["variant"] == "true":
                 process_incident["data_classification_enabled"] = True
@@ -514,8 +516,6 @@ def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) ->
                         "using the incident context.",
                 error=e)
 
-    cluster_details = {}
-
     operation_name_object_list = f"{OPERATION_NAME_PREFIX}CDMClusterLocationQuery"
 
     cdm_location_query = """query %s($filter: ClusterFilterInput) {
@@ -528,7 +528,6 @@ def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) ->
                                 }
                             }
                     """ % operation_name_object_list
-
 
     cdm_location_variable = {
         "filter": {
@@ -545,18 +544,19 @@ def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) ->
         context["location"] = cdm_location_detail["data"]["clusterConnection"]["nodes"][0]["geoLocation"]["address"]
 
     except KeyError:
-        #Return blank context if key error
+        # Return blank context if key error
         return CommandResults(
-        outputs_prefix='Rubrik.CDM.Cluster',
-        outputs_key_field='Location',
-        outputs={}
-    )   
+            outputs_prefix='Rubrik.CDM.Cluster',
+            outputs_key_field='Location',
+            outputs={}
+        )
 
     return CommandResults(
         outputs_prefix='Rubrik.CDM.Cluster',
         outputs_key_field='Location',
         outputs=context
     )
+
 
 def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident().get("CustomFields")
@@ -576,8 +576,6 @@ def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, 
                         "using the incident context.",
                 error=e)
 
-    cluster_details = {}
-
     operation_name_object_list = f"{OPERATION_NAME_PREFIX}CDMClusterConnectionStateQuery"
 
     cdm_connection_query = """query %s($filter: ClusterFilterInput) {
@@ -591,15 +589,13 @@ def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, 
                             }
                     """ % operation_name_object_list
 
-
     cdm_connection_variable = {
         "filter": {
-                "id": [clusterId]
-            }
+            "id": [clusterId]
+        }
     }
 
-    cdm_connection_detail = client.gql_query(operation_name_object_list, cdm_connection_query, cdm_connection_variable,
-                                           False)
+    cdm_connection_detail = client.gql_query(operation_name_object_list, cdm_connection_query, cdm_connection_variable, False)
 
     context = {}
 
@@ -607,18 +603,19 @@ def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, 
         context["ConnectionState"] = cdm_connection_detail["data"]["clusterConnection"]["nodes"][0]["state"]["connectedState"]
 
     except KeyError:
-        #Return blank context if key error
+        # Return blank context if key error
         return CommandResults(
-        outputs_prefix='Rubrik.CDM.Cluster',
-        outputs_key_field='ConnectionState',
-        outputs={}
-    )   
+            outputs_prefix='Rubrik.CDM.Cluster',
+            outputs_key_field='ConnectionState',
+            outputs={}
+        )
 
     return CommandResults(
         outputs_prefix='Rubrik.CDM.Cluster',
         outputs_key_field='ConnectionState',
         outputs=context
     )
+
 
 def convert_to_demisto_severity(severity='XSOAR LOW') -> int:
     """Maps the severity from the Rubrik Radar event to the user specified XSOAR severity level."""
@@ -629,7 +626,6 @@ def convert_to_demisto_severity(severity='XSOAR LOW') -> int:
         'XSOAR HIGH': IncidentSeverity.HIGH,
         'XSOAR CRITICAL': IncidentSeverity.CRITICAL
     }[severity]
-
 
 
 def main() -> None:
