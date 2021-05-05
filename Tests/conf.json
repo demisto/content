@@ -3274,6 +3274,19 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Tidy - Test",
+            "integrations": [
+                "AWS - EC2",
+                "Demisto REST API",
+                "Tidy"
+            ],
+            "instance_names": [
+                "aws_alloacte_host"
+            ],
+            "fromversion": "6.0.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
