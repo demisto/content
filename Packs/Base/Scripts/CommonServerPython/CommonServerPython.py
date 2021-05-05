@@ -7410,7 +7410,7 @@ class IndicatorsSearcher:
     """
     def __init__(self, page=0, filter_fields=None):
         # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        self._can_use_search_after = is_demisto_version_ge('6.1.0', build_number='1095800')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
