@@ -109,7 +109,7 @@ def test_fetch_incidents(mocker, requests_mock):
     mock_response = [{
         "name": f'Rubrik Radar Anomaly - {mock_incident["objectName"]}',
         "occurred": mock_incident["lastUpdated"],
-        "severity": convert_to_demisto_severity(mock_incident["severity"]),
+        "severity": 1,
         "rawJSON": json.dumps(mock_incident)
     }]
 
