@@ -1,4 +1,5 @@
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *
 import json
 
 def main() -> None:
@@ -7,9 +8,6 @@ def main() -> None:
     GREEN_HTML_STYLE = "color:#00CD33;font-size:275%;>"
     RED_HTML_STYLE = "color:#FF1744;font-size:275%;>"
     DIV_HTML_STYLE = "display:block;text-align:center;"
-
-    formats = {}
-    entryTypes = {}
 
     try:
         radar_files_modified = demisto.executeCommand("Print", {"value": "${incident.labels.radar_files_modified}"})

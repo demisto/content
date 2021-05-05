@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
+from CommonServerPython import *
 import json
+
 
 def main() -> None:
 
@@ -8,9 +10,6 @@ def main() -> None:
     RED_HTML_STYLE = "color:#FF1744;font-size:250%;"
     DIV_HTML_STYLE = "display:block;text-align:center;"
 
-    formats = {}
-    entryTypes = {}
-    
     try:
         cdm_connection_state = demisto.executeCommand("Print", {"value": "${Rubrik.CDM.Cluster.ConnectionState}"})
         cdm_connection_state = cdm_connection_state[0]["Contents"]
