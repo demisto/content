@@ -4789,7 +4789,7 @@ class ScheduledCommand:
     :return: None
     :rtype: ``None``
     """
-    VERSION_MISMATCH_ERROR = 'This command is not supported for your server version. Please update your server ' \
+    VERSION_MISMATCH_ERROR = 'This command is not supported by this XSOAR server version. Please update your server ' \
                              'version to 6.2.0 or later.'
 
     def __init__(
