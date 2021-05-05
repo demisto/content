@@ -169,8 +169,8 @@ outputs:
 - contextPath: Relationships.ID
   description: The ID of the relationship.
   type: string
-- contextPath: Relationships.Relatability
-  description: The Relatability of the relationship.
+- contextPath: Relationships.Reliability
+  description: The reliability of the relationship.
   type: string
 - contextPath: Relationships.Brand
   description: The Brand of the relationship.

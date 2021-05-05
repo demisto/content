@@ -36,7 +36,7 @@ def to_context(relationships: list, verbose: bool) -> List[dict]:
 
             sources = relationship.get('sources')
             if sources:
-                relationships_context['Relatability'] = sources[0].get('reliability', '')
+                relationships_context['Reliability'] = sources[0].get('reliability', '')
                 relationships_context['Brand'] = sources[0].get('brand', '')
 
             custom_fields = relationship.get('CustomFields', {})
