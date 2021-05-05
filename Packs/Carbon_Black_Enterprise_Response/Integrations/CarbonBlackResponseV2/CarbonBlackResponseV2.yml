@@ -1,4 +1,4 @@
-category: Utilities
+category: Endpoint
 commonfields:
   id: BaseIntegration
   version: -1
@@ -21,10 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
-display: Starter Base Integration - Name the integration as it will appear in the
-  XSOAR UI
+description: Query and response with Carbon Black endpoint detection and response.
+display: Carbon Black Response
 name: BaseIntegration
 script:
   commands:
@@ -654,7 +652,7 @@ script:
     name: endpoint
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
