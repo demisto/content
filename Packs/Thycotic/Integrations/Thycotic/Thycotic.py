@@ -206,44 +206,11 @@ class Client(BaseClient):
     def userDelete(self, id: str) -> str:
         return self._http_request("DELETE", url_suffix="/api/v1/users/" + str(id))
 
-    def getCredentials(self, key: str) -> dict:
-        secretID = self.searchSecretIdByName(key)[0]
-        object = {}
-        object['name'] = key
-        object['user'] = self.getUsernameById(secretID)
-        object['password'] = self.getPasswordById(secretID)
-        return object
-
 
 def test_module(client) -> str:
-    # Test for exist params for command fetch-credential
-    if demisto.params().get('isFetchCredentials') and len(demisto.params().get('credentialobjects')) == 0:
-        return "Failed parameter on list secret name."
-
     # Test for get authority
     if client._token == '':
         return "Failed to get authorization token. Check you credential and access to Secret Server.'"
-
-    # Checking for secret
-    paramsTest: dict = demisto.params()
-    credentials_str = paramsTest.get('credentialobjects')
-    credentials_names_from_configuration = argToList(credentials_str)
-
-    for elementCredential in credentials_names_from_configuration:
-        idElement = client.searchSecretIdByName(elementCredential)
-        if len(idElement) == 0:
-            return "Secret " + str(elementCredential) + " not found"
-
-    # Test for duplicate username
-    credentialsTest = {}
-    for credentials_name in credentials_names_from_configuration:
-        object_record = client.getCredentials(credentials_name)
-        userTest = object_record['user']
-        nameTest = object_record['name']
-        if userTest in credentialsTest:
-            return "Error: duplicate username are used for command fetch-credentials, secret name - " + nameTest
-        else:
-            credentialsTest[userTest] = nameTest
 
     return "ok"
 
@@ -526,16 +493,6 @@ def main():
         elif demisto.command() == 'test-module':
             result = test_module(client)
             demisto.results(result)
-
-        elif demisto.command() == "fetch-credentials":
-            params: dict = demisto.params()
-            credentials_str = params.get('credentialobjects')
-            credentials_names_from_configuration = argToList(credentials_str)
-            credentials = []
-            for credentials_name in credentials_names_from_configuration:
-                credentials.append(client.getCredentials(credentials_name))
-
-            demisto.credentials(credentials)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

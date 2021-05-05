@@ -20,18 +20,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Turns on synchronization of secrets with XSOAR credential store.
-  hidden: false
-  name: isFetchCredentials
-  required: false
-  type: 8
-- display: A list secret names to retrieve and sync (separated by commas). Note the
-    sync, will function only if the synchronization check box is selected.
-  hidden: false
-  name: credentialobjects
-  required: false
-  type: 12
 description: Secret Server is the only fully featured Privileged Account Management
   (PAM) solution available both on premise and in the cloud. It empowers security
   and IT ops teams to secure and manage all types of privileged accounts and offers
@@ -1103,6 +1091,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

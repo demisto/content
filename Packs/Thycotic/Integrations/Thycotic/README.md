@@ -220,7 +220,7 @@ Check Out a secret
 
 ### thycotic-secret-checkin
 ***
-Check in a secret
+Check In a secret
 
 
 #### Base Command
@@ -230,18 +230,18 @@ Check in a secret
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| secret_id | ID secret for command Check In | Required | 
+| secret_id | Secret ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Thycotic.Secret.Checkin	 | String | Object Secret summary | 
+| Thycotic.Secret.Checkin | String | Secret object | 
 
 
 #### Command Example
-```!thycotic-secret-checkin secret_id=2```
+```!thycotic-secret-checkin secret_id=13```
 
 #### Context Example
 ```json
@@ -253,20 +253,20 @@ Check in a secret
                 "autoChangeEnabled": false,
                 "checkOutEnabled": true,
                 "checkedOut": false,
-                "createDate": "2020-11-02T14:58:29.643",
+                "createDate": "2020-12-15T09:13:49.487",
                 "daysUntilExpiration": null,
                 "doubleLockEnabled": false,
                 "extendedFields": null,
                 "folderId": 3,
                 "hidePassword": false,
-                "id": 2,
+                "id": 13,
                 "inheritsPermissions": true,
                 "isOutOfSync": false,
                 "isRestricted": true,
                 "lastAccessed": null,
                 "lastHeartBeatStatus": "Pending",
                 "lastPasswordChangeAttempt": "0001-01-01T00:00:00",
-                "name": "test-w2",
+                "name": "secretT",
                 "outOfSyncReason": "",
                 "requiresApproval": false,
                 "requiresComment": false,
@@ -282,8 +282,8 @@ Check in a secret
 
 #### Human Readable Output
 
->Check In for secret ID 2.
->Status CheckOut for secret - False
+>Check In for secret ID=13. CheckOut = False
+
 
 ### thycotic-folder-create
 ***
@@ -385,37 +385,19 @@ Search folder by name folder
 >List ID:
 >5
 
-### thycotic-folder-delete
-***
-Delete a folder by ID
-
-
-#### Base Command
-
-`thycotic-folder-delete`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| folder_id | Folder ID | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Thycotic.Folder.Id | String | Deleted folder by ID | 
-
-
 #### Command Example
-```!thycotic-folder-delete folder_id="4"```
+```!thycotic-folder-delete folder_id="18"```
 
 #### Context Example
 ```json
 {
     "Thycotic": {
         "Folder": {
-            "Id": 4
+            "Delete": {
+                "id": 18,
+                "objectType": "Folder",
+                "responseCodes": []
+            }
         }
     }
 }
@@ -423,7 +405,7 @@ Delete a folder by ID
 
 #### Human Readable Output
 
->Delete folder by ID 4
+>Deleted folder ID: 18
 
 ### thycotic-secret-get
 ***
