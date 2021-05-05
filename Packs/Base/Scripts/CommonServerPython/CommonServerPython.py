@@ -7415,7 +7415,9 @@ class IndicatorsSearcher:
     """
     def __init__(self, page=0, filter_fields=None):
         # searchAfter is available in searchIndicators from version 6.1.0
-        self._can_use_search_after = is_demisto_version_ge('6.1.0', build_number='1095800')
+        self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        # populateFields merged in https://github.com/demisto/server/pull/18398
+        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
@@ -7445,8 +7447,16 @@ class IndicatorsSearcher:
         :rtype: ``dict``
         """
         if self._can_use_search_after:
-            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
-                                           searchAfter=self._search_after_param, populateFields=self._filter_fields)
+            search_iocs_params = assign_params(
+                fromDate=from_date,
+                toDate=to_date,
+                query=query,
+                size=size,
+                value=value,
+                searchAfter=self._search_after_param,
+                populateFields= self._filter_fields if self._can_use_filter_fields else None
+            )
+            res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]
 
             if res[self._search_after_title] is None:
