@@ -3287,6 +3287,10 @@
             ],
             "fromversion": "6.0.0",
             "nightly": true
+        },
+        {
+            "integrations": "HPEArubaClearpass",
+            "playbookID": "HPEArubaClearpass_TestPlaybook"
         }
     ],
     "skipped_tests": {
