@@ -1,0 +1,847 @@
+category: Email Gateway
+commonfields:
+  id: "trustwave secure email gateway"
+  version: -1
+configuration:
+- additionalinfo: "Hostname or IP (localhost or 127.0.0.1)"
+  defaultvalue: localhost
+  display: "Hostname or IP"
+  name: host
+  required: true
+- additionalinfo: Used for retrieving token for the commands
+  defaultvalue: '19007'
+  display: SEG Configuration Service Port
+  name: config_port
+  required: true
+- additionalinfo: Used for accessing the API console
+  defaultvalue: '19006'
+  display: SEG API Port
+  name: api_port
+  required: true
+- display: User Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "Trustwave SEG is a secure messaging solution that protects businesses\
+  \ and users from email-borne threats, including phishing, blended threats, and spam.Trustwave\
+  \ Secure Email Gateway also delivers improved policy enforcement and data leakage\
+  \ prevention."
+display: "Trustwave Secure Email Gateway"
+name: "trustwave secure email gateway"
+script:
+  commands:
+  - arguments: []
+    deprecated: false
+    description: Get Trustwave version information
+    execution: false
+    name: trustwave-seg-get-version
+    outputs:
+    - contextPath: TrustwaveSEG.Version.configVersion
+      description: The configVersion of the Version
+      type: Number
+    - contextPath: TrustwaveSEG.Version.productVersion
+      description: The productVersion of the Version
+      type: String
+    - contextPath: TrustwaveSEG.Version.rpcInterfaceVersion
+      description: rpcInterfaceVersion of the Version
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Return list of automatic config backups
+    execution: false
+    name: trustwave-seg-automatic-config-backup-list
+    outputs:
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.fileSize
+      description: The fileSize of the AutomaticBackupConfig
+      type: Number
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.filename
+      description: The filename of the AutomaticBackupConfig
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.backupTime
+      description: The backupTime of the AutomaticBackupConfig
+      type: Number
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.backupTimeStr
+      description: The backupTimeStr of the AutomaticBackupConfig
+      type: Date
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.backupType
+      description: The backupType of the AutomaticBackupConfig
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.backupUser
+      description: The backupUser of the AutomaticBackupConfig
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.commitDescription
+      description: The commitDescription of the AutomaticBackupConfig
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.commitSetId
+      description: The commitSetId of the AutomaticBackupConfig
+      type: Number
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.commitUser
+      description: The commitUser of the AutomaticBackupConfig
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.configVersion
+      description: The configVersion of the AutomaticBackupConfig
+      type: Number
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.containsDkimKeys
+      description: The containsDkimKeys of the AutomaticBackupConfig
+      type: Boolean
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.info.productVersion
+      description: The product version of the AutomaticBackupConfig
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupConfig.lastModified
+      description: The lastModified of the AutomaticBackupConfig
+      type: Number
+  - arguments:
+    - description: "The name of the backup to restore (e.g: MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10)"
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '30'
+      description: The timeout for the request in seconds. This request might take
+        a while. If the request fails due to a connectivity error, try to add more
+        seconds to the timeout.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: false
+      description: "Choose if DKIM (DomainKeys Identified Mail) should be used"
+      isArray: false
+      name: include_dkim
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - description: If include_dkim equals to true - The DKIM password for the action
+      isArray: false
+      name: dkim_password
+      required: false
+      secret: true
+    deprecated: false
+    description: Restore a specific automatic config backup
+    execution: false
+    name: trustwave-seg-automatic-config-backup-restore
+    outputs:
+    - contextPath: TrustwaveSEG.AutomaticBackupRestore.errors
+      description: The errors of the AutomaticBackupRestore
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupRestore.reason
+      description: The reason for the AutomaticBackupRestore
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupRestore.warnings
+      description: The warnings of the AutomaticBackupRestore
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '30'
+      description: The timeout for the request in seconds. This request might take
+        a while. If the request fails due to a connectivity error, try to add more
+        seconds to the timeout.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: false
+      description: "Choose if DKIM (DomainKeys Identified Mail) should be used"
+      isArray: false
+      name: include_dkim
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - description: If include_dkim equals true - Please specify the DKIM password
+        (defaults to configured password)
+      isArray: false
+      name: dkim_password
+      required: false
+      secret: true
+    deprecated: false
+    description: Run automatic backup now
+    execution: false
+    name: trustwave-seg-automatic-config-backup-run
+    outputs:
+    - contextPath: TrustwaveSEG.AutomaticBackupRun.backupName
+      description: The backup name of the AutomaticBackupRun
+      type: String
+    - contextPath: TrustwaveSEG.AutomaticBackupRun.reason
+      description: The reason of the AutomaticBackupRun
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: false
+      description: Return only active alarms
+      isArray: false
+      name: active_only
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of current alerts
+    execution: false
+    name: trustwave-seg-list-alerts
+    outputs:
+    - contextPath: TrustwaveSEG.Alert.active
+      description: The activity of the Alert
+      type: Boolean
+    - contextPath: TrustwaveSEG.Alert.description
+      description: The description of the Alert
+      type: String
+    - contextPath: TrustwaveSEG.Alert.node
+      description: The node of the Alert
+      type: Number
+    - contextPath: TrustwaveSEG.Alert.source
+      description: The source of the Alert
+      type: String
+    - contextPath: TrustwaveSEG.Alert.triggered
+      description: The triggered of the Alert
+      type: Number
+    - contextPath: TrustwaveSEG.Alert.type
+      description: The type of the Alert
+      type: Number
+  - arguments:
+    - default: false
+      description: "An optional time range. i.e: 3 months, 1 week, 1 day ago, etc."
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    - default: false
+      description: "Start time. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week,\
+        \ 1 day ago, etc.Given only the start_time, end_time will be set to the current\
+        \ time."
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "End time. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1\
+        \ week, 1 day ago, etc."
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Get Trustwave SEG statistics. Must provide start time or time range.
+    execution: false
+    name: trustwave-seg-statistics
+    outputs:
+    - contextPath: TrustwaveSEG.Statistics.maliciousUrls
+      description: The malicious URLs of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.msgsBlendedThreats
+      description: The messages Blended Threats of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.msgsIn
+      description: The messages in of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.msgsInternal
+      description: The messages Internal of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.msgsOut
+      description: The messages Out of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.msgsSpam
+      description: The message spam of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.msgsVirus
+      description: The messages Virus of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.numQuarantined
+      description: The number of quarantined of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.numQuarantinesPerMsg
+      description: The number of quarantines per message of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.pFolders
+      description: The pFolders of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.pThreats
+      description: The pThreats of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.safeClicks
+      description: The safe clicks of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.unsafeClicks
+      description: The unsafe clicks of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.unsafeUrls
+      description: The unsafe URLs of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.urlsFound
+      description: The URLs found of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.urlsRewritten
+      description: The urlsRewritten of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.virusDetected
+      description: The virus detected of the Statistics
+      type: Number
+    - contextPath: TrustwaveSEG.Statistics.virusScanned
+      description: The virus-scanned Statistics
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Get a list of servers
+    execution: false
+    name: trustwave-seg-list-servers
+    outputs:
+    - contextPath: TrustwaveSEG.Server.configCommitSetId
+      description: The config commit set ID of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.configTimeStamp
+      description: The config timestamp of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.disconnectedReason
+      description: Disconnected reason of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.isActive
+      description: Activation status of the server
+      type: Boolean
+    - contextPath: TrustwaveSEG.Server.isConfigDeferred
+      description: The isConfigDeferred of the Server
+      type: Boolean
+    - contextPath: TrustwaveSEG.Server.lastConnected
+      description: Last connected time of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.osVersion
+      description: The OS version of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.description
+      description: The description of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.lastError
+      description: Last error of the Server
+      type: Unknown
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.name
+      description: The name of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.serviceId
+      description: The serviceId of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.state
+      description: The state of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.productVersion
+      description: The product version of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.serverDescription
+      description: The description of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.serverId
+      description: The ID of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.serverLocation
+      description: The location of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.serverName
+      description: The name of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.timeZoneName
+      description: Timezone name of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.timeZoneOffset
+      description: Timezone offset of the Server
+      type: Number
+  - arguments:
+    - description: The ID of the server to retrieve its information
+      isArray: false
+      name: server_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get server details
+    execution: false
+    name: trustwave-seg-get-server
+    outputs:
+    - contextPath: TrustwaveSEG.Server.configCommitSetId
+      description: The config commit set ID of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.configTimeStamp
+      description: The config timestamp of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.disconnectedReason
+      description: Disconnected reason of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.isActive
+      description: Activation status of the server
+      type: Boolean
+    - contextPath: TrustwaveSEG.Server.isConfigDeferred
+      description: The isConfigDeferred of the Server
+      type: Boolean
+    - contextPath: TrustwaveSEG.Server.lastConnected
+      description: Last connected time of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.osVersion
+      description: The OS version of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.description
+      description: The description of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.lastError
+      description: Last error of the Server
+      type: Unknown
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.name
+      description: The name of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.serviceId
+      description: The serviceId of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.pServiceStatus.state
+      description: The state of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.productVersion
+      description: The product version of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.serverDescription
+      description: The description of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.serverId
+      description: The ID of the Server
+      type: Number
+    - contextPath: TrustwaveSEG.Server.serverLocation
+      description: The location of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.serverName
+      description: The name of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.timeZoneName
+      description: Timezone name of the Server
+      type: String
+    - contextPath: TrustwaveSEG.Server.timeZoneOffset
+      description: Timezone offset of the Server
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Get a list of classifications
+    execution: false
+    name: trustwave-seg-list-classifications
+    outputs:
+    - contextPath: TrustwaveSEG.Classification.code
+      description: The code of the Classification
+      type: Number
+    - contextPath: TrustwaveSEG.Classification.id
+      description: The ID of the Classification
+      type: Number
+    - contextPath: TrustwaveSEG.Classification.name
+      description: The name of the Classification
+      type: String
+    - contextPath: TrustwaveSEG.Classification.type
+      description: The type of the Classification
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Get a list of folders
+    execution: false
+    name: trustwave-seg-list-quarantine-folders
+    outputs:
+    - contextPath: TrustwaveSEG.Folder.description
+      description: The description of the Folder
+      type: String
+    - contextPath: TrustwaveSEG.Folder.folderId
+      description: The folder ID of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.folderType
+      description: The folder type of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.iconIndex
+      description: The iconIndex of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.isDeleted
+      description: The isDeleted of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isFingerprintingEnabled
+      description: The isFingerprintingEnabled of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isPassThru
+      description: The isPassThru of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isPublishedInbound
+      description: The isPublishedInbound of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isPublishedOutbound
+      description: The isPublishedOutbound of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isReadOnly
+      description: Is the folder read-only
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.name
+      description: The name of the Folder
+      type: String
+    - contextPath: TrustwaveSEG.Folder.numFiles
+      description: The numFiles of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.parentId
+      description: The parentId of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.path
+      description: The path of the Folder
+      type: String
+    - contextPath: TrustwaveSEG.Folder.retention
+      description: The retention of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.securityDescription
+      description: The security description of the Folder
+      type: String
+  - arguments: []
+    deprecated: false
+    description: Get a list of folders with current day info
+    execution: false
+    name: trustwave-seg-list-quarantine-folders-with-day-info
+    outputs:
+    - contextPath: TrustwaveSEG.Folder.dayItems
+      description: The items of the day for the Folder
+      type: Unknown
+    - contextPath: TrustwaveSEG.Folder.description
+      description: The description of the Folder
+      type: String
+    - contextPath: TrustwaveSEG.Folder.folderId
+      description: The folder ID of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.folderType
+      description: The folder type of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.iconIndex
+      description: The iconIndex of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.isDeleted
+      description: The isDeleted of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isFingerprintingEnabled
+      description: The isFingerprintingEnabled of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isPassThru
+      description: The isPassThru of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isPublishedInbound
+      description: The isPublishedInbound of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isPublishedOutbound
+      description: The isPublishedOutbound of the Folder
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.isReadOnly
+      description: Is the folder read-only
+      type: Boolean
+    - contextPath: TrustwaveSEG.Folder.name
+      description: The name of the Folder
+      type: String
+    - contextPath: TrustwaveSEG.Folder.numFiles
+      description: The numFiles of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.parentId
+      description: The parentId of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.path
+      description: The path of the Folder
+      type: String
+    - contextPath: TrustwaveSEG.Folder.retention
+      description: The retention of the Folder
+      type: Number
+    - contextPath: TrustwaveSEG.Folder.securityDescription
+      description: The security description of the Folder
+      type: String
+  - arguments:
+    - default: false
+      description: The id of the folder with quarantine day info
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get current day info for a folder
+    execution: false
+    name: trustwave-seg-list-day-info-by-quarantine-folder
+    outputs:
+    - contextPath: TrustwaveSEG.DayInfo.endTime
+      description: "The end time of the day info"
+      type: Number
+    - contextPath: TrustwaveSEG.DayInfo.numFiles
+      description: The number of files of the day info
+      type: Number
+    - contextPath: TrustwaveSEG.DayInfo.startTime
+      description: The start time of the day info
+      type: Number
+  - arguments:
+    - default: false
+      description: "An optional time range of the search. i.e: 3 months, 1 week,\
+        \ 1 day ago, etc."
+      isArray: false
+      name: time_range
+      required: false
+      secret: false
+    - default: false
+      description: "Start time of the search. format: YYYY-mm-ddTHH:MM:SSZ or 3 months,\
+        \ 1 week, 1 day ago, etc.Given only the start_time, end_time will be set to\
+        \ the current time."
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "End time of the search. format: YYYY-mm-ddTHH:MM:SSZ or i.e: \
+        3 months, 1 week, 1 day ago, etc."
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '10'
+      description: The number of rows to return from the API. default to 10 rows.
+      isArray: false
+      name: max_rows
+      required: false
+      secret: false
+    - default: false
+      description: 'The ID of the folder to search info in (e.g: 1006)'
+      isArray: false
+      name: folder_id
+      required: false
+      secret: false
+    - default: false
+      description: The name of the message to search for
+      isArray: false
+      name: message_name
+      required: false
+      secret: false
+    - default: false
+      description: 'The classification ID. Can be found by the classification command.
+        (e.g: 37)'
+      isArray: false
+      name: classification
+      required: false
+      secret: false
+    - default: false
+      description: Find a message that this email address sent.
+      isArray: false
+      name: from_user
+      required: false
+      secret: false
+    - default: false
+      description: Find a message that this email address received.
+      isArray: false
+      name: to_user
+      required: false
+      secret: false
+    - default: false
+      description: Find a message that this domain received.
+      isArray: false
+      name: to_domain
+      required: false
+      secret: false
+    - default: false
+      description: 'The minimum size of in Bytes of the message (e.g: 0)'
+      isArray: false
+      name: min_size
+      required: false
+      secret: false
+    - default: false
+      description: 'The maximum size of in Bytes of the message (e.g: 1024)'
+      isArray: false
+      name: max_size
+      required: false
+      secret: false
+    - default: false
+      description: 'The subject of the message to search for (e.g: "some subject")'
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should the search include history
+      isArray: false
+      name: search_history
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should the search include forwarded messages
+      isArray: false
+      name: forwards
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - default: false
+      description: 'The block number of the message to search for (e.g: 106098471075840)'
+      isArray: false
+      name: block_number
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should the search include messages with a blank subject
+      isArray: false
+      name: search_blank_subject
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: Find message by specified parameters
+    execution: false
+    name: trustwave-seg-find-quarantine-message
+    outputs:
+    - contextPath: TrustwaveSEG.Message.actionType
+      description: The actionType of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.blockNumber
+      description: The blockNumber of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.blockRecipientIndex
+      description: The blockRecipientIndex of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.classification
+      description: The classification of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.deleted
+      description: The deleted of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.description
+      description: The description of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.edition
+      description: The edition of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.folderId
+      description: The folderId of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.hasAttachments
+      description: The hasAttachments of the Message
+      type: Boolean
+    - contextPath: TrustwaveSEG.Message.messageBody
+      description: The messageBody of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.messageName
+      description: The messageName of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.recipient
+      description: The recipient of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.sender
+      description: The sender of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.serverId
+      description: The serverId of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.sessionNumber
+      description: The sessionNumber of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.size
+      description: The size of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.subject
+      description: The subject of the Message
+      type: String
+    - contextPath: TrustwaveSEG.Message.timeArrived
+      description: The timeArrived of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.timeLogged
+      description: The timeLogged of the Message
+      type: Number
+    - contextPath: TrustwaveSEG.Message.unicodeSubject
+      description: The unicodeSubject of the Message
+      type: String
+  - arguments:
+    - default: false
+      description: 'The block number of the message to search for. Should be retrieved
+        from the find message endpoint. (e.g: 106098471075840)'
+      isArray: false
+      name: block_number
+      required: true
+      secret: false
+    - default: false
+      description: "edition of the message. Should be retrieved from the find message\
+        \ endpoint. (e.g: \"607ef9ae0000\")"
+      isArray: false
+      name: edition
+      required: true
+      secret: false
+    - default: false
+      description: "folder ID of the message. Should be retrieved from the find message\
+        \ endpoint. (e.g: 1006)"
+      isArray: false
+      name: folder_id
+      required: true
+      secret: false
+    - default: false
+      description: "The name of the message. Should be retrieved from the find message\
+        \ endpoint. (e.g: \"B607ef9ac0000\")"
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    - default: false
+      description: "The recipient of the message. Should be retrieved from the find\
+        \ message endpoint. (e.g: email@example.com)"
+      isArray: false
+      name: recipient
+      required: true
+      secret: false
+    - default: false
+      description: "The server ID of the message. Should be retrieved from the find\
+        \ message endpoint. (e.g: 1)"
+      isArray: false
+      name: server_id
+      required: true
+      secret: false
+    - default: false
+      description: "The logged time of the message. Should be retrieved from the\
+        \ find message endpoint. (e.g: 1618934189)"
+      isArray: false
+      name: time_logged
+      required: true
+      secret: false
+    - default: false
+      description: 'The message that should be shown with the message on Spiderlabs
+        (e.g: "This message is spam...")'
+      isArray: false
+      name: spam_report_message
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is the message spam or not
+      isArray: false
+      name: is_spam
+      predefined:
+      - "true"
+      - "false"
+      required: true
+      secret: false
+    deprecated: false
+    description: "Forward a message to spiderlabs as spam "
+    execution: false
+    name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
+    outputs: []
+  dockerimage: demisto/python3:3.8.3.8715
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
