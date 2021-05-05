@@ -36,6 +36,11 @@
                 "endCursor": "Y3Vyc29yOmFjdGl2aXR5U2VyaWVzOkxhc3RVcGRhdGVkOjpMYXN0VXBkYXRlZDo6MjAyMS0wMi0xOVQxNDozMDowMC44NzVaOjoyMDIxLTAyLTE5VDE0OjMwOjAwLjg3NVo6OjEzNjM1OTE5Nw==",
                 "hasNextPage": false
             }
+        },
+        "featureFlag": {
+            "name": "DataClassificationEnabled",
+            "variant": true,
+            "__typename": "FeatureFlag"
         }
     }
 }
