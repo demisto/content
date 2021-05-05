@@ -304,7 +304,10 @@ def load_conf_files(conf_path, secret_conf_path):
     return conf, secret_conf
 
 
-def load_env_results_json(env_results_path):
+def load_env_results_json():
+    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
+                                                                  'env_results.json'))
+
     if not os.path.isfile(env_results_path):
         return {}
 
@@ -329,10 +332,10 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
-                                                                  'env_results.json'))
-    env_json = load_env_results_json(env_results_path)
+    env_json = load_env_results_json()
     if not env_json:
+        env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
+                                                                      'env_results.json'))
         logging.warning(f"Did not find {env_results_path} file, "
                         f"assuming server version is {default_version}.")
         return default_version
