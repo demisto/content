@@ -7399,18 +7399,22 @@ class TableOrListWidget(BaseWidget):
 
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
-     :type page: ``int``
+    :type page: ``int``
     :param page: the number of page from which we start search indicators from.
+
+    :type filter_fields: ``str``
+    :param filter_fields: comma separated fields to filter (e.g. "value,type")
 
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, page=0):
+    def __init__(self, page=0, filter_fields=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
+        self._filter_fields = filter_fields
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -7437,7 +7441,7 @@ class IndicatorsSearcher:
         """
         if self._can_use_search_after:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
-                                           searchAfter=self._search_after_param)
+                                           searchAfter=self._search_after_param, populateFields=self._filter_fields)
             self._search_after_param = res[self._search_after_title]
 
             if res[self._search_after_title] is None:
