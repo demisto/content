@@ -1,6 +1,5 @@
 id: Relationships scripts - Test
-version: 8
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Relationships scripts - Test
 starttaskid: "0"
 tasks:
