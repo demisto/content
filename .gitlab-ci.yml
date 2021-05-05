@@ -254,6 +254,8 @@ server_master:
 run-unittests-and-lint:
   needs: []
   stage: unittests-and-validations
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD != "true"'
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -315,6 +317,8 @@ run-unittests-and-lint:
 run-validations:
   stage: unittests-and-validations
   needs: []
+  rules:
+    - if: '$FORCE_BUCKET_UPLOAD != "true"'
   artifacts:
     expire_in: 48 hrs
     paths:
