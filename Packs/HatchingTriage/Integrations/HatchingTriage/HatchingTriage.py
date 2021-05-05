@@ -224,7 +224,7 @@ def get_report_triage(client: Client, **args) -> CommandResults:
             dbot_score=dbot_score
         )
 
-    if indicator not None:
+    if indicator is not None:
         results = CommandResults(
             outputs_prefix="Triage.sample.reports.triage",
             outputs_key_field="sample.id",
