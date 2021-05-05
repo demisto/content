@@ -265,7 +265,7 @@ class TestArcherV2:
 
     def test_generate_field_contents(self):
         client = Client(BASE_URL, '', '', '', '')
-        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
+        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP['mapping'])
         assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
     def test_get_errors_from_res(self):
