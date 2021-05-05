@@ -1677,9 +1677,9 @@ List team members.
 | GitHub.TEAMMEMBER.ID | String | The ID of the team member. | 
 | GitHub.TEAMMEMBER.Login | String |he login name of the team member. |
 #### Command Example
-```!GitHub-list-team-members organization=organization team_slug=team```
+```!GitHub-list-team-members organization=org_name team_slug=test_team```
 #### Human Readable Output
-## Team Member of team content in organization demisto
+## Team Member of team test_team in organization org_name
 |ID|Login|
 |--- |---|
 |1234567|username|
