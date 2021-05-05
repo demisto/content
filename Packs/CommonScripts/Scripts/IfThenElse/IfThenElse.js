@@ -6,7 +6,7 @@ function convertValue(args, type, value) {
         value = args.value;
     } else if (type == "json") {
         value = JSON.parse(value);
-    } else{
+    } else {
         throw `Unknown value type: ${type}`;
     }
     return value === undefined ? null : value;
@@ -125,16 +125,10 @@ function evaluate(operator, lhs, rhs, options) {
     }
 }
 
-var condition = args.condition;
-if (condition) {
-    condition = condition.trim();
-    if (condition.indexOf("equals") >= 0) {
-        throw "Legacy parameter (equals) is not supported for the condition, please use lhs and rhs.";
-    }
-} else {
-    condition = 'value==equals';
+if (args.op && args.op.indexOf("equals") >= 0) {
+    throw "Legacy parameter (equals) is not supported for `op`, please use lhs and rhs or leave it blank";
 }
-
+const condition = args.op ? args.op.trim() : 'value==equals';
 const options = makeOptions(args.options);
 const [lhs_name, lhs] = getValue(args, condition, options, true);
 const [rhs_name, rhs] = getValue(args, condition, options, false);

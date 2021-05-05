@@ -18,7 +18,31 @@ args:
   description: Return this value if 'condition' is true
 - name: else
   description: Return this value if 'condition' is false
-- name: condition
+- name: op
+  auto: PREDEFINED
+  predefined:
+  - lhs===rhs
+  - lhs!==rhs
+  - lhs==rhs
+  - lhs!=rhs
+  - lhs>rhs
+  - lhs>=rhs
+  - lhs<rhs
+  - lhs<=rhs
+  - lhs=~rhs
+  - lhs in list rhs
+  - lhs not in list rhs
+  - value===rhs
+  - value!==rhs
+  - value==rhs
+  - value!=rhs
+  - value>rhs
+  - value>=rhs
+  - value<rhs
+  - value<=rhs
+  - value=~rhs
+  - value in list rhs
+  - value not in list rhs
   description: The condition expression to evaluate such as lhs==rhs or lhs!=rhs.
     It evaluate as value==equals if this is empty for backward compatibility.
 - name: lhs
