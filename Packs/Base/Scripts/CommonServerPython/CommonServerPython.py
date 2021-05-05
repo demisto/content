@@ -4958,28 +4958,28 @@ class EntityRelation:
     XSOAR entity relation.
 
     :type name: ``str``
-    :param name: Relation name.
+    :param name: relationship name.
 
     :type relation_type: ``str``
-    :param relation_type: Relation type.
+    :param relation_type: relationship type. (Optional)
 
     :type entity_a: ``str``
-    :param entity_a: A value, A aka Source of the relation.
+    :param entity_a: A value, A aka Source of the relationship.
 
     :type entity_a_family: ``str``
-    :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
+    :param entity_a_family: Entity family of A, A aka Source of the relationship. (For future use)
 
-    :type entity_type_a: ``str``
-    :param entity_type_a: Entity type B, B aka Source of the relation. (For future use).
+    :type entity_a_type: ``str``
+    :param entity_a_type: Entity A type, A aka Source of the relationship. (e.g. IP/URL/...).
 
     :type entity_b: ``str``
-    :param entity_b: B value, B aka Source of the relation.
+    :param entity_b: B value, B aka Destination of the relationship.
 
     :type entity_b_family: ``str``
-    :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
+    :param entity_b_family: Entity family of B, B aka Destination of the relationship. (For future use)
 
-    :type entity_type_b: ``str``
-    :param entity_type_b: Entity type B, B aka Source of the relation. (For future use).
+    :type entity_b_type: ``str``
+    :param entity_b_type: Entity B type, B aka Destination of the relationship. (e.g. IP/URL/...).
 
     :type source_reliability: ``str``
     :param source_reliability: Source_reliability.
