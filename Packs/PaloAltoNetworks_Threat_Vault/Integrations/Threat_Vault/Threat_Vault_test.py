@@ -39,7 +39,7 @@ def test_antivirus_get_by_id(mocker):
     command_results = antivirus_signature_get(client, args={'signature_id': '93534285'})
     output = command_results.to_context()
     expected_result = {
-        'ThreatVault.Antivirus(val.signatureId == obj.signatureId)':
+        'ThreatVault.Antivirus(val.signatureId && val.signatureId == obj.signatureId)':
             {
                 "active": True,
                 "createTime": "2010-10-01 10:28:57 (UTC)",
@@ -144,7 +144,7 @@ def test_dns_get_by_id(mocker):
     command_results = dns_get_by_id(client, args={'dns_signature_id': '325235352'})
     output = command_results.to_context()
     expected_result = {
-        'ThreatVault.DNS(val.signatureId == obj.signatureId)':
+        'ThreatVault.DNS(val.signatureId && val.signatureId == obj.signatureId)':
             {
                 'signatureId': 325235352, 'signatureName': 'generic:accounts.google.com.sign-google.com',
                 'domainName': 'accounts.google.com.sign-google.com', 'createTime': '2020-01-15 23:57:54 (UTC)',
@@ -193,7 +193,7 @@ def test_antispyware_get_by_id(mocker):
     command_results = antispyware_get_by_id(client, args={'signature_id': '10001'})
     output = command_results.to_context()
     expected_result = {
-        'ThreatVault.AntiSpyware(val.signatureId == obj.signatureId)':
+        'ThreatVault.AntiSpyware(val.signatureId && val.signatureId == obj.signatureId)':
             {
                 'metadata':
                     {
@@ -235,7 +235,7 @@ def test_ip_geo_get(mocker):
     command_results = ip_geo_get(client, args={'ip': '1.1.1.1'})
     output = command_results.to_context()
     expected_result = {
-        'ThreatVault.IP(val.ipAddress == obj.ipAddress)':
+        'ThreatVault.IP(val.ipAddress && val.ipAddress == obj.ipAddress)':
             {
                 'ipAddress': '1.1.1.1', 'countryCode': 'AU', 'countryName': 'Australia'
             }
@@ -325,7 +325,7 @@ def test_signature_search_results_dns(mocker):
     command_results = signature_search_results(client, args={'search_request_id': 'mock_domain', 'size': '1'})
     output = command_results.to_context()
     expected_context = {
-        'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
+        'ThreatVault.Search(val.search_request_id && val.search_request_id == obj.search_request_id)':
             {
                 "page_count": 1,
                 "signatures": [
@@ -412,7 +412,7 @@ def test_signature_search_results_anti_spyware_cve(mocker):
     command_results = signature_search_results(client, args={'search_request_id': 'mock_cve', 'size': '1'})
     output = command_results.to_context()
     expected_context = {
-        'ThreatVault.Search(val.search_request_id == obj.search_request_id)':
+        'ThreatVault.Search(val.search_request_id && val.search_request_id == obj.search_request_id)':
             {
                 "page_count": 1,
                 "search_request_id": "mock_cve",
