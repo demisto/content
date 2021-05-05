@@ -2522,10 +2522,10 @@ class Common(object):
                 if self.organization_type:
                     ip_context['Organization']['Type'] = self.organization_type
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 ip_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_engines:
+            if self.positive_engines is not None:
                 ip_context['PositiveDetections'] = self.positive_engines
 
             if self.feed_related_indicators:
@@ -3200,10 +3200,10 @@ class Common(object):
                 'Data': self.url
             }
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 url_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_detections:
+            if self.positive_detections is not None:
                 url_context['PositiveDetections'] = self.positive_detections
 
             if self.category:
@@ -3349,10 +3349,10 @@ class Common(object):
             if self.dns:
                 domain_context['DNS'] = self.dns
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 domain_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_detections:
+            if self.positive_detections is not None:
                 domain_context['PositiveDetections'] = self.positive_detections
 
             if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
@@ -5440,7 +5440,7 @@ class CommandResults:
                 human_readable = tableToMarkdown('Results', self.outputs)
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
