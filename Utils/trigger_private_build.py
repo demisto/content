@@ -35,7 +35,7 @@ GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
 
 def get_modified_files(branch_name: str = None) -> List[str]:
     """ Gets modified files between master branch and the input branch_name, If the branch_name is empty the method
-        compare master branch with the commit sha1 from the environment variable CIRCLE_SHA1.
+        compare master branch with the commit sha1 from the environment variable CI_COMMIT_SHA.
 
     Args:
         branch_name: The branch name to compare with master.
@@ -44,7 +44,7 @@ def get_modified_files(branch_name: str = None) -> List[str]:
 
     """
     if not branch_name:
-        branch_name = os.environ.get('CIRCLE_SHA1')
+        branch_name = os.environ.get('CI_COMMIT_SHA')
 
     files = []
     files_string = tools.run_command(f'git diff --name-only origin/master...{branch_name}')
