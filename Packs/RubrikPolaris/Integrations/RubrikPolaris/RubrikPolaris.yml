@@ -67,11 +67,12 @@ name: RubrikPolaris
 script:
   commands:
   - arguments:
-    - description: The ID of the Polaris Event Series. When used in combination with
+    - description: (Deprecated) The ID of the Polaris Event Series. When used in combination with
         "Rubrik Radar Anomaly" incidents, this value will automatically be looked
         up using the incident context. Otherwise it is a required value.
       name: activitySeriesId
-    description: Check the Radar Event for updates.
+    description: (Deprecated) Check the Radar Event for updates.
+    deprecated: true
     name: rubrik-radar-analysis-status
     outputs:
     - contextPath: Rubrik.Radar.EventComplete

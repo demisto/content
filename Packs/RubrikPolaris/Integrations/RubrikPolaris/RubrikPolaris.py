@@ -306,6 +306,67 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
         return current_time.strftime(DATE_TIME_FORMAT), incidents
 
 
+def rubrik_radar_analysis_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    incident = demisto.incident().get("CustomFields")
+
+    # activitySeriesId is an optional value for the command. When not set,
+    # look up the value in the incident custom fields
+    activitySeriesId = args.get('activitySeriesId', None)
+    if not activitySeriesId:
+        try:
+            activitySeriesId = incident.get("rubrikpolarisactivityseriesid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The activitySeriesId value is required. Either manually provide or run this "
+                        "command in a 'Rubrik Radar Anomaly' incident where it will automatically looked "
+                        "up using the incident context.",
+                error=e)
+
+    operation_name = f"{OPERATION_NAME_PREFIX}AnomalyEventSeriesDetailsQuery"
+
+    query = """query %s($activitySeriesId: UUID!, $clusterUuid: UUID!) {
+                    activitySeries(activitySeriesId: $activitySeriesId, clusterUuid: $clusterUuid) {
+                        activityConnection {
+                            nodes {
+                                    id
+                                    message
+                                    time
+                            }
+                        }
+                        progress
+                        lastUpdated
+                        lastActivityStatus
+                    }
+                }
+                    """ % operation_name
+
+    variables = {
+        "clusterUuid": incident.get("rubrikpolariscdmclusterid"),
+        "activitySeriesId": activitySeriesId
+    }
+
+    radar_update_events = client.gql_query(operation_name, query, variables, False)
+
+    context = {
+        "ClusterID": incident.get("rubrikpolariscdmclusterid"),
+        "ActivitySeriesId": activitySeriesId,
+        "Message": radar_update_events["data"]["activitySeries"]["activityConnection"]["nodes"]
+    }
+
+    if radar_update_events["data"]["activitySeries"]["lastActivityStatus"] == "Success":
+        context["EventComplete"] = "True"
+    else:
+        context["EventComplete"] = "False"
+
+    return CommandResults(
+        outputs_prefix='Rubrik.Radar',
+        outputs_key_field='ActivitySeriesId',
+        outputs=context
+    )
+
+
 def rubrik_sonar_sensitive_hits_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     incident = demisto.incident().get("CustomFields")
 
@@ -672,6 +733,8 @@ def main() -> None:
 
             demisto.incidents(incidents)
 
+        elif demisto.command() == 'rubrik-radar-analysis-status':
+            return_results(rubrik_radar_analysis_status_command(client, demisto.args()))
         elif demisto.command() == 'rubrik-sonar-sensitive-hits':
             return_results(rubrik_sonar_sensitive_hits_command(client, demisto.args()))
         elif demisto.command() == 'rubrik-cdm-cluster-location':
