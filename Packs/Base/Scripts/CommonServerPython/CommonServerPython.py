@@ -4958,34 +4958,34 @@ class EntityRelation:
     XSOAR entity relation.
 
     :type name: ``str``
-    :param name: relationship name.
+    :param name: Relationship name.
 
     :type relation_type: ``str``
-    :param relation_type: relationship type. (Optional)
+    :param relation_type: Relationship type. (e.g. IndicatorToIndicator...).
 
     :type entity_a: ``str``
-    :param entity_a: A value, A aka Source of the relationship.
+    :param entity_a: A value, A aka source of the relationship.
 
     :type entity_a_family: ``str``
-    :param entity_a_family: Entity family of A, A aka Source of the relationship. (For future use)
+    :param entity_a_family: Entity family of A, A aka source of the relationship. (e.g. Indicator...)
 
     :type entity_a_type: ``str``
-    :param entity_a_type: Entity A type, A aka Source of the relationship. (e.g. IP/URL/...).
+    :param entity_a_type: Entity A type, A aka source of the relationship. (e.g. IP/URL/...).
 
     :type entity_b: ``str``
-    :param entity_b: B value, B aka Destination of the relationship.
+    :param entity_b: B value, B aka destination of the relationship.
 
     :type entity_b_family: ``str``
-    :param entity_b_family: Entity family of B, B aka Destination of the relationship. (For future use)
+    :param entity_b_family: Entity family of B, B aka destination of the relationship. (e.g. Indicator...)
 
     :type entity_b_type: ``str``
-    :param entity_b_type: Entity B type, B aka Destination of the relationship. (e.g. IP/URL/...).
+    :param entity_b_type: Entity B type, B aka destination of the relationship. (e.g. IP/URL/...).
 
     :type source_reliability: ``str``
-    :param source_reliability: Source_reliability.
+    :param source_reliability: Source reliability.
 
     :type fields: ``dict``
-    :param fields: Custom fields.
+    :param fields: Custom fields. (Optional)
 
     :type brand: ``str``
     :param brand: Source brand name. (Optional)
