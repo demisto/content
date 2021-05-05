@@ -58,7 +58,7 @@ def _get_dbot_score(json_res: dict) -> Tuple[int, str]:
 def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'ip/report/'
-    res_limit = None
+    entries_limit = None
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
@@ -72,9 +72,9 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         ip_object = Common.IP(ip, dbot)
 
         if not client.extended_data:
-            res_limit = DEFAULT_RESOLUTION_LIMIT
-        hashes = res.get('hashes')[:res_limit]
-        resolutions = handle_resolutions(res.get('resolutions', []), res_limit)
+            entries_limit = DEFAULT_RESOLUTION_LIMIT
+        hashes = res.get('hashes')[:entries_limit]
+        resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
         markdown = f"### Threat crowd report for ip {ip}: \n DBotScore: {score_str} \n" \
                    f"{tableToMarkdown('Resolutions', resolutions)} \n Hashes: \n {hashes} \n" \
@@ -120,7 +120,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         email_object = Common.EMAIL(email, dbot)
 
         markdown = f"Threat crowd report for Email {email} \n " \
-                   f"'DBotScore: {score_str} \n {tableToMarkdown("Results", res)}'
+                   f"DBotScore: {score_str} \n {tableToMarkdown('Results', res)}"
 
         # res.copy() is being used as it passed by ref,
         # so changing last file's value will also change all previous file's values and so on.
@@ -140,7 +140,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'domain/report/'
-    resolution_limit = None
+    entries_limit = None
     domains = argToList(args.get('domain'))
     for domain in domains:
         res = client._http_request(method='GET', url_suffix=api_url, params={'domain': domain})
@@ -155,10 +155,10 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
         markdown = f"### Threat crowd report for domain {domain} \n DBotScore: {score_str} \n"
 
         if not client.extended_data:
-            resolution_limit = DEFAULT_RESOLUTION_LIMIT
+            entries_limit = DEFAULT_RESOLUTION_LIMIT
 
-        subdomains = res.get('subdomains')[:resolution_limit]
-        resolutions = handle_resolutions(res.get('resolutions', []), resolution_limit)
+        subdomains = res.get('subdomains')[:entries_limit]
+        resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
         markdown += f"{tableToMarkdown('Resolutions', resolutions)} " \
                     f"{tableToMarkdown('\n', res.copy().pop('resolutions'))}"
@@ -263,11 +263,7 @@ def test_module(client: Client) -> str:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
     command_functions = {'email': email_command,
                          'domain': domain_command,
                          'ip': ip_command,
