@@ -190,18 +190,7 @@ def test_remove_existing_entity_b_indicators_with_query():
     """
     from CreateIndicatorRelationship import remove_existing_entity_b_indicators
     expected_entity_b_list = []
-    args = {
-        'entity_a': '1.1.1.1,2.2.2.2',
-        'entity_a_type': 'IP',
-        'entity_b_query': 'value:1.1.1.1',
-        'description': 'Test',
-        'last_seen': '',
-        'source_reliability': '',
-        'relationship': 'compromises',
-        'reverse_relationship': '',
-        'create_indicator': 'false'
-    }
-    entity_b_list = remove_existing_entity_b_indicators(args)
+    entity_b_list = remove_existing_entity_b_indicators(entity_b_list=[], entity_b_query='value:1.1.1.1')
     assert expected_entity_b_list == entity_b_list
 
 
@@ -219,21 +208,9 @@ def test_remove_existing_entity_b_indicators_with_args(mocker):
     """
     from CreateIndicatorRelationship import remove_existing_entity_b_indicators
     expected_entity_b_list = ['3.3.3.3']
-    args = {
-        'entity_a': '1.1.1.1',
-        'entity_a_type': 'IP',
-        'entity_b': '2.2.2.2,3.3.3.3',
-        'entity_b_type': 'IP',
-        'description': 'Test',
-        'last_seen': '',
-        'source_reliability': '',
-        'relationship': 'compromises',
-        'reverse_relationship': '',
-        'create_indicator': 'false'
-    }
     find_indicators_by_query = [{'entity_b': '1.1.1.1', 'entity_b_type': 'IP'},
                                 {'entity_b': '2.2.2.2', 'entity_b_type': 'IP'}]
     mocker.patch('CreateIndicatorRelationship.find_indicators_by_query', return_value=find_indicators_by_query)
-    entity_b_list = remove_existing_entity_b_indicators(args)
+    entity_b_list = remove_existing_entity_b_indicators(entity_b_list=['2.2.2.2', '3.3.3.3'])
 
     assert expected_entity_b_list == entity_b_list

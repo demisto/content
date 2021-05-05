@@ -153,7 +153,7 @@ def create_indicators(args: dict):
     :rtype: ``None``
     """
     entity_b_to_create = remove_existing_entity_b_indicators(argToList(args.get('entity_b')),
-                                                             args.get('entity_b_query'))
+                                                             args.get('entity_b_query', ''))
     indicators = []
     for entity_b in entity_b_to_create:
         indicator = {
