@@ -123,11 +123,61 @@ def get_static_report(client: Client, **args) -> CommandResults:
 
     r = client._http_request("GET", f"samples/{sample_id}/reports/static")
 
-    results = CommandResults(
-        outputs_prefix="Triage.sample.reports.static",
-        outputs_key_field="sample.sample",
-        outputs=r,
-    )
+    score = 0
+    if 'analysis' in r:
+        if 'score' in r['analysis']:
+            score = map_scores_to_dbot(r['analysis']['score'])
+
+    indicator = None
+    if 'sample' in r:
+        target = r['sample']['target']
+        if r['sample']['kind'] == "file":
+            # Static can include data on multiple files e.g. in case of .zip upload.
+            # sample.target identifies the actual analysis subject so only get
+            # the results for that file
+            for file in r['files']:
+                if file['filename'] == target:
+                    dbot_score = Common.DBotScore(
+                        indicator=file['sha256'],
+                        indicator_type=DBotScoreType.FILE,
+                        integration_name="Hatching Triage",
+                        score = score
+                    )
+                    indicator = Common.File(
+                        name=r['sample']['target'],
+                        sha256=file['sha256'],
+                        md5=file['md5'],
+                        sha1=file['sha1'],
+                        dbot_score=dbot_score
+                    )
+        else:
+            # Static often doesn't include scores for URL analyses so only
+            # include results which do, rather than potentially reporting
+            # false-negatives to DBot
+            if 'score' in r['analysis']:
+                dbot_score = Common.DBotScore(
+                    indicator=target,
+                    indicator_type=DBotScoreType.URL,
+                    integration_name="Hatching Triage",
+                    score=score
+                )
+                indicator = Common.URL(
+                    url=target,
+                    dbot_score=dbot_score
+                )
+    if indicator is not None:
+        results = CommandResults(
+            outputs_prefix="Triage.sample.reports.static",
+            outputs_key_field="sample.sample",
+            outputs=r,
+            indicator=indicator
+        )
+    else:
+        results = CommandResults(
+            outputs_prefix="Triage.sample.reports.static",
+            outputs_key_field="sample.sample",
+            outputs=r
+        )
 
     return results
 
@@ -141,11 +191,13 @@ def get_report_triage(client: Client, **args) -> CommandResults:
 
     r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
 
+    score = 0
     if 'sample' in r:
         if 'score' in r['sample']:
             score = map_scores_to_dbot(r['sample']['score'])
 
     target = r['sample']['target']
+    indicator = None
     if not "sha256" in r['sample']:
         dbot_score = Common.DBotScore(
             indicator=target,
@@ -172,12 +224,19 @@ def get_report_triage(client: Client, **args) -> CommandResults:
             dbot_score=dbot_score
         )
 
-    results = CommandResults(
-        outputs_prefix="Triage.sample.reports.triage",
-        outputs_key_field="sample.id",
-        outputs=r,
-        indicator=indicator
-    )
+    if indicator not None:
+        results = CommandResults(
+            outputs_prefix="Triage.sample.reports.triage",
+            outputs_key_field="sample.id",
+            outputs=r,
+            indicator=indicator
+        )
+    else:
+        results = CommandResults(
+            outputs_prefix="Triage.sample.reports.triage",
+            outputs_key_field="sample.id",
+            outputs=r
+        )
     #dbot_score_data = []
     #dbot_score_data.append({
     #    "Indicator": target,
