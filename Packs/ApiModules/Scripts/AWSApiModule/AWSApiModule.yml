@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: AWS Client class, provides generic Infrastructure to all aws integrations
+comment: AWS Client class, provides generic Infrastructure to all AWS integrations
 scripttarget: 0
 dependson: {}
 timeout: 0s
