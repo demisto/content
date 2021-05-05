@@ -8,7 +8,7 @@ These unique features allow you to move beyond simple backup and recovery into p
 
 ## What does this pack do?
 
-When responding to real world threats -- not theory real world --  you have to quickly build context and then push changes begin remediation process. You can’t do that without a platform of automation.
+When responding to real world threats -- not theory real world --  you have to quickly build context and then push changes to begin remediation process. You can’t do that without a platform of automation.
 
 So as much time as well spend on our UI/UX, we recognize how important it is to take the information we gather and have it available in Cortex XSOAR where you live on a day in and day out basis. And then more importantly start correlating that data into a more holistic threat picture.
 
