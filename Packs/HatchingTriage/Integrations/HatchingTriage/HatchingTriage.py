@@ -22,6 +22,7 @@ def test_module(client: Client) -> str:
 
     return "ok"
 
+
 def map_scores_to_dbot(score):
     if 0 <= score <= 4:
         return 1
@@ -29,6 +30,7 @@ def map_scores_to_dbot(score):
         return 2
     elif 8 <= score <= 10:
         return 3
+
 
 def query_samples(client, **args) -> CommandResults:
     params = {"subset": args.get("subset")}
@@ -128,6 +130,7 @@ def get_static_report(client: Client, **args) -> CommandResults:
         if 'score' in r['analysis']:
             score = map_scores_to_dbot(r['analysis']['score'])
 
+    indicator: Any
     if 'sample' in r:
         target = r['sample']['target']
         if r['sample']['kind'] == "file":
@@ -140,7 +143,7 @@ def get_static_report(client: Client, **args) -> CommandResults:
                         indicator=file['sha256'],
                         indicator_type=DBotScoreType.FILE,
                         integration_name="Hatching Triage",
-                        score = score
+                        score=score
                     )
                     indicator = Common.File(
                         name=r['sample']['target'],
@@ -184,12 +187,13 @@ def get_report_triage(client: Client, **args) -> CommandResults:
     r = client._http_request("GET", f"samples/{sample_id}/{task_id}/report_triage.json")
 
     score = 0
+    indicator: Any
     if 'sample' in r:
         if 'score' in r['sample']:
             score = map_scores_to_dbot(r['sample']['score'])
 
     target = r['sample']['target']
-    if not "sha256" in r['sample']:
+    if "sha256" not in r['sample']:
         dbot_score = Common.DBotScore(
             indicator=target,
             indicator_type=DBotScoreType.URL,
@@ -221,14 +225,7 @@ def get_report_triage(client: Client, **args) -> CommandResults:
         outputs=r,
         indicator=indicator
     )
-    #dbot_score_data = []
-    #dbot_score_data.append({
-    #    "Indicator": target,
-    #    "Score": score,
-    #    "Type": "file",
-    #    "Vendor": "Hatching Triage"
-    #})
-    #appendContext("DBotScore", dbot_score_data)
+
     return results
 
 
