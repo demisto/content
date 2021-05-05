@@ -4970,16 +4970,16 @@ class EntityRelation:
     :param entity_a_family: Entity family of type A, A aka Source of the relation. (e.g. IP/URL/...).
 
     :type entity_type_a: ``str``
-    :param entity_type_a: Entity type B, B aka Destination of the relation. (For future use).
+    :param entity_type_a: Entity type B, B aka Source of the relation. (For future use).
 
     :type entity_b: ``str``
-    :param entity_b: B value, B aka Destination of the relation.
+    :param entity_b: B value, B aka Source of the relation.
 
     :type entity_b_family: ``str``
-    :param entity_b_family: Entity family of type B, B aka Destination of the relation. (e.g. IP/URL/...)
+    :param entity_b_family: Entity family of type B, B aka Source of the relation. (e.g. IP/URL/...)
 
     :type entity_type_b: ``str``
-    :param entity_type_b: Entity type B, B aka Destination of the relation. (For future use).
+    :param entity_type_b: Entity type B, B aka Source of the relation. (For future use).
 
     :type source_reliability: ``str``
     :param source_reliability: Source_reliability.
