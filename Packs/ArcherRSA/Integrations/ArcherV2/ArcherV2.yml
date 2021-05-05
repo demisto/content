@@ -215,7 +215,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use for create the record.
+      description: The Level ID to use for create the record. If empty the command will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -260,7 +260,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Level ID to use for update the record.
+      description: The Level ID to use for update the record. If empty the command will take the first level as default.
       isArray: false
       name: levelId
       required: false
@@ -525,7 +525,7 @@ script:
       - "false"
       description: Whether to order by descending order.
     - default: false
-      description: The Level ID to use for searching. This argument is relevant when fullData is True.
+      description: The Level ID to use for searching. This argument is relevant when fullData is True, If empty the command will take the first level as default.
       isArray: false
       name: levelId
       required: false
