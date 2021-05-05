@@ -57,7 +57,6 @@
       "script": "",
       "selectValues": [
         "",
-        "",
         "WHITE",
         "GREEN",
         "AMBER",
@@ -100,12 +99,12 @@
     {
     }
   ],
-  "editForm": true,
+  "editForm": false,
   "group": 0,
   "hidden": false,
   "id": "incident_thehiveobservables",
   "isReadOnly": true,
-  "locked": false,
+  "locked": true,
   "name": "TheHive Observables",
   "neverSetAsRequired": false,
   "ownerOnly": false,

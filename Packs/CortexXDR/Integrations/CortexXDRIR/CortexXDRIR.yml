@@ -40,7 +40,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: The maximum number of incidents per fetch. cannot exceed 100.
+- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -73,7 +73,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status
-    is provided then incidents of all the statuses will be fetched. Note: an incident
+    is provided then incidents of all the statuses will be fetched. Note: An incident
     whose status was changed to a filtered status after its creation time will not
     be fetched.'
   display: Incident Statuses to Fetch
@@ -1033,13 +1033,25 @@ script:
       description: The domain of the endpoint.
       type: String
     - contextPath: Endpoint.OS
-      description: Endpoint OS.
+      description: The endpoint's operation system.
       type: String
     - contextPath: Account.Username
       description: The username in the relevant system.
       type: String
     - contextPath: Account.Domain
       description: The domain of the account.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor. 
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -1655,56 +1667,56 @@ script:
   - arguments:
     - default: false
       description: List of endpoint IDs.
-      isArray: false
+      isArray: true
       name: endpoint_id_list
       required: false
       secret: false
     - default: false
       description: Name of the distribution list.
-      isArray: false
+      isArray: true
       name: dist_name
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds.
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: gte_last_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_first_seen
       required: false
       secret: false
     - default: false
-      description: Integer in timestamp epoch milliseconds
+      description: Epoch timestamp in milliseconds.
       isArray: false
       name: lte_last_seen
       required: false
       secret: false
     - default: false
       description: List of IP addresses.
-      isArray: false
+      isArray: true
       name: ip_list
       required: false
       secret: false
     - default: false
       description: Name of the endpoint group.
-      isArray: false
+      isArray: true
       name: group_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Type of operating system.
-      isArray: false
+      isArray: true
       name: platform
       predefined:
       - windows
@@ -1715,7 +1727,7 @@ script:
       secret: false
     - default: false
       description: Endpoint alias name.
-      isArray: false
+      isArray: true
       name: alias
       required: false
       secret: false
@@ -1731,7 +1743,7 @@ script:
       secret: false
     - default: false
       description: Name of the host.
-      isArray: false
+      isArray: true
       name: hostname
       required: false
       secret: false
@@ -1751,6 +1763,122 @@ script:
       command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action ID of the scan request.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the distribution list.
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses.
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the endpoint group.
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of operating system.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint alias name.
+      isArray: true
+      name: alias
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether an endpoint has been isolated. Can be "isolated" or "unisolated".
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: Name of the host.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to scan all of the endpoints or not. Default is false.
+        Note that scanning all of the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Cancel the scan of selected endpoints. A scan can only be aborted
+      if the selected endpoints are Pending or In Progress. To scan all
+      endpoints, run the command with the argument all=true. Note that scanning all
+      of the endpoints may cause performance issues and latency.
+    execution: true
+    name: xdr-endpoint-scan-abort
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.endpointScan.actionId
+      description: The action id of the abort scan request.
+      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
   - deprecated: false
     description: Get mapping fields from remote incident. Please note that this method
       will not update the current incident, it's here for debugging purposes.
@@ -2625,17 +2753,65 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
       description: Number of endpoints the action was initiated on.
       type: Number
-  dockerimage: demisto/python3:3.9.2.17957
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: true
+      description: The endpoint IP address.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns information about an endpoint.
+    execution: false
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook

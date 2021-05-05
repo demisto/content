@@ -803,7 +803,7 @@ script:
         case 'vx-scan': // Deprecated
         case 'crowdstrike-scan':
             var res = scan(args.file);
-            if (res.length > 0){
+            if (Object.keys(res).length > 0){
                 return scanToEntry(res, args.file);
             } else {
                 return {

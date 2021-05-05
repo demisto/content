@@ -58,8 +58,8 @@ configuration:
   - XSOAR LOW
   
 
-defaultclassifier: Rubrik Polaris Radar - Classification
-defaultmapperin: Rubrik Polaris Radar - Mapping
+defaultclassifier: c3e38fe1-e429-4836-8050-a8d399518fe8
+defaultmapperin: 97b3f7dc-5bdb-40c8-819b-8c1beb95cb09
 description: Create a new incident when a Polaris Radar anomaly event is detected
   and determine if any Sonar data classification hits were found on that object.
 display: Rubrik Radar

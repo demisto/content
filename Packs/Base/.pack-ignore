@@ -13,8 +13,8 @@ ignore=SC105
 [file:DBotFindSimilarIncidents.yml]
 ignore=SC105
 
-[file:GetIncidentsByQuery.yml ]
+[file:GetIncidentsByQuery.yml]
 ignore=SC105
 
-[file:]
+[file:DrawRelatedIncidentsCanvas.yml]
 ignore=SC105

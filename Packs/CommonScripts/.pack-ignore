@@ -28,5 +28,5 @@ ignore=SC105
 [file:script-generateSummaryReport.yml]
 ignore=SC105
 
-[file:cript-hideFieldsOnNewIncident.yml]
+[file:script-hideFieldsOnNewIncident.yml]
 ignore=SC105

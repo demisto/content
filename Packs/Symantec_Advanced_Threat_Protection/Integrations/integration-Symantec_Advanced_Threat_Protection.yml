@@ -340,7 +340,7 @@ script:
     var getIncidentsFromEventsResult = function(res, lastRun) {
         var max_timestamp = lastRun;
         incidents = res.map(function(r){
-            max_timestamp = Date.parse(r.time) > Date.parse(max_timestamp) ? r.time : max_timestamp;
+            max_timestamp = Date.parse(r.device_time) > Date.parse(max_timestamp) ? r.device_time : max_timestamp;
             var name;
             if ('message' in r){
                 name = r.message;
@@ -351,7 +351,7 @@ script:
             }
             return {
                 name: name,
-                occurred: r.time,
+                occurred: r.device_time,
                 rawJSON: JSON.stringify(r)
             };
         });

@@ -23,7 +23,7 @@ To get your API key, you need to add an authorization code, and then activate th
 Use the API key when configuring the integration.
 For more information on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
-## Configure AutoFocus V2 on Demisto
+## Configure AutoFocus V2 on Cortex XSOAR
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -35,9 +35,10 @@ For more information on activating the license see [Activating AutoFocus License
    | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
    | API Key | Account's private token. | N/A  |
    | Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |
+   | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |   
+   | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/www.markdownguide.org |
-   | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
 
 
 4. Click **Test** to validate the URLs, token, and connection.
