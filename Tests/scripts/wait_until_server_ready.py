@@ -82,7 +82,9 @@ def main():
     instance_name_to_wait_on = sys.argv[1]
 
     ready_ami_list = []
-    with open(os.getenv('ENV_RESULTS_PATH', './artifacts/env_results.json'), 'r') as json_file:
+    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
+                                                                  'env_results.json'))
+    with open(env_results_path, 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
 

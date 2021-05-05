@@ -329,9 +329,11 @@ def get_server_numeric_version(ami_env, is_local_run=False):
         logging.info(f'Local run, assuming server version is {default_version}')
         return default_version
 
-    env_json = load_env_results_json(os.getenv('ENV_RESULTS_PATH', './artifacts/env_results.json'))
+    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
+                                                                  'env_results.json'))
+    env_json = load_env_results_json(env_results_path)
     if not env_json:
-        logging.warning(f"Did not find {os.getenv('ENV_RESULTS_PATH','./artifacts/env_results.json')} file, "
+        logging.warning(f"Did not find {env_results_path} file, "
                         f"assuming server version is {default_version}.")
         return default_version
 

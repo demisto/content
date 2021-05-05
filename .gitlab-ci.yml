@@ -114,6 +114,7 @@ notify-slack:
         done
       else
         echo "Nothing to notify about, skipping."
+        echo "skipped" > .runner-result
       fi
 
 create-instances:
