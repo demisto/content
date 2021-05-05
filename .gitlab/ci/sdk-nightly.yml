@@ -93,6 +93,7 @@ demisto_sdk_nightly:validate_files:
   dependencies:
     - demisto_sdk_nightly:setup
   script:
+    - which python
     - |
       # Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting
       ./Tests/scripts/pyflake.sh *.py
@@ -109,6 +110,7 @@ demisto_sdk_nightly:lint_and_unittest:
   dependencies:
     - demisto_sdk_nightly:setup
   script:
+    - which python
     - |
       echo "demisto-sdk version: $(demisto-sdk --version)"
       echo "mypy version: $(mypy --version)"
