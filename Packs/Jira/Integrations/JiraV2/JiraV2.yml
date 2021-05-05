@@ -332,7 +332,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The account ID of the reporter.
+      description: The account ID of the reporter. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
+      isArray: false
+      name: reporter_id
+      required: false
+      secret: false
+    - default: false
+      description: The name of the of the reporter.
       isArray: false
       name: reporter
       required: false

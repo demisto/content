@@ -2,4 +2,4 @@
 ignore=BA101
 
 [file:pack_metadata.json]
-ignore=PA108
+ignore=PA124

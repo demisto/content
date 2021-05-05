@@ -3,22 +3,15 @@ This class replaces the old get_modified_files_for_testing function in collect_t
 """
 import glob
 import os
-from enum import Enum
 from typing import Dict, Set, Optional
 
 import demisto_sdk.commands.common.constants as constants
+from demisto_sdk.commands.common.constants import FileType
 from Tests.scripts.utils.collect_helpers import (
     COMMON_YML_LIST,
     is_pytest_file, checked_type, SECRETS_WHITE_LIST, LANDING_PAGE_SECTIONS_JSON_PATH,
 )
 from demisto_sdk.commands.common import tools
-
-
-class FileType(constants.FileType, Enum):
-    CONF_JSON = "confjson"
-    METADATA = "metadata"
-    WHITE_LIST = 'whitelist'
-    LANDING_PAGE_SECTIONS_JSON = 'landingPage_sections.json'
 
 
 class ModifiedFiles:
