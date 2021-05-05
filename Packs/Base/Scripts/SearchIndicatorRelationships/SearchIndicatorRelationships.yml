@@ -30,7 +30,7 @@ args:
   - CIDR
   - STIX Attack Pattern
   - STIX Malware
-  - STIX Repor
+  - STIX Report
   - STIX Threat Actor
   - STIX Tool
 - default: false
@@ -42,14 +42,14 @@ args:
   secret: false
   predefined:
   - applied
-  - attachement-of
+  - attachment-of
   - attaches
   - attribute-of
   - attributed-by
   - attributed-to
   - authored-by
   - beacons-to
-  - bundeled-in
+  - bundled-in
   - bundles
   - communicated-with
   - communicated-by
@@ -66,7 +66,7 @@ args:
   - dropped-by
   - drops
   - duplicate-of
-  - embbeded-in
+  - embedded-in
   - embeds
   - executed
   - executed-by
@@ -120,7 +120,7 @@ args:
   secret: false
 - default: false
   defaultValue: 'false'
-  description: 'This setting specifies if all of the relationships attributes will be returned or just the basics. The default value is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If the selected value will be true all the attributes will be returned.'
+  description: 'This setting specifies if all of the relationships attributes will be returned or just the basics. The default value is false and the returned values will be relationship name, reverse relationship, entity A value, entity A type, entity B value, entity B type and ID of the relationship. If the selected value will be true all the attributes will be returned.'
   isArray: false
   name: verbose
   required: false
@@ -140,8 +140,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: 'This automation outputs the indicator relationships to context according to the provided query. Using the entities, entityTypes, relationships argument. All arguments will be with the AND operator. For example using the following arguments entities=8.8.8.8
-          entities_types=Domain will provide just relationships that the 8.8.8.8 indicator has with indicators of type domain.'
+comment: 'This automation outputs the indicator relationships to context according to the provided query. Using the entities, entityTypes, relationships arguments.'
 commonfields:
   id: SearchIndicatorRelationships
   version: -1
