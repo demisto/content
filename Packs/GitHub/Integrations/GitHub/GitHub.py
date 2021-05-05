@@ -676,8 +676,11 @@ def list_teams_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
-def get_pull_request(pull_number: Union[int, str]):
-    suffix = PULLS_SUFFIX + f'/{pull_number}'
+def get_pull_request(pull_number: Union[int, str], repository: str = None, organization: str = None):
+    if repository and organization and pull_number:
+        suffix = f'/repos/{organization}/{repository}/pulls/{pull_number}'
+    else:
+        suffix = PULLS_SUFFIX + f'/{pull_number}'
     response = http_request('GET', url_suffix=suffix)
     return response
 
@@ -685,7 +688,9 @@ def get_pull_request(pull_number: Union[int, str]):
 def get_pull_request_command():
     args = demisto.args()
     pull_number = args.get('pull_number')
-    response = get_pull_request(pull_number)
+    organization = args.get('organization')
+    repository = args.get('repository')
+    response = get_pull_request(pull_number, repository, organization)
 
     ec_object = format_pr_outputs(response)
     ec = {
