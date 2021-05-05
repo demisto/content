@@ -1765,7 +1765,10 @@ def test_module(base_url: str, sid: str, verify_certificate) -> str:
             reason = '\nWrong credentials! Please check the username and password you entered and try' \
                      ' again.\n'
     except Exception as e:
-        raise e
+        if '500' in str(e):  # for status code 500
+            return 'Server Error: make sure Server URL and Server Port is correctly set'
+        else:
+            raise e
     return 'ok' if response else f'Connection failed.{reason}\nFull response: {response.json()}'
 
 
