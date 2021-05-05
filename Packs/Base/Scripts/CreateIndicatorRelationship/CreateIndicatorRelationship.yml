@@ -81,14 +81,14 @@ args:
   defaultValue: 'related-to'
   predefined:
   - applied
-  - attachement-of
+  - attachment-of
   - attaches
   - attribute-of
   - attributed-by
   - attributed-to
   - authored-by
   - beacons-to
-  - bundeled-in
+  - bundled-in
   - bundles
   - communicated-with
   - communicated-by
@@ -105,7 +105,7 @@ args:
   - dropped-by
   - drops
   - duplicate-of
-  - embbeded-in
+  - embedded-in
   - embeds
   - executed
   - executed-by
@@ -160,14 +160,14 @@ args:
   name: reverse_relationship
   predefined:
   - applied
-  - attachement-of
+  - attachment-of
   - attaches
   - attribute-of
   - attributed-by
   - attributed-to
   - authored-by
   - beacons-to
-  - bundeled-in
+  - bundled-in
   - bundles
   - communicated-with
   - communicated-by
@@ -184,7 +184,7 @@ args:
   - dropped-by
   - drops
   - duplicate-of
-  - embbeded-in
+  - embedded-in
   - embeds
   - executed
   - executed-by
