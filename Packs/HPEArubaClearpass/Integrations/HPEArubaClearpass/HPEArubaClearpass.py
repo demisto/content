@@ -57,12 +57,13 @@ class Client(BaseClient):
             Args:
                auth_response (dict): A dict includes the new access token and its expiration (in seconds).
        """
-        self.access_token = auth_response.get("access_token")
+        self.access_token = auth_response.get("access_token")  # type:ignore
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         is_access_token_expiration_valid = access_token_expiration_in_seconds and isinstance(
             auth_response.get("expires_in"), int)
         if is_access_token_expiration_valid:
-            access_token_expiration_datetime = datetime.now() + timedelta(seconds=access_token_expiration_in_seconds)
+            access_token_expiration_datetime = datetime.now() + timedelta(
+                seconds=access_token_expiration_in_seconds)  # type:ignore
             context = {"access_token": self.access_token,
                        "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
             set_integration_context(context)
