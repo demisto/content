@@ -1,7 +1,7 @@
 args:
-- default: false
-  description: The indicator to get the reputation of. Only system indecator types are supported.
-  isArray: false
+- default: true
+  description: The indicator to get the reputation of. Only system indicator types are supported.
+  isArray: true
   name: indicator
   required: true
   secret: false
