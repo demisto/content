@@ -5036,14 +5036,14 @@ class EntityRelation:
         :rtype: ``None``
         """
         APPLIED = 'applied'
-        ATTACHEMENT_OF = 'attachement-of'
+        ATTACHMENT_OF = 'attachment-of'
         ATTACHES = 'attaches'
         ATTRIBUTE_OF = 'attribute-of'
         ATTRIBUTED_BY = 'attributed-by'
         ATTRIBUTED_TO = 'attributed-to'
         AUTHORED_BY = 'authored-by'
         BEACONS_TO = 'beacons-to'
-        BUNDELED_IN = 'bundeled-in'
+        BUNDLED_IN = 'bundled-in'
         BUNDLES = 'bundles'
         COMMUNICATED_WITH = 'communicated-with'
         COMMUNICATED_BY = 'communicated-by'
@@ -5060,7 +5060,7 @@ class EntityRelation:
         DROPPED_BY = 'dropped-by'
         DROPS = 'drops'
         DUPLICATE_OF = 'duplicate-of'
-        EMBBEDED_IN = 'embbeded-in'
+        EMBEDDED_IN = 'embedded-in'
         EMBEDS = 'embeds'
         EXECUTED = 'executed'
         EXECUTED_BY = 'executed-by'
@@ -5107,15 +5107,15 @@ class EntityRelation:
         VARIANT_OF = 'variant-of'
 
         RELATIONS_NAMES = {'applied': 'applied-on',
-                           'attachement-of': 'attaches',
-                           'attaches': 'attachement-of',
+                           'attachment-of': 'attaches',
+                           'attaches': 'attachment-of',
                            'attribute-of': 'owns',
                            'attributed-by': 'attributed-to',
                            'attributed-to': 'attributed-by',
                            'authored-by': 'author-of',
                            'beacons-to': 'communicated-by',
-                           'bundeled-in': 'bundles',
-                           'bundles': 'bundeled-in',
+                           'bundled-in': 'bundles',
+                           'bundles': 'bundled-in',
                            'communicated-with': 'communicated-by',
                            'communicated-by': 'communicates-with',
                            'communicates-with': 'communicated-by',
@@ -5131,7 +5131,7 @@ class EntityRelation:
                            'dropped-by': 'drops',
                            'drops': 'dropped-by',
                            'duplicate-of': 'duplicate-of',
-                           'embbeded-in': 'embeds',
+                           'embedded-in': 'embeds',
                            'embeds': 'embedded-on',
                            'executed': 'executed-by',
                            'executed-by': 'executes',
