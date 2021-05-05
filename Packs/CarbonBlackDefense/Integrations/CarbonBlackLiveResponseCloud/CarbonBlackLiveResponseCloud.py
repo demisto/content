@@ -1,3 +1,4 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from cbc_sdk import endpoint_standard, CBCloudAPI, errors
@@ -5,6 +6,8 @@ import ntpath
 import requests
 
 # Disable insecure warnings
+CONNECTION_ERROR_MSG = 'Connection Error: Check your server URL'
+AUTHORIZATION_ERROR_MSG = 'Authorization Error: Check your API Credentials'
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
@@ -63,11 +66,11 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
         directories_readable.append({
             'name': item['filename'],
             'type': 'Directory' if item['attributes'] and 'DIRECTORY' in item['attributes'] else 'File',
-            'date_modified': timestamp_to_datestring(item['last_write_time']),
+            'date_modified': epochToTimestamp(int(item['last_write_time']) * 1000),
             'size': item['size']
         })
 
-    readable_output = tableToMarkdown('Carbon Black Defense Live Response Directory content',
+    readable_output = tableToMarkdown(f'Directory of {directory_path}',
                                       t=directories_readable,
                                       headers=headers,
                                       headerTransform=string_to_table_header,
@@ -246,7 +249,9 @@ def command_test_module(api_client: CBCloudAPI) -> str:
     try:
         api_client.api_json_request(method='GET', uri='/integrationServices/v3/cblr/session/')
     except errors.UnauthorizedError:
-        return_error('Authorization Error: Check your API Credentials')
+        return_error(AUTHORIZATION_ERROR_MSG)
+    except errors.ConnectionError:
+        return_error(CONNECTION_ERROR_MSG)
     except Exception as e:
         return_error(f'An error occurred.\n {str(e)}')
 

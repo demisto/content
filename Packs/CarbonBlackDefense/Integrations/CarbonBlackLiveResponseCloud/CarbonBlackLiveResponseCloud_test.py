@@ -1,3 +1,5 @@
+import functools
+
 import pytest
 from cbapi.live_response_api import LiveResponseMemdump
 from CarbonBlackLiveResponseCloud import *
@@ -103,7 +105,7 @@ TEST_DIR_LIST = [
     {
         'size': 25600, 'attributes': ['TEST_ARCHIVE'],
         'create_time': 123, 'last_access_time': 123,
-        'last_write_time': '1000000000000', 'filename': 'test.xls',
+        'last_write_time': '100000', 'filename': 'test.xls',
         'alternate_name': 'test_$9EE1B~1.XLS'}]
 
 TEST_PROCESSES_RESULT = [
@@ -141,8 +143,8 @@ WRONG_ARGS = [
     ('get_file', get_file_command, dict(timeout='wrong_val')),
 ]
 
-DIR_LIST_EXPECTED_OUTPUT = '|Name|Type|Date Modified|Size|\n|---|---|---|---|\n| test.xls | File | ' \
-                           '2001-09-09T01:46:40.000Z | 25600 |'
+DIR_LIST_EXPECTED_OUTPUT = 'Name|Type|Date Modified|Size|\n|---|---|---|---|\n| test.xls | File | ' \
+                           '1970-01-02 03:46:40 | 25600'
 #
 
 HAPPY_PATH_ARGS_FOR_COMMAND_RESULTS = [
@@ -168,8 +170,8 @@ class MockedLRObject:
         return self
 
 
-def raise_unauthorized_exception(**kwargs):
-    raise errors.UnauthorizedError('test_uri')
+def raise_exception(exception_to_arise, **kwargs):
+    raise exception_to_arise('test_uri')
 
 
 def mock_method_in_lr_session(mocker, method_name, mocked_results=None):
@@ -338,7 +340,13 @@ class TestCommands:
         # assert
         res == 'ok'
 
-    def test_command_test_raise_exception(self, mocker, capfd):
+    RAISE_EXCEPTION_PARAMS = [
+        (errors.UnauthorizedError, AUTHORIZATION_ERROR_MSG),
+        (errors.ConnectionError, CONNECTION_ERROR_MSG)
+    ]
+
+    @pytest.mark.parametrize('exception_to_raise, expected_res', RAISE_EXCEPTION_PARAMS)
+    def test_command_test_raise_exception(self, mocker, exception_to_raise, expected_res):
         """
             Given:
                 - Args for test_command
@@ -350,17 +358,16 @@ class TestCommands:
                 - raise exceptions and validate them
 
         """
+
         # prepare
         kwargs = commands_with_args[command_test_module]
         api = kwargs['api_client']
-        mocker.patch.object(api, 'api_json_request', side_effect=raise_unauthorized_exception)
+        mocker.patch.object(api, 'api_json_request', side_effect=functools.partial(raise_exception, exception_to_raise))
+        mocked_return_error = mocker.patch('CarbonBlackLiveResponseCloud.return_error')
 
         # run
-        with capfd.disabled():  # allowed output in the stdout in the end of test
-            try:
-                command_test_module(**kwargs)
+        command_test_module(**kwargs)
 
-                # assert
-                assert False, 'should fail with SystemExit as return_error should occurred'
-            except SystemExit:
-                return
+        # validate
+        res = mocked_return_error.call_args[0][0]
+        assert res == expected_res
