@@ -49,6 +49,18 @@
         "AWS-IAM": {
             "mandatory": false,
             "display_name": "AWS - IAM"
+        },
+        "Azure-AKS": {
+            "mandatory": false,
+            "display_name": "Azure - AKS"
+        },
+        "Azure-SQL": {
+            "mandatory": false,
+            "display_name": "Azure - SQL"
+        },
+        "Azure-Network": {
+            "mandatory": false,
+            "display_name": "Azure - Network"
         }
     }
 }
