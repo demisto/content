@@ -244,21 +244,21 @@ def main():
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
-
+        args = demisto.args()
         if demisto.command() == 'test-module':
             test_function(aws_client)
         if demisto.command() == 'aws-acm-describe-certificate':
-            describe_certificate(params, aws_client)
+            describe_certificate(args, aws_client)
         if demisto.command() == 'aws-acm-list-certificates':
-            list_certificates(params, aws_client)
+            list_certificates(args, aws_client)
         if demisto.command() == 'aws-acm-add-tags-to-certificate':
-            add_tags_to_certificate(params, aws_client)
+            add_tags_to_certificate(args, aws_client)
         if demisto.command() == 'aws-acm-remove-tags-from-certificate':
-            remove_tags_from_certificate(params, aws_client)
+            remove_tags_from_certificate(args, aws_client)
         if demisto.command() == 'aws-acm-list-tags-for-certificate':
-            list_tags_for_certificate(params, aws_client)
+            list_tags_for_certificate(args, aws_client)
         if demisto.command() == 'aws-acm-get-certificate':
-            get_certificate(params, aws_client)
+            get_certificate(args, aws_client)
 
     except ResponseParserError as e:
         return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
