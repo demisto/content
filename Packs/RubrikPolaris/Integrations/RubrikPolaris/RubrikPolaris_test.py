@@ -1,4 +1,3 @@
-from CommonServerPython import *
 import json
 import io
 
@@ -82,7 +81,7 @@ def test_fetch_incidents(mocker, requests_mock):
     Checks the mock_response for a "access_key" token which
     will result in the return value of "ok"
     """
-    from RubrikPolaris import Client, fetch_incidents, convert_to_demisto_severity
+    from RubrikPolaris import Client, fetch_incidents
     import demistomock as demisto
     from datetime import datetime, timedelta
 
@@ -109,8 +108,8 @@ def test_fetch_incidents(mocker, requests_mock):
     mock_response = [{
         "name": f'Rubrik Radar Anomaly - {mock_incident["objectName"]}',
         "occurred": mock_incident["lastUpdated"],
-        "severity": 1,
-        "rawJSON": json.dumps(mock_incident)
+        "rawJSON": json.dumps(mock_incident),
+        "severity": 1
     }]
 
     assert response == mock_response
