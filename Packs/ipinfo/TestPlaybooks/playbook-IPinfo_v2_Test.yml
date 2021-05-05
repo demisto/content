@@ -1,8 +1,8 @@
-id: IPInfov2Test
+id: IPInfo_v2Test
 version: 5
 fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
-name: IPInfov2Test
+name: IPInfo_v2Test
 starttaskid: "0"
 tasks:
   "0":

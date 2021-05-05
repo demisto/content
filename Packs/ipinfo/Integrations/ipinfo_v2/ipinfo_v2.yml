@@ -166,5 +166,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- IPInfo_v2Test
 fromversion: 5.0.0
