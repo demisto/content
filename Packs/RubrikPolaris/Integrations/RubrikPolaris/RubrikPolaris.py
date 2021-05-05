@@ -184,6 +184,10 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                             hasNextPage
                         }
                     }
+                    featureFlag(entityType: ACCOUNT, flagName: DataClassificationEnabled) {
+                        name
+                        variant
+                    }
                 }""" % operation_name
 
         variables = {
@@ -191,7 +195,7 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 "lastActivityType": [
                     "Anomaly"
                 ],
-                "startTime_gt": last_run
+                "lastUpdated_gt": last_run
             },
         }
 
@@ -279,6 +283,13 @@ def fetch_incidents(client: Client, max_fetch: int) -> Tuple[str, List[dict]]:
                 process_incident["severity"] = convert_to_demisto_severity(warning_mapping)
             else:
                 process_incident["severity"] = IncidentSeverity.LOW
+
+            #Check to see if Sonar is enabled and assign context label
+
+            if radar_events["data"]["featureFlag"]["variant"] == "true":
+                process_incident["data_classification_enabled"] = True
+            else:
+                process_incident["data_classification_enabled"] = False
 
             incidents.append({
                 "name": f'Rubrik Radar Anomaly - {process_incident["objectName"]}',
