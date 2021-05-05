@@ -1823,7 +1823,6 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden.
-        be "true" or "false". The default is "false".
       name: overridable
       predefined:
       - 'true'
