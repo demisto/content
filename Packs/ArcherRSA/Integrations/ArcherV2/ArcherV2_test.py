@@ -218,13 +218,13 @@ class TestArcherV2:
         field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
         assert field_id == '6969'
 
-    def test_get_level_by_app_id(self, requests_mock):
+    def test_get_levels_by_app_id(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
                                                                                            }, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         client = Client(BASE_URL, '', '', '', '')
-        levels = client.get_level_by_app_id('1')
+        levels = client.get_levels_by_app_id('1')
         assert levels == GET_LEVELS_BY_APP
 
     @pytest.mark.parametrize('requested_object, is_successful',
