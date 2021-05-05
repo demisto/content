@@ -50,9 +50,9 @@ class Client(BaseClient):
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
                    facet: str = None, rows: str = None, start: str = None) -> dict:
         query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
-        query_params: dict = {key: locals().get(key) for key in query_fields if
-                              locals().get(key)}
-        query_string = _create_query_string(query_params)
+        local_params = locals()
+        query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
+        query_string = _create_query_string(**query_params)
         params = assign_params(q=query_string,
                                rows=rows,
                                start=start,
@@ -68,8 +68,8 @@ class Client(BaseClient):
                      facet_field: str = None, rows: str = None, start: str = None) -> dict:
         query_fields = ['product_name', 'signed', 'group', 'hostname', 'digsig_publisher', 'company_name',
                         'observed_filename', 'query']
-        query_params: dict = {key: locals().get(key) for key in query_fields if
-                              locals().get(key)}
+        local_params = locals()
+        query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
                                rows=rows,
@@ -86,8 +86,8 @@ class Client(BaseClient):
                       query: str = None, group_by: str = None, sort: str = None, facet: str = None,
                       facet_field: str = None, rows: str = None, start: str = None):
         query_fields = ['process_name', 'group', 'hostname', 'parent_name', 'process_path', 'md5', 'query']
-        query_params = {key: locals().get(key) for key in query_fields if
-                        locals().get(key)}
+        local_params = locals()
+        query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
                                rows=rows,
@@ -106,10 +106,11 @@ class Client(BaseClient):
 
 
 def _create_query_string(params: dict) -> str:
-    current_query = f"({params.get('query')})" if params.get('query') else ''
-
-    for query_field in params:
-        current_query += f' AND {query_field}:{params[query_field]}'
+    current_query = [f"({params.get('query')})"] if params.get('query') else []
+    if 'query' in params:
+        params.pop('query')
+    current_query += [f"{query_field}:{params[query_field]}" for query_field in params]
+    current_query = ' AND '.join(current_query)
 
     if not current_query:
         raise Exception(
@@ -248,8 +249,12 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
         raise Exception('Request cannot be processed.')
 
     result_section = res.get('results', [])
-    facet_results = res.get('facets', {})
+    facet_section = res.get('facets', {})
 
+    outputs = {
+        'Results': result_section,
+        'Facets': facet_section
+    }
     # TODO return
 
 
@@ -359,7 +364,7 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
     if not id or not ip or not hostname:
         raise Exception('In order to run this command, please provide valid id, ip and hostname')
 
-    res = client.get_sensors(id=id, ip=ip, hostname=hostname)
+    res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)
     endpoints = []
     command_results = []
     for sensor in res:
