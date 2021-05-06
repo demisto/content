@@ -457,7 +457,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     threat_ip_context = get_threat_generic_context(indicator)
     threat_ip_tags = threat_ip_context.pop('Tags', [])
     if threat_ip_tags:
-        # I convert the tags objects into string for the human readable and then override it with the original objects
+        # Convert the tags objects into s string for the human readable and then override it with the original objects
         # for the context.
         threat_ip_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_ip_tags)
     human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
@@ -497,7 +497,7 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     threat_domain_context = get_threat_generic_context(indicator)
     threat_domain_tags = threat_domain_context.pop('Tags', [])
     if threat_domain_tags:
-        # I convert the tags objects into string for the human readable and then override it with the original objects
+        # Convert the tags objects into s string for the human readable and then override it with the original objects
         # for the context.
         threat_domain_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_domain_tags)
     human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
@@ -549,7 +549,7 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     threat_file_context.pop("Country", None)
     threat_file_tags = threat_file_context.pop('Tags', [])
     if threat_file_tags:
-        # I convert the tags objects into string for the human readable and then override it with the original objects
+        # Convert the tags objects into s string for the human readable and then override it with the original objects
         # for the context.
         threat_file_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_file_tags)
     human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
@@ -590,7 +590,7 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     del threat_url_context['ASN']
     threat_url_tags = threat_url_context.pop('Tags', [])
     if threat_url_tags:
-        # I convert the tags objects into string for the human readable and then override it with the original objects
+        # Convert the tags objects into s string for the human readable and then override it with the original objects
         # for the context.
         threat_url_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_url_tags)
     human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context)
@@ -624,7 +624,7 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     threat_email_context.pop("Country", None)
     threat_email_tags = threat_email_context.pop('Tags', [])
     if threat_email_tags:
-        # I convert the tags objects into string for the human readable and then override it with the original objects
+        # Convert the tags objects into s string for the human readable and then override it with the original objects
         # for the context.
         threat_email_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_email_tags)
     human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context)
