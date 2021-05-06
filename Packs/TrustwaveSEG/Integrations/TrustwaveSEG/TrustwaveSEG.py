@@ -129,7 +129,7 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix='/services/config/autobackups')
 
-    def run_automatic_config_backups(self, timeout: int, include_dkim: bool,
+    def run_automatic_config_backups(self, timeout: int = 30, include_dkim: bool = False,
                                      dkim_password: str = None) -> dict:
         """Run an automatic config backup on Trustwave console.
 
@@ -150,13 +150,13 @@ class Client(BaseClient):
                                   data=data,
                                   timeout=timeout)
 
-    def restore_automatic_config_backups(self, timeout: int, name: str, include_dkim: bool,
+    def restore_automatic_config_backups(self, name: str, timeout: int = 30, include_dkim: bool = False,
                                          dkim_password: str = None) -> dict:
         """Restore an automatic config backup based on params
 
         Args:
-            timeout (int): The timeout of the request.
             name (str): The name of the backup to restore
+            timeout (int): The timeout of the request.
             include_dkim (bool): If the backup is protected by DKIM
             dkim_password (str, optional): The DKIM, only if include_dkim is True.
 
@@ -391,8 +391,8 @@ def trustwave_seg_automatic_config_backup_list_command(client: Client) -> Comman
     )
 
 
-def trustwave_seg_automatic_config_backup_restore_command(client: Client, name: str, timeout: int,
-                                                          include_dkim: bool,
+def trustwave_seg_automatic_config_backup_restore_command(client: Client, name: str, timeout: int = 30,
+                                                          include_dkim: bool = False,
                                                           dkim_password: str = None
                                                           ) -> CommandResults:
     """Restore an automatic config backup based on params
@@ -429,8 +429,8 @@ def trustwave_seg_automatic_config_backup_restore_command(client: Client, name: 
     )
 
 
-def trustwave_seg_automatic_config_backup_run_command(client: Client, timeout: int,
-                                                      include_dkim: bool,
+def trustwave_seg_automatic_config_backup_run_command(client: Client, timeout: int = 30,
+                                                      include_dkim: bool = False,
                                                       dkim_password: str = None
                                                       ) -> CommandResults:
     """Run an automatic config backup on Trustwave console.

@@ -106,7 +106,7 @@ script:
       name: name
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '30'
       description: The timeout for the request in seconds. This request might take
         a while. If the request fails due to a connectivity error, try to add more
@@ -116,7 +116,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Choose if DKIM (DomainKeys Identified Mail) should be used
       isArray: false
@@ -147,7 +147,7 @@ script:
       description: The warnings of the AutomaticBackupRestore
       type: String
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '30'
       description: The timeout for the request in seconds. This request might take
         a while. If the request fails due to a connectivity error, try to add more
@@ -157,7 +157,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Choose if DKIM (DomainKeys Identified Mail) should be used
       isArray: false
