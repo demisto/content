@@ -1,0 +1,70 @@
+.default-cache:
+  cache:
+    key:
+      files:
+        - "dev-requirements-py3.txt"
+        - "package-lock.json"
+      prefix: $CI_COMMIT_REF_SLUG
+    paths:
+      - $PIP_CACHE_DIR
+      - venv/
+      - node_modules/
+      - .npm/
+    policy: pull
+
+.default-before_script:
+  before_script:
+    - echo "=== Running before script ==="
+    - git checkout $CI_COMMIT_BRANCH
+    - git config diff.renameLimit 6000
+    - mkdir -p -m 777 $ARTIFACTS_FOLDER/
+    - |
+      if [[ -f "$BASH_ENV" ]]; then
+        source "$BASH_ENV"
+      fi
+    - source .circleci/content_release_vars.sh
+    - export PATH="${PWD}/node_modules/.bin:${PATH}"
+
+    - echo "=== Creating new clean logs folder ==="
+    - rm -rf $ARTIFACTS_FOLDER/logs
+    - mkdir -p $ARTIFACTS_FOLDER/logs
+
+    - echo "=== Granting execute permissions on files ==="
+    - chmod +x ./Tests/scripts/*
+    - chmod +x ./Tests/Marketplace/*
+
+    - echo "=== Installing Virtualenv ==="
+    - |
+     if [ -f "./venv/bin/activate" ]; then
+       echo "found venv"
+     else
+      echo "installing venv"
+      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     fi
+     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+     source ./venv/bin/activate
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+        echo "Installing SDK from master branch" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+        pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      fi
+    - echo "========= Installing SSH keys ========"
+    - eval $(ssh-agent -s)
+    - chmod 400 $OREGON_CI_KEY
+    - ssh-add $OREGON_CI_KEY
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+    - echo "========== Build Parameters =========="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
+    - python --version
+    - python3 --version
+    - node --version
+    - npm --version
+    - demisto-sdk --version
+
+
+.default-job-settings:
+  extends:
+    - .default-cache
+    - .default-before_script
