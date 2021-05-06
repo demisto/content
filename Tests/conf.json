@@ -1847,11 +1847,6 @@
             "is_mockable": false
         },
         {
-            "integrations": "Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
-        },
-        {
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
             "fromversion": "5.5.0",
@@ -3279,6 +3274,19 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Tidy - Test",
+            "integrations": [
+                "AWS - EC2",
+                "Demisto REST API",
+                "Tidy"
+            ],
+            "instance_names": [
+                "aws_alloacte_host"
+            ],
+            "fromversion": "6.0.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -3357,9 +3365,7 @@
         "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
-        "pyEWS_Test": "Issue 27942",
         "EWS search-mailbox test": "Issue 27943",
-        "EWS Public Folders Test": "Issue 27941",
         "Azure NSG - Test": "Issue 33217",
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
@@ -3368,7 +3374,8 @@
         "Google-Vault-Generic-Test": "Issue 24347",
         "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
-        "Gmail Single User - Test": "Issue 27361"
+        "Gmail Single User - Test": "Issue 27361",
+        "AWS - EC2 Test Playbook": "Issue 36486"
     },
     "skipped_integrations": {
         
@@ -3473,7 +3480,8 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3489,7 +3497,6 @@
         "urlscan.io": "Uses data that comes in the headers",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
-        "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
