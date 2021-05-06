@@ -74,7 +74,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Deprecated. Use Recorded Future v2 instead. Unique threat intel technology that automatically serves up relevant
+description: Deprecated. Use Recorded Future v2 from RecordedFuture pack instead. Unique threat intel technology that automatically serves up relevant
   insights in real time.
 display: Recorded Future (Deprecated)
 name: Recorded Future

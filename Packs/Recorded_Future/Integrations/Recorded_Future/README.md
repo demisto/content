@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>Deprecated. Use Recorded Future v2 instead.</p>
+<p>Deprecated. Use Recorded Future v2 from RecordedFuture pack instead.</p>
 <p>Recorded Future is a threat intelligence platform, whose indicator and alert data is ingested into Demisto for enrichment.</p>
 <p>This integration was integrated and tested with revision r128029 of Recorded Future.</p>
 </div>
