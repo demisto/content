@@ -20,7 +20,12 @@
     "description": "",
     "associatedToAll": false,
     "associatedTypes": [
-        "AWS Security Hub"
+        "AWS Security Hub",
+        "Malware",
+        "Attack Pattern",
+        "Tool",
+        "Threat Actor",
+        "Report"
     ],
     "caseInsensitive": true,
     "columns": null,

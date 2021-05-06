@@ -12,6 +12,16 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
+        "accidental",
+        "coercion",
+        "dominance",
+        "ideology",
+        "notoriety",
+        "organizational-gain",
+        "personal-gain",
+        "personal-satisfaction",
+        "revenge",
+        "unpredictable",
         "Vulnerability",
         "Cyber Crime",
         "Cyber Espionage",
@@ -26,7 +36,8 @@
     "associatedTypes": [
         "IP",
         "Domain",
-        "URL"
+        "URL",
+        "Threat Actor"
     ],
     "associatedToAll": false,
     "unmapped": false,
