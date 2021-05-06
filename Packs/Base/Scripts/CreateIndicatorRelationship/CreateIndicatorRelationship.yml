@@ -283,6 +283,6 @@ tags:
 - basescript
 timeout: '0'
 type: python
-subtype: python3BitcoinAbuse
+subtype: python3
 dockerimage: demisto/python3:3.9.4.18682
 fromversion: 6.2.0
