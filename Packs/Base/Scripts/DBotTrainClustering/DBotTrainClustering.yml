@@ -8,9 +8,9 @@ args:
   secret: false
 - default: false
   description: Incident field that represents the family name for each cluster created.
-    The model will compute homogeinity of the cluster based on this value. In case
-    there are multiple different value of the fieldForClusterName field, the model
-    will select the cluster based on minHomogeneityCluster
+    The model will compute homogeneity of the cluster based on this value. If
+    there are multiple different values in the fieldForClusterName field, the model
+    will select the cluster based on minHomogeneityCluster.
   isArray: true
   name: fieldForClusterName
   required: false
@@ -140,7 +140,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Hide the model in the ML page
+  description: Whether to hide the model in the ML page.
   isArray: false
   name: modelHidden
   predefined:
@@ -148,7 +148,7 @@ args:
   - 'False'
   required: false
   secret: false
-comment: Train clustering model on any incidents type.
+comment: Train clustering model on any incident type.
 commonfields:
   id: DBotTrainClustering
   version: -1
