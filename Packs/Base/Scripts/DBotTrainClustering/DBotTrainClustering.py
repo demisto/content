@@ -273,7 +273,7 @@ def get_args():  # type: ignore
     to_date = demisto.args().get('toDate')
     limit = int(demisto.args().get('limit'))
     query = demisto.args().get('query')
-    incident_type = demisto.args().get('incidentType')
+    incident_type = demisto.args().get('type')
     max_percentage_of_missing_value = float(demisto.args().get('maxRatioOfMissingValue'))
 
     min_number_of_incident_in_cluster = int(demisto.args().get('minNumberofIncidentPerCluster'))

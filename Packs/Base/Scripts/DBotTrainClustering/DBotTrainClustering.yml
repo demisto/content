@@ -91,7 +91,7 @@ args:
   description: Type of incident we want to train the model on. If empty will consider
     all types.
   isArray: false
-  name: incidentType
+  name: type
   required: false
   secret: false
 - default: false

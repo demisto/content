@@ -14,7 +14,7 @@ PARAMETERS_DICT = {
     'modelName': 'model ',
     'storeModel': 'False',
     'minHomogeneityCluster': 0.6,
-    'incidentType': 'Phishing',
+    'type': 'Phishing',
     'maxRatioOfMissingValue': 0.5,
     'modelExpiration': 24,
     'forceRetrain': 'True'
