@@ -1,13 +1,13 @@
 args:
 - default: false
-  description: 'Comma-separated list of incident fields to take into account when
-    training the clustering. '
+  description: Comma-separated list of incident fields to take into account when training
+    the clustering.
   isArray: false
   name: fieldsForClustering
   required: false
   secret: false
 - default: false
-  description: Incident field which represent the family name for each cluster created.
+  description: Incident field that represents the family name for each cluster created.
     The model will compute homogeinity of the cluster based on this value. In case
     there are multiple different value of the fieldForClusterName field, the model
     will select the cluster based on minHomogeneityCluster
@@ -49,13 +49,13 @@ args:
   secret: false
 - default: false
   defaultValue: '2'
-  description: Minimun number of incident a cluster should contain for it to be retained.
+  description: Minimum number of incidents a cluster should contain for it to be retained.
   isArray: false
   name: minNumberofIncidentPerCluster
   required: false
   secret: false
 - default: false
-  description: Name of the model
+  description: Name of the model.
   isArray: false
   name: modelName
   required: false
@@ -73,8 +73,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0.4'
-  description: We will keep samples in the cluster where the family ratio is above
-    this number . Will be effective only if fieldForClusterName is given.
+  description: Keep samples in the cluster when the family ratio is above
+    this number. Will be effective only if fieldForClusterName is given.
   isArray: false
   name: minHomogeneityCluster
   required: false
@@ -91,7 +91,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: Type of incident we want to train the model on. If empty will consider
+  description: Type of incident to train the model on. If empty, will consider
     all types.
   isArray: false
   name: type
@@ -107,8 +107,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Whether to return more information about the clustering. Default value
-    if False
+  description: Whether to return more information about the clustering. Default
+    is "False".
   isArray: false
   name: debug
   predefined:
@@ -119,7 +119,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Whether to re-train the model in any cases. Default value if False
+  description: Whether to re-train the model in any cases. Default is "False".
   isArray: false
   name: forceRetrain
   predefined:
@@ -129,8 +129,8 @@ args:
   secret: false
 - default: false
   defaultValue: '24'
-  description: Period of time (in hours) before retraining the model. Default value
-    if 24 hours
+  description: Period of time (in hours) before retraining the model. Default
+    is "24".
   isArray: false
   name: modelExpiration
   predefined:
@@ -162,6 +162,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/mlclustering:1.0.0.19269
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
