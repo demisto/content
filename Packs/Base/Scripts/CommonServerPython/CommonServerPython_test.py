@@ -1464,7 +1464,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-               'File(val.sha1 == obj.sha1 && val.sha256 == obj.sha256 && val.md5 == obj.md5)'
+               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -1715,7 +1715,7 @@ class TestCommandResults:
             'Contents': tickets,
             'HumanReadable': tableToMarkdown('Results', tickets),
             'EntryContext': {
-                'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
+                'Jira.Ticket(val.ticket_id && val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
             'Relationships': [],
@@ -4173,7 +4173,7 @@ class TestCommonTypes:
 
 
 class TestIndicatorsSearcher:
-    def mock_search_after_output(self, fromDate, toDate, query, size, value, searchAfter):
+    def mock_search_after_output(self, fromDate='', toDate='', query='', size=0, value='', page=0, searchAfter=''):
         if not searchAfter:
             searchAfter = 0
 
@@ -4183,6 +4183,10 @@ class TestIndicatorsSearcher:
         else:
             # mock the end of indicators
             searchAfter = None
+
+        if page == 17:
+            # checking a unique case when trying to reach a certain page and not all the indicators
+            searchAfter = 200
 
         return {'searchAfter': searchAfter}
 
@@ -4225,9 +4229,11 @@ class TestIndicatorsSearcher:
 
         search_indicators_obj_search_after = IndicatorsSearcher()
         search_indicators_obj_search_after._can_use_search_after = True
-
-        for n in range(5):
-            search_indicators_obj_search_after.search_indicators_by_version()
+        try:
+            for n in range(5):
+                search_indicators_obj_search_after.search_indicators_by_version()
+        except Exception as e:
+            print(e)
 
         assert search_indicators_obj_search_after._search_after_param == 5
         assert search_indicators_obj_search_after._page == 0
@@ -4254,6 +4260,27 @@ class TestIndicatorsSearcher:
         assert search_indicators_obj_search_after._search_after_param == None
         assert search_indicators_obj_search_after._page == 0
 
+    def test_search_indicators_in_certain_page(self, mocker):
+        """
+        Given:
+          - Searching indicators in a specific page that is mot 0
+          - Server version in equal or higher than 6.1.0
+        When:
+          - Mocking search indicators in this specific page
+          so search_after is None
+        Then:
+          - The search after param is not None
+          - The page param is 0
+        """
+        from CommonServerPython import IndicatorsSearcher
+        mocker.patch.object(demisto, 'searchIndicators', side_effect=self.mock_search_after_output)
+
+        res = search_indicators_obj_search_after = IndicatorsSearcher(page=17)
+        search_indicators_obj_search_after._can_use_search_after = True
+        search_indicators_obj_search_after.search_indicators_by_version()
+
+        assert search_indicators_obj_search_after._search_after_param == 200
+        assert search_indicators_obj_search_after._page == 17
 
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
