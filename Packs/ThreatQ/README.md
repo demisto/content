@@ -5,6 +5,7 @@ This pack allows ThreatQ users to automate ThreatQ tasks such as searches, creat
 - Create, modify, or edit attributes within ThreatQ.
 - Automate hunts based on data present in ThreatQ.
 
-For more information about ThreatQ or this integration, please vist the following links:
+For more information about ThreatQ or this integration, please visit the following links:
+
 - https://www.threatq.com/
 - https://marketplace.threatq.com/details/cortex-xsoar-integration-for-threatq/
