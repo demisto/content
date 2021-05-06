@@ -408,7 +408,7 @@ def trustwave_seg_automatic_config_backup_restore_command(client: Client, name: 
         CommandResults: Command results with raw response, outputs and readable outputs.
     """
 
-    response = client.restore_automatic_config_backups(int(timeout), name,
+    response = client.restore_automatic_config_backups(name, int(timeout),
                                                        argToBoolean(include_dkim), dkim_password)
 
     readable_outputs = response.copy()
