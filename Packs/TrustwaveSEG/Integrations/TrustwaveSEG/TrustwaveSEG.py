@@ -950,7 +950,8 @@ def main() -> None:
     except Exception as exception:
         if command == 'test-module':
             error_msg = (str(exception))
-        error_msg = f'Failed to execute {command} command. Error: {str(exception)}'
+        else:
+            error_msg = f'Failed to execute {command} command. Error: {str(exception)}'
         return_error(error_msg)
 
 
