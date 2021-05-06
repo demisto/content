@@ -38,6 +38,8 @@ HDBSCAN_PARAMS = {
 FAMILY_COLUMN_NAME = 'label'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 MESSAGE_ERROR_MESSAGE = 'Model cannot be loaded'
+CLUSTERING_STEP_PIPELINE = 'clustering'
+PREPROCESSOR_STEP_PIPELINE = 'clustering'
 
 PALETTE_COLOR = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF00', '#665D1E', '#8DB600',
                  '#D0FF14']
@@ -219,7 +221,7 @@ class PostProcessing(object):
                     self.clustering.raw_data[  # type: ignore
                         self.clustering.model.labels_ == cluster_number].label.isin(list(chosen.keys())))  # type: ignore
                 dist_total[cluster_number]['distribution'] = dist
-                dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])
+                dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])[:15]
         else:
             for cluster_number in range(0, self.clustering.number_clusters):  # type: ignore
                 chosen = self.stats[cluster_number]['distribution sample']
@@ -285,10 +287,12 @@ def get_args():  # type: ignore
     debug = demisto.args().get('debug', 'False') == 'True'
     force_retrain = demisto.args().get('forceRetrain', 'False') == 'True'
     model_expiration = float(demisto.args().get('modelExpiration'))
+    model_hidden = demisto.args().get('model_hidden', 'False') == 'True'
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, \
-        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, model_expiration
+        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, \
+           model_expiration, model_hidden
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
@@ -466,11 +470,12 @@ class Tfidf(BaseEstimator, TransformerMixin):
         return self.vec.transform(x).toarray()
 
 
-def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool) -> None:
+def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool, model_hidden: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
+                                                   'modelHidden': model_hidden
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -503,11 +508,15 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     for cluster_number, coordinates in clustering.centers.items():
         if cluster_number not in model_processed.selected_clusters.keys():
             continue
-        d = {'x': float(coordinates[0]), 'y': float(coordinates[1]),
-             'name': model_processed.selected_clusters[cluster_number]['clusterName'], 'dataType': 'incident',
-             'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]], 'pivot': str(cluster_number),
+        d = {'x': float(coordinates[0]),
+             'y': float(coordinates[1]),
+             'name': model_processed.selected_clusters[cluster_number]['clusterName'],
+             'dataType': 'incident',
+             'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]],
+             'pivot': str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
-                 clustering.model.labels_ == cluster_number].id.values.tolist()], 'query': 'type:%s' % type,  # type: ignore
+                 clustering.model.labels_ == cluster_number].id.values.tolist()],
+             'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
     data['range'] = calculate_range(data)
@@ -731,7 +740,7 @@ def main():
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, \
         min_homogeneity_cluster, model_override, max_percentage_of_missing_value, \
-        debug, force_retrain, model_expiration = get_args()
+        debug, force_retrain, model_expiration, model_hidden = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
@@ -796,21 +805,21 @@ def main():
             transformers=transformers_list)
 
         # Model pipeline
-        model = Pipeline(steps=[('preprocessor', preprocessor),
-                                ('clustering', Clustering(HDBSCAN_PARAMS))
+        model = Pipeline(steps=[(PREPROCESSOR_STEP_PIPELINE, preprocessor),
+                                (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
                                 ])
         # Fit of the model on incidents_df and labels
         model.fit(incidents_df, labels)
 
         # Check is clustering is valid
-        if not is_clustering_valid(model.named_steps['clustering']):
+        if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
             global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
             return None, {}, global_msg
 
         # Reduce dimension
-        model.named_steps['clustering'].reduce_dimension()
-        model.named_steps['clustering'].compute_centers()
-        model_processed = PostProcessing(model.named_steps['clustering'], min_homogeneity_cluster,
+        model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
+        model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
+        model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
                                          generic_cluster_name)
 
         # Create summary of the training and assign it the the summary attribute of the model
@@ -825,7 +834,7 @@ def main():
         model_processed.json = output_clustering_json
         return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
         if store_model:
-            store_model_in_demisto(model_processed, model_name, model_override)
+            store_model_in_demisto(model_processed, model_name, model_override, model_hidden)
         return model_processed, output_clustering_json, global_msg
 
 

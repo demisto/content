@@ -1,13 +1,16 @@
 args:
 - default: false
-  description: Comma-separated list of incident fields to take into account when training
-    the clustering.
+  description: 'Comma-separated list of incident fields to take into account when
+    training the clustering. '
   isArray: false
   name: fieldsForClustering
   required: false
   secret: false
 - default: false
   description: Incident field which represent the family name for each cluster created.
+    The model will compute homogeinity of the cluster based on this value. In case
+    there are multiple different value of the fieldForClusterName field, the model
+    will select the cluster based on minHomogeneityCluster
   isArray: true
   name: fieldForClusterName
   required: false
@@ -134,6 +137,17 @@ args:
   - ''
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Hide the model in the ML page
+  isArray: false
+  name: modelHidden
+  predefined:
+  - 'True'
+  - 'False'
+  required: false
+  secret: false
 comment: Train clustering model on any incidents type.
 commonfields:
   id: DBotTrainClustering
@@ -148,6 +162,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/mlclustering:1.0.0.19269
-fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.2.0
