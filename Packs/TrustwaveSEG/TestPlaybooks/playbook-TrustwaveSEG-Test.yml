@@ -1002,7 +1002,7 @@ tasks:
       message_name:
         simple: B607ef9ac0000
       recipient:
-        simple: sarb@qmasters.co
+        simple: x@x.x
       server_id:
         simple: "1"
       spam_report_message:
