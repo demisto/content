@@ -52,7 +52,8 @@ RESPONSE = [{u'Type': 1,
         (['test1', 'test2'], 2),
         (['test1', 'test2', 'test3'], 3),
         ('test1,test2', 1),
-        ('https://expired.badssl.com/?q=1,2,3', 1)
+        ('https://expired.badssl.com/?q=1,2,3', 1),
+        ('["https://expired.badssl.com/?q=1,2,3", "indicator2"]', 2),
     ]
 
 )
