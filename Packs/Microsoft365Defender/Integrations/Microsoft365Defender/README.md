@@ -219,7 +219,7 @@ Update incident with the given ID.
 
 
 #### Command Example
-```!microsoft-365-defender-incident-update id=264 tags=test1,test2,test3```
+```!microsoft-365-defender-incident-update id=264 tags=test5```
 
 #### Human Readable Output
 >### Updated incident No. 263:

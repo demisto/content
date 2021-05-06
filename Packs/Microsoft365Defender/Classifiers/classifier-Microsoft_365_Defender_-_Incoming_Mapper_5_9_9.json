@@ -2,7 +2,7 @@
     "brandName": "Microsoft365Defender",
     "custom": true,
     "feed": false,
-    "id": "9a1b7a7f-d0ed-4155-8e1b-ebf6943fdacf",
+    "id": "Microsoft 365 Defender - Incoming Mapper",
     "isDefault": false,
     "mapping": {
         "Microsoft 365 Defender Incident": {

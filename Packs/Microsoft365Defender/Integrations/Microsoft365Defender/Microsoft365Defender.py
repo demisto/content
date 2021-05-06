@@ -74,7 +74,7 @@ class Client(BaseClient):
 
         if assigned_to:
             filter_query += ' and ' if filter_query else ''
-            filter_query += 'assignedTo eq ' + assigned_to
+            filter_query += f"assignedTo eq '{assigned_to}'"
 
         # fetch incidents
         if from_date:
@@ -271,12 +271,14 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
 
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
-    # the table headers are the incident keys. creates dummy incident to manage a situation of empty list.
-    headers = list(convert_incident_to_readable({}).keys())
-    human_readable_table = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
+    if readable_incidents:
+        headers = list(readable_incidents[0].keys())     # the table headers are the incident keys.
+        human_readable = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
+    else:
+        human_readable = "No incidents found"
 
     return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
-                          outputs=raw_incidents, readable_output=human_readable_table)
+                          outputs=raw_incidents, readable_output=human_readable)
 
 
 @logger
@@ -481,6 +483,8 @@ def main() -> None:
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
 
         elif command == 'fetch-incidents':
+            start_auth(client)
+            complete_auth(client)
             fetch_limit = arg_to_number(fetch_limit)
             fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
             incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)

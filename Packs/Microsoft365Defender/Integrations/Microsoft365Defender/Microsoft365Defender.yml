@@ -38,6 +38,7 @@ configuration:
   required: false
   type: 8
 - display: Incident type
+  defaultvalue: 'Microsoft 365 Defender Incident'
   name: incidentType
   required: false
   type: 13
@@ -249,7 +250,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Todo
+      description: Advanced hunting query.
       isArray: false
       name: query
       required: true
@@ -275,6 +276,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: Microsoft 365 Defender - Incoming Mapper
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0

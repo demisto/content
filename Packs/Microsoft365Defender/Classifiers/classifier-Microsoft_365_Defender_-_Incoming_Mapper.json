@@ -1,7 +1,7 @@
 {
     "description": "Classifies Microsoft 365 Defender's events",
     "feed": false,
-    "id": "7624f92c-eb19-4214-8d1d-868ae886d72b",
+    "id": "Microsoft 365 Defender - Incoming Mapper",
     "mapping": {
         "Microsoft 365 Defender Incident": {
             "dontMapEventToLabels": true,
