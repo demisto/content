@@ -373,7 +373,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             time_delta = time.time() - start_time
             if timeout and time_delta > timeout:
                 raise DemistoException(
-                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent")
+                    "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
 
             # HTTP request
             response = client.incidents_list(from_date=last_run, skip=offset)
