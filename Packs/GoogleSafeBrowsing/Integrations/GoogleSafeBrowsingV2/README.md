@@ -44,10 +44,10 @@ Check URL Reputation
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | int | The actual score | 
 | DBotScore.Reliability | string | Reliability of the source providing the intelligence data. |
-| GoogleSafeBrowsingV2.URL.cacheDuration | string | The URL cache duration time. |
-| GoogleSafeBrowsingV2.URL.threatType | string | The URL threat type. |
-| GoogleSafeBrowsingV2.URL.threatEntryType | string | The URL threat entry type. |
-| GoogleSafeBrowsingV2.URL.platformType | string | The URL platform type. |
+| GoogleSafeBrowsing.URL.cacheDuration | string | The URL cache duration time. |
+| GoogleSafeBrowsing.URL.threatType | string | The URL threat type. |
+| GoogleSafeBrowsing.URL.threatEntryType | string | The URL threat entry type. |
+| GoogleSafeBrowsing.URL.platformType | string | The URL platform type. |
 | URL.Data | string | Bad URLs found | 
 | URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
 | URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 

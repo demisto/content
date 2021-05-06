@@ -17,7 +17,7 @@ HEADERS = {
 
 def create_client(proxy: bool = False, verify: bool = False, base_url='',
                   reliability: str = DBotScoreReliability.B):
-    return Client(proxy=proxy, verify=verify, base_url=base_url, reliability=reliability)
+    return Client(proxy=proxy, verify=verify, base_url=base_url, reliability=reliability, params={})
 
 
 def test_build_request_body():

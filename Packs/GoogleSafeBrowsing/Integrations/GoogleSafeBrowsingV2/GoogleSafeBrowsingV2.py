@@ -153,7 +153,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     if not result or result.get('StatusCode'):
         handle_errors(result)
 
-    urls_data = arrange_results_to_urls(result.get('matches'), url)
+    urls_data = arrange_results_to_urls(result.get('matches'), url)  # type: ignore
 
     url_data_list = []
     for url_key, url_data in urls_data.items():
@@ -201,7 +201,7 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 def build_base_url(params: Dict) -> str:
     api_key = params.get('api_key')
-    base_url = params.get('url')
+    base_url = params.get('url', '')
 
     if not base_url.endswith('/'):
         base_url += '/'
