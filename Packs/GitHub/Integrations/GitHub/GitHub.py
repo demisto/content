@@ -1329,14 +1329,12 @@ def list_team_members_command():
     team_slug = args.get('team_slug')
     limit = int(args.get('limit'))
     response = get_team_members(org, team_slug, limit)
-    members = None
+    members = []
     for member in response:
         context_data = {
             'ID': member.get("id"),
             'Login': member.get("login")
         }
-        if not members:
-            members = []
         members.append(context_data)
     if members:
         human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
@@ -1346,7 +1344,7 @@ def list_team_members_command():
     return_results(CommandResults(
         readable_output=human_readable,
         outputs_prefix=f'GitHub.TEAMMEMBER.{team_slug}(val.ID === obj.ID)',
-        outputs=members,
+        outputs=members if members else None,
         raw_response=response,
     ))
 
