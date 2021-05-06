@@ -3367,7 +3367,6 @@
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
-        "Azure NSG - Test": "Issue 33217",
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
