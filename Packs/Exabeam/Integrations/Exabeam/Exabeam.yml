@@ -1684,7 +1684,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the asset to fetch info for
+      description: ID of the asset to fetch info for.
       isArray: false
       name: asset_id
       required: true
@@ -1703,7 +1703,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: The results order (ascending or descending).
+      description: The order of the results (ascending or descending).
       isArray: false
       name: sort_order
       predefined:
@@ -1713,7 +1713,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximal number of results.
+      description: Maximum number of results.
       isArray: false
       name: limit
       required: false
@@ -1785,7 +1785,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16.
       isArray: false
       name: start_time
       required: false
@@ -1798,7 +1798,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximal number of rules to retrieve.
+      description: Maximum number of rules to retrieve.
       isArray: false
       name: limit
       required: false
@@ -1872,7 +1872,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximal number of rules to retrieve.
+      description: Maximum number of rules to retrieve.
       isArray: false
       name: limit
       required: false

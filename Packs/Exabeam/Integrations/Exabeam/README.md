@@ -1214,8 +1214,8 @@ Returns notable session details.
 | --- | --- | --- |
 | asset_id | ID of the asset to fetch info for. | Required | 
 | sort_by | The key to sort results by. Possible values are: date, riskScore. Default is date. | Optional | 
-| sort_order | The results order (ascending or descending). Possible values are: asc, desc. Default is desc. | Optional | 
-| limit | Maximal number of results. Default is 50. | Optional | 
+| sort_order | The order of the results (ascending or descending). Possible values are: asc, desc. Default is desc. | Optional | 
+| limit | Maximum number of results. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -1259,8 +1259,10 @@ Returns sequence details for the given asset ID and time range.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | asset_id | The asset ID for which to fetch data. | Required | 
-| start_time | The Start time of the time range. For example, 2018-08-01T11:50:16). | Optional | 
+| start_time | The Start time of the time range. For example, 2018-08-01T11:50:16. | Optional | 
 | end_time | The end time of the time range. For example, 2018-08-01T11:50:16. | Optional | 
+| limit | Maximum number of rules to retrieve. Default is 50. | Optional | 
+| page | Results page number. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -1301,6 +1303,8 @@ Returns sequence event types for the given asset sequence ID and time range.
 | --- | --- | --- |
 | asset_sequence_id | The asset sequence ID. | Required | 
 | search_str | String to search for inside display name. | Optional | 
+| limit | Maximum number of rules to retrieve. Default is 50. | Optional | 
+| page | Results page number. Default is 0. | Optional | 
 
 
 #### Context Output
