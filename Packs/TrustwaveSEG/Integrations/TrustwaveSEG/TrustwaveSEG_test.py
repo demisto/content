@@ -26,7 +26,7 @@ def test_trustwave_seg_get_version_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_get_version_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get('https://1.1.1.1:2/seg/api/version', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
     response = trustwave_seg_get_version_command(client)
@@ -48,14 +48,14 @@ def test_trustwave_seg_statistics_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_statistics_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
-        'https://1.1.1.1:2/seg/api/console/array/stats?fromtime=1582142400&totime=1582228800',
+        'https://1.1.1.1:2/seg/api/console/array/stats?fromtime=1617543358&totime=1620221758',
         json=mock_response
     )
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
     response = trustwave_seg_statistics_command(
-        client, time_range='20/2/2020', end_time='21/2/2020')
+        client, start_time='2021-04-04 07:35:58 PM', end_time='2021-05-05 07:35:58 PM')
 
     assert response.outputs_prefix == 'TrustwaveSEG.Statistics'
     assert response.raw_response['maliciousUrls'] == 0
@@ -74,7 +74,7 @@ def test_trustwave_seg_list_classifications_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_classifications_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/quarantine/classifications', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -98,7 +98,7 @@ def test_trustwave_seg_automatic_config_backup_list_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_automatic_config_backup_list_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/services/config/autobackups', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -123,7 +123,7 @@ def test_trustwave_seg_automatic_config_backup_restore_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_automatic_config_backup_restore_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.put('https://1.1.1.1:2/seg/api/services/config/autobackups/restore',
                       json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -147,7 +147,7 @@ def test_trustwave_seg_automatic_config_backup_run_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_automatic_config_backup_run_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.put('https://1.1.1.1:2/seg/api/services/config/autobackups/backup',
                       json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -172,7 +172,7 @@ def test_trustwave_seg_list_servers_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_servers_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/services/servers/', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -195,7 +195,7 @@ def test_trustwave_seg_get_server_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_get_server_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/services/servers/1', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -218,7 +218,7 @@ def test_trustwave_seg_list_alerts_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_alerts_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/console/alerts?activeonly=False', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -241,7 +241,7 @@ def test_trustwave_seg_list_quarantine_folders_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_quarantine_folders_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/quarantine/folders/', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -263,7 +263,7 @@ def test_trustwave_seg_list_quarantine_folders_with_day_info_command(requests_mo
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_quarantine_folders_with_day_info_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/quarantine/folderswithdayinfo/', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -286,7 +286,7 @@ def test_trustwave_seg_list_day_info_by_quarantine_folder_command(requests_mock)
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_day_info_by_quarantine_folder_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.get(
         'https://1.1.1.1:2/seg/api/quarantine/folders/1007/dayinfo', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -309,7 +309,7 @@ def test_trustwave_seg_find_quarantine_message_command(requests_mock):
     mock_response = util_load_json(
         'test_data/trustwave_seg_find_quarantine_message_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.post(
         'https://1.1.1.1:2/seg/api/quarantine/findmessage/?maxRows=5', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -334,7 +334,7 @@ def test_trustwave_seg_spiderlabs_forward_quarantine_message_as_spam_command(req
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_alerts_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in' : 0})
+                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.post(
         'https://1.1.1.1:2/seg/api/quarantine/forwardspam/', json=mock_response)
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)

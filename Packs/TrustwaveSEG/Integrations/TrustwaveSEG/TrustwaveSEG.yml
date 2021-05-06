@@ -1,23 +1,26 @@
 category: Email Gateway
 commonfields:
-  id: "trustwave secure email gateway"
+  id: trustwave secure email gateway
   version: -1
 configuration:
-- additionalinfo: "Hostname or IP (localhost or 127.0.0.1)"
+- additionalinfo: Hostname or IP (localhost or 127.0.0.1)
   defaultvalue: localhost
-  display: "Hostname or IP"
+  display: Hostname or IP
   name: host
   required: true
+  type: 0
 - additionalinfo: Used for retrieving token for the commands
   defaultvalue: '19007'
   display: SEG Configuration Service Port
   name: config_port
   required: true
+  type: 0
 - additionalinfo: Used for accessing the API console
   defaultvalue: '19006'
   display: SEG API Port
   name: api_port
   required: true
+  type: 0
 - display: User Credentials
   name: credentials
   required: true
@@ -30,16 +33,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "Trustwave SEG is a secure messaging solution that protects businesses\
-  \ and users from email-borne threats, including phishing, blended threats, and spam.Trustwave\
-  \ Secure Email Gateway also delivers improved policy enforcement and data leakage\
-  \ prevention."
-display: "Trustwave Secure Email Gateway"
-name: "trustwave secure email gateway"
+description: Trustwave SEG is a secure messaging solution that protects businesses
+  and users from email-borne threats, including phishing, blended threats, and spam.Trustwave
+  Secure Email Gateway also delivers improved policy enforcement and data leakage
+  prevention.
+display: Trustwave Secure Email Gateway
+name: trustwave secure email gateway
 script:
   commands:
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: Get Trustwave version information
     execution: false
     name: trustwave-seg-get-version
@@ -53,8 +55,7 @@ script:
     - contextPath: TrustwaveSEG.Version.rpcInterfaceVersion
       description: rpcInterfaceVersion of the Version
       type: Number
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: Return list of automatic config backups
     execution: false
     name: trustwave-seg-automatic-config-backup-list
@@ -99,7 +100,8 @@ script:
       description: The lastModified of the AutomaticBackupConfig
       type: Number
   - arguments:
-    - description: "The name of the backup to restore (e.g: MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10)"
+    - default: false
+      description: 'The name of the backup to restore (e.g: MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10)'
       isArray: false
       name: name
       required: true
@@ -115,16 +117,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
-      defaultValue: false
-      description: "Choose if DKIM (DomainKeys Identified Mail) should be used"
+      defaultValue: 'false'
+      description: Choose if DKIM (DomainKeys Identified Mail) should be used
       isArray: false
       name: include_dkim
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - description: If include_dkim equals to true - The DKIM password for the action
+    - default: false
+      description: If include_dkim equals to true - The DKIM password for the action
       isArray: false
       name: dkim_password
       required: false
@@ -155,16 +158,17 @@ script:
       secret: false
     - auto: PREDEFINED
       default: true
-      defaultValue: false
-      description: "Choose if DKIM (DomainKeys Identified Mail) should be used"
+      defaultValue: 'false'
+      description: Choose if DKIM (DomainKeys Identified Mail) should be used
       isArray: false
       name: include_dkim
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - description: If include_dkim equals true - Please specify the DKIM password
+    - default: false
+      description: If include_dkim equals true - Please specify the DKIM password
         (defaults to configured password)
       isArray: false
       name: dkim_password
@@ -184,13 +188,13 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      defaultValue: false
+      defaultValue: 'false'
       description: Return only active alarms
       isArray: false
       name: active_only
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -218,22 +222,22 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: "An optional time range. i.e: 3 months, 1 week, 1 day ago, etc."
+      description: 'An optional time range. i.e: 3 months, 1 week, 1 day ago, etc.'
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
-      description: "Start time. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week,\
-        \ 1 day ago, etc.Given only the start_time, end_time will be set to the current\
-        \ time."
+      description: 'Start time. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week,
+        1 day ago, etc.Given only the start_time, end_time will be set to the current
+        time.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "End time. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1\
-        \ week, 1 day ago, etc."
+      description: 'End time. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week,
+        1 day ago, etc.'
       isArray: false
       name: end_time
       required: false
@@ -297,8 +301,7 @@ script:
     - contextPath: TrustwaveSEG.Statistics.virusScanned
       description: The virus-scanned Statistics
       type: Number
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: Get a list of servers
     execution: false
     name: trustwave-seg-list-servers
@@ -361,7 +364,8 @@ script:
       description: Timezone offset of the Server
       type: Number
   - arguments:
-    - description: The ID of the server to retrieve its information
+    - default: false
+      description: The ID of the server to retrieve its information
       isArray: false
       name: server_id
       required: true
@@ -428,8 +432,7 @@ script:
     - contextPath: TrustwaveSEG.Server.timeZoneOffset
       description: Timezone offset of the Server
       type: Number
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: Get a list of classifications
     execution: false
     name: trustwave-seg-list-classifications
@@ -446,8 +449,7 @@ script:
     - contextPath: TrustwaveSEG.Classification.type
       description: The type of the Classification
       type: Number
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: Get a list of folders
     execution: false
     name: trustwave-seg-list-quarantine-folders
@@ -500,8 +502,7 @@ script:
     - contextPath: TrustwaveSEG.Folder.securityDescription
       description: The security description of the Folder
       type: String
-  - arguments: []
-    deprecated: false
+  - deprecated: false
     description: Get a list of folders with current day info
     execution: false
     name: trustwave-seg-list-quarantine-folders-with-day-info
@@ -570,7 +571,7 @@ script:
     name: trustwave-seg-list-day-info-by-quarantine-folder
     outputs:
     - contextPath: TrustwaveSEG.DayInfo.endTime
-      description: "The end time of the day info"
+      description: The end time of the day info
       type: Number
     - contextPath: TrustwaveSEG.DayInfo.numFiles
       description: The number of files of the day info
@@ -580,23 +581,23 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: "An optional time range of the search. i.e: 3 months, 1 week,\
-        \ 1 day ago, etc."
+      description: 'An optional time range of the search. i.e: 3 months, 1 week, 1
+        day ago, etc.'
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
-      description: "Start time of the search. format: YYYY-mm-ddTHH:MM:SSZ or 3 months,\
-        \ 1 week, 1 day ago, etc.Given only the start_time, end_time will be set to\
-        \ the current time."
+      description: 'Start time of the search. format: YYYY-mm-ddTHH:MM:SSZ or 3 months,
+        1 week, 1 day ago, etc.Given only the start_time, end_time will be set to
+        the current time.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "End time of the search. format: YYYY-mm-ddTHH:MM:SSZ or i.e: \
-        3 months, 1 week, 1 day ago, etc."
+      description: 'End time of the search. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3
+        months, 1 week, 1 day ago, etc.'
       isArray: false
       name: end_time
       required: false
@@ -669,8 +670,8 @@ script:
       isArray: false
       name: search_history
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -679,8 +680,8 @@ script:
       isArray: false
       name: forwards
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
@@ -695,8 +696,8 @@ script:
       isArray: false
       name: search_blank_subject
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -773,43 +774,43 @@ script:
       required: true
       secret: false
     - default: false
-      description: "edition of the message. Should be retrieved from the find message\
-        \ endpoint. (e.g: \"607ef9ae0000\")"
+      description: 'edition of the message. Should be retrieved from the find message
+        endpoint. (e.g: "607ef9ae0000")'
       isArray: false
       name: edition
       required: true
       secret: false
     - default: false
-      description: "folder ID of the message. Should be retrieved from the find message\
-        \ endpoint. (e.g: 1006)"
+      description: 'folder ID of the message. Should be retrieved from the find message
+        endpoint. (e.g: 1006)'
       isArray: false
       name: folder_id
       required: true
       secret: false
     - default: false
-      description: "The name of the message. Should be retrieved from the find message\
-        \ endpoint. (e.g: \"B607ef9ac0000\")"
+      description: 'The name of the message. Should be retrieved from the find message
+        endpoint. (e.g: "B607ef9ac0000")'
       isArray: false
       name: message_name
       required: true
       secret: false
     - default: false
-      description: "The recipient of the message. Should be retrieved from the find\
-        \ message endpoint. (e.g: email@example.com)"
+      description: 'The recipient of the message. Should be retrieved from the find
+        message endpoint. (e.g: email@example.com)'
       isArray: false
       name: recipient
       required: true
       secret: false
     - default: false
-      description: "The server ID of the message. Should be retrieved from the find\
-        \ message endpoint. (e.g: 1)"
+      description: 'The server ID of the message. Should be retrieved from the find
+        message endpoint. (e.g: 1)'
       isArray: false
       name: server_id
       required: true
       secret: false
     - default: false
-      description: "The logged time of the message. Should be retrieved from the\
-        \ find message endpoint. (e.g: 1618934189)"
+      description: 'The logged time of the message. Should be retrieved from the find
+        message endpoint. (e.g: 1618934189)'
       isArray: false
       name: time_logged
       required: true
@@ -827,15 +828,14 @@ script:
       isArray: false
       name: is_spam
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: true
       secret: false
     deprecated: false
-    description: "Forward a message to spiderlabs as spam "
+    description: Forward a message to spiderlabs as spam
     execution: false
     name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
-    outputs: []
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: false

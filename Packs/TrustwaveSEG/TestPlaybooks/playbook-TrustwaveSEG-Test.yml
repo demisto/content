@@ -1,5 +1,5 @@
 id: TrustwaveSEG-Test
-version: 18
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: TrustwaveSEG-Test
 starttaskid: "0"
@@ -1062,3 +1062,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
