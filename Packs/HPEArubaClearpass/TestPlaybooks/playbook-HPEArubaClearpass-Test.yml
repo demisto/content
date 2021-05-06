@@ -47,7 +47,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-      - "9"
+      - "15"
     scriptarguments:
       all:
         simple: "yes"
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -126,7 +126,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -152,7 +152,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -188,7 +188,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -228,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: db34b17b-3407-4c5b-8b82-1b3c1ef77ca2
+    taskid: a9e507a0-732c-4112-84a8-797c3ffda762
     type: condition
     task:
-      id: db34b17b-3407-4c5b-8b82-1b3c1ef77ca2
+      id: a9e507a0-732c-4112-84a8-797c3ffda762
       version: -1
       name: Verify attributes list
       type: condition
@@ -268,7 +268,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 9aeee4d7-577a-4318-821e-5309a3689802
+    taskid: 706133af-9120-46dd-869f-1402134f1354
     type: regular
     task:
-      id: 9aeee4d7-577a-4318-821e-5309a3689802
+      id: 706133af-9120-46dd-869f-1402134f1354
       version: -1
       name: Create new attribute
       description: Create a new attribute.
@@ -300,13 +300,13 @@ tasks:
       entity_name:
         simple: Device
       name:
-        simple: test_playbook_attribute
+        simple: ${RandomString}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 013ca53f-74e0-4b4d-83df-d4f8f949cc22
+    taskid: effc71fb-7e19-4d3d-8d9f-97a0b99af35c
     type: regular
     task:
-      id: 013ca53f-74e0-4b4d-83df-d4f8f949cc22
+      id: effc71fb-7e19-4d3d-8d9f-97a0b99af35c
       version: -1
       name: Get attribute
       description: Get a list of attributes. If no arguments were given, all of the
@@ -343,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -355,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 172a7c3b-390e-4512-8747-958ed190d256
+    taskid: ba6c521e-36b2-421b-8ee7-45c88852fcca
     type: regular
     task:
-      id: 172a7c3b-390e-4512-8747-958ed190d256
+      id: ba6c521e-36b2-421b-8ee7-45c88852fcca
       version: -1
       name: Update attribute fields
       description: Update some fields of an attribute by the attribute's ID.
@@ -377,13 +377,13 @@ tasks:
       entity_name:
         simple: GuestUser
       name:
-        simple: test_playbook_new_name
+        simple: ${RandomString}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -395,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: cf040f68-8151-4be8-80ee-da3b02c755fc
+    taskid: bfe84785-5a9f-4346-816b-4dc2dd3f79dd
     type: condition
     task:
-      id: cf040f68-8151-4be8-80ee-da3b02c755fc
+      id: bfe84785-5a9f-4346-816b-4dc2dd3f79dd
       version: -1
       name: Verify update attribute
       type: condition
@@ -418,7 +418,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: test_playbook_new_name
+              simple: ${RandomString}
+            iscontext: true
       - - operator: isEqualString
           left:
             value:
@@ -431,7 +432,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -443,10 +444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 49f12ac2-73f9-4529-8109-fec9940fd23a
+    taskid: 1152a779-1996-48a3-8cc2-39d9650a7b5d
     type: regular
     task:
-      id: 49f12ac2-73f9-4529-8109-fec9940fd23a
+      id: 1152a779-1996-48a3-8cc2-39d9650a7b5d
       version: -1
       name: Delete attribute
       description: Delete an attribute.
@@ -465,7 +466,49 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 1245
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: d6e58732-8765-4bbb-832a-eea4bee7d08a
+    type: regular
+    task:
+      id: d6e58732-8765-4bbb-832a-eea4bee7d08a
+      version: -1
+      name: Generate new attribute name
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "7"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 370
         }
       }
     note: false
@@ -480,7 +523,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 1610,
         "width": 922.5,
         "x": 50,
         "y": 50
