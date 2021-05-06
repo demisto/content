@@ -22,4 +22,4 @@ subtype: python3
 dockerimage: demisto/python3:3.9.4.18682
 fromversion: 6.2.0
 tests:
-- No test
+- Relationships scripts - Test
