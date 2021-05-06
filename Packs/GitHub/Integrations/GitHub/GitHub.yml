@@ -2820,8 +2820,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The repository of the pull request. Defaults to repository parameter
-        if not given.
+      description: The repository for the pull request. Defaults to the repository parameter
+        if not provided.
       isArray: false
       name: repository
       required: false
