@@ -2547,7 +2547,8 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 ip_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -2979,7 +2980,8 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 file_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -3011,7 +3013,7 @@ class Common(object):
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description, relations=None):
+        def __init__(self, id, cvss, published, modified, description, relationships=None):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -3045,7 +3047,8 @@ class Common(object):
                 cve_context['Description'] = self.description
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 cve_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -3073,7 +3076,7 @@ class Common(object):
         """
         CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, dbot_score, domain=None, blocked=None, relations=None):
+        def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None):
             # type (str, str, bool) -> None
             self.address = address
             self.domain = domain
@@ -3090,8 +3093,9 @@ class Common(object):
             if self.blocked:
                 email_context['Blocked'] = self.blocked
 
-            if self.relations:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 email_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -3260,7 +3264,8 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 url_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -3476,7 +3481,8 @@ class Common(object):
                 domain_context['WHOIS'] = whois_context
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 domain_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -3558,7 +3564,8 @@ class Common(object):
                 endpoint_context['Processor'] = self.processor
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 endpoint_context['Relationships'] = relationships_context
 
             if self.vendor:
@@ -3647,7 +3654,8 @@ class Common(object):
                 }
 
             if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if relationship.to_context()]
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
                 account_context['Relationships'] = relationships_context
 
             ret_value = {
@@ -5107,75 +5115,75 @@ class EntityRelationship:
         VARIANT_OF = 'variant-of'
 
         RELATIONSHIPS_NAMES = {'applied': 'applied-on',
-                           'attachment-of': 'attaches',
-                           'attaches': 'attachment-of',
-                           'attribute-of': 'owns',
-                           'attributed-by': 'attributed-to',
-                           'attributed-to': 'attributed-by',
-                           'authored-by': 'author-of',
-                           'beacons-to': 'communicated-by',
-                           'bundled-in': 'bundles',
-                           'bundles': 'bundled-in',
-                           'communicated-with': 'communicated-by',
-                           'communicated-by': 'communicates-with',
-                           'communicates-with': 'communicated-by',
-                           'compromises': 'compromised-by',
-                           'contains': 'part-of',
-                           'controls': 'controlled-by',
-                           'created-by': 'creates',
-                           'creates': 'created-by',
-                           'delivered-by': 'delivers',
-                           'delivers': 'delivered-by',
-                           'downloads': 'downloaded-by',
-                           'downloads-from': 'hosts',
-                           'dropped-by': 'drops',
-                           'drops': 'dropped-by',
-                           'duplicate-of': 'duplicate-of',
-                           'embedded-in': 'embeds',
-                           'embeds': 'embedded-on',
-                           'executed': 'executed-by',
-                           'executed-by': 'executes',
-                           'exfiltrates-to': 'exfiltrated-from',
-                           'exploits': 'exploited-by',
-                           'has': 'seen-on',
-                           'hosted-on': 'hosts',
-                           'hosts': 'hosted-on',
-                           'impersonates': 'impersonated-by',
-                           'indicated-by': 'indicator-of',
-                           'indicator-of': 'indicated-by',
-                           'injected-from': 'injects-into',
-                           'injects-into': 'injected-from',
-                           'investigates': 'investigated-by',
-                           'is-also': 'is-also',
-                           'mitigated-by': 'mitigates',
-                           'mitigates': 'mitigated-by',
-                           'originated-from': 'source-of',
-                           'owned-by': 'owns',
-                           'owns': 'owned-by',
-                           'part-of': 'contains',
-                           'related-to': 'related-to',
-                           'remediates': 'remediated-by',
-                           'resolved-by': 'resolves-to',
-                           'resolved-from': 'resolves-to',
-                           'resolves-to': 'resolved-from',
-                           'seen-on': 'has',
-                           'sent': 'attached-to',
-                           'sent-by': 'sent',
-                           'sent-from': 'received-by',
-                           'sent-to': 'received-by',
-                           'similar-to': 'similar-to',
-                           'sub-domain-of': 'supra-domain-of',
-                           'supra-domain-of': 'sub-domain-of',
-                           'subtechnique-of': 'parent-technique-of',
-                           'parent-technique-of': 'subtechnique-of',
-                           'targeted-by': 'targets',
-                           'targets': 'targeted-by',
-                           'Types': 'Reverse',
-                           'uploaded-to': 'hosts',
-                           'used-by': 'uses',
-                           'used-on': 'targeted-by',
-                           'uses': 'used-by',
-                           'variant-of': 'variant-of'}
+                               'attachment-of': 'attaches',
+                               'attaches': 'attachment-of',
+                               'attribute-of': 'owns',
+                               'attributed-by': 'attributed-to',
+                               'attributed-to': 'attributed-by',
+                               'authored-by': 'author-of',
+                               'beacons-to': 'communicated-by',
+                               'bundled-in': 'bundles',
+                               'bundles': 'bundled-in',
+                               'communicated-with': 'communicated-by',
+                               'communicated-by': 'communicates-with',
+                               'communicates-with': 'communicated-by',
+                               'compromises': 'compromised-by',
+                               'contains': 'part-of',
+                               'controls': 'controlled-by',
+                               'created-by': 'creates',
+                               'creates': 'created-by',
+                               'delivered-by': 'delivers',
+                               'delivers': 'delivered-by',
+                               'downloads': 'downloaded-by',
+                               'downloads-from': 'hosts',
+                               'dropped-by': 'drops',
+                               'drops': 'dropped-by',
+                               'duplicate-of': 'duplicate-of',
+                               'embedded-in': 'embeds',
+                               'embeds': 'embedded-on',
+                               'executed': 'executed-by',
+                               'executed-by': 'executes',
+                               'exfiltrates-to': 'exfiltrated-from',
+                               'exploits': 'exploited-by',
+                               'has': 'seen-on',
+                               'hosted-on': 'hosts',
+                               'hosts': 'hosted-on',
+                               'impersonates': 'impersonated-by',
+                               'indicated-by': 'indicator-of',
+                               'indicator-of': 'indicated-by',
+                               'injected-from': 'injects-into',
+                               'injects-into': 'injected-from',
+                               'investigates': 'investigated-by',
+                               'is-also': 'is-also',
+                               'mitigated-by': 'mitigates',
+                               'mitigates': 'mitigated-by',
+                               'originated-from': 'source-of',
+                               'owned-by': 'owns',
+                               'owns': 'owned-by',
+                               'part-of': 'contains',
+                               'related-to': 'related-to',
+                               'remediates': 'remediated-by',
+                               'resolved-by': 'resolves-to',
+                               'resolved-from': 'resolves-to',
+                               'resolves-to': 'resolved-from',
+                               'seen-on': 'has',
+                               'sent': 'attached-to',
+                               'sent-by': 'sent',
+                               'sent-from': 'received-by',
+                               'sent-to': 'received-by',
+                               'similar-to': 'similar-to',
+                               'sub-domain-of': 'supra-domain-of',
+                               'supra-domain-of': 'sub-domain-of',
+                               'subtechnique-of': 'parent-technique-of',
+                               'parent-technique-of': 'subtechnique-of',
+                               'targeted-by': 'targets',
+                               'targets': 'targeted-by',
+                               'Types': 'Reverse',
+                               'uploaded-to': 'hosts',
+                               'used-by': 'uses',
+                               'used-on': 'targeted-by',
+                               'uses': 'used-by',
+                               'variant-of': 'variant-of'}
 
         @staticmethod
         def is_valid(_type):
