@@ -78,7 +78,7 @@ def handle_incident(inc, fields_to_populate, include_context):
     # we flat the custom field to the incident structure, like in the context
     custom_fields = inc.get('CustomFields', {}) or {}
     inc.update(custom_fields)
-    if is_demisto_version_ge('6.2.0') and fields_to_populate and len(fields_to_populate) > 0:
+    if fields_to_populate and len(fields_to_populate) > 0:
         inc = {k: v for k, v in inc.items() if k in fields_to_populate}
     if include_context:
         inc['context'] = get_context(inc['id'])
@@ -102,7 +102,7 @@ def get_fields_to_populate_arg(fields_to_populate):
 
 def get_incidents_by_page(args, page, fields_to_populate, include_context):
     args['page'] = page
-    if len(fields_to_populate) > 0:
+    if is_demisto_version_ge('6.2.0') and len(fields_to_populate) > 0:
         args['populateFields'] = get_fields_to_populate_arg(fields_to_populate)
     res = demisto.executeCommand("getIncidents", args)
     if res[0]['Contents'].get('data') is None:
