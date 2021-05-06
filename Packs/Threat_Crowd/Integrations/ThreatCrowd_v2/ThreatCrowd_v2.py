@@ -17,16 +17,23 @@ DEFAULT_RESOLUTION_LIMIT = 10
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability,
-                 extended_data: bool):
+                 entry_limit: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
-        self.extended_data = extended_data
+        self.entry_limit = entry_limit
 
+    def _get_limit_for_command(self, command_limit:int=None):
+        if command_limit:
+            return None if command_limit == -1 else command_limit
+        else:
+            return self.entry_limit
 
 ''' HELPER FUNCTIONS '''
 
+
 def _get_list_without_empty(list_to_change: list) -> list:
     return [entry for entry in list_to_change if entry]
+
 
 def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[dict]:
     """ Gets a resolution section from response with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"}]
@@ -60,7 +67,7 @@ def _get_dbot_score(json_res: dict) -> Tuple[int, str]:
 def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'ip/report/'
-    entries_limit = None
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
@@ -73,14 +80,13 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             ip, DBotScoreType.IP, VENDOR, score, reliability=client.reliability)
         ip_object = Common.IP(ip, dbot)
 
-        if not client.extended_data:
-            entries_limit = DEFAULT_RESOLUTION_LIMIT
         hashes = res.get('hashes')[:entries_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
-        markdown = f"### Threat crowd report for ip {ip}: \n DBotScore: {score_str} \n" \
-                   f"{tableToMarkdown('Resolutions', resolutions)} \n Hashes: \n {hashes} \n" \
-                   f"{tableToMarkdown('References', res.get('references'))}"
+        markdown = f"### Threat crowd report for ip {ip}: \n  ### DBotScore: {score_str} \n" \
+                   f"{tableToMarkdown('Resolutions', resolutions, removeNull=True)} \n " \
+                   f"{tableToMarkdown('Hashes', hashes, headers='Hashes', removeNull=True)}" \
+                   f"{tableToMarkdown('References', res.get('references'), removeNull=True)}"
 
         outputs = {
             'hashes': hashes,
@@ -121,7 +127,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         email_object = Common.EMAIL(email, dbot)
 
         markdown = f"Threat crowd report for Email {email} \n " \
-                   f"DBotScore: {score_str} \n {tableToMarkdown('Results', res)}"
+                   f"DBotScore: {score_str} \n {tableToMarkdown('Results', res, removeNull=True)}"
 
         # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
@@ -140,7 +146,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'domain/report/'
-    entries_limit = None
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
     domains = argToList(args.get('domain'))
     for domain in domains:
         res = client._http_request(method='GET', url_suffix=api_url, params={'domain': domain})
@@ -152,18 +158,17 @@ def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]
             domain, DBotScoreType.DOMAIN, VENDOR, score, reliability=client.reliability)
         domain_object = Common.Domain(domain, dbot)
 
-        markdown = f"### Threat crowd report for domain {domain} \n DBotScore: {score_str} \n"
-
-        if not client.extended_data:
-            entries_limit = DEFAULT_RESOLUTION_LIMIT
+        markdown = f"### Threat crowd report for domain {domain} \n ### DBotScore: {score_str} \n"
 
         subdomains = res.get('subdomains')[:entries_limit]
         resolutions = handle_resolutions(res.get('resolutions', []), entries_limit)
 
-        markdown += f'{tableToMarkdown("Resolutions", resolutions)} \n'
-        res_without_resolution = res.copy()
-        res_without_resolution.pop("resolutions")
-        markdown += f'{tableToMarkdown("", res_without_resolution)}'
+        markdown += f'{tableToMarkdown("Resolutions", resolutions, removeNull=True)} \n ' \
+                    f'{tableToMarkdown("Subdomains", subdomains, headers=["subdomains"])} \n'
+        res_to_show = res.copy()
+        res_to_show.pop("resolutions")
+        res_to_show.pop("subdomains")
+        markdown += f'{tableToMarkdown(" ", res_to_show, removeNull=True)}'
 
         outputs = {
             'hashes': res.get('hashes'),
@@ -194,9 +199,7 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     command_results: List[CommandResults] = []
     api_url = 'antivirus/report/'
     antivirus_list = argToList(args.get('antivirus'))
-    entries_limit = None
-    if not client.extended_data:
-        entries_limit = DEFAULT_RESOLUTION_LIMIT
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
 
     for antivirus in antivirus_list:
         res = client._http_request(method='GET', url_suffix=api_url, params={'antivirus': antivirus})
@@ -205,7 +208,7 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
         res['value'] = antivirus
         res['hashes'] = res['hashes'][:entries_limit]
 
-        markdown = tableToMarkdown(f"Threat crowd report for antivirus {antivirus}", res)
+        markdown = tableToMarkdown(f"Threat crowd report for antivirus {antivirus}", res, removeNull=True)
 
         # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
@@ -223,6 +226,8 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'file/report/'
     files = argToList(args.get('file'))
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
+
     for file_hash in files:
         res = client._http_request(method='GET', url_suffix=api_url, params={'resource': file_hash})
 
@@ -234,11 +239,11 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             file_hash, DBotScoreType.FILE, VENDOR, score, reliability=client.reliability)
         file_object = Common.File(dbot, md5=res.get('md5'), sha1=res.get('sha1'))
 
-        markdown = f"Threat crowd report for File {file_hash}: \n Reputation: {score_str} \n " \
-                   f"{tableToMarkdown('Results', res)}"
-
         # removes empty entries returned by API
-        res['scans'] = _get_list_without_empty(res.get('scans'))
+        res['scans'] = _get_list_without_empty(res.get('scans'))[:entries_limit]
+
+        markdown = f"Threat crowd report for File {file_hash}: \n ### DBotScore: {score_str} \n " \
+                   f"{tableToMarkdown('Results', res)}".replace('<br>','')
 
         # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
@@ -283,7 +288,7 @@ def main() -> None:
         base_url = params.get('server_url')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
-        extended_data = argToBoolean(params.get('extended_data', False))
+        entry_limit = arg_to_number(params.get('entry_limit'), 'entry_limit', True)
 
         reliability = params.get('integrationReliability')
         reliability = reliability if reliability else DBotScoreReliability.C
@@ -298,7 +303,7 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
             reliability=reliability,
-            extended_data=extended_data
+            entry_limit=entry_limit
         )
 
         if command == 'test-module':

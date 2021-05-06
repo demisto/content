@@ -21,8 +21,21 @@ CLIENT = Client(
     verify=False,
     proxy=False,
     reliability=DBotScoreReliability.C,
-    extended_data=False
+    entry_limit=50
 )
+LIMIT_CASES=[
+    (5 , -1, None), # case where command requires all results while instance is limited
+    (-1, 5, 5), # case where command requires limit amount of result while instance is limitless
+    (-1, -1, None), # case where unlimited results are required
+    (5, None, 5), # case where command does not specified a limit,
+]
+
+@pytest.mark.parametrize("instance_limit,command_limit, expected", LIMIT_CASES)
+def test_get_limit_for_command(instance_limit,command_limit, expected):
+    CLIENT.entry_limit = instance_limit
+    res = CLIENT._get_limit_for_command(command_limit)
+    assert res == expected
+
 
 RESOLUTION_CASES = [
     (True,

@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatCrowdv2
+  id: ThreatCrowd_v2
   version: -1
 configuration:
 - defaultvalue: https://www.threatcrowd.org/searchApi/v2/
@@ -22,12 +22,12 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Whether to get all the resolution information. If disabled, only the 10 most recent entries will be displayed.
-  display: Return extended Data
-  name: extended_data
-  required: false
-  type: 8
-  defaultvalue: false
+- additionalinfo: How many entries to fetch. For full data use -1.
+  defaultvalue: '50'
+  display: Max Number of Entries
+  name: entry_limit
+  required: true
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -38,7 +38,7 @@ configuration:
   type: 8
 description: Query Threat Crowd for reports.
 display: Threat Crowd v2
-name: ThreatCrowdv2
+name: ThreatCrowd_v2
 script:
   commands:
   - arguments:
@@ -48,6 +48,12 @@ script:
       name: ip
       required: true
       secret: false
+    - default: false
+      description: Maximum number of results to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get a report of an IP address.
     execution: false
@@ -56,64 +62,54 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-    - contextPath: IP.ASN
-      description: 'The autonomous system name for the IP address, for example: "AS8948".'
-      type: String
-    - contextPath: IP.Hostname
-      description: The hostname that is mapped to this IP address.
-      type: String
-    - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
-      type: String
-    - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
-      type: String
-    - contextPath: IP.Geo.Description
-      description: Additional information about the location.
-      type: String
-    - contextPath: IP.DetectionEngines
-      description: The total number of engines that checked the indicator.
-      type: Number
-    - contextPath: IP.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
-      type: Number
     - contextPath: IP.Malicious.Vendor
       description: The vendor reporting the IP address as malicious.
       type: String
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: String
-    - contextPath: IP.Tags
-      description: (List) Tags of the IP address.
+    - contextPath: ThreatCrowd.IP.hashes
+      description: Hashes related to the ip.
       type: String
-    - contextPath: IP.FeedRelatedIndicators.value
-      description: Indicators that are associated with the IP address.
+    - contextPath: ThreatCrowd.IP.permalink
+      description: The link to ip in the product.
       type: String
-    - contextPath: IP.FeedRelatedIndicators.type
-      description: The type of the indicators that are associated with the IP address.
+    - contextPath: ThreatCrowd.IP.references
+      description: References related to the ip.
       type: String
-    - contextPath: IP.FeedRelatedIndicators.description
-      description: The description of the indicators that are associated with the
-        IP address.
+    - contextPath: ThreatCrowd.IP.resolutions
+      description: Resolutions related to the ip.
       type: String
-    - contextPath: IP.MalwareFamily
-      description: The malware family associated with the IP address.
+    - contextPath: ThreatCrowd.IP.value
+      description: The ip value.
       type: String
-    - contextPath: IP.Organization.Name
-      description: The organization of the IP address.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
       type: String
-    - contextPath: IP.Organization.Type
-      description: The organization type of the IP address.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
       type: String
-
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
   - arguments:
     - default: true
       description: The domain for which to retrieve a report.
       isArray: true
       name: domain
       required: true
+      secret: false
+    - default: false
+      description: Maximum number of results to fetch.
+      isArray: false
+      name: limit
+      required: false
       secret: false
     deprecated: false
     description: Get a report of a domain.
@@ -123,127 +119,47 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: String
-    - contextPath: Domain.DNS
-      description: A list of IP objects resolved by DNS.
-      type: String
-    - contextPath: Domain.DetectionEngines
-      description: The total number of engines that checked the indicator.
-      type: Number
-    - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
-      type: Number
-    - contextPath: Domain.CreationDate
-      description: The date that the domain was created.
-      type: Date
-    - contextPath: Domain.UpdatedDate
-      description: The date that the domain was last updated.
-      type: String
-    - contextPath: Domain.ExpirationDate
-      description: The expiration date of the domain.
-      type: Date
-    - contextPath: Domain.DomainStatus
-      description: The status of the domain.
-      type: Datte
-    - contextPath: Domain.NameServers
-      description: (List<String>) Name servers of the domain.
-      type: Unknown
-    - contextPath: Domain.Organization
-      description: The organization of the domain.
-      type: String
-    - contextPath: Domain.Subdomains
-      description: (List<String>) Subdomains of the domain.
-      type: Unknown
-    - contextPath: Domain.Admin.Country
-      description: The country of the domain administrator.
-      type: String
-    - contextPath: Domain.Admin.Email
-      description: The email address of the domain administrator.
-      type: String
-    - contextPath: Domain.Admin.Name
-      description: The name of the domain administrator.
-      type: String
-    - contextPath: Domain.Admin.Phone
-      description: The phone number of the domain administrator.
-      type: String
-    - contextPath: Domain.Registrant.Country
-      description: The country of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.Email
-      description: The email address of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.Name
-      description: The name of the registrant.
-      type: String
-    - contextPath: Domain.Registrant.Phone
-      description: The phone number for receiving abuse reports.
-      type: String
-    - contextPath: Domain.Tags
-      description: (List) Tags of the domain.
-      type: String
-    - contextPath: Domain.FeedRelatedIndicators.value
-      description: Indicators that are associated with the domain.
-      type: String
-    - contextPath: Domain.FeedRelatedIndicators.type
-      description: The type of the indicators that are associated with the domain.
-      type: String
-    - contextPath: Domain.FeedRelatedIndicators.description
-      description: The description of the indicators that are associated with the
-        domain.
-      type: String
-    - contextPath: Domain.MalwareFamily
-      description: The malware family associated with the domain.
-      type: String
-    - contextPath: Domain.WHOIS.DomainStatus
-      description: The status of the domain.
-      type: String
-    - contextPath: Domain.WHOIS.NameServers
-      description: (List<String>) Name servers of the domain.
-      type: String
-    - contextPath: Domain.WHOIS.CreationDate
-      description: The date that the domain was created.
-      type: Date
-    - contextPath: Domain.WHOIS.UpdatedDate
-      description: The date that the domain was last updated.
-      type: Date
-    - contextPath: Domain.WHOIS.ExpirationDate
-      description: The expiration date of the domain.
-      type: Date
-    - contextPath: Domain.WHOIS.Registrant.Name
-      description: The name of the registrant.
-      type: String
-    - contextPath: Domain.WHOIS.Registrant.Email
-      description: The email address of the registrant.
-      type: String
-    - contextPath: Domain.WHOIS.Registrant.Phone
-      description: The phone number of the registrant.
-      type: String
-    - contextPath: Domain.WHOIS.Registrar.Name
-      description: 'The name of the registrar, for example: "GoDaddy".'
-      type: String
-    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
-      description: The email address of the contact for reporting abuse.
-      type: String
-    - contextPath: Domain.WHOIS.Registrar.AbusePhone
-      description: The phone number of the contact for reporting abuse.
-      type: String
-    - contextPath: Domain.WHOIS.Admin.Name
-      description: The name of the domain administrator.
-      type: String
-    - contextPath: Domain.WHOIS.Admin.Email
-      description: The email address of the domain administrator.
-      type: String
-    - contextPath: Domain.WHOIS.Admin.Phone
-      description: The phone number of the domain administrator.
-      type: String
-    - contextPath: Domain.WHOIS/History
-      description: List of Whois objects.
-      type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
       type: String
     - contextPath: Domain.Malicious.Description
       description: A description explaining why the domain was reported as malicious.
+      type: String
+    - contextPath: ThreatCrowd.Domain.hashes
+      description: Hashes related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.permalink
+      description: A link to domain search in the product.
+      type: String
+    - contextPath: ThreatCrowd.Domain.references
+      description: References related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.resolutions
+      description: Resolutions related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.subdomains
+      description: The subdomains related to the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.value
+      description: The name of the domain.
+      type: String
+    - contextPath: ThreatCrowd.Domain.votes
+      description: The votes given to the domain.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
   - arguments:
     - default: true
@@ -252,13 +168,43 @@ script:
       name: email
       required: true
       secret: false
+    - default: false
+      description: Maximum number of results to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get a report of an email address.
     execution: false
     name: email
     outputs:
-    - contextPath: ThreatCrowd.Account
+    - contextPath: ThreatCrowd.Account.value
       description: The email address.
+      type: String
+    - contextPath: ThreatCrowd.Account.domains
+      description: The domains related to the email address.
+      type: String
+    - contextPath: ThreatCrowd.Account.permalink
+      description: The Link to the email address in the product.
+      type: String
+    - contextPath: ThreatCrowd.Account.references
+      description: The refernces related to the email address.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
   - arguments:
     - default: false
@@ -267,10 +213,29 @@ script:
       name: antivirus
       required: true
       secret: false
+    - default: false
+      description: Maximum number of results to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get a report of an antivirus.
     execution: false
     name: threat-crowd-antivirus
+    outputs:
+    - contextPath: ThreatCrowd.AntiVirus.hashes
+      description: The hashes related to the antivirus.
+      type: String
+    - contextPath: ThreatCrowd.AntiVirus.permalink
+      description: The link to the antivitrus in the product.
+      type: String
+    - contextPath: ThreatCrowd.AntiVirus.references
+      description: The references of the antivirus.
+      type: Unknown
+    - contextPath: ThreatCrowd.AntiVirus.value
+      description: The name of the antivirus.
+      type: String
   - arguments:
     - default: true
       description: The hash for which to retrieve a report.
@@ -278,99 +243,67 @@ script:
       name: file
       required: true
       secret: false
+    - default: false
+      description: Maximum number of results to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Get a report of a hash.
     execution: false
     name: file
     outputs:
-    - contextPath: File.Name
-      description: The full file name (including file extension).
-      type: String
-    - contextPath: File.EntryID
-      description: The ID for locating the file in the War Room.
-      type: String
-    - contextPath: File.Size
-      description: The size of the file in bytes.
-      type: Number
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
     - contextPath: File.SHA1
       description: The SHA1 hash of the file.
       type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.SHA512
-      description: The SHA512 hash of the file.
-      type: String
-    - contextPath: File.SSDeep
-      description: The ssdeep hash of the file (same as displayed in file entries).
-      type: String
-    - contextPath: File.Extension
-      description: 'The file extension, for example: "xls".'
-      type: String
-    - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in
-        file entries).
-      type: String
-    - contextPath: File.Hostname
-      description: The name of the host where the file was found. Should match Path.
-      type: String
-    - contextPath: File.Path
-      description: The path where the file is located.
-      type: String
-    - contextPath: File.Company
-      description: The name of the company that released a binary.
-      type: String
-    - contextPath: File.ProductName
-      description: The name of the product to which this file belongs.
-      type: String
-    - contextPath: File.DigitalSignature.Publisher
-      description: The publisher of the digital signature for the file.
-      type: String
-    - contextPath: File.Actor
-      description: The actor reference.
-      type: String
-    - contextPath: File.Tags
-      description: (List) Tags of the file.
-      type: Unknown
-    - contextPath: File.FeedRelatedIndicators.value
-      description: Indicators that are associated with the file.
-      type: String
-    - contextPath: File.FeedRelatedIndicators.type
-      description: The type of the indicators that are associated with the file.
-      type: String
-    - contextPath: File.FeedRelatedIndicators.description
-      description: The description of the indicators that are associated with the
-        file.
-      type: String
-    - contextPath: File.MalwareFamily
-      description: The malware family associated with the file.
-      type: String
-    - contextPath: File.Signature.Authentihash
-      description: The authentication hash.
-      type: String
-    - contextPath: File.Signature.Copyright
-      description: Copyright information.
-      type: String
-    - contextPath: File.Signature.Description
-      description: A description of the signature.
-      type: String
-    - contextPath: File.Signature.FileVersion
-      description: The file version.
-      type: String
-    - contextPath: File.Signature.InternalName
-      description: The internal name of the file.
-      type: String
-    - contextPath: File.Signature.OriginalName
-      description: The original name of the file.
-      type: String
     - contextPath: File.Malicious.Vendor
       description: The vendor that reported the file as malicious.
       type: String
     - contextPath: File.Malicious.Description
       description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: ThreatCrowd.File.sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: ThreatCrowd.File.references
+      description: The refernces related to the file.
+      type: String
+    - contextPath: ThreatCrowd.File.permalink
+      description: The link to the file in the product.
+      type: String
+    - contextPath: ThreatCrowd.File.ips
+      description: The ips related to the file.
+      type: String
+    - contextPath: ThreatCrowd.File.domains
+      description: The domains related to the file.
+      type: String
+    - contextPath: ThreatCrowd.File.value
+      description: The file identifier.
+      type: String
+    - contextPath: ThreatCrowd.File.scans
+      description: The scans related to thefile.
+      type: String
+    - contextPath: ThreatCrowd.File.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
       type: String
   dockerimage: demisto/python3:3.9.4.18682
   feed: false
