@@ -12,7 +12,6 @@ import traceback
 def to_context(relationships: list, verbose: bool) -> List[dict]:
     """
     Create context entries from the relationships returned from the searchRelationships command.
-
     :type relationships: ``list``
     :param relationships: list of dict of relationships from the searchRelationships command.
 
