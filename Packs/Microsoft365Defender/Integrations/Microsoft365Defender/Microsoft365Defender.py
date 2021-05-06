@@ -483,8 +483,6 @@ def main() -> None:
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
 
         elif command == 'fetch-incidents':
-            start_auth(client)
-            complete_auth(client)
             fetch_limit = arg_to_number(fetch_limit)
             fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
             incidents = fetch_incidents(client, first_fetch_time, fetch_limit, fetch_timeout)
