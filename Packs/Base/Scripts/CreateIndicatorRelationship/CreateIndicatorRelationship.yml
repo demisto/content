@@ -276,7 +276,6 @@ commonfields:
   version: -1
 enabled: false
 name: CreateIndicatorRelationship
-outputs:
 script: '-'
 system: false
 tags:
