@@ -1653,7 +1653,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1680,12 +1680,95 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "57":
+    id: "57"
+    taskid: 9c880392-8c36-4822-8e9a-590824662c94
+    type: regular
+    task:
+      id: 9c880392-8c36-4822-8e9a-590824662c94
+      version: -1
+      name: Github-list-files
+      description: Get list of files from the given path in the repository.
+      script: '|||Github-list-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: f749927a-3d90-438f-8335-5e689f61245b
+    type: condition
+    task:
+      id: f749927a-3d90-438f-8335-5e689f61245b
+      version: -1
+      name: Verify Results - list files
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "15"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: containsGeneral
+              left:
+                value:
+                  complex:
+                    root: GitHub.File
+                    accessor: Name
+                iscontext: true
+              right:
+                value:
+                  simple: TEST.md
+          - - operator: isEqualString
+              left:
+                value:
+                  complex:
+                    root: GitHub.File
+                    accessor: Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 4315
+        }
+      }
+    note: false
+    timertriggers: [ ]
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4140,
+        "height": 4520,
         "width": 2427.5,
         "x": 50,
         "y": 50
