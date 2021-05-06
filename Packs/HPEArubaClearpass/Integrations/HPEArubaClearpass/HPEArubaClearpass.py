@@ -36,6 +36,7 @@ class Client(BaseClient):
         """
         Makes an HTTP request in order to get back a new access token.
         """
+        demisto.debug("access token does not exist, trying to generate a new one")
         body = {
             "grant_type": "client_credentials",
             "client_id": self.client_id,
@@ -85,6 +86,7 @@ class Client(BaseClient):
         integration_context = get_integration_context()
         self.access_token = integration_context.get('access_token')
         self.set_request_headers()
+        demisto.debug("access token is valid")
 
     def login(self):
         """
@@ -148,6 +150,7 @@ def parse_items_response(response: dict, parsing_function):  # type:ignore
             items_list (list): List (of dictionaries) of all items from the response,
             going to be set as outputs (context data).
     """
+    demisto.debug(f"parsing response by the function {parsing_function}")
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
     if items_list:
