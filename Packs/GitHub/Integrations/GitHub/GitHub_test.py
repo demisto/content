@@ -33,7 +33,7 @@ def test_search_code(requests_mock, mocker):
 
     results = demisto.results.call_args[0][0]
     assert results['Contents'] == raw_response
-    assert len(results['EntryContext']['GitHub.CodeSearchResults(val.html_url == obj.html_url)']) == 7
+    assert len(results['EntryContext']['GitHub.CodeSearchResults(val.html_url && val.html_url == obj.html_url)']) == 7
     assert 'Repository Name' in results['HumanReadable']
 
 
