@@ -1216,7 +1216,8 @@ function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
-2. Run the following command **!$script:COMMAND_PREFIX-auth-complete** in the War Room."
+2. Run the **!$script:COMMAND_PREFIX-auth-complete** command in the War Room.
+3. Run the **!$script:COMMAND_PREFIX-auth-test** command in the War Room to test the completion of the authorization process and the configured parameters."
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response
