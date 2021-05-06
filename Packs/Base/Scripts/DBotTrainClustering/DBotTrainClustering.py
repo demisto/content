@@ -192,7 +192,6 @@ class PostProcessing(object):
                 self.clustering.model.labels_ == number_cluster)  # type: ignore
             ind = np.where(self.clustering.model.labels_ == number_cluster)[0]  # type: ignore
             selected_data = [x for x in self.clustering.raw_data.iloc[ind][FAMILY_COLUMN_NAME]]  # type: ignore
-            # flat_list = [item for sublist in selected_data for item in sublist]
             counter = collections.Counter(selected_data)
             total = sum(dict(counter).values(), 0.0)
             dist = {k: v * 100 / total for k, v in counter.items()}
@@ -493,7 +492,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     :param model_processed: Postprocessing
     :param incidents_df: incidents_df
     :param type: type of incident
-    :return:
+    :return: json with information on the clusters
     """
     clustering = model_processed.clustering
     data = {}  # type: ignore
@@ -503,19 +502,13 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     for cluster_number, coordinates in clustering.centers.items():
         if cluster_number not in model_processed.selected_clusters.keys():
             continue
-        d = {}
-        d['x'] = float(coordinates[0])
-        d['y'] = float(coordinates[1])
-        d['name'] = model_processed.selected_clusters[cluster_number]['clusterName']
-        d['dataType'] = 'incident'  # type: ignore
-        d['color'] = color[divmod(cluster_number, len(color))[1]]
-        d['pivot'] = str(cluster_number)  # type: ignore
-        d['incidents_ids'] = [x for x in incidents_df[  # type: ignore
-            clustering.model.labels_ == cluster_number].id.values.tolist()]  # type: ignore
-        d['query'] = 'type:%s' % type  # type: ignore
-        d['data'] = [int(model_processed.stats[cluster_number]['number_samples'])]  # type: ignore
+        d = {'x': float(coordinates[0]), 'y': float(coordinates[1]),
+             'name': model_processed.selected_clusters[cluster_number]['clusterName'], 'dataType': 'incident',
+             'color': color[divmod(cluster_number, len(color))[1]], 'pivot': str(cluster_number),
+             'incidents_ids': [x for x in incidents_df[  # type: ignore
+                 clustering.model.labels_ == cluster_number].id.values.tolist()], 'query': 'type:%s' % type,  # type: ignore
+             'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
-
     pretty_json = json.dumps(data, indent=4, sort_keys=True)
     return pretty_json
 
@@ -605,8 +598,15 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: pd.DataFrame, *list_of_field_list: List[str]) -> \
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str]) -> \
         pd.DataFrame:
+    """
+    Handle nested fields by concatening values for each sub list of the field
+    :param incidents_df: DataFrame of incidents
+    :param incidents: List of incident
+    :param list_of_field_list: field which can be nested. Can be also no nested field and will remain the same
+    :return: DataFrame with nested field columns updated
+    """
     for field_type in list_of_field_list:
         for field in field_type:
             if '.' in field:
@@ -643,6 +643,11 @@ def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.Da
 
 
 def get_model_data(model_name):
+    """
+    Return model in base 64 and message about the load of the model
+    :param model_name: model_name
+    :return:
+    """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if not is_error(res_model):
         model_data = res_model['Contents']['modelData']
@@ -655,7 +660,14 @@ def get_model_data(model_name):
         return None, MESSAGE_ERROR_MESSAGE
 
 
-def is_model_needs_retrain(force_retrain, model_expiration, model_name):
+def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
+    """
+    Return boolean if the model needs to be retrain based on the expiration of the model and force_retrain atgument
+    :param force_retrain: boolean if the user cho to retrain the model in any case
+    :param model_expiration: period in hour after which you want to retrain the model
+    :param model_name: model_name
+    :return: PostProcessing model, boolean if needs to be retrained
+    """
     if force_retrain:
         return None, True
     model_data, model_type = get_model_data(model_name)
@@ -667,7 +679,12 @@ def is_model_needs_retrain(force_retrain, model_expiration, model_name):
         return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
 
 
-def load_model64(model_base64):
+def load_model64(model_base64: str):
+    """
+    Load model from base64 model
+    :param model_base64: string base64 model
+    :return: PostProcessing model
+    """
     try:
         model = pickle.loads(base64.b64decode(model_base64))
         return model
@@ -676,6 +693,13 @@ def load_model64(model_base64):
 
 
 def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name):
+    """
+
+    :param generic_cluster_name: if using generic name or field name given by the user in argument
+    :param incidents_df: dataframe of incidents
+    :param field_for_cluster_name: field for cluster name given by the user
+    :return: labels
+    """
     if generic_cluster_name:
         incidents_df[FAMILY_COLUMN_NAME] = ""
         labels = incidents_df[FAMILY_COLUMN_NAME]
