@@ -1,0 +1,142 @@
+.push-rule:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+
+
+.download-configuration: &download_demisto_conf
+  - echo "======= Download configuration ========"
+  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+
+
+create-instances:
+  extends:
+    - .default-job-settings
+    - .push-rule
+  cache:
+    policy: pull-push
+    when: always
+  needs: []
+  stage: create-instances
+  script:
+    - *download_demisto_conf
+    - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
+    - ./Documentation/commonServerDocs.sh
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
+    - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+    - echo $successful_feature_branch_build
+    - python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure")
+    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - python3 ./Tests/scripts/update_conf_json.py
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - |
+      if [ -n "${INSTANCE_TESTS}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        echo "====== Collecting tests and content packs ======"
+        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+      fi
+    - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - |
+      if [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+        echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
+      else
+        echo "====== Preparing Content Packs For Testing ======"
+        ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+      fi
+    - |
+      if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
+        echo "Skipping packs download to artifact on non master or release branch"
+      else
+        ZIP_FOLDER=$(mktemp -d)
+        python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
+      fi
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        echo "====== Uploading artifacts to GCP ======"
+        ./Tests/scripts/upload_artifacts.sh
+      fi
+    - |
+      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
+        echo "Skipping - not running in INSTANCE_TESTS build"
+      else
+        echo "====== Creating instances ======"
+        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+        if [ -n "${NIGHTLY}" ]; then
+          export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+        elif [ -n "${INSTANCE_TESTS}" ]; then
+          export IFRA_ENV_TYPE="Server 5.5" # disable-secrets-detection
+        elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+          export IFRA_ENV_TYPE="Server Master" # disable-secrets-detection
+        elif [ -n "${BUCKET_UPLOAD}" ]; then
+          export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
+        else
+          export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+        fi
+        python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+      fi
+
+
+.test_content_on_server_instances_base:
+  extends:
+    - .default-job-settings
+    - .push-rule
+  needs: ["create-instances"]
+  stage: run-instances
+  dependencies:
+    - create-instances
+  script:
+    - *download_demisto_conf
+    - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+# If instance was not created
+    - |
+      if [[ "$TEMP" != "true" && -z "${NIGHTLY}" ]]; then
+        echo "Instance with role $INSTANCE_ROLE was not created"
+        exit 0
+      fi
+    - mv $SSH_CONFIGURATION ~/.ssh/config
+    - chmod 700 ~/.ssh/config
+    - Tests/scripts/open_ssh_tunnel.sh
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+    - |
+      if [ -f ./Tests/failed_tests.txt ]; then
+        cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
+      fi
+    - |
+      if [ $INSTANCE_ROLE == "Server Master" ]; then
+        ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json
+      fi
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+    - zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+    - rm -f $ARTIFACTS_FOLDER/server*.log
+
+
+server_5_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.0"
+
+server_5_5:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 5.5"
+
+server_6_0:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server 6.0"
+
+server_master:
+  extends: .test_content_on_server_instances_base
+  variables:
+    INSTANCE_ROLE: "Server Master"
