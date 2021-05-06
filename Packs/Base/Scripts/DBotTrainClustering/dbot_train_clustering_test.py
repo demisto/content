@@ -17,7 +17,8 @@ PARAMETERS_DICT = {
     'type': 'Phishing',
     'maxRatioOfMissingValue': 0.5,
     'modelExpiration': 24,
-    'forceRetrain': 'True'
+    'forceRetrain': 'True',
+    'modelHidden' : 'False'
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [
