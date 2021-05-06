@@ -1,7 +1,7 @@
 {
     "name": "Intel471 Feed",
     "description": "This pack fetches actor and malware related indicators from Intel 471.",
-    "support": "xsoar",
+    "support": "partner",
     "currentVersion": "1.1.5",
     "author": "Intel 471",
     "url": "https://www.intel471.com",
