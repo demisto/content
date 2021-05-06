@@ -73,7 +73,7 @@ class Client(BaseClient):
 
 
 def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
-    """Parse the objects retrieved from the feed.
+    """Parse the IOC objects retrieved from the feed.
     Args:
       indicator_objects: a list of objects containing the indicators.
       feed_tags: feed tags.
@@ -109,10 +109,10 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
 
 
 def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
-    """Parse the objects retrieved from the feed.
+    """Parse the Reports objects retrieved from the feed.
 
     Args:
-      report_objects: a list of objects containing the reports.
+      report_objects: a list of report objects containing the reports.
       feed_tags: feed tags.
       tlp_color: Traffic Light Protocol color.
 
@@ -152,6 +152,16 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
 
 
 def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
+    """Parse the Campaign objects retrieved from the feed.
+
+    Args:
+      campaigns_obj: a list of campaign objects containing the campaign.
+      feed_tags: feed tags.
+      tlp_color: Traffic Light Protocol color.
+
+    Returns:
+        A list of processed campaign.
+    """
     campaigns_indicators = []
     for campaign in campaigns_obj:
         indicator_obj = {
@@ -197,6 +207,15 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
 
 
 def get_indicator_publication(indicator):
+    """
+    Build publications grid field from the indicator external_references field
+
+    Args:
+        indicator: The indicator with publication field
+
+    Returns:
+        list. publications grid field
+    """
     publications = []
     for external_reference in indicator.get('external_references', []):
         if external_reference.get('external_id'):
@@ -220,10 +239,15 @@ def get_attack_id_and_value_from_name(attack_indicator):
 
 
 def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_color) -> List:
-    """Creates Attack Pattern indicators with the related mitre course of action.
+    """Parse the Attack Pattern objects retrieved from the feed.
+
+    Args:
+      attack_indicator_objects: a list of Attack Pattern objects containing the Attack Pattern.
+      feed_tags: feed tags.
+      tlp_color: Traffic Light Protocol color.
 
     Returns:
-        Attack Pattern indicators list.
+        A list of processed Attack Pattern.
     """
 
     attack_pattern_indicators = []
@@ -256,6 +280,16 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
 
 def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_color):
+    """Parse the Course of Action objects retrieved from the feed.
+
+    Args:
+      course_of_action_objects: a list of Course of Action objects containing the Course of Action.
+      feed_tags: feed tags.
+      tlp_color: Traffic Light Protocol color.
+
+    Returns:
+        A list of processed campaign.
+    """
     course_of_action_indicators = []
 
     for coa_indicator in course_of_action_objects:
@@ -284,6 +318,16 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
 
 
 def get_ioc_type(indicator, id_to_object):
+    """
+    Get IOC type by extracting it from the pattern field.
+
+    Args:
+        indicator: the indicator to get information on.
+        id_to_object: a dict in the form of - id: stix_object.
+
+    Returns:
+        str. the IOC type.
+    """
     ioc_type = ''
     indicator_obj = id_to_object.get(indicator, {})
     pattern = indicator_obj.get('pattern', '')
@@ -295,12 +339,31 @@ def get_ioc_type(indicator, id_to_object):
 
 
 def get_ioc_value(ioc, id_to_obj):
+    """
+    Get IOC value from the indicator name field.
+
+    Args:
+        ioc: the indicator to get information on.
+        id_to_obj: a dict in the form of - id: stix_object.
+
+    Returns:
+        str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix.
+    """
     ioc_obj = id_to_obj.get(ioc)
     if ioc_obj:
         return f"[Unit42 ATOM] {ioc_obj.get('name')}" if ioc_obj.get('type') == 'report' else ioc_obj.get('name')
 
 
 def create_list_relationships(relationships_objects, id_to_object):
+    """Parse the Relationships objects retrieved from the feed.
+
+    Args:
+      relationships_objects: a list of relationships objects containing the relationships.
+      id_to_object: a dict in the form of - id: stix_object.
+
+    Returns:
+        A list of processed relationships.
+    """
     relationships_list = []
 
     for relationships_object in relationships_objects:
@@ -355,7 +418,7 @@ def test_module(client: Client) -> str:
 
 def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[str] = None,
                      create_relationships=False) -> List[Dict]:
-    """Retrieves indicators and reports from the feed
+    """Retrieves indicators from the feed
 
     Args:
         client: Client object with request
@@ -363,7 +426,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         tlp_color: Traffic Light Protocol color.
         create_relationships: Create indicators relationships
     Returns:
-        List. Processed indicators and reports from feed.
+        List. Processed indicators from feed.
     """
     item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship',
                                     'course-of-action']

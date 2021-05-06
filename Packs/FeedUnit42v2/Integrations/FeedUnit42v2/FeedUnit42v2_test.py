@@ -12,7 +12,7 @@ from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DA
     (get_indicators_command, {'limit': 5}, INDICATORS_DATA, 5),
 ])  # noqa: E124
 def test_commands(command, args, response, length, mocker):
-    """Unit test
+    """
     Given
     - get_indicators_command func
     - command args
@@ -43,7 +43,7 @@ TYPE_TO_RESPONSE = {
 
 
 def test_fetch_indicators_command(mocker):
-    """Unit test
+    """
     Given
     - fetch incidents command
     - command args
@@ -53,6 +53,7 @@ def test_fetch_indicators_command(mocker):
     Then
     - run the fetch incidents command using the Client
     Validate the amount of indicators fetched
+    Validate that the dummy indicator with the relationships list fetched
     """
 
     def mock_get_stix_objects(test, **kwargs):
@@ -68,7 +69,7 @@ def test_fetch_indicators_command(mocker):
 
 
 def test_feed_tags_param(mocker):
-    """Unit test
+    """
     Given
     - fetch incidents command
     - command args
@@ -99,11 +100,29 @@ def test_feed_tags_param(mocker):
     ('modified', '2020-03-16T15:38:37.650Z\n2020-01-17T16:45:24.252Z', '2020-03-16T15:38:37.650Z'),
 ])
 def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_result):
+    """
+    Given
+    - created / modified indicator field
+    When
+    - this field contains two dates
+    Then
+    - run the handle_multiple_dates_in_one_field
+    Validate The field contain one specific date.
+    """
     from FeedUnit42v2 import handle_multiple_dates_in_one_field
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
 
 
 def test_get_indicator_publication():
+    """
+    Given
+    - Indicator with external_reference field
+    When
+    - we extract this field to publications grid field
+    Then
+    - run the get_indicator_publication
+    Validate The grid field extracted successfully.
+    """
     from FeedUnit42v2 import get_indicator_publication
     assert get_indicator_publication(ATTACK_PATTERN_DATA[0]) == PUBLICATIONS
 
@@ -113,42 +132,114 @@ def test_get_indicator_publication():
     ({"name": "T1078: Valid Accounts"}, ("T1078", "Valid Accounts"))
 ])
 def test_get_attack_id_and_value_from_name(indicator_name, expected_result):
+    """
+    Given
+    - Indicator with name field
+    When
+    - we extract this field to ID and value fields
+    Then
+    - run the get_attack_id_and_value_from_name
+    Validate The ID and value fields extracted successfully.
+    """
     from FeedUnit42v2 import get_attack_id_and_value_from_name
     assert get_attack_id_and_value_from_name(indicator_name) == expected_result
 
 
 def test_parse_indicators():
+    """
+    Given
+    - list of IOCs in STIX format.
+    When
+    - we extract this IOCs list to Demisto format
+    Then
+    - run the parse_indicators
+    Validate The IOCs list extracted successfully.
+    """
     from FeedUnit42v2 import parse_indicators
     assert parse_indicators(INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
 
 
 def test_parse_reports():
+    """
+    Given
+    - list of reports in STIX format.
+    When
+    - we extract this reports list to Demisto format
+    Then
+    - run the parse_reports
+    Validate The reports list extracted successfully.
+    """
     from FeedUnit42v2 import parse_reports
     assert parse_reports(REPORTS_DATA, [], '') == REPORTS_INDICATORS
 
 
 def test_parse_campaigns():
+    """
+    Given
+    - list of campaigns in STIX format.
+    When
+    - we extract this campaigns list to Demisto format
+    Then
+    - run the parse_campaigns
+    Validate The campaigns list extracted successfully.
+    """
     from FeedUnit42v2 import parse_campaigns
     assert parse_campaigns(CAMPAIGN_RESPONSE, [], '') == CAMPAIGN_INDICATOR
 
 
 def test_create_attack_pattern_indicator():
+    """
+    Given
+    - list of IOCs in STIX format.
+    When
+    - we extract this attack pattern list to Demisto format
+    Then
+    - run the attack_pattern_indicator
+    Validate The attack pattern list extracted successfully.
+    """
     from FeedUnit42v2 import create_attack_pattern_indicator
     assert create_attack_pattern_indicator(ATTACK_PATTERN_DATA, [], '') == ATTACK_PATTERN_INDICATOR
 
 
 def test_create_course_of_action_indicators():
+    """
+    Given
+    - list of course of action in STIX format.
+    When
+    - we extract this course of action list to Demisto format
+    Then
+    - run the create_course_of_action_indicators
+    Validate The course of action list extracted successfully.
+    """
     from FeedUnit42v2 import create_course_of_action_indicators
     assert create_course_of_action_indicators(COURSE_OF_ACTION_DATA, [], '') == COURSE_OF_ACTION_INDICATORS
 
 
 def test_get_ioc_type():
+    """
+    Given
+    - IOC ID to get its type.
+    When
+    - we extract its type from the pattern field
+    Then
+    - run the get_ioc_type
+    Validate The IOC type extracted successfully.
+    """
     from FeedUnit42v2 import get_ioc_type
     assert get_ioc_type('indicator--01a5a209-b94c-450b-b7f9-946497d91055', ID_TO_OBJECT) == 'IP'
     assert get_ioc_type('indicator--fd0da09e-a0b2-4018-9476-1a7edd809b59', ID_TO_OBJECT) == 'URL'
 
 
 def test_get_ioc_value():
+    """
+    Given
+    - IOC ID to get its value.
+    When
+    - we extract its value from the name field
+    Then
+    - run the get_ioc_value
+    Validate The IOC value extracted successfully.
+    """
     from FeedUnit42v2 import get_ioc_value
     assert get_ioc_value('indicator--01a5a209-b94c-450b-b7f9-946497d91055', ID_TO_OBJECT) == 'T111: Software Discovery'
     assert get_ioc_value('indicator--fd0da09e-a0b2-4018-9476-1a7edd809b59', ID_TO_OBJECT) == 'Deploy XSOAR Playbook'
@@ -156,5 +247,14 @@ def test_get_ioc_value():
 
 
 def test_create_list_relationships():
+    """
+    Given
+    - list of relationships in STIX format.
+    When
+    - we extract this relationships list to Demisto format
+    Then
+    - run the create_list_relationships
+    Validate The relationships list extracted successfully.
+    """
     from FeedUnit42v2 import create_list_relationships
     assert create_list_relationships(RELATIONSHIP_DATA, ID_TO_OBJECT) == RELATIONSHIP_OBJECTS
