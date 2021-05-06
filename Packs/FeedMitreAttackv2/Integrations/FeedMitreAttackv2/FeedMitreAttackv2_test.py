@@ -20,13 +20,26 @@ def mock_create_relations(original):
     ([RELATION.get('response')], RELATION.get('indicator'))
 ])
 def test_fetch_indicators(mocker, indicator, expected_result):
+    """
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the Client's get_stix_objects.
+    Then
+    - run the fetch incidents command using the Client
+    Validate that all the indicators extracted successfully
+    """
     import FeedMitreAttackv2 as fm
     from FeedMitreAttackv2 import Client, create_relationship
     client = Client(url="https://cti-taxii.mitre.org", proxies=False, verify=False, tags=[], tlp_color=None)
     client.initialise()
+
     mocker.patch.object(TAXIICollectionSource, 'query', return_value=indicator)
     mocker.patch.object(json, 'loads', return_value=indicator[0])
     mocker.patch.object(fm, 'create_relationship', wraps=mock_create_relations(create_relationship))
+
     indicators = client.build_iterator(create_relationships=True, limit=6)
     assert indicators == expected_result
 
@@ -38,6 +51,15 @@ def test_fetch_indicators(mocker, indicator, expected_result):
     ('modified', '2020-03-16T15:38:37.650Z\n2020-01-17T16:45:24.252Z', '2020-03-16T15:38:37.650Z'),
 ])
 def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_result):
+    """
+    Given
+    - created / modified indicator field
+    When
+    - this field contains two dates
+    Then
+    - run the handle_multiple_dates_in_one_field
+    Validate The field contain one specific date.
+    """
     from FeedMitreAttackv2 import handle_multiple_dates_in_one_field
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
 
@@ -48,6 +70,15 @@ def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_re
     ({}, False)
 ])
 def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
+    """
+   Given
+   - indicator in STIX format.
+   When
+   - we cheed
+   Then
+   - run the create_list_relationships
+   Validate The relationships list extracted successfully.
+   """
     from FeedMitreAttackv2 import is_indicator_deprecated_or_revoked
     assert is_indicator_deprecated_or_revoked(indicator) == expected_result
 
@@ -65,6 +96,15 @@ def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
 
 
 def test_create_relationship():
+    """
+   Given
+   - relationship obj in STIX format.
+   When
+   - we extract this relationship to Demisto format
+   Then
+   - run the create_relationship
+   Validate The relationship extracted successfully.
+   """
     from FeedMitreAttackv2 import create_relationship
     relation = create_relationship(RELATION.get('response'), ID_TO_NAME)
     relation._entity_a = 'entity a'
