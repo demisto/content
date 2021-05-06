@@ -474,12 +474,15 @@ def main() -> None:
             return_results(test_connection(client))
 
         elif command == 'microsoft-365-defender-incidents-list':
+            test_context_for_token()
             return_results(microsoft_365_defender_incidents_list_command(client, args))
 
         elif command == 'microsoft-365-defender-incident-update':
+            test_context_for_token()
             return_results(microsoft_365_defender_incident_update_command(client, args))
 
         elif command == 'microsoft-365-defender-advanced-hunting':
+            test_context_for_token()
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
 
         elif command == 'fetch-incidents':

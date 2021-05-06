@@ -3,7 +3,7 @@
     "kind": "details",
     "layout": {
         "TypeName": "",
-        "id": "Microsoft 365 Defender Incident",
+        "id": "Microsoft 365 Defender - Layout",
         "kind": "details",
         "modified": "2021-05-04T09:43:15.819766288Z",
         "name": "",
@@ -333,101 +333,100 @@
                 "type": "canvas"
             },
             {
-                "hidden": false,
-                "id": "ripkznpucg",
-                "name": "Microsoft 365 Defender",
-                "sections": [
+              "hidden": false,
+              "id": "6omg1k5zwv",
+              "name": "Microsoft 365 Defender",
+              "sections": [
+                {
+                  "displayType": "CARD",
+                  "h": 3,
+                  "hideName": false,
+                  "i": "caseinfoid-6omg1k5zwv-caseinfoid-4471e880-aca1-11eb-bf63-a32296a3717b",
+                  "items": [
                     {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "ripkznpucg-f3ccb380-acbc-11eb-9544-49c7453f7ece",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "microsoft365defenderdisplayname",
-                                "height": 22,
-                                "id": "fce02830-acbc-11eb-9544-49c7453f7ece",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "assigneduser",
-                                "height": 22,
-                                "id": "08a6fd10-acbd-11eb-9544-49c7453f7ece",
-                                "index": 1,
-                                "listId": "ripkznpucg-f3ccb380-acbc-11eb-9544-49c7453f7ece",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "microsoft365defenderclassification",
-                                "height": 22,
-                                "id": "fd81bf60-acbc-11eb-9544-49c7453f7ece",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "eventtype",
-                                "height": 22,
-                                "id": "0b725210-acbd-11eb-9544-49c7453f7ece",
-                                "index": 3,
-                                "listId": "ripkznpucg-f3ccb380-acbc-11eb-9544-49c7453f7ece",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "microsoft365defenderstatus",
-                                "height": 22,
-                                "id": "fe221e10-acbc-11eb-9544-49c7453f7ece",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 22,
-                                "id": "0e170c40-acbd-11eb-9544-49c7453f7ece",
-                                "index": 5,
-                                "listId": "ripkznpucg-f3ccb380-acbc-11eb-9544-49c7453f7ece",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "microsoft365defendertags",
-                                "height": 22,
-                                "id": "feb33a80-acbc-11eb-9544-49c7453f7ece",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "New Section",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
+                      "dropEffect": "move",
+                      "endCol": 2,
+                      "fieldId": "microsoft365defenderdisplayname",
+                      "height": 53,
+                      "id": "6299f0a0-aca1-11eb-bf63-a32296a3717b",
+                      "index": 0,
+                      "listId": "caseinfoid-6omg1k5zwv-caseinfoid-4471e880-aca1-11eb-bf63-a32296a3717b",
+                      "sectionItemType": "field",
+                      "startCol": 0
+                    },
+                    {
+                      "dropEffect": "move",
+                      "endCol": 2,
+                      "fieldId": "microsoft365defenderstatus",
+                      "height": 53,
+                      "id": "648f5800-aca1-11eb-bf63-a32296a3717b",
+                      "index": 1,
+                      "listId": "caseinfoid-4471e880-aca1-11eb-bf63-a32296a3717b",
+                      "sectionItemType": "field",
+                      "startCol": 0
+                    },
+                    {
+                      "endCol": 2,
+                      "fieldId": "microsoft365defenderclassification",
+                      "height": 53,
+                      "id": "66030c40-aca1-11eb-bf63-a32296a3717b",
+                      "index": 2,
+                      "sectionItemType": "field",
+                      "startCol": 0
+                    },
+                    {
+                      "endCol": 2,
+                      "fieldId": "microsoft365defendertags",
+                      "height": 53,
+                      "id": "66cbda80-aca1-11eb-bf63-a32296a3717b",
+                      "index": 3,
+                      "sectionItemType": "field",
+                      "startCol": 0
+                    },
+                    {
+                      "endCol": 2,
+                      "fieldId": "assigneduser",
+                      "height": 53,
+                      "id": "6c3ecfe0-aca1-11eb-bf63-a32296a3717b",
+                      "index": 4,
+                      "sectionItemType": "field",
+                      "startCol": 0
+                    },
+                    {
+                      "endCol": 2,
+                      "fieldId": "eventtype",
+                      "height": 53,
+                      "id": "70d45d90-aca1-11eb-bf63-a32296a3717b",
+                      "index": 5,
+                      "sectionItemType": "field",
+                      "startCol": 0
+                    },
+                    {
+                      "endCol": 2,
+                      "fieldId": "severity",
+                      "height": 53,
+                      "id": "79265700-aca1-11eb-bf63-a32296a3717b",
+                      "index": 6,
+                      "sectionItemType": "field",
+                      "startCol": 0
                     }
-                ],
-                "type": "custom"
+                  ],
+                  "maxH": null,
+                  "maxW": 3,
+                  "minH": 1,
+                  "minW": 3,
+                  "moved": false,
+                  "name": "Microsoft 365 Defender Incident Data",
+                  "static": false,
+                  "w": 3,
+                  "x": 0,
+                  "y": 0
+                }
+              ],
+              "type": "custom"
             }
         ],
-        "typeId": "Microsoft 365 Defender Incident",
+        "typeId": "Microsoft 365 Defender - Layout",
         "version": -1
     },
     "typeId": "Microsoft 365 Defender Incident",
