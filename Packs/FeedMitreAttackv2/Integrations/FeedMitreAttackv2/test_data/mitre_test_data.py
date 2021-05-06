@@ -341,5 +341,19 @@ RELATION = {
         "relationship_type": "uses",
         "modified": "2021-04-27T01:56:35.810Z",
         "target_ref": "attack-pattern--707399d6-ab3e-4963-9315-d9d3818cd6a0",
-    }
+    },
+    "indicator": [{'relationships': [{'entityA': 'entity a',
+                                      'entityAFamily': 'Indicator',
+                                      'entityAType': 'STIX Malware',
+                                      'entityB': 'entity b',
+                                      'entityBFamily': 'Indicator',
+                                      'entityBType': 'STIX Attack Pattern',
+                                      'fields': {'description': ' '
+                                                                '[Explosive](https://attack.mitre.org/software/S0569)',
+                                                 'firstseenbysource': '2021-04-27T01:56:35.810Z',
+                                                 'lastseenbysource': '2021-04-27T01:56:35.810Z'},
+                                      'name': 'uses',
+                                      'reverseName': 'used-by',
+                                      'type': 'IndicatorToIndicator'}],
+                   'value': '$$DummyIndicator$$'}]
 }

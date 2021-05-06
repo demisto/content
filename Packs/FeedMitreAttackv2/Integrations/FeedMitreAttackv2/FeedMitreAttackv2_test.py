@@ -5,19 +5,28 @@ from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSIO
     RELATION
 
 
+def mock_create_relations(original):
+    def mock(item_json, id_to_name):
+        return original(item_json, ID_TO_NAME)
+    return mock
+
+
 @pytest.mark.parametrize('indicator, expected_result', [
     ([ATTACK_PATTERN.get('response')], ATTACK_PATTERN.get('indicator')),
     ([COURSE_OF_ACTION.get('response')], COURSE_OF_ACTION.get('indicator')),
     ([INTRUSION_SET.get('response')], INTRUSION_SET.get('indicator')),
     ([MALWARE.get('response')], MALWARE.get('indicator')),
-    ([TOOL.get('response')], TOOL.get('indicator'))
+    ([TOOL.get('response')], TOOL.get('indicator')),
+    ([RELATION.get('response')], RELATION.get('indicator'))
 ])
 def test_fetch_indicators(mocker, indicator, expected_result):
-    from FeedMitreAttackv2 import Client
+    import FeedMitreAttackv2 as fm
+    from FeedMitreAttackv2 import Client, create_relationship
     client = Client(url="https://cti-taxii.mitre.org", proxies=False, verify=False, tags=[], tlp_color=None)
     client.initialise()
     mocker.patch.object(TAXIICollectionSource, 'query', return_value=indicator)
     mocker.patch.object(json, 'loads', return_value=indicator[0])
+    mocker.patch.object(fm, 'create_relationship', wraps=mock_create_relations(create_relationship))
     indicators = client.build_iterator(create_relationships=True, limit=6)
     assert indicators == expected_result
 

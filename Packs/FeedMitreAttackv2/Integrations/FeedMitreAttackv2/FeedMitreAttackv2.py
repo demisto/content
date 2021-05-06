@@ -26,6 +26,8 @@ INDICATOR_TYPE_TO_SCORE = {
     "STIX Tool": 2
 }
 
+RELATIONSHIP_TYPES = EntityRelation.Relations.RELATIONS_NAMES.keys()
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -115,7 +117,8 @@ class Client:
                         if indicator_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
-                            relationships_list.append(create_relationship(mitre_item_json, id_to_name).to_indicator())
+                            relation_obj = create_relationship(mitre_item_json, id_to_name)
+                            relationships_list.append(relation_obj.to_indicator()) if relation_obj else None
 
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
@@ -220,6 +223,9 @@ def create_relationship(item_json, id_to_name):
         'lastseenbysource': item_json.get('modified'),
         'firstseenbysource': item_json.get('created')
     }
+    if item_json.get('relationship_type') not in RELATIONSHIP_TYPES:
+        demisto.debug(f"Invalid relation type: {item_json.get('relationship_type')}")
+        return
 
     return EntityRelation(name=item_json.get('relationship_type'),
                           entity_a=id_to_name.get(item_json.get('source_ref')),
