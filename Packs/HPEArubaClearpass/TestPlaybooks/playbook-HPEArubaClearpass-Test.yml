@@ -47,7 +47,7 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-      - "15"
+      - "9"
     scriptarguments:
       all:
         simple: "yes"
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -126,7 +126,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -152,7 +152,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
@@ -188,7 +188,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -228,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 1245
         }
       }
     note: false
@@ -268,7 +268,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 895
+          "y": 720
         }
       }
     note: false
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 706133af-9120-46dd-869f-1402134f1354
+    taskid: a5e5ef69-5f95-4dac-82f9-8b6267b28c81
     type: regular
     task:
-      id: 706133af-9120-46dd-869f-1402134f1354
+      id: a5e5ef69-5f95-4dac-82f9-8b6267b28c81
       version: -1
       name: Create new attribute
       description: Create a new attribute.
@@ -300,13 +300,13 @@ tasks:
       entity_name:
         simple: Device
       name:
-        simple: ${RandomString}
+        simple: test_name
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -343,7 +343,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 720
+          "y": 545
         }
       }
     note: false
@@ -355,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ba6c521e-36b2-421b-8ee7-45c88852fcca
+    taskid: 4fcd1998-2529-496f-879e-427e035b0b7c
     type: regular
     task:
-      id: ba6c521e-36b2-421b-8ee7-45c88852fcca
+      id: 4fcd1998-2529-496f-879e-427e035b0b7c
       version: -1
       name: Update attribute fields
       description: Update some fields of an attribute by the attribute's ID.
@@ -377,13 +377,13 @@ tasks:
       entity_name:
         simple: GuestUser
       name:
-        simple: ${RandomString}
+        simple: test_name
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 1070
+          "y": 895
         }
       }
     note: false
@@ -395,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: bfe84785-5a9f-4346-816b-4dc2dd3f79dd
+    taskid: 7fc74195-dbb6-4489-8476-cc09472c9d20
     type: condition
     task:
-      id: bfe84785-5a9f-4346-816b-4dc2dd3f79dd
+      id: 7fc74195-dbb6-4489-8476-cc09472c9d20
       version: -1
       name: Verify update attribute
       type: condition
@@ -418,8 +418,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ${RandomString}
-            iscontext: true
+              simple: test_name
       - - operator: isEqualString
           left:
             value:
@@ -432,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 1245
+          "y": 1070
         }
       }
     note: false
@@ -444,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 1152a779-1996-48a3-8cc2-39d9650a7b5d
+    taskid: 1a16f77c-5f85-4078-8275-1d942d71cbdd
     type: regular
     task:
-      id: 1152a779-1996-48a3-8cc2-39d9650a7b5d
+      id: 1a16f77c-5f85-4078-8275-1d942d71cbdd
       version: -1
       name: Delete attribute
       description: Delete an attribute.
@@ -466,49 +465,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: d6e58732-8765-4bbb-832a-eea4bee7d08a
-    type: regular
-    task:
-      id: d6e58732-8765-4bbb-832a-eea4bee7d08a
-      version: -1
-      name: Generate new attribute name
-      description: Generates random string
-      scriptName: GenerateRandomString
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      Digits:
-        simple: "False"
-      Length:
-        simple: "7"
-      Lowercase:
-        simple: "True"
-      Punctuation:
-        simple: "False"
-      Uppercase:
-        simple: "True"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 592.5,
-          "y": 370
+          "y": 1245
         }
       }
     note: false
@@ -523,7 +480,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1435,
         "width": 922.5,
         "x": 50,
         "y": 50
