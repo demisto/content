@@ -275,6 +275,8 @@ class NetscoutClient(BaseClient):
                 f'NetscoutArborSightline fetch params are: page_size={amount_of_incidents}, '
                 f'search_filter={data_attribute_filter}')
 
+            # We use the status_list_to_retry since in some rare cases the API returns 500 error on consecutive API
+            # calls.
             results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter,
                                        status_list_to_retry=[500])
             all_alerts = results.get('data')
