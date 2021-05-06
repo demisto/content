@@ -270,7 +270,7 @@ class TestChangedTestPlaybook:
             - Create filter_envs.json file with all as true
         """
         create_filter_envs_file('0.0.0', '99.99.99')
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+        with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server 5.5') is True
         assert filter_envs.get('Server Master') is True
@@ -300,7 +300,7 @@ class TestChangedTestPlaybook:
                                                                               MOCK_ID_SET)
 
         create_filter_envs_file(from_version, to_version)
-        with open("./Tests/filter_envs.json", "r") as filter_envs_file:
+        with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server 5.5') is True
         assert filter_envs.get('Server Master') is True
