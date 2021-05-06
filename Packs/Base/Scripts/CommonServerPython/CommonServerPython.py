@@ -7447,6 +7447,7 @@ class IndicatorsSearcher:
         :rtype: ``dict``
         """
         if self._can_use_search_after:
+            # if search_after_param exists use it for paging, else use the page number
             search_iocs_params = assign_params(
                 fromDate=from_date,
                 toDate=to_date,
@@ -7454,7 +7455,8 @@ class IndicatorsSearcher:
                 size=size,
                 value=value,
                 searchAfter=self._search_after_param,
-                populateFields=self._filter_fields if self._can_use_filter_fields else None
+                populateFields=self._filter_fields if self._can_use_filter_fields else None,
+                page=self._page if not self._search_after_param else None
             )
             res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]
