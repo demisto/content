@@ -1,0 +1,716 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "12f4446e-b1e5-47b4-8230-735f9ab0d463",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 17,
+	"mapping": {
+		"ProofPointTAP - Click Blocked": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"ProofPointTAP Classification": {
+					"complex": null,
+					"simple": "classification"
+				},
+				"ProofPointTAP Click IP": {
+					"complex": null,
+					"simple": "clickIP"
+				},
+				"ProofPointTAP Click Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "clickTime",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"ProofPointTAP GUID": {
+					"complex": null,
+					"simple": "GUID"
+				},
+				"ProofPointTAP ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"ProofPointTAP Message ID": {
+					"complex": null,
+					"simple": "messageID"
+				},
+				"ProofPointTAP SMTP Recipient": {
+					"complex": null,
+					"simple": "recipient"
+				},
+				"ProofPointTAP SMTP Sender": {
+					"complex": null,
+					"simple": "sender"
+				},
+				"ProofPointTAP Sender IP": {
+					"complex": null,
+					"simple": "senderIP"
+				},
+				"ProofPointTAP Suspicious URL": {
+					"complex": null,
+					"simple": "url"
+				},
+				"ProofPointTAP Threat ID": {
+					"complex": null,
+					"simple": "threatID"
+				},
+				"ProofPointTAP Threat Status": {
+					"complex": null,
+					"simple": "threatStatus"
+				},
+				"ProofPointTAP Threat Time": {
+					"complex": null,
+					"simple": "threatTime"
+				},
+				"ProofPointTAP Threat URL": {
+					"complex": null,
+					"simple": "threatURL"
+				},
+				"ProofPointTAP Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"ProofPointTAP User Agent": {
+					"complex": null,
+					"simple": "userAgent"
+				}
+			}
+		},
+		"ProofPointTAP - Click Permitted": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"ProofPointTAP Classification": {
+					"complex": null,
+					"simple": "classification"
+				},
+				"ProofPointTAP Click IP": {
+					"complex": null,
+					"simple": "clickIP"
+				},
+				"ProofPointTAP Click Time": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "clickTime",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"ProofPointTAP GUID": {
+					"complex": null,
+					"simple": "GUID"
+				},
+				"ProofPointTAP ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"ProofPointTAP Message ID": {
+					"complex": null,
+					"simple": "messageID"
+				},
+				"ProofPointTAP SMTP Recipient": {
+					"complex": null,
+					"simple": "recipient"
+				},
+				"ProofPointTAP SMTP Sender": {
+					"complex": null,
+					"simple": "sender"
+				},
+				"ProofPointTAP Sender IP": {
+					"complex": null,
+					"simple": "senderIP"
+				},
+				"ProofPointTAP Suspicious URL": {
+					"complex": null,
+					"simple": "url"
+				},
+				"ProofPointTAP Threat ID": {
+					"complex": null,
+					"simple": "threatID"
+				},
+				"ProofPointTAP Threat Status": {
+					"complex": null,
+					"simple": "threatStatus"
+				},
+				"ProofPointTAP Threat Time": {
+					"complex": null,
+					"simple": "threatTime"
+				},
+				"ProofPointTAP Threat URL": {
+					"complex": null,
+					"simple": "threatURL"
+				},
+				"ProofPointTAP Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"ProofPointTAP User Agent": {
+					"complex": null,
+					"simple": "userAgent"
+				}
+			}
+		},
+		"ProofPointTAP - Message Blocked": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"ProofPointTAP Cluster": {
+					"complex": null,
+					"simple": "cluster"
+				},
+				"ProofPointTAP Examined By": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modulesRun",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP GUID": {
+					"complex": null,
+					"simple": "GUID"
+				},
+				"ProofPointTAP Header CC": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "ccAddresses",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Headers From": {
+					"complex": null,
+					"simple": "headerFrom"
+				},
+				"ProofPointTAP Headers Reply To": {
+					"complex": null,
+					"simple": "replyToAddress"
+				},
+				"ProofPointTAP ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"ProofPointTAP Imposter Score": {
+					"complex": null,
+					"simple": "impostorScore"
+				},
+				"ProofPointTAP Malware Score": {
+					"complex": null,
+					"simple": "malwareScore"
+				},
+				"ProofPointTAP Message ID": {
+					"complex": null,
+					"simple": "messageID"
+				},
+				"ProofPointTAP Message Parts": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "messageParts",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Message Size": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "messageSize",
+						"transformers": [
+							{
+								"args": {
+									"by": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1000"
+										}
+									}
+								},
+								"operator": "division"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " KB"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Phishing Score": {
+					"complex": null,
+					"simple": "phishScore"
+				},
+				"ProofPointTAP Policies": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "policyRoutes",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Quarantine Folder": {
+					"complex": null,
+					"simple": "quarantineFolder"
+				},
+				"ProofPointTAP Quarantine Rule": {
+					"complex": null,
+					"simple": "quarantineRule"
+				},
+				"ProofPointTAP Reply To Address": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "replyToAddress",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP SMTP Recipient": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "recipient",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP SMTP Sender": {
+					"complex": null,
+					"simple": "sender"
+				},
+				"ProofPointTAP Sender Address": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "fromAddress",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Spam Score": {
+					"complex": null,
+					"simple": "spamScore"
+				},
+				"ProofPointTAP Subject": {
+					"complex": null,
+					"simple": "subject"
+				},
+				"ProofPointTAP Threat Info Map": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "threatsInfoMap",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"ProofPointTAP Xmailer": {
+					"complex": null,
+					"simple": "xmailer"
+				}
+			}
+		},
+		"ProofPointTAP - Message Delievered": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"ProofPointTAP Cluster": {
+					"complex": null,
+					"simple": "cluster"
+				},
+				"ProofPointTAP Examined By": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "modulesRun",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP GUID": {
+					"complex": null,
+					"simple": "GUID"
+				},
+				"ProofPointTAP Header CC": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "ccAddresses",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Headers From": {
+					"complex": null,
+					"simple": "headerFrom"
+				},
+				"ProofPointTAP Headers Reply To": {
+					"complex": null,
+					"simple": "replyToAddress"
+				},
+				"ProofPointTAP ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"ProofPointTAP Imposter Score": {
+					"complex": null,
+					"simple": "impostorScore"
+				},
+				"ProofPointTAP Malware Score": {
+					"complex": null,
+					"simple": "malwareScore"
+				},
+				"ProofPointTAP Message ID": {
+					"complex": null,
+					"simple": "messageID"
+				},
+				"ProofPointTAP Message Parts": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "messageParts",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Message Size": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "messageSize",
+						"transformers": [
+							{
+								"args": {
+									"by": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1000"
+										}
+									}
+								},
+								"operator": "division"
+							},
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": null
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": " KB"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Phishing Score": {
+					"complex": null,
+					"simple": "phishScore"
+				},
+				"ProofPointTAP Policies": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "policyRoutes",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Quarantine Folder": {
+					"complex": null,
+					"simple": "quarantineFolder"
+				},
+				"ProofPointTAP Quarantine Rule": {
+					"complex": null,
+					"simple": "quarantineRule"
+				},
+				"ProofPointTAP Reply To Address": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "replyToAddress",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP SMTP Recipient": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "recipient",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP SMTP Sender": {
+					"complex": null,
+					"simple": "sender"
+				},
+				"ProofPointTAP Sender Address": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "fromAddress",
+						"transformers": [
+							{
+								"args": {
+									"separator": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ","
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Spam Score": {
+					"complex": null,
+					"simple": "spamScore"
+				},
+				"ProofPointTAP Subject": {
+					"complex": null,
+					"simple": "subject"
+				},
+				"ProofPointTAP Threat Info Map": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "threatsInfoMap",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "88d687c2-a411-4a8e-8fb1-196de418ccc2"
+							}
+						]
+					},
+					"simple": ""
+				},
+				"ProofPointTAP Type": {
+					"complex": null,
+					"simple": "type"
+				},
+				"ProofPointTAP Xmailer": {
+					"complex": null,
+					"simple": "xmailer"
+				}
+			}
+		}
+	},
+	"name": "ProofPointTAP Mapper",
+	"nameRaw": "ProofPointTAP Mapper",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
