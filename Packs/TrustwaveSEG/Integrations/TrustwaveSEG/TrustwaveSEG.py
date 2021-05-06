@@ -949,9 +949,9 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as exception:
         if command == 'test-module':
-            return_error(str(exception))
-        return_error(
-            f'Failed to execute {command} command. Error: {str(exception)}')
+            error_msg = (str(exception))
+        error_msg = f'Failed to execute {command} command. Error: {str(exception)}'
+        return_error(error_msg)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
