@@ -2829,7 +2829,7 @@ script:
     deprecated: false
     description: Get pull requests corresponding to the given branch name.
     execution: false
-    name: GitHub-list-branch-pull-requests
+    name: GitHub-list-branch-pull-request
     outputs:
     - contextPath: GitHub.PR.ID
       description: The ID number of the pull request
