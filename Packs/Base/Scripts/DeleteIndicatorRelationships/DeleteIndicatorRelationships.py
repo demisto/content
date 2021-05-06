@@ -12,7 +12,7 @@ def main():
         ids = demisto.args().get('ids')
         res = demisto.executeCommand("deleteRelationships", {'relationshipsIDsKey': ids})
         if is_error(res[0]):
-            raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
+            raise Exception("Error in DeleteIndicatorRelationships command - {}".format(res[0]["Contents"]))
         hr = f"The relationships {str(ids)} were deleted successfully."
         return_results(CommandResults(readable_output=hr))
     except Exception as ex:
