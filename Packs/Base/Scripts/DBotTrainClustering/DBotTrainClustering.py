@@ -39,6 +39,9 @@ FAMILY_COLUMN_NAME = 'label'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 MESSAGE_ERROR_MESSAGE = 'Model cannot be loaded'
 
+PALETTE_COLOR = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF00', '#665D1E', '#8DB600',
+                 '#D0FF14']
+
 
 class Clustering(object):
     """
@@ -497,14 +500,12 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     clustering = model_processed.clustering
     data = {}  # type: ignore
     data['data'] = []
-    color = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF00', '#665D1E', '#8DB600',
-             '#D0FF14']
     for cluster_number, coordinates in clustering.centers.items():
         if cluster_number not in model_processed.selected_clusters.keys():
             continue
         d = {'x': float(coordinates[0]), 'y': float(coordinates[1]),
              'name': model_processed.selected_clusters[cluster_number]['clusterName'], 'dataType': 'incident',
-             'color': color[divmod(cluster_number, len(color))[1]], 'pivot': str(cluster_number),
+             'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]], 'pivot': str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()], 'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
