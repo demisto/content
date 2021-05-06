@@ -7454,7 +7454,7 @@ class IndicatorsSearcher:
                 size=size,
                 value=value,
                 searchAfter=self._search_after_param,
-                populateFields= self._filter_fields if self._can_use_filter_fields else None
+                populateFields=self._filter_fields if self._can_use_filter_fields else None
             )
             res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]
