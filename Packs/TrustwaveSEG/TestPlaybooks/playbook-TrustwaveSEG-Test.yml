@@ -218,7 +218,7 @@ tasks:
       name:
         simple: ${TrustwaveSEG.AutomaticBackupConfig.[0].filename}
       timeout:
-        simple: "60"
+        simple: "120"
     separatecontext: false
     view: |-
       {
