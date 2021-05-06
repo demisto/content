@@ -364,7 +364,23 @@ full_attributes_response = {
                 'id': '10691',
                 'distribution': '5',
                 'sharing_group_id': '0'
-            }
+            },
+            "Tag": [{
+                "colour": "#0088cc", "id": "56", "local": False,
+                "name": "test name",
+                "numerical_value": None
+                }
+            ],
+            "decay_score": [{
+                "DecayingModel": {
+                    "id": "2",
+                    "name": "test name"
+                },
+                "base_score": 80,
+                "decayed": False,
+                "score": 69.30162037037037
+                }
+            ]
         },
         {
             'id': '67899',
@@ -483,7 +499,20 @@ filtered_attributes_response = [
             'ID': '10691',
             'Distribution': '5',
             'SharingGroupID': '0'
-        }
+        },
+        'Tag': [{
+            'Name': 'test name',
+        }],
+        'DecayScore': [{
+            'DecayingModel':
+                {
+                    'ID': '2',
+                    'Name': 'test name'
+                },
+            'base_score': 80,
+            'decayed': False,
+            'score': 69.30162037037037
+        }]
     },
     {
         'ID': '67899',

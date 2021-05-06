@@ -171,8 +171,6 @@ def test_data_filtering(mocker):
 
 def test_attributes_data_filtering(mocker):
     mock_misp(mocker)
-    # mocker.patch('MISP_V2.DATA_KEYS_TO_SAVE', ['Category', 'EventID', 'UUID'])
-    # mocker.patch('MISP_V2.MAX_ATTRIBUTES', 1000)
 
     from test_data import test_constants
     from MISP_V2 import build_attribute_context

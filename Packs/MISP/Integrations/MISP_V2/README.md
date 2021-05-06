@@ -25,8 +25,7 @@
 <p> </p>
 <ol>
 <li><a href="#h_4f615456-b26c-48b8-89ee-3ef4be73dedf" target="_self">Search for events: misp-search</a></li>
-<li><a href="#h_4f637628-b26c-48b8-89ee-3ef4be73dedf" target="_self">Search for attributes: misp-search-attributes</a
-></li>
+<li><a href="#h_4f637628-b26c-48b8-89ee-3ef4be73dedf" target="_self">Search for attributes: misp-search-attributes</a></li>
 <li><a href="#h_53acd13b-9862-45fe-ba8f-9f524ef0795d" target="_self">Get the reputation of a file: file</a></li>
 <li><a href="#h_58d2d4e2-08aa-4c78-9f67-9415508ac63c" target="_self">Check if a URL is in MISP events: url</a></li>
 <li><a href="#h_8ffb723c-d3f8-40fc-a15a-ecb8b011d507" target="_self">Get the reputation of an IP address: ip</a></li>
@@ -715,6 +714,16 @@
 <td style="width: 535px;">Return only the attributes set with the "to_ids" flag</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 134px;">last</td>
+<td style="width: 535px;">Events published within the last "x" amount of time. Valid time values are days, hours, and minutes (for example "5d", "12h", "30m"). This filter uses the published timestamp of the event.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 134px;">include_decay_score</td>
+<td style="width: 535px;">Include the decay score at attribute level.</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -971,7 +980,26 @@
 <td style="width: 62px;">String</td>
 <td style="width: 344px;">Description of the object.</td>
 </tr>
-
+<tr>
+<td style="width: 334px;">MISP.Attribute.Galaxy.Description</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Event's galaxy description.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Galaxy.Name</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">Galaxy name.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Galaxy.Type</td>
+<td style="width: 62px;">number</td>
+<td style="width: 344px;">Galaxy type.</td>
+</tr>
+<tr>
+<td style="width: 334px;">MISP.Attribute.Tag.Name</td>
+<td style="width: 62px;">string</td>
+<td style="width: 344px;">All tag names in the event.</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -1066,12 +1094,6 @@
 </tr>
 </tbody>
 </table>
-
-
-
-
-
-
 <p> </p>
 <p> </p>
 <h3 id="h_53acd13b-9862-45fe-ba8f-9f524ef0795d">3. Get the reputation of a file</h3>

@@ -99,7 +99,8 @@ ENTITIESDICT = {
     'object_relation': 'ObjectRelation',
     'template_version': 'TemplateVersion',
     'template_uuid': 'TemplateUUID',
-    'meta-category': 'MetaCategory'
+    'meta-category': 'MetaCategory',
+    'decay_score': 'DecayScore'
 }
 
 THREAT_LEVELS_WORDS = {
@@ -388,13 +389,32 @@ def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
         'disable_correlation',
         'value',
         'Event',
-        'Object'
+        'Object',
+        'Galaxy',
+        'Tag',
+        'decay_score'
     ]
     if isinstance(response, str):
         response = json.loads(json.dumps(response))
     attributes = response.get('Attribute')
     for i in range(len(attributes)):
         attributes[i] = {key: attributes[i].get(key) for key in attribute_fields if key in attributes[i]}
+
+        # Build Galaxy
+        if attributes[i].get('Galaxy'):
+            attributes[i]['Galaxy'] = [
+                {
+                    'name': star.get('name'),
+                    'type': star.get('type'),
+                    'description': star.get('description')
+                } for star in attributes[i]['Galaxy']
+            ]
+
+        # Build Tag
+        if attributes[i].get('Tag'):
+            attributes[i]['Tag'] = [
+                {'Name': tag.get('name')} for tag in attributes[i].get('Tag')
+            ]
 
     attributes = replace_keys(attributes)
     return attributes
@@ -1005,7 +1025,9 @@ def search_attributes() -> Tuple[dict, Any]:
         'type',
         'category',
         'uuid',
-        'to_ids'
+        'to_ids',
+        'last',
+        'include_decay_score'
     ]
     args = dict()
     # Create dict to pass into the search
