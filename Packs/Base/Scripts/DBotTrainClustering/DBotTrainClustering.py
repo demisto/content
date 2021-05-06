@@ -510,6 +510,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
                  clustering.model.labels_ == cluster_number].id.values.tolist()], 'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
+    data['range'] = calculate_range(data)
     pretty_json = json.dumps(data, indent=4, sort_keys=True)
     return pretty_json
 
@@ -707,6 +708,15 @@ def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_clus
     else:
         labels = incidents_df[field_for_cluster_name].rename(columns={field_for_cluster_name[0]: FAMILY_COLUMN_NAME})
     return labels
+
+
+def calculate_range(data):
+    all_data_size = list(map(lambda x: x['data'][0], data['data']))
+    max_size =  max(all_data_size)
+    min_size = min(all_data_size)
+    min_range = max(30, min_size)
+    max_range = min_range + max(300, max_size-min_size)
+    return [min_range, max_range]
 
 
 def main():
