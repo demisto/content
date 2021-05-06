@@ -1,5 +1,7 @@
 import io
 import json
+import dateparser
+from datetime import datetime
 
 
 def util_load_json(path: str) -> dict:
@@ -49,8 +51,14 @@ def test_trustwave_seg_statistics_command(requests_mock):
         'test_data/trustwave_seg_statistics_command.json')
     requests_mock.post('https://1.1.1.1:1/token',
                        json={'access_token': 'token', 'expires_in': 0})
+    start_time = dateparser.parse('2021-04-04 07:35:58 PM')
+    end_time = dateparser.parse('2021-05-05 07:35:58 PM')
+    start_time = int(datetime.timestamp(
+        datetime.utcfromtimestamp(datetime.timestamp(start_time))))
+    end_time = int(datetime.timestamp(
+        datetime.utcfromtimestamp(datetime.timestamp(end_time))))
     requests_mock.get(
-        'https://1.1.1.1:2/seg/api/console/array/stats?fromtime=1617543358&totime=1620221758',
+        f'https://1.1.1.1:2/seg/api/console/array/stats?fromtime={start_time}&totime={end_time}',
         json=mock_response
     )
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
@@ -333,10 +341,14 @@ def test_trustwave_seg_spiderlabs_forward_quarantine_message_as_spam_command(req
     from TrustwaveSEG import trustwave_seg_spiderlabs_forward_quarantine_message_as_spam_command
     mock_response = util_load_json(
         'test_data/trustwave_seg_list_alerts_command.json')
-    requests_mock.post('https://1.1.1.1:1/token',
-                       json={'access_token': 'token', 'expires_in': 0})
     requests_mock.post(
-        'https://1.1.1.1:2/seg/api/quarantine/forwardspam/', json=mock_response)
+        'https://1.1.1.1:1/token',
+        json={'access_token': 'token', 'expires_in': 0}
+    )
+    requests_mock.post(
+        'https://1.1.1.1:2/seg/api/quarantine/forwardspam/',
+        json=mock_response
+    )
     client = Client('1.1.1.1', '1', '2', 'username', 'password', False, False)
     response = trustwave_seg_spiderlabs_forward_quarantine_message_as_spam_command(
         client, "1", "1", "1", "xxx", "xxx",
