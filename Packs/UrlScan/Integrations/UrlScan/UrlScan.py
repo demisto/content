@@ -29,7 +29,7 @@ RELATIONSHIP_TYPE = {
     'lists': {
         'domains': {
             'indicator_type': FeedIndicatorType.Domain,
-            'name': EntityRelationshipship.Relationships.RELATED_TO,
+            'name': EntityRelationship.Relationships.RELATED_TO,
             'detect_type': False
         },
         'hashes': {
