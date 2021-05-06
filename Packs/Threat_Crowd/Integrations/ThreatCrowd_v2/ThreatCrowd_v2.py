@@ -10,23 +10,23 @@ requests.packages.urllib3.disable_warnings()
 
 VENDOR = 'Threat Crowd'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-DEFAULT_RESOLUTION_LIMIT = 10
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, reliability: DBotScoreReliability,
-                 entry_limit: bool):
+                 entry_limit: int):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.reliability = reliability
         self.entry_limit = entry_limit
 
-    def _get_limit_for_command(self, command_limit:int=None):
+    def _get_limit_for_command(self, command_limit: int = None):
         if command_limit:
             return None if command_limit == -1 else command_limit
         else:
             return self.entry_limit
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -67,7 +67,7 @@ def _get_dbot_score(json_res: dict) -> Tuple[int, str]:
 def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'ip/report/'
-    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'), 'limit', False))
     ips = argToList(args.get('ip'))
     for ip in ips:
         res = client._http_request(method='GET', url_suffix=api_url, params={'ip': ip})
@@ -146,7 +146,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 def domain_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'domain/report/'
-    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'), 'limit', False))
     domains = argToList(args.get('domain'))
     for domain in domains:
         res = client._http_request(method='GET', url_suffix=api_url, params={'domain': domain})
@@ -199,7 +199,7 @@ def antivirus_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     command_results: List[CommandResults] = []
     api_url = 'antivirus/report/'
     antivirus_list = argToList(args.get('antivirus'))
-    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'), 'limit', False))
 
     for antivirus in antivirus_list:
         res = client._http_request(method='GET', url_suffix=api_url, params={'antivirus': antivirus})
@@ -226,7 +226,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     api_url = 'file/report/'
     files = argToList(args.get('file'))
-    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'),'limit',False))
+    entries_limit = client._get_limit_for_command(arg_to_number(args.get('limit'), 'limit', False))
 
     for file_hash in files:
         res = client._http_request(method='GET', url_suffix=api_url, params={'resource': file_hash})
@@ -243,7 +243,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         res['scans'] = _get_list_without_empty(res.get('scans'))[:entries_limit]
 
         markdown = f"Threat crowd report for File {file_hash}: \n ### DBotScore: {score_str} \n " \
-                   f"{tableToMarkdown('Results', res)}".replace('<br>','')
+                   f"{tableToMarkdown('Results', res)}".replace('<br>', '')
 
         # using res.copy() to avoid changing all previous entries's values.
         command_results.append(CommandResults(
@@ -289,7 +289,8 @@ def main() -> None:
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         entry_limit = arg_to_number(params.get('entry_limit'), 'entry_limit', True)
-
+        if not entry_limit:
+            raise Exception("Please Provide a limit for number of entries. To receive all entries use -1")
         reliability = params.get('integrationReliability')
         reliability = reliability if reliability else DBotScoreReliability.C
 

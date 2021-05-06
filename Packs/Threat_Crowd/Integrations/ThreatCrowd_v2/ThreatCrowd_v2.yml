@@ -83,6 +83,9 @@ script:
     - contextPath: ThreatCrowd.IP.value
       description: The ip value.
       type: String
+    - contextPath: ThreatCrowd.IP.votes
+      description: The votes given to ip.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -130,6 +133,9 @@ script:
       type: String
     - contextPath: ThreatCrowd.Domain.permalink
       description: A link to domain search in the product.
+      type: String
+    - contextPath: ThreatCrowd.Domain.emails
+      description: Emails related to the domain.
       type: String
     - contextPath: ThreatCrowd.Domain.references
       description: References related to the domain.
@@ -305,7 +311,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   feed: false
   isfetch: false
   longRunning: false
