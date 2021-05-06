@@ -2808,7 +2808,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The branch name to retrieve its pull requests.
+      description: The branch name from which to retrieve pull requests.
       isArray: false
       name: branch_name
       required: true
