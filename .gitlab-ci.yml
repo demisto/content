@@ -1,3 +1,11 @@
+default:
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18863
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+
 stages:
   - unittests-and-validations
   - create-instances

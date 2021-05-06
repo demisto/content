@@ -9,11 +9,12 @@
 
 
 create-instances:
-  extends: 
+  extends:
     - .default-job-settings
     - .push-rule
   cache:
     policy: pull-push
+    when: always
   needs: []
   stage: create-instances
   script:
@@ -84,7 +85,7 @@ create-instances:
 
 
 .test_content_on_server_instances_base:
-  extends: 
+  extends:
     - .default-job-settings
     - .push-rule
   needs: ["create-instances"]
