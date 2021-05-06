@@ -913,13 +913,11 @@ def get_escalations_command(rest_client, args):
 
 
 def get_remote_data_command(rest_client, args):
-    demisto.debug('in remote data')
     full_id = args.get('id')
     last_index = full_id.rfind(':')
     args['respond_tenant_id'] = full_id[0:last_index]
     args['incident_id'] = full_id[last_index + 1:]
     entries = []
-    demisto.debug('in remote data 2')
     try:
         updated_incident = get_formatted_incident(rest_client, args)
         updated_incident['id'] = args.get('id')
@@ -1143,7 +1141,6 @@ def main():
             return_results(get_mapping_fields_command())
 
         elif demisto.command() == 'get-remote-data':
-            demisto.debug('get-remote-data called')
             return_results(get_remote_data_command(rest_client, demisto.args()))
 
         elif demisto.command() == 'mad-get-escalations':

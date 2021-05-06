@@ -40,8 +40,6 @@ def mock_rest_client():
         verify=False
     )
 
-# todo test first fetch
-
 
 def test_fetch_incidents_does_not_get_most_recent_event_again(mocker, requests_mock):
     from RespondAnalyst import fetch_incidents
@@ -263,7 +261,6 @@ def test_close_incident(mocker, requests_mock):
     from RespondAnalyst import close_incident_command
 
     rest_client = mock_rest_client()
-    # test
     mocker.patch.object(demisto, 'info')
 
     get_all_users_response = load_test_data('test_data/users.json')
@@ -572,7 +569,6 @@ def test_get_remote_data_command(requests_mock):
             "Type": 1
         }
     ]
-    # print(json.dumps(expected_result, sort_keys=True, indent=2, separators=(',', ': ')))
     assert res == expected_result
 
 
