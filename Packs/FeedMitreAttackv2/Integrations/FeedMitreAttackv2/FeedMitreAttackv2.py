@@ -26,7 +26,7 @@ INDICATOR_TYPE_TO_SCORE = {
     "STIX Tool": 2
 }
 
-RELATIONSHIP_TYPES = EntityRelation.Relations.RELATIONS_NAMES.keys()
+RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -227,12 +227,12 @@ def create_relationship(item_json, id_to_name):
         demisto.debug(f"Invalid relation type: {item_json.get('relationship_type')}")
         return
 
-    return EntityRelation(name=item_json.get('relationship_type'),
-                          entity_a=id_to_name.get(item_json.get('source_ref')),
-                          entity_a_type=a_type,
-                          entity_b=id_to_name.get(item_json.get('target_ref')),
-                          entity_b_type=b_type,
-                          fields=mapping_fields)
+    return EntityRelationship(name=item_json.get('relationship_type'),
+                              entity_a=id_to_name.get(item_json.get('source_ref')),
+                              entity_a_type=a_type,
+                              entity_b=id_to_name.get(item_json.get('target_ref')),
+                              entity_b_type=b_type,
+                              fields=mapping_fields)
 
 
 def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
