@@ -27,8 +27,9 @@ RELATIONS_TYPE_TO_DEMISTO_TYPES = {
     'indicator': 'Indicator',
     'malware': 'Malware',
     'course-of-action': 'Course of Action'
-
 }
+
+RELATIONSHIP_TYPES = EntityRelation.Relations.RELATIONS_NAMES.keys()
 
 
 class Client(BaseClient):
@@ -303,6 +304,15 @@ def create_list_relationships(relationships_objects, id_to_object):
     relationships_list = []
 
     for relationships_object in relationships_objects:
+
+        relationship_type = relationships_object.get('relationship_type')
+        if relationship_type not in RELATIONSHIP_TYPES:
+            if relationship_type == 'indicates':
+                relationship_type = 'indicated-by'
+            else:
+                demisto.debug(f"Invalid relation type: {relationship_type}")
+                continue
+
         a_type = relationships_object.get('source_ref').split('--')[0]
         a_type = RELATIONS_TYPE_TO_DEMISTO_TYPES.get(a_type)
         if a_type == 'Indicator':
@@ -320,10 +330,6 @@ def create_list_relationships(relationships_objects, id_to_object):
 
         entity_a = get_ioc_value(relationships_object.get('source_ref'), id_to_object)
         entity_b = get_ioc_value(relationships_object.get('target_ref'), id_to_object)
-
-        relationship_type = relationships_object.get('relationship_type')
-        if relationship_type == 'indicates':
-            relationship_type = 'indicated-by'
 
         entity_relation = EntityRelation(name=relationship_type,
                                          entity_a=entity_a,
