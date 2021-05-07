@@ -285,19 +285,6 @@
                     },
                     "simple": ""
                 },
-                "SolarWinds Alert Related Node URI": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "RelatedNodeUri",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
                 "SolarWinds Alert Type": {
                     "complex": {
                         "accessor": "",

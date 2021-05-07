@@ -393,15 +393,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "solarwindsalertrelatednodeuri",
-                                "height": 22,
-                                "id": "9b73bf60-a1ec-11eb-926f-df5ff9f9e10a",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "solarwindsalertrelatednodecaption",
                                 "height": 22,
                                 "id": "9d0e0e70-a1ec-11eb-926f-df5ff9f9e10a",
