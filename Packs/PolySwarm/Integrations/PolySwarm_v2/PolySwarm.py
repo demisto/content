@@ -41,8 +41,7 @@ class PolyswarmConnector():
                    'Total': str(total_scans),
                    'Positives': str(positives),
                    'Permalink': permalink,
-                   'Artifact': artifact,
-                   'IgnoreAutoExtact': True}
+                   'Artifact': artifact}
 
         command_result = CommandResults(
             outputs_prefix=f'PolySwarm.{object_name}',
