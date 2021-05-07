@@ -351,7 +351,7 @@ script:
           description: Maximal number of alerts to retrieve. Also sets the size of
             the returned page.
           isArray: false
-          defaultvalue: '50'
+          defaultValue: '50'
           name: limit
           required: false
           secret: false
@@ -428,7 +428,7 @@ script:
           description: Maximal number of mitigations to retrieve. Also sets the size
             of the returned page.
           isArray: false
-          defaultvalue: '50'
+          defaultValue: '50'
           name: limit
           required: false
           secret: false
@@ -789,7 +789,7 @@ script:
           description: Maximal number of mitigations to retrieve. Also sets the size
             of the returned page.
           isArray: false
-          defaultvalue: '50'
+          defaultValue: '50'
           name: limit
           required: false
           secret: false
