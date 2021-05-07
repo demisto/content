@@ -30,20 +30,25 @@ class PolyswarmConnector():
                                           uri=self.config['base_url'])
 
     def _get_results(self,
-                     title: str,
+                     object_name: str,
                      total_scans: int,
                      positives: int,
                      permalink: str,
-                     artifact: str) -> dict:
+                     artifact: str,
+                     indicator: object = None) -> dict:
+
         results = {'Scan_UUID': artifact,
                    'Total': str(total_scans),
                    'Positives': str(positives),
                    'Permalink': permalink,
-                   'Artifact': artifact}
+                   'Artifact': artifact,
+                   'IgnoreAutoExtact': True}
+
         command_result = CommandResults(
-            outputs_prefix='PolySwarm',
+            outputs_prefix=f'PolySwarm.{object_name}',
             outputs_key_field='Scan_UUID',
-            outputs=results
+            outputs=results,
+            indicator=indicator
         )
 
         return_results(command_result)
@@ -101,7 +106,7 @@ class PolyswarmConnector():
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results(title, total_scans,
+        return self._get_results('File', total_scans,
                                  positives, permalink,
                                  file_hash)
 
@@ -154,7 +159,7 @@ class PolyswarmConnector():
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results(title, total_scans,
+        return self._get_results('File', total_scans,
                                  positives, result.permalink,
                                  file_info['name'])
 
@@ -185,7 +190,7 @@ class PolyswarmConnector():
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results(title, total_scans,
+        return self._get_results('File', total_scans,
                                  positives, result.permalink,
                                  param['hash'])
 
@@ -228,9 +233,37 @@ class PolyswarmConnector():
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results(title, total_scans,
+        score = Common.DBotScore.SUSPICIOUS if positives > 0 else Common.DBotScore.GOOD
+
+        if artifact == 'ip':
+            dbot_score_type = DBotScoreType.IP
+            object_name = 'IP'
+        elif artifact == 'url':
+            object_name = 'URL'
+            dbot_score_type = DBotScoreType.URL
+        elif artifact == 'domain':
+            object_name = 'Domain'
+            dbot_score_type = DBotScoreType.DOMAIN
+
+        dbot_score = Common.DBotScore(indicator=param[artifact],
+                                      indicator_type=dbot_score_type,
+                                      integration_name='PolySwarm',
+                                      score=score)
+
+        indicator = None
+        if artifact == 'ip':
+            indicator = Common.IP(ip=param[artifact],
+                                  dbot_score=dbot_score)
+        elif artifact == 'url':
+            indicator = Common.URL(url=param[artifact],
+                                   dbot_score=dbot_score)
+        elif artifact == 'domain':
+            indicator = Common.Domain(domain=param[artifact],
+                                      dbot_score=dbot_score)
+
+        return self._get_results(object_name, total_scans,
                                  positives, result.permalink,
-                                 param[artifact])
+                                 param[artifact], indicator)
 
     def get_report(self, param: dict) -> dict:
         """
@@ -268,7 +301,7 @@ class PolyswarmConnector():
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results(title, total_scans,
+        return self._get_results('File', total_scans,
                                  positives, permalink,
                                  param['scan_uuid'])
 
