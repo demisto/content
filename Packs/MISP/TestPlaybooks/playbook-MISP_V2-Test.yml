@@ -67,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 1245
         }
       }
     note: false
@@ -113,7 +113,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7895
+          "y": 8245
         }
       }
     note: false
@@ -197,7 +197,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "74"
+      - "76"
     scriptarguments:
       analysis: {}
       category: {}
@@ -257,7 +257,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1070
+          "y": 1420
         }
       }
     note: false
@@ -303,7 +303,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -339,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3695
+          "y": 4045
         }
       }
     note: false
@@ -375,7 +375,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -413,7 +413,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3345
         }
       }
     note: false
@@ -451,7 +451,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -493,7 +493,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2470
         }
       }
     note: false
@@ -535,7 +535,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -584,7 +584,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -633,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3345
+          "y": 3695
         }
       }
     note: false
@@ -668,7 +668,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3520
         }
       }
     note: false
@@ -704,7 +704,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7545
+          "y": 7895
         }
       }
     note: false
@@ -742,7 +742,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7720
+          "y": 8070
         }
       }
     note: false
@@ -782,7 +782,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2995
+          "y": 3345
         }
       }
     note: false
@@ -810,7 +810,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2135
+          "y": 2485
         }
       }
     note: false
@@ -859,7 +859,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2820
+          "y": 3170
         }
       }
     note: false
@@ -893,7 +893,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2470
+          "y": 2820
         }
       }
     note: false
@@ -937,7 +937,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2295
+          "y": 2645
         }
       }
     note: false
@@ -974,7 +974,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1245
+          "y": 1595
         }
       }
     note: false
@@ -1011,7 +1011,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2645
+          "y": 2995
         }
       }
     note: false
@@ -1039,7 +1039,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 3185
+          "y": 3535
         }
       }
     note: false
@@ -1073,7 +1073,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4570
+          "y": 4920
         }
       }
     note: false
@@ -1115,7 +1115,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5095
+          "y": 5445
         }
       }
     note: false
@@ -1176,7 +1176,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5620
         }
       }
     note: false
@@ -1218,7 +1218,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5795
+          "y": 6145
         }
       }
     note: false
@@ -1279,7 +1279,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 6320
         }
       }
     note: false
@@ -1321,7 +1321,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6495
+          "y": 6845
         }
       }
     note: false
@@ -1364,7 +1364,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6670
+          "y": 7020
         }
       }
     note: false
@@ -1406,7 +1406,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4395
+          "y": 4745
         }
       }
     note: false
@@ -1448,7 +1448,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4745
+          "y": 5095
         }
       }
     note: false
@@ -1480,7 +1480,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7370
+          "y": 7720
         }
       }
     note: false
@@ -1522,7 +1522,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4570
         }
       }
     note: false
@@ -1558,7 +1558,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4920
+          "y": 5270
         }
       }
     note: false
@@ -1594,7 +1594,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 5970
         }
       }
     note: false
@@ -1630,7 +1630,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6320
+          "y": 6670
         }
       }
     note: false
@@ -1666,7 +1666,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4045
+          "y": 4395
         }
       }
     note: false
@@ -1708,7 +1708,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7195
+          "y": 7545
         }
       }
     note: false
@@ -1744,7 +1744,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7020
+          "y": 7370
         }
       }
     note: false
@@ -1776,7 +1776,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1945
+          "y": 2295
         }
       }
     note: false
@@ -1808,7 +1808,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2645
+          "y": 2995
         }
       }
     note: false
@@ -1840,7 +1840,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 3520
+          "y": 3870
         }
       }
     note: false
@@ -1873,7 +1873,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 5445
+          "y": 5795
         }
       }
     note: false
@@ -1906,7 +1906,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 6145
+          "y": 6495
         }
       }
     note: false
@@ -1939,7 +1939,7 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 6845
+          "y": 7195
         }
       }
     note: false
@@ -1971,7 +1971,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3870
+          "y": 4220
         }
       }
     note: false
@@ -1981,10 +1981,10 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: 1cce8785-10b0-4afc-801a-329531ad4410
+    taskid: 33206ddc-c4ce-499c-81b9-c7a2244da210
     type: regular
     task:
-      id: 1cce8785-10b0-4afc-801a-329531ad4410
+      id: 33206ddc-c4ce-499c-81b9-c7a2244da210
       version: -1
       name: Search Attribute
       description: Search for attributes in MISP.
@@ -1999,12 +1999,79 @@ tasks:
       category: {}
       include_decay_score: {}
       last: {}
-      to_ids:
-        simple: ${MISP.Event.Attribute.ToIDs}
+      to_ids: {}
       type: {}
-      uuid:
-        simple: ${MISP.Event.Attribute.UUID}
-      value: {}
+      uuid: {}
+      value:
+        simple: attribute test - ${GeneratedUUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 2c3bd987-aebc-4c9b-84a1-6aeefe41ccd1
+    type: condition
+    task:
+      id: 2c3bd987-aebc-4c9b-84a1-6aeefe41ccd1
+      version: -1
+      name: Validate Search Attributes
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: MISP.Attribute.Value
+            iscontext: true
+          right:
+            value:
+              simple: GeneratedUUID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: ff23a0ae-7159-4f69-8ded-d306c3eb71c1
+    type: regular
+    task:
+      id: ff23a0ae-7159-4f69-8ded-d306c3eb71c1
+      version: -1
+      name: Generate UUID
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
     separatecontext: false
     view: |-
       {
@@ -2018,33 +2085,37 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "75":
-    id: "75"
-    taskid: 072162b8-ac0c-4c06-8864-f0c13e387a44
-    type: condition
+  "77":
+    id: "77"
+    taskid: 81a7262b-cd6d-49b6-8f47-9f72cdacf9f8
+    type: regular
     task:
-      id: 072162b8-ac0c-4c06-8864-f0c13e387a44
+      id: 81a7262b-cd6d-49b6-8f47-9f72cdacf9f8
       version: -1
-      name: Validate Search Attributes
-      type: condition
-      iscommand: false
+      name: Add new attribute
+      description: Adds an attribute to an existing MISP event.
+      script: '|||misp-add-attribute'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
-      "yes":
-      - "3"
+      '#none#':
+      - "74"
+    scriptarguments:
+      category:
+        simple: External analysis
+      comment:
+        simple: Comment for attribute creation
+      distribution: {}
+      id:
+        simple: ${MISP.Event.ID}
+      to_ids:
+        simple: "false"
+      type:
+        simple: other
+      value:
+        simple: attribute test - ${GeneratedUUID}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: MISP.Attribute.UUID
-            iscontext: true
-          right:
-            value:
-              simple: MISP.Event.Attribute.[0].UUID
-            iscontext: true
     view: |-
       {
         "position": {
@@ -2065,7 +2136,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 7910,
+        "height": 8260,
         "width": 922.5,
         "x": 50,
         "y": 50
