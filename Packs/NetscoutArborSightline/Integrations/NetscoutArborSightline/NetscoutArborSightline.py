@@ -279,7 +279,7 @@ class NetscoutClient(BaseClient):
             # calls.
             results = self.list_alerts(page_size=amount_of_incidents, search_filter=data_attribute_filter,
                                        status_list_to_retry=[500])
-            all_alerts = results.get('data')
+            all_alerts = results.get('data', [])
             short_alert_list = all_alerts[-1 * self.max_fetch:]
             if short_alert_list:
                 new_last_start_time = short_alert_list[0].get('attributes', {}).get('start_time')
@@ -362,7 +362,7 @@ class NetscoutClient(BaseClient):
             json_data=data
         )
 
-    def delete_mitigation(self, mitigation_id: str) -> dict:
+    def delete_mitigation(self, mitigation_id: str):
         self.http_request(
             method='DELETE',
             url_suffix=f'mitigations/{mitigation_id}',
@@ -564,7 +564,7 @@ def alert_annotation_list_command(client: NetscoutClient, args: dict):
     alert_id = args.get('alert_id', '')
     extend_data = argToBoolean(args.get('extend_data', False))
     raw_result = client.get_annotations(alert_id)
-    data = raw_result.get('data')
+    data = raw_result.get('data', [])
     hr = [build_human_readable(data=annotation) for annotation in data]
     annotations = [build_output(data=annotation, extend_data=extend_data) for annotation in data]
     context = {'AlertID': alert_id, 'Annotations': annotations}
@@ -617,7 +617,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
                                subtype=sub_type, subobject=sub_object)
     object_data = {'relationships': relationships, 'attributes': attributes}
     raw_result = client.create_mitigation(data={'data': object_data})
-    data = raw_result.get('data')
+    data = raw_result.get('data', {})
     hr = build_human_readable(data=data)
     mitigation = build_output(data=data, extend_data=extend_data)
     return CommandResults(outputs_prefix='NASightline.Mitigation',

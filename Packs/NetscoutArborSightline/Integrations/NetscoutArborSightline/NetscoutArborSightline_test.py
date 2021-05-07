@@ -131,7 +131,7 @@ def test_calculate_amount_of_incidents(mocker, http_response_key, expected_numbe
     mocked_http_response = http_responses[http_response_key]
 
     mocker.patch.object(client, 'list_alerts', return_value=mocked_http_response)
-    number_of_pages = client.calculate_amount_of_incidents('')
+    number_of_pages = client.calculate_amount_of_incidents('', {})
     assert number_of_pages == expected_number_of_pages
 
 
@@ -143,7 +143,7 @@ def test_calculate_amount_of_incidents_raise_error(mocker):
     with pytest.raises(DemistoException,
                        match='Could not calculate page size, last page number was not found:\n'
                              'https://content.demisto.works:57585/api/sp/v7/alerts/?'):
-        client.calculate_amount_of_incidents('')
+        client.calculate_amount_of_incidents('', {})
 
 
 @pytest.mark.parametrize('object_to_clean', [
