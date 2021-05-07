@@ -87,10 +87,6 @@
                     "complex": null,
                     "simple": "incidentId"
                 },
-                "Internal Asset Count": {
-                    "complex": null,
-                    "simple": "assetCount"
-                },
                 "MAD Last Event Time": {
                     "complex": null,
                     "simple": "lastEventTime"
@@ -123,7 +119,7 @@
                     "complex": null,
                     "simple": "timeGenerated"
                 },
-                "MAD Title": {
+                "Title": {
                     "complex": null,
                     "simple": "title"
                 },
@@ -131,7 +127,7 @@
                     "complex": null,
                     "simple": "URL"
                 },
-                "MAD Severity": {
+                "severity": {
                     "complex": null,
                     "simple": "severity"
                 }
@@ -158,5 +154,5 @@
     "name": "Mandiant Automated Defense Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }
