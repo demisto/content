@@ -28,8 +28,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: 'First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z'
-  name: fetch_time
+- additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>,
+    e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
+  defaultvalue: 12 hours
+  display: First fetch time interval
+  hidden: false
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
