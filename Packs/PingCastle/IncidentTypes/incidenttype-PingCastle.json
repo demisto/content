@@ -8,7 +8,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "PingCastle",
-    "layout": "76b08853-ef6c-4879-844d-69b7cee9beef",
+    "layout": "Ping Castle Incident - Report",
     "locked": false,
     "name": "PingCastle",
     "playbookId": "SX - PC - PingCastle Report",
@@ -18,5 +18,5 @@
     "version": -1,
     "weeks": 0,
     "weeksR": 0,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }

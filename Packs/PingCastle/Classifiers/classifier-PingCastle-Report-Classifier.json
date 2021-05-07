@@ -2,7 +2,7 @@
     "defaultIncidentType": "PingCastle",
     "description": "",
     "feed": false,
-    "id": "c7196486-a097-4086-84a4-7c0a086fb916",
+    "id": "PingCastle-Report-Classifier",
     "keyTypeMap": {},
     "name": "PingCastle-Report-Classifier",
     "transformer": {

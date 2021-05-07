@@ -1,4 +1,4 @@
-category: Utilities
+category: Vulnerability Management
 commonfields:
   id: PingCastle
   version: -1
@@ -19,6 +19,16 @@ configuration:
   name: longRunningPort
   required: false
   type: 0
+- display: Certificate (Required for HTTPS)
+  hidden: false
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  hidden: false
+  name: private_key
+  required: false
+  type: 12
 description: This integration will run a server that will listen for PingCastle XML
   reports.
 display: PingCastle
@@ -46,7 +56,7 @@ script:
     - contextPath: PingCastle.Report.report
       description: The XML report sent by Ping Castle
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   feed: false
   isfetch: false
   longRunning: true
@@ -57,4 +67,6 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+fromversion: 5.5.0
+defaultmapperin: PingCastle-Report-Mapper
+defaultclassifier: PingCastle-Report-Classifier

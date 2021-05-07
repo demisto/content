@@ -1,7 +1,7 @@
 {
   "description": "",
   "feed": false,
-  "id": "339a2e42-7a1e-44ba-8670-f8573c89aee9",
+  "id": "PingCastle-Report-Mapper",
   "mapping": {
     "PingCastle": {
       "dontMapEventToLabels": true,

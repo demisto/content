@@ -229,5 +229,5 @@ view: |-
   }
 tests:
 - SX - PC - Test Playbook
-fromversion: 5.0.0
+fromversion: 5.5.0
 description: 'This playbook runs when a new report is sent from PingCastle. It then parses it to json and renders a table. It also puts a download link to the xml report in the war room.'

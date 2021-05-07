@@ -1,7 +1,9 @@
 import random
 import string
 import traceback
+import ssl
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from tempfile import NamedTemporaryFile
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -93,9 +95,9 @@ class PingCastleHTTPServer(BaseHTTPRequestHandler):
         Args:
             request_json (dict): The JSON sent in the request.
         """
-        context: dict = demisto.getIntegrationContext()
+        context: dict = get_integration_context()
         context['report'] = request_json.get('xmlReport')
-        demisto.setIntegrationContext(context)
+        set_integration_context(context)
 
     def _handle_login(self, request_json):
         """
@@ -115,13 +117,34 @@ class PingCastleHTTPServer(BaseHTTPRequestHandler):
             self.wfile.write(PingCastleHTTPServer.token.encode('utf-8'))
 
 
-def listen_for_reports(port: str):
+def listen_for_reports(params):
     """
-    long-running-execution command: Runs a server listening for PingCastle reports
+    long-running-execution command: listen forever for reports sent by PingCastle
+    Args:
+        params (dict): A dictionary of the arguments to the integration
     """
+    certificate: str = params.get('certificate')
+    private_key: str = params.get('private_key')
+    port = int(params.get('longRunningPort'))
+
     while True:
         try:
-            listener = HTTPServer(('', int(port)), PingCastleHTTPServer)
+            listener = HTTPServer(('', port), PingCastleHTTPServer)
+            if certificate and private_key:
+                certificate_file = NamedTemporaryFile(mode='w', delete=False)
+                certificate_path = certificate_file.name
+                certificate_file.write(certificate)
+                certificate_file.close()
+
+                private_key_file = NamedTemporaryFile(mode='w', delete=False)
+                private_key_path = private_key_file.name
+                private_key_file.write(private_key)
+                private_key_file.close()
+                listener.socket = ssl.wrap_socket(listener.socket,
+                                                  keyfile=private_key_path,
+                                                  certfile=certificate_path,
+                                                  server_side=True)
+
             listener.serve_forever()
         except Exception:
             demisto.error(traceback.format_exc())
@@ -135,14 +158,14 @@ def get_report_command(args: dict):
         args (dict): A dict object containing the arguments for this command
     """
     delete_report = args.get('delete_report') == 'Yes'
-    context = demisto.getIntegrationContext()
+    context = get_integration_context()
     report = context.get('report')
     if report is None:
         return 'No report available'
 
     if delete_report:
         context.pop('report')
-        demisto.setIntegrationContext(context)
+        set_integration_context(context)
 
     return CommandResults(
         outputs_prefix='PingCastle.Report',
@@ -154,14 +177,14 @@ def get_report_command(args: dict):
 def main() -> None:
     """main function, parses params and runs command functions"""
 
-    port = demisto.params().get('longRunningPort')
+    params = demisto.params()
     command = demisto.command()
     args = demisto.args()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if command == 'long-running-execution':
-            listen_for_reports(port)
+            listen_for_reports(params)
 
         elif command == 'pingcastle-get-report':
             return_results(get_report_command(args))
@@ -171,8 +194,6 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
-
-''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
