@@ -1,18 +1,30 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "domains",
+    "cliName": "madassets",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "name",
+            "displayName": "hostname",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "name",
+            "key": "hostname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "ipaddress",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "ipaddress",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -29,10 +41,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_domains",
+    "id": "incident_madassets",
     "isReadOnly": false,
     "locked": false,
-    "name": "Domains",
+    "name": "MAD Assets",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -1,48 +1,48 @@
 {
     "description": "",
     "feed": false,
-    "id": "respond-analyst-mapper",
+    "id": "mandiant-automated-defense-incoming-mapper",
     "mapping": {
-        "Respond Software Incident": {
+        "Mandiant Automated Defense Incident": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Accounts": {
+                "MAD Accounts": {
                     "complex": null,
                     "simple": "accounts"
                 },
-                "Asset Criticality": {
+                "MAD Asset Criticality": {
                     "complex": null,
                     "simple": "assetCriticality"
                 },
-                "Assets": {
+                "MAD Assets": {
                     "complex": null,
                     "simple": "assets"
                 },
-                "Assigned Users": {
+                "MAD Assigned Users": {
                     "complex": null,
                     "simple": "assignedUsers"
                 },
-                "Attack Stage": {
+                "MAD Attack Stage": {
                     "complex": null,
                     "simple": "attackStage"
                 },
-                "Attack Tactic": {
+                "MAD Attack Tactic": {
                     "complex": null,
                     "simple": "attackTactic"
                 },
-                "Close URL": {
+                "MAD Close URL": {
                     "complex": null,
                     "simple": "closeURL"
                 },
-                "Description": {
+                "MAD Description": {
                     "complex": null,
                     "simple": "description"
                 },
-                "Domains": {
+                "MAD Domains": {
                     "complex": null,
                     "simple": "domains"
                 },
-                "Escalation Reasons": {
+                "MAD Escalation Reasons": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -51,35 +51,39 @@
                     },
                     "simple": ""
                 },
-                "External Systems": {
+                "MAD Event Count": {
+                    "complex": null,
+                    "simple": "eventCount"
+                },
+                "MAD External Systems": {
                     "complex": null,
                     "simple": "externalsystems"
                 },
-                "Feedback Comments": {
+                "MAD Feedback Comments": {
                     "complex": null,
                     "simple": "feedback.comments"
                 },
-                "Feedback Outcome": {
+                "MAD Feedback Outcome": {
                     "complex": null,
                     "simple": "feedback.outcome"
                 },
-                "Feedback Time Updated": {
+                "MAD Feedback Time Updated": {
                     "complex": null,
                     "simple": "feedback.timeUpdated"
                 },
-                "Feedback User Id": {
+                "MAD Feedback User Id": {
                     "complex": null,
                     "simple": "feedback.userId"
                 },
-                "File Hashes": {
+                "MAD File Hashes": {
                     "complex": null,
                     "simple": "hashes"
                 },
-                "First Event Time": {
+                "MAD First Event Time": {
                     "complex": null,
                     "simple": "firstEventTime"
                 },
-                "Incident Id": {
+                "MAD Incident Id": {
                     "complex": null,
                     "simple": "incidentId"
                 },
@@ -87,47 +91,47 @@
                     "complex": null,
                     "simple": "assetCount"
                 },
-                "Last Event Time": {
+                "MAD Last Event Time": {
                     "complex": null,
                     "simple": "lastEventTime"
                 },
-                "Malware": {
+                "MAD Malware": {
                     "complex": null,
                     "simple": "malware"
                 },
-                "Mandiant Status": {
+                "MAD Status": {
                     "complex": null,
                     "simple": "status"
                 },
-                "Probability": {
+                "MAD Probability": {
                     "complex": null,
                     "simple": "probability"
                 },
-                "Respond Tenant Id": {
+                "MAD Internal Tenant Id": {
                     "complex": null,
                     "simple": "tenantIdRespond"
                 },
-                "Signatures": {
+                "MAD Signatures": {
                     "complex": null,
                     "simple": "signatures"
                 },
-                "Tenant Id": {
+                "MAD External Tenant Id": {
                     "complex": null,
                     "simple": "tenantId"
                 },
-                "Time Generated": {
+                "MAD Time Generated": {
                     "complex": null,
                     "simple": "timeGenerated"
                 },
-                "Title": {
+                "MAD Title": {
                     "complex": null,
                     "simple": "title"
                 },
-                "URL": {
+                "MAD URL": {
                     "complex": null,
                     "simple": "URL"
                 },
-                "severity": {
+                "MAD Severity": {
                     "complex": null,
                     "simple": "severity"
                 }
@@ -151,8 +155,8 @@
             }
         }
     },
-    "name": "Respond Analyst (mapper)",
+    "name": "Mandiant Automated Defense Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "5.0.0"
 }

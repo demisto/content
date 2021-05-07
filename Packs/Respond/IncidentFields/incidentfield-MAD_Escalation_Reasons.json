@@ -1,42 +1,18 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "signatures",
+    "cliName": "madescalationreasons",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "vendor",
+            "displayName": "label",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "vendor",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "name",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "name",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "category",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "category",
+            "key": "label",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -53,10 +29,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_signatures",
+    "id": "incident_madescalationreasons",
     "isReadOnly": false,
     "locked": false,
-    "name": "Signatures",
+    "name": "MAD Escalation Reasons",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

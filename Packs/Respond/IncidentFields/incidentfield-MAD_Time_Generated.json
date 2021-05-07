@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "assetcriticality",
+    "cliName": "madtimegenerated",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_assetcriticality",
+    "id": "incident_madtimegenerated",
     "isReadOnly": false,
     "locked": false,
-    "name": "Asset Criticality",
+    "name": "MAD Time Generated",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

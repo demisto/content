@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "respondtenantid",
+    "cliName": "maddescription",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_respondtenantid",
+    "id": "incident_maddescription",
     "isReadOnly": false,
     "locked": false,
-    "name": "Respond Tenant Id",
+    "name": "MAD Description",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

@@ -255,5 +255,5 @@ script:
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-defaultclassifier: Respond Analyst
-defaultmapperin: Respond Analyst (mapper)
+defaultclassifier: Mandiant Automated Defense Classifier
+defaultmapperin: Mandiant Automated Defense Incoming Mapper

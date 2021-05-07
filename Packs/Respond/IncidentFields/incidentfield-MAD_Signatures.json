@@ -1,12 +1,24 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "malware",
+    "cliName": "madsignatures",
     "closeForm": false,
     "columns": [
+        {
+            "displayName": "vendor",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "vendor",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
         {
             "displayName": "name",
             "fieldCalcScript": "",
@@ -20,23 +32,11 @@
             "width": 150
         },
         {
-            "displayName": "type",
+            "displayName": "category",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "type",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
-        {
-            "displayName": "vendor",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "vendor",
+            "key": "category",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -53,10 +53,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_malware",
+    "id": "incident_madsignatures",
     "isReadOnly": false,
     "locked": false,
-    "name": "Malware",
+    "name": "MAD Signatures",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

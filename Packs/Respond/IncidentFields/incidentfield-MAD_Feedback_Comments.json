@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "lasteventtime",
+    "cliName": "madfeedbackcomments",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_lasteventtime",
+    "id": "incident_madfeedbackcomments",
     "isReadOnly": false,
     "locked": false,
-    "name": "Last Event Time",
+    "name": "MAD Feedback Comments",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

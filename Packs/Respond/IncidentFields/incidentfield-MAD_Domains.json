@@ -1,24 +1,12 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "accounts",
+    "cliName": "maddomains",
     "closeForm": false,
     "columns": [
-        {
-            "displayName": "domain",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "domain",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150
-        },
         {
             "displayName": "name",
             "fieldCalcScript": "",
@@ -41,10 +29,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_accounts",
+    "id": "incident_maddomains",
     "isReadOnly": false,
     "locked": false,
-    "name": "Accounts",
+    "name": "MAD Domains",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

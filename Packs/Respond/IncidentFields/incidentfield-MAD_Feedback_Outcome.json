@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "assignedusers",
+    "cliName": "madfeedbackoutcome",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_assignedusers",
+    "id": "incident_madfeedbackoutcome",
     "isReadOnly": false,
     "locked": false,
-    "name": "Assigned Users",
+    "name": "MAD Feedback Outcome",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

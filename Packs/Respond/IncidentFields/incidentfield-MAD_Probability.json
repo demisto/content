@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "feedbackuserid",
+    "cliName": "madprobability",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_feedbackuserid",
+    "id": "incident_madprobability",
     "isReadOnly": false,
     "locked": false,
-    "name": "Feedback User Id",
+    "name": "MAD Probability",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

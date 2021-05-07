@@ -1,18 +1,30 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "filehashes",
+    "cliName": "madaccounts",
     "closeForm": false,
     "columns": [
         {
-            "displayName": "hash",
+            "displayName": "domain",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "hash",
+            "key": "domain",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
             "required": false,
             "script": "",
             "selectValues": null,
@@ -29,10 +41,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_filehashes",
+    "id": "incident_madaccounts",
     "isReadOnly": false,
     "locked": false,
-    "name": "File Hashes",
+    "name": "MAD Accounts",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

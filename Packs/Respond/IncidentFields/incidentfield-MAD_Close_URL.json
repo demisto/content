@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "description",
+    "cliName": "madcloseurl",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_description",
+    "id": "incident_madcloseurl",
     "isReadOnly": false,
     "locked": false,
-    "name": "Description",
+    "name": "MAD Close URL",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

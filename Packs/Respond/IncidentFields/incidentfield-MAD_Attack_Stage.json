@@ -1,19 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Respond Software Incident"
+        "Mandiant Automated Defense Incident"
     ],
     "caseInsensitive": true,
-    "cliName": "timegenerated",
+    "cliName": "madattackstage",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_timegenerated",
+    "id": "incident_madattackstage",
     "isReadOnly": false,
     "locked": false,
-    "name": "Time Generated",
+    "name": "MAD Attack Stage",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
