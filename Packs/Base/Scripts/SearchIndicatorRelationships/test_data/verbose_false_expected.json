@@ -1,0 +1,38 @@
+[
+  {
+    "EntityA": "1.1.1.1",
+    "EntityAType": "IP",
+    "EntityB": "2.2.2.2",
+    "EntityBType": "IP",
+    "Relationship": "related to",
+    "Reverse": "related to",
+    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be44"
+  },
+  {
+    "EntityA": "1.1.1.1",
+    "EntityAType": "IP",
+    "EntityB": "3.3.3.3",
+    "EntityBType": "IP",
+    "Relationship": "related to",
+    "Reverse": "related to",
+    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be45"
+  },
+  {
+    "EntityA": "1.1.1.1",
+    "EntityAType": "IP",
+    "EntityB": "4.4.4.4",
+    "EntityBType": "IP",
+    "Relationship": "related to",
+    "Reverse": "related to",
+    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be46"
+  },
+  {
+    "EntityA": "1.1.1.1",
+    "EntityAType": "IP",
+    "EntityB": "6.6.6.6",
+    "EntityBType": "IP",
+    "Relationship": "related to",
+    "Reverse": "related to",
+    "ID": "7ed6656f4c2aaa8f0cbc5cb83606be47"
+  }
+]
