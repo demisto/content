@@ -51,7 +51,7 @@ class PolyswarmConnector():
             indicator=indicator
         )
 
-        return_results(command_result)
+        return command_result
 
     def test_connectivity(self) -> bool:
         EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'  # guardrails-disable-line
@@ -317,27 +317,27 @@ def main():
 
         if command == 'test-module':
             if polyswarm.test_connectivity():
-                demisto.results('ok')
+                return_results('ok')
             else:
                 return_error('Connection Failed')
         elif command == 'file':
-            demisto.results(polyswarm.file_reputation(param))
+            return_results(polyswarm.file_reputation(param))
         elif command == 'get-file':
-            demisto.results(polyswarm.get_file(param))
+            return_results(polyswarm.get_file(param))
         elif command == 'file-scan':
-            demisto.results(polyswarm.detonate_file(param))
+            return_results(polyswarm.detonate_file(param))
         elif command == 'file-rescan':
-            demisto.results(polyswarm.rescan_file(param))
+            return_results(polyswarm.rescan_file(param))
         elif command == 'url':
-            demisto.results(polyswarm.url_reputation(param, 'url'))
+            return_results(polyswarm.url_reputation(param, 'url'))
         elif command == 'url-scan':
-            demisto.results(polyswarm.url_reputation(param, 'url'))
+            return_results(polyswarm.url_reputation(param, 'url'))
         elif command == 'ip':
-            demisto.results(polyswarm.url_reputation(param, 'ip'))
+            return_results(polyswarm.url_reputation(param, 'ip'))
         elif command == 'domain':
-            demisto.results(polyswarm.url_reputation(param, 'domain'))
+            return_results(polyswarm.url_reputation(param, 'domain'))
         elif command == 'polyswarm-get-report':
-            demisto.results(polyswarm.get_report(param))
+            return_results(polyswarm.get_report(param))
 
     except Exception as e:
         return_error(str(e),
