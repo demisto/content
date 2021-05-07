@@ -18,7 +18,7 @@ PARAMETERS_DICT = {
     'maxRatioOfMissingValue': 0.5,
     'modelExpiration': 24,
     'forceRetrain': 'True',
-    'modelHidden' : 'False'
+    'modelHidden': 'False'
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [
@@ -206,7 +206,7 @@ def test_main_incident_nested(mocker):
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     nested_field = 'xdralerts.cmd'
     PARAMETERS_DICT.update(
-        {'fieldsForClustering': nested_field, 'fieldForClusterName': 'entityname'})
+        {'fieldsForClustering': nested_field, 'fieldForClusterName': nested_field})
     mocker.patch.object(demisto, 'args',
                         return_value=PARAMETERS_DICT)
     mocker.patch.object(demisto, 'dt', return_value=['nested_val_1', 'nested_val_2'])

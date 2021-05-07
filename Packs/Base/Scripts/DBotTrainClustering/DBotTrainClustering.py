@@ -380,32 +380,25 @@ def recursive_filter(item, regex_patterns: List, *fieldsToRemove):  # type: igno
     return item
 
 
-def normalize_global(obj):  # type: ignore
-    """
-    Funtion to decide which normalization to use
-    :param obj: object that we want to normalize
-    :return:
-    """
-    if isinstance(obj, str):
+def normalize_global(obj):
+    if isinstance(obj, float) or not obj:
+        return " "
+    if check_list_of_dict(obj):
+        obj = {k: v for k, v in enumerate(obj)}  # type: ignore
+        return normalize_json(obj)
+    if isinstance(obj, dict):
+        return normalize_json(obj)
+    if isinstance(obj, str) or isinstance(obj, list):
         return normalize_command_line(obj)
-    else:
-        return normalize_json(obj)  # type: ignore
+
 
 
 def normalize_json(obj) -> str:  # type: ignore
     """
-    Normalize json from removing unwantd regex pattern or stop word
+    Normalize json from removing unwanted regex pattern or stop word
     :param obj:Dumps of a json or dict
     :return:
     """
-    if isinstance(obj, float) or not obj:
-        return " "
-    if isinstance(obj, str):
-        obj = json.loads(obj)
-    if check_list_of_dict(obj):
-        obj = {k: v for k, v in enumerate(obj)}  # type: ignore
-    if not isinstance(obj, dict):
-        return " "
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     my_string = json.dumps(my_dict)
     pattern = re.compile('([^\s\w]|_)+')
@@ -470,7 +463,8 @@ class Tfidf(BaseEstimator, TransformerMixin):
         return self.vec.transform(x).toarray()
 
 
-def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool, model_hidden: bool) -> None:
+def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool,
+                           model_hidden: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
@@ -515,7 +509,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]],
              'pivot': str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
-                 clustering.model.labels_ == cluster_number].id.values.tolist()],
+                 clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
@@ -609,7 +603,7 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str]) -> \
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str], keep_unique_value=False) -> \
         pd.DataFrame:
     """
     Handle nested fields by concatening values for each sub list of the field
@@ -623,14 +617,22 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
             if '.' in field:
                 if isinstance(incidents, list):
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
-                    value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))) for x in
-                                  value_list]
+                    if not keep_unique_value:
+                        value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x))))
+                                      for x in value_list]
+                    else:
+                        value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
+                                      for x in value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
                     value_list = ' '.join(  # type: ignore
                         set(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list))))  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
+
+
+def most_frequent(l):
+    return max(set(l), key=l.count)
 
 
 def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
@@ -721,10 +723,10 @@ def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_clus
 
 def calculate_range(data):
     all_data_size = list(map(lambda x: x['data'][0], data['data']))
-    max_size =  max(all_data_size)
+    max_size = max(all_data_size)
     min_size = min(all_data_size)
     min_range = max(30, min_size)
-    max_range = min_range + max(300, max_size-min_size)
+    max_range = min_range + max(300, max_size - min_size)
     return [min_range, max_range]
 
 
@@ -738,9 +740,9 @@ def main():
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-        min_number_of_incident_in_cluster, model_name, store_model, \
-        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, \
-        debug, force_retrain, model_expiration, model_hidden = get_args()
+    min_number_of_incident_in_cluster, model_name, store_model, \
+    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, \
+    debug, force_retrain, model_expiration, model_hidden = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
@@ -774,6 +776,7 @@ def main():
 
         # Fill nested fields with appropriate values
         incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
+        incidents_df = fill_nested_fields(incidents_df, incidents, field_for_cluster_name, keep_unique_value=True)
 
         # Check Field that appear in populate_fields but are not in the incidents_df and return message
         global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
