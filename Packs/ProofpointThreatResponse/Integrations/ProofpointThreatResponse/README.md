@@ -14,7 +14,7 @@ Use the Proofpoint Threat Response integration to orchestrate and automate incid
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days) | The time range to consider for the initial data fetch. If timeout errors occur consider changing this value. | False |
+    | First fetch timestamp ("number" "time unit", e.g., 12 hours, 7 days) | The time range to consider for the initial data fetch. If timeout errors occur consider changing this value. | False |
     | Fetch limit - maximum number of incidents per fetch  |  | False |
     | Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.  | The time range between create_after and created_before that is sent to the api when fetching
     older incidents. If timeout errors occur consider changing this value. | False |
