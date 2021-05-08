@@ -68,7 +68,7 @@ def get_bucket_name(args, default_bucket):
     if not bucket_name:
         raise DemistoException('Missing argument: "bucket_name"\nSpecify a bucket name in the command argument or'
                                ' set a default bucket name as an integration parameter.')
-    return  bucket_name
+    return bucket_name
 
 
 def ec_key(path, *merge_by):
