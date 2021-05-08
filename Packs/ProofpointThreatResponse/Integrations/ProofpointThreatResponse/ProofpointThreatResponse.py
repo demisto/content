@@ -427,8 +427,7 @@ def get_incidents_request(params):
             'Authorization': API_KEY
         },
         params=params,
-        verify=VERIFY_CERTIFICATE,
-        timeout=10
+        verify=VERIFY_CERTIFICATE
     )
     demisto.debug("get_incidents_request after the request")
     if incidents_list.status_code < 200 or incidents_list.status_code >= 300:
@@ -451,7 +450,7 @@ def get_time_delta(fetch_delta):
     """
     fetch_delta_split = fetch_delta.strip().split(' ')
     if len(fetch_delta_split) != 2:
-        return_error(
+        raise Exception(
             'The fetch_delta is invalid. Please make sure to insert both the number and the unit of the fetch delta.')
 
     unit = fetch_delta_split[1].lower()
@@ -460,7 +459,7 @@ def get_time_delta(fetch_delta):
     if unit not in ['minute', 'minutes',
                     'hour', 'hours',
                     ]:
-        return_error('The unit of fetch_delta is invalid. Possible values are "minutes" or "hours".')
+        raise Exception('The unit of fetch_delta is invalid. Possible values are "minutes" or "hours".')
 
     if 'hour' in unit:
         time_delta = timedelta(hours=number)  # batch by hours
