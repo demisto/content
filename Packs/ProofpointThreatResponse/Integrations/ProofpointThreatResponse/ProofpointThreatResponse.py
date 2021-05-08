@@ -198,8 +198,6 @@ def test():
         'ok' if test passed, anything else will fail the test.
     """
 
-    global FIRST_FETCH
-
     get_incidents_request(
         {
             'created_after': date.today(),
@@ -419,7 +417,6 @@ def get_incidents_request(params):
         list. The incidents returned from the API call
     """
     fullurl = BASE_URL + 'api/incidents'
-    demisto.debug("get_incidents_request before the request")
     incidents_list = requests.get(
         fullurl,
         headers={
@@ -429,7 +426,6 @@ def get_incidents_request(params):
         params=params,
         verify=VERIFY_CERTIFICATE
     )
-    demisto.debug("get_incidents_request after the request")
     if incidents_list.status_code < 200 or incidents_list.status_code >= 300:
         if incidents_list.status_code == 502 or incidents_list.status_code == 504:
             return_error('The operation failed. There is a possibility you are trying to get too many incidents.\n'

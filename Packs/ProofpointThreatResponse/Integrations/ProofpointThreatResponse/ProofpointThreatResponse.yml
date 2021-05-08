@@ -28,21 +28,22 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>,
-    e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
+- additionalinfo: The time range to consider for the initial data fetch. If timeout errors occur consider changing this value.
   defaultvalue: 12 hours
-  display: First fetch time interval
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
   name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Number of fetched incidents in single fetch
+  display: Fetch limit - maximum number of incidents per fetch
   name: fetch_limit
   required: false
   type: 0
 - defaultvalue: '6 hours'
-  display: The delta between the last incident fetched and the next incident in a single fetch. e.g. 1 hour, 3 minutes.
+  additionalinfo: The time range between create_after and created_before that is sent to the api when fetching
+    older incidents. If timeout errors occur consider changing this value.
+  display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   required: false
   type: 0
