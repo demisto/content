@@ -1050,7 +1050,13 @@
         },
         {
             "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne V2 - test"
+            "instance_names": "SentinelOne_v2.0",
+            "playbookID": "SentinelOne V2.0 - Test"
+        },
+        {
+            "integrations": "SentinelOne V2",
+            "instance_names": "SentinelOne_v2.1",
+            "playbookID": "SentinelOne V2.1 - Test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
@@ -3298,7 +3304,6 @@
         "Protectwise-Test": "Issue 28168",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "RedLockTest": "Issue 24600",
-        "SentinelOne V2 - test": "Issue 24933",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
@@ -3402,7 +3407,6 @@
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
-        "SentinelOne": "No instance",
         "Vectra v2": "No instance",
         "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
@@ -3481,6 +3485,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
+        "SentinelOne V2": "License expired issue #24933",
         "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
     },
     "nightly_integrations": [
