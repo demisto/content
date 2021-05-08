@@ -9,17 +9,18 @@ This integration was integrated and tested with version 9.3 of Netscout Arbor Si
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL |  | True |
-    | None | API Key \(leave empty. Fill in the API Key in the password field.\) | False |
+    | Incident type |  | False |
+    | Server URL (e.g., https://....) |  | True |
+    | API Key | If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty. | False |
     | Fetch incidents |  | False |
     | First fetch time | First fetch query \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days or ISO format 2020-01-01T10:00:00\). Maximal number of past events to fetch is 10,000. | False |
     | Fetch Limit | Maximum number of alerts per fetch. Default is 50, maximum is 100. | False |
+    | Alert Class | Alert class to filter by. Only one class can be configured at a time. If none is chosen, all classes will be fetched. | False |
+    | Alert Type | Alert type to filter by. Only one type can be configured at a time. If none is chosen, all types will be fetched. | False |
+    | Minimal importance to fetch | Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched. | False |
+    | Event Status | Alert status to filter by. If none is chosen, all statuses will be fetched. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Alert Class | Alert class to filter by. Only one class can be configured at a time. If none was chosen, all classes will be fetched. | False |
-    | Alert Type | Alert type to filter by. Only one type can be configured at a time. If none was chosen, all types will be fetched. | False |
-    | Minimal importance to fetch | Minimal alert importance to filter by. If none or Low is chosen, all importances will be fetched.| False |
-    | Event Status | Alert status to filter by. If none was chosen, all statuses will be fetched. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -37,8 +38,8 @@ Lists the collection of annotations for a given alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert ID to list the annotation for. | Required | 
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| alert_id | Alert ID to list the annotation for. Can be obtained from the na-sightline-alert-list command. | Required | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -51,7 +52,7 @@ Lists the collection of annotations for a given alert.
 | NASightline.AlertAnnotation.Annotations.id | String | The ID of the annotation. | 
 | NASightline.AlertAnnotation.Annotations.text | String | Annotation text. | 
 | NASightline.AlertAnnotation.Annotations.type | String | Type of the returned object. | 
-| NASightline.AlertAnnotation.Annotations.relationships | Unknown | Relationships of the annotation \(only visible when extending data\). | 
+| NASightline.AlertAnnotation.Annotations.relationships | Unknown | Relationships of the annotation \(only visible when extending the data\). | 
 
 
 #### Command Example
@@ -103,7 +104,7 @@ Lists the collection of annotations for a given alert.
 
 ### na-sightline-alert-list
 ***
-List all alerts, when an alert ID is given only the relevant alert will be fetched.
+List all alerts. When an alert ID is given, only the relevant alert will be fetched.
 
 
 #### Base Command
@@ -118,16 +119,16 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 | alert_type | Alert type to filter by. Possible values are: autoclassify_restart, bgp_down, bgp_hijack, bgp_instability, bgp_trap, blob_thresh, cloud_mit_request, cloudsignal_fault, collector_down, collector_start, config_change, device_system_error, dns_baseline, dos, dos_host_detection, dos_mo_profiled, dos_profiled_network, dos_profiled_router, fingerprint_thresh, flexible_license_error, flow_down, flow_missing, gre_down, hw_failure, smart_thresh, interface_usage, nucleus_fault, routing_failover, routing_interface_failover, service_thresh, smart_thresh, snmp_down, spcomm_failure, tms_fault, traffic_auto_mitigation. | Optional | 
 | classification | Alert classification to filter by. Possible values are: Possible Attack, False Positive, Verified Attack, Network Failure, Flash Crowd, Trivial. | Optional | 
 | importance | Alert importance to filter by. For more complex operators use the 'importance_operator' argument. Possible values are: Low, Medium, High. | Optional | 
-| importance_operator | The operator to apply on the importance argument ('&gt;' is grater than, '&lt;' is smaller than, '='is equal). For example: if the chosen operator is '&gt;' and the chosen importance is '1', only alerts with importance grater than 1 will be fetched. Possible values are: &lt;, =, &gt;. | Optional | 
-| ongoing | Alert status to filter by. If not set, all statuses will be pulled. Possible values are: true, false. | Optional | 
+| importance_operator | The operator to apply on the importance argument ("&gt;" is greater than, "&lt;" is less than, "=" is equal to). For example: if the chosen operator is "&gt;" and the chosen importance is "Low", only alerts with and importance greater than Low will be fetched. Possible values are: &lt;, =, &gt;. | Optional | 
+| ongoing | Alert status to filter by. If not set, all statuses will be fetched. Possible values are: true, false. | Optional | 
 | start_time | Alert start time to filter by. For more complex operators use the 'start_time_operator' argument. | Optional | 
-| start_time_operator | The operator to apply on the 'start_time' argument. For example: if the chosen operator is '&gt;' and the given time is '2020-12-01T13:15:00', only alerts with starting time grater than '2020-12-01T13:15:00' will be fetched. Possible values are: =, &gt;, &lt;. | Optional | 
+| start_time_operator | The operator to apply on the "start_time" argument. For example: if the chosen operator is "&gt;" and the given time is "2020-12-01T13:15:00", only alerts with a starting time greater than "2020-12-01T13:15:00" will be fetched. Possible values are: =, &gt;, &lt;. | Optional | 
 | stop_time | Alert stop time to filter by. For more complex operators use the 'stop_time_operator' argument. | Optional | 
-| stop_time_operator | The operator to apply on the 'stop_time' argument. For example: if the chosen operator is '&gt;' and the given time is '2020-12-01T13:15:00', only alerts with stopping time grater than '2020-12-01T13:15:00' will be fetched. Possible values are: =, &gt;, &lt;. | Optional | 
-| managed_object_id | ID of managed object associated with the alert. | Optional | 
+| stop_time_operator | The operator to apply on the "stop_time" argument. For example: if the chosen operator is "&gt;" and the given time is "2020-12-01T13:15:00", only alerts with a stopping time greater than "2020-12-01T13:15:00" will be fetched. Possible values are: =, &gt;, &lt;. | Optional | 
+| managed_object_id | ID of the managed object associated with the alert. Can be obtained from the na-sightline-managed-object-list command. | Optional | 
 | page | The page to return starting from 1. | Optional | 
-| limit | Maximal number of alerts to retrieve, will also set the size of the returned page. | Optional | 
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximal number of alerts to retrieve. Also sets the size of the returned page. Default is 50. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -138,13 +139,13 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 | NASightline.Alert.alert_type | String | The type of the alert. One of the following: bgp_hijack, bgp_instability, bgp_trap, cloudsignal, cloudsignal_fault, cloud_mit_request, data, bgp_down, flow_down, snmp_down, dos, dos_host_detection, dos_profiled_network, dos_profiled_router, mobile, mobile_fault, smart, smart_thresh, system_error, collector_down, flexible_license, hw_failure, routing_failover, routing_failover_interface, spcomm_failure, system_monitor, system_event, config_change, tms, dns_baseline, gre_down, tms_fault, traffic, blob_thresh, fingerprint_thresh, interface_usage, service_thresh, traffic_auto_mitigation. | 
 | NASightline.Alert.id | String | The ID of the alert. | 
 | NASightline.Alert.importance | Number | Importance of the alert. One of the following 2: high, 1: medium, 0: low | 
-| NASightline.Alert.ongoing | Boolean | Whether the alert is currently active or not. | 
-| NASightline.Alert.relationships | Unknown | Relationships of the alert \(only visible when extending data\). | 
+| NASightline.Alert.ongoing | Boolean | Whether the alert is currently active. | 
+| NASightline.Alert.relationships | Unknown | Relationships of the alert \(only visible when extending the data\). | 
 | NASightline.Alert.start_time | Date | Date and time at which the alert activity was first detected. | 
 | NASightline.Alert.type | String | Type of the returned object. | 
 | NASightline.Alert.classification | String | Classification of the alert. One of the following: False Positive, Flash Crowd, Network Failure, Possible Attack, Trivial, Verified Attack  | 
 | NASightline.Alert.stop_time | Date | Date and time at which the alert activity was no longer detected. | 
-| NASightline.Alert.subobject | Unknown | Subobject data \(only visible when extending data\). | 
+| NASightline.Alert.subobject | Unknown | Subobject data \(only visible when extending the data\). | 
 
 
 #### Command Example
@@ -158,10 +159,10 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
             {
                 "alert_class": "data",
                 "alert_type": "flow_down",
-                "id": "2605",
+                "id": "2799",
                 "importance": 1,
                 "ongoing": true,
-                "start_time": "2021-04-17T16:07:34+00:00",
+                "start_time": "2021-05-08T16:07:13+00:00",
                 "subobject": {},
                 "type": "alert"
             },
@@ -169,15 +170,15 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
                 "alert_class": "dos",
                 "alert_type": "dos_host_detection",
                 "classification": "Possible Attack",
-                "id": "2604",
+                "id": "2798",
                 "importance": 2,
                 "ongoing": false,
-                "start_time": "2021-04-17T16:00:02+00:00",
-                "stop_time": "2021-04-17T16:10:30+00:00",
+                "start_time": "2021-05-08T16:00:02+00:00",
+                "stop_time": "2021-05-08T16:10:29+00:00",
                 "subobject": {
                     "direction": "Incoming",
                     "fast_detected": true,
-                    "host_address": "1.2.3.4",
+                    "host_address": "192.168.123.123",
                     "impact_boundary": "managed object",
                     "impact_bps": 1072,
                     "impact_pps": 3,
@@ -202,13 +203,13 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 >### Alerts
 >|alert_class|alert_type|id|importance|links|ongoing|start_time|subobject|type|
 >|---|---|---|---|---|---|---|---|---|
->| data | flow_down | 2605 | 1 | self: https://content.demisto.works:57585/api/sp/v7/alerts/2605 | true | 2021-04-17T16:07:34+00:00 |  | alert |
->| dos | dos_host_detection | 2604 | 2 | self: https://content.demisto.works:57585/api/sp/v7/alerts/2604 | false | 2021-04-17T16:00:02+00:00 |  | alert |
+>| data | flow_down | 2799 | 1 | self: https://content.demisto.works:57585/api/sp/v7/alerts/2799 | true | 2021-05-08T16:07:13+00:00 |  | alert |
+>| dos | dos_host_detection | 2798 | 2 | self: https://content.demisto.works:57585/api/sp/v7/alerts/2798 | false | 2021-05-08T16:00:02+00:00 |  | alert |
 
 
 ### na-sightline-mitigation-list
 ***
-List all mitigations, when a mitigation ID is given the only the relevant mitigation will be fetched.
+List all mitigations. When a mitigation ID is given, only the relevant mitigation will be fetched.
 
 
 #### Base Command
@@ -218,10 +219,10 @@ List all mitigations, when a mitigation ID is given the only the relevant mitiga
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The mitigation ID to get. | Optional | 
+| mitigation_id | The mitigation ID to get. Can be obtained from the na-sightline-mitigation-list command. | Optional | 
 | page | The page to return starting from 1. | Optional | 
-| limit | Maximal number of mitigations to retrieve, will also set the size of the returned page. | Optional | 
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximal number of mitigations to retrieve. Also sets the size of the returned page. Default is 50. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -229,17 +230,17 @@ List all mitigations, when a mitigation ID is given the only the relevant mitiga
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NASightline.Mitigation.description | String | Description of the mitigation. | 
-| NASightline.Mitigation.id | String | The Id of the mitigation. | 
+| NASightline.Mitigation.id | String | The ID of the mitigation. | 
 | NASightline.Mitigation.ip_version | Number | IP version of the traffic that is being mitigated. | 
-| NASightline.Mitigation.is_automitigation | Boolean | Whether the mitigation is an auto-mitigation or not. | 
+| NASightline.Mitigation.is_automitigation | Boolean | Whether the mitigation is an auto-mitigation. | 
 | NASightline.Mitigation.name | String | Mitigation name. | 
-| NASightline.Mitigation.ongoing | Boolean | Whether the mitigation is currently running or not. | 
+| NASightline.Mitigation.ongoing | Boolean | Whether the mitigation is currently running. | 
 | NASightline.Mitigation.start | String | Start date and time of the mitigation in ISO 8601 format. | 
 | NASightline.Mitigation.subtype | String | The type of mitigation. One of the following: blackhole, flowspec, tms. | 
 | NASightline.Mitigation.type | String | Type of the returned object. | 
 | NASightline.Mitigation.user | String | The user who initiated a mitigation. | 
-| NASightline.Mitigation.relationships | Unknown | Relationships of the mitigation \(only visible when extending data\). | 
-| NASightline.Mitigation.subobject | Unknown | Subobject data \(only visible when extending data\). | 
+| NASightline.Mitigation.relationships | Unknown | Relationships of the mitigation \(only visible when extending the data\). | 
+| NASightline.Mitigation.subobject | Unknown | Subobject data \(only visible when extending the data\). | 
 
 
 #### Command Example
@@ -251,25 +252,25 @@ List all mitigations, when a mitigation ID is given the only the relevant mitiga
     "NASightline": {
         "Mitigation": [
             {
-                "description": "just desc",
-                "id": "flowspec-8",
+                "description": "TMS mitigation for alert 101",
+                "id": "flowspec-36",
                 "ip_version": 4,
                 "is_automitigation": false,
-                "name": "test_mit",
+                "name": "DoS Alert 1079",
                 "ongoing": true,
-                "start": "2021-04-03T16:16:11.397680+00:00",
+                "start": "2021-04-22T07:39:27.849350+00:00",
                 "subtype": "flowspec",
                 "type": "mitigation",
                 "user": "demisto"
             },
             {
-                "description": "TMS mitigation for alert 101",
-                "id": "flowspec-7",
+                "description": "Some annotation description",
+                "id": "flowspec-12",
                 "ip_version": 4,
                 "is_automitigation": false,
-                "name": "DoS Alert 1078",
+                "name": "Mitigation Annotation Name1",
                 "ongoing": true,
-                "start": "2021-04-03T16:09:49.073360+00:00",
+                "start": "2021-04-17T18:03:54.875020+00:00",
                 "subtype": "flowspec",
                 "type": "mitigation",
                 "user": "demisto"
@@ -284,13 +285,13 @@ List all mitigations, when a mitigation ID is given the only the relevant mitiga
 >### Mitigation list
 >|description|id|ip_version|is_automitigation|links|name|ongoing|start|subtype|type|user|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| just desc | flowspec-8 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-8 | test_mit | true | 2021-04-03T16:16:11.397680+00:00 | flowspec | mitigation | demisto |
->| TMS mitigation for alert 101 | flowspec-7 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-7 | DoS Alert 1078 | true | 2021-04-03T16:09:49.073360+00:00 | flowspec | mitigation | demisto |
+>| TMS mitigation for alert 101 | flowspec-36 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-36 | DoS Alert 1079 | true | 2021-04-22T07:39:27.849350+00:00 | flowspec | mitigation | demisto |
+>| Some annotation description | flowspec-12 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-12 | Mitigation Annotation Name1 | true | 2021-04-17T18:03:54.875020+00:00 | flowspec | mitigation | demisto |
 
 
 ### na-sightline-mitigation-create
 ***
-List all alerts, when an alert ID is given only the relevant alert will be fetched.
+List all alerts. When an alert ID is given, only the relevant alert will be fetched.
 
 
 #### Base Command
@@ -306,12 +307,12 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 | ongoing | Whether to start the mitigation (true) or not (false). Possible values are: true, false. Default is false. | Optional | 
 | sub_type | The type of mitigation. Possible values are: tms, flowspec. | Required | 
 | sub_object | JSON object that specifies the attributes specific to the mitigation subtype. For example: {"bgp_announce": false, "protection_prefixes": ["192.0.2.0/24"]}. List of values supported for each sub-type can be found in the Netscout Arbor Sightline documentation: &lt;your_server_url&gt;/api/sp/doc/v7/mitigations.html#url-/mitigations/. | Required | 
-| alert_id | ID of the alert associated with the mitigation. | Optional | 
-| mitigation_template_id | ID of the mitigation template applied to this mitigation. To get a list of available templates and their IDs run the 'na-sightline-mitigation-template-list'. | Optional | 
-| router_ids | (Flowspec mitigations only) Comma separated list of IDs of the routers to which the flowspec announcement is made. To get a list of available routers and their IDs run the 'na-sightline-router-list'. | Optional | 
-| managed_object_id | (TMS mitigations only) ID of the managed object associated with the alert. To get a list of available managed objects and their IDs run the 'na-sightline-managed-object-list'. | Optional | 
-| tms_group_id | (TMS mitigations only) ID of the TMS group that the associated managed object belongs to. To get a list of available tms groups and their IDs run the 'na-sightline-tms-group-list'. | Optional | 
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| alert_id | ID of the alert associated with the mitigation. Can be obtained from the na-sightline-alert-list command. | Optional | 
+| mitigation_template_id | ID of the mitigation template applied to this mitigation. To get a list of available templates and their IDs, run the na-sightline-mitigation-template-list command. | Optional | 
+| router_ids | (Flowspec mitigations only) Comma-separated list of IDs of the routers to which the flowspec announcement is made. To get a list of available routers and their IDs run the na-sightline-router-list command. | Optional | 
+| managed_object_id | (TMS mitigations only) ID of the managed object associated with the alert. To get a list of available managed objects and their IDs run the na-sightline-managed-object-list command. | Optional | 
+| tms_group_id | (TMS mitigations only) ID of the TMS group that the associated managed object belongs to. To get a list of available TMS groups and their IDs run the na-sightline-tms-group-list command. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -320,17 +321,17 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 | --- | --- | --- |
 | NASightline.Mitigation.id | String | The ID of the mitagation. | 
 | NASightline.Mitigation.ip_version | Number | IP version of the traffic that is being mitigated. | 
-| NASightline.Mitigation.is_automitigation | Boolean | Whether the mitigation is an auto-mitigation or not. | 
+| NASightline.Mitigation.is_automitigation | Boolean | Whether the mitigation is an auto-mitigation. | 
 | NASightline.Mitigation.name | String | Mitigation name. | 
-| NASightline.Mitigation.ongoing | Boolean | Whether the mitigation is currently running or not. |  
-| NASightline.Mitigation.subobject | Unknown | Subobject data \(only visible when extending data\). | 
+| NASightline.Mitigation.ongoing | Boolean | Whether the mitigation is currently running. | 
+| NASightline.Mitigation.subobject | Unknown | Subobject data \(only visible when extending the data\). | 
 | NASightline.Mitigation.subtype | String | The type of mitigation. One of the following: blackhole, flowspec, tms. | 
 | NASightline.Mitigation.type | String | Type of the returned object. | 
-| NASightline.Mitigation.relationships | Unknown | Relationships of the mitigation \(only visible when extending data\). | 
+| NASightline.Mitigation.relationships | Unknown | Relationships of the mitigation \(only visible when extending the data\). | 
 
 
 #### Command Example
-```!na-sightline-mitigation-create description="Some mitigation description" ip_version=IPv4 name="Mitigation Annotation Name1" ongoing=true sub_object="{\"protection_prefixes\": [\"192.0.2.0/24\"]}" sub_type=flowspec```
+```!na-sightline-mitigation-create description="Some mitigation description" ip_version=IPv4 name="Mitigation Annotation Name" ongoing=true sub_object="{\"protection_prefixes\": [\"192.0.2.0/24\"]}" sub_type=flowspec```
 
 #### Context Example
 ```json
@@ -338,12 +339,12 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
     "NASightline": {
         "Mitigation": {
             "description": "Some mitigation description",
-            "id": "flowspec-12",
+            "id": "flowspec-58",
             "ip_version": 4,
             "is_automitigation": false,
-            "name": "Mitigation Annotation Name1",
+            "name": "Mitigation Annotation Name",
             "ongoing": true,
-            "start": "2021-04-17T18:03:54.875020+00:00",
+            "start": "2021-05-08T20:16:53.251710+00:00",
             "subobject": {
                 "action": {
                     "type": "accept"
@@ -365,7 +366,8 @@ List all alerts, when an alert ID is given only the relevant alert will be fetch
 >### Mitigation was created
 >|description|id|ip_version|is_automitigation|links|name|ongoing|start|subtype|type|user|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| Some mitigation description | flowspec-12 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-12 | Mitigation Annotation Name1 | true | 2021-04-17T18:03:54.875020+00:00 | flowspec | mitigation | demisto |
+>| Some mitigation description | flowspec-58 | 4 | false | self: https://content.demisto.works:57585/api/sp/v7/mitigations/flowspec-58 | Mitigation Annotation Name | true | 2021-05-08T20:16:53.251710+00:00 | flowspec | mitigation | demisto |
+
 
 ### na-sightline-mitigation-delete
 ***
@@ -379,7 +381,7 @@ Delete a given mitigation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | The mitigation ID to delete. | Required | 
+| mitigation_id | The mitigation ID to delete. Can be obtained from the na-sightline-mitigation-list command. | Required | 
 
 
 #### Context Output
@@ -387,11 +389,10 @@ Delete a given mitigation.
 There is no context output for this command.
 
 #### Command Example
-```!na-sightline-mitigation-delete mitigation_id=flowspec-34```
+``` ```
 
 #### Human Readable Output
 
->### Mitigation flowspec-34 was deleted
 
 
 ### na-sightline-mitigation-template-list
@@ -406,7 +407,7 @@ Get a list of available mitigation templates.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -420,8 +421,8 @@ Get a list of available mitigation templates.
 | NASightline.MitigationTemplate.subtype | String | The type of mitigation this template can be applied to. | 
 | NASightline.MitigationTemplate.system | Boolean | System or custom object. | 
 | NASightline.MitigationTemplate.type | String | Type of the returned object. | 
-| NASightline.MitigationTemplate.subobject | Unknown | Subobject data \(only visible when extending data\). | 
-| NASightline.MitigationTemplate.relationships | Unknown | Relationships of the mitigation template \(only visible when extending data\). | 
+| NASightline.MitigationTemplate.subobject | Unknown | Subobject data \(only visible when extending the data\). | 
+| NASightline.MitigationTemplate.relationships | Unknown | Relationships of the mitigation template \(only visible when extending the data\). | 
 
 
 #### Command Example
@@ -546,7 +547,7 @@ Get a list of available routers.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -569,8 +570,8 @@ Get a list of available routers.
 | NASightline.Router.is_proxy | Boolean | If true, Sightline treats the router as a proxy for other routers. | 
 | NASightline.Router.license_type | String | The router license type: core, edge, or unset. For more information, see “Configuring Routers” in the Sightline and TMS User Guide. | 
 | NASightline.Router.name | String | Router name | 
-| NASightline.Router.snmp_authprotocol | String | SNMP v3 authentication protocol. One of the following: md5, sha, sha-224, sha-256, sha-384, sha-512 | 
-| NASightline.Router.snmp_priv_protocol | String | The SNMP v3 privacy protocol: DES or AES. DES. | 
+| NASightline.Router.snmp_authprotocol | String | SNMP v3 authentication protocol. One of the following: md5, sha, sha-224, sha-256, sha-384, sha-512. | 
+| NASightline.Router.snmp_priv_protocol | String | The SNMP v3 privacy protocol: DES or AES. | 
 | NASightline.Router.snmp_security_level | String | SNMP v3 security level. One of the following: noAuthNoPriv \(no pass-phrase authentication is performed\), authNoPriv \(pass-phrase authentication is performed, but there is no encryption of the data in the trap messages\), authPriv \(pass-phrase authentication is performed and the data in the trap messages is encrypted\). | 
 | NASightline.Router.snmp_version | Number | SNMP version: 1, 2, or 3. | 
 | NASightline.Router.type | String | Type of the returned object. | 
@@ -581,7 +582,7 @@ Get a list of available routers.
 | NASightline.Router.bgp_ip_address | String | The remote IP address that you want Sightline to use to create a BGP peering session with this router. | 
 | NASightline.Router.bgp_remote_as | String | The ASN of the router. | 
 | NASightline.Router.bgp_session_name | String | A name to help identify the BGP peering session in the Sightline UI when you create a blackhole or TMS mitigation. | 
-| NASightline.Router.relationships | Unknown | Relationships of the router \(only visible when extending data\). | 
+| NASightline.Router.relationships | Unknown | Relationships of the router \(only visible when extending the data\). | 
 
 
 #### Command Example
@@ -670,8 +671,8 @@ Get a list of available managed objects.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | The page to return starting from 1. | Optional | 
-| limit | Maximal number of mitigations to retrieve, will also set the size of the returned page. | Optional | 
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximal number of mitigations to retrieve. Also sets the size of the returned page. Default is 50. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -688,13 +689,13 @@ Get a list of available managed objects.
 | NASightline.ManagedObject.detection_profiled_outgoing_enabled | Boolean | If true, outgoing detection for profiled router detection is enabled. | 
 | NASightline.ManagedObject.detection_profiled_severity_duration | Number | Number of seconds that traffic must exceed a given severity threshold before Sightline escalates its severity for profiled router detection. | 
 | NASightline.ManagedObject.detection_profiled_severity_snmp_enabled | Boolean | If true, SNMP link rate severity calculation is enabled for profiled router detection. | 
-| NASightline.ManagedObject.detection_profiled_threshold_bandwidth | Number | Threshold for interface bandwidth alerts for profiled router detection. An integer from 1 to 5 where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts. | 
-| NASightline.ManagedObject.detection_profiled_threshold_packet_rate | Number | Threshold for interface packet alerts for profiled router detection. An integer from 1 to 5 where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts. | 
-| NASightline.ManagedObject.detection_profiled_threshold_protocol | Number | Threshold for all protocol alerts for profiled router detection. An integer from 1 to 5 where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts. | 
+| NASightline.ManagedObject.detection_profiled_threshold_bandwidth | Number | Threshold for interface bandwidth alerts for profiled router detection. An integer from 1 to 5, where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts. | 
+| NASightline.ManagedObject.detection_profiled_threshold_packet_rate | Number | Threshold for interface packet alerts for profiled router detection. An integer from 1 to 5, where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts. | 
+| NASightline.ManagedObject.detection_profiled_threshold_protocol | Number | Threshold for all protocol alerts for profiled router detection. An integer from 1 to 5, where: 1 = detect more alerts, 2 = default, 3 = detect fewer alerts, 4 = detect even fewer alerts, 5 = detect fewest alerts. | 
 | NASightline.ManagedObject.dynamic_match_enabled | Boolean | If true, Sightline can monitor traffic for OTT domains that have frequently changing service IP addresses. | 
 | NASightline.ManagedObject.editable | Boolean | If true, is editable. | 
 | NASightline.ManagedObject.family | String | A valid managed object type. Not all values appear in the UI as managed object types. One of the following: none, peer, profile, customer, worm \(deprecated\), vpn, vpnsite, service, subscriber. | 
-| NASightline.ManagedObject.id | String | The ID of the ,anaged object. | 
+| NASightline.ManagedObject.id | String | The ID of the managed object. | 
 | NASightline.ManagedObject.match | String | A value appropriate for the specified match_type. | 
 | NASightline.ManagedObject.match_enabled | Boolean | If true, Sightline records flow for this managed object. | 
 | NASightline.ManagedObject.match_type | String | The managed object’s match type. One of the following: advanced, appid, asregexp, cidr_blocks, cidr_groups, cidr_v6_blocks, community, extended_community, interface, profiled_interface_group, subas, peer_as, tmsports. | 
@@ -706,8 +707,8 @@ Get a list of available managed objects.
 | NASightline.ManagedObject.name | String | The managed object’s name. | 
 | NASightline.ManagedObject.num_children | Number | The number of child managed objects assigned to this one. | 
 | NASightline.ManagedObject.parent_editable | Boolean | If false, parent is read-only. | 
-| NASightline.ManagedObject.relationships | Unknown | Relationships of the managed object \(only visible when extending data\). | 
-| NASightline.ManagedObject.scrub_insight_mo_match | Boolean | If true, Sightline disassociates the managed object from flow before sending flow to Insight, thereby preventing the managed object from being subject to or appearing in Insight queries. | 
+| NASightline.ManagedObject.relationships | Unknown | Relationships of the managed object \(only visible when extending the data\). | 
+| NASightline.ManagedObject.scrub_insight_mo_match | Boolean | If true, Sightline disassociates the managed object from the flow before sending the flow to Insight, thereby preventing the managed object from being subject to or appearing in Insight queries. | 
 | NASightline.ManagedObject.tags | String | A list of tags that are applied to the managed object. | 
 | NASightline.ManagedObject.type | String | Type of the returned object. | 
 
@@ -739,7 +740,7 @@ Get a list of available managed objects.
             "editable": true,
             "family": "customer",
             "id": "122",
-            "match": "1.2.3.4/32",
+            "match": "192.168.123.123/32",
             "match_enabled": true,
             "match_type": "cidr_blocks",
             "mitigation_automitigation": false,
@@ -766,7 +767,7 @@ Get a list of available managed objects.
 >### Managed object list
 >|id|name|tags|match_type|match_enabled|match|family|autodetected|
 >|---|---|---|---|---|---|---|---|
->| 122 | TestMO1 | customer | cidr_blocks | true | 1.2.3.4/32 | customer | false |
+>| 122 | TestMO1 | customer | cidr_blocks | true | 192.168.123.123/32 | customer | false |
 
 
 ### na-sightline-tms-group-list
@@ -781,7 +782,7 @@ Get a list of available TMS groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| extend_data | Whather to extend results with all available data. Possible values are: true, false. Default is false. | Optional | 
+| extend_data | Whether to extend the results with all available data. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -798,18 +799,18 @@ Get a list of available TMS groups.
 | NASightline.TMSGroup.flowspec_redirect_ipv4_type | String | In TMS flowspec diversion deployments, these attributes define whether the Sightline peer redirects TMS mitigation traffic to a route target or to an IP address. | 
 | NASightline.TMSGroup.flowspec_redirect_ipv6_destination | String | In TMS flowspec diversion deployments, these attributes each specify a destination route target or IP address. The Sightline peer uses these destinations in TMS mitigations to advertise routes to its BGP peers. | 
 | NASightline.TMSGroup.flowspec_redirect_ipv6_type | String | In TMS flowspec diversion deployments, these attributes define whether the Sightline peer redirects TMS mitigation traffic to a route target or to an IP address. | 
-| NASightline.TMSGroup.id | String | The tms group ID. | 
-| NASightline.TMSGroup.l3vpn_flowspec_ipv4_route_distinguisher | String | This attribute specifies the route distinguisher \(RD\) for a VPN, which uniquely identifies the routes for that VPN. | 
-| NASightline.TMSGroup.l3vpn_flowspec_ipv6_route_distinguisher | String | This attribute specifies the route distinguisher \(RD\) for a VPN, which uniquely identifies the routes for that VPN. | 
+| NASightline.TMSGroup.id | String | The TMS group ID. | 
+| NASightline.TMSGroup.l3vpn_flowspec_ipv4_route_distinguisher | String | The route distinguisher \(RD\) for a VPN, which uniquely identifies the routes for that VPN. | 
+| NASightline.TMSGroup.l3vpn_flowspec_ipv6_route_distinguisher | String | The route distinguisher \(RD\) for a VPN, which uniquely identifies the routes for that VPN. | 
 | NASightline.TMSGroup.member_limits_differ | Boolean | If true, TMS device limits \(such as maximum mitigations or filter lists\) differ, which leads to either performance issues if devices change midstream for ongoing mitigations, or failure to start or save mitigations. | 
 | NASightline.TMSGroup.mitigation_orchestration.bandwidth_threshold_percent | Number | The percentage of total bandwidth capacity at which this TMS group will become overloaded. | 
 | NASightline.TMSGroup.mitigation_orchestration.enabled | Boolean | If true, mitigation orchestration is enabled for this TMS group. | 
 | NASightline.TMSGroup.name | String | TMS group name. | 
 | NASightline.TMSGroup.nexthop | String | The IPv4 address for the BGP diversion nexthop. It overrides the default nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection devices that are in the TMS group. | 
 | NASightline.TMSGroup.nexthop_v6 | String | The IPv6 address for the BGP diversion nexthop. It overrides the default nexthops of the TMS appliances or Cisco ASR 9000 vDDoS Protection devices that are in the TMS group. | 
-| NASightline.TMSGroup.relationships | Unknown | Relationships of the managed object \(only visible when extending data\). | 
+| NASightline.TMSGroup.relationships | Unknown | Relationships of the managed object \(only visible when extending the data\). | 
 | NASightline.TMSGroup.system | Boolean | If true, the TMS group is pre-configured in Sightline and is not editable. | 
-| NASightline.TMSGroup.tms_group_type | String | Type of the tms group. | 
+| NASightline.TMSGroup.tms_group_type | String | Type of the TMS group. | 
 | NASightline.TMSGroup.type | String | Type of the returned object. | 
 
 
@@ -820,38 +821,72 @@ Get a list of available TMS groups.
 ```json
 {
     "NASightline": {
-        "TMSGroup": {
-            "bgp_communities": [],
-            "check_available_bw": true,
-            "check_bgp_peering": true,
-            "check_group_allup": true,
-            "default_bgp_offramp": true,
-            "description": "Default all mitigation group. Mitigations will use all ports on all configured TMS devices.",
-            "dns_auth_active_secondary_servers": [],
-            "fail_open": false,
-            "flowspec_communities": [],
-            "flowspec_offramp": "",
-            "flowspec_redirect_ipv4_destination": "",
-            "flowspec_redirect_ipv4_type": "",
-            "flowspec_redirect_ipv6_destination": "",
-            "flowspec_redirect_ipv6_type": "",
-            "id": "3",
-            "l3vpn_flowspec_ipv4_route_distinguisher": "",
-            "l3vpn_flowspec_ipv4_route_targets": [],
-            "l3vpn_flowspec_ipv6_route_distinguisher": "",
-            "l3vpn_flowspec_ipv6_route_targets": [],
-            "member_limits_differ": false,
-            "mitigation_orchestration": {
-                "bandwidth_threshold_percent": 85,
-                "enabled": false
+        "TMSGroup": [
+            {
+                "bgp_communities": [],
+                "check_available_bw": true,
+                "check_bgp_peering": true,
+                "check_group_allup": true,
+                "default_bgp_offramp": true,
+                "description": "Default all mitigation group. Mitigations will use all ports on all configured TMS devices.",
+                "dns_auth_active_secondary_servers": [],
+                "fail_open": false,
+                "flowspec_communities": [],
+                "flowspec_offramp": "",
+                "flowspec_redirect_ipv4_destination": "",
+                "flowspec_redirect_ipv4_type": "",
+                "flowspec_redirect_ipv6_destination": "",
+                "flowspec_redirect_ipv6_type": "",
+                "id": "3",
+                "l3vpn_flowspec_ipv4_route_distinguisher": "",
+                "l3vpn_flowspec_ipv4_route_targets": [],
+                "l3vpn_flowspec_ipv6_route_distinguisher": "",
+                "l3vpn_flowspec_ipv6_route_targets": [],
+                "member_limits_differ": false,
+                "mitigation_orchestration": {
+                    "bandwidth_threshold_percent": 85,
+                    "enabled": false
+                },
+                "name": "All",
+                "nexthop": "",
+                "nexthop_v6": "",
+                "system": true,
+                "tms_group_type": "",
+                "type": "tms_group"
             },
-            "name": "All",
-            "nexthop": "",
-            "nexthop_v6": "",
-            "system": true,
-            "tms_group_type": "",
-            "type": "tms_group"
-        }
+            {
+                "bgp_communities": [],
+                "check_available_bw": true,
+                "check_bgp_peering": true,
+                "check_group_allup": true,
+                "default_bgp_offramp": false,
+                "description": "",
+                "dns_auth_active_secondary_servers": [],
+                "fail_open": true,
+                "flowspec_communities": [],
+                "flowspec_offramp": "",
+                "flowspec_redirect_ipv4_destination": "",
+                "flowspec_redirect_ipv4_type": "route_target",
+                "flowspec_redirect_ipv6_destination": "",
+                "flowspec_redirect_ipv6_type": "route_target",
+                "id": "192",
+                "l3vpn_flowspec_ipv4_route_distinguisher": "",
+                "l3vpn_flowspec_ipv4_route_targets": [],
+                "l3vpn_flowspec_ipv6_route_distinguisher": "",
+                "l3vpn_flowspec_ipv6_route_targets": [],
+                "member_limits_differ": false,
+                "mitigation_orchestration": {
+                    "bandwidth_threshold_percent": 85,
+                    "enabled": false
+                },
+                "name": "anar_test",
+                "nexthop": "",
+                "nexthop_v6": "",
+                "system": false,
+                "tms_group_type": "",
+                "type": "tms_group"
+            }
+        ]
     }
 }
 ```
@@ -859,7 +894,8 @@ Get a list of available TMS groups.
 #### Human Readable Output
 
 >### TMS group list
->|check_available_bw|check_bgp_peering|check_group_allup|default_bgp_offramp|description|fail_open|id|links|member_limits_differ|mitigation_orchestration|name|system|type|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| true | true | true | true | Default all mitigation group. Mitigations will use all ports on all configured TMS devices. | false | 3 | self: https://content.demisto.works:57585/api/sp/v7/tms_groups/3 | false | bandwidth_threshold_percent: 85<br/>enabled: false | All | true | tms_group |
+>|check_available_bw|check_bgp_peering|check_group_allup|default_bgp_offramp|description|fail_open|flowspec_redirect_ipv4_type|flowspec_redirect_ipv6_type|id|links|member_limits_differ|mitigation_orchestration|name|system|type|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | true | true | true | Default all mitigation group. Mitigations will use all ports on all configured TMS devices. | false |  |  | 3 | self: https://content.demisto.works:57585/api/sp/v7/tms_groups/3 | false | bandwidth_threshold_percent: 85<br/>enabled: false | All | true | tms_group |
+>| true | true | true | false |  | true | route_target | route_target | 192 | self: https://content.demisto.works:57585/api/sp/v7/tms_groups/192 | false | bandwidth_threshold_percent: 85<br/>enabled: false | anar_test | false | tms_group |
 

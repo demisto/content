@@ -13,9 +13,8 @@ configuration:
     name: url
     required: true
     type: 0
-  - additionalinfo: API Key (Leave empty. Fill in the API key in the password field.)
-    name: api_token
-    displaypassword: API Token
+  - name: User
+    displaypassword: API Key
     required: false
     hiddenusername: true
     type: 9
