@@ -389,10 +389,11 @@ Delete a given mitigation.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!na-sightline-mitigation-delete mitigation_id=flowspec-34```
 
 #### Human Readable Output
 
+>### Mitigation flowspec-34 was deleted
 
 
 ### na-sightline-mitigation-template-list
