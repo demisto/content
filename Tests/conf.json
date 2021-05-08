@@ -3381,7 +3381,10 @@
         "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
         "Gmail Single User - Test": "Issue 27361",
-        "AWS - EC2 Test Playbook": "Issue 36486"
+        "AWS - EC2 Test Playbook": "Issue 36486",
+        "BitcoinAbuse-test": "Issue 36688",
+        "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
+        "playbook_TrendmicroCAS_Test": "Issue 32730"
     },
     "skipped_integrations": {
         
