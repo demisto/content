@@ -721,6 +721,19 @@ def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_clus
     return labels
 
 
+def transform_names_if_list(incidents_df, field_for_cluster_name):
+    """
+    Check if field_for_cluster_name value are type list and keep the maximun value if this is the case
+    :param incidents_df: Dataframe of incidents
+    :param field_for_cluster_name: List with one field that correspong to the name of the cluster
+    :return: Dataframe of incidents with modification on field_for_cluster_name columns
+    """
+    if field_for_cluster_name and field_for_cluster_name[0] in incidents_df.columns:
+        incidents_df[field_for_cluster_name[0]] = incidents_df[field_for_cluster_name[0]].apply(
+            lambda x: most_frequent(x) if isinstance(x, list) else x)
+    return incidents_df
+
+
 def calculate_range(data):
     all_data_size = list(map(lambda x: x['data'][0], data['data']))
     max_size = max(all_data_size)
@@ -774,6 +787,7 @@ def main():
         incidents_df.index = incidents_df.id
 
         # Fill nested fields with appropriate values
+        incidents_df = transform_names_if_list(incidents_df, field_for_cluster_name)
         incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
         incidents_df = fill_nested_fields(incidents_df, incidents, field_for_cluster_name, keep_unique_value=True)
 

@@ -32,6 +32,17 @@ FETCHED_INCIDENT_NOT_EMPTY = [
      'entityname': 'nmap'},
 ]
 
+FETCHED_INCIDENT_NOT_EMPTY_MULTIPLE_NAME = [
+    {'id': '1', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.1', 'field_2': 'powershell.exe',
+     'entityname': ['powershell', 'powershell', 'nmap']},
+    {'id': '2', 'created': "2021-01-30", 'field_1': 'nmap port 1', 'field_2': 'nmap.exe',
+     'entityname': ['powershell', 'nmap', 'nmap']},
+    {'id': '3', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.2', 'field_2': 'powershell',
+     'entityname': ['powershell', 'powershell', 'nmap']},
+    {'id': '4', 'created': "2021-01-30", 'field_1': 'nmap port 2', 'field_2': 'nmap',
+     'entityname': ['powershell', 'nmap', 'nmap']},
+]
+
 FETCHED_INCIDENT_NOT_EMPTY_WITH_NOT_ENOUGH_VALUES = [
     {'id': '1', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.1', 'field_2': '',
      'entityname': 'powershell'},
@@ -251,6 +262,30 @@ def test_model_exist_and_expired(mocker):
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json['data'][0]
     cluster_1 = output_json['data'][1]
+    cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_1.items()))
+    cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
+                                                                                    for item in sub_dict_0.items()))
+    assert (cond_1 or cond_2)
+
+
+# Test if cluster name field has value of type list
+def test_main_regular(mocker):
+    global FETCHED_INCIDENT
+    global sub_dict_1
+    global sub_dict_0
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY_MULTIPLE_NAME
+    PARAMETERS_DICT.update(
+        {'fieldsForClustering': 'field_1, field_2, wrong_field', 'fieldForClusterName': 'entityname'})
+    mocker.patch.object(demisto, 'args',
+                        return_value=PARAMETERS_DICT
+                        )
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    model, output_clustering_json, msg = main()
+    output_json = json.loads(output_clustering_json)
+    cluster_0 = output_json['data'][0]
+    cluster_1 = output_json['data'][1]
+    assert MESSAGE_INCORRECT_FIELD % 'wrong_field' in msg
     cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
                                                                                     for item in sub_dict_1.items()))
     cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
