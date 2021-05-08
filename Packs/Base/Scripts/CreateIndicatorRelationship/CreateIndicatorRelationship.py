@@ -67,7 +67,7 @@ def remove_existing_entity_b_indicators(entity_b_list: list, entity_b_query: str
     return entity_b_list
 
 
-def create_relation_command_using_query(args: dict) -> List[EntityRelation]:
+def create_relation_command_using_query(args: dict) -> List[EntityRelationship]:
     relationships = []
     indicators = find_indicators_by_query(args.get('entity_b_query', ''))
     for indicator in indicators:
@@ -83,7 +83,7 @@ def create_relation_command_using_query(args: dict) -> List[EntityRelation]:
     return relationships
 
 
-def create_relationships_with_args(args: dict) -> List[EntityRelation]:
+def create_relationships_with_args(args: dict) -> List[EntityRelationship]:
     relationships = []
     entity_b_list = argToList(args.get('entity_b'))
     for entity_b in entity_b_list:
@@ -100,8 +100,8 @@ def create_relationships_with_args(args: dict) -> List[EntityRelation]:
 
 def create_relationship(name: str, entity_a: str, entity_a_type: str, entity_b: str, entity_b_type: str,
                         source_reliability: str = '', reverse_name: str = '', first_seen: str = '',
-                        description: str = '') -> EntityRelation:
-    return EntityRelation(
+                        description: str = '') -> EntityRelationship:
+    return EntityRelationship(
         name=name,
         reverse_name=reverse_name,
         entity_a=entity_a,
@@ -175,7 +175,7 @@ def create_indicators(args: dict):
                       f' {json.dumps(errors, indent=4)}')
 
 
-def create_relationships(args: dict) -> Tuple[List[EntityRelation], str]:
+def create_relationships(args: dict) -> Tuple[List[EntityRelationship], str]:
     """
     Create relationships from given arguments.
 
@@ -208,7 +208,7 @@ def main():
         if argToBoolean(args.get('create_indicator')):
             create_indicators(args)
         relationships, human_readable = create_relationships(args)
-        return_results(CommandResults(readable_output=human_readable, relations=relationships))
+        return_results(CommandResults(readable_output=human_readable, relationships=relationships))
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute CreateIndicatorRelationships automation. Error: {str(e)}')
