@@ -3619,7 +3619,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_file_name = indiv_msg.get_filename()
                             try:
                                 # In some cases the body content is empty and cannot be decoded.
-                                msg_info = base64.b64decode(msg).decode('utf-8')
+                                msg_info = base64.b64decode(msg).decode('utf-8', errors='ignore')
                             except TypeError:
                                 msg_info = str(msg)
                             attached_emails.append(msg_info)

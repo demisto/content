@@ -12,7 +12,8 @@ import os
 
 from Tests.scripts.validate_index import log_message_if_statement, get_index_json_data
 from Tests.configure_and_test_integration_instances import Build, Server
-from Tests.Marketplace.marketplace_services import load_json, GCPConfig
+from Tests.Marketplace.marketplace_services import load_json
+from Tests.Marketplace.marketplace_constants import GCPConfig
 from Tests.scripts.utils.log_util import install_logging
 from pprint import pformat
 
