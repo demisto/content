@@ -219,7 +219,8 @@ class PostProcessing(object):
                 dist_total[cluster_number] = {}
                 dist_total[cluster_number]['number_samples'] = sum(
                     self.clustering.raw_data[  # type: ignore
-                        self.clustering.model.labels_ == cluster_number].label.isin(list(chosen.keys())))  # type: ignore
+                        self.clustering.model.labels_ == cluster_number].label.isin(  # type: ignore
+                        list(chosen.keys())))  # type: ignore
                 dist_total[cluster_number]['distribution'] = dist
                 dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])[:15]
         else:
@@ -290,9 +291,8 @@ def get_args():  # type: ignore
     model_hidden = demisto.args().get('model_hidden', 'False') == 'True'
 
     return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-        min_number_of_incident_in_cluster, model_name, store_model, \
-        min_homogeneity_cluster, model_override, max_percentage_of_missing_value, debug, force_retrain, \
-           model_expiration, model_hidden
+        min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
+        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
@@ -390,7 +390,6 @@ def normalize_global(obj):
         return normalize_json(obj)
     if isinstance(obj, str) or isinstance(obj, list):
         return normalize_command_line(obj)
-
 
 
 def normalize_json(obj) -> str:  # type: ignore
@@ -603,7 +602,8 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str], keep_unique_value=False) -> \
+def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str],
+                       keep_unique_value=False) -> \
         pd.DataFrame:
     """
     Handle nested fields by concatening values for each sub list of the field
@@ -618,8 +618,8 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
                 if isinstance(incidents, list):
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     if not keep_unique_value:
-                        value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x))))
-                                      for x in value_list]
+                        value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x))))  # type: ignore
+                                      for x in value_list]  # type: ignore
                     else:
                         value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
                                       for x in value_list]
@@ -740,9 +740,8 @@ def main():
 
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
-    min_number_of_incident_in_cluster, model_name, store_model, \
-    min_homogeneity_cluster, model_override, max_percentage_of_missing_value, \
-    debug, force_retrain, model_expiration, model_hidden = get_args()
+        min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
+        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
