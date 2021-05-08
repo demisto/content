@@ -172,23 +172,11 @@ def test_pass_abuse_disposition_filter(abuse_dispotion_values, expected_answer):
     assert result == expected_answer
 
 
-DEMISTO_PARAMS = [
-    ({
-         'event_sources': "No such source, Proofpoint TAP",
-         'abuse_disposition': "No such value, Unknown"}, [MOCK_INCIDENT]),
-    ({
-         'event_sources': "",
-         'abuse_disposition': ""}, [MOCK_INCIDENT]),
-    ({
-         'event_sources': "No such source",
-         'abuse_disposition': "No such value, Unknown"}, []),
-    ({
-         'event_sources': "No such source, Proofpoint TAP",
-         'abuse_disposition': "No such value"}, []),
-    ({
-         'event_sources': "No such source",
-         'abuse_disposition': "No such value"}, []),
-]
+DEMISTO_PARAMS = [({'event_sources': "No such source, Proofpoint TAP", 'abuse_disposition': "No such value, Unknown"},
+                   [MOCK_INCIDENT]), ({'event_sources': "", 'abuse_disposition': ""}, [MOCK_INCIDENT]),
+                  ({'event_sources': "No such source", 'abuse_disposition': "No such value, Unknown"}, []),
+                  ({'event_sources': "No such source, Proofpoint TAP", 'abuse_disposition': "No such value"}, []),
+                  ({'event_sources': "No such source", 'abuse_disposition': "No such value"}, [])]
 
 
 @pytest.mark.parametrize('demisto_params, expected_answer', DEMISTO_PARAMS)
@@ -336,7 +324,8 @@ def test_get_time_delta():
     try:
         get_time_delta('2')
     except Exception as ex:
-        assert 'The fetch_delta is invalid. Please make sure to insert both the number and the unit of the fetch delta.' in str(ex)
+        assert 'The fetch_delta is invalid. Please make sure to insert both the number and the unit of the fetch delta.' in str(
+            ex)
     try:
         get_time_delta('2 days')
     except Exception as ex:
