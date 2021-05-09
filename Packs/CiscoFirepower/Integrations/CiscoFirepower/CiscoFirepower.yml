@@ -1779,9 +1779,8 @@ script:
       description: task status
       type: String
   - arguments:
-    - description: ID of the group.
+    - description: ID of the group. If not supplied, retrieves a list of all url objects.
       name: id
-      required: true
     description: Retrieves the groups of url objects and addresses associated with
       the specified ID. If not supplied, retrieves a list of all url objects.
     name: ciscofp-get-url-groups-object
@@ -1854,11 +1853,9 @@ script:
     - contextPath: CiscoFP.URLGroups.Overridable
       description: Boolean indicating whether objects can be overridden.
       type: string
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)
