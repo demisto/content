@@ -92,23 +92,14 @@ stages:
   - upload-to-marketplace
   - notify-slack
 
-notify-slack:
-  stage: notify-slack
-  when: always
-  allow_failure: true
-  script:
+.notify-slack:
+  after_script:
     - echo "=====Notify Slack====="
     - |
-      if [ -n "${BUCKET_UPLOAD}" ]; then
-        ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
-      elif [ -f $ARTIFACTS_FOLDER/slack_notifier_input.txt ]; then
-        cat $ARTIFACTS_FOLDER/slack_notifier_input.txt | while read slack_input_line
-        do
-          echo "running ./Tests/scripts/slack_notifier.sh ${slack_input_line}"
-          ./Tests/scripts/slack_notifier.sh $slack_input_line
-        done
+      if [ -n "${SLACK_ONLY_IF}" ]; then
+        ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
       else
-        echo "Nothing to notify about, skipping."
+        echo "Skipping Slack"
       fi
 
 create-instances:
@@ -214,11 +205,6 @@ create-instances:
         then
           cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
-    - |
-      if [ $INSTANCE_ROLE == "Server Master" ];
-        then
-          echo "'test_playbooks' ${ENV_RESULTS_PATH} '${SLACK_CHANNEL}'" >> $ARTIFACTS_FOLDER/slack_notifier_input.txt
-      fi
     - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
     - export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
     - zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
@@ -241,9 +227,15 @@ server_6_0:
     INSTANCE_ROLE: "Server 6.0"
 
 server_master:
-  extends: .test_content_on_server_instances_base
+  extends:
+    - .test_content_on_server_instances_base
+    - .notify-slack
   variables:
     INSTANCE_ROLE: "Server Master"
+    SLACK_TEST_TYPE: "test_playbooks"
+    SLACK_ENV_RESULTS: $ENV_RESULTS_PATH
+    SLACK_ONLY_IF: "true"
+
 
 run-unittests-and-lint:
   needs: []
@@ -255,11 +247,16 @@ run-unittests-and-lint:
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
+  extends: .notify-slack
+  variables:
+    SLACK_TEST_TYPE: "unittests"
+    SLACK_ENV_RESULTS: $ENV_RESULTS_PATH
+    SLACK_ONLY_IF: $BUCKET_UPLOAD
   script:
     - echo "====Trigger Private Build===="
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]] || [[ -n $SKIP_PRIVATE_BUILD ]]; then
-        echo "Skipping - not running in bucket upload."
+        echo "Skipping - not running in bucket upload, contrib branches or id skip is enabled."
       else
         python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
       fi
@@ -299,13 +296,9 @@ run-unittests-and-lint:
     - echo "====Get Private Build Status===="
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD || $CI_COMMIT_BRANCH =~ pull/[0-9]+ || -n $SKIP_PRIVATE_BUILD ]]; then
-        echo "Skipping - not running in bucket upload"
+        echo "Skipping - not running in bucket upload, contrib branches or id skip is enabled."
       else
         python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-      fi
-    - |
-      if ! [ -n "${BUCKET_UPLOAD}" ]; then
-        echo "'unittests' ${ENV_RESULTS_PATH}" >> $ARTIFACTS_FOLDER/slack_notifier_input.txt
       fi
 
 run-validations:
