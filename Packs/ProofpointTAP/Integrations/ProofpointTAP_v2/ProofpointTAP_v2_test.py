@@ -797,10 +797,10 @@ def test_get_clicks_command(requests_mock):
     blocked_result = get_clicks_command(client, True, "3 days")
     permitted_result = get_clicks_command(client, False, "3 days")
     assert len(blocked_result.outputs) == 1
-    assert blocked_result.outputs_prefix == f'Proofpoint.ClicksBlocked'
+    assert blocked_result.outputs_prefix == 'Proofpoint.ClicksBlocked'
     assert blocked_result.outputs[0].get('messageID') == '4444'
     assert len(permitted_result.outputs) == 1
-    assert permitted_result.outputs_prefix == f'Proofpoint.ClicksPermitted'
+    assert permitted_result.outputs_prefix == 'Proofpoint.ClicksPermitted'
     assert permitted_result.outputs[0].get('messageID') == '3333'
 
 
@@ -834,10 +834,10 @@ def test_get_messages_command(requests_mock):
     blocked_result = get_messages_command(client, True, "3 days")
     delivered_result = get_messages_command(client, False, "3 days")
     assert len(blocked_result.outputs) == 1
-    assert blocked_result.outputs_prefix == f'Proofpoint.MessagesBlocked'
+    assert blocked_result.outputs_prefix == 'Proofpoint.MessagesBlocked'
     assert blocked_result.outputs[0].get('messageID') == "2222@evil.zz"
     assert len(delivered_result.outputs) == 1
-    assert delivered_result.outputs_prefix == f'Proofpoint.MessagesDelivered'
+    assert delivered_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
     assert delivered_result.outputs[0].get('messageID') == "1111@evil.zz"
 
 
@@ -867,7 +867,7 @@ def test_list_campaigns_command(requests_mock):
     )
     result = list_campaigns_command(client, "3 days")
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == f'Proofpoint.Campaign'
+    assert result.outputs_prefix == 'Proofpoint.Campaign'
     assert result.outputs[0].get('id') == "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"
     assert result.outputs[0].get('lastUpdatedAt') == "2021-03-25T10:37:46.000Z"
 
@@ -898,7 +898,7 @@ def test_get_campaign(requests_mock):
     )
     result = get_campaign_command(client, "1")
     assert len(result.outputs) == 6
-    assert result.outputs_prefix == f'Proofpoint.Campaign'
+    assert result.outputs_prefix == 'Proofpoint.Campaign'
     assert result.outputs.get('info').get('id') == "aa9b3d62-4d72-4ebc-8f39-3da3833e7038"
 
 
@@ -928,7 +928,7 @@ def test_list_most_attacked_users_command(requests_mock):
     )
     result = list_most_attacked_users_command(client, "")
     assert len(result.outputs) == 5
-    assert result.outputs_prefix == f'Proofpoint.Vap'
+    assert result.outputs_prefix == 'Proofpoint.Vap'
     assert result.outputs.get('users')[0].get('identity').get('guid') == "88e36bf359-99e8-7e53-f58a-6df8b430be6d"
     assert result.outputs.get('totalVapUsers') == 2
 
@@ -959,7 +959,7 @@ def test_get_top_clickers_command(requests_mock):
     )
     result = get_top_clickers_command(client, "")
     assert len(result.outputs) == 3
-    assert result.outputs_prefix == f'Proofpoint.Topclickers'
+    assert result.outputs_prefix == 'Proofpoint.Topclickers'
     assert result.outputs.get('users')[1].get('identity').get('guid') == "b4077fsv0e-3a2e-767f-7315-c049f831cc95"
     assert result.outputs.get('totalTopClickers') == 2
 
@@ -990,7 +990,7 @@ def test_url_decode(requests_mock):
     )
     result = url_decode_command(client, "")
     assert len(result.outputs) == 2
-    assert result.outputs_prefix == f'Proofpoint.URL'
+    assert result.outputs_prefix == 'Proofpoint.URL'
     assert result.outputs[1].get('decodedUrl') == "http://www.bouncycastle.org/"
 
 
@@ -1024,9 +1024,9 @@ def test_list_issues_command(requests_mock):
     clicks_result = result[1]
 
     assert len(clicks_result.outputs) == 1
-    assert clicks_result.outputs_prefix == f'Proofpoint.ClicksPermitted'
+    assert clicks_result.outputs_prefix == 'Proofpoint.ClicksPermitted'
     assert clicks_result.outputs[0].get('messageID') == '3333'
 
     assert len(messages_result.outputs) == 1
-    assert messages_result.outputs_prefix == f'Proofpoint.MessagesDelivered'
+    assert messages_result.outputs_prefix == 'Proofpoint.MessagesDelivered'
     assert messages_result.outputs[0].get('messageID') == "1111@evil.zz"
