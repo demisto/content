@@ -136,19 +136,7 @@ def get_incidents_by_keys(similar_incident_keys, time_field, incident_time, inci
     incident_time = parse_datetime(incident_time)
     max_date = incident_time
     min_date = incident_time - timedelta(hours=hours_back)
-    query = ''
-
-    if similar_keys_query:
-        query = similar_keys_query
-
-    if ignore_closed:
-        query += " and -status:Closed" if query else "-status:Closed"
-
-    if incident_id:
-        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)' % (incident_id)"
-
-    if extra_query:
-        query += " and (%s)" % extra_query if query else extra_query
+    query = build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query)
 
     demisto.log("Find similar incidents based on initial query: %s" % query)
 
@@ -264,6 +252,23 @@ def merge_incident_fields(incident):
     incident['severity'] = SEVERITY_MAP.get(str(incident['severity']))
     incident['status'] = STATUS_MAP.get(str(incident['status']))
     return incident
+
+
+def build_incident_query(similar_keys_query, ignore_closed, incident_id, extra_query):
+    query = ''
+
+    if similar_keys_query:
+        query = similar_keys_query
+
+    if ignore_closed:
+        query += " and -status:Closed" if query else "-status:Closed"
+
+    if incident_id:
+        query = "(-id:%s) and (%s)" % (incident_id, query) if query else "(-id:%s)' % (incident_id)"
+
+    if extra_query:
+        query += " and (%s)" % extra_query if query else extra_query
+    return query
 
 
 def main():
