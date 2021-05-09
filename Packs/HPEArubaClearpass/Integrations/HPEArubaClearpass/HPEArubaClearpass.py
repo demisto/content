@@ -48,48 +48,6 @@ class Client(BaseClient):
             json_data=body
         )
 
-    def is_expiration_type_valid(self, auth_response: Dict[str, str]):
-        access_token_expiration_in_seconds = auth_response.get("expires_in")
-        return access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int)
-
-    def save_access_token_to_context(self, auth_response: dict):
-        """
-        Saves a new access token to the integration context.
-
-            Args:
-               auth_response (dict): A dict includes the new access token and its expiration (in seconds).
-       """
-        self.access_token = auth_response.get("access_token")  # type:ignore
-        access_token_expiration_in_seconds = auth_response.get("expires_in")
-        if self.is_expiration_type_valid(auth_response):
-            access_token_expiration_datetime = datetime.now() + timedelta(
-                seconds=access_token_expiration_in_seconds)  # type:ignore
-            context = {"access_token": self.access_token,
-                       "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
-            set_integration_context(context)
-            self.set_request_headers()
-            demisto.debug(
-                f"New access token that expires in : {access_token_expiration_datetime.strftime(DATE_FORMAT)} w"
-                f"as set to integration_context.")
-        else:
-            return_error(f"HPEArubaClearpass error: Got an invalid access token "
-                         f"expiration time from the API: {access_token_expiration_in_seconds} "
-                         f"from type: {type(access_token_expiration_in_seconds)}")
-
-    def is_access_token_valid(self):
-        integration_context = get_integration_context()
-        access_token_expiration = integration_context.get('expires_in')
-        access_token = integration_context.get('access_token')
-        is_context_has_access_token = access_token and access_token_expiration
-        access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
-        return is_context_has_access_token and access_token_expiration_datetime > datetime.now()
-
-    def set_valid_access_token(self):
-        integration_context = get_integration_context()
-        self.access_token = integration_context.get('access_token')
-        self.set_request_headers()
-        demisto.debug("access token is valid")
-
     def login(self):
         """
         Checks if a valid access token is set to integration context. Otherwise, generates one and save to it
@@ -113,6 +71,38 @@ class Client(BaseClient):
         """
         authorization_header_value = f"Bearer {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
+
+    def get_expiration_in_seconds(self, auth_response: Dict[str, str]):
+        access_token_expiration_in_seconds = auth_response.get("expires_in")
+        is_expiration_valid = access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int)
+        error_msg = f"HPEArubaClearpass error: Got an invalid access token expiration time from the API: " \
+                    f"{access_token_expiration_in_seconds} from type: {type(access_token_expiration_in_seconds)}"
+        return access_token_expiration_in_seconds if is_expiration_valid else return_error(error_msg)
+
+    def save_access_token_to_context(self, auth_response: dict):
+        self.access_token = auth_response.get("access_token")  # type:ignore
+        expiration_in_seconds = self.get_expiration_in_seconds(auth_response)
+        expiration_timestamp = datetime.now() + timedelta(seconds=expiration_in_seconds)
+
+        context = {"access_token": self.access_token, "expires_in": expiration_timestamp.strftime(DATE_FORMAT)}
+        set_integration_context(context)
+        self.set_request_headers()
+        demisto.debug(f"New access token that expires in : {expiration_timestamp.strftime(DATE_FORMAT)}"
+                      f" was set to integration_context.")
+
+    def is_access_token_valid(self):
+        integration_context = get_integration_context()
+        access_token_expiration = integration_context.get('expires_in')
+        access_token = integration_context.get('access_token')
+        context_has_access_token_and_expiration = access_token and access_token_expiration
+        access_token_expiration_datetime = datetime.strptime(access_token_expiration, DATE_FORMAT)
+        return context_has_access_token_and_expiration and access_token_expiration_datetime > datetime.now()
+
+    def set_valid_access_token(self):
+        integration_context = get_integration_context()
+        self.access_token = integration_context.get('access_token')
+        self.set_request_headers()
+        demisto.debug("access token is valid")
 
     def prepare_request(self, method: str, params: dict, url_suffix: str, body: dict = {}, resp_type: str = 'json'):
         return self._http_request(
