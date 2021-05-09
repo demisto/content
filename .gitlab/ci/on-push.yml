@@ -13,11 +13,16 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD != "true" && $BUCKET_UPLOAD != "true" && ! $CI_COMMIT_BRANCH =~ pull/[0-9]+ && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$FORCE_BUCKET_UPLOAD != "true" && $BUCKET_UPLOAD != "true" && $SKIP_PRIVATE_BUILD != "true"'
   script:
-    - echo "====Trigger Private Build===="
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+    - |
+      if [ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]; then
+        echo "Not running private build in contrib branch."
+      else
+        echo "====Trigger Private Build===="
+        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+        python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
+      fi
 
 create-instances:
   extends:
