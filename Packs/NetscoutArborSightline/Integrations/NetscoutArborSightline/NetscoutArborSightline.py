@@ -233,10 +233,10 @@ class NetscoutClient(BaseClient):
                 # If the current parameter supports a special operator (it appears in the OPERATOR_NAME_DICTIONARY),
                 # we take the operator value using the operator name (that appears in the OPERATOR_NAME_DICTIONARY)
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
-                    operator = attributes_dict.get(operator_name) if attributes_dict.get(
-                        operator_name) else '='  # type: ignore
+                    operator = attributes_dict.get(operator_name, '') if attributes_dict.get(
+                        operator_name) else '='
 
-                param_list.append(f'/data/attributes/{key + operator + val}')  # type: ignore
+                param_list.append(f'/data/attributes/{key + operator + val}')
         return ' AND '.join(param_list)
 
     def fetch_incidents(self, params_dict: dict) -> Tuple[list, str]:
@@ -594,7 +594,7 @@ def mitigation_list_command(client: NetscoutClient, args: dict):
 
 
 def mitigation_create_command(client: NetscoutClient, args: dict):
-    ip_version = IP_DICTIONARY.get(args.get('ip_version'))  # type: ignore
+    ip_version = IP_DICTIONARY.get(args['ip_version'])
     if not ip_version:
         raise DemistoException('ip_version value can be one of the following: '
                                f'{",".join(list(IP_DICTIONARY.keys()))}. {args.get("ip_version")} was given.')
@@ -602,7 +602,7 @@ def mitigation_create_command(client: NetscoutClient, args: dict):
     name = args.get('name')
     ongoing = args.get('ongoing', 'false')
     sub_type = args.get('sub_type')
-    sub_object = validate_json_arg(args.get('sub_object'), 'sub_object')  # type: ignore
+    sub_object = validate_json_arg(args['sub_object'], 'sub_object')
     alert_id = args.get('alert_id')
     managed_object_id = args.get('managed_object_id')
     mitigation_template_id = args.get('mitigation_template_id')

@@ -8,8 +8,7 @@ configuration:
     name: incidentType
     required: false
     type: 13
-  - defaultvalue: https://example.com/
-    display: Server URL (e.g., https://....)
+  - display: Server URL (e.g., https://192.168.0.1)
     name: url
     required: true
     type: 0

@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Netscout Arbor Sightline Alert"
+    ],
     "caseInsensitive": true,
     "cliName": "netscoutarborsightlinealerttype",
     "closeForm": false,
