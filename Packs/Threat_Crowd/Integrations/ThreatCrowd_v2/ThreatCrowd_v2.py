@@ -126,7 +126,7 @@ def email_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             email, DBotScoreType.EMAIL, VENDOR, score, reliability=client.reliability)
         email_object = Common.EMAIL(email, dbot)
 
-        markdown = f"Threat crowd report for Email {email} \n " \
+        markdown = f"### Threat crowd report for Email {email} \n " \
                    f"DBotScore: {score_str} \n {tableToMarkdown('Results', res, removeNull=True)}"
 
         # using res.copy() to avoid changing all previous entries's values.
@@ -242,7 +242,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
         # removes empty entries returned by API
         res['scans'] = _get_list_without_empty(res.get('scans'))[:entries_limit]
 
-        markdown = f"Threat crowd report for File {file_hash}: \n ### DBotScore: {score_str} \n " \
+        markdown = f"### Threat crowd report for File {file_hash}: \n ### DBotScore: {score_str} \n " \
                    f"{tableToMarkdown('Results', res)}".replace('<br>', '')
 
         # using res.copy() to avoid changing all previous entries's values.
