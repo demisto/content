@@ -17,7 +17,7 @@
     "selectValues": [
         "Close",
         "Link",
-        "Link & Close",
+        "Link \u0026 Close",
         "Reopen",
         "Unlink"
     ],
