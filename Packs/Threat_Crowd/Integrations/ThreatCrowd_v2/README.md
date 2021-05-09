@@ -3,7 +3,7 @@ This integration was integrated and tested with version v2 of ThreatCrowd
 ## Configure ThreatCrowd v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for ThreatCrowd_v2.
+2. Search for ThreatCrowd v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
