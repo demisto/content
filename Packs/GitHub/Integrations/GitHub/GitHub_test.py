@@ -88,8 +88,8 @@ def test_list_team_members_command(mocker, maximum_users, expected_result1):
     When:
         list_team_members_command is running
     Then:
-        Assert that the number of users for in single page is compatible with the maximum_users number and the github
-        limit for page size
+        Assert that the number of users in single page is compatible with the maximum_users number and the github
+        limit of page size
     """
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={
