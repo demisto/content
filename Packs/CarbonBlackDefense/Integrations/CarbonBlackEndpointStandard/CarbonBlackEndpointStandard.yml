@@ -97,8 +97,8 @@ configuration:
   - '10'
   required: false
   type: 15
-- additionalinfo: Query in Lucene syntax and/or value searches.
-    If chosen, the other fetch incidents parameters should be empty.
+- additionalinfo: Query in Lucene syntax and/or value searches. 
+    If defined, the other fetch incidents parameters should be left blank.
   display: Query
   hidden: false
   name: query
