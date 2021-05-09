@@ -130,7 +130,8 @@ def list_groups_command(client: AzureNSGClient) -> CommandResults:
     Returns:
         A detailed list of all network security groups
     """
-    raise DemistoException(f'current ctx: {get_integration_context()}')
+    ctx = get_integration_context()
+    raise DemistoException(f'current ctx: {ctx}')
     network_groups = client.list_network_security_groups()
     network_groups = network_groups.get('value', [])
 
