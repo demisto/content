@@ -1165,7 +1165,7 @@ script:
     name: misp-upload-sample
     outputs:
     - contextPath: MISP.UploadedSample
-      description: 'Object containing {filename: event id} of the uploaded file'.
+      description: 'Object containing {filename: event id} of the uploaded file.'
       type: Unknown
   - arguments:
     - default: false
