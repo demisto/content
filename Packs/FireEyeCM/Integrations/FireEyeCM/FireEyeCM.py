@@ -15,7 +15,11 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 class Client(BaseClient):
     def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
-        self._headers = {'X-FeApi-Token': self._generate_token(), 'Accept': 'application/json'}
+        self._headers = {
+            'X-FeApi-Token': self._generate_token(),
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
 
     def _generate_token(self) -> str:
         resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
@@ -28,6 +32,13 @@ class Client(BaseClient):
 
     def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
         return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json')
+
+    def alert_acknowledge_request(self, uuid: str) -> Dict[str, str]:
+        # data here is redundant, but without it we are getting an error.
+        # "Bad Request" with Invalid input. code:ALRTCONF001
+        return self._http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
+                                  params={'schema_compatibility': True}, data=json.dumps({"annotation": "<test>"}),
+                                  resp_type='resp')
 
 
 def test_module(client: Client) -> str:
@@ -49,7 +60,8 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=md_,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.alerts',
         outputs_key_field='id',
-        outputs=raw_response,
+        outputs=alerts,
+        raw_response=raw_response
     )
 
 
@@ -57,21 +69,44 @@ def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResul
     alert_ids = argToList(args.get('alert_id'))
     command_results: List[CommandResults] = []
 
+    headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+
     for alert_id in alert_ids:
         raw_response = client.get_alert_details_request(alert_id)
 
         alert_details = raw_response.get('alert')
         if not alert_details:
             md_ = f'Alert {alert_id} was not found.'
-
-        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alert_details, headers=headers, removeNull=True)
+        else:
+            md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alert_details, headers=headers, removeNull=True)
 
         command_results.append(CommandResults(
             readable_output=md_,
             outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.alerts',
             outputs_key_field='id',
-            outputs=raw_response,
+            outputs=alert_details,
+            raw_response=raw_response
+        ))
+
+    return command_results
+
+
+def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    uuids = argToList(args.get('uuid'))
+    command_results: List[CommandResults] = []
+
+    for uuid in uuids:
+        try:
+            client.alert_acknowledge_request(uuid)
+            md_ = f'Alert {uuid} was acknowledged successfully.'
+        except Exception as err:
+            if 'Alert not found or cannot update' in str(err.message):
+                md_ = f'Alert {uuid} was not found or cannot update. it may have been acknowledged in the past.'
+            else:
+                raise err
+
+        command_results.append(CommandResults(
+            readable_output=md_
         ))
 
     return command_results
@@ -97,9 +132,11 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         client = Client(base_url=base_url, username=username, password=password, verify=verify, proxy=proxy)
+        # raise Exception(self._headers['X-FeApi-Token'])
         commands = {
             f'{INTEGRATION_COMMAND_NAME}-get-alerts': get_alerts,
             f'{INTEGRATION_COMMAND_NAME}-get-alert-details': get_alert_details,
+            f'{INTEGRATION_COMMAND_NAME}-alert-acknowledge': alert_acknowledge,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))

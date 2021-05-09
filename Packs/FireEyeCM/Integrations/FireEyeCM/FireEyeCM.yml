@@ -182,6 +182,17 @@ script:
     - contextPath: FireEyeCM.alert
       description: TODO
       type: String
+  - arguments:
+    - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Confirm that the alert has been reviewed.
+    execution: false
+    name: fireeye-cm-alert-acknowledge
   isfetch: false
   runonce: false
   script: '-'
