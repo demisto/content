@@ -314,39 +314,48 @@ ID_TO_OBJECT = {
     }
 }
 
-PUBLICATIONS = [{'Link': 'example.com', 'Title': 'Ballenthin'},
-                {'Link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                 'Title': 'Microsoft. (n.d.). Windows Management Instrumentation. Retrieved '
+PUBLICATIONS = [{'link': 'example.com', 'source': 'FireEye WMI 2015', 'title': 'Ballenthin'},
+                {'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
+                 'source': 'MSDN WMI',
+                 'title': 'Microsoft. (n.d.). Windows Management Instrumentation. Retrieved '
                           'April 27, 2016.'},
-                {'Link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                 'Title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, '
+                {'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                 'source': 'TechNet RPC',
+                 'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, '
                           '2016.'},
-                {'Link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                 'Title': 'Wikipedia. (2016, June 12). Server Message Block. Retrieved June '
+                {'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
+                 'source': 'Wikipedia SMB',
+                 'title': 'Wikipedia. (2016, June 12). Server Message Block. Retrieved June '
                           '12, 2016.'}]
 
 ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
                                         'firstseenbysource': '2018-08-03T19:54:02.821Z',
+                                        'killchainphases': ['Installation', 'Execution'],
                                         'mitreid': 'T1047',
                                         'modified': '2020-05-12T13:02:30.000Z',
                                         'operatingsystemrefs': ['Windows'],
-                                        'publications': [{'Link': 'example.com', 'Title': 'Ballenthin'},
+                                        'publications': [{'link': 'example.com',
+                                                          'source': 'FireEye WMI 2015',
+                                                          'title': 'Ballenthin'},
                                                          {
-                                                             'Link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
-                                                             'Title': 'Microsoft. (n.d.). Windows Management '
+                                                             'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
+                                                             'source': 'MSDN WMI',
+                                                             'title': 'Microsoft. (n.d.). Windows Management '
                                                                       'Instrumentation. Retrieved April 27, '
                                                                       '2016.'},
                                                          {
-                                                             'Link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                             'Title': 'Microsoft. (2003, March 28). What Is '
+                                                             'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                                                             'source': 'TechNet RPC',
+                                                             'title': 'Microsoft. (2003, March 28). What Is '
                                                                       'RPC?. Retrieved June 12, 2016.'},
-                                                         {'Link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                          'Title': 'Wikipedia. (2016, June 12). Server '
+                                                         {'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
+                                                          'source': 'Wikipedia SMB',
+                                                          'title': 'Wikipedia. (2016, June 12). Server '
                                                                    'Message Block. Retrieved June 12, '
                                                                    '2016.'}],
                                         'reportedby': 'Unit42',
                                         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
-                                        'tags': []},
+                                        'tags': ['T1047']},
                              'type': 'Attack Pattern',
                              'value': 'Windows Management Instrumentation'}]
 

@@ -29,6 +29,27 @@ RELATIONS_TYPE_TO_DEMISTO_TYPES = {
     'course-of-action': 'Course of Action'
 }
 
+MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
+    'build-capabilities': "Build Capabilities",
+    'privilege-escalation': "Privilege Escalation",
+    'adversary-opsec': "Adversary Opsec",
+    'credential-access': "Credential Access",
+    'exfiltration': "Exfiltration",
+    'lateral-movement': "Lateral Movement",
+    'defense-evasion': "Defense Evasion",
+    'persistence': "Persistence",
+    'collection': "Collection",
+    'impact': "Impact",
+    'initial-access': "Initial Access",
+    'discovery': "Discovery",
+    'execution': "Execution",
+    'installation': "Installation",
+    'delivery': "Delivery",
+    'weaponization': "Weaponization",
+    'act-on-objectives': "Actions on Objectives",
+    'command-and-control': "Command \u0026 Control"
+}
+
 RELATIONSHIP_TYPES = EntityRelation.Relations.RELATIONS_NAMES.keys()
 
 
@@ -260,12 +281,15 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
         publications = get_indicator_publication(attack_indicator)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
-        feed_tags.extend(mitre_id)
+        kill_chain_mitre = [chain.get('phase_name', '') for chain in attack_indicator.get('kill_chain_phases', [])]
+        kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_mitre]
+
         indicator = {
             "value": value,
             "type": 'Attack Pattern',
             "fields": {
                 'stixid': attack_indicator.get('id'),
+                "killchainphases": kill_chain_phases,
                 "firstseenbysource": handle_multiple_dates_in_one_field('created', attack_indicator.get('created')),
                 "modified": handle_multiple_dates_in_one_field('modified', attack_indicator.get('modified')),
                 'description': attack_indicator.get('description'),
@@ -276,6 +300,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
                 "tags": feed_tags,
             }
         }
+        indicator['fields']['tags'].extend([mitre_id])
         if tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
 
