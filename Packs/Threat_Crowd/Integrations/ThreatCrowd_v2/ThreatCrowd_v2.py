@@ -32,8 +32,9 @@ class Client(BaseClient):
 
 
 def _get_list_without_empty(list_to_change: list) -> list:
-    return [entry for entry in list_to_change if entry]
-
+    if list_to_change:
+        return [entry for entry in list_to_change if entry]
+    return list_to_change
 
 def handle_resolutions(resolutions: List[dict], limit: Optional[int]) -> List[dict]:
     """ Gets a resolution section from response with following struct: [{"last_resolved": "2014-12-14", "domain": "example.com"}]
