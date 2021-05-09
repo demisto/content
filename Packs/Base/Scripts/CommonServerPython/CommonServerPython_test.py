@@ -4227,7 +4227,8 @@ class TestCommonTypes:
 
 
 class TestIndicatorsSearcher:
-    def mock_search_after_output(self, fromDate='', toDate='', query='', size=0, value='', page=0, searchAfter=''):
+    def mock_search_after_output(self, fromDate='', toDate='', query='', size=0, value='', page=0, searchAfter='',
+                                 populateFields=None):
         if not searchAfter:
             searchAfter = 0
 

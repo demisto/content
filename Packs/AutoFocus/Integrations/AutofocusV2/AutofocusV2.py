@@ -81,8 +81,8 @@ API_PARAM_DICT = {
     },
     'search_arguments': {
         'file_hash': {
-            'api_name': 'alias.hash',
-            'operator': 'contains'
+            'api_name': 'alias.hash_lookup',
+            'operator': 'is'
         },
         'domain': {
             'api_name': 'alias.domain',
@@ -1166,23 +1166,23 @@ def search_sessions_with_polling_command(args):
                                                next_run_in_seconds=interval_in_secs,
                                                args=polling_args, timeout_in_seconds=600)
             command_results.scheduled_command = schedule_config
+            return command_results
         else:
             # continue to look for search results
             args['af_cookie'] = af_cookie
-    else:
-        # get search status
-        command_results, status = sessions_search_results_command(args)
-        if status != 'complete':
-            # schedule next poll
-            polling_args = {
-                'af_cookie': args.get('af_cookie'),
-                'interval_in_seconds': interval_in_secs,
-                'polling': True
-            }
-            schedule_config = ScheduledCommand(command='autofocus-search-sessions',
-                                               next_run_in_seconds=interval_in_secs,
-                                               args=polling_args, timeout_in_seconds=600)
-            command_results.scheduled_command = schedule_config
+    # get search status
+    command_results, status = sessions_search_results_command(args)
+    if status != 'complete':
+        # schedule next poll
+        polling_args = {
+            'af_cookie': args.get('af_cookie'),
+            'interval_in_seconds': interval_in_secs,
+            'polling': True
+        }
+        schedule_config = ScheduledCommand(command='autofocus-search-sessions',
+                                           next_run_in_seconds=interval_in_secs,
+                                           args=polling_args, timeout_in_seconds=600)
+        command_results.scheduled_command = schedule_config
     return command_results
 
 
@@ -1224,8 +1224,7 @@ def samples_search_results_command(args):
     files = get_files_data_from_results(results)
     hr = ''
     if not results or len(results) == 0:
-        hr = 'No entries found that match the query'
-        status = 'complete'
+        hr = 'No entries found that match the query' if status == 'complete' else f'Search Sessions Results is {status}'
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
         'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
@@ -1277,7 +1276,6 @@ def sessions_search_results_command(args):
     files = get_files_data_from_results(results)
     if not results or len(results) == 0:
         md = results = 'No entries found that match the query'
-        status = 'complete'
     else:
         md = tableToMarkdown(f'Search Sessions Results is {status}', results)
     context = {
@@ -1340,8 +1338,7 @@ def tag_details_command():
     })
 
 
-def top_tags_search_command():
-    args = demisto.args()
+def top_tags_search_command(args):
     scope = args.get('scope')
     tag_class = args.get('class')
     private = args.get('private') == 'True'
@@ -1350,30 +1347,76 @@ def top_tags_search_command():
     unit42 = args.get('unit42') == 'True'
     info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
     md = tableToMarkdown('Top tags search Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    return CommandResults(
+        outputs_prefix='AutoFocus.TopTagsSearch',
+        outputs_key_field='AFCookie',
+        outputs=info,
+        readable_output=md
+    )
 
 
-def top_tags_results_command():
-    args = demisto.args()
+def top_tags_results_command(args):
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
     context = createContext(results, keyTransform=string_to_context_key)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
-                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                   'AFCookie': af_cookie}},
-        'HumanReadable': md
-    })
+    cmd_results = [
+        CommandResults(
+            outputs_prefix='AutoFocus.TopTagsResults',
+            outputs_key_field='PublicTagName',
+            outputs=context,
+            readable_output=md
+        ),
+        CommandResults(
+            outputs_prefix='AutoFocus.TopTagsSearch',
+            outputs_key_field='AFCookie',
+            outputs={'Status': status, 'AFCookie': af_cookie},
+        )
+    ]
+    return cmd_results
+
+
+def top_tags_with_polling_command(args):
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    if 'af_cookie' not in args:
+        # create new search
+        command_results = top_tags_search_command(args)
+        outputs = command_results.outputs
+        af_cookie = outputs.get('AFCookie')
+        if outputs.get('Status') != 'complete':
+            polling_args = {
+                'af_cookie': af_cookie,
+                'scope': args.get('scope'),
+                'class': args.get('class'),
+                'interval_in_seconds': interval_in_secs,
+                'polling': True
+            }
+            schedule_config = ScheduledCommand(command='autofocus-top-tags-search',
+                                               next_run_in_seconds=interval_in_secs,
+                                               args=polling_args, timeout_in_seconds=600)
+            command_results.scheduled_command = schedule_config
+            return command_results
+        else:
+            # continue to look for search results
+            args['af_cookie'] = af_cookie
+    # get search status
+    command_results = top_tags_results_command(args)
+    status = command_results[1].outputs.get('Status')
+    if status != 'complete':
+        # schedule next poll
+        polling_args = {
+            'af_cookie': args.get('af_cookie'),
+            'scope': args.get('scope'),
+            'class': args.get('class'),
+            'interval_in_seconds': interval_in_secs,
+            'polling': True
+        }
+        schedule_config = ScheduledCommand(command='autofocus-top-tags-search',
+                                           next_run_in_seconds=interval_in_secs,
+                                           args=polling_args, timeout_in_seconds=600)
+        command_results[1].scheduled_command = schedule_config
+    return command_results
 
 
 def search_ip_command(ip, reliability):
@@ -1777,9 +1820,12 @@ def main():
         elif active_command == 'autofocus-tag-details':
             tag_details_command()
         elif active_command == 'autofocus-top-tags-search':
-            top_tags_search_command()
+            if args.get('polling') == 'true':
+                return_results(top_tags_with_polling_command(args))
+            else:
+                return_results(top_tags_search_command(args))
         elif active_command == 'autofocus-top-tags-results':
-            top_tags_results_command()
+            return_results(top_tags_results_command(args))
         elif active_command == 'autofocus-get-export-list-indicators':
             get_export_list_command(args)
         elif active_command == 'ip':

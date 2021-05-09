@@ -7500,18 +7500,24 @@ class TableOrListWidget(BaseWidget):
 
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
-     :type page: ``int``
+    :type page: ``int``
     :param page: the number of page from which we start search indicators from.
+
+    :type filter_fields: ``str``
+    :param filter_fields: comma separated fields to filter (e.g. "value,type")
 
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, page=0):
+    def __init__(self, page=0, filter_fields=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        # populateFields merged in https://github.com/demisto/server/pull/18398
+        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
+        self._filter_fields = filter_fields
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -7537,14 +7543,18 @@ class IndicatorsSearcher:
         :rtype: ``dict``
         """
         if self._can_use_search_after:
-            if self._search_after_param:
-                # if search_after_param exists use it for paging, else use the page number
-                res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
-                                               searchAfter=self._search_after_param)
-            else:
-                res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size,
-                                               value=value, page=self._page)
-
+            # if search_after_param exists use it for paging, else use the page number
+            search_iocs_params = assign_params(
+                fromDate=from_date,
+                toDate=to_date,
+                query=query,
+                size=size,
+                value=value,
+                searchAfter=self._search_after_param,
+                populateFields=self._filter_fields if self._can_use_filter_fields else None,
+                page=self._page if not self._search_after_param else None
+            )
+            res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]
 
             if res[self._search_after_title] is None:

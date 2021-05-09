@@ -987,6 +987,13 @@ Performs a search to identify the most popular tags.
 | public | Whether the tag scope is "public". If "True", the tag scope is public. The default is "False". | Optional | 
 | commodity | Whether the tag scope is "commodity". If "True", the tag scope is commodity. The default is "False". | Optional | 
 | unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional | 
+| af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+
+##### Using polling
+The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
+
+For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ##### Tag Classes
 - Malware Family: group of malware that have shared properties or common functions. 
@@ -1001,6 +1008,11 @@ Performs a search to identify the most popular tags.
 | --- | --- | --- |
 | AutoFocus.TopTagsSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
 | AutoFocus.TopTagsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
+| AutoFocus.TopTagsResults.Count | Number | The number of samples that matched this tag. | 
+| AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
+| AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
+| AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
+| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". |
 
 
 ##### Command Example
