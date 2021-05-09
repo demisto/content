@@ -1,5 +1,28 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+function GetIntegrationContext {
+        [CmdletBinding()]
+        param (
+            [bool]$refresh = $true
+        )
+        if (DemistoVersionGreaterEqualThen -version "6.0.0") {
+            $integration_context = $demisto.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ refresh = $refresh } })
+
+            return $integration_context.context
+        }
+        return $demisto.GetIntegrationContext()
+    }
+
+function SetIntegrationContext ([object]$context, [bool]$sync = $true, [int]$version = -1) {
+        if (DemistoVersionGreaterEqualThen -version "6.0.0") {
+            $b = $demisto.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{value = $context; version = $version; sync = $sync} })
+        }
+        else {
+            $b = $demisto.SetIntegrationContext($context)
+
+        }
+    }
+
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
 $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
@@ -578,12 +601,7 @@ class OAuth2DeviceCodeClient {
         }
         catch {
             $response_body = ConvertFrom-Json $_.ErrorDetails.Message
-            if ($response_body.error -eq "invalid_grant") {
-                $error_details = "Please login to grant account permissions (After 90 days grant is expired) !$script:COMMAND_PREFIX-auth-start."
-            }
-            else {
-                $error_details = $response_body
-            }
+            $error_details = $response_body
 
             throw "Unable to refresh access token for your account, $error_details"
         }
@@ -1236,7 +1254,7 @@ function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
 }
 
 function TestAuthCommand ([OAuth2DeviceCodeClient]$oclient, [SecurityAndComplianceClient]$cs_client) {
-    $raw_response = $oclient.RefreshTokenRequest()
+    $raw_response = $oclient.RefreshTokenIfExpired()
     $human_readable = "**Test ok!**"
     $entry_context = @{}
     try {
@@ -1478,6 +1496,8 @@ function Main {
     try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $Demisto.Debug("oauth2_client from integration context: $($oauth2_client | ConvertTo-Json)")
+
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating Compliance and search client
@@ -1533,6 +1553,8 @@ function Main {
             }
         }
         # Updating integration context if access token changed
+        $Demisto.Debug("oauth2_client after exec: $($oauth2_client | ConvertTo-Json)")
+
         UpdateIntegrationContext $oauth2_client
         # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
