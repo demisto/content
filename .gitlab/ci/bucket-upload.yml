@@ -1,6 +1,6 @@
 .bucket-upload-rule:
   rules:
-    - if: '$BUCKET_UPLOAD'
+    - if: '$BUCKET_UPLOAD == "true"'
 
 .start_tunnel: &start_tunnel
   - echo "=====Start Tunnel====="
@@ -95,8 +95,7 @@ upload-packs-to-marketplace:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
+  extends: .bucket-upload-rule
   script:
     - *start_tunnel
     - *check_user_permissions_to_upload_packs
