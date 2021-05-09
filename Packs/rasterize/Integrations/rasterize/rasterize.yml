@@ -3,7 +3,7 @@ commonfields:
   id: Rasterize
   version: -1
 configuration:
-- display: 'Return Errors '
+- display: Return Errors
   name: with_error
   defaultvalue: "false"
   type: 8
@@ -26,7 +26,6 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   required: false
-  defaultvalue: false
   type: 8
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
