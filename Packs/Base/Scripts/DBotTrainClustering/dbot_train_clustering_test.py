@@ -244,7 +244,7 @@ def test_model_exist_and_valid(mocker):
     assert output_clustering_json == {'data': 'data'}
 
 
-# Test to validate that if the model has expired then it won't train again
+# Test to validate that if the model has expired then it will train again
 def test_model_exist_and_expired(mocker):
     global FETCHED_INCIDENT
     global sub_dict_1
@@ -270,7 +270,7 @@ def test_model_exist_and_expired(mocker):
 
 
 # Test if cluster name field has value of type list
-def test_main_regular(mocker):
+def test_main_name_cluster_is_list(mocker):
     global FETCHED_INCIDENT
     global sub_dict_1
     global sub_dict_0

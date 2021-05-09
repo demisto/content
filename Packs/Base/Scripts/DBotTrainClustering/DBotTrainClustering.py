@@ -17,6 +17,7 @@ import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
 
+
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
                             "or increase the limit argument to more than %s."
@@ -144,7 +145,7 @@ class Clustering(object):
         :return:
         """
         if not self.TSNE_:
-            tsne = TSNE(n_jobs=-1, n_components=dimension, learning_rate=1000)
+            tsne = TSNE(n_jobs=8, n_components=dimension, learning_rate=1000)
             self.data_2d = tsne.fit_transform(self.data)
             self.TSNE_ = True
 
@@ -179,6 +180,7 @@ class PostProcessing(object):
         self.compute_dist()
         self.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
         self.summary = None  # type: ignore
+        self.global_msg = None  # type: ignore
         self.json = None  # type: ignore
 
     def statistics(self):
@@ -542,7 +544,8 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]  # type: ignore
 
 
-def create_summary(model_processed: Type[PostProcessing]) -> dict:
+def create_summary(model_processed: Type[PostProcessing], fields_for_clustering: List[str],
+                   field_for_cluster_name: List[str]) -> dict:
     """
     Create json with summary of the training
     :param model_processed: Postprocessing
@@ -568,6 +571,8 @@ def create_summary(model_processed: Type[PostProcessing]) -> dict:
         'Percentage of cluster selected': "%s  (%s/%s)" % (
             str(percentage_clusters_selected), str(number_clusters_selected),
             str(nb_clusters)),
+        'Fields used for training': ' , '.join(fields_for_clustering),
+        'Fields used for cluster name': field_for_cluster_name[0] if field_for_cluster_name else "",
         'Training time': str(model_processed.date_training)
     }
     return summary
@@ -631,8 +636,16 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
     return incidents_df
 
 
-def most_frequent(l):
-    return max(set(l), key=l.count)
+def most_frequent(l: List):
+    """
+    Return most frequent element of a list if not empty elase return empty string
+    :param l: list with element
+    :return: item in list with most occurrence
+    """
+    if not l:
+        return ""
+    else:
+        return max(set(l), key=l.count)
 
 
 def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
@@ -839,8 +852,9 @@ def main():
                                          generic_cluster_name)
 
         # Create summary of the training and assign it the the summary attribute of the model
-        summary = create_summary(model_processed)
+        summary = create_summary(model_processed, fields_for_clustering, field_for_cluster_name)
         model_processed.summary = summary
+        model_processed.global_msg = global_msg
 
         if debug:
             return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
