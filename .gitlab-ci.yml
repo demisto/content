@@ -109,7 +109,6 @@ notify-slack:
         done
       else
         echo "Nothing to notify about, skipping."
-        echo "skipped" > .runner-result
       fi
 
 create-instances:
@@ -360,7 +359,6 @@ run-validations:
         ./Tests/scripts/validate.sh
       fi
     - echo "====Check Spelling===="
-    - pip3 freeze | grep pyspellchecker
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
     - echo "====Check Build Files Are Up To Date===="
     - |
@@ -459,7 +457,7 @@ run-validations:
     - echo "=====Wait Until Server Ready====="
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - echo "=====Install Packs====="
-    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE" "gitlab"
+    - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
     - echo "=====Destroy Instances====="
     - |
       if [ -n "${CONTRIB_BRANCH}" ]; then
