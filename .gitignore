@@ -21,7 +21,7 @@ demistomock.py
 demistomock.ps1
 !Tests/demistomock/demistomock.py
 !Tests/demistomock/demistomock.ps1
-Tests/filter_file.json
+Tests/filter_file.txt
 Tests/id_set.json
 .mypy_cache
 Scripts/*/*_unified.yml

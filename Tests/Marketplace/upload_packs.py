@@ -264,7 +264,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
     :param landing_page_sections: landingPage sections.
-    :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
+    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
     :param storage_bucket: The storage bucket object
     :returns None.
 

@@ -305,8 +305,7 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
-                                                                  'env_results.json'))
+    env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
 
     if not os.path.isfile(env_results_path):
         logging.warning(f"Did not find {env_results_path} file ")
