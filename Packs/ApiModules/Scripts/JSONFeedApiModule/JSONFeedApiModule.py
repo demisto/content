@@ -211,7 +211,7 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
 
 def get_indicator_relations(feed_config, mapping, indicator_data):
     if mapping.get('relation_entity_b'):
-        relationships_lst = EntityRelation(
+        relationships_lst = EntityRelationship(
             name=feed_config.get('relation_name'),
             entity_a=indicator_data.get('value'),
             entity_a_type=indicator_data.get('type'),
@@ -267,6 +267,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     relationships = []
     if create_relationships and feed_config.get('relation_name'):
         relationships = relations_function(feed_config, mapping, attributes)
+    demisto.debug(f"INTEL JAS {str(relationships)}")
     indicator['relationships'] = relationships
     indicator['rawJSON'] = item
 
