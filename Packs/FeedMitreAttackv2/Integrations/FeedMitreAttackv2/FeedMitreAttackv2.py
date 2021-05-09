@@ -26,6 +26,27 @@ INDICATOR_TYPE_TO_SCORE = {
     "STIX Tool": 2
 }
 
+MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
+    'build-capabilities': "Build Capabilities",
+    'privilege-escalation': "Privilege Escalation",
+    'adversary-opsec': "Adversary Opsec",
+    'credential-access': "Credential Access",
+    'exfiltration': "Exfiltration",
+    'lateral-movement': "Lateral Movement",
+    'defense-evasion': "Defense Evasion",
+    'persistence': "Persistence",
+    'collection': "Collection",
+    'impact': "Impact",
+    'initial-access': "Initial Access",
+    'discovery': "Discovery",
+    'execution': "Execution",
+    'installation': "Installation",
+    'delivery': "Delivery",
+    'weaponization': "Weaponization",
+    'act-on-objectives': "Actions on Objectives",
+    'command-and-control': "Command \u0026 Control"
+}
+
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
 # Disable insecure warnings
@@ -164,42 +185,49 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     created = handle_multiple_dates_in_one_field('created', indicator_json.get('created'))  # type: ignore
     modified = handle_multiple_dates_in_one_field('modified', indicator_json.get('modified'))  # type: ignore
 
+    kill_chain_phases_mitre = [chain.get('phase_name', '') for chain in indicator_json.get('kill_chain_phases', [])]
+    kill_chain_phases = [MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS.get(phase) for phase in kill_chain_phases_mitre]
+
     publications = []
     for external_reference in indicator_json.get('external_references', []):
         if external_reference.get('external_id'):
             continue
         url = external_reference.get('url')
         description = external_reference.get('description')
-        publications.append({'Link': url, 'Title': description})
+        source_name = external_reference.get('source_name')
+        publications.append({'link': url, 'title': description, 'source': source_name})
 
     mitre_id = [external.get('external_id') for external in indicator_json.get('external_references', [])
                 if external.get('source_name', '') == 'mitre-attack']
     mitre_id = mitre_id[0] if mitre_id else None
 
+    tags = []
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
         'modified': modified,
         'description': indicator_json.get('description'),
         'publications': publications,
+        'mitreid': mitre_id,
+        'tags': tags.append(mitre_id)
     }
 
     mapping_by_type = {
         "STIX Attack Pattern": {
-            'mitreid': mitre_id,
+            'killchainphases': kill_chain_phases,
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Intrusion Set": {
             'aliases': indicator_json.get('aliases')
         },
         "STIX Malware": {
-            'tags': indicator_json.get('labels'),
+            'tags': tags.extend(indicator_json.get('labels', '')),
             'aliases': indicator_json.get('x_mitre_aliases'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
 
         },
         "STIX Tool": {
-            'tags': indicator_json.get('labels'),
+            'tags': tags.extend(indicator_json.get('labels', '')),
             'aliases': indicator_json.get('x_mitre_aliases'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
