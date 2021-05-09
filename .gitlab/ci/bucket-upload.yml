@@ -51,7 +51,9 @@
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-  extends: .bucket-upload-rule
+  extends:
+    - .bucket-upload-rule
+    - .default-job-settings
   script:
     - *start_tunnel
     - echo "=====Get Instance Variables====="
@@ -95,7 +97,9 @@ upload-packs-to-marketplace:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-  extends: .bucket-upload-rule
+  extends:
+    - .bucket-upload-rule
+    - .default-job-settings
   script:
     - *start_tunnel
     - *check_user_permissions_to_upload_packs
@@ -125,6 +129,8 @@ force-pack-upload:
   needs: ["create-instances"]
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  extends:
+    - .default-job-settings
   script:
     - *check_user_permissions_to_upload_packs
     - EXTRACT_FOLDER=$(mktemp -d)
