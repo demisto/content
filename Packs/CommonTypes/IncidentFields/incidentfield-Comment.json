@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Comment",
     "ownerOnly": false,
-    "description": "Comment",
+    "description": "The comments related with the incident",
     "cliName": "comment",
     "type": "shortText",
     "closeForm": false,

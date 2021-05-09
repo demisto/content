@@ -4,7 +4,7 @@
     "cliName": "deviceusername",
     "closeForm": false,
     "content": true,
-    "description": "Device Username",
+    "description": "The username of the user that owns the device",
     "editForm": true,
     "group": 0,
     "hidden": false,
