@@ -10,20 +10,20 @@ from taxii2client.v20 import Server, Collection, ApiRoot
 ''' CONSTANT VARIABLES '''
 
 MITRE_TYPE_TO_DEMISTO_TYPE = {
-    "attack-pattern": "STIX Attack Pattern",
+    "attack-pattern": "Attack Pattern",
     "course-of-action": "Course of Action",
     "intrusion-set": "Intrusion Set",
-    "malware": "STIX Malware",
-    "tool": "STIX Tool",
+    "malware": "Malware",
+    "tool": "Tool",
     "relationship": "Relationship"
 }
 
 INDICATOR_TYPE_TO_SCORE = {
     "Intrusion Set": 3,
-    "STIX Attack Pattern": 2,
+    "Attack Pattern": 2,
     "Course of Action": 0,
-    "STIX Malware": 3,
-    "STIX Tool": 2
+    "Malware": 3,
+    "Tool": 2
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
@@ -154,10 +154,7 @@ class Client:
                                 "fields": map_fields_by_type(indicator_type, mitre_item_json)  # type: ignore
                             }
 
-                            if indicator_obj['fields'].get('tags'):
-                                indicator_obj['fields']['tags'].append(self.tags) if self.tags else None
-                            else:
-                                indicator_obj['fields'].update({"tags": self.tags}) if self.tags else None
+                            indicator_obj['fields']['tags'].extend(self.tags)
 
                             if self.tlp_color:
                                 indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
@@ -201,7 +198,10 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
                 if external.get('source_name', '') == 'mitre-attack']
     mitre_id = mitre_id[0] if mitre_id else None
 
-    tags = []
+    tags = [mitre_id]
+    if indicator_type in ['Tool', 'Malware']:
+        tags.extend(indicator_json.get('labels', ''))
+
     generic_mapping_fields = {
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
@@ -209,25 +209,23 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         'description': indicator_json.get('description'),
         'publications': publications,
         'mitreid': mitre_id,
-        'tags': tags.append(mitre_id)
+        'tags': tags
     }
 
     mapping_by_type = {
-        "STIX Attack Pattern": {
+        "Attack Pattern": {
             'killchainphases': kill_chain_phases,
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Intrusion Set": {
             'aliases': indicator_json.get('aliases')
         },
-        "STIX Malware": {
-            'tags': tags.extend(indicator_json.get('labels', '')),
+        "Malware": {
             'aliases': indicator_json.get('x_mitre_aliases'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
 
         },
-        "STIX Tool": {
-            'tags': tags.extend(indicator_json.get('labels', '')),
+        "Tool": {
             'aliases': indicator_json.get('x_mitre_aliases'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }

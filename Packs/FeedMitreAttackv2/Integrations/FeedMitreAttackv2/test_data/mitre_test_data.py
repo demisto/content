@@ -26,18 +26,32 @@ ATTACK_PATTERN = {
                 "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx"
             },
         ],
+        "kill_chain_phases": [
+            {
+                "phase_name": "defense-evasion",
+                "kill_chain_name": "mitre-attack"
+            },
+            {
+                "phase_name": "privilege-escalation",
+                "kill_chain_name": "mitre-attack"
+            }
+        ]
     },
     'map_result': {
         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
         'firstseenbysource': '2017-05-31T21:30:44.329Z',
+        'killchainphases': ['Defense Evasion', 'Privilege Escalation'],
         'modified': "2020-05-13T22:50:51.258Z",
         'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
         'mitreid': 'T1047',
-        'publications': [{'Link': "https://en.wikipedia.org/wiki/Server_Message_Block",
-                          'Title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016."},
-                         {'Link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
-                          'Title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.'}]
+        'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
+                          'title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                          'source': 'Wikipedia SMB'},
+                         {'link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                          'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.',
+                          "source": 'TechNet RPC'}],
+        'tags': ['T1047']
     },
     'indicator': [{'fields': {'description': 'Adversaries may abuse Windows Management '
                                              'Instrumentation (WMI) to achieve execution.',
@@ -45,13 +59,17 @@ ATTACK_PATTERN = {
                               'operatingsystemrefs': ['Windows'],
                               'firstseenbysource': '2017-05-31T21:30:44.329Z',
                               'modified': '2020-05-13T22:50:51.258Z',
-                              'publications': [{'Link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
-                                                'Title': 'Wikipedia. (2016, June 12). Server '
+                              'publications': [{'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
+                                                'title': 'Wikipedia. (2016, June 12). Server '
                                                          'Message Block. Retrieved June 12, '
-                                                         '2016.'},
-                                               {'Link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
-                                                'Title': 'Microsoft. (2003, March 28). What Is '
-                                                         'RPC?. Retrieved June 12, 2016.'}],
+                                                         '2016.',
+                                                'source': 'Wikipedia SMB'},
+                                               {'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                                                'title': 'Microsoft. (2003, March 28). What Is '
+                                                         'RPC?. Retrieved June 12, 2016.',
+                                                'source': 'TechNet RPC', }],
+                              "killchainphases": ['Defense Evasion', 'Privilege Escalation'],
+                              "tags": ['T1047'],
                               'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'},
                    'rawJSON': {'created': '2017-05-31T21:30:44.329Z',
                                'name': 'ATTACK_PATTERN 1',
@@ -74,10 +92,14 @@ ATTACK_PATTERN = {
                                                         'source_name': 'TechNet RPC',
                                                         'url': 'https://technet.microsoft.com/en-us/library/cc787851.aspx'}],
                                'id': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
+                               'kill_chain_phases': [{'kill_chain_name': 'mitre-attack',
+                                                      'phase_name': 'defense-evasion'},
+                                                     {'kill_chain_name': 'mitre-attack',
+                                                      'phase_name': 'privilege-escalation'}],
                                'modified': '2020-05-13T22:50:51.258Z',
                                'x_mitre_platforms': ['Windows']},
                    'score': 2,
-                   'type': "STIX Attack Pattern",
+                   'type': "Attack Pattern",
                    'value':
                        "ATTACK_PATTERN 1"},
                   {'relationships': [], 'value': '$$DummyIndicator$$'}]
@@ -99,19 +121,22 @@ COURSE_OF_ACTION = {
         ],
         "created": "2018-10-17T00:14:20.652Z"
     },
-    'map_result': {
-        'stixid': 'course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22',
-        'firstseenbysource': '2018-10-17T00:14:20.652Z',
-        'modified': "2019-07-25T11:46:32.010Z",
-        'description': "Prevent files from having a trailing space after the extension.",
-        'publications': [],
-    },
+    'map_result': {'description': 'Prevent files from having a trailing space after the '
+                                  'extension.',
+                   'firstseenbysource': '2018-10-17T00:14:20.652Z',
+                   'mitreid': 'T1151',
+                   'modified': '2019-07-25T11:46:32.010Z',
+                   'publications': [],
+                   'stixid': 'course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22',
+                   'tags': ['T1151']},
     'indicator': [{'fields': {'description': 'Prevent files from having a trailing space after '
                                              'the extension.',
                               'firstseenbysource': '2018-10-17T00:14:20.652Z',
+                              'mitreid': 'T1151',
                               'modified': '2019-07-25T11:46:32.010Z',
                               'publications': [],
-                              'stixid': 'course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22'},
+                              'stixid': 'course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22',
+                              'tags': ['T1151']},
                    'rawJSON': {'created': '2018-10-17T00:14:20.652Z',
                                'description': 'Prevent files from having a trailing space after '
                                               'the extension.',
@@ -154,15 +179,17 @@ INTRUSION_SET = {
         "name": "INTRUSION_SET 1",
         "type": "intrusion-set"
     },
-    'map_result': {
-        'stixid': "intrusion-set--03506554-5f37-4f8f-9ce4-0e9f01a1b484",
-        'firstseenbysource': "2018-04-18T17:59:24.739Z",
-        'modified': "2021-03-02T22:40:11.097Z",
-        'description': "[Elderwood](https://attack.mitre.org/groups/G0066)",
-        'aliases': ["Elderwood", "Elderwood Gang", "Beijing Group", "Sneaky Panda"],
-        'publications': [{'Link': None,
-                          'Title': "(Citation: Security Affairs Elderwood Sept 2012)"}],
-    },
+    'map_result': {'aliases': ['Elderwood', 'Elderwood Gang', 'Beijing Group', 'Sneaky Panda'],
+                   'description': '[Elderwood](https://attack.mitre.org/groups/G0066)',
+                   'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                   'mitreid': 'G0066',
+                   'modified': '2021-03-02T22:40:11.097Z',
+                   'publications': [{'link': None,
+                                     'source': 'Elderwood',
+                                     'title': '(Citation: Security Affairs Elderwood Sept '
+                                              '2012)'}],
+                   'stixid': 'intrusion-set--03506554-5f37-4f8f-9ce4-0e9f01a1b484',
+                   'tags': ['G0066']},
     "indicator": [{'fields': {'aliases': ['Elderwood',
                                           'Elderwood Gang',
                                           'Beijing Group',
@@ -170,9 +197,12 @@ INTRUSION_SET = {
                               'description': '[Elderwood](https://attack.mitre.org/groups/G0066)',
                               'firstseenbysource': '2018-04-18T17:59:24.739Z',
                               'modified': '2021-03-02T22:40:11.097Z',
-                              'publications': [{'Link': None,
-                                                'Title': '(Citation: Security Affairs Elderwood '
-                                                         'Sept 2012)'}],
+                              'mitreid': 'G0066',
+                              'tags': ['G0066'],
+                              'publications': [{'link': None,
+                                                'title': '(Citation: Security Affairs Elderwood '
+                                                         'Sept 2012)',
+                                                "source": "Elderwood"}],
                               'stixid': 'intrusion-set--03506554-5f37-4f8f-9ce4-0e9f01a1b484'},
                    'rawJSON': {'aliases': ['Elderwood',
                                            'Elderwood Gang',
@@ -202,6 +232,11 @@ MALWARE = {
         "description": "[Wiarp](https://attack.mitre.org/software/S0206)",
         "external_references": [
             {
+                "external_id": "S0206",
+                "source_name": "mitre-attack",
+                "url": "https://attack.mitre.org/software/S0206"
+            },
+            {
                 "description": "Zhou, R. (2012, May 15). Backdoor.Wiarp. Retrieved February 22, 2018.",
                 "source_name": "Symantec Wiarp May 2012",
                 "url": "https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99"
@@ -222,32 +257,39 @@ MALWARE = {
         "name": "MALWARE 1",
         "type": "malware"
     },
-    'map_result': {
-        'stixid': "malware--039814a0-88de-46c5-a4fb-b293db21880a",
-        'firstseenbysource': "2018-04-18T17:59:24.739Z",
-        'modified': "2021-01-06T19:32:28.378Z",
-        'description': "[Wiarp](https://attack.mitre.org/software/S0206)",
-        'publications': [{'Link': "https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99",
-                          'Title': "Zhou, R. (2012, May 15). Backdoor.Wiarp. Retrieved February 22, 2018."}],
-        'tags': ['malware'],
-        'aliases': ['Wiarp'],
-        'operatingsystemrefs': ["Windows"]
-    },
+    'map_result': {'aliases': ['Wiarp'],
+                   'description': '[Wiarp](https://attack.mitre.org/software/S0206)',
+                   'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                   'mitreid': 'S0206',
+                   'modified': '2021-01-06T19:32:28.378Z',
+                   'operatingsystemrefs': ['Windows'],
+                   'publications': [
+                       {'link': 'https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99',
+                        'source': 'Symantec Wiarp May 2012',
+                        'title': 'Zhou, R. (2012, May 15). Backdoor.Wiarp. '
+                                 'Retrieved February 22, 2018.'}],
+                   'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
+                   'tags': ['S0206', 'malware']},
     "indicator": [{'fields': {'aliases': ['Wiarp'],
                               'description': '[Wiarp](https://attack.mitre.org/software/S0206)',
                               'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                              'mitreid': 'S0206',
                               'modified': '2021-01-06T19:32:28.378Z',
                               'operatingsystemrefs': ['Windows'],
                               'publications': [{
-                                  'Link': 'https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99',
-                                  'Title': 'Zhou, R. (2012, May 15). '
+                                  'link': 'https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99',
+                                  'source': 'Symantec Wiarp May 2012',
+                                  'title': 'Zhou, R. (2012, May 15). '
                                            'Backdoor.Wiarp. Retrieved February '
                                            '22, 2018.'}],
                               'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
-                              'tags': ['malware']},
+                              'tags': ['S0206', 'malware']},
                    'rawJSON': {'created': '2018-04-18T17:59:24.739Z',
                                'description': '[Wiarp](https://attack.mitre.org/software/S0206)',
-                               'external_references': [{'description': 'Zhou, R. (2012, May '
+                               'external_references': [{'external_id': 'S0206',
+                                                        'source_name': 'mitre-attack',
+                                                        'url': 'https://attack.mitre.org/software/S0206'},
+                                                       {'description': 'Zhou, R. (2012, May '
                                                                        '15). Backdoor.Wiarp. '
                                                                        'Retrieved February 22, '
                                                                        '2018.',
@@ -261,7 +303,7 @@ MALWARE = {
                                'x_mitre_aliases': ['Wiarp'],
                                'x_mitre_platforms': ['Windows']},
                    'score': 3,
-                   'type': 'STIX Malware',
+                   'type': 'Malware',
                    'value': 'MALWARE 1'},
                   {'relationships': [], 'value': '$$DummyIndicator$$'}]
 }
@@ -291,24 +333,24 @@ TOOL = {
         ],
         "id": "tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d"
     },
-    'map_result': {
-        'stixid': "tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d",
-        'firstseenbysource': "2018-04-18T17:59:24.739Z",
-        'modified': "2021-02-09T14:00:16.093Z",
-        'description': "[PowerSploit](https://attack.mitre.org/software/S0194)",
-        'publications': [],
-        'tags': ['tool'],
-        'aliases': ['PowerSploit'],
-        'operatingsystemrefs': ['Windows']
-    },
+    'map_result': {'aliases': ['PowerSploit'],
+                   'description': '[PowerSploit](https://attack.mitre.org/software/S0194)',
+                   'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                   'mitreid': 'S0194',
+                   'modified': '2021-02-09T14:00:16.093Z',
+                   'operatingsystemrefs': ['Windows'],
+                   'publications': [],
+                   'stixid': 'tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d',
+                   'tags': ['S0194', 'tool']},
     "indicator": [{'fields': {'aliases': ['PowerSploit'],
                               'description': '[PowerSploit](https://attack.mitre.org/software/S0194)',
                               'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                              'mitreid': 'S0194',
                               'modified': '2021-02-09T14:00:16.093Z',
                               'operatingsystemrefs': ['Windows'],
                               'publications': [],
                               'stixid': 'tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d',
-                              'tags': ['tool']},
+                              'tags': ['S0194', 'tool']},
                    'rawJSON': {'created': '2018-04-18T17:59:24.739Z',
                                'description': '[PowerSploit](https://attack.mitre.org/software/S0194)',
                                'external_references': [{'external_id': 'S0194',
@@ -322,7 +364,7 @@ TOOL = {
                                'x_mitre_aliases': ['PowerSploit'],
                                'x_mitre_platforms': ['Windows']},
                    'score': 2,
-                   'type': 'STIX Tool',
+                   'type': 'Tool',
                    'value': 'TOOL 1'},
                   {'relationships': [], 'value': '$$DummyIndicator$$'}]
 }
@@ -344,10 +386,10 @@ RELATION = {
     },
     "indicator": [{'relationships': [{'entityA': 'entity a',
                                       'entityAFamily': 'Indicator',
-                                      'entityAType': 'STIX Malware',
+                                      'entityAType': 'Malware',
                                       'entityB': 'entity b',
                                       'entityBFamily': 'Indicator',
-                                      'entityBType': 'STIX Attack Pattern',
+                                      'entityBType': 'Attack Pattern',
                                       'fields': {'description': ' '
                                                                 '[Explosive](https://attack.mitre.org/software/S0569)',
                                                  'firstseenbysource': '2021-04-27T01:56:35.810Z',
