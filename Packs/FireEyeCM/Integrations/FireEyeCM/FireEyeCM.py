@@ -49,11 +49,11 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     # check get alerts for fetch purposes
-    return CommandResults('ok')
+    return 'ok'
 
 
 def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
-    alert_id = args.get('alert_id')
+    alert_id = args.get('alert_id', '')
 
     raw_response = client.get_alerts_request(alert_id)
 
@@ -106,10 +106,10 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
             client.alert_acknowledge_request(uuid)
             md_ = f'Alert {uuid} was acknowledged successfully.'
         except Exception as err:
-            if 'Alert not found or cannot update' in str(err.message):
+            if 'Alert not found or cannot update' in str(err):
                 md_ = f'Alert {uuid} was not found or cannot update. it may have been acknowledged in the past.'
             else:
-                raise err
+                raise
 
         command_results.append(CommandResults(
             readable_output=md_
@@ -120,7 +120,7 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
 
 def get_artifacts_by_uuid(client: Client, args: Dict[str, Any]):
     uuids = argToList(args.get('uuid'))
-    timeout = int(args.get('timeout'))
+    timeout = int(args.get('timeout', '120'))
 
     for uuid in uuids:
         artifact = client.get_artifacts_by_uuid_request(uuid, timeout)
@@ -128,7 +128,7 @@ def get_artifacts_by_uuid(client: Client, args: Dict[str, Any]):
 
 
 def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
-    uuids = argToList(args.get('uuid'))
+    uuids: List[str] = argToList(str(args.get('uuid')))
     command_results: List[CommandResults] = []
 
     for uuid in uuids:
@@ -137,7 +137,7 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
         metadata = raw_response.get('artifactsInfoList')
         if isinstance(metadata, list):
             metadata = metadata[0]
-        metadata['uuid'] = uuid
+        metadata['uuid'] = uuid  # type: ignore
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} {uuid} Artifact metadata:', t=metadata, removeNull=True)
 
         command_results.append(CommandResults(
