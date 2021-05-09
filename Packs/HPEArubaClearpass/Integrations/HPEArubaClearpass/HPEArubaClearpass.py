@@ -48,7 +48,7 @@ class Client(BaseClient):
             json_data=body
         )
 
-    def is_expiration_type_valid(self, auth_response):
+    def is_expiration_type_valid(self, auth_response: Dict[str, str]):
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         return access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int)
 
@@ -60,9 +60,10 @@ class Client(BaseClient):
                auth_response (dict): A dict includes the new access token and its expiration (in seconds).
        """
         self.access_token = auth_response.get("access_token")  # type:ignore
+        access_token_expiration_in_seconds = auth_response.get("expires_in")
         if self.is_expiration_type_valid(auth_response):
             access_token_expiration_datetime = datetime.now() + timedelta(
-                seconds=auth_response.get("expires_in"))  # type:ignore
+                seconds=access_token_expiration_in_seconds)  # type:ignore
             context = {"access_token": self.access_token,
                        "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
             set_integration_context(context)
@@ -208,7 +209,7 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def delete_redundant_data(res):
+def delete_redundant_data(res: Dict[str, Any]):
     try:
         del res['_links']
     except KeyError:
