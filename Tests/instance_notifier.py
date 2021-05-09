@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import os
 
 import demisto_client
 from slack import WebClient as SlackClient
@@ -11,6 +12,7 @@ from Tests.test_integration import __create_integration_instance, __delete_integ
 from demisto_sdk.commands.common.tools import str2bool
 
 SERVER_URL = "https://{}"
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
 
 
 def options_handler():
@@ -88,7 +90,7 @@ def test_instances(secret_conf_path, server, username, password):
 
 
 def create_failed_integrations_file(failed_instances):
-    with open("./artifacts/failed_instances.txt", "w") as failed_instances_file:
+    with open(f"{ARTIFACTS_FOLDER}/failed_instances.txt", "w") as failed_instances_file:
         failed_instances_file.write('\n'.join(failed_instances))
 
 
