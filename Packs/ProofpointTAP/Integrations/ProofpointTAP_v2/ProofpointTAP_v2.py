@@ -810,7 +810,7 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
         except Exception:
             request_error.append(
                 {'interval': interval_string,
-                 "message": f'Error retrieving data from {interval_string}. Please check that the interval you entered is correct'})
+                 "message": f'Error retrieving data from {interval_string}. Please validate the interval format'})
             continue
 
         messages_path = ['messagesBlocked'] if messages_type == 'blocked' else ['messagesDelivered']
