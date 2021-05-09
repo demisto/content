@@ -24,6 +24,20 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
 - display: Use system proxy settings
   name: useproxy
   defaultvalue: "true"
@@ -42,14 +56,11 @@ configuration:
 script:
   script: >-
     var serverUrl = params.Server;
-
     if (serverUrl[serverUrl.length - 1] !== '/') {
         serverUrl += '/';
     }
 
-
     var defaultLimit = 20;
-
 
     var doReq = function(method, path, parameters) {
         if (!parameters) {
@@ -81,8 +92,7 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode};
     };
 
-
-    var doFile = function(hash) {
+    var doFile = function(hash, reliability) {
         var limit = defaultLimit;
         if (args.limit) {
             limit = args.limit;
@@ -103,13 +113,15 @@ script:
                 Indicator: hash,
                 Type: 'hash',
                 Vendor: 'ThreatExchange',
-                Score: 0
+                Score: 0,
+                Reliability: reliability
             });
             ec.DBotScore.push({
                 Indicator: hash,
                 Type: 'file',
                 Vendor: 'ThreatExchange',
-                Score: 0
+                Score: 0,
+                Reliability: reliability
             })
 
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
@@ -135,13 +147,15 @@ script:
                 Indicator: hash,
                 Type: 'hash',
                 Vendor: 'ThreatExchange',
-                Score: dbotScore
+                Score: dbotScore,
+                Reliability: reliability
             });
             ec.DBotScore.push({
                 Indicator: hash,
                 Type: 'file',
                 Vendor: 'ThreatExchange',
-                Score: dbotScore
+                Score: dbotScore,
+                Reliability: reliability
             })
         }
         return {
@@ -153,27 +167,26 @@ script:
         };
     };
 
-
     var dbotTypeHashList = function(hash, score)
-
     {
         return [{
                 Indicator: hash,
                 Type: 'hash',
                 Vendor: 'ThreatExchange',
-                Score: score
+                Score: score,
+                Reliability: reliability
             },
             {
                 Indicator: hash,
                 Type: 'file',
                 Vendor: 'ThreatExchange',
-                Score: score
+                Score: score,
+                Reliability: reliability
             }
             ]
     }
 
-
-    var doIP = function(ip) {
+    var doIP = function(ip, reliability) {
         if (!isValidIP(ip)) {
             return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
         }
@@ -197,7 +210,8 @@ script:
                 Indicator: ip,
                 Type: 'ip',
                 Vendor: 'ThreatExchange',
-                Score: 0
+                Score: 0,
+                Reliability: reliability
             });
             return {
                 Type: entryTypes.note,
@@ -230,7 +244,8 @@ script:
                 Indicator: ip,
                 Type: 'ip',
                 Vendor: 'ThreatExchange',
-                Score: dbotScore
+                Score: dbotScore,
+                Reliability: reliability
             });
         }
         return {
@@ -242,8 +257,7 @@ script:
         };
     };
 
-
-    var doURL = function(url) {
+    var doURL = function(url, reliability) {
         var limit = defaultLimit;
         if (args.limit) {
             limit = args.limit;
@@ -264,7 +278,8 @@ script:
                 Indicator: url,
                 Type: 'url',
                 Vendor: 'ThreatExchange',
-                Score: 0
+                Score: 0,
+                Reliability: reliability
             });
             return {
                 Type: entryTypes.note,
@@ -297,7 +312,8 @@ script:
                 Indicator: url,
                 Type: 'url',
                 Vendor: 'ThreatExchange',
-                Score: dbotScore
+                Score: dbotScore,
+                Reliability: reliability
             });
         }
         return {
@@ -309,8 +325,7 @@ script:
         };
     };
 
-
-    var doDomain = function(domain) {
+    var doDomain = function(domain, reliability) {
         var limit = defaultLimit;
         if (args.limit) {
             limit = args.limit;
@@ -337,7 +352,8 @@ script:
                 Indicator: domain,
                 Type: 'domain',
                 Vendor: 'ThreatExchange',
-                Score: 0
+                Score: 0,
+                Reliability: reliability
             });
             return {
                 Type: entryTypes.note,
@@ -369,7 +385,8 @@ script:
                 Indicator: domain,
                 Type: 'domain',
                 Vendor: 'ThreatExchange',
-                Score: dbotScore
+                Score: dbotScore,
+                Reliability: reliability
             });
         }
         return {
@@ -380,7 +397,6 @@ script:
             EntryContext: ec
         };
     };
-
 
     var doQuery = function(text) {
         var limit = defaultLimit;
@@ -425,7 +441,6 @@ script:
         };
     };
 
-
     var doMembers = function() {
         var res = doReq('GET', 'threat_exchange_members', {});
         var data = res.obj.data;
@@ -438,19 +453,32 @@ script:
         };
     };
 
+    var isValidReliability = function(reliability) {
+        var reliability_options = ['A+ - 3rd party enrichment', 'A - Completely reliable', 'B - Usually reliable', 'C - Fairly reliable', 'D - Not usually reliable', 'E - Unreliable', 'F - Reliability cannot be judged'];
+        return reliability_options.indexOf(reliability) >= 0;
+    };
+
+    var reliability = params.integrationReliability;
+    if(!reliability){
+        reliability = 'C - Fairly reliable';
+    }
+    if(!isValidReliability(reliability)) {
+        return 'Error, Source Reliability value is invalid. Please choose from available reliability options.';
+    }
 
     switch (command) {
+
         case 'test-module':
             doFile('d2b4a84e2b69856ba8e234f55b1fbc4b'); // Check File Hash d2b4a84e2b69856ba8e234f55b1fbc4b - it will throw an error if not successful
             return true;
         case 'file':
-            return doFile(args.file);
+            return doFile(args.file, reliability);
         case 'ip':
-            return doIP(args.ip);
+            return doIP(args.ip, reliability);
         case 'url':
-            return doURL(args.url);
+            return doURL(args.url, reliability);
         case 'domain':
-            return doDomain(args.domain);
+            return doDomain(args.domain, reliability);
         case 'threatexchange-query':
             return doQuery(args.text);
         case 'threatexchange-members':

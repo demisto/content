@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 description: Scalable visibility and security analytics.
-display: Cisco Stealthwatch
+display: Cisco Secure Network Analytics (Stealthwatch)
 name: Cisco Stealthwatch
 script:
   commands:
@@ -397,7 +397,7 @@ script:
     - contextPath: CiscoStealthwatch.SecurityEventResults.hitCount
       description: The hit count of the security event.
       type: str
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: false
   longRunning: false

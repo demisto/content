@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "0361981e-c627-4c09-8fcc-085ffe0a7e56",
+    "isPredefined": true,
+    "name": " Cortex XDR Disconnected Endpoints",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRDisconnectedEndpoints",
+    "size": 0,
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.0.0",
+    "description": ""
+}

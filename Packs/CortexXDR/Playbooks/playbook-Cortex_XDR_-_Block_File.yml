@@ -18,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 150,
+          "y": -180
         }
       }
     note: false
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 460
+          "x": 630,
+          "y": 300
         }
       }
     note: false
@@ -97,8 +97,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 390,
+          "y": 130
         }
       }
     note: false
@@ -122,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 630
+          "x": 150,
+          "y": 470
         }
       }
     note: false
@@ -131,6 +131,61 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8191db29-4004-4baf-81dd-f81fa58040c1
+    type: condition
+    task:
+      id: 8191db29-4004-4baf-81dd-f81fa58040c1
+      version: -1
+      name: Is Cortex XDR integration enabled?
+      description: Returns 'yes' if Cortex XDR integration brand is available. Otherwise
+        returns 'no'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Cortex XDR - IR
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -139,10 +194,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 645,
-        "width": 380,
-        "x": 450,
-        "y": 50
+        "height": 715,
+        "width": 860,
+        "x": 150,
+        "y": -180
       }
     }
   }

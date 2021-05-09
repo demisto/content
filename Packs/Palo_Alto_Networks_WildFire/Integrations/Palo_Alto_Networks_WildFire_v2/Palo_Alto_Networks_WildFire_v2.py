@@ -53,7 +53,8 @@ VERDICTS_DICT = {
     '-100': 'pending, the sample exists, but there is currently no verdict',
     '-101': 'error',
     '-102': 'unknown, cannot find sample record in the database',
-    '-103': 'invalid hash value'
+    '-103': 'invalid hash value',
+    '-104': 'flawed submission, please re-submit the file',
 }
 
 VERDICTS_TO_DBOTSCORE = {
@@ -64,7 +65,8 @@ VERDICTS_TO_DBOTSCORE = {
     '-100': 0,
     '-101': 0,
     '-102': 0,
-    '-103': 0
+    '-103': 0,
+    '-104': 0,
 }
 
 ''' HELPER FUNCTIONS '''
@@ -173,8 +175,10 @@ def prettify_verdict(verdict_data):
 def create_dbot_score_from_verdict(pretty_verdict):
     if 'SHA256' not in pretty_verdict and 'MD5' not in pretty_verdict:
         raise Exception('Hash is missing in WildFire verdict.')
+
     if pretty_verdict["Verdict"] not in VERDICTS_TO_DBOTSCORE:
         raise Exception('This hash verdict is not mapped to a DBotScore. Contact Demisto support for more information.')
+
     dbot_score = [
         {'Indicator': pretty_verdict["SHA256"] if 'SHA256' in pretty_verdict else pretty_verdict["MD5"],
          'Type': 'hash',
