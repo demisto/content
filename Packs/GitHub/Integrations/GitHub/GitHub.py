@@ -920,10 +920,10 @@ def get_team_members(organization: str, team_slug: str, maximum_users: int = 30)
     results: list = []
     while len(results) < maximum_users:
         results_per_page = maximum_users - len(results)
-        if results_per_page > 100:
-            results_per_page = 100
-        suffix = f'/orgs/{organization}/teams/{team_slug}/members?page={page}&per_page={results_per_page}'
-        response = http_request('GET', url_suffix=suffix)
+        results_per_page = min(results_per_page, 100)
+        params = {'page': page, 'per_page': results_per_page}
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members'
+        response = http_request('GET', url_suffix=suffix, params=params)
         if not response:
             break
         results.extend(response)
@@ -1336,7 +1336,8 @@ def list_team_members_command():
     for member in response:
         context_data = {
             'ID': member.get("id"),
-            'Login': member.get("login")
+            'Login': member.get("login"),
+            'Team': team_slug,
         }
         members.append(context_data)
     if members:
@@ -1346,7 +1347,8 @@ def list_team_members_command():
 
     return_results(CommandResults(
         readable_output=human_readable,
-        outputs_prefix=f'GitHub.TEAMMEMBER.{team_slug}(val.ID === obj.ID)',
+        outputs_prefix='GitHub.TEAMMEMBER',
+        outputs_key_field='ID',
         outputs=members if members else None,
         raw_response=response,
     ))

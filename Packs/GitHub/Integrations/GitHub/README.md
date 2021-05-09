@@ -1669,16 +1669,31 @@ List team members.
 | --- | --- | --- |
 | organization | The name of the organization. | Required | 
 | team_slug | The name of the team under the organiztion. | Required | 
-| limit | The maximum number of pages to return | Optional | 
+| maximum_users | The maximum number of users to return | Optional | 
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.TEAMMEMBER.{Team_slug}.ID | String | The ID of the team member. | 
-| GitHub.TEAMMEMBER.{Team_slug}.Login | String |he login name of the team member. |
+| GitHub.GitHub.ID | String | The ID of the team member. | 
+| GitHub.TEAMMEMBER.Login | String | The login name of the team member. |
+| GitHub.TEAMMEMBER.Team | String | The user's team. |
 #### Command Example
-```!GitHub-list-team-members organization=demisto team_slug=content limit=2```
+```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
+
+##### Context Example
+```
+{
+    "GitHub.GitHub": [
+        {
+            "ID": 1234567, 
+            "Login": user1, 
+            "Team": content, 
+        }
+    ]
+}
+```
+
 #### Human Readable Output
 ## Team Member of team content in organization demisto
 |ID|Login|
 |--- |---|
-|1234567|username|
+|1234567|user1|
