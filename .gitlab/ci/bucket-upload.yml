@@ -55,7 +55,7 @@
     - .bucket-upload-rule
     - .default-job-settings
   script:
-     - echo "======= Download configuration ========"
+    - echo "======= Download configuration ========"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - *start_tunnel
     - echo "=====Get Instance Variables====="
