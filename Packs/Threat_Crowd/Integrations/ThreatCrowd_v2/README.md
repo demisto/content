@@ -1,6 +1,6 @@
 Query Threat Crowd for reports.
 This integration was integrated and tested with version v2 of ThreatCrowd
-## Configure ThreatCrowd_v2 on Cortex XSOAR
+## Configure ThreatCrowd v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for ThreatCrowd_v2.
@@ -472,4 +472,3 @@ Get a report of a hash.
 >|domains|ips|md5|permalink|references|response_code|scans|sha1|value|
 >|---|---|---|---|---|---|---|---|---|
 >| hpservice.homepc.it,facebook.controlliamo.com | 8.8.8.8 | 31d0e421894004393c48de1769744687 | https://www.threatcrowd.org/malware.php?md5=31d0e421894004393c48de1769744687 |  | 1 | Error Scanning File,Malware-gen*Win32*Malware-gen,Gen*Variant.Symmi.50061,W32/Trojan.VSQD-1927,BDS/Plugx.266990,Gen*Variant.Symmi.50061,Gen*Variant.Symmi.50061,Win32/Korplug.CF,W32/FakeAV.CX,Generic11_c.CDQL | 4f0eb746d81a616fb9bdff058997ef47a4209a76 | 31d0e421894004393c48de1769744687 |
-
