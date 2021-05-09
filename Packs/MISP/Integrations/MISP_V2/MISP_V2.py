@@ -390,7 +390,7 @@ def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
         'value',
         'Event',
         'Object',
-        'Galaxy',
+        'Galaxy',  # field wasn't tested as we don't see it in our responses. Was added by customer's request.
         'Tag',
         'decay_score'
     ]
