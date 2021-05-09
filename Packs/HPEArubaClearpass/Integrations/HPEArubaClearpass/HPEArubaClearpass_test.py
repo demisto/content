@@ -4,6 +4,7 @@ import HPEArubaClearpass
 from HPEArubaClearpass import *
 from freezegun import freeze_time
 import pytest
+from pytest import raises
 
 CLIENT_ID = "id123"
 CLIENT_SECRET = "secret123"
@@ -245,3 +246,24 @@ def test_disconnect_active_session_command(mocker):
     assert results.outputs_key_field == "id"
     assert results.outputs['Error_code'] == 0
     assert results.outputs['Response_message'] == "Success"
+
+
+@pytest.mark.parametrize('args', [{"data_type": None, "allow_multiple": True},
+                                  {"data_type": "Boolean", "allow_multiple": True},
+                                  {"data_type": "Boolean", "allowed_value": True}])
+def test_check_api_limitation_on_specific_data_types(args):
+    """
+    Given:
+    - data_type of an attribute
+    - allow_multiple
+    - allowed_value
+
+    When:
+    - Tyring to create a new attribute. The API can set the arguments allow_multiple & allowed_value only for specific
+    types (String & List ).
+
+    Then:
+    - Ensures that the given values match the attribute data type according to API limitation.
+    """
+    with raises(SystemExit):
+        check_api_limitation_on_specific_data_types(args)

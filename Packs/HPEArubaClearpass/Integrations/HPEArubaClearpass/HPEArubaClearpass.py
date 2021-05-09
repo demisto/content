@@ -113,8 +113,7 @@ class Client(BaseClient):
         authorization_header_value = f"Bearer {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
-    def prepare_request(self, method: str, params: dict, url_suffix: str, body: dict = {},
-                        resp_type: str = 'json'):
+    def prepare_request(self, method: str, params: dict, url_suffix: str, body: dict = {}, resp_type: str = 'json'):
         return self._http_request(
             method=method,
             params=params,
@@ -126,7 +125,6 @@ class Client(BaseClient):
 
 
 def command_test_module(client: Client):
-    """Tests HPE Aruba API connectivity and authentication' by getting list of endpoints"""
     try:
         params = {"filter": {}, "offset": 0, "limit": 25}
         client.prepare_request(method='GET', params=params, url_suffix='endpoint')
@@ -140,27 +138,15 @@ def command_test_module(client: Client):
 
 
 def parse_items_response(response: dict, active_sessions_parsing=None):  # type:ignore
-    """
-    Parses the HTTP response by the given function.
-        Args:
-            response (dict): The HTTP dict response.
-            active_sessions_parsing (function): whether to call parsing method - only for the active sessions response.
-
-        Return:
-            human_readable (list): List of dictionaries. Each dict represents a parsed item.
-            items_list (list): List (of dictionaries) of all items from the response,
-            going to be set as outputs (context data).
-    """
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
     if items_list:
         for item in items_list:
             if item.get('_links'):
-                del item['_links']
+                del item['_links']  # useless information, won't be displayed
             if active_sessions_parsing:
-                human_readable.append(item)  # type: ignore
-            else:
-                human_readable.append(item)
+                item = active_sessions_parsing(item)
+            human_readable.append(item)
     return human_readable, items_list
 
 
