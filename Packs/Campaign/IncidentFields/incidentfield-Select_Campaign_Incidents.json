@@ -1,0 +1,33 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "selectcampaignincidents",
+    "closeForm": false,
+    "content": true,
+    "description": "Select Campaign Incidents ",
+    "editForm": true,
+    "fieldCalcScript": "7116d73d-106c-45d0-8e3c-baa2b8ecca9c",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_selectcampaignincidents",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Select Campaign Incidents",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "Select one or more Incidents",
+    "required": false,
+    "script": "1b687187-11bc-4145-8051-eddafd9d67d6",
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
