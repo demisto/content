@@ -148,7 +148,7 @@ echo "======================="
 
 if [ -n "$CI" ]; then
     echo "Detected CI env. Running npm ci..."
-    npm ci
+    npm ci --cache .npm --prefer-offline
 elif [ -n "$NO_NPM" ]; then
     echo "Skipping npm node modules setup as environment varialbe NO_NPM is set"
 else
