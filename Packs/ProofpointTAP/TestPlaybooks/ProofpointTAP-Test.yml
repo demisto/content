@@ -1,5 +1,5 @@
 id: ProofpointTAP-Test
-version: 5
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: ProofpointTAP-Test
 starttaskid: "0"
@@ -645,3 +645,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0

@@ -134,7 +134,7 @@ class Client:
         Retrieves clicks on malicious URLs in the specified time period. Clicks can either be blocked or permitted.
 
         Args:
-            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
             threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
             clicks_type (str): The type of the click. Can be either "blocked" or "permitted".
 
@@ -153,7 +153,7 @@ class Client:
         Retrieves events for messages in the specified time period. Messages can either be blocked or delivered.
 
         Args:
-            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
             threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
             threat_type (str): The type of the threat. Can be: url, attachment or message.
             messages_type (str): The type of the messages. Can be either "blocked" or "delivered"
@@ -172,7 +172,7 @@ class Client:
         """
         Retrieves a list of IDs of campaigns active in a time window.
         Args:
-            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one day.
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one day.
             limit (str): The maximum number of campaign IDs to produce in the response.
             page (str): The page of results to return, in multiples of the specified size.
 
@@ -241,7 +241,7 @@ class Client:
         """
         Retrieves events for permitted clicks on malicious URLs and delivered messages in the specified time period.
         Args:
-            interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
             threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
             threat_type (str): The type of the threat. Can be: url, attachment or messageText.
         Returns:
@@ -264,7 +264,8 @@ def test_module(client: Client) -> str:
     """
 
     url_list = [
-        "https://urldefense.com/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$"]
+        "https://urldefense.com/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-"
+        "612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$"]
     try:
         client.url_decode(url_list)
     except Exception as exception:
@@ -677,7 +678,7 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # mypy: ignore
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
 
     outputs = []
     raw_responses = []
@@ -688,7 +689,7 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
         except Exception:
             request_error.append(
                 {'interval': interval_string,
-                 "message": f'Error retrieving data from {interval_string}. Please check that the interval you entered is correct'})
+                 "message": f'Error retrieving data from {interval_string}. Please validate the interval format'})
             continue
 
         clicks_path = ['clicksBlocked'] if clicks_type == 'blocked' else ['clicksPermitted']
@@ -799,7 +800,7 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # mypy: ignore
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
     outputs = []
     raw_responses = []
     request_error = []
@@ -879,7 +880,7 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range), is_days_interval=True) if time_range else [
-            interval]  # mypy: ignore
+            interval]  # type: ignore
 
     outputs = []
     raw_responses = []
@@ -1119,7 +1120,7 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # mypy: ignore
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
 
     messages_outputs = []
     messages_raw_responses = []
@@ -1135,7 +1136,7 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
         except Exception:
             request_error.append(
                 {'interval': interval_string,
-                 "message": f'Error retrieving data from {interval_string}. Please check that the interval you entered is correct'})
+                 "message": f'Error retrieving data from {interval_string}. Please validate the interval format'})
             continue
 
         messages = dict_safe_get(raw_response, ['messagesDelivered'])
