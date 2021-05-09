@@ -1,25 +1,25 @@
-# Overview 
+### Overview 
 
 RiskSense provides vulnerability management, assessment, and response to changes in the environment while prioritizing risk across vulnerabilities, configurations, and controls. 
 
-Our objective is to integrate with Demisto and address use-cases such as:
+Our objective is to integrate with Cortex XSOAR and address use-cases such as:
 
 **Aggregation** - make RiskSense a source for data ingestion especially as a threat intelligence source in context of a customer’s infrastructure.
 
-**Enrichment** - be able to enrich security and threat centric data for an incident or during data collection and processing
+**Enrichment** - be able to enrich security and threat centric data for an incident or during data collection and processing.
 
-**Orchestration and Automation** - provide functions and capabilities to allow for RiskSense data to be used in creating playbooks for vulnerability management either as a standalone data source or in conjunction with other software and solutions
+**Orchestration and Automation** - provide functions and capabilities to allow for RiskSense data to be used in creating playbooks for vulnerability management either as a standalone data source or in conjunction with other software and solutions.
 
-# Use-Cases
+### Use-Cases
 
-## Automated Vulnerability Enrichment and  Context Addition
-With the Demisto-RiskSense integration, security orchestration playbooks can benefit from ingesting and enriching host vulnerability information along with other custom fields such as a host risk score and vulnerability risk rating to help security operations prioritize and remediate vulnerabilities. RiskSense integration can provide all necessary data to security analyst to help make their decision based on actual risk.
+#### Automated Vulnerability Enrichment and Context Addition
+With the Cortex XSOAR-RiskSense integration, security orchestration playbooks can benefit from ingesting and enriching host vulnerability information along with other custom fields such as a host risk score and vulnerability risk rating to help security operations prioritize and remediate vulnerabilities. RiskSense integration can provide all necessary data to security analyst to help make their decision based on actual risk.
 
-## Information Enrichment for Incidents and Threats
-Security analysts can benefit by using RiskSense commands to debug and respond to incidents and threats. For example, analysts can look up host details for the host that shows up in a alert and quickly gauge the risk that host presents based on its is risk score and vulnerabilities that exist on the host.
+#### Information Enrichment for Incidents and Threats
+Security analysts can benefit by using RiskSense commands to debug and respond to incidents and threats. For example, analysts can look up host details for the host that shows up in a alert and quickly gauge the risk that host presents based on its risk score and vulnerabilities that exist on the host.
 
 
-# RiskSense Commands on Demisto
+### RiskSense Commands on Cortex XSOAR
 
 |   Command     | Description|
 | ---    | ---  |
