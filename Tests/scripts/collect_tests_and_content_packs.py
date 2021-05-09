@@ -1298,7 +1298,8 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
-
+    # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
+    # server in release branches.
     if is_release_branch():
         marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
         for key in marketplace_server_keys:

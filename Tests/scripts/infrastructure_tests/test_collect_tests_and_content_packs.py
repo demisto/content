@@ -4,6 +4,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from ruamel.yaml import YAML
@@ -1253,6 +1254,7 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
     assert '99.99.99' in to_version
 
 
+@patch.dict('os.environ', {'CI_COMMIT_BRANCH': '21.12.0'})
 def test_is_release_branch_positive():
     """
     Given:
@@ -1262,11 +1264,11 @@ def test_is_release_branch_positive():
     Then:
         - Validate the response is positive.
     """
-    os.environ['CI_COMMIT_BRANCH'] = '21.12.0'
     assert is_release_branch()
 
 
-def test_is_release_branch_negative():
+@pytest.mark.parametrize('mocked_branch_name', ['some_branch_name', ''])
+def test_is_release_branch_negative(mocked_branch_name):
     """
     Given:
         - That branch name found from 'CI_COMMIT_BRANCH' env variable is a regular branch name or an empty value
@@ -1275,7 +1277,5 @@ def test_is_release_branch_negative():
     Then:
         - Validate the response is negative.
     """
-    os.environ['CI_COMMIT_BRANCH'] = 'some_branch_name'
-    assert not is_release_branch()
-    os.environ['CI_COMMIT_BRANCH'] = ''
-    assert not is_release_branch()
+    with patch.dict('os.environ', {'CI_COMMIT_BRANCH': mocked_branch_name}):
+        assert not is_release_branch()
