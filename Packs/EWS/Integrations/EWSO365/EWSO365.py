@@ -2063,7 +2063,7 @@ def parse_incident_from_item(item):
 
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email.as_string(),
+                        attached_email.as_bytes().decode('utf-8'),
                     )
 
                 if file_result:
