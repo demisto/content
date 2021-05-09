@@ -85,6 +85,7 @@ class TestMetadataParsing:
         dummy_pack._description = 'Description of test pack'
         dummy_pack._server_min_version = Metadata.SERVER_DEFAULT_MIN_VERSION
         dummy_pack._downloads_count = 10
+        dummy_pack._displayed_integration_images = []
         dummy_pack._enhance_pack_attributes(
             user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
@@ -124,6 +125,7 @@ class TestMetadataParsing:
     def test_enhance_pack_attributes(self, dummy_pack, dummy_pack_metadata):
         """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
         """
+        dummy_pack._displayed_integration_images = []
         dummy_pack._enhance_pack_attributes(
             user_metadata=dummy_pack_metadata, index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
@@ -149,6 +151,7 @@ class TestMetadataParsing:
             to XSOAR defaults value of Metadata class.
         """
 
+        dummy_pack._displayed_integration_images = []
         dummy_pack._enhance_pack_attributes(
             user_metadata={}, index_folder_path="", pack_was_modified=False,
             dependencies_data={}, statistics_handler=None
@@ -356,7 +359,7 @@ class TestParsingInternalFunctions:
                     "imagePath": "content/packs/DummyPack2/DummyIntegration_image.png"}]}}
 
         all_pack_images = Pack._get_all_pack_images(pack_integration_images, display_dependencies_images,
-                                                    dependencies_data)
+                                                    dependencies_data, display_dependencies_images)
 
         assert expected == all_pack_images
 
