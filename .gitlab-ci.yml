@@ -70,7 +70,6 @@ default:
 
 
 variables:
-  GIT_SHA1: "6fee942518c6b2275a6cb61c1824574171cf58f9" # guardrails-disable-line disable-secrets-detection
   DONT_CACHE_LAST_RESPONSE: "true"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
