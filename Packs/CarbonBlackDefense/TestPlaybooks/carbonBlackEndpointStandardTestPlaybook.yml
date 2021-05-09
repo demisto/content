@@ -1345,7 +1345,7 @@ tasks:
       - "85"
     scriptarguments:
       alert_category: {}
-      blocked_hash: {}
+      hash: {}
       device_external_ip: {}
       device_id:
         simple: "3925348"
@@ -1354,12 +1354,10 @@ tasks:
       device_os: {}
       device_timestamp: {}
       event_type: {}
-      parent_hash: {}
       parent_name: {}
       parent_reputation: {}
       process_cmdline: {}
       process_guid: {}
-      process_hash: {}
       process_name: {}
       process_pid: {}
       process_reputation: {}
@@ -1485,7 +1483,7 @@ tasks:
       - "67"
     scriptarguments:
       alert_category: {}
-      blocked_hash: {}
+      hash: {}
       device_external_ip: {}
       device_id: {}
       device_internal_ip: {}
@@ -1493,12 +1491,10 @@ tasks:
       device_os: {}
       device_timestamp: {}
       event_type: {}
-      parent_hash: {}
       parent_name: {}
       parent_reputation: {}
       process_cmdline: {}
       process_guid: {}
-      process_hash: {}
       process_name: {}
       process_pid: {}
       process_reputation: {}
