@@ -32,7 +32,7 @@ BASE_URL = 'https://api.github.com'
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Organization', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at',
                  'Closed_by', 'Assignees', 'Labels']
-FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'DownloadUrl']
+FILE_HEADERS = ['Name', 'Path', 'Type', 'Size', 'SHA', 'DownloadUrl']
 
 # Headers to be sent in requests
 MEDIA_TYPE_INTEGRATION_PREVIEW = "application/vnd.github.machine-man-preview+json"
@@ -1440,13 +1440,18 @@ def list_files_command():
     path = args.get('path', '')
     organization = args.get('organization')
     repository = args.get('repository')
+    branch = args.get('branch')
 
     if organization and repository:
         suffix = f'/repos/{organization}/{repository}/contents/{path}'
     else:
         suffix = f'{USER_SUFFIX}/contents/{path}'
 
-    res = http_request(method='GET', url_suffix=suffix)
+    params = {}
+    if branch:
+        params['ref'] = branch
+
+    res = http_request(method='GET', url_suffix=suffix, params=params)
 
     ec_object = []
     for file in res:
@@ -1455,6 +1460,7 @@ def list_files_command():
             'Name': file.get('name'),
             'Size': file.get('size'),
             'Path': file.get('path'),
+            'SHA': file.get('sha'),
             'DownloadUrl': file.get('download_url')
         })
 

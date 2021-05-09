@@ -2786,6 +2786,12 @@ script:
       name: repository
       required: false
       secret: false
+    - default: false
+      description: The branch name from which to get the files.
+      isArray: false
+      name: branch
+      required: false
+      secret: false
     deprecated: false
     description: Get list of files from the given path in the repository.
     execution: false
@@ -2805,6 +2811,9 @@ script:
       type: String
     - contextPath: GitHub.File.DownloadUrl
       description: Link to download the file content.
+      type: String
+    - contextPath: GitHub.File.SHA
+      description: The SHA of the file.
       type: String
   - arguments:
     - default: false
