@@ -182,7 +182,7 @@ def last_run_data():
         'LAST_RUN_IDS': [],
         'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
         'LAST_RUN_FOLDER_PATH': "Phishing",
-        'LAST_RUN_ACCOUNT': 'dummy@mailbox.com'
+        'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
     }
 
     return last_run

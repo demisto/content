@@ -880,7 +880,7 @@ class MsGraphClient:
             'LAST_RUN_IDS': fetched_emails_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
-            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch
+            'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
 
