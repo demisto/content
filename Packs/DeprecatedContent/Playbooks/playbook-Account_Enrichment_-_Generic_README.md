@@ -1,4 +1,4 @@
-Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead.\ \ Enrich Accounts using one or more integrations
+Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich Accounts using one or more integrations
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

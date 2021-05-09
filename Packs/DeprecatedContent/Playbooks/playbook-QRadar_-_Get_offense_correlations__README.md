@@ -1,4 +1,5 @@
-Deprecated. Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a QRadar offense to get more information\n\n* Get all correlations relevant to the offense\n* Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs\" to \"True\")\n\nInputs-\n* GetCorrelationLogs (default - False)\n* MaxLogsCount (default - 20)
+Deprecated. Use the `QRadar - Get offense correlations v2` instead. Run on a QRadar offense to get more information
+* Get all correlations relevant to the offense\n* Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs\" to \"True\")\n\nInputs-\n* GetCorrelationLogs (default - False)\n* MaxLogsCount (default - 20)
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

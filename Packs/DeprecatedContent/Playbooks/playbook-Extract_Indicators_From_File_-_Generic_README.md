@@ -1,5 +1,5 @@
-Deprecated. Use the "Extract Indicators From File - Generic v2" playbook instead.\
-\ Extracts indicators from a file.
+Deprecated. Use the "Extract Indicators From File - Generic v2" playbook instead.
+Extracts indicators from a file.
 Supported file types:
 - PDF
 - TXT

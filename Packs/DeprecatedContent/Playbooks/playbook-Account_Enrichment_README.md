@@ -1,5 +1,5 @@
-Deprecated. Use the "Account Enrichment - Generic v2.1" playbook instead.\
-\ Enrich the accounts under the Account context key with details from relevant integrations such as AD.
+Deprecated. Use the "Account Enrichment - Generic v2.1" playbook instead.
+Enrich the accounts under the Account context key with details from relevant integrations such as AD.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

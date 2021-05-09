@@ -1,4 +1,4 @@
-Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead.\ \ Enrich accounts using one or more integrations. Supported integrations - - Active Directory
+Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead. Enrich accounts using one or more integrations. Supported integrations - - Active Directory
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -1,5 +1,5 @@
-Deprecated. Use the "ExtraHop - Ticket Tracking v2" playbook instead.\
-\ Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
+Deprecated. Use the "ExtraHop - Ticket Tracking v2" playbook instead.
+Links the Demisto incident back to the ExtraHop detection that created it for ticket tracking purposes.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
