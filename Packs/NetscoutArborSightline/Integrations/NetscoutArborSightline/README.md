@@ -178,7 +178,7 @@ List all alerts. When an alert ID is given, only the relevant alert will be fetc
                 "subobject": {
                     "direction": "Incoming",
                     "fast_detected": true,
-                    "host_address": "192.168.123.123",
+                    "host_address": "1.2.3.4",
                     "impact_boundary": "managed object",
                     "impact_bps": 1072,
                     "impact_pps": 3,
@@ -741,7 +741,7 @@ Get a list of available managed objects.
             "editable": true,
             "family": "customer",
             "id": "122",
-            "match": "192.168.123.123/32",
+            "match": "1.2.3.4/32",
             "match_enabled": true,
             "match_type": "cidr_blocks",
             "mitigation_automitigation": false,
@@ -768,7 +768,7 @@ Get a list of available managed objects.
 >### Managed object list
 >|id|name|tags|match_type|match_enabled|match|family|autodetected|
 >|---|---|---|---|---|---|---|---|
->| 122 | TestMO1 | customer | cidr_blocks | true | 192.168.123.123/32 | customer | false |
+>| 122 | TestMO1 | customer | cidr_blocks | true | 1.2.3.4/32 | customer | false |
 
 
 ### na-sightline-tms-group-list
