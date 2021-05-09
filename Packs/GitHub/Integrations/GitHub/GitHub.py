@@ -915,11 +915,14 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
-def get_team_members(organization: str, team_slug: str, limit: int = 10) -> list:
+def get_team_members(organization: str, team_slug: str, maximum_users: int = 30) -> list:
     page = 1
     results = []
-    while page <= limit:
-        suffix = f'/orgs/{organization}/teams/{team_slug}/members?page={page}'
+    while len(results) < maximum_users:
+        results_per_page = maximum_users - len(results)
+        if results_per_page > 100:
+            results_per_page = 100
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members?page={page}&per_page={results_per_page}'
         response = http_request('GET', url_suffix=suffix)
         if not response:
             break
@@ -1327,8 +1330,8 @@ def list_team_members_command():
     args = demisto.args()
     org = args.get('organization')
     team_slug = args.get('team_slug')
-    limit = int(args.get('limit'))
-    response = get_team_members(org, team_slug, limit)
+    maximum_users = int(args.get('maximum_users'))
+    response = get_team_members(org, team_slug, maximum_users)
     members = []
     for member in response:
         context_data = {
@@ -1339,7 +1342,7 @@ def list_team_members_command():
     if members:
         human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
     else:
-        human_readable = f'There is no team members on team {team_slug} in organization {org}'
+        human_readable = f'There is no team members under team {team_slug} in organization {org}'
 
     return_results(CommandResults(
         readable_output=human_readable,

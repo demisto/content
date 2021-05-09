@@ -2820,10 +2820,10 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '20'
+      defaultValue: '30'
       isArray: false
-      name: limit
-      description: Miximum number of pages to return.
+      name: maximum_users
+      description: Miximum number of users to return.
       required: false
       secret: false
     deprecated: false
