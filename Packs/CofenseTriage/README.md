@@ -1,10 +1,8 @@
-### Cofense Triage
-
 **Cofense Triage** is a post email gateway automated phishing analysis solution for SOC and incident response teams. Employees who report emails that have bypassed the email gateway are ingested and analyzed by Cofense Triage, **clustered into similar threats, and prioritized for action**. Cofense Triage filters benign spam-based emails, leaving security teams with **real world phish to remediate from employees who reported**. Cofense Triage's automation leverages integrations with **proprietary Cofense Intelligence curated research** as well as 3rd party sandbox, URL, and threat intelligence integrations. 
 
 The Cofense Triage content pack integrates with Cortex XSOAR to ingest reported email attributes and operationalize in a playbook. Email attributes such as file payload and malicious links are ingestible into XSOAR as threat indicators. In addition, email reporter details, an email visual, and other related emails similar to the reported threat are searchable via Cofense's API.
 
-#### What does this pack do?
+##### What does this pack do?
 
 The integration allows Cortex XSOAR to ingest phishing threats from Cofense Triage and run response playbooks based on email attributes.
 - Ingest from Cofense Triage inbox and processed locations.
