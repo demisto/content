@@ -43,6 +43,9 @@ class Client(BaseClient):
         self._headers.pop('Accept')  # returns a file, hence this header is disruptive
         return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}', resp_type='content', timeout=timeout)
 
+    def get_artifacts_metadata_by_uuid_request(self, uuid: str) -> Dict[str, str]:
+        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}/meta', resp_type='json')
+
 
 def test_module(client: Client) -> str:
     # check get alerts for fetch purposes
@@ -61,8 +64,8 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.alerts',
-        outputs_key_field='id',
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Alerts',
+        outputs_key_field='uuid',
         outputs=alerts,
         raw_response=raw_response
     )
@@ -85,8 +88,8 @@ def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResul
 
         command_results.append(CommandResults(
             readable_output=md_,
-            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.alerts',
-            outputs_key_field='id',
+            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Alerts',
+            outputs_key_field='uuid',
             outputs=alert_details,
             raw_response=raw_response
         ))
@@ -118,9 +121,34 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
 def get_artifacts_by_uuid(client: Client, args: Dict[str, Any]):
     uuids = argToList(args.get('uuid'))
     timeout = int(args.get('timeout'))
+
     for uuid in uuids:
         artifact = client.get_artifacts_by_uuid_request(uuid, timeout)
         demisto.results(fileResult(f'artifacts_{uuid}.zip', data=artifact, file_type=EntryType.ENTRY_INFO_FILE))
+
+
+def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    uuids = argToList(args.get('uuid'))
+    command_results: List[CommandResults] = []
+
+    for uuid in uuids:
+        raw_response = client.get_artifacts_metadata_by_uuid_request(uuid)
+
+        metadata = raw_response.get('artifactsInfoList')
+        if isinstance(metadata, list):
+            metadata = metadata[0]
+        metadata['uuid'] = uuid
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} {uuid} Artifact metadata:', t=metadata, removeNull=True)
+
+        command_results.append(CommandResults(
+            readable_output=md_,
+            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Alerts',
+            outputs_key_field='uuid',
+            outputs=metadata,
+            raw_response=raw_response
+        ))
+
+    return command_results
 
 
 def main():
@@ -130,7 +158,7 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    # there is also a v1.2.0 which holds different reqs, we support only the newest API version
+    # there is also a v1.2.0 which holds different paths and params, we support only the newest API version
     base_url = urljoin(params.get('url'), '/wsapis/v2.0.0/')
     verify = not argToBoolean(params.get('insecure', 'false'))
     proxy = argToBoolean(params.get('proxy'))
@@ -151,6 +179,7 @@ def main():
             f'{INTEGRATION_COMMAND_NAME}-get-alert-details': get_alert_details,
             f'{INTEGRATION_COMMAND_NAME}-alert-acknowledge': alert_acknowledge,
             f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid': get_artifacts_by_uuid,
+            f'{INTEGRATION_COMMAND_NAME}-get-artifacts-metadata-by-uuid': get_artifacts_metadata_by_uuid,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))

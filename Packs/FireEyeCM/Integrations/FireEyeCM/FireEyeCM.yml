@@ -230,6 +230,30 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the artifact file.
       type: string
+  - arguments:
+    - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets artifacts metadata for the specified UUID.
+    execution: false
+    name: fireeye-cm-get-artifacts-metadata-by-uuid
+    outputs:
+    - contextPath: FireEyeCM.Alerts.uuid
+      description: Universally unique ID (UUID) of the alert.
+      type: string
+    - contextPath: FireEyeCM.Alerts.artifactType
+      description: The artifact type.
+      type: string
+    - contextPath: FireEyeCM.Alerts.artifactName
+      description: The artifact name.
+      type: string
+    - contextPath: FireEyeCM.Alerts.artifactSize
+      description: The zipped artifact size in bytes.
+      type: string
   isfetch: false
   runonce: false
   script: '-'
