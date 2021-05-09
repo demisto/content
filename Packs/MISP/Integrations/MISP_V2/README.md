@@ -87,7 +87,9 @@
 </tr>
 <tr>
 <td style="width: 134px;">tags</td>
-<td style="width: 535px;">The tag to include in the results. To exclude a tag, prefix the tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To use a list of tags, separate them by ",". To chain logical operators use ";". For example, "AND:tag1,tag2;OR:tag3".</td>
+<td style="width: 535px;">A comma-separated list of tags to include in the results. To exclude a tag, prefix the
+        tag name with "!". Can be: "AND", "OR", and "NOT" followed by ":". To chain logical operators use ";". 
+        for example, "AND:tag1,tag2;OR:tag3".</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
@@ -117,7 +119,7 @@
 </tr>
 <tr>
 <td style="width: 134px;">to_ids</td>
-<td style="width: 535px;">Return only the attributes set with the "to_ids" flag</td>
+<td style="width: 535px;">Whether to return only the attributes set with the "to_ids" flag</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -324,7 +326,7 @@
 <tr>
 <td style="width: 334px;">MISP.Event.Object.MetaCategory</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">Object Meta Category.</td>
+<td style="width: 344px;">Object meta category.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Event.Object.Distribution</td>
@@ -349,7 +351,7 @@
 <tr>
 <td style="width: 334px;">MISP.Event.Object.TemplateUUID</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">UUID of template</td>
+<td style="width: 344px;">UUID of the template</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Event.Object.Timestamp</td>
@@ -369,7 +371,7 @@
 <tr>
 <td style="width: 334px;">MISP.Event.Object.UUID</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">UUID of object.</td>
+<td style="width: 344px;">UUID of the object.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Event.Object.Attribute.Value</td>
@@ -424,7 +426,7 @@
 <tr>
 <td style="width: 334px;">MISP.Event.Object.Attribute.ToIDs</td>
 <td style="width: 62px;">Boolean</td>
-<td style="width: 344px;">Whether the ToIDs flag is on.</td>
+<td style="width: 344px;">Whether the to_ids flag is on.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Event.Object.Attribute.Category</td>
@@ -706,12 +708,13 @@
 </tr>
 <tr>
 <td style="width: 134px;">uuid</td>
-<td style="width: 535px;">Return events that include an attribute with the given UUID. Alternatively the event's UUID must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002</td>
+<td style="width: 535px;">Return events that include an attribute with the given UUID. Alternatively the event's UUID
+ must match the value(s) passed, e.g., 59523300-4be8-4fa6-8867-0037ac110002.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 134px;">to_ids</td>
-<td style="width: 535px;">Return only the attributes set with the "to_ids" flag</td>
+<td style="width: 535px;">Whether to return only the attributes set with the "to_ids" flag.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
@@ -928,7 +931,7 @@
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.MetaCategory</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">Object Meta Category.</td>
+<td style="width: 344px;">Object meta category.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.Distribution</td>
@@ -953,12 +956,12 @@
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.TemplateUUID</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">UUID of template</td>
+<td style="width: 344px;">UUID of the template.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.Timestamp</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">Timestamp of object creation</td>
+<td style="width: 344px;">Timestamp of object creation.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.Deleted</td>
@@ -973,7 +976,7 @@
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.UUID</td>
 <td style="width: 62px;">String</td>
-<td style="width: 344px;">UUID of object.</td>
+<td style="width: 344px;">UUID of the object.</td>
 </tr>
 <tr>
 <td style="width: 334px;">MISP.Attribute.Object.Description</td>
@@ -1636,7 +1639,7 @@
 </tr>
 <tr>
 <td style="width: 193px;">distribution</td>
-<td style="width: 435px;">Where to distribute.</td>
+<td style="width: 435px;">Where to distribute the attribute.</td>
 <td style="width: 112px;">Optional</td>
 </tr>
 <tr>
@@ -1656,7 +1659,7 @@
 </tr>
 <tr>
 <td style="width: 193px;">published</td>
-<td style="width: 435px;">Publish the event.</td>
+<td style="width: 435px;">Whether to publish the event.</td>
 <td style="width: 112px;">Optional</td>
 </tr>
 <tr>
@@ -1853,7 +1856,7 @@
 <tr>
 <td>MISP.Event.Attribute.Comment</td>
 <td>string</td>
-<td>Attribute comment.</td>
+<td>Attribute comment for the attribute.</td>
 </tr>
 <tr>
 <td>MISP.Event.Analysis</td>
@@ -1977,17 +1980,18 @@
 </tr>
 <tr>
 <td style="width: 131px;">eventID</td>
-<td style="width: 538px;">If set, it will only fetch data from the given event ID.</td>
+<td style="width: 538px;">If set, will only fetch data from the given event ID.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 131px;">allSamples</td>
-<td style="width: 538px;">If set, it will return all samples from events that match the hash supplied in the "hash" argument.</td>
+<td style="width: 538px;">If set, will return all samples from events that match the hash supplied in the "hash
+" argument.</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 131px;">unzip</td>
-<td style="width: 538px;">Return one zipped file, or all files unzipped, default is "false" (one zipped file).</td>
+<td style="width: 538px;">Return one zipped file, or all files unzipped. Default is "false" (one zipped file).</td>
 <td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
@@ -2045,12 +2049,12 @@
 </tr>
 <tr>
 <td style="width: 155px;">to_ids</td>
-<td style="width: 502px;">Return only events set with the "to_ids" flag, default is "true".</td>
+<td style="width: 502px;">Whether to return only events set with the "to_ids" flag. Default is "true".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 <tr>
 <td style="width: 155px;">distribution</td>
-<td style="width: 502px;">Where to distribute.</td>
+<td style="width: 502px;">Where to distribute the attribute.</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 <tr>
@@ -2733,97 +2737,97 @@
 <tr>
 <td style="width: 284.4px;">MISP.Event.UUID</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">Event UUID</td>
+<td style="width: 395px;">Event UUID.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.ShadowAttribute</td>
 <td style="width: 59.6px;">Unknown</td>
-<td style="width: 395px;">Event shadow attributes</td>
+<td style="width: 395px;">Event shadow attributes.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Distribution</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Attribute distribution</td>
+<td style="width: 395px;">Attribute distribution.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Value</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">Attribute value</td>
+<td style="width: 395px;">Attribute value.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.EventID</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Attribute event ID</td>
+<td style="width: 395px;">Attribute event ID.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Timestamp</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Attribute timestamp</td>
+<td style="width: 395px;">Attribute timestamp.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Deleted</td>
 <td style="width: 59.6px;">boolean</td>
-<td style="width: 395px;">Is the attribute deleted</td>
+<td style="width: 395px;">Is the attribute deleted.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.DisableCorrelation</td>
 <td style="width: 59.6px;">boolean</td>
-<td style="width: 395px;">Is attribute correlation disabled</td>
+<td style="width: 395px;">Is attribute correlation disabled.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Type</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">Attribute type</td>
+<td style="width: 395px;">Attribute type.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.ID</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Attribute ID</td>
+<td style="width: 395px;">Attribute ID.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.UUID</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">Attribute UUID</td>
+<td style="width: 395px;">Attribute UUID.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.ShadowAttribute</td>
 <td style="width: 59.6px;">Unknown</td>
-<td style="width: 395px;">Attribute shadow attribute</td>
+<td style="width: 395px;">Attribute shadow attribute.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.ToIDs</td>
 <td style="width: 59.6px;">boolean</td>
-<td style="width: 395px;">Is the Intrusion Detection System flag set</td>
+<td style="width: 395px;">Is the Intrusion Detection System flag set.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Category</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">Attribute category</td>
+<td style="width: 395px;">Attribute category.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.SharingGroupID</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Attribute sharing group ID</td>
+<td style="width: 395px;">Attribute sharing group ID.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Attribute.Comment</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">Attribute comment</td>
+<td style="width: 395px;">Attribute comment.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Analysis</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Event analysis (0 Initial, 1 Ongoing, 2 Completed)</td>
+<td style="width: 395px;">Event analysis (0 Initial, 1 Ongoing, 2 Completed).</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.SharingGroupID</td>
 <td style="width: 59.6px;">number</td>
-<td style="width: 395px;">Event sharing group ID</td>
+<td style="width: 395px;">Event sharing group ID.</td>
 </tr>
 <tr>
 <td style="width: 284.4px;">MISP.Event.Tag.Name</td>
 <td style="width: 59.6px;">string</td>
-<td style="width: 395px;">All tag names in the event</td>
+<td style="width: 395px;">All tag names in the event.</td>
 </tr>
 </tbody>
 </table>
@@ -3118,7 +3122,7 @@
 <tr>
 <td style="width: 334.8px;">MISP.Event.Object.Attribute.ToIDs</td>
 <td style="width: 60.2px;">Boolean</td>
-<td style="width: 345px;">Whether the ToIDs flag is on.</td>
+<td style="width: 345px;">Whether the to_ids flag is on.</td>
 </tr>
 <tr>
 <td style="width: 334.8px;">MISP.Event.Object.Attribute.Category</td>
@@ -3473,7 +3477,7 @@
 <tr>
 <td style="width: 334.8px;">MISP.Event.Object.Attribute.ToIDs</td>
 <td style="width: 60.2px;">Boolean</td>
-<td style="width: 345px;">Whether the ToIDs flag is on.</td>
+<td style="width: 345px;">Whether the to_ids flag is on.</td>
 </tr>
 <tr>
 <td style="width: 334.8px;">MISP.Event.Object.Attribute.Category</td>
@@ -3761,7 +3765,7 @@
 <tr>
 <td style="width: 333.8px;">MISP.Event.Object.Attribute.ToIDs</td>
 <td style="width: 61.2px;">Boolean</td>
-<td style="width: 345px;">Whether the ToIDs flag is on.</td>
+<td style="width: 345px;">Whether the to_ids flag is on.</td>
 </tr>
 <tr>
 <td style="width: 333.8px;">MISP.Event.Object.Attribute.Category</td>
@@ -4077,7 +4081,7 @@
 <tr>
 <td style="width: 333.8px;">MISP.Event.Object.Attribute.ToIDs</td>
 <td style="width: 61.2px;">Boolean</td>
-<td style="width: 345px;">Whether the ToIDs flag is on.</td>
+<td style="width: 345px;">Whether the to_ids flag is on.</td>
 </tr>
 <tr>
 <td style="width: 333.8px;">MISP.Event.Object.Attribute.Category</td>
@@ -4199,7 +4203,8 @@
 <p> </p>
 <hr>
 <p> </p>
-<p>Adds an IP Object to MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".</p>
+<p>Adds an IP Object to the MISP event. The following arguments are optional, but at least one must be supplied for the
+ command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".</p>
 <p> </p>
 <h5>Base Command</h5>
 <p> </p>
@@ -4395,7 +4400,7 @@
 <tr>
 <td style="width: 331.8px;">MISP.Event.Object.Attribute.ToIDs</td>
 <td style="width: 63.2px;">Boolean</td>
-<td style="width: 345px;">Whether the ToIDs flag is on.</td>
+<td style="width: 345px;">Whether the to_ids flag is on.</td>
 </tr>
 <tr>
 <td style="width: 331.8px;">MISP.Event.Object.Attribute.Category</td>

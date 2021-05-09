@@ -139,7 +139,7 @@ script:
     description: Search for events in MISP.
     execution: false
     name: misp-search
-   outputs:
+    outputs:
     - contextPath: MISP.Event.ID
       description: MISP event ID.
       type: number
