@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Description",
     "ownerOnly": false,
-    "description": "Description",
+    "description": "The description of the incident",
     "cliName": "description",
     "type": "shortText",
     "closeForm": false,

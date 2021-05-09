@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "60181348-b463-4826-8326-36e97ba5b92b",
+    "layout": "Carbon Black Endpoint Standard Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

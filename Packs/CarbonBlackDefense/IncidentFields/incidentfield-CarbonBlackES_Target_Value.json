@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Target Value",
     "ownerOnly": false,
-    "description": "Target Value",
+    "description": "The priority of the device assigned by the policy (LOW, MEDIUM, HIGH, MISSION_CRITICAL)",
     "cliName": "carbonblackestargetvalue",
     "type": "shortText",
     "closeForm": false,

@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Last Event Time",
     "ownerOnly": false,
-    "description": "Last Event Time",
+    "description": "The time of the latest event associated with the incident",
     "cliName": "carbonblackeslasteventtime",
     "type": "date",
     "closeForm": false,

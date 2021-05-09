@@ -1,7 +1,7 @@
 {
     "id": "incident_alertcategory",
     "version": -1,
-    "name": "Alert Category",
+    "name": "The category of the alert",
     "ownerOnly": false,
     "description": "Alert Category",
     "cliName": "alertcategory",

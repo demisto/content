@@ -163,7 +163,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CarbonBlackDefense.EventDetails.Results.results(val.completed !=  val.contacted)
+        simple: CarbonBlackDefense.EventDetails.Results(val.completed !=  val.contacted)
     separatecontext: true
     loop:
       iscommand: false
@@ -203,19 +203,19 @@ inputs:
     A list of event ids to fetch. (comma separated)
   playbookInputQuery:
 outputs:
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.approximate_unaggregated
+- contextPath: CarbonBlackDefense.EventsDetails.Results.approximate_unaggregated
   description: The approximate number of unaggregated results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.completed
+- contextPath: CarbonBlackDefense.EventsDetails.Results.completed
   description: The number of completed results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.contacted
+- contextPath: CarbonBlackDefense.EventsDetails.Results.contacted
   description: The number of contacted results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.num_aggregated
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_aggregated
   description: The number of aggregated results.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.num_available
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_available
   description: The number of event details available in this search.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.num_found
+- contextPath: CarbonBlackDefense.EventsDetails.Results.num_found
   description: The number of event details found in this search.
-- contextPath: CarbonBlackDefense.EventsDetails.Results.results.results
+- contextPath: CarbonBlackDefense.EventsDetails.Results.results
   description: The lists that contains the data of the results for this search.
 - contextPath: CarbonBlackDefense.EventsDetails.Results.job_id
   description: The job ID of the event details search.

@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Changed",
     "ownerOnly": false,
-    "description": "Changed",
+    "description": "The user who changed this incident",
     "cliName": "changed",
     "type": "shortText",
     "closeForm": false,

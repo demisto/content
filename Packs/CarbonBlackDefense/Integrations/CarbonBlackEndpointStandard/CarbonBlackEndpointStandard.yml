@@ -97,8 +97,8 @@ configuration:
   - '10'
   required: false
   type: 15
-- additionalinfo: Query in Lucene syntax and/or value searches. Do not use the query
-    parameter with additional parameters to fetch incidents
+- additionalinfo: Query in Lucene syntax and/or value searches.
+    If chosen, the other fetch incidents parameters should be empty.
   display: Query
   hidden: false
   name: query
@@ -1257,25 +1257,25 @@ script:
     - contextPath: CarbonBlackDefense.Process.Results.job_id
       description: The job_id of the process search.
       type: String
-    - contextPath: CarbonBlackDefense.Process.Results.results.approximate_unaggregated
+    - contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
       description: The approximate number of unaggregated results.
       type: Number
-    - contextPath: CarbonBlackDefense.Process.Results.results.completed
+    - contextPath: CarbonBlackDefense.Process.Results.completed
       description: The number of completed results.
       type: Number
-    - contextPath: CarbonBlackDefense.Process.Results.results.contacted
+    - contextPath: CarbonBlackDefense.Process.Results.contacted
       description: The number of contacted results.
       type: Number
-    - contextPath: CarbonBlackDefense.Process.Results.results.num_aggregated
+    - contextPath: CarbonBlackDefense.Process.Results.num_aggregated
       description: The number of aggregated results.
       type: Number
-    - contextPath: CarbonBlackDefense.Process.Results.results.num_available
+    - contextPath: CarbonBlackDefense.Process.Results.num_available
       description: The number of processes available in this search.
       type: Number
-    - contextPath: CarbonBlackDefense.Process.Results.results.num_found
+    - contextPath: CarbonBlackDefense.Process.Results.num_found
       description: The number of processes found in this search.
       type: Number
-    - contextPath: CarbonBlackDefense.Process.Results.results.results
+    - contextPath: CarbonBlackDefense.Process.Results.results
       description: The lists that contains the data of the results for this search.
       type: Unknown
   - deprecated: false
@@ -1773,25 +1773,25 @@ script:
     - contextPath: CarbonBlackDefense.Events.Results.job_id
       description: The job_id of the events search.
       type: String
-    - contextPath: CarbonBlackDefense.Events.Results.results.approximate_unaggregated
+    - contextPath: CarbonBlackDefense.Events.Results.approximate_unaggregated
       description: The approximate number of unaggregated results.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.Results.results.completed
+    - contextPath: CarbonBlackDefense.Events.Results.completed
       description: The number of completed results.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.Results.results.contacted
+    - contextPath: CarbonBlackDefense.Events.Results.contacted
       description: The number of contacted results.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.Results.results.num_aggregated
+    - contextPath: CarbonBlackDefense.Events.Results.num_aggregated
       description: The number of aggregated results.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.Results.results.num_available
+    - contextPath: CarbonBlackDefense.Events.Results.num_available
       description: The number of events available in this search.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.Results.results.num_found
+    - contextPath: CarbonBlackDefense.Events.Results.num_found
       description: The number of events found in this search.
       type: Number
-    - contextPath: CarbonBlackDefense.Events.Results.results.results
+    - contextPath: CarbonBlackDefense.Events.Results.results
       description: The lists that contains the data of the results for this search.
       type: Unknown
   - arguments:
@@ -1827,25 +1827,25 @@ script:
     - contextPath: CarbonBlackDefense.EventDetails.Results.job_id
       description: The job_id of the event details search.
       type: String
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.approximate_unaggregated
+    - contextPath: CarbonBlackDefense.EventDetails.Results.approximate_unaggregated
       description: The approximate number of unaggregated results.
       type: Number
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.completed
+    - contextPath: CarbonBlackDefense.EventDetails.Results.completed
       description: The number of completed results.
       type: Number
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.contacted
+    - contextPath: CarbonBlackDefense.EventDetails.Results.contacted
       description: The number of contacted results.
       type: Number
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.num_aggregated
+    - contextPath: CarbonBlackDefense.EventDetails.Results.num_aggregated
       description: The number of aggregated results.
       type: Number
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.num_available
+    - contextPath: CarbonBlackDefense.EventDetails.Results.num_available
       description: The number of event details available in this search.
       type: Number
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.num_found
+    - contextPath: CarbonBlackDefense.EventDetails.Results.num_found
       description: The number of event details found in this search.
       type: Number
-    - contextPath: CarbonBlackDefense.EventDetails.Results.results.results
+    - contextPath: CarbonBlackDefense.EventDetails.Results.results
       description: The lists that contains the data of the results for this search.
       type: Unknown
   - arguments:

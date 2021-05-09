@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Vector",
     "ownerOnly": false,
-    "description": "vector",
+    "description": "The source of the threat cause",
     "cliName": "carbonblackesvector",
     "type": "shortText",
     "closeForm": false,

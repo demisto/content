@@ -800,13 +800,13 @@ RBAC Permissions Required - org.search.events: READ
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefense.Process.Results.job_id | String | The results of the process search. | 
-| CarbonBlackDefense.Process.Results.results.approximate_unaggregated | Number | The approximate number of unaggregated results. | 
-| CarbonBlackDefense.Process.Results.results.completed | Number | The number of completed results. | 
-| CarbonBlackDefense.Process.Results.results.contacted | Number | The number of contacted results. | 
-| CarbonBlackDefense.Process.Results.results.num_aggregated | Number | The number of aggregated results. | 
-| CarbonBlackDefense.Process.Results.results.num_available | Number | The number of processes available in this search. | 
-| CarbonBlackDefense.Process.Results.results.num_found | Number | The number of processes found in this search. | 
-| CarbonBlackDefense.Process.Results.results.results | Unknown | The lists that contains the data of the results for this search. | 
+| CarbonBlackDefense.Process.Results.approximate_unaggregated | Number | The approximate number of unaggregated results. | 
+| CarbonBlackDefense.Process.Results.completed | Number | The number of completed results. | 
+| CarbonBlackDefense.Process.Results.contacted | Number | The number of contacted results. | 
+| CarbonBlackDefense.Process.Results.num_aggregated | Number | The number of aggregated results. | 
+| CarbonBlackDefense.Process.Results.num_available | Number | The number of processes available in this search. | 
+| CarbonBlackDefense.Process.Results.num_found | Number | The number of processes found in this search. | 
+| CarbonBlackDefense.Process.Results.results | Unknown | The lists that contains the data of the results for this search. | 
 
 
 #### Command Example
@@ -818,6 +818,7 @@ RBAC Permissions Required - org.search.events: READ
     "CarbonBlackDefense": {
         "Process": {
             "Results": {
+                "job_id": "a79f5a25-5ab4-4df7-b806-62e0aedd7034",
                 "approximate_unaggregated": 35890,
                 "completed": 47,
                 "contacted": 47,
@@ -3507,13 +3508,13 @@ RBAC Permissions Required - org.search.events: READ
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefense.Events.Results.job_id | Results | The results of the event. | 
-| CarbonBlackDefense.Events.Results.results.approximate_unaggregated | Number | The approximate number of unaggregated results. | 
-| CarbonBlackDefense.Events.Results.results.completed | Number | The number of completed results. | 
-| CarbonBlackDefense.Events.Results.results.contacted | Number | The number of contacted results. | 
-| CarbonBlackDefense.Events.Results.results.num_aggregated | Number | The number of aggregated results. | 
-| CarbonBlackDefense.Events.Results.results.num_available | Number | The number of events available in this search. | 
-| CarbonBlackDefense.Events.Results.results.num_found | Number | The number of events found in this search. | 
-| CarbonBlackDefense.Events.Results.results.results | Unknown | The lists that contains the data of the results for this search. | 
+| CarbonBlackDefense.Events.Results.approximate_unaggregated | Number | The approximate number of unaggregated results. | 
+| CarbonBlackDefense.Events.Results.completed | Number | The number of completed results. | 
+| CarbonBlackDefense.Events.Results.contacted | Number | The number of contacted results. | 
+| CarbonBlackDefense.Events.Results.num_aggregated | Number | The number of aggregated results. | 
+| CarbonBlackDefense.Events.Results.num_available | Number | The number of events available in this search. | 
+| CarbonBlackDefense.Events.Results.num_found | Number | The number of events found in this search. | 
+| CarbonBlackDefense.Events.Results.results | Unknown | The lists that contains the data of the results for this search. | 
 
 
 #### Command Example
@@ -3525,6 +3526,7 @@ RBAC Permissions Required - org.search.events: READ
     "CarbonBlackDefense": {
         "Events": {
             "Results": {
+                "job_id": "82d1df67-0edc-43e6-8e1b-c3dd9d42a3e9",
                 "approximate_unaggregated": 28229,
                 "completed": 47,
                 "contacted": 47,
@@ -3722,13 +3724,13 @@ RBAC Permissions Required - org.search.events: READ
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefense.EventDetails.Results.job_id | Results | The results of the event. | 
-| CarbonBlackDefense.EventDetails.Results.results.approximate_unaggregated | Number | The approximate number of unaggregated results. | 
-| CarbonBlackDefense.EventDetails.Results.results.completed | Number | The number of completed results. | 
-| CarbonBlackDefense.EventDetails.Results.results.contacted | Number | The number of contacted results. | 
-| CarbonBlackDefense.EventDetails.Results.results.num_aggregated | Number | The number of aggregated results. | 
-| CarbonBlackDefense.EventDetails.Results.results.num_available | Number | The number of event details available in this search. | 
-| CarbonBlackDefense.EventDetails.Results.results.num_found | Number | The number of event details found in this search. | 
-| CarbonBlackDefense.EventDetails.Results.results.results | Unknown | The lists that contains the data of the results for this search. | 
+| CarbonBlackDefense.EventDetails.Results.approximate_unaggregated | Number | The approximate number of unaggregated results. | 
+| CarbonBlackDefense.EventDetails.Results.completed | Number | The number of completed results. | 
+| CarbonBlackDefense.EventDetails.Results.contacted | Number | The number of contacted results. | 
+| CarbonBlackDefense.EventDetails.Results.num_aggregated | Number | The number of aggregated results. | 
+| CarbonBlackDefense.EventDetails.Results.num_available | Number | The number of event details available in this search. | 
+| CarbonBlackDefense.EventDetails.Results.num_found | Number | The number of event details found in this search. | 
+| CarbonBlackDefense.EventDetails.Results.results | Unknown | The lists that contains the data of the results for this search. | 
 
 
 #### Command Example
@@ -3740,6 +3742,7 @@ RBAC Permissions Required - org.search.events: READ
     "CarbonBlackDefense": {
         "EventDetails": {
             "Results": {
+                "job_id": "ee9d8548-e356-45b5-97e5-307713a56e26",
                 "approximate_unaggregated": 1,
                 "completed": 46,
                 "contacted": 46,

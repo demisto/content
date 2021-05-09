@@ -178,7 +178,7 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: CarbonBlackDefense.Process.Results.results(val.completed !=  val.contacted)
+        simple: CarbonBlackDefense.Process.Results(val.completed !=  val.contacted)
     separatecontext: true
     loop:
       iscommand: false
@@ -427,19 +427,19 @@ inputs:
     The time window to restrict the search to match using device_timestamp as the reference. Window will take priority over start and end if provided.
   playbookInputQuery:
 outputs:
-- contextPath: CarbonBlackDefense.Process.Results.results.approximate_unaggregated
+- contextPath: CarbonBlackDefense.Process.Results.approximate_unaggregated
   description: The approximate number of unaggregated results.
-- contextPath: CarbonBlackDefense.Process.Results.results.completed
+- contextPath: CarbonBlackDefense.Process.Results.completed
   description: The number of completed results.
-- contextPath: CarbonBlackDefense.Process.Results.results.contacted
+- contextPath: CarbonBlackDefense.Process.Results.contacted
   description: The number of contacted results.
-- contextPath: CarbonBlackDefense.Process.Results.results.num_aggregated
+- contextPath: CarbonBlackDefense.Process.Results.num_aggregated
   description: The number of aggregated results.
-- contextPath: CarbonBlackDefense.Process.Results.results.num_available
+- contextPath: CarbonBlackDefense.Process.Results.num_available
   description: The number of processes available in this search.
-- contextPath: CarbonBlackDefense.Process.Results.results.num_found
+- contextPath: CarbonBlackDefense.Process.Results.num_found
   description: The number of processes found in this search.
-- contextPath: CarbonBlackDefense.Process.Results.results.results
+- contextPath: CarbonBlackDefense.Process.Results.results
   description: The lists that contains the data of the results for this search.
 - contextPath: CarbonBlackDefense.Process.Results.job_id
   description: The job ID of the process search.

@@ -906,12 +906,12 @@ def fetch_incident_filters(params: dict):
         'query': params.get('query')
     }
     if filters.get('query'):
-        filters_with_out_query = dict(filters)
-        del filters_with_out_query['suffix_url_path']
-        del filters_with_out_query['query']
-        if not any(filters_with_out_query.values()):
+        filters_without_query = dict(filters)
+        del filters_without_query['suffix_url_path']
+        del filters_without_query['query']
+        if not any(filters_without_query.values()):
             return filters
-        raise DemistoException("Do not use the query parameter with additional parameters to fetch incidents")
+        raise DemistoException("The 'query' parameter should be used without additional parameters to fetch incidents.")
     else:
         return filters
 
@@ -943,17 +943,7 @@ def test_module(client: Client, params: dict) -> str:
         if (client.api_key and client.api_secret_key and client.organization_key) or \
                 (client.policy_api_key and client.policy_api_secret_key and not is_fetch):
             if client.api_key or client.api_secret_key or client.organization_key:
-                try:
-                    client.test_module_request()
-                except DemistoException as e:
-                    if 'Verify that the server URL parameter is correct' in str(e):
-                        return 'Url Error: make sure URL is correctly set'
-                    if e.res.status_code == 401:
-                        return 'Authorization Error: make sure Custom API Key & Secret Key is correctly set'
-                    if e.res.status_code == 404:
-                        return 'Authorization Error: make sure Organization key is correctly set'
-                    else:
-                        raise
+                client.test_module_request()
                 if is_fetch:
                     filters = fetch_incident_filters(params)
                     client.search_alerts_request(suffix_url_path=filters.get('suffix_url_path'),
@@ -964,15 +954,7 @@ def test_module(client: Client, params: dict) -> str:
                                                  query=filters.get('query'),
                                                  alert_category=filters.get('category'))
             if client.policy_api_key or client.policy_api_secret_key:
-                try:
-                    client.policy_test_module_request()
-                except DemistoException as e:
-                    if 'Verify that the server URL parameter is correct' in str(e):
-                        return 'Url Error: make sure URL is correctly set'
-                    if e.res.status_code == 401:
-                        return 'Authorization Error: make sure Live Response API Key & Secret Key is correctly set'
-                    else:
-                        raise
+                client.policy_test_module_request()
             message = 'ok'
         else:
             if is_fetch:
@@ -1306,6 +1288,7 @@ def find_events_results_command(client: Client, args: dict):
     headers = ['event_id', 'device_id', 'event_network_remote_port', 'event_network_remote_ipv4',
                'event_network_local_ipv4', 'enriched_event_type']
 
+    res['job_id'] == job_id
     human_readable = res.get('results', {})
     readable_output = tableToMarkdown('Carbon Black Defense Event Results',
                                       human_readable,
@@ -1316,7 +1299,7 @@ def find_events_results_command(client: Client, args: dict):
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Events.Results',
         outputs_key_field='job_id',
-        outputs={"job_id": job_id, "results": res},
+        outputs=res,
         readable_output=readable_output,
         raw_response=res
     )
@@ -1346,6 +1329,7 @@ def find_events_details_results_command(client: Client, args: dict):
     headers = ['event_id', 'device_id', 'event_network_remote_port', 'event_network_remote_ipv4',
                'event_network_local_ipv4', 'enriched_event_type']
 
+    res['job_id'] = job_id
     human_readable = res.get('results')
     readable_output = tableToMarkdown('Carbon Black Defense Event Details Results',
                                       human_readable,
@@ -1356,7 +1340,7 @@ def find_events_details_results_command(client: Client, args: dict):
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.EventDetails.Results',
         outputs_key_field='job_id',
-        outputs={"job_id": job_id, "results": res},
+        outputs=res,
         readable_output=readable_output,
         raw_response=res
     )
@@ -1390,6 +1374,7 @@ def find_processes_results_command(client: Client, args: dict):
     res = client.get_process_results(job_id, rows)
     headers = ['device_id', 'device_name', 'process_name', 'device_policy_id', 'enriched_event_type']
 
+    res['job_id'] = job_id
     human_readable = res.get('results')
     readable_output = tableToMarkdown('The Results For The Process Search',
                                       human_readable,
@@ -1400,7 +1385,7 @@ def find_processes_results_command(client: Client, args: dict):
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Process.Results',
         outputs_key_field='job_id',
-        outputs={"job_id": job_id, "results": res},
+        outputs=res,
         readable_output=readable_output,
         raw_response=res
     )

@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES IOC Hit",
     "ownerOnly": false,
-    "description": "IOC Hit",
+    "description": "The IOC field value or IOC query that cause the hit",
     "cliName": "carbonblackesiochit",
     "type": "shortText",
     "closeForm": false,

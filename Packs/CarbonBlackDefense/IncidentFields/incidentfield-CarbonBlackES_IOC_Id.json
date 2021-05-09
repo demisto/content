@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES IOC Id",
     "ownerOnly": false,
-    "description": "IOC Id",
+    "description": "The identifier of the IOC that cause the hit",
     "cliName": "carbonblackesiocid",
     "type": "shortText",
     "closeForm": false,

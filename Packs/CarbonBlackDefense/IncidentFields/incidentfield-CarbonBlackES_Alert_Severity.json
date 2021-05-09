@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Alert Severity",
     "ownerOnly": false,
-    "description": "Carbon Black ES Alert Severity",
+    "description": "The Carbon Black ES Alert Severity",
     "cliName": "carbonblackesalertseverity",
     "type": "shortText",
     "closeForm": false,

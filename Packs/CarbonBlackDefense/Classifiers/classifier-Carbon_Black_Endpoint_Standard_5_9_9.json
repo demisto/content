@@ -5,11 +5,6 @@
     "feed": false,
     "isDefault": false,
     "id": "Carbon Black Endpoint Standard",
-    "keyTypeMap": {
-        "High": "Carbon Black Endpoint Standard",
-        "Low": "Carbon Black Endpoint Standard",
-        "Normal": "Carbon Black Endpoint Standard"
-    },
     "transformer": {
         "complex": null,
         "simple": "importance"

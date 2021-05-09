@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Report ID",
     "ownerOnly": false,
-    "description": "Report Id",
+    "description": "The identifier of the report that contains the IOC",
     "cliName": "carbonblackesreportid",
     "type": "shortText",
     "closeForm": false,

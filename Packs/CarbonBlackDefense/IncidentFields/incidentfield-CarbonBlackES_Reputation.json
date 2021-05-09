@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Reputation",
     "ownerOnly": false,
-    "description": "Reputation",
+    "description": "The reputation of the primary involved process",
     "cliName": "carbonblackesreputation",
     "type": "shortText",
     "closeForm": false,

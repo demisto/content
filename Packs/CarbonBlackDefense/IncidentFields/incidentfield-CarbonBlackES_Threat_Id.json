@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Threat Id",
     "ownerOnly": false,
-    "description": "Threat Id",
+    "description": "The identifier of a threat which this alert belongs.",
     "cliName": "carbonblackesthreatid",
     "type": "shortText",
     "closeForm": false,

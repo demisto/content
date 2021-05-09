@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Carbon Black ES Process Name",
     "ownerOnly": false,
-    "description": "Process Name",
+    "description": "The process name that triggered the alert",
     "cliName": "carbonblackesprocessname",
     "type": "shortText",
     "closeForm": false,
