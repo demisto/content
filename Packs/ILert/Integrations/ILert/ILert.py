@@ -9,9 +9,9 @@ requests.packages.urllib3.disable_warnings()
 USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
-INTEGRATION_KEY = demisto.params()['integrationKey']
+INTEGRATION_KEY = demisto.params().get('integrationKey', '')
 
-CREATE_EVENT_URL = 'https://api.ilert.com/api/v1/events'
+BASE_URL = demisto.params().get('url', '').strip('/')
 
 DEFAULT_HEADERS = {
     'accept': 'application/json',
@@ -25,11 +25,6 @@ if not USE_PROXY:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
-'''TABLE NAMES'''
-NEW_EVENT = 'New Event'
-ACKNOWLEDGE_EVENT = 'Acknowledge Event'
-RESOLVE_EVENT = 'Resolve Event'
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -38,8 +33,8 @@ def test_module():
     demisto.results('ok')
 
 
-def http_request(method, url, params_dict=None, data=None):
-    LOG('running %s request with url=%s\nparams=%s' % (method, url, json.dumps(params_dict)))
+def http_request(method, url_suffix, params_dict=None, data=None):
+    url = urljoin(BASE_URL, url_suffix)
     try:
         res = requests.request(method,
                                url,
@@ -57,55 +52,55 @@ def http_request(method, url, params_dict=None, data=None):
         raise
 
 
-def create_new_incident_event(eventType="ALERT", summary='', details='No description',
-                              incidentKey=None, priority=None, integrationKey=INTEGRATION_KEY):
+def create_new_incident_event(event_type="ALERT", summary='', details='No description',
+                              incident_key=None, priority=None, integrationKey=INTEGRATION_KEY):
     """Send incident related event to iLert."""
 
     if integrationKey is None:
         raise Exception('You must enter an integrationKey as integration '
                         'parameters or in the command to process this action.')
 
-    if eventType == 'ALERT' and not summary:
+    if event_type == 'ALERT' and not summary:
         raise Exception('You must enter a summary in the command to process this action.')
 
-    if eventType != 'ALERT' and incidentKey is None:
-        raise Exception('You must enter an incidentKey in the command to process this action.')
+    if event_type != 'ALERT' and incident_key is None:
+        raise Exception('You must enter an incident_key in the command to process this action.')
 
     payload = {
         'apiKey': integrationKey,
-        'eventType': eventType,
+        'eventType': event_type,
         'summary': summary,
         'details': details,
-        'incidentKey': incidentKey,
+        'incidentKey': incident_key,
         'priority': priority
     }
 
-    return http_request('POST', CREATE_EVENT_URL, data=json.dumps(payload))
+    return http_request('POST', '/events', data=json.dumps(payload))
 
 
-def submit_new_event_command(eventType='ALERT', summary='', details='No description',
-                             incidentKey=None, priority=None, integrationKey=INTEGRATION_KEY):
+def submit_new_event_command(event_type='ALERT', summary='', details='No description',
+                             incident_key=None, priority=None, integrationKey=INTEGRATION_KEY):
     """Create new incident."""
 
-    create_new_incident_event(eventType, summary, details, incidentKey,
+    create_new_incident_event(event_type, summary, details, incident_key,
                               priority, integrationKey)
 
     return "Incident has been created"
 
 
-def submit_acknowledge_event_command(summary, incidentKey=None, integrationKey=INTEGRATION_KEY):
+def submit_acknowledge_event_command(summary, incident_key=None, integrationKey=INTEGRATION_KEY):
     """Acknowledge existing incident."""
 
-    create_new_incident_event(eventType='ACCEPT', summary=summary, incidentKey=incidentKey,
+    create_new_incident_event(event_type='ACCEPT', summary=summary, incident_key=incident_key,
                               integrationKey=integrationKey)
 
     return "Incident has been acknowledged"
 
 
-def submit_resolve_event_command(summary, incidentKey=None, integrationKey=INTEGRATION_KEY):
+def submit_resolve_event_command(summary, incident_key=None, integrationKey=INTEGRATION_KEY):
     """Resolve existing incident."""
 
-    create_new_incident_event(eventType='RESOLVE', summary=summary, incidentKey=incidentKey,
+    create_new_incident_event(event_type='RESOLVE', summary=summary, incident_key=incident_key,
                               integrationKey=integrationKey)
 
     return "Incident has been resolved"
@@ -126,7 +121,7 @@ def main():
         elif demisto.command() == 'ilert-resolve-event':
             demisto.results(submit_resolve_event_command(**demisto.args()))
     except Exception as err:
-        return_error(err)
+        return_error(str(err))
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

@@ -11,7 +11,10 @@ This integration was integrated and tested with API version 1 of iLert.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | The API key of the alert source (for triggering events only) | False |
+    | Server URL | True |
+    | The API key of the alert source (for triggering events only) | True |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -31,8 +34,8 @@ Creates a new event/incident in iLert (in order to use this command you have to 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incidentKey | For ALERT events, the incident key can be used to deduplicate or group events. If an open incident with the key already exists, the event will be appended to the incident's event log. Otherwise a new incident will be created. For ACCEPT and RESOLVE events, the incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
-| eventType | Must be either ALERT, ACCEPT, or RESOLVE. Default is ALERT. | Optional | 
+| incident_key | For ALERT events, the incident key can be used to deduplicate or group events. If an open incident with the key already exists, the event will be appended to the incident's event log. Otherwise a new incident will be created. For ACCEPT and RESOLVE events, the incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
+| event_type | Must be either ALERT, ACCEPT, or RESOLVE. Default is ALERT. | Optional | 
 | summary | The event summary. Will be used as the incident summary if a new incident is created. | Optional | 
 | details | The event details. Will be used as the incident details if a new incident is created. | Optional | 
 | priority | Must be either HIGH or LOW. Will overwrite the evaluated priority of the alert source. | Optional | 
@@ -59,7 +62,7 @@ Acknowledges an existing event in iLert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incidentKey | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
+| incident_key | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
 | summary | The event summary. Will be used as the event description in the incident timeline. | Optional | 
 
 
@@ -68,7 +71,7 @@ Acknowledges an existing event in iLert
 There is no context output for this command.
 
 #### Command Example
-``` !ilert-acknowledge-event incidentKey="ctx312" ```
+``` !ilert-acknowledge-event incident_key="ctx312" ```
 
 #### Human Readable Output
 Incident has been acknowledged.
@@ -87,7 +90,7 @@ Resolves an existing event in iLert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incidentKey | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
+| incident_key | The incident key is used to reference the open incident which is to be accepted or resolved by this event. | Optional | 
 | summary | The event summary. Will be used as the event description in the incident timeline. | Optional | 
 
 #### Context Output
@@ -95,7 +98,7 @@ Resolves an existing event in iLert
 There is no context output for this command.
 
 #### Command Example
-``` !iLert-resolve-event incidentKey="ctx312" ```
+``` !iLert-resolve-event incident_key="ctx312" ```
 
 #### Human Readable Output
 Incident has been resolved.
