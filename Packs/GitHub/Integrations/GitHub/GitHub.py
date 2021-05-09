@@ -917,7 +917,7 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
 
 def get_team_members(organization: str, team_slug: str, maximum_users: int = 30) -> list:
     page = 1
-    results = []
+    results: list = []
     while len(results) < maximum_users:
         results_per_page = maximum_users - len(results)
         if results_per_page > 100:
