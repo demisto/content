@@ -648,10 +648,8 @@ RBAC Permissions Required - org.search.events: CREATE
 | --- | --- | --- |
 | alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". Possible values are: THREAT, OBSERVED. | Optional | 
 | hash | Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash). | Optional | 
-| blocked_hash | SHA-256 hash(es) of the child process(es) binary. For any process(es) terminated by the sensor. | Optional | 
 | device_external_ip | The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format. | Optional | 
 | device_id | The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments. | Optional | 
-| parent_hash | The MD5 and/or SHA-256 hash of the parent process binary. | Optional | 
 | device_internal_ip | The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format. | Optional | 
 | device_name | The hostname of the endpoint recorded by the sensor when last initialized. | Optional | 
 | device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". Possible values are: WINDOWS, MAC, LINUX. | Optional | 
@@ -721,10 +719,8 @@ RBAC Permissions Required - org.search.events: CREATE
 | --- | --- | --- |
 | alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". Possible values are: THREAT, OBSERVED. | Optional | 
 | hash | Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash). | Optional | 
-| blocked_hash | SHA-256 hash(es) of the child process(es) binary. For any process(es) terminated by the sensor. | Optional | 
 | device_external_ip | The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format. | Optional | 
 | device_id | The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments. | Optional | 
-| parent_hash | The MD5 and/or SHA-256 hash of the parent process binary. | Optional | 
 | device_internal_ip | The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format. | Optional | 
 | device_name | The hostname of the endpoint recorded by the sensor when last initialized. | Optional | 
 | device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". Possible values are: WINDOWS, MAC, LINUX. | Optional | 
