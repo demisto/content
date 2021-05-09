@@ -647,20 +647,20 @@ RBAC Permissions Required - org.search.events: CREATE
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". Possible values are: THREAT, OBSERVED. | Optional | 
+| hash | Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash). | Optional | 
 | blocked_hash | SHA-256 hash(es) of the child process(es) binary. For any process(es) terminated by the sensor. | Optional | 
 | device_external_ip | The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format. | Optional | 
 | device_id | The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments. | Optional | 
+| parent_hash | The MD5 and/or SHA-256 hash of the parent process binary. | Optional | 
 | device_internal_ip | The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format. | Optional | 
 | device_name | The hostname of the endpoint recorded by the sensor when last initialized. | Optional | 
 | device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". Possible values are: WINDOWS, MAC, LINUX. | Optional | 
 | device_timestamp | The sensor-reported timestamp of the batch of events in which this record was submitted to Carbon Black Cloud. specified as ISO 8601 timestamp in UTC for example: 2020-01-19T04:28:40.190Z. | Optional | 
 | event_type | The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload". Possible values are: filemod, netconn, regmod, modload, crossproc, childproc, scriptload, fileless_scriptload. | Optional | 
-| parent_hash | The MD5 and/or SHA-256 hash of the parent process binary. | Optional | 
 | parent_name | The file system path of the parent process binary. | Optional | 
 | parent_reputation | The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
 | process_cmdline | The command line executed by the actor process. | Optional | 
 | process_guid | The unique process identifier for the actor process. | Optional | 
-| process_hash | The MD5 and/or SHA-256 hash of the actor process binary. The order may vary when two hashes are reported. | Optional | 
 | process_name | The file system path of the actor process binary. | Optional | 
 | process_pid | The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS. | Optional | 
 | process_reputation | The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
@@ -720,19 +720,19 @@ RBAC Permissions Required - org.search.events: CREATE
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". Possible values are: THREAT, OBSERVED. | Optional | 
+| hash | Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash). | Optional | 
 | blocked_hash | SHA-256 hash(es) of the child process(es) binary. For any process(es) terminated by the sensor. | Optional | 
 | device_external_ip | The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format. | Optional | 
 | device_id | The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments. | Optional | 
+| parent_hash | The MD5 and/or SHA-256 hash of the parent process binary. | Optional | 
 | device_internal_ip | The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format. | Optional | 
 | device_name | The hostname of the endpoint recorded by the sensor when last initialized. | Optional | 
 | device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". Possible values are: WINDOWS, MAC, LINUX. | Optional | 
 | event_type | The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload". Possible values are: filemod, netconn, regmod, modload, crossproc, childproc, scriptload, fileless_scriptload. | Optional | 
-| parent_hash | The MD5 and/or SHA-256 hash of the parent process binary. | Optional | 
 | parent_name | The file system path of the parent process binary. | Optional | 
 | parent_reputation | The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
 | process_cmdline | The command line executed by the actor process. | Optional | 
 | process_guid | The unique process identifier for the actor process. | Optional | 
-| process_hash | The MD5 and/or SHA-256 hash of the actor process binary. The order may vary when two hashes are reported. | Optional | 
 | process_name | The file system path of the actor process binary. | Optional | 
 | process_pid | The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS. | Optional | 
 | process_reputation | The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 

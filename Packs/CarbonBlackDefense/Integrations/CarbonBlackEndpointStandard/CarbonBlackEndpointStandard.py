@@ -370,8 +370,9 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
     # The events API
-    def get_events(self, alert_category: List[str] = None, hash: List[str] = None, device_external_ip: List[str] = None,
-                   device_id: List[int] = None, device_internal_ip: List[str] = None, device_name: List[str] = None,
+    def get_events(self, alert_category: List[str] = None, hash: List[str] = None, blocked_hash: List[str] = None,
+                   device_external_ip: List[str] = None, device_id: List[int] = None, parent_hash: List[str] = None,
+                   device_internal_ip: List[str] = None, device_name: List[str] = None,
                    device_os: List[str] = None, event_type: List[str] = None, parent_name: List[str] = None,
                    parent_reputation: List[str] = None, process_cmdline: List[str] = None,
                    process_guid: List[str] = None, process_name: List[str] = None, process_pid: List[int] = None,
@@ -393,6 +394,10 @@ class Client(BaseClient):
             (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
             enables one-step search for any matches on the specified hashes
 
+        :type blocked_hash: ``Optional[List[str]]``
+        :param blocked_hash: Searchable. MD5 and SHA-256 hash(es) of the child process(es) binary;
+            for any process(es) terminated by the sensor
+
         :type device_external_ip: ``Optional[List[str]]``
         :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
             can differ from device_internal_ip due to network proxy or NAT;
@@ -401,6 +406,9 @@ class Client(BaseClient):
         :type device_id: ``Optional[List[int]]``
         :param device_id: The ID assigned to the endpoint by Carbon Black Cloud;
             unique across all Carbon Black Cloud environments.
+
+        :type parent_hash: ``Optional[List[str]]``
+        :param parent_hash: Searchable. MD5 and/or SHA-256 hash of the parent process binary
 
         :type device_internal_ip ``Optional[List[str]]``
         :param device_internal_ip: The IP address of the endpoint reported by the sensor;
@@ -486,8 +494,10 @@ class Client(BaseClient):
             criteria=assign_params(  # one of the arguments (query or criteria) is required
                 alert_category=argToList(alert_category),
                 hash=argToList(hash),
+                blocked_hash=argToList(blocked_hash),
                 device_external_ip=argToList(device_external_ip),
                 device_id=argToList(device_id),
+                parent_hash=argToList(parent_hash),
                 device_internal_ip=argToList(device_internal_ip),
                 device_name=argToList(device_name),
                 device_os=argToList(device_os),
@@ -560,8 +570,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Processes API
-    def get_processes(self, alert_category: List[str] = None, hash: List[str] = None,
-                      device_external_ip: List[str] = None, device_id: List[int] = None,
+    def get_processes(self, alert_category: List[str] = None, hash: List[str] = None, blocked_hash: List[str] = None,
+                      device_external_ip: List[str] = None, device_id: List[int] = None, parent_hash: List[str] = None,
                       device_internal_ip: List[str] = None, device_name: List[str] = None, device_os: List[str] = None,
                       device_timestamp: List[str] = None, event_type: List[str] = None, parent_name: List[str] = None,
                       parent_reputation: List[str] = None, process_cmdline: List[str] = None,
@@ -584,6 +594,10 @@ class Client(BaseClient):
             (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
             enables one-step search for any matches on the specified hashes
 
+        :type blocked_hash: ``Optional[List[str]]``
+        :param blocked_hash: Searchable. MD5 and SHA-256 hash(es) of the child process(es) binary;
+            for any process(es) terminated by the sensor
+
         :type device_external_ip: ``Optional[List[str]]``
         :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
             can differ from device_internal_ip due to network proxy or NAT;
@@ -592,6 +606,9 @@ class Client(BaseClient):
         :type device_id: ``Optional[List[int]]``
         :param device_id: The ID assigned to the endpoint by Carbon Black Cloud;
             unique across all Carbon Black Cloud environments.
+
+        :type parent_hash: ``Optional[List[str]]``
+        :param parent_hash: Searchable. MD5 and/or SHA-256 hash of the parent process binary
 
         :type device_internal_ip ``Optional[List[str]]``
         :param device_internal_ip: The IP address of the endpoint reported by the sensor;
@@ -681,8 +698,10 @@ class Client(BaseClient):
             criteria=assign_params(  # one of the arguments (query or criteria) is required
                 alert_category=argToList(alert_category),
                 hash=argToList(hash),
+                blocked_hash=argToList(blocked_hash),
                 device_external_ip=argToList(device_external_ip),
                 device_id=argToList(device_id),
+                parent_hash=argToList(parent_hash),
                 device_internal_ip=argToList(device_internal_ip),
                 device_name=argToList(device_name),
                 device_os=argToList(device_os),
@@ -1288,7 +1307,7 @@ def find_events_results_command(client: Client, args: dict):
     headers = ['event_id', 'device_id', 'event_network_remote_port', 'event_network_remote_ipv4',
                'event_network_local_ipv4', 'enriched_event_type']
 
-    res['job_id'] == job_id
+    res['job_id'] = job_id
     human_readable = res.get('results', {})
     readable_output = tableToMarkdown('Carbon Black Defense Event Results',
                                       human_readable,

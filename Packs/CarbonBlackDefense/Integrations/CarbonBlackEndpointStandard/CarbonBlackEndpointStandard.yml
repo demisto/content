@@ -857,10 +857,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The MD5 and/or SHA-256 hash of the actor process binary. The order
-        may vary when two hashes are reported.
+      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
       isArray: false
-      name: process_hash
+      name: hash
       required: false
       secret: false
     - default: false
@@ -1110,10 +1109,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The MD5 and/or SHA-256 hash of the actor process binary. The order
-        may vary when two hashes are reported.
+      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
       isArray: false
-      name: process_hash
+      name: hash
       required: false
       secret: false
     - default: false
