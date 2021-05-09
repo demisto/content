@@ -866,8 +866,6 @@ def test_list_campaigns_command(requests_mock):
         proxies=None
     )
     result = list_campaigns_command(client, "3 days")
-    print(result.outputs)
-    print(result.raw_response)
     assert len(result.outputs) == 2
     assert result.outputs_prefix == f'Proofpoint.Campaign'
     assert result.outputs[0].get('id') == "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"

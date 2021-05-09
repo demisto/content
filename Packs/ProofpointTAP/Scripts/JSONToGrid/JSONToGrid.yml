@@ -1,0 +1,18 @@
+commonfields:
+  id: JSONToGrid
+  version: -1
+name: JSONToGrid
+script: ''
+type: python
+tags:
+- transformer
+enabled: true
+comment: Transform JSON object to XSOAR grid element
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.4.19537
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
