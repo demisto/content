@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Tuple
+from typing import Tuple, Union
 from datetime import datetime, timedelta
 import json
 import requests
@@ -677,7 +677,7 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # mypy: ignore
 
     outputs = []
     raw_responses = []
@@ -799,7 +799,7 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # mypy: ignore
     outputs = []
     raw_responses = []
     request_error = []
@@ -878,7 +878,8 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range), is_days_interval=True) if time_range else [interval]
+        intervals = handle_interval(dateparser.parse(time_range), is_days_interval=True) if time_range else [
+            interval]  # mypy: ignore
 
     outputs = []
     raw_responses = []
@@ -915,7 +916,7 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
     )
 
 
-def get_campaign_command(client: Client, campaign_id: str) -> CommandResults:
+def get_campaign_command(client: Client, campaign_id: str) -> Union[CommandResults, str]:
     """
     Retrieves information for a given campaign.
     Args:
@@ -1118,7 +1119,7 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
         start = dateparser.parse(time_range).strftime(DATE_FORMAT)
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # mypy: ignore
 
     messages_outputs = []
     messages_raw_responses = []

@@ -1,38 +1,22 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "f7b93386-e95f-40b5-8f85-8b9cf661519e",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"clicks blocked": "ProofPointTAP - Click Blocked",
-		"clicks permitted": "ProofPointTAP - Click Permitted",
-		"messages blocked": "ProofPointTAP - Message Blocked",
-		"messages delivered": "ProofPointTAP - Message Delievered"
-	},
-	"locked": false,
-	"logicalVersion": 3,
-	"mapping": null,
-	"name": "ProofPointTAP Classifier",
-	"nameRaw": "ProofPointTAP Classifier",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": "type"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "f7b93386-e95f-40b5-8f85-8b9cf661519e",
+    "keyTypeMap": {
+        "clicks blocked": "ProofPointTAP - Click Blocked",
+        "clicks permitted": "ProofPointTAP - Click Permitted",
+        "messages blocked": "ProofPointTAP - Message Blocked",
+        "messages delivered": "ProofPointTAP - Message Delievered"
+    },
+    "name": "ProofPointTAP Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }
