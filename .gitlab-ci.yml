@@ -35,3 +35,4 @@ variables:
 include:
   - local: .gitlab/ci/global.yml
   - local: .gitlab/ci/on-push.yml
+  - local: .gitlab/ci/nightly.yml
