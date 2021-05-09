@@ -92,9 +92,8 @@
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
-            "instance_names": "ewv2_regular",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "timeout": 1000
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
@@ -3369,7 +3368,6 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
