@@ -19,7 +19,7 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicator | he indicator to get the reputation of. Only system indicator types are supported. In order to send multiple indicators you can either use a JSON formatted string representation (e.g `["indicator1", "indicator2"]`). |
+| indicator | the indicator to get the reputation of. Only system indicator types are supported. In order to send multiple indicators, use either a list or a JSON formatted string representation (e.g `["indicator1", "indicator2"]`). |
 
 ## Outputs
 ---
