@@ -370,7 +370,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
 
 def build_attribute_context(response: Union[dict, requests.Response]) -> dict:
     """
-    Convert the response returned from MIPS to the context output format.
+    Convert the response of attribute search returned from MIPS to the context output format.
     """
     attribute_fields = [
         'id',
