@@ -3020,12 +3020,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximum number of entries to retrieve.
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: false
       description: Returns only results whose Tag ID falls in the provided list. (comma
         separated string). Cannot be used with the 'tag_names' argument.
       isArray: true
