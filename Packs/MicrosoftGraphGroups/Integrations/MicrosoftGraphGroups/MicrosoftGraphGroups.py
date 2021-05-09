@@ -332,7 +332,7 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
     top = args.get('top')
     filter_ = args.get('filter')
     members = client.list_members(group_id, next_link, top, filter_)
-
+    demisto.debug(f'raw_response is: {members}')
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'
         return human_readable, NO_OUTPUTS, NO_OUTPUTS
@@ -341,6 +341,8 @@ def list_members_command(client: MsGraphClient, args: Dict) -> Tuple[str, Dict, 
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+    demisto.debug(f'group_data is: {group_data}')
+
     if isinstance(group_data, list):
         group_data = group_data[0]
 
