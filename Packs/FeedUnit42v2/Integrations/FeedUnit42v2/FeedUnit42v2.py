@@ -124,7 +124,7 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
     for report_object in report_objects:
         report = dict()  # type: Dict[str, Any]
 
-        report['type'] = 'STIX Report'
+        report['type'] = 'Report'
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields'] = {
             'stixid': report_object.get('id'),
@@ -222,7 +222,8 @@ def get_indicator_publication(indicator):
             continue
         url = external_reference.get('url')
         description = external_reference.get('description')
-        publications.append({'Link': url, 'Title': description})
+        source_name = external_reference.get('source_name')
+        publications.append({'link': url, 'title': description, 'source': source_name})
     return publications
 
 
@@ -250,6 +251,8 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
         A list of processed Attack Pattern.
     """
 
+    feed_tags = [] if not feed_tags else feed_tags
+
     attack_pattern_indicators = []
 
     for attack_indicator in attack_indicator_objects:
@@ -257,6 +260,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
         publications = get_indicator_publication(attack_indicator)
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator)
 
+        feed_tags.extend(mitre_id)
         indicator = {
             "value": value,
             "type": 'Attack Pattern',
@@ -462,7 +466,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         ioc_indicators.append(dummy_indicator)
 
     demisto.debug(f'{len(ioc_indicators)} XSOAR Indicators were created.')
-    demisto.debug(f'{len(reports)} XSOAR STIX Reports Indicators were created.')
+    demisto.debug(f'{len(reports)} XSOAR Reports Indicators were created.')
     demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
     demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
     demisto.debug(f'{len(course_of_actions)} Course of Actions Indicators were created.')

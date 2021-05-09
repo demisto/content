@@ -232,7 +232,7 @@ REPORTS_INDICATORS = [
                  'unit42_modified_date': '1993-06-17T11:00:00.000Z',
                  'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
                  'unit42_published': '1994-08-12T11:00:00.000Z'},
-     'type': 'STIX Report',
+     'type': 'Report',
      'value': '[Unit42 ATOM] Main Report'},
     {'fields': {'description': 'A description of the report',
                 'published': '1994-08-12T11:00:00.000Z',
@@ -254,7 +254,7 @@ REPORTS_INDICATORS = [
                                         'malware--f351db0d-0667-4ca0-aed8-205bcef1d9a9',
                                         'relationship--ff0a724d-2a3d-4ac1-9c7f-6340bded0d6f'],
                  'unit42_published': '1994-08-12T11:00:00.000Z'},
-     'type': 'STIX Report',
+     'type': 'Report',
      'value': '[Unit42 ATOM] Sub Report'}
 ]
 
