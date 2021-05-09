@@ -458,7 +458,7 @@ def main() -> None:
             return_results(disconnect_active_session_command(client, args))
 
         else:
-            raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
+            raise NotImplementedError(f'{demisto.command()} is not an existing HPE Aruba Clearpass command')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
