@@ -13,7 +13,7 @@
     "keywords": [],
     "dependencies": {
         "Compliance": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Compliance"
         },
         "SplunkPy": {
@@ -29,7 +29,7 @@
             "display_name": "Common Scripts"
         },
         "Malware": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Malware"
         },
         "CVESearch": {
