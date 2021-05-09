@@ -83,7 +83,7 @@ run-unittests-and-lint:
   needs: []
   stage: unittests-and-validations
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD != "true"'
+    - if: '$FORCE_BUCKET_UPLOAD != "true" && $INSTANCE_TESTS != "true"'
   artifacts:
     expire_in: 48 hrs
     paths:
