@@ -99,10 +99,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7ce126db-f703-4da6-8783-83dd350a11d2
+    taskid: e62f3903-15aa-44e0-8d65-3252f4e56df2
     type: condition
     task:
-      id: 7ce126db-f703-4da6-8783-83dd350a11d2
+      id: e62f3903-15aa-44e0-8d65-3252f4e56df2
       version: -1
       name: Verify endpoints list
       type: condition
@@ -120,7 +120,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: HPEArubaClearpass.endpoints.list.[0]
+              simple: HPEArubaClearpass.endpoints.[0]
             iscontext: true
     view: |-
       {
@@ -164,10 +164,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fd196634-7bb7-4bb0-8053-75069115c282
+    taskid: 1e7a5fa2-c2af-4cf0-8d22-16af21f33c21
     type: regular
     task:
-      id: fd196634-7bb7-4bb0-8053-75069115c282
+      id: 1e7a5fa2-c2af-4cf0-8d22-16af21f33c21
       version: -1
       name: Update endpoint description
       description: Updates some fields of an endpoint.
@@ -182,7 +182,7 @@ tasks:
       description:
         simple: test_playbook
       endpoint_id:
-        simple: ${HPEArubaClearpass.endpoints.list.[0].id}
+        simple: ${HPEArubaClearpass.endpoints.[0].id}
     separatecontext: false
     view: |-
       {
@@ -200,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 64e32ce8-01b5-4837-83a7-7f5e11345d2b
+    taskid: 4c2f9e74-dbac-42f1-889f-8d8c2ff3f36a
     type: condition
     task:
-      id: 64e32ce8-01b5-4837-83a7-7f5e11345d2b
+      id: 4c2f9e74-dbac-42f1-889f-8d8c2ff3f36a
       version: -1
       name: Verify description update
       type: condition
@@ -219,7 +219,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: HPEArubaClearpass.endpoints.update.Description
+              simple: HPEArubaClearpass.endpoints.description
             iscontext: true
           right:
             value:
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a9e507a0-732c-4112-84a8-797c3ffda762
+    taskid: 31275de3-8eaa-4b22-89e5-418b8e491b14
     type: condition
     task:
-      id: a9e507a0-732c-4112-84a8-797c3ffda762
+      id: 31275de3-8eaa-4b22-89e5-418b8e491b14
       version: -1
       name: Verify attributes list
       type: condition
@@ -259,11 +259,11 @@ tasks:
       - - operator: in
           left:
             value:
-              simple: ${HPEArubaClearpass.attributes.create.ID}
+              simple: ${HPEArubaClearpass.attributes.id}
             iscontext: true
           right:
             value:
-              simple: ${HPEArubaClearpass.attributes.list.id}
+              simple: ${HPEArubaClearpass.attributes.id}
     view: |-
       {
         "position": {
@@ -280,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: a5e5ef69-5f95-4dac-82f9-8b6267b28c81
+    taskid: c7abbacc-173f-4995-88a5-57dd5b8c4e98
     type: regular
     task:
-      id: a5e5ef69-5f95-4dac-82f9-8b6267b28c81
+      id: c7abbacc-173f-4995-88a5-57dd5b8c4e98
       version: -1
       name: Create new attribute
       description: Create a new attribute.
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: effc71fb-7e19-4d3d-8d9f-97a0b99af35c
+    taskid: 62517e0c-24d0-4ff7-8915-b4ce201586fa
     type: regular
     task:
-      id: effc71fb-7e19-4d3d-8d9f-97a0b99af35c
+      id: 62517e0c-24d0-4ff7-8915-b4ce201586fa
       version: -1
       name: Get attribute
       description: Get a list of attributes. If no arguments were given, all of the
@@ -336,8 +336,8 @@ tasks:
     scriptarguments:
       attribute_id:
         complex:
-          root: HPEArubaClearpass.attributes.create
-          accessor: ID
+          root: HPEArubaClearpass.attributes
+          accessor: id
     separatecontext: false
     view: |-
       {
@@ -355,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 4fcd1998-2529-496f-879e-427e035b0b7c
+    taskid: f7768642-1272-4432-8e50-78f26dbdcaa6
     type: regular
     task:
-      id: 4fcd1998-2529-496f-879e-427e035b0b7c
+      id: f7768642-1272-4432-8e50-78f26dbdcaa6
       version: -1
       name: Update attribute fields
       description: Update some fields of an attribute by the attribute's ID.
@@ -371,7 +371,7 @@ tasks:
       - "13"
     scriptarguments:
       attribute_id:
-        simple: ${HPEArubaClearpass.attributes.create.ID}
+        simple: ${HPEArubaClearpass.attributes.id}
       data_type:
         simple: String
       entity_name:
@@ -395,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 7fc74195-dbb6-4489-8476-cc09472c9d20
+    taskid: b9cc0a37-83ea-4141-8963-3d6fa4131438
     type: condition
     task:
-      id: 7fc74195-dbb6-4489-8476-cc09472c9d20
+      id: b9cc0a37-83ea-4141-8963-3d6fa4131438
       version: -1
       name: Verify update attribute
       type: condition
@@ -414,7 +414,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${HPEArubaClearpass.attributes.update.Name}
+              simple: ${HPEArubaClearpass.attributes.name}
             iscontext: true
           right:
             value:
@@ -422,11 +422,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${HPEArubaClearpass.attributes.update.ID}
+              simple: ${HPEArubaClearpass.attributes.id}
             iscontext: true
           right:
             value:
-              simple: ${HPEArubaClearpass.attributes.create.ID}
+              simple: ${HPEArubaClearpass.attributes.id}
     view: |-
       {
         "position": {
@@ -443,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 1a16f77c-5f85-4078-8275-1d942d71cbdd
+    taskid: b76fdab2-0763-49b9-8554-f2b558e36d82
     type: regular
     task:
-      id: 1a16f77c-5f85-4078-8275-1d942d71cbdd
+      id: b76fdab2-0763-49b9-8554-f2b558e36d82
       version: -1
       name: Delete attribute
       description: Delete an attribute.
@@ -459,7 +459,7 @@ tasks:
       - "4"
     scriptarguments:
       attribute_id:
-        simple: ${HPEArubaClearpass.attributes.create.ID}
+        simple: ${HPEArubaClearpass.attributes.id}
     separatecontext: false
     view: |-
       {

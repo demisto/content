@@ -69,22 +69,22 @@ script:
     execution: false
     name: aruba-clearpass-endpoints-list
     outputs:
-    - contextPath: HPEArubaClearpass.endpoints.list.id
+    - contextPath: HPEArubaClearpass.endpoints.id
       description: The ID of the endpoint.
       type: Number
-    - contextPath: HPEArubaClearpass.endpoints.list.mac_address
+    - contextPath: HPEArubaClearpass.endpoints.mac_address
       description: The MAC Address of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.list.description
+    - contextPath: HPEArubaClearpass.endpoints.description
       description: The description of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.list.status
+    - contextPath: HPEArubaClearpass.endpoints.status
       description: The status of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.list.device_insight_tags
+    - contextPath: HPEArubaClearpass.endpoints.device_insight_tags
       description: List of Device Insight Tags.
       type: Unknown
-    - contextPath: HPEArubaClearpass.endpoints.list.attributes
+    - contextPath: HPEArubaClearpass.endpoints.attributes
       description: Additional attributes (key/value pairs) may be stored with the
         endpoint.
       type: Unknown
@@ -137,22 +137,22 @@ script:
     execution: false
     name: aruba-clearpass-endpoint-update
     outputs:
-    - contextPath: HPEArubaClearpass.endpoints.update.ID
+    - contextPath: HPEArubaClearpass.endpoints.id
       description: The ID of the endpoint.
       type: Number
-    - contextPath: HPEArubaClearpass.endpoints.update.MAC_Address
+    - contextPath: HPEArubaClearpass.endpoints.mac_address
       description: The MAC Address of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.update.Description
+    - contextPath: HPEArubaClearpass.endpoints.description
       description: The description of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.update.Status
+    - contextPath: HPEArubaClearpass.endpoints.status
       description: The status of the endpoint.
       type: string
-    - contextPath: HPEArubaClearpass.endpoints.update.Device_insight_tags
+    - contextPath: HPEArubaClearpass.endpoints.device_insight_tags
       description: List of Device Insight Tags.
       type: Unknown
-    - contextPath: HPEArubaClearpass.endpoints.update.Attributes
+    - contextPath: HPEArubaClearpass.endpoints.attributes
       description: Additional attributes (key/value pairs) may be stored with the
         endpoint.
       type: Unknown
@@ -201,29 +201,29 @@ script:
     execution: false
     name: aruba-clearpass-attributes-list
     outputs:
-    - contextPath: HPEArubaClearpass.attributes.list.id
+    - contextPath: HPEArubaClearpass.attributes.id
       description: The ID of the attribute.
       type: Number
-    - contextPath: HPEArubaClearpass.attributes.list.name
+    - contextPath: HPEArubaClearpass.attributes.name
       description: The name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.list.entity_name
+    - contextPath: HPEArubaClearpass.attributes.entity_name
       description: The entity name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.list.data_type
+    - contextPath: HPEArubaClearpass.attributes.data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
-    - contextPath: HPEArubaClearpass.attributes.list.mandatory
+    - contextPath: HPEArubaClearpass.attributes.mandatory
       description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.list.default_value
+    - contextPath: HPEArubaClearpass.attributes.default_value
       description: Default Value of the attribute.
       type: Unknown
-    - contextPath: HPEArubaClearpass.attributes.list.allow_multiple
+    - contextPath: HPEArubaClearpass.attributes.allow_multiple
       description: Whether to allow multiple values of the attribute with data type
         String only (API limitation).
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.list.allowed_value
+    - contextPath: HPEArubaClearpass.attributes.allowed_value
       description: The allowed value for attribute with data type List (e.g., example1,example2,example3).
       type: Unknown
   - arguments:
@@ -270,7 +270,11 @@ script:
       description: Whether to make this attribute mandatory for the given entity_name.
         Default is false.
       isArray: false
+      auto: PREDEFINED
       name: mandatory
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -284,6 +288,10 @@ script:
         String only (API limitation). Default is false.
       isArray: false
       name: allow_multiple
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -298,29 +306,29 @@ script:
     execution: false
     name: aruba-clearpass-attribute-create
     outputs:
-    - contextPath: HPEArubaClearpass.attributes.create.ID
+    - contextPath: HPEArubaClearpass.attributes.id
       description: The ID of the attribute.
       type: Number
-    - contextPath: HPEArubaClearpass.attributes.create.Name
+    - contextPath: HPEArubaClearpass.attributes.name
       description: The name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.create.Entity_name
+    - contextPath: HPEArubaClearpass.attributes.entity_name
       description: The entity name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.create.Data_type
+    - contextPath: HPEArubaClearpass.attributes.data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
-    - contextPath: HPEArubaClearpass.attributes.create.Mandatory
+    - contextPath: HPEArubaClearpass.attributes.mandatory
       description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.create.Default_value.
+    - contextPath: HPEArubaClearpass.attributes.default_value.
       description: Default Value of the attribute.
       type: Unknown
-    - contextPath: HPEArubaClearpass.attributes.create.Allow_multiple
+    - contextPath: HPEArubaClearpass.attributes.allow_multiple
       description: Whether to allow multiple values of the attribute with data type
         String only (API limitation).
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.create.Allowed_value
+    - contextPath: HPEArubaClearpass.attributes.allowed_value
       description: The allowed value for attribute with data type List (e.g., example1,example2,example3).
       type: Unknown
   - arguments:
@@ -373,7 +381,11 @@ script:
       description: Whether to make this attribute mandatory for the given entity_name.
         Default is false.
       isArray: false
+      auto: PREDEFINED
       name: mandatory
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -387,7 +399,11 @@ script:
         String only (API limitation). Default is false.
       isArray: false
       name: allow_multiple
+      auto: PREDEFINED
       required: false
+      predefined:
+      - 'True'
+      - 'False'
       secret: false
     - default: false
       description: Possible value for attribute with data type List only - API limitation
@@ -401,29 +417,29 @@ script:
     execution: false
     name: aruba-clearpass-attribute-update
     outputs:
-    - contextPath: HPEArubaClearpass.attributes.update.ID
+    - contextPath: HPEArubaClearpass.attributes.id
       description: The ID of the attribute.
       type: Number
-    - contextPath: HPEArubaClearpass.attributes.update.Name
+    - contextPath: HPEArubaClearpass.attributes.name
       description: The name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.update.Entity_name
+    - contextPath: HPEArubaClearpass.attributes.entity_name
       description: The entity name of the attribute.
       type: string
-    - contextPath: HPEArubaClearpass.attributes.update.Data_type
+    - contextPath: HPEArubaClearpass.attributes.data_type
       description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
       type: string
-    - contextPath: HPEArubaClearpass.attributes.update.Mandatory
+    - contextPath: HPEArubaClearpass.attributes.mandatory
       description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.update.Default_value.
+    - contextPath: HPEArubaClearpass.attributes.default_value.
       description: Default Value of the attribute.
       type: Unknown
-    - contextPath: HPEArubaClearpass.attributes.update.Allow_multiple
+    - contextPath: HPEArubaClearpass.attributes.allow_multiple
       description: Whether to allow multiple values of the attribute with data type
         String only (API limitation).
       type: Boolean
-    - contextPath: HPEArubaClearpass.attributes.update.Allowed_value
+    - contextPath: HPEArubaClearpass.attributes.allowed_value
       description: The allowed value for attribute with data type List (e.g., example1,example2,example3).
       type: Unknown
   - arguments:
@@ -473,19 +489,19 @@ script:
     execution: false
     name: aruba-clearpass-active-sessions-list
     outputs:
-    - contextPath: HPEArubaClearpass.sessions.list.ID
+    - contextPath: HPEArubaClearpass.sessions.ID
       description: ID of the active session.
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.Device_IP
+    - contextPath: HPEArubaClearpass.sessions.Device_IP
       description: IP address of the client.
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.Device_mac_address
+    - contextPath: HPEArubaClearpass.sessions.Device_mac_address
       description: MAC address of the client device.
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.state
+    - contextPath: HPEArubaClearpass.sessions.state
       description: The current state of the session (active, stale, closed).
       type: String
-    - contextPath: HPEArubaClearpass.sessions.list.Visitor_phone
+    - contextPath: HPEArubaClearpass.sessions.Visitor_phone
       description: The visitor’s phone number.
       type: String
   - arguments:
@@ -500,10 +516,10 @@ script:
     execution: false
     name: aruba-clearpass-active-session-disconnect
     outputs:
-    - contextPath: HPEArubaClearpass.sessions.disconnect.Error_code
+    - contextPath: HPEArubaClearpass.sessions.Error_code
       description: Error status code of response (non-zero if a problem occurred).
       type: Number
-    - contextPath: HPEArubaClearpass.sessions.disconnect.Response_message
+    - contextPath: HPEArubaClearpass.sessions.Response_message
       description: Describes the result of the disconnect operation.
       type: String
   dockerimage: demisto/python3:3.9.4.19537

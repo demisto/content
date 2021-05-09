@@ -31,8 +31,9 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def create_client(proxy: bool = False, verify: bool = False, base_url: str = "https://example.com/api/",
+def create_client(mocker, proxy: bool = False, verify: bool = False, base_url: str = "https://example.com/api/",
                   client_id: str = CLIENT_ID, client_secret: str = CLIENT_SECRET):
+    mocker.patch.object(HPEArubaClearpass.Client, 'login')
     return HPEArubaClearpass.Client(proxy=proxy, verify=verify, base_url=base_url, client_id=client_id,
                                     client_secret=client_secret)
 
@@ -51,10 +52,10 @@ def test_login(mocker, integration_context, expected_token):
     - Ensures that access token exists and is not expired.
     - Ensures that if access token is expired, a new one is generated.
     """
-    client = create_client()
     mocker.patch.object(HPEArubaClearpass, "get_integration_context", return_value=integration_context)
-    mocker.patch.object(client, "generate_new_access_token", return_value=CLIENT_AUTH)
-    client.login()
+    mocker.patch.object(HPEArubaClearpass.Client, "generate_new_access_token", return_value=CLIENT_AUTH)
+    client = HPEArubaClearpass.Client(proxy=False, verify=False, base_url="https://example.com/api/",
+                                      client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
     assert client.access_token == expected_token
 
 
@@ -69,11 +70,11 @@ def test_get_endpoints_list_command(mocker):
     Then:
     - Ensures that command outputs are valid.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_endpoints_response = util_load_json("test_data/endpoints_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoints_response)
     results = get_endpoints_list_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearpass.endpoints.list"
+    assert results.outputs_prefix == "HPEArubaClearpass.endpoints"
     assert results.outputs_key_field == "id"
     assert results.outputs[0]['id'] == 1
     assert results.outputs[1]['id'] == 2
@@ -92,17 +93,17 @@ def test_update_endpoint_command(mocker):
     Then:
     - Ensures that new endpoint has the required fields.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_endpoint_response = util_load_json("test_data/update_endpoint_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
-    args = {"id": '1', "mac_address": "123456789", "description": "test1", "status": "Unknown"}
+    args = {"endpoint_id": '1', "mac_address": "123456789", "description": "test1", "status": "Unknown"}
     results = update_endpoint_command(client, args)
-    assert results.outputs_prefix == "HPEArubaClearpass.endpoints.update"
+    assert results.outputs_prefix == "HPEArubaClearpass.endpoints"
     assert results.outputs_key_field == "id"
-    assert results.outputs['ID'] == 1
-    assert results.outputs['MAC_Address'] == '123456789'
-    assert results.outputs['Description'] == 'test1'
-    assert results.outputs['Status'] == 'Unknown'
+    assert results.outputs['id'] == 1
+    assert results.outputs['mac_address'] == '123456789'
+    assert results.outputs['description'] == 'test1'
+    assert results.outputs['status'] == 'Unknown'
 
 
 def test_get_attributes_list_command(mocker):
@@ -116,11 +117,11 @@ def test_get_attributes_list_command(mocker):
     Then:
     - Ensures that command outputs are valid.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_attributes_response = util_load_json("test_data/attributes_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_attributes_response)
     results = get_attributes_list_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearpass.attributes.list"
+    assert results.outputs_prefix == "HPEArubaClearpass.attributes"
     assert results.outputs_key_field == "id"
     assert results.outputs[0]['id'] == 1
     assert results.outputs[0]['name'] == 'Controller Id'
@@ -141,19 +142,19 @@ def test_create_attribute_command(mocker):
     Then:
     - Ensures that new attribute has the required fields.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"data_type": "Boolean", "name": "new123", "entity_name": "Device"}
     results = create_attribute_command(client, args)
-    assert results.outputs_prefix == "HPEArubaClearpass.attributes.create"
+    assert results.outputs_prefix == "HPEArubaClearpass.attributes"
     assert results.outputs_key_field == "id"
-    assert results.outputs['ID'] == 1
-    assert results.outputs['Name'] == args.get('name')
-    assert results.outputs['Entity_name'] == args.get('entity_name')
-    assert results.outputs['Data_type'] == args.get('data_type')
-    assert results.outputs['Mandatory'] is False
-    assert results.outputs['Allow_multiple'] is False
+    assert results.outputs['id'] == 1
+    assert results.outputs['name'] == args.get('name')
+    assert results.outputs['entity_name'] == args.get('entity_name')
+    assert results.outputs['data_type'] == args.get('data_type')
+    assert results.outputs['mandatory'] is False
+    assert results.outputs['allow_multiple'] is False
 
 
 def test_update_attribute_command(mocker):
@@ -167,19 +168,19 @@ def test_update_attribute_command(mocker):
     Then:
     - Ensures that the attribute fields were updated as required.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_endpoint_response = util_load_json("test_data/create_attribute_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"attribute_id": "1", "data_type": "Boolean", "name": "new123", "entity_name": "Device"}
     results = update_attribute_command(client, args)
-    assert results.outputs_prefix == "HPEArubaClearpass.attributes.update"
+    assert results.outputs_prefix == "HPEArubaClearpass.attributes"
     assert results.outputs_key_field == "id"
-    assert results.outputs['ID'] == 1
-    assert results.outputs['Name'] == args.get('name')
-    assert results.outputs['Entity_name'] == args.get('entity_name')
-    assert results.outputs['Data_type'] == args.get('data_type')
-    assert results.outputs['Mandatory'] is False
-    assert results.outputs['Allow_multiple'] is False
+    assert results.outputs['id'] == 1
+    assert results.outputs['name'] == args.get('name')
+    assert results.outputs['entity_name'] == args.get('entity_name')
+    assert results.outputs['data_type'] == args.get('data_type')
+    assert results.outputs['mandatory'] is False
+    assert results.outputs['allow_multiple'] is False
 
 
 def test_delete_attribute_command(mocker):
@@ -193,7 +194,7 @@ def test_delete_attribute_command(mocker):
     Then:
     - Ensures that the attribute was deleted successfully.
     """
-    client = create_client()
+    client = create_client(mocker)
     args = {"attribute_id": "1"}
     mocker.patch.object(client, "prepare_request")
     results = delete_attribute_command(client, args)
@@ -212,11 +213,11 @@ def test_get_active_sessions_list_command(mocker):
     Then:
     - Ensures that command outputs are valid.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_sessions_response = util_load_json("test_data/active_sessions_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
     results = get_active_sessions_list_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearpass.sessions.list"
+    assert results.outputs_prefix == "HPEArubaClearpass.sessions"
     assert results.outputs_key_field == "id"
     assert results.outputs[0]['ID'] == 1
     assert results.outputs[0]['Device_IP'] == "1.2.3.4"
@@ -236,11 +237,11 @@ def test_disconnect_active_session_command(mocker):
     Then:
     - Ensures that the attribute session disconnected successfully.
     """
-    client = create_client()
+    client = create_client(mocker)
     mock_sessions_response = util_load_json("test_data/disconnect_active_session_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
-    results = disconnect_active_session_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearpass.sessions.disconnect"
+    results = disconnect_active_session_command(client, {'session_id': 1})
+    assert results.outputs_prefix == "HPEArubaClearpass.sessions"
     assert results.outputs_key_field == "id"
     assert results.outputs['Error_code'] == 0
     assert results.outputs['Response_message'] == "Success"

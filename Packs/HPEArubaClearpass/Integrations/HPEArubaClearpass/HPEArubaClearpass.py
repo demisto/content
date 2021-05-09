@@ -10,7 +10,6 @@ from typing import Dict, Any
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR"
-TOKEN_TYPE = "Bearer"
 
 
 class Client(BaseClient):
@@ -29,8 +28,9 @@ class Client(BaseClient):
         super().__init__(proxy=proxy, verify=verify, base_url=base_url)
         self.client_id = client_id
         self.client_secret = client_secret
-        self.access_token = ""  # will be generated
-        self.headers: Dict[str, str] = {}  # will be set
+        self.access_token = ""
+        self.headers: Dict[str, str] = {}
+        self.login()
 
     def generate_new_access_token(self):
         """
@@ -48,6 +48,10 @@ class Client(BaseClient):
             json_data=body
         )
 
+    def is_expiration_type_valid(self, auth_response):
+        access_token_expiration_in_seconds = auth_response.get("expires_in")
+        return access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int)
+
     def save_access_token_to_context(self, auth_response: dict):
         """
         Saves a new access token to the integration context.
@@ -56,12 +60,9 @@ class Client(BaseClient):
                auth_response (dict): A dict includes the new access token and its expiration (in seconds).
        """
         self.access_token = auth_response.get("access_token")  # type:ignore
-        access_token_expiration_in_seconds = auth_response.get("expires_in")
-        is_access_token_expiration_valid = access_token_expiration_in_seconds and isinstance(
-            auth_response.get("expires_in"), int)
-        if is_access_token_expiration_valid:
+        if self.is_expiration_type_valid(auth_response):
             access_token_expiration_datetime = datetime.now() + timedelta(
-                seconds=access_token_expiration_in_seconds)  # type:ignore
+                seconds=auth_response.get("expires_in"))  # type:ignore
             context = {"access_token": self.access_token,
                        "expires_in": access_token_expiration_datetime.strftime(DATE_FORMAT)}
             set_integration_context(context)
@@ -109,7 +110,7 @@ class Client(BaseClient):
         Setting the headers for the future HTTP requests.
         The headers should be: {Authorization: Bearer <access_token>}
         """
-        authorization_header_value = f"{TOKEN_TYPE} {self.access_token}"
+        authorization_header_value = f"Bearer {self.access_token}"
         self.headers = {"Authorization": authorization_header_value}
 
     def prepare_request(self, method: str, params: dict, url_suffix: str, body: dict = {},
@@ -138,24 +139,28 @@ def command_test_module(client: Client):
     return message
 
 
-def parse_items_response(response: dict, parsing_function):  # type:ignore
+def parse_items_response(response: dict, active_sessions_parsing=None):  # type:ignore
     """
     Parses the HTTP response by the given function.
         Args:
             response (dict): The HTTP dict response.
-            parsing_function: The function to be called over the given response.
+            active_sessions_parsing (function): whether to call parsing method - only for the active sessions response.
 
         Return:
             human_readable (list): List of dictionaries. Each dict represents a parsed item.
             items_list (list): List (of dictionaries) of all items from the response,
             going to be set as outputs (context data).
     """
-    demisto.debug(f"parsing response by the function {parsing_function}")
     items_list = response.get('_embedded', {}).get('items')
     human_readable = []
     if items_list:
         for item in items_list:
-            human_readable.append(parsing_function(item))  # type: ignore
+            if item.get('_links'):
+                del item['_links']
+            if active_sessions_parsing:
+                human_readable.append(item)  # type: ignore
+            else:
+                human_readable.append(item)
     return human_readable, items_list
 
 
@@ -167,40 +172,33 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     status = args.get('status')
     offset = args.get('offset', 0)
     limit = args.get('limit', 25)
-    endpoints_filter = {}
-    endpoints_filter.update({"status": status}) if status else None
-    endpoints_filter.update({"mac_address": mac_address}) if mac_address else None
-    endpoints_filter = json.dumps(endpoints_filter)  # the API requires the value of 'filter' to be a json object.
+    endpoints_filter = endpoints_filter_to_json_object(status, mac_address)
     params = {"filter": endpoints_filter, "limit": limit, "offset": offset}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='endpoint')
-    readable_output, outputs = parse_items_response(res, endpoints_response_to_dict)
+    readable_output, outputs = parse_items_response(res)
     human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.endpoints.list',
+        outputs_prefix='HPEArubaClearpass.endpoints',
         outputs_key_field='id',
         outputs=outputs,
     )
 
 
-def endpoints_response_to_dict(response: dict) -> dict:
-    return {
-        'ID': response.get('id'),
-        'MAC_Address': response.get('mac_address'),
-        'Status': response.get('status', ""),
-        'Attributes': response.get('attributes', ""),
-        'Description': response.get('description', ""),
-        'Device_insight_tags': response.get('device_insight_tags', "")
-    }
+def endpoints_filter_to_json_object(status, mac_address):
+    endpoints_filter = {}
+    endpoints_filter.update({"status": status}) if status else None
+    endpoints_filter.update({"mac_address": mac_address}) if mac_address else None
+    return json.dumps(endpoints_filter)  # the API requires the value of 'filter' to be a json object.
 
 
 def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Updates an endpoint by its endpoint_id. Only endpoint_id is a mandatory field.
     """
-    endpoint_id = args.get('endpoint_id')
+    endpoint_id = args['endpoint_id']
     mac_address = args.get('mac_address')
     status = args.get('status')
     description = args.get('description')
@@ -210,23 +208,35 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
     for attribute in attributes:  # converting the given list of attributes pairs to a a dict
         attributes_values.update(attribute)
 
+    request_body = get_endpoint_request_body(status, mac_address, description, device_insight_tags, attributes_values,
+                                             attributes)
+    outputs = client.prepare_request(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
+    delete_redundant_data(outputs)
+    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', outputs, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def delete_redundant_data(res):
+    try:
+        del res['_links']
+    except KeyError:
+        pass
+
+
+def get_endpoint_request_body(status, mac_address, description, device_insight_tags, attributes_values, attributes):
     request_body = {}
     request_body.update({"status": status}) if status else None
     request_body.update({"mac_address": mac_address}) if mac_address else None
     request_body.update({"description": description}) if description else None
     request_body.update({"device_insight_tags": device_insight_tags}) if device_insight_tags else None
     request_body.update({"attributes": attributes_values}) if attributes else None
-
-    res = client.prepare_request(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
-    outputs = endpoints_response_to_dict(res)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', outputs, removeNull=True)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.endpoints.update',
-        outputs_key_field='id',
-        outputs=outputs,
-    )
+    return request_body
 
 
 def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -244,51 +254,57 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
     entity_name = args.get('entity_name')
     offset = args.get('offset', 0)
     limit = args.get('limit', 25)
-
-    attribute_filter = {}
-    attribute_filter.update({"id": attribute_id}) if attribute_id else None
-    attribute_filter.update({"name": name}) if name else None
-    attribute_filter.update({"entity_name": entity_name}) if entity_name else None
-    attribute_filter = json.dumps(attribute_filter)  # the API requires the value of 'filter' to be a json object.
+    attribute_filter = attributes_filter_to_json_object(attribute_id, name, entity_name)
     params = {"filter": attribute_filter, "offset": offset, "limit": limit}
 
     res = client.prepare_request(method='GET', params=params, url_suffix='attribute')
-    readable_output, outputs = parse_items_response(res, attributes_response_to_dict)
+    readable_output, outputs = parse_items_response(res)
     human_readable = tableToMarkdown('HPE Aruba Clearpass attributes', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes.list',
+        outputs_prefix='HPEArubaClearpass.attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
 
 
-def attributes_response_to_dict(response: dict) -> dict:
-    return {
-        'ID': response.get('id'),
-        'Name': response.get('name'),
-        'Entity_name': response.get('entity_name'),
-        'Data_type': response.get('data_type'),
-        'Mandatory': response.get('mandatory', False),
-        'Default_value': response.get('default_value'),
-        'Allow_multiple': response.get('allow_multiple', False),
-        'Allowed_value': response.get('allowed_value', False)
-    }
+def attributes_filter_to_json_object(attribute_id, name, entity_name):
+    attribute_filter = {}
+    attribute_filter.update({"id": attribute_id}) if attribute_id else None
+    attribute_filter.update({"name": name}) if name else None
+    attribute_filter.update({"entity_name": entity_name}) if entity_name else None
+    return json.dumps(attribute_filter)  # the API requires the value of 'filter' to be a json object.
+
+
+def check_api_limitation_on_specific_data_types(args: Dict[str, Any]):
+    """ Checks if the attribute data_type match the api limitations like:
+    1. allow_multiple is available only when data_type is String.
+    1. allowed_value is available only when data_type is List.
+    """
+    data_type = args.get('data_type')
+    allow_multiple_data_type_string = argToBoolean(args.get('allow_multiple', False))
+    allowed_list_data_types_value = args.get('allowed_value', "")
+
+    if allow_multiple_data_type_string and data_type != "String":
+        return_error(f"Note: allow_multiple argument should be true only for data type String and not for {data_type}.")
+    if allowed_list_data_types_value and data_type != 'List':
+        return_error(f"Note: allowed_value argument should be set only for data type List and not for {data_type}.")
 
 
 def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Creates an attribute by the given name, entity_name, data_type which are all mandatory fields.
     """
+    check_api_limitation_on_specific_data_types(args)
     new_attribute_body = create_new_attribute_body(args)
-    res = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
-    outputs = attributes_response_to_dict(res)
+    outputs = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
+    delete_redundant_data(outputs)
     human_readable = tableToMarkdown('HPE Aruba Clearpass new attribute', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes.create',
+        outputs_prefix='HPEArubaClearpass.attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -301,16 +317,17 @@ def create_new_attribute_body(args: Dict[str, Any]):
     name = args.get('name')
     entity_name = args.get('entity_name')
     data_type = args.get('data_type')
-    mandatory = args.get('mandatory', False)
+    mandatory = argToBoolean(args.get('mandatory', False))
     attribute_default_value = args.get('default_value', "")
-    allow_multiple_data_type_string = args.get('allow_multiple', False)
+    allow_multiple_data_type_string = argToBoolean(args.get('allow_multiple', False))
     allowed_list_data_types_value = args.get('allowed_value', "")
 
-    if allow_multiple_data_type_string and data_type != "String":
-        return_error(f"Note: allow_multiple argument should be true only for data type String and not for {data_type}.")
-    if allowed_list_data_types_value and data_type != 'List':
-        return_error(f"Note: allowed_value argument should be set only for data type List and not for {data_type}.")
+    return get_attribute_request_body(name, entity_name, data_type, mandatory, attribute_default_value,
+                                      allow_multiple_data_type_string, allowed_list_data_types_value)
 
+
+def get_attribute_request_body(name, entity_name, data_type, mandatory, attribute_default_value,
+                               allow_multiple_data_type_string, allowed_list_data_types_value):
     new_attribute_body = {}
     new_attribute_body.update({"name": name})
     new_attribute_body.update({"entity_name": entity_name})
@@ -321,7 +338,6 @@ def create_new_attribute_body(args: Dict[str, Any]):
         {"allow_multiple": allow_multiple_data_type_string}) if allow_multiple_data_type_string else None
     new_attribute_body.update(
         {"allowed_value": allowed_list_data_types_value}) if allowed_list_data_types_value else None
-
     return new_attribute_body
 
 
@@ -329,16 +345,16 @@ def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     Updates an attribute fields by the attribute_id which is a mandatory field.
     """
-    attribute_id = args.get('attribute_id')
+    attribute_id = args['attribute_id']
     new_attribute_body = create_new_attribute_body(args)
-    res = client.prepare_request(method='PATCH', params={}, url_suffix=f'attribute/{attribute_id}',
-                                 body=new_attribute_body)
-    outputs = attributes_response_to_dict(res)
+    outputs = client.prepare_request(method='PATCH', params={}, url_suffix=f'attribute/{attribute_id}',
+                                     body=new_attribute_body)
+    delete_redundant_data(outputs)
     human_readable = tableToMarkdown('HPE Aruba Clearpass update attribute', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes.update',
+        outputs_prefix='HPEArubaClearpass.attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -348,7 +364,7 @@ def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     Deletes an attribute by the attribute_id which is a mandatory field.
     """
-    attribute_id = args.get('attribute_id')
+    attribute_id = args['attribute_id']
     client.prepare_request(method='DELETE', params={}, url_suffix=f'attribute/{attribute_id}', resp_type='content')
 
     human_readable = f"HPE Aruba Clearpass attribute with ID: {attribute_id} deleted successfully."
@@ -365,29 +381,33 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     state = args.get('state')
     visitor_phone = args.get('visitor_phone')
 
+    session_filter = sessions_filter_to_json_object(session_id, device_ip, device_mac_address, state, visitor_phone)
+    params = {"filter": json.dumps(session_filter)}
+
+    res = client.prepare_request(method='GET', params=params, url_suffix='session')
+    readable_output, all_active_sessions_list = parse_items_response(res, parse_active_sessions_response)
+    outputs = [parse_active_sessions_response(item) for item in all_active_sessions_list]
+    human_readable = tableToMarkdown('HPE Aruba Clearpass Active Sessions', readable_output, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='HPEArubaClearpass.sessions',
+        outputs_key_field='id',
+        outputs=outputs,
+    )
+
+
+def sessions_filter_to_json_object(session_id, device_ip, device_mac_address, state, visitor_phone):
     session_filter = {}
     session_filter.update({"id": session_id}) if session_id else None
     session_filter.update({"framedipaddress": device_ip}) if device_ip else None
     session_filter.update({"mac_address": device_mac_address}) if device_mac_address else None
     session_filter.update({"state": state}) if state else None
     session_filter.update({"visitor_phone": visitor_phone}) if visitor_phone else None
-    session_filter = json.dumps(session_filter)  # the API requires the value of 'filter' to be a json object.
-    params = {"filter": json.dumps(session_filter)}
-
-    res = client.prepare_request(method='GET', params=params, url_suffix='session')
-    readable_output, all_active_sessions_list = parse_items_response(res, active_sessions_response_to_dict)
-    outputs = [active_sessions_response_to_dict(item) for item in all_active_sessions_list]
-    human_readable = tableToMarkdown('HPE Aruba Clearpass Active Sessions', readable_output, removeNull=True)
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.sessions.list',
-        outputs_key_field='id',
-        outputs=outputs,
-    )
+    return json.dumps(session_filter)  # the API requires the value of 'filter' to be a json object.
 
 
-def active_sessions_response_to_dict(response: dict) -> dict:
+def parse_active_sessions_response(response: dict) -> dict:
     return {
         'ID': response.get('id'),
         'Device_IP': response.get('framedipaddress'),
@@ -401,7 +421,7 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
     """
     Disconnects an active session by the session_id which is a mandatory field.
     """
-    session_id = args.get('session_id')
+    session_id = args['session_id']
     url_suffix = f"/session/{session_id}/disconnect"
     body = {"id": session_id, "confirm_disconnect": True}
 
@@ -411,7 +431,7 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.sessions.disconnect',
+        outputs_prefix='HPEArubaClearpass.sessions',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -422,9 +442,9 @@ def main() -> None:
     base_url = urljoin(params.get('url'), '/api')
     client_id = params.get('client_id')
     client_secret = params.get('client_secret')
-
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+
     client = Client(proxy=proxy,
                     verify=verify_certificate,
                     base_url=base_url,
@@ -432,33 +452,33 @@ def main() -> None:
                     client_secret=client_secret)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        client.login()
+        args = demisto.args()
         if demisto.command() == 'test-module':
             return_results(command_test_module(client))
 
         elif demisto.command() == 'aruba-clearpass-endpoints-list':
-            return_results(get_endpoints_list_command(client, demisto.args()))
+            return_results(get_endpoints_list_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-endpoint-update':
-            return_results(update_endpoint_command(client, demisto.args()))
+            return_results(update_endpoint_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-attributes-list':
-            return_results(get_attributes_list_command(client, demisto.args()))
+            return_results(get_attributes_list_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-attribute-create':
-            return_results(create_attribute_command(client, demisto.args()))
+            return_results(create_attribute_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-attribute-update':
-            return_results(update_attribute_command(client, demisto.args()))
+            return_results(update_attribute_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-attribute-delete':
-            return_results(delete_attribute_command(client, demisto.args()))
+            return_results(delete_attribute_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-active-sessions-list':
-            return_results(get_active_sessions_list_command(client, demisto.args()))
+            return_results(get_active_sessions_list_command(client, args))
 
         elif demisto.command() == 'aruba-clearpass-active-session-disconnect':
-            return_results(disconnect_active_session_command(client, demisto.args()))
+            return_results(disconnect_active_session_command(client, args))
 
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
