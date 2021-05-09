@@ -83,7 +83,8 @@ install-packs-in-server-master:
     INSTANCE_ROLE: "Server Master"
 
 upload-packs-to-marketplace:
-  needs: ["run-validations", "run-unittests-and-lint", "install-packs-in-server6_0", "install-packs-in-server-master"]
+#  needs: ["run-validations", "run-unittests-and-lint", "install-packs-in-server6_0", "install-packs-in-server-master"]
+  needs: ["install-packs-in-server6_0", "install-packs-in-server-master"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
