@@ -325,36 +325,45 @@ class Client(BaseClient):
         self.destroy_token(token)
         return extract_from_xml(res, req_data['outputPath']), res
 
-    def get_level_by_app_id(self, app_id):
-        cache = demisto.getIntegrationContext()
-        if cache.get(app_id):
-            return cache[app_id]
-
+    def get_level_by_app_id(self, app_id, specify_level_id=None):
         levels = []
-        all_levels_res = self.do_request('GET', f'/api/core/system/level/module/{app_id}')
-        for level in all_levels_res:
-            if level.get('RequestedObject') and level.get('IsSuccessful'):
-                level_id = level.get('RequestedObject').get('Id')
+        cache = get_integration_context()
 
-                fields = {}
-                level_res = self.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
-                for field in level_res:
-                    if field.get('RequestedObject') and field.get('IsSuccessful'):
-                        field_item = field.get('RequestedObject')
-                        field_id = str(field_item.get('Id'))
-                        fields[field_id] = {'Type': field_item.get('Type'),
-                                            'Name': field_item.get('Name'),
-                                            'FieldId': field_id,
-                                            'IsRequired': field_item.get('IsRequired', False),
-                                            'RelatedValuesListId': field_item.get('RelatedValuesListId')}
+        if cache.get(app_id):
+            levels = cache[app_id]
+        else:
+            all_levels_res = self.do_request('GET', f'/api/core/system/level/module/{app_id}')
+            for level in all_levels_res:
+                if level.get('RequestedObject') and level.get('IsSuccessful'):
+                    level_id = level.get('RequestedObject').get('Id')
 
-                levels.append({'level': level_id, 'mapping': fields})
+                    fields = {}
+                    level_res = self.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
+                    for field in level_res:
+                        if field.get('RequestedObject') and field.get('IsSuccessful'):
+                            field_item = field.get('RequestedObject')
+                            field_id = str(field_item.get('Id'))
+                            fields[field_id] = {'Type': field_item.get('Type'),
+                                                'Name': field_item.get('Name'),
+                                                'FieldId': field_id,
+                                                'IsRequired': field_item.get('IsRequired', False),
+                                                'RelatedValuesListId': field_item.get('RelatedValuesListId')}
 
-        if levels:
-            cache[int(app_id)] = levels
-            demisto.setIntegrationContext(cache)
-            return levels
-        return []
+                    levels.append({'level': level_id, 'mapping': fields})
+            if levels:
+                cache[int(app_id)] = levels
+                set_integration_context(cache)
+
+        level_data = None
+        if specify_level_id:
+            level_data = next((level for level in levels if level.get('level') == int(specify_level_id)), None)
+        elif levels:
+            level_data = levels[0]
+
+        if not level_data:
+            raise DemistoException('Got no level by app id. You might be using the wrong application id or level id.')
+
+        return level_data
 
     def get_record(self, app_id, record_id):
         res = self.do_request('GET', f'/api/core/content/{record_id}')
@@ -367,10 +376,9 @@ class Client(BaseClient):
         if res.get('RequestedObject') and res.get('IsSuccessful'):
             content_obj = res.get('RequestedObject')
             level_id = content_obj.get('LevelId')
-            levels = self.get_level_by_app_id(app_id)
-            level_fields = list(filter(lambda m: m['level'] == level_id, levels))
-            if level_fields:
-                level_fields = level_fields[0]['mapping']
+            level = self.get_level_by_app_id(app_id, level_id)
+            if level:
+                level_fields = level['mapping']
             else:
                 return {}, res, errors
 
@@ -452,12 +460,9 @@ class Client(BaseClient):
         demisto.debug(f'searching for records {field_to_search}:{search_value}')
         if fields_to_display is None:
             fields_to_display = []
-        try:
-            level_data = self.get_level_by_app_id(app_id)[0]
-        except IndexError as exc:
-            raise DemistoException(
-                'Could not find a level data. You might be using the wrong application id'
-            ) from exc
+
+        level_data = self.get_level_by_app_id(app_id)
+
         # Building request fields
         fields_xml = ''
         search_field_name = ''
@@ -521,7 +526,7 @@ class Client(BaseClient):
         return records
 
     def get_field_value_list(self, field_id):
-        cache = demisto.getIntegrationContext()
+        cache = get_integration_context()
 
         if cache['fieldValueList'].get(field_id):
             return cache.get('fieldValueList').get(field_id)
@@ -544,7 +549,7 @@ class Client(BaseClient):
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
-                demisto.setIntegrationContext(cache)
+                set_integration_context(cache)
                 return field_data
         return {}
 
@@ -851,12 +856,9 @@ def get_record_command(client: Client, args: Dict[str, str]):
 def create_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     fields_values = args.get('fieldsToValues')
-    try:
-        level_data = client.get_level_by_app_id(app_id)[0]
-    except IndexError as exc:
-        raise DemistoException(
-            'Got no level by app id. You might be using the wrong application id'
-        ) from exc
+    level_id = args.get('levelId')
+    level_data = client.get_level_by_app_id(app_id, level_id)
+
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
@@ -886,7 +888,9 @@ def update_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     record_id = args.get('contentId')
     fields_values = args.get('fieldsToValues')
-    level_data = client.get_level_by_app_id(app_id)[0]
+    level_id = args.get('levelId')
+    level_data = client.get_level_by_app_id(app_id, level_id)
+
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
@@ -932,7 +936,7 @@ def search_options_command(client: Client, args: Dict[str, str]):
 
 
 def reset_cache_command(client: Client, args: Dict[str, str]):
-    demisto.setIntegrationContext({})
+    set_integration_context({})
     return_outputs('', {}, '')
 
 
@@ -1058,8 +1062,9 @@ def search_records_command(client: Client, args: Dict[str, str]):
     numeric_operator = args.get('numericOperator')
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
-    full_data = args.get('fullData', 'true') == 'true'
+    full_data = argToBoolean(args.get('fullData'))
     sort_type = 'Descending' if argToBoolean(args.get('isDescending', 'false')) else 'Ascending'
+    level_id = args.get('levelId')
 
     if fields_to_get and 'Id' not in fields_to_get:
         fields_to_get.append('Id')
@@ -1068,7 +1073,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         return_error('fields-to-display param should have only values from fields-to-get')
 
     if full_data:
-        level_data = client.get_level_by_app_id(app_id)[0]
+        level_data = client.get_level_by_app_id(app_id, level_id)
         fields_mapping = level_data['mapping']
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
@@ -1135,7 +1140,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
 
 
 def print_cache_command(client: Client, args: Dict[str, str]):
-    cache = demisto.getIntegrationContext()
+    cache = get_integration_context()
     return_outputs(cache, {}, {})
 
 
@@ -1250,10 +1255,10 @@ def main():
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
 
-    cache = demisto.getIntegrationContext()
+    cache = get_integration_context()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
-        demisto.setIntegrationContext(cache)
+        set_integration_context(cache)
 
     client = Client(
         base_url,
