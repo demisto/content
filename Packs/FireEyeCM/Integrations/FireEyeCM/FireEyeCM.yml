@@ -167,6 +167,21 @@ script:
     - contextPath: FireEyeCM.alert
       description: TODO
       type: String
+  - arguments:
+    - default: false
+      description: The ID number of the alert to retrieve its details.
+      isArray: true
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Search and retrieve single alert details.
+    execution: false
+    name: fireeye-cm-get-alert-details
+    outputs:
+    - contextPath: FireEyeCM.alert
+      description: TODO
+      type: String
   isfetch: false
   runonce: false
   script: '-'

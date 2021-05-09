@@ -26,6 +26,9 @@ class Client(BaseClient):
     def get_alerts_request(self, alert_id: str) -> Dict[str, str]:
         return self._http_request(method='GET', url_suffix='alerts', params={'alert_id': alert_id}, resp_type='json')
 
+    def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
+        return self._http_request(method='GET', url_suffix=f'alerts/alert/{alert_id}', resp_type='json')
+
 
 def test_module(client: Client) -> str:
     # check get alerts for fetch purposes
@@ -39,7 +42,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     alerts = raw_response.get('alert')
 
-    headers = ['id', 'alertUrl', 'name', 'ack', 'severity', 'malicious', 'occurred']
+    headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
     md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alerts, headers=headers, removeNull=True)
 
     return CommandResults(
@@ -48,6 +51,30 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='id',
         outputs=raw_response,
     )
+
+
+def get_alert_details(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    alert_ids = argToList(args.get('alert_id'))
+    command_results: List[CommandResults] = []
+
+    for alert_id in alert_ids:
+        raw_response = client.get_alert_details_request(alert_id)
+
+        alert_details = raw_response.get('alert')
+        if not alert_details:
+            md_ = f'Alert {alert_id} was not found.'
+
+        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alert_details, headers=headers, removeNull=True)
+
+        command_results.append(CommandResults(
+            readable_output=md_,
+            outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.alerts',
+            outputs_key_field='id',
+            outputs=raw_response,
+        ))
+
+    return command_results
 
 
 def main():
@@ -72,6 +99,7 @@ def main():
         client = Client(base_url=base_url, username=username, password=password, verify=verify, proxy=proxy)
         commands = {
             f'{INTEGRATION_COMMAND_NAME}-get-alerts': get_alerts,
+            f'{INTEGRATION_COMMAND_NAME}-get-alert-details': get_alert_details,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))
