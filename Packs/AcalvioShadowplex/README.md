@@ -2,8 +2,8 @@ Acalvio ShadowPlex is an Autonomous, Distributed Deception Platform designed for
 
 ##### What does this pack do?
 The integration pack allows:
-• Automated forwarding of deception incidents into Cortex XSOAR
-• Viewing ShadowPlex incident data in Cortex XSOAR
-• Managing of deceptions using Cortex XSOAR
+• Automated forwarding of deception incidents into Cortex XSOAR.
+• Viewing ShadowPlex incident data in Cortex XSOAR.
+• Managing of deceptions using Cortex XSOAR.
 
 For more information on Acalvio ShadowPlex, please visit www.acalvio.com
