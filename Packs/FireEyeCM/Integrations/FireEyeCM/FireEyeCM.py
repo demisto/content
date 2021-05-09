@@ -18,7 +18,6 @@ class Client(BaseClient):
         self._headers = {
             'X-FeApi-Token': self._generate_token(),
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
         }
 
     def _generate_token(self) -> str:
@@ -39,6 +38,10 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
                                   params={'schema_compatibility': True}, data=json.dumps({"annotation": "<test>"}),
                                   resp_type='resp')
+
+    def get_artifacts_by_uuid_request(self, uuid: str, timeout: int) -> Dict[str, str]:
+        self._headers.pop('Accept')  # returns a file, hence this header is disruptive
+        return self._http_request(method='GET', url_suffix=f'artifacts/{uuid}', resp_type='content', timeout=timeout)
 
 
 def test_module(client: Client) -> str:
@@ -112,6 +115,14 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
     return command_results
 
 
+def get_artifacts_by_uuid(client: Client, args: Dict[str, Any]):
+    uuids = argToList(args.get('uuid'))
+    timeout = int(args.get('timeout'))
+    for uuid in uuids:
+        artifact = client.get_artifacts_by_uuid_request(uuid, timeout)
+        demisto.results(fileResult(f'artifacts_{uuid}.zip', data=artifact, file_type=EntryType.ENTRY_INFO_FILE))
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -119,6 +130,7 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
+    # there is also a v1.2.0 which holds different reqs, we support only the newest API version
     base_url = urljoin(params.get('url'), '/wsapis/v2.0.0/')
     verify = not argToBoolean(params.get('insecure', 'false'))
     proxy = argToBoolean(params.get('proxy'))
@@ -129,19 +141,20 @@ def main():
     # first_fetch_time = params.get('fetch_time', '3 days').strip()
 
     command = demisto.command()
+    args = demisto.args()
     LOG(f'Command being called is {command}')
     try:
         client = Client(base_url=base_url, username=username, password=password, verify=verify, proxy=proxy)
-        # raise Exception(self._headers['X-FeApi-Token'])
+        # raise Exception(client._headers['X-FeApi-Token'])
         commands = {
             f'{INTEGRATION_COMMAND_NAME}-get-alerts': get_alerts,
             f'{INTEGRATION_COMMAND_NAME}-get-alert-details': get_alert_details,
             f'{INTEGRATION_COMMAND_NAME}-alert-acknowledge': alert_acknowledge,
+            f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid': get_artifacts_by_uuid,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))
-
-        # elif demisto.command() == 'fetch-incidents':
+        # elif command == 'fetch-incidents':
         #     next_run, incidents = fetch_incidents(
         #         client=client,
         #         last_run=demisto.getLastRun(),
@@ -151,10 +164,10 @@ def main():
         #     )
         #     demisto.setLastRun(next_run)
         #     demisto.incidents(incidents)
-
+        elif command == f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid':
+            get_artifacts_by_uuid(client, args)
         elif command in commands:
-            return_results(commands[command](client, demisto.args()))
-
+            return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

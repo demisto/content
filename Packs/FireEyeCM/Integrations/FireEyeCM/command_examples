@@ -1,1 +1,4 @@
-!fireeye-cm-alert-acknowledge
+!fireeye-cm-get-alerts
+!fireeye-cm-get-alert-details alert_id=<id1>,<id2>
+!fireeye-cm-alert-acknowledge uuid=<uuid>
+!fireeye-cm-get-artifacts-by-uuid uuid=<uuid>

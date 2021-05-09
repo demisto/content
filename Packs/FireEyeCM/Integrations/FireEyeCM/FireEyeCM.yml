@@ -193,6 +193,43 @@ script:
     description: Confirm that the alert has been reviewed.
     execution: false
     name: fireeye-cm-alert-acknowledge
+  - arguments:
+    - default: false
+      description: The universally unique identifier (UUID) for the alert.
+      isArray: true
+      name: uuid
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '120'
+      description: Timeout to retrieve the artifacts, Default is 120.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Downloads malware artifacts data for the specified UUID as a zip file.
+    execution: false
+    name: fireeye-cm-get-artifacts-by-uuid
+    outputs:
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the artifact file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the artifact file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the artifact file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the artifact file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the artifact file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the artifact file.
+      type: string
   isfetch: false
   runonce: false
   script: '-'
