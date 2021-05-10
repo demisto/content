@@ -3384,7 +3384,8 @@
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "playbook_TrendmicroCAS_Test": "Issue 32730",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "Rundeck_test": "Issue 31174"
+        "Rundeck_test": "Issue 31174",
+        "Azure NSG - Test": "Issue 33217"
     },
     "skipped_integrations": {
         
