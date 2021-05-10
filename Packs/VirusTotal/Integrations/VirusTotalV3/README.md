@@ -136,7 +136,7 @@ Checks the file reputation of the specified hash.
 | File.Relationships.EntityB | String | The destination of the relationship. |
 | File.Relationships.Relationship | String | The name of the relationship. |
 | File.Relationships.EntityAType | String | The type of the source of the relationship. |
-| File.Relationships.EntityBType | String | The type of the destination of the relationship. 
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Detections | Number | For malicious files, the total number of detections. | 
 | File.Malicious.TotalEngines | Number | For malicious files, the total number of engines that checked the file hash. | 
