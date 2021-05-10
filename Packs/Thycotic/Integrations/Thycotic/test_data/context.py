@@ -187,7 +187,7 @@ SECRET_CHECKIN_CONTEXT = {
 }
 
 SECRET_DELETE_CONTEXT = {
-    "Thycotic.Secret.Deleted(val.delete == obj.delete)": {
+    "Thycotic.Secret.Deleted(val.delete && val.delete == obj.delete)": {
         "id": 9,
         "objectType": "Secret",
         "responseCodes": []
