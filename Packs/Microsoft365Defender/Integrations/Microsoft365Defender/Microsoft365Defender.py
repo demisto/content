@@ -17,8 +17,6 @@ TIMEOUT = 30
 ''' CLIENT CLASS '''
 
 
-# todo In the readme add permission requirements per command.
-# todo Needs to be beta integration - its just adding the beta flag in the integration yml and adding a section to the description and readme.
 # todo Add configurable base_url in parameter.
 # todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
 # todo Add timeout argument for list commands.
