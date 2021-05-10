@@ -2626,6 +2626,12 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      description: The dedicated Host ID.
+      isArray: false
+      name: host_id
+      required: false
+      secret: false
     deprecated: false
     description: Launches the specified number of instances using an AMI for which
       you have permissions. You can create a launch template , which is a resource
@@ -4639,7 +4645,7 @@ script:
       secret: false
     - default: false
       description: The IPv6 network range to allow or deny, in CIDR notation (for
-        example 2001:db8:1234:1a00::/64 ). # disable-secrets-detection
+        example 2001:db8:1234:1a00::/64 ).
       isArray: false
       name: Ipv6CidrBlock
       required: false
@@ -4788,17 +4794,6 @@ script:
       default: false
       description: Indicates that the fleet uses a single instance type to launch
         all Spot Instances in the fleet.
-      isArray: false
-      name: SpotSingleInstanceType
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicates that the fleet launches all Spot Instances into a single
-        Availability Zone.
       isArray: false
       name: SpotSingleInstanceType
       predefined:
@@ -6635,7 +6630,145 @@ script:
       values exactly.
     execution: true
     name: aws-ec2-revoke-security-group-egress-rule
-  dockerimage: demisto/boto3:2.0.0.19034
+  - arguments:
+    - default: false
+      description: The Availability Zone in which to allocate the Dedicated Host.
+      isArray: false
+      name: availability_zone
+      required: true
+      secret: false
+    - default: false
+      description: The number of Dedicated Hosts to allocate to your account with
+        these parameters.
+      isArray: false
+      name: quantity
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether the host accepts any untargeted instance launches
+        that match its instance type configuration, or if it only accepts Host tenancy
+        instance launches that specify its unique host ID. The default is "on".
+      isArray: false
+      name: auto_placement
+      predefined:
+      - 'on'
+      - 'off'
+      required: false
+      secret: false
+    - default: false
+      description: Unique, case-sensitive identifier that you provide to ensure the
+        idempotency of the request.
+      isArray: false
+      name: client_token
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the instance type to be supported by the Dedicated Hosts.
+        If you specify an instance type, the Dedicated Hosts support instances of
+        the specified instance type only. If you want the Dedicated Hosts to support
+        multiple instance types in a specific instance family, omit this parameter
+        and specify InstanceFamily instead. You cannot specify InstanceType and InstanceFamily
+        in the same request.
+      isArray: false
+      name: instance_type
+      required: false
+      secret: false
+    - default: false
+      description: Specifies the instance family to be supported by the Dedicated
+        Hosts. If you specify an instance family, the Dedicated Hosts support multiple
+        instance types within that instance family. If you want the Dedicated Hosts
+        to support a specific instance type only, omit this parameter and specify
+        InstanceType instead. You cannot specify InstanceFamily and InstanceType in
+        the same request
+      isArray: false
+      name: instance_family
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Indicates whether to enable or disable host recovery for the Dedicated
+        Host. Host recovery is disabled by default.
+      isArray: false
+      name: host_recovery
+      predefined:
+      - 'on'
+      - 'off'
+      required: false
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Allocates a Dedicated Host to your account.
+    execution: false
+    name: aws-ec2-allocate-hosts
+    outputs:
+    - contextPath: AWS.EC2.Host.HostId
+      description: The ID of the allocated Dedicated Host. This is used to launch
+        an instance onto a specific host.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of IDs of the Dedicated Hosts to release.
+      isArray: true
+      name: host_id
+      required: true
+      secret: false
+    - default: false
+      description: The AWS Region, if not specified the default region will be used.
+      isArray: false
+      name: region
+      required: false
+      secret: false
+    - default: false
+      description: The Amazon Resource Name (ARN) of the role to assume.
+      isArray: false
+      name: roleArn
+      required: false
+      secret: false
+    - default: false
+      description: An identifier for the assumed role session.
+      isArray: false
+      name: roleSessionName
+      required: false
+      secret: false
+    - default: false
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
+      isArray: false
+      name: roleSessionDuration
+      required: false
+      secret: false
+    deprecated: false
+    description: Release on demand dedicated host.
+    execution: false
+    name: aws-ec2-release-hosts
+  dockerimage: demisto/boto3:2.0.0.19717
   feed: false
   isfetch: false
   longRunning: false
