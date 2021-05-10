@@ -341,8 +341,6 @@ def create_instance(args):
 
     Return the created instance to the war room
     """
-
-    print(args)
     config = {}
     if args.get('name'):
         name = args.get('name', '')
@@ -728,7 +726,7 @@ def create_instance(args):
         config.update({'deletionProtection': deletion_protection})
 
     project = SERVICE_ACT_PROJECT_ID
-    print(config)
+
     operation = (
         get_compute().instances().insert(project=project, zone=zone, body=config).execute()
     )
