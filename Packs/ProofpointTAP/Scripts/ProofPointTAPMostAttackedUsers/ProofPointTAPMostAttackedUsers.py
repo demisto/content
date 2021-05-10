@@ -8,4 +8,4 @@ for user in results:
     users.append({"name": user.get("identity").get("emails", [""])[0],
                   "data": [user.get("threatStatistics").get("attackIndex")]})
 
-demisto.results(json.dumps(users))
+return_results(json.dumps(users))
