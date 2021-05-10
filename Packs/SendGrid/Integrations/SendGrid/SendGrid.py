@@ -42,8 +42,8 @@ def process_attachments(message, attachIDs="", attachNames=""):
             f_data = f.read()
         encoded_data = base64.b64encode(f_data).decode()
         file_type = mimetypes.guess_type(attachment_name)[0]
-        message.attachment = Attachment(FileContent(encoded_data), FileName(attachment_name),
-                                        FileType(file_type), Disposition('attachment'))
+        message.attachment = Attachment(FileContent(encoded_data), FileName(attachment_name), FileType(file_type),
+                                        Disposition('attachment'))  # type: ignore[name-defined]
     return 'ok'
 
 
@@ -68,7 +68,7 @@ def create_batch_id(sg):
     if response.status_code == 201:
         rBody = response.body
         body = json.loads(rBody.decode("utf-8"))
-        ec = {'Sendgrid.Batchid': body['batch_id']}
+        ec = {'Sendgrid.BatchId': body['batch_id']}
         md = tableToMarkdown('Batch Id: ', body)
         return {
             'ContentsFormat': formats['json'],
@@ -93,7 +93,7 @@ def scheduled_send_status_change(args: dict, sg):
     if response.status_code == 201:
         rBody = response.body
         body = json.loads(rBody.decode("utf-8"))
-        ec = {'Sendgrid.SceduledSendStatus': body}
+        ec = {'Sendgrid.ScheduledSendStatus': body}
         md = tableToMarkdown('Scheduled status changed: ', body)
         return {
             'ContentsFormat': formats['json'],
@@ -233,9 +233,12 @@ def get_global_email_stats(args: dict, sg):
             mail_stats.append(res)
 
         md = tableToMarkdown("Global Email Statistics", mail_stats, ['date', 'blocks',
-                                                                     'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered', 'invalid_emails',
-                                                                     'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports',
-                                                                     'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+                                                                     'bounce_drops', 'bounces', 'clicks', 'deferred',
+                                                                     'delivered', 'invalid_emails',
+                                                                     'opens', 'processed', 'requests',
+                                                                     'spam_report_drops', 'spam_reports',
+                                                                     'unique_clicks', 'unique_opens',
+                                                                     'unsubscribe_drops', 'unsubscribes'])
         ec = {'Sendgrid.GlobalEmailStats': mail_stats}
         return {
             'ContentsFormat': formats['json'],
@@ -302,9 +305,18 @@ def get_category_stats(args: dict, sg):
             cat_stats.append(res)
 
         md = tableToMarkdown("Statistics for the Category: " + res['category'], cat_stats, ['date',
-                                                                                            'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered', 'invalid_emails',
-                                                                                            'opens', 'processed', 'requests', 'spam_report_drops', 'spam_reports',
-                                                                                            'unique_clicks', 'unique_opens', 'unsubscribe_drops', 'unsubscribes'])
+                                                                                            'blocks', 'bounce_drops',
+                                                                                            'bounces', 'clicks',
+                                                                                            'deferred', 'delivered',
+                                                                                            'invalid_emails',
+                                                                                            'opens', 'processed',
+                                                                                            'requests',
+                                                                                            'spam_report_drops',
+                                                                                            'spam_reports',
+                                                                                            'unique_clicks',
+                                                                                            'unique_opens',
+                                                                                            'unsubscribe_drops',
+                                                                                            'unsubscribes'])
         ec = {'Sendgrid.CategoryStats': cat_stats}
         return {
             'ContentsFormat': formats['json'],
@@ -377,9 +389,22 @@ def get_all_categories_stats(args: dict, sg):
                 cat_stats.append(res)
 
             md = tableToMarkdown("Sum of All Categories Statistics from " + body['date'], cat_stats, ['category',
-                                                                                                      'blocks', 'bounce_drops', 'bounces', 'clicks', 'deferred', 'delivered', 'invalid_emails', 'opens',
-                                                                                                      'processed', 'requests', 'spam_report_drops', 'spam_reports', 'unique_clicks', 'unique_opens',
-                                                                                                      'unsubscribe_drops', 'unsubscribes'])
+                                                                                                      'blocks',
+                                                                                                      'bounce_drops',
+                                                                                                      'bounces',
+                                                                                                      'clicks',
+                                                                                                      'deferred',
+                                                                                                      'delivered',
+                                                                                                      'invalid_emails',
+                                                                                                      'opens',
+                                                                                                      'processed',
+                                                                                                      'requests',
+                                                                                                      'spam_report_drops',
+                                                                                                      'spam_reports',
+                                                                                                      'unique_clicks',
+                                                                                                      'unique_opens',
+                                                                                                      'unsubscribe_drops',
+                                                                                                      'unsubscribes'])
             ec = {'Sendgrid.AllCategoriesStats': body}
             return {
                 'ContentsFormat': formats['json'],
@@ -430,7 +455,7 @@ def get_categories_list(args: dict, sg):
 
 
 def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
-    message = Mail()
+    message = Mail()  # type: ignore[name-defined]
 
     attach_ids = args.get('AttachIDs')
     attach_names = args.get('AttachNames') or ""
@@ -442,40 +467,41 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if categories:
         categories = categories.split(",")
         for category in categories:
-            message.category = Category(category)
+            message.category = Category(category)  # type: ignore[name-defined]
 
     batch_id = args.get('BatchID')
     if batch_id:
-        message.batch_id = BatchId(batch_id)
+        message.batch_id = BatchId(batch_id)  # type: ignore[name-defined]
 
     send_at = args.get('SendAt')
     if send_at:
         t = dateutil.parser.parse(send_at)
         send_time = time.mktime(t.timetuple())
-        message.send_at = SendAt(int(send_time))
+        message.send_at = SendAt(int(send_time))  # type: ignore[name-defined]
 
     asm = args.get('Asm')
     if asm:
         asm = asm if type(asm) is dict else json.loads(asm)
-        message.asm = Asm(GroupId(asm["group_id"]), GroupsToDisplay(asm["groups_to_display"]))
+        message.asm = Asm(GroupId(asm["group_id"]), GroupsToDisplay(asm["groups_to_display"]))  # type: ignore[name-defined]
 
     custom_args = args.get('CustomArgs')
     if custom_args:
         custom_args = custom_args if type(custom_args) is dict else json.loads(custom_args)
         for key in custom_args:
-            message.custom_arg = CustomArg(key, custom_args[key])
+            message.custom_arg = CustomArg(key, custom_args[key])  # type: ignore[name-defined]
 
     ip_pool_name = args.get('IPPoolName')
     if ip_pool_name:
-        message.ip_pool_name = IpPoolName(ip_pool_name)
+        message.ip_pool_name = IpPoolName(ip_pool_name)  # type: ignore[name-defined]
 
     # Mail Tracking settings
-    tracking_settings = TrackingSettings()
+    tracking_settings = TrackingSettings()  # type: ignore[name-defined]
     click_tracking = args.get('ClickTracking')
     if click_tracking:
         click_tracking = click_tracking if type(click_tracking) is dict else json.loads(click_tracking)
         is_enable = False if click_tracking["enable"] == 'False' else True
-        tracking_settings.click_tracking = ClickTracking(is_enable, click_tracking["enable_text"])
+        tracking_settings.click_tracking = ClickTracking(is_enable,
+                                                         click_tracking["enable_text"])  # type: ignore[name-defined]
 
     open_tracking = args.get('OpenTracking')
     if open_tracking:
@@ -483,7 +509,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         is_enable = False if open_tracking["enable"] == 'False' else True
         tracking_settings.open_tracking = OpenTracking(
             is_enable,
-            OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]))
+            OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]))  # type: ignore[name-defined]
 
     sub_tracking = args.get('SubscriptionTracking')
     if sub_tracking:
@@ -493,7 +519,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
             is_enable,
             SubscriptionText(sub_tracking["text"]),
             SubscriptionHtml(sub_tracking["html"]),
-            SubscriptionSubstitutionTag(sub_tracking["substitution_tag"]))
+            SubscriptionSubstitutionTag(sub_tracking["substitution_tag"]))  # type: ignore[name-defined]
 
     ganalytics = args.get('GAnalytics')
     if ganalytics:
@@ -505,7 +531,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
             UtmMedium(ganalytics["utm_medium"]),
             UtmTerm(ganalytics["utm_term"]),
             UtmContent(ganalytics["utm_content"]),
-            UtmCampaign(ganalytics["utm_campaign"]))
+            UtmCampaign(ganalytics["utm_campaign"]))  # type: ignore[name-defined]
 
     message.tracking_settings = tracking_settings
 
@@ -517,7 +543,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         is_enable = False if bcc_mail_set["enable"] == 'False' else True
         mail_settings.bcc_settings = BccSettings(
             is_enable,
-            BccSettingsEmail(bcc_mail_set["email"]))
+            BccSettingsEmail(bcc_mail_set["email"]))  # type: ignore[name-defined]
 
     footer = args.get('Footer')
     if footer:
@@ -526,7 +552,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         mail_settings.footer_settings = FooterSettings(
             is_enable,
             FooterText(footer["text"]),
-            FooterHtml(footer["html"]))
+            FooterHtml(footer["html"]))  # type: ignore[name-defined]
 
     spam_check = args.get('SpamCheck')
     if spam_check:
@@ -535,17 +561,17 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         mail_settings.spam_check = SpamCheck(
             is_enable,
             SpamThreshold(spam_check["threshold"]),
-            SpamUrl(spam_check["post_to_url"]))
+            SpamUrl(spam_check["post_to_url"]))  # type: ignore[name-defined]
 
     sandbox_mode = args.get('SandboxMode')
     if sandbox_mode:
         sandbox_mode = False if sandbox_mode == 'False' else True
-        mail_settings.sandbox_mode = SandBoxMode(sandbox_mode)
+        mail_settings.sandbox_mode = SandBoxMode(sandbox_mode)  # type: ignore[name-defined]
 
     bypass_list_management = args.get('BypassListManagement')
     if bypass_list_management:
         bypass_list_management = False if bypass_list_management == 'False' else True
-        mail_settings.bypass_list_management = BypassListManagement(bypass_list_management)
+        mail_settings.bypass_list_management = BypassListManagement(bypass_list_management)  # type: ignore[name-defined]
 
     message.mail_settings = mail_settings
 
@@ -553,45 +579,45 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if headers:
         headers = headers if type(headers) is dict else json.loads(headers)
         for key in headers:
-            message.header = Header(key, headers[key])
+            message.header = Header(key, headers[key])  # type: ignore[name-defined]
 
     template_id = args.get('TemplateID')
     if template_id:
-        message.template_id = TemplateId(template_id)
+        message.template_id = TemplateId(template_id)  # type: ignore[name-defined]
 
     subject = args.get('Subject')
-    message.subject = Subject(subject)
+    message.subject = Subject(subject)  # type: ignore[name-defined]
 
     email_body = args.get('HtmlBody')
     if email_body:
-        message.content = Content(MimeType.html, email_body)
+        message.content = Content(MimeType.html, email_body)  # type: ignore[name-defined]
 
     raw_body = args.get('RawBody')
     if raw_body:
-        message.content = Content(MimeType.text, raw_body)
+        message.content = Content(MimeType.text, raw_body)  # type: ignore[name-defined]
 
     reply_to_email = args.get('ReplyTo')
     if reply_to_email:
-        message.reply_to = ReplyTo(reply_to_email, None)
+        message.reply_to = ReplyTo(reply_to_email, None)  # type: ignore[name-defined]
 
     message.from_email = From(sg_from_email, sg_sender_name)
 
     to_emails = args.get('ToEmails')
-    to_emails = to_emails if isinstance(to_emails, list) else to_emails.split(",")
+    to_emails = to_emails if isinstance(to_emails, list) else to_emails.split(",")  # type: ignore[union-attr]
     for email in to_emails:
-        message.to = To(email, None, p=0)
+        message.to = To(email, None, p=0)  # type: ignore[name-defined]
 
     cc_emails = args.get('Cc')
     if cc_emails:
         cc_emails = cc_emails if isinstance(cc_emails, list) else cc_emails.split(",")
         for email in cc_emails:
-            message.cc = Cc(email, None, p=0)
+            message.cc = Cc(email, None, p=0)  # type: ignore[name-defined]
 
     bcc_emails = args.get('Bcc')
     if bcc_emails:
         bcc_emails = bcc_emails if isinstance(bcc_emails, list) else bcc_emails.split(",")
         for email in bcc_emails:
-            message.bcc = Bcc(email, None, p=0)
+            message.bcc = Bcc(email, None, p=0)  # type: ignore[name-defined]
 
     response = sg.send(message)
     if response.status_code == 202:

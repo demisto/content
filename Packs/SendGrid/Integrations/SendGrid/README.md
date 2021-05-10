@@ -218,7 +218,7 @@ Generates a new batch ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.Batchid | unknown | Returns a batch id, which can be used manage scheduled sends. | 
+| Sendgrid.BatchId | unknown | Returns a batch id, which can be used manage scheduled sends. | 
 
 
 #### Command Example
@@ -248,7 +248,7 @@ Cancel or pause a scheduled send associated with a batch ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sendgrid.SceduledSendStatus | unknown | The latest status of the scheduled send. | 
+| Sendgrid.ScheduledSendStatus | unknown | The latest status of the scheduled send. | 
 
 
 #### Command Example

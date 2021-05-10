@@ -250,7 +250,7 @@ script:
     description: Generates a new batch ID.
     name: sg-create-batch-id
     outputs:
-    - contextPath: Sendgrid.Batchid
+    - contextPath: Sendgrid.BatchId
       description: Returns a batch id, which can be used manage scheduled sends.
   - arguments:
     - description: ID to manage multiple scheduled sends.
@@ -267,7 +267,7 @@ script:
     description: Cancel or pause a scheduled send associated with a batch ID.
     name: sg-scheduled-status-change
     outputs:
-    - contextPath: Sendgrid.SceduledSendStatus
+    - contextPath: Sendgrid.ScheduledSendStatus
       description: The latest status of the scheduled send.
   - arguments: []
     description: Retrieves all cancelled and paused scheduled send information.
