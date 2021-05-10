@@ -2,7 +2,10 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
 
-
+.server-master-rule:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$NIGHTLY'
 .download-configuration: &download_demisto_conf
   - echo "======= Download configuration ========"
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
@@ -11,7 +14,10 @@
 create-instances:
   extends:
     - .default-job-settings
-    - .nightly-rule
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$NIGHTLY'
+    - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
     when: always
@@ -128,6 +134,6 @@ server_6_0:
 server_master:
   extends:
     - .test_content_on_server_instances_base
-    - .nightly-rule
+    - .server-master-rule
   variables:
     INSTANCE_ROLE: "Server Master"
