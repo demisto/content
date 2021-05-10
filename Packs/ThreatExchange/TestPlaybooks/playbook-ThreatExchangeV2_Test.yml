@@ -1,0 +1,819 @@
+id: ThreatExchangeV2-test
+version: -1
+name: ThreatExchangeV2-test
+description: test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8634b7df-839b-4b61-8b96-42be0ccbafdc
+    type: start
+    task:
+      id: 8634b7df-839b-4b61-8b96-42be0ccbafdc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 098f7124-7f78-4761-84fd-0fc9166d6cc1
+    type: regular
+    task:
+      id: 098f7124-7f78-4761-84fd-0fc9166d6cc1
+      version: -1
+      name: ip
+      description: Checks the reputation of the given IP address.
+      script: ThreatExchange v2|||ip
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: ${ExtractedIndicators.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: bf883bc5-6a2d-400c-85eb-d6167d996c96
+    type: condition
+    task:
+      id: bf883bc5-6a2d-400c-85eb-d6167d996c96
+      version: -1
+      name: Verify IP is malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 00b66032-2c08-4340-8c6b-b588b2b4a06d
+    type: regular
+    task:
+      id: 00b66032-2c08-4340-8c6b-b588b2b4a06d
+      version: -1
+      name: file
+      description: Checks the file reputation of the given hash.
+      script: ThreatExchange v2|||file
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      file:
+        simple: ${ExtractedIndicators.File}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7493698f-9648-42d0-8e8b-685bb7ca7420
+    type: regular
+    task:
+      id: 7493698f-9648-42d0-8e8b-685bb7ca7420
+      version: -1
+      name: url
+      description: Checks URL Reputation
+      script: ThreatExchange v2|||url
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      url:
+        simple: ${ExtractedIndicators.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 9279e5d6-ea9c-4345-8a1c-c077eb8fd674
+    type: condition
+    task:
+      id: 9279e5d6-ea9c-4345-8a1c-c077eb8fd674
+      version: -1
+      name: Verify url is malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Malicious
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: ec4394d5-e182-4619-81c1-6b278c370d9d
+    type: regular
+    task:
+      id: ec4394d5-e182-4619-81c1-6b278c370d9d
+      version: -1
+      name: domain
+      description: Checks domain reputation
+      script: ThreatExchange v2|||domain
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      domain:
+        simple: ${ExtractedIndicators.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 23c2f06c-56e4-41dd-862d-fd95c33ffbc0
+    type: regular
+    task:
+      id: 23c2f06c-56e4-41dd-862d-fd95c33ffbc0
+      version: -1
+      name: extractIndicators
+      description: Extract all indicators according to server indicators configuration
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      text:
+        simple: |+
+          dsdsdsd  dffdfdfdf newindicator 186.125.57.253
+          ssdsd cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c ddd
+
+          google.com
+
+
+          http://ulineindustries.com/index.php
+
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 0db40454-cc8d-49ea-8d85-b328b32cde31
+    type: condition
+    task:
+      id: 0db40454-cc8d-49ea-8d85-b328b32cde31
+      version: -1
+      name: Verify File is not malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: File.Malicious
+            iscontext: true
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: ac2082d4-8d94-4b70-85d8-48278701343e
+    type: regular
+    task:
+      id: ac2082d4-8d94-4b70-85d8-48278701343e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 7eb0b175-deed-4ed0-85fd-d378d4647b21
+    type: condition
+    task:
+      id: 7eb0b175-deed-4ed0-85fd-d378d4647b21
+      version: -1
+      name: Verify Domain is not malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Domain.Malicious
+            iscontext: true
+      - - operator: isNotEqualNumber
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 7685c317-3ef5-4255-8c85-950273964f24
+    type: title
+    task:
+      id: 7685c317-3ef5-4255-8c85-950273964f24
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 96deeb64-63cf-4053-8a6a-a444ce515ffd
+    type: regular
+    task:
+      id: 96deeb64-63cf-4053-8a6a-a444ce515ffd
+      version: -1
+      name: ThreatExchange-Members
+      description: Returns a list of current members of the ThreatExchange, alphabetized
+        by application name. Each application may also include an optional contact
+        email address. You can set this address, if desired, under the settings panel
+        for your application
+      script: ThreatExchange v2|||threatexchange-members
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 5b5aa00e-7a9c-4f54-88d2-c94dbab0f3f8
+    type: condition
+    task:
+      id: 5b5aa00e-7a9c-4f54-88d2-c94dbab0f3f8
+      version: -1
+      name: Verify Members
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatExchange.Member
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 66518ad8-2c46-400b-8b8a-c9240b0b5b15
+    type: regular
+    task:
+      id: 66518ad8-2c46-400b-8b8a-c9240b0b5b15
+      version: -1
+      name: ThreatExchange-Query
+      description: Searches for subjective opinions on indicators of compromise stored
+        in ThreatExchange
+      script: ThreatExchange v2|||threatexchange-query
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      strict_text:
+        simple: "true"
+      text:
+        simple: 8.8.8.8
+      type:
+        simple: IP_ADDRESS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: ddca035b-b75a-48c4-8b9a-d92f5f961cc4
+    type: condition
+    task:
+      id: ddca035b-b75a-48c4-8b9a-d92f5f961cc4
+      version: -1
+      name: Verify Query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatExchange.Query.data
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IP_ADDRESS
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatExchange.Query.data
+                accessor: raw_indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 1e3f4487-dfce-4833-8b44-0eb3c91216eb
+    type: regular
+    task:
+      id: 1e3f4487-dfce-4833-8b44-0eb3c91216eb
+      version: -1
+      name: ThreatExchange-tags-search
+      description: |-
+        Enables searching for tags in ThreatExchange.
+        With this call you can search for ThreatTag objects by text.
+      script: ThreatExchange v2|||threatexchange-tags-search
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      text:
+        simple: malware
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 8ae979ef-0967-46d6-8041-893c16f02d6a
+    type: condition
+    task:
+      id: 8ae979ef-0967-46d6-8041-893c16f02d6a
+      version: -1
+      name: Verify Tags Search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatExchange.Tag.data.id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatExchange.Tag.data.text
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: aa4e6e5e-20b1-4de9-8df6-8cd53ed44755
+    type: regular
+    task:
+      id: aa4e6e5e-20b1-4de9-8df6-8cd53ed44755
+      version: -1
+      name: ThreatExchange-tagged-objects-list
+      description: Gets a list of tagged objects for a specific ThreatTag.
+      script: ThreatExchange v2|||threatexchange-tagged-objects-list
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      tag_id:
+        simple: "1318516441499594"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7cc7b7c9-6c77-4a8b-8d42-b6afab572893
+    type: condition
+    task:
+      id: 7cc7b7c9-6c77-4a8b-8d42-b6afab572893
+      version: -1
+      name: Verify Tagged Objects List
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatExchange.TaggedObject.data
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: MALWARE_DESCRIPTOR
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 7263d723-6c73-4366-86a0-49ce6fcc0724
+    type: regular
+    task:
+      id: 7263d723-6c73-4366-86a0-49ce6fcc0724
+      version: -1
+      name: ThreatExchange-object-get-by-id
+      description: Gets ThreatExchange object by ID
+      script: ThreatExchange v2|||threatexchange-object-get-by-id
+      type: regular
+      iscommand: true
+      brand: ThreatExchange v2
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      object_id:
+        simple: "1318516441499594"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 1d1438da-e1c2-48d8-8ffc-c1cdbcbd17bd
+    type: condition
+    task:
+      id: 1d1438da-e1c2-48d8-8ffc-c1cdbcbd17bd
+      version: -1
+      name: Verify Object Get By ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatExchange.Object.id
+            iscontext: true
+          right:
+            value:
+              simple: "1318516441499594"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3710,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: ThreatExchange-test
+fromversion: 5.5.0
