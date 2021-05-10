@@ -937,12 +937,15 @@ def test_module(client: Client, params: dict) -> str:
     is_fetch = params.get('isFetch')
 
     # if is_fetch = true and custom API key's is no provided
-    if is_fetch and any(a == "" for a in [client.api_key, client.api_secret_key, client.organization_key]):
-        return 'To fetch incidents you must complete the following arguments beforehand, ' \
-               'Custom API key & Custom API secret key & the Organization key'
+    if is_fetch and not(client.api_key and client.api_secret_key and client.organization_key):
+        return 'To fetch incidents you must fill the following parameters: ' \
+               'Custom API key, Custom API secret key and Organization key'
 
-    # if one of the custom API key's is provided
-    if client.api_key or client.api_secret_key or client.organization_key:
+    message = "Missing parameters Error: At least one complete set of API keys " \
+              "(Custom API keys or Api/Live-Response API keys) is required"
+
+    # if all of the custom API key's is provided
+    if client.api_key and client.api_secret_key and client.organization_key:
         try:
             client.test_module_request()
 
@@ -959,21 +962,28 @@ def test_module(client: Client, params: dict) -> str:
 
             message = 'ok'
         except Exception as e:
-            if 'authenticated' in str(e):
+            if 'authenticated' in str(e) or 'Forbidden' in str(e):
                 return 'Authorization Error: make sure Custom API Key is correctly set'
             else:
                 raise e
+    # if only one of the custom API key's is provided
+    elif client.api_key or client.api_secret_key or client.organization_key:
+        return 'Please fill the following parameters: Custom API key, Custom API secret key and Organization key'
 
-    # if one of the api/live-response API key's is provided
-    if client.policy_api_key or client.policy_api_secret_key:
+    # if all of the api/live-response API key's is provided
+    if client.policy_api_key and client.policy_api_secret_key:
         try:
             client.policy_test_module_request()
             message = 'ok'
         except Exception as e:
-            if 'Authentication' in str(e):
+            if 'Authentication' in str(e) or 'authenticated' in str(e):
                 return 'Authorization Error: make sure API Key is correctly set'
             else:
                 raise e
+    # if only one of the api/live-response API key's is provided
+    elif client.policy_api_key or client.policy_api_secret_key:
+        return 'Please fill the following parameters: API key, API secret key'
+
     return message
 
 
