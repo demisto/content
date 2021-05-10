@@ -49,7 +49,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "13"
     scriptarguments:
       create_indicator:
         simple: "true"
@@ -101,7 +101,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "3"
     scriptarguments:
       entities:
         simple: 1.1.1.1
@@ -110,7 +110,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -238,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "6"
     scriptarguments:
       entities:
         simple: 1.1.1.1
@@ -247,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -416,7 +416,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "14"
     scriptarguments:
       all:
         simple: "yes"
@@ -463,12 +463,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 1e7ecaf6-0cf8-4980-8e28-8fd0c6f652d2
+    taskid: 7fc16a96-465e-4940-85f6-b4c41abdd8de
     type: regular
     task:
-      id: 1e7ecaf6-0cf8-4980-8e28-8fd0c6f652d2
+      id: 7fc16a96-465e-4940-85f6-b4c41abdd8de
       version: -1
-      name: sleep 5
+      name: sleep 10
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -476,16 +476,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "2"
     scriptarguments:
       seconds:
-        simple: "5"
+        simple: "10"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 370
         }
       }
     note: false
@@ -497,12 +497,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3ab8dadb-5dbe-4787-8c96-cc89882610c1
+    taskid: 614b7854-0cd6-4d95-8edb-a8968df56e6a
     type: regular
     task:
-      id: 3ab8dadb-5dbe-4787-8c96-cc89882610c1
+      id: 614b7854-0cd6-4d95-8edb-a8968df56e6a
       version: -1
-      name: sleep 5
+      name: sleep 10
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -510,16 +510,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "5"
     scriptarguments:
       seconds:
-        simple: "5"
+        simple: "10"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
