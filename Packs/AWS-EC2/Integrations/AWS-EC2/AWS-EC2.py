@@ -84,9 +84,9 @@ def describe_regions_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration')
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
     data = []
     kwargs = {}
@@ -109,9 +109,9 @@ def describe_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
     obj = vars(client._client_config)
     data = []
@@ -169,9 +169,9 @@ def describe_images_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
     obj = vars(client._client_config)
     kwargs = {}
@@ -226,9 +226,9 @@ def describe_addresses_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -280,9 +280,9 @@ def describe_snapshots_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -342,9 +342,9 @@ def describe_volumes_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -395,9 +395,9 @@ def describe_launch_templates_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -453,9 +453,9 @@ def describe_key_pairs_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -485,9 +485,9 @@ def describe_vpcs_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -537,9 +537,9 @@ def describe_subnets_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -590,9 +590,9 @@ def describe_security_groups_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -643,9 +643,9 @@ def allocate_address_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     obj = vars(client._client_config)
@@ -666,9 +666,9 @@ def associate_address_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration')
     )
 
     obj = vars(client._client_config)
@@ -699,9 +699,9 @@ def create_snapshot_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {'VolumeId': args.get('volumeId')}
@@ -756,9 +756,9 @@ def delete_snapshot_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_snapshot(SnapshotId=args.get('snapshotId'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -769,9 +769,9 @@ def create_image_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {
@@ -802,9 +802,9 @@ def deregister_image_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.deregister_image(ImageId=args.get('imageId'))
@@ -816,9 +816,9 @@ def modify_volume_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     obj = vars(client._client_config)
@@ -866,9 +866,9 @@ def create_tags_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'Resources': parse_resource_ids(args.get('resources')),
@@ -883,9 +883,9 @@ def disassociate_address_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.disassociate_address(AssociationId=args.get('associationId'))
@@ -897,9 +897,9 @@ def release_address_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.release_address(AllocationId=args.get('allocationId'))
@@ -911,9 +911,9 @@ def start_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.start_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
@@ -925,9 +925,9 @@ def stop_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.stop_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
@@ -939,9 +939,9 @@ def terminate_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.terminate_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
@@ -953,9 +953,9 @@ def create_volume_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {'AvailabilityZone': args.get('availabilityZone')}
@@ -1018,9 +1018,9 @@ def attach_volume_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {
@@ -1052,9 +1052,9 @@ def detach_volume_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {'VolumeId': args.get('volumeId')}
@@ -1090,9 +1090,9 @@ def delete_volume_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     response = client.delete_volume(VolumeId=args.get('volumeId'))
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -1103,9 +1103,9 @@ def run_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {
@@ -1231,9 +1231,9 @@ def waiter_instance_running_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('filters') is not None:
@@ -1254,9 +1254,9 @@ def waiter_instance_status_ok_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('filters') is not None:
@@ -1277,9 +1277,9 @@ def waiter_instance_stopped_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('filters') is not None:
@@ -1300,9 +1300,9 @@ def waiter_instance_terminated_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('filters') is not None:
@@ -1323,9 +1323,9 @@ def waiter_image_available_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('filters') is not None:
@@ -1350,9 +1350,9 @@ def waiter_snapshot_completed_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('filters') is not None:
@@ -1377,9 +1377,9 @@ def get_latest_ami_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {}
@@ -1428,9 +1428,9 @@ def create_security_group_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'GroupName': args.get('groupName'),
@@ -1453,9 +1453,9 @@ def delete_security_group_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('groupId') is not None:
@@ -1472,9 +1472,9 @@ def authorize_security_group_ingress_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
     IpPermissions = []
@@ -1553,9 +1553,9 @@ def revoke_security_group_ingress_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
 
@@ -1579,9 +1579,9 @@ def revoke_security_group_egress_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {
@@ -1652,9 +1652,9 @@ def copy_image_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {
@@ -1686,9 +1686,9 @@ def copy_snapshot_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {
@@ -1717,9 +1717,9 @@ def describe_reserved_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {}
@@ -1776,9 +1776,9 @@ def monitor_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.monitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
@@ -1798,9 +1798,9 @@ def unmonitor_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
     response = client.unmonitor_instances(InstanceIds=parse_resource_ids(args.get('instancesIds')))
@@ -1820,9 +1820,9 @@ def reboot_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.reboot_instances(InstanceIds=parse_resource_ids(args.get('instanceIds')))
@@ -1834,9 +1834,9 @@ def get_password_data_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     response = client.get_password_data(InstanceId=args.get('instanceId'))
@@ -1859,9 +1859,9 @@ def modify_network_interface_attribute_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'NetworkInterfaceId': args.get('networkInterfaceId')}
 
@@ -1887,9 +1887,9 @@ def modify_instance_attribute_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'InstanceId': args.get('instanceId')}
 
@@ -1919,9 +1919,9 @@ def create_network_acl_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'VpcId': args.get('VpcId')}
 
@@ -1952,9 +1952,9 @@ def create_network_acl_entry_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'Egress': True if args.get('Egress') == 'True' else False,
@@ -1988,9 +1988,9 @@ def create_fleet_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}  # type: dict
 
@@ -2195,9 +2195,9 @@ def delete_fleet_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     data = []
@@ -2245,9 +2245,9 @@ def describe_fleets_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)  # noqa:F841
     data = []
@@ -2307,9 +2307,9 @@ def describe_fleet_instances_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     data = []
@@ -2356,9 +2356,9 @@ def modify_fleet_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('FleetId') is not None:
@@ -2397,9 +2397,9 @@ def create_launch_template_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
@@ -2633,9 +2633,9 @@ def delete_launch_template_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)  # noqa:F841
     data = []
@@ -2671,9 +2671,9 @@ def modify_image_attribute_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)  # noqa:F841
     kwargs = {}
@@ -2719,9 +2719,9 @@ def detach_internet_gateway_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('InternetGatewayId') is not None:
@@ -2738,9 +2738,9 @@ def delete_subnet_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('SubnetId') is not None:
@@ -2755,9 +2755,9 @@ def delete_vpc_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('VpcId') is not None:
@@ -2772,9 +2772,9 @@ def delete_internet_gateway_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('InternetGatewayId') is not None:
@@ -2789,9 +2789,9 @@ def describe_internet_gateway_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {}
@@ -2839,9 +2839,9 @@ def create_traffic_mirror_session_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {}
     if args.get('NetworkInterfaceId') is not None:
@@ -2903,8 +2903,8 @@ def allocate_hosts_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
         roleSessionDuration=args.get('roleSessionDuration'))
 
     availability_zone = args.get('availability_zone')
@@ -2935,9 +2935,9 @@ def release_hosts_command(args, aws_client):
     client = aws_client.aws_session(
         service='ec2',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     host_id = argToList(args.get('host_id'))
     response = client.release_hosts(HostIds=host_id)
@@ -2951,7 +2951,7 @@ def main():
         aws_default_region = params.get('defaultRegion')
         aws_role_arn = params.get('roleArn')
         aws_role_session_name = params.get('roleSessionName')
-        aws_role_session_duration = dparamsget('sessionDuration')
+        aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
         aws_access_key_id = params.get('access_key')
         aws_secret_access_key = params.get('secret_key')
