@@ -59,7 +59,7 @@ class Client(BaseClient):
         Returns:
             str: The token for the session
         """
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context()
         now = int(time.time())
         if integration_context.get('token') and integration_context.get('expires_in'):
             if now < integration_context['expires_in']:
@@ -78,7 +78,7 @@ class Client(BaseClient):
                 'token': response.get('access_token'),
                 'expires_in': now + int(response.get('expires_in'))
             }
-            demisto.setIntegrationContext(integration_context)
+            set_integration_context(integration_context)
             return response.get('access_token')
         except Exception as exception:
             raise ValueError(
@@ -838,13 +838,11 @@ def trustwave_seg_spiderlabs_forward_quarantine_message_as_spam_command(client: 
     Returns:
         str: An informative string about the action
     """
-    response = client.forward_spam(int(block_number), edition, int(folder_id),
-                                   message_name, recipient, int(
-                                       server_id), int(time_logged),
-                                   argToBoolean(is_spam), spam_report_message)
-    if response.status_code == 200:
-        return "The message forwarded to Spiderlabs"
-    return "Something went wrong..."
+    client.forward_spam(int(block_number), edition, int(folder_id),
+                        message_name, recipient, int(
+        server_id), int(time_logged),
+        argToBoolean(is_spam), spam_report_message)
+    return "The message was forwarded to Spiderlabs."
 
 
 def test_module(client: Client) -> str:
