@@ -934,6 +934,11 @@ def test_module(client: Client, params: dict) -> str:
     :rtype: ``str``
     """
 
+    """There is 2 sets of api_key&api_secret_key 1 for all API's and 1 for the policy API.
+    check which set of keys to test (organization_key is not needed for the policy pair of keys).
+    at least one of the 2 sets is required.
+    Fetch uses the general api_key."""
+
     is_fetch = params.get('isFetch')
 
     # if is_fetch = true and custom API key's is no provided
