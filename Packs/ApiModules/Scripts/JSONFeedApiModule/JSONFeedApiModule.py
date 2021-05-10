@@ -150,7 +150,7 @@ def test_module(client: Client, limit) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
-                             limit: int = 0, create_relationships: bool = False, **kwargs) -> Union[Dict, List[Dict]]:
+                             limit: int = 0, **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -158,7 +158,6 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     :param feedTags: the indicator tags
     :param auto_detect: a boolean indicates if we should automatically detect the indicator_type
     :param limit: given only when get-indicators command is running. function will return number indicators as the limit
-    :param create_relationships: whether to add connected indicators
     """
     indicators: List[dict] = []
     feeds_results = {}
@@ -179,7 +178,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         use_prefix_flat = bool(feed_config.get('flat_json_with_prefix', False))
         mapping_function = feed_config.get('mapping_function', indicator_mapping)
         handle_indicator_function = feed_config.get('handle_indicator_function', handle_indicator)
-        custom_relationships_creator = feed_config.get('relationships_creator_function', get_indicator_relations)
+        create_relationships_function = feed_config.get('create_relations_function')
 
         for item in items:
             if isinstance(item, str):
@@ -187,10 +186,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
 
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
-                                          use_prefix_flat, feedTags, auto_detect, mapping_function,
-                                          create_relationships, custom_relationships_creator))
+                                          use_prefix_flat, feedTags, auto_detect, mapping_function, create_relationships_function))
 
-            if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
+            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
     return indicators
@@ -208,23 +206,11 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
             else:
                 indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
 
-
-def get_indicator_relations(feed_config, mapping, indicator_data):
-    if mapping.get('relation_entity_b'):
-        relationships_lst = EntityRelationship(
-            name=feed_config.get('relation_name'),
-            entity_a=indicator_data.get('value'),
-            entity_a_type=indicator_data.get('type'),
-            entity_b=mapping.get('relation_entity_b'),
-            entity_b_type=feed_config.get('relation_entity_b_type'),
-        )
-        return [relationships_lst.to_indicator()]
-
-
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
-                     feedTags: list, auto_detect: bool, mapping_function: Callable = indicator_mapping,
-                     create_relationships: bool = False, relations_function: Callable = get_indicator_relations) -> List[dict]:
+                     feedTags: list, auto_detect: bool,
+                     mapping_function: Callable = indicator_mapping, relations_function: Callable = None) -> List[dict]:
+
     indicator_list = []
     mapping = feed_config.get('mapping')
     take_value_from_flatten = False
@@ -234,8 +220,6 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
 
     if not current_indicator_type:
-        demisto.debug(f'Could not determine indicator type for value: {indicator_value} from field: {indicator_field}.'
-                      f' Skipping item: {item}')
         return []
 
     indicator = {
@@ -260,18 +244,15 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     if mapping:
         mapping_function(mapping, indicator, attributes)
 
-    if feed_config.get('rawjson_include_indicator_type'):
-        item['_indicator_type'] = current_indicator_type
+    if relations_function:
+        indicator['relationships'] = relations_function(feed_config, mapping, attributes)
 
-    # if relations param is True and also the url returns relations
-    relationships = []
-    if create_relationships and feed_config.get('relation_name'):
-        relationships = relations_function(feed_config, mapping, attributes)
-    demisto.debug(f"INTEL JAS {str(relationships)}")
-    indicator['relationships'] = relationships
     indicator['rawJSON'] = item
 
+    demisto.debug(str(indicator))
+
     indicator_list.append(indicator)
+
     return indicator_list
 
 
@@ -333,10 +314,12 @@ def extract_all_fields_from_indicator(indicator: Dict, indicator_key: str, flat_
 
 
 def feed_main(params, feed_name, prefix):
+    demisto.log("MAIN")
     handle_proxy()
     client = Client(**params)
     indicator_type = params.get('indicator_type')
     auto_detect = params.get('auto_detect_type')
+
     feedTags = argToList(params.get('feedTags'))
     limit = int(demisto.args().get('limit', 10))
     command = demisto.command()
@@ -349,8 +332,7 @@ def feed_main(params, feed_name, prefix):
             return_results(test_module(client, limit))
 
         elif command == 'fetch-indicators':
-            create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships)
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)
             if not len(indicators):
                 demisto.createIndicators(indicators)
             else:
@@ -359,8 +341,7 @@ def feed_main(params, feed_name, prefix):
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
-            create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, limit, create_relationships)
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 

@@ -22,29 +22,30 @@ FEED_INDICATOR_TYPES = {
 }
 FEED_URL = 'https://api.intel471.com/v1/indicators/stream?'
 MAPPING = {
-    FeedIndicatorType.File: {'threat_type': 'threattypes.threatcategory',
-                             'threat_data_family': 'malwarefamily',
-                             'indicator_data_file_md5': 'md5',
-                             'indicator_data_file_sha1': 'sha1',
-                             'indicator_data_file_sha256': 'sha256',
-                             'context_description': 'description',
-                             'indicator_data_file_download_url': 'downloadurl',
-                             'mitre_tactics': 'mitretactics',
-                             'relation_entity_b': 'threat_data_family',
-                             },
+    FeedIndicatorType.File: {
+        'threat_type': 'threattypes.threatcategory',
+        'threat_data_family': 'malwarefamily',
+        'indicator_data_file_md5': 'md5',
+        'indicator_data_file_sha1': 'sha1',
+        'indicator_data_file_sha256': 'sha256',
+        'context_description': 'description',
+        'indicator_data_file_download_url': 'downloadurl',
+        'mitre_tactics': 'mitretactics',
+        'relation_entity_b': 'threat_data_family'
+    },
     FeedIndicatorType.URL: {'threat_type': 'threattypes.threatcategory',
                             'threat_data_family': 'malwarefamily',
                             'indicator_data_url': 'url',
                             'context_description': 'description',
                             'mitre_tactics': 'mitretactics',
-                            'relation_entity_b': 'threat_data_family',
+                            'relation_entity_b': 'threat_data_family'
                             },
     "ipv4": {'threat_type': 'threattypes.threatcategory',
              'threat_data_family': 'malwarefamily',
              'indicator_data_address': 'ipaddress',
              'context_description': 'description',
              'mitre_tactics': 'mitretactics',
-             'relation_entity_b': 'threat_data_family',
+             'relation_entity_b': 'threat_data_family'
              }
 }
 INDICATOR_VALUE_FIELD = {FeedIndicatorType.File: 'indicator_data_file_sha256',
@@ -87,18 +88,6 @@ def get_params_by_indicator_type(**kwargs):
     return indicators_url
 
 
-def custom_get_indicator_relations(feed_config, mapping, indicator_data):
-    if mapping.get('relation_entity_b'):
-        relationships_lst = EntityRelationship(
-            name=feed_config.get('relation_name'),
-            entity_a=indicator_data.get('value'),
-            entity_a_type=indicator_data.get('type'),
-            entity_b=indicator_data.get(mapping.get('relation_entity_b')),
-            entity_b_type=feed_config.get('relation_entity_b_type'),
-        )
-        return [relationships_lst.to_indicator()]
-
-
 def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) -> List:
     url = feed.get('url', client.url)
     fetch_time = feed.get('fetch_time')
@@ -138,6 +127,18 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
     return result
 
 
+def custom_build_relationships(feed_config, mapping, indicator_data):
+    if indicator_data.get(mapping.get('relation_entity_b')):
+        relationships_lst = EntityRelationship(
+            name=feed_config.get('relation_name'),
+            entity_a=indicator_data.get('value'),
+            entity_a_type=indicator_data.get('type'),
+            entity_b=indicator_data.get(mapping.get('relation_entity_b')),
+            entity_b_type=feed_config.get('relation_entity_b_type'),
+        )
+        return [relationships_lst.to_indicator()]
+
+
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
     urls = get_params_by_indicator_type(**params)
@@ -152,11 +153,12 @@ def main():
             'mapping': MAPPING.get(indicator_type),
             'custom_build_iterator': custom_build_iterator,
             'fetch_time': params.get('fetch_time', '7 days'),
+            'relation_entity_b_type': 'STIX Malware',
             'relation_name': EntityRelationship.Relationships.COMMUNICATES_WITH,
-            'relationships_creator_function': custom_get_indicator_relations,
-            'relation_entity_b_type': 'Malware',
+            'create_relations_function': custom_build_relationships,
+
         }
-    feed_main(params, 'Intel471 Indicator Feed', 'intel471-indicator')
+    feed_main(params, 'Intel471 Indicators Feed', 'intel471-indicators')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
