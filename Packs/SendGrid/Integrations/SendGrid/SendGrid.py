@@ -42,7 +42,9 @@ def process_attachments(message, attachIDs="", attachNames=""):
             f_data = f.read()
         encoded_data = base64.b64encode(f_data).decode()
         file_type = mimetypes.guess_type(attachment_name)[0]
-        message.attachment = Attachment(FileContent(encoded_data), FileName(attachment_name), FileType(file_type),  # type: ignore[name-defined]
+        message.attachment = Attachment(FileContent(encoded_data),  # type: ignore[name-defined]
+                                        FileName(attachment_name),  # type: ignore[name-defined]
+                                        FileType(file_type),  # type: ignore[name-defined]
                                         Disposition('attachment'))  # type: ignore[name-defined]
     return 'ok'
 
