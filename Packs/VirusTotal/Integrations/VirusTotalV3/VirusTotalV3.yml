@@ -1229,7 +1229,7 @@ script:
         type: String
     description: Retrieves resolutions of the given IP.
   runonce: false
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.4.19537
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
