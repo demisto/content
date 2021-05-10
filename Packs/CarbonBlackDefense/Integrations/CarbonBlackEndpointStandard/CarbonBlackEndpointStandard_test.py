@@ -1,4 +1,3 @@
-
 def create_client():
     from CarbonBlackEndpointStandard import Client
     client = Client(base_url='example.com',
@@ -23,7 +22,7 @@ def test_get_alert_details_command(mocker):
     """
     mocker_result = {'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'}
     expected_result = {
-        'CarbonBlackDefense.Alert(val.id == obj.id)': {
+        'CarbonBlackDefense.Alert(val.id && val.id == obj.id)': {
             'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'
         }
     }
@@ -52,7 +51,7 @@ def test_device_search_command(mocker):
         ]
     }
     expected_result = {
-        'CarbonBlackDefense.Device(val.id == obj.id)': [
+        'CarbonBlackDefense.Device(val.id && val.id == obj.id)': [
             {'id': 1234, 'name': 'carbon-black-integration-endpoint', 'os': 'MAC'}
         ]
     }
@@ -76,7 +75,9 @@ def test_find_events_command(mocker):
         Assert that the output is we are expected
     """
     mocker_result = {'job_id': '123456'}
-    expected_result = {'CarbonBlackDefense.Events.Search(val.job_id == obj.job_id)': {'job_id': '123456'}}
+    expected_result = {
+        'CarbonBlackDefense.Events.Search(val.job_id && val.job_id == obj.job_id)': {'job_id': '123456'}
+    }
     client = create_client()
     mocker.patch.object(client, 'get_events', return_value=mocker_result)
     from CarbonBlackEndpointStandard import find_events_command
@@ -97,7 +98,9 @@ def test_find_processes_command(mocker):
         Assert that the output is we are expected
     """
     mocker_result = {'job_id': '123456'}
-    expected_result = {'CarbonBlackDefense.Process.Search(val.job_id == obj.job_id)': {'job_id': '123456'}}
+    expected_result = {
+        'CarbonBlackDefense.Process.Search(val.job_id && val.job_id == obj.job_id)': {'job_id': '123456'}
+    }
     client = create_client()
     mocker.patch.object(client, 'get_processes', return_value=mocker_result)
     from CarbonBlackEndpointStandard import find_processes_command
