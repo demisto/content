@@ -3,7 +3,7 @@ commonfields:
   id: VirusTotal - Premium (API v3)
   version: -1
 configuration:
-- display: ""
+- display: API Key (leave empty. Fill in the API key in the password field.)
   displaypassword: API Key
   name: credentials
   type: 9
