@@ -1,19 +1,19 @@
 id: Relationships scripts - Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Relationships scripts - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5d78fae8-b63f-4447-89c9-8afde6570cac
+    taskid: b85cc5b7-d01b-462b-81f9-f310aff9c333
     type: start
     task:
-      id: 5d78fae8-b63f-4447-89c9-8afde6570cac
+      id: b85cc5b7-d01b-462b-81f9-f310aff9c333
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a45685a7-2296-4616-8762-0f929d8700a5
+    taskid: aaad1ea7-bb3c-4bb5-856b-3cb3b6b83514
     type: regular
     task:
-      id: a45685a7-2296-4616-8762-0f929d8700a5
+      id: aaad1ea7-bb3c-4bb5-856b-3cb3b6b83514
       version: -1
       name: Create Relationships
       description: '[Enter a description of the script, including what function it
@@ -78,12 +80,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 712c8561-626d-4786-8c7a-fa9948e3eed3
+    taskid: e00c01d4-52c6-4deb-8701-9efc3caebf60
     type: regular
     task:
-      id: 712c8561-626d-4786-8c7a-fa9948e3eed3
+      id: e00c01d4-52c6-4deb-8701-9efc3caebf60
       version: -1
       name: Search For Relationships of indicator
       description: This automation outputs the indicator relationships to context
@@ -97,7 +101,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "13"
     scriptarguments:
       entities:
         simple: 1.1.1.1
@@ -114,12 +118,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 4ddc4083-61fd-40f9-8626-a4bbed32f087
+    taskid: e3ab54ce-0705-4493-8d78-ebca2e0621b6
     type: condition
     task:
-      id: 4ddc4083-61fd-40f9-8626-a4bbed32f087
+      id: e3ab54ce-0705-4493-8d78-ebca2e0621b6
       version: -1
       name: Check basic relationships exists
       type: condition
@@ -168,7 +174,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -176,12 +182,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 848b02c7-e70e-4e63-812c-bf7521849dc5
+    taskid: 58b564aa-6013-47e4-8c3a-6eacf452788e
     type: regular
     task:
-      id: 848b02c7-e70e-4e63-812c-bf7521849dc5
+      id: 58b564aa-6013-47e4-8c3a-6eacf452788e
       version: -1
       name: Delete Relationships
       description: This automation allows to delete a relationship between indicator
@@ -201,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -209,12 +217,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6f6b7f95-87e1-41bb-8094-9f1334bec578
+    taskid: 9d526545-06e1-45e7-8800-a9ffec3dd992
     type: regular
     task:
-      id: 6f6b7f95-87e1-41bb-8094-9f1334bec578
+      id: 9d526545-06e1-45e7-8800-a9ffec3dd992
       version: -1
       name: Search for deleted Relationship
       description: This automation outputs the indicator relationships to context
@@ -228,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "14"
     scriptarguments:
       entities:
         simple: 1.1.1.1
@@ -237,7 +247,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -245,12 +255,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 761283f7-6138-44a0-8f90-fd0ed1e52511
+    taskid: f4ff4eaa-5127-402f-8c7a-fd2d4c4bcb06
     type: condition
     task:
-      id: 761283f7-6138-44a0-8f90-fd0ed1e52511
+      id: f4ff4eaa-5127-402f-8c7a-fd2d4c4bcb06
       version: -1
       name: Check if Deleted
       type: condition
@@ -275,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -283,12 +295,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 56c3ad92-6211-4be5-8773-6cd0be010b17
+    taskid: b2426126-b6de-4e4d-8bdb-7f17426c76e2
     type: regular
     task:
-      id: 56c3ad92-6211-4be5-8773-6cd0be010b17
+      id: b2426126-b6de-4e4d-8bdb-7f17426c76e2
       version: -1
       name: Search For Relationships of indicator with verbose
       description: This automation outputs the indicator relationships to context
@@ -313,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -321,12 +335,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ead21490-7b4b-4536-833a-e6a90d034c78
+    taskid: ff2806fc-1c47-4eba-871c-3a728c5a3116
     type: condition
     task:
-      id: ead21490-7b4b-4536-833a-e6a90d034c78
+      id: ff2806fc-1c47-4eba-871c-3a728c5a3116
       version: -1
       name: Check Relationships exists  with verbose
       type: condition
@@ -375,7 +391,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -383,12 +399,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 25440803-8743-44f7-8e78-4eafa2790621
+    taskid: 57096967-a0d9-43e1-89b0-52c0ef56d529
     type: regular
     task:
-      id: 25440803-8743-44f7-8e78-4eafa2790621
+      id: 57096967-a0d9-43e1-89b0-52c0ef56d529
       version: -1
       name: Delete Context for delete search
       description: Delete field from context
@@ -407,7 +425,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -415,24 +433,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d4df83d6-d981-4504-8843-1cf6f2582120
+    taskid: 9387df25-5a9d-4f94-8f3f-775612b1bbe4
     type: title
     task:
-      id: d4df83d6-d981-4504-8843-1cf6f2582120
+      id: 9387df25-5a9d-4f94-8f3f-775612b1bbe4
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1750
+          "y": 2120
         }
       }
     note: false
@@ -440,12 +459,82 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1e7ecaf6-0cf8-4980-8e28-8fd0c6f652d2
+    type: regular
+    task:
+      id: 1e7ecaf6-0cf8-4980-8e28-8fd0c6f652d2
+      version: -1
+      name: sleep 5
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3ab8dadb-5dbe-4787-8c96-cc89882610c1
+    type: regular
+    task:
+      id: 3ab8dadb-5dbe-4787-8c96-cc89882610c1
+      version: -1
+      name: sleep 5
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1765,
+        "height": 2135,
         "width": 380,
         "x": 50,
         "y": 50
@@ -454,5 +543,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.2.0
-description: ''
