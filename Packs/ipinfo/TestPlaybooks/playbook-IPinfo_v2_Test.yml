@@ -84,8 +84,8 @@ tasks:
     scriptarguments:
       ip:
         simple: 1.1.1.1
-      using:
-        simple: new
+      using-brand:
+        simple: ipinfo_v2
     separatecontext: false
     view: |-
       {
