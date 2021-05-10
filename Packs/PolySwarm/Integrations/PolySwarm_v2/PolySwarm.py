@@ -47,7 +47,8 @@ class PolyswarmConnector():
             outputs_prefix=f'PolySwarm.{object_name}',
             outputs_key_field='Scan_UUID',
             outputs=results,
-            indicator=indicator
+            indicator=indicator,
+            ignore_auto_extract=True
         )
 
         return command_result
