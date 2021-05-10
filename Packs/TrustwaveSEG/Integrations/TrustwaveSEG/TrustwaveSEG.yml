@@ -836,7 +836,7 @@ script:
     description: Forward a message to spiderlabs as spam.
     execution: false
     name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   feed: false
   isfetch: false
   longRunning: false
