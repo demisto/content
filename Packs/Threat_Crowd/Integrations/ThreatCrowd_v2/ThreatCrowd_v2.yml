@@ -22,9 +22,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: How many entries to fetch. For full data use -1.
+- additionalinfo: How many results per indicator to fetch. For full data use -1.
   defaultvalue: '50'
-  display: Max Number of Entries
+  display: Max number of results per indicator
   name: entry_limit
   required: true
   type: 0
@@ -49,7 +49,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of results to fetch.
+      description: Maximum number of results per indicator to fetch.
       isArray: false
       name: limit
       required: false
@@ -109,7 +109,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of results to fetch.
+      description: Maximum number of results per indicator to fetch.
       isArray: false
       name: limit
       required: false
@@ -175,7 +175,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of results to fetch.
+      description: Maximum number of results per indicator to fetch.
       isArray: false
       name: limit
       required: false
@@ -220,7 +220,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of results to fetch.
+      description: Maximum number of results per indicator to fetch.
       isArray: false
       name: limit
       required: false
@@ -250,7 +250,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of results to fetch.
+      description: Maximum number of results per indicator to fetch.
       isArray: false
       name: limit
       required: false
