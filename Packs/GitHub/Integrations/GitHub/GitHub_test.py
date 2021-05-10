@@ -97,10 +97,10 @@ def test_list_team_members_command(mocker, maximum_users, expected_result1):
         'team_slug': 'content',
         'maximum_users': maximum_users
     })
-    mock_tal = mocker.patch('GitHub.http_request', side_effect=mock_http_request)
+    mock_list_members = mocker.patch('GitHub.http_request', side_effect=mock_http_request)
     from GitHub import list_team_members_command
 
     list_team_members_command()
 
     url_suffix = '/orgs/demisto/teams/content/members'
-    mock_tal.call_args_list[0]('GET', url_suffix, expected_result1)
+    mock_list_members.call_args_list[0]('GET', url_suffix, expected_result1)
