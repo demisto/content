@@ -26,8 +26,7 @@
     "associatedTypes": [
         "IP",
         "Domain",
-        "URL",
-        "Intrusion Set"
+        "URL"
     ],
     "associatedToAll": false,
     "unmapped": false,

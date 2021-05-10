@@ -20,11 +20,7 @@
     "description": "",
     "associatedToAll": false,
     "associatedTypes": [
-        "AWS Security Hub",
-        "Campaign",
-        "Course of Action",
-        "Infrastructure",
-        "Intrusion Set"
+        "AWS Security Hub"
     ],
     "caseInsensitive": true,
     "columns": null,
