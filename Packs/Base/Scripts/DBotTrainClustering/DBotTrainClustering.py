@@ -17,7 +17,6 @@ import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
 
-
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
                             "or increase the limit argument to more than %s."
@@ -406,16 +405,17 @@ def normalize_json(obj) -> str:  # type: ignore
     :return:
     """
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
-    extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict) ]
-    my_string = ' '.join(extracted_values) # json.dumps(my_dict)
+    extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict)]
+    my_string = ' '.join(extracted_values)  # json.dumps(my_dict)
     pattern = re.compile('([^\s\w]|_)+')
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
 
+
 def json_extract(obj):
     """Recursively fetch values from nested JSON."""
-    arr = []
+    arr = []  # type: ignore
 
     def extract(obj, arr):
         """Recursively search for values of key in JSON tree."""
@@ -432,7 +432,6 @@ def json_extract(obj):
 
     values = extract(obj, arr)
     return values
-
 
 
 def normalize_command_line(command) -> str:
@@ -499,7 +498,7 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
                                                    'modelOverride': model_override,
                                                    'modelHidden': model_hidden,
                                                    'modelExtraInfo': {'modelSummaryMarkdown':
-                                                                          tableToMarkdown("Summary",model.summary)}
+                                                                      tableToMarkdown("Summary", model.summary)}
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -653,6 +652,7 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     if not keep_unique_value:
                         value_list = [' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], x))))  # type: ignore
+                                      # type: ignore
                                       for x in value_list]  # type: ignore
                     else:
                         value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
