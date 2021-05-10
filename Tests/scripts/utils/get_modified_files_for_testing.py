@@ -75,7 +75,7 @@ def resolve_type(file_path: str) -> Optional[FileType]:
 
 
 def remove_code_files_by_types(types_to_files: Dict[FileType, Set[str]], file_type: FileType):
-    """Get corresponding yml files and types from PY files.
+    """Get corresponding yml files and types from PY, JS and PS files.
     If a corresponding yml found, will remove the py file
 
     Args:
@@ -86,7 +86,6 @@ def remove_code_files_by_types(types_to_files: Dict[FileType, Set[str]], file_ty
         Filtered types_to_files
     """
     code_files_to_be_removed = set()
-    # TODO: types to files should get also ps and js files
     code_files = types_to_files.get(file_type, set())
     for file_path in code_files:
         if not is_code_test_file(file_path):
@@ -111,8 +110,8 @@ def remove_code_files_by_types(types_to_files: Dict[FileType, Set[str]], file_ty
 
 
 def remove_code_files(types_to_files: Dict[FileType, Set[str]]):
-    """Get corresponding yml files and types from PY files.
-    If a corresponding yml found, will remove the py file
+    """ Sending PY, JS and PS files to remove_code_files_by_types function with specific file type.
+    If a corresponding yml found, will remove the py, js or ps file
 
     Args:
         types_to_files: Mapping of FileType: file_paths
@@ -120,10 +119,9 @@ def remove_code_files(types_to_files: Dict[FileType, Set[str]]):
     Returns:
         Filtered types_to_files
     """
-    # TODO: types to files should get also ps and js files
-    types_to_files = remove_code_files_by_types(types_to_files, FileType.PYTHON_FILE)
-    types_to_files = remove_code_files_by_types(types_to_files, FileType.POWERSHELL_FILE)
-    types_to_files = remove_code_files_by_types(types_to_files, FileType.JAVASCRIPT_FILE)
+
+    for file_type in [FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE]:
+        types_to_files = remove_code_files_by_types(types_to_files, file_type)
 
     return types_to_files
 

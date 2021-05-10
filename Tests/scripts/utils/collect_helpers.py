@@ -80,5 +80,4 @@ def is_code_test_file(file_path: str) -> bool:
     Args:
         file_path: File path to check
     """
-    # TODO: make it work for ps tests (pester)
     return '_test' in file_path or 'test_' in file_path or 'Tests.ps1' in file_path
