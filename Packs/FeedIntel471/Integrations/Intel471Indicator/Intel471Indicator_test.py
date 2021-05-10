@@ -74,12 +74,12 @@ def test_create_url(mocker, input, expected_results):
 def test_create_relationships():
     config = {'relation_entity_b_type': 'STIX Malware', 'relation_name': 'communicates-with'}
     indicator_data = {'type': 'URL', 'threat_data_family': 'test_malware', 'indicator_type': 'url',
-                      'indicator_data_url': 'http://test_url.com', 'value': 'http://test_url.com'}
+                      'indicator_data_url': 'http://example_url.com', 'value': 'http://example_url.com'}
     mapping = {'threat_data_family': 'malwarefamily', 'indicator_data_url': 'url',
                'relation_entity_b': 'threat_data_family'}
 
     res = feed.custom_build_relationships(config, mapping, indicator_data)
     assert res[0] == {'name': 'communicates-with', 'reverseName': 'communicated-by', 'type': 'IndicatorToIndicator',
-                      'entityA': 'http://test_url.com', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
+                      'entityA': 'http://example_url.com', 'entityAFamily': 'Indicator', 'entityAType': 'URL',
                       'entityB': 'test_malware', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Malware',
                       'fields': {}}
