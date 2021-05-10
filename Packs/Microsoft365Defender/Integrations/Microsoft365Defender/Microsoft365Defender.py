@@ -17,9 +17,19 @@ TIMEOUT = 30
 ''' CLIENT CLASS '''
 
 
+# todo In the readme add permission requirements per command.
+# todo Needs to be beta integration - its just adding the beta flag in the integration yml and adding a section to the description and readme.
+# todo Add configurable base_url in parameter.
+# todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
+# todo Add timeout argument for list commands.
+# todo Add documentation connection in the query argument in the hunting command.
+# todo Add limit argument to hunting command - default value 50.
+# todo drop first fetch to 12 hours
+# todo Add default value for timeout param
+
 class Client(BaseClient):
     @logger
-    def __init__(self, app_id: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, base_url: str, verify: bool, proxy: bool):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -33,7 +43,7 @@ class Client(BaseClient):
             'auth_id': app_id,
             'token_retrieval_url': 'https://login.windows.net/organizations/oauth2/v2.0/token',
             'grant_type': DEVICE_CODE,
-            'base_url': 'https://api.security.microsoft.com',
+            'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
             'scope': 'offline_access https://security.microsoft.com/mtp/.default',
@@ -272,7 +282,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
     if readable_incidents:
-        headers = list(readable_incidents[0].keys())     # the table headers are the incident keys.
+        headers = list(readable_incidents[0].keys())  # the table headers are the incident keys.
         human_readable = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
     else:
         human_readable = "No incidents found"
