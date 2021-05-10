@@ -64,7 +64,7 @@ ID_SET_PATH = './artifacts/id_set.json'
 
 
 class Running(IntEnum):
-    CIRCLECI_RUN = 0
+    CI_RUN = 0
     WITH_OTHER_SERVER = 1
     WITH_LOCAL_SERVER = 2
 
@@ -119,10 +119,10 @@ def get_id_set(id_set_path) -> dict:
 
 class Build:
     # START CHANGE ON LOCAL RUN #
-    content_path = '{}/project'.format(os.getenv('HOME'))
-    test_pack_target = '{}/project/Tests'.format(os.getenv('HOME'))
+    content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
+    test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv('CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
-    run_environment = Running.CIRCLECI_RUN
+    run_environment = Running.CI_RUN
     env_results_path = './artifacts/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
@@ -206,7 +206,7 @@ class Build:
     def get_servers(ami_env):
         env_conf = get_env_conf()
         server_to_port_mapping = map_server_to_port(env_conf, ami_env)
-        if Build.run_environment == Running.CIRCLECI_RUN:
+        if Build.run_environment == Running.CI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
@@ -829,7 +829,7 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
 
 
 def get_env_conf():
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         return get_json_file(Build.env_results_path)
 
     elif Build.run_environment == Running.WITH_LOCAL_SERVER:
@@ -910,7 +910,7 @@ def get_tests(build: Build) -> List[str]:
     """
     server_numeric_version: str = build.server_numeric_version
     tests: dict = build.tests
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         filtered_tests = extract_filtered_tests()
         if build.is_nightly:
             # skip test button testing
@@ -964,7 +964,7 @@ def get_changed_integrations(build: Build) -> tuple:
 
 
 def get_pack_ids_to_install():
-    if Build.run_environment == Running.CIRCLECI_RUN:
+    if Build.run_environment == Running.CI_RUN:
         with open('./artifacts/content_packs_to_install.txt', 'r') as packs_stream:
             pack_ids = packs_stream.readlines()
             return [pack_id.rstrip('\n') for pack_id in pack_ids]
