@@ -20,7 +20,7 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'file:hashes': FeedIndicatorType.File,
 }
 
-RELATIONS_TYPE_TO_DEMISTO_TYPES = {
+THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'campaign': 'Campaign',
     'attack-pattern': 'Attack Pattern',
     'report': 'Report',
@@ -405,13 +405,13 @@ def create_list_relationships(relationships_objects, id_to_object):
                 demisto.debug(f"Invalid relation type: {relationship_type}")
                 continue
 
-        a_type = relationships_object.get('source_ref').split('--')[0]
-        a_type = RELATIONS_TYPE_TO_DEMISTO_TYPES.get(a_type)
+        a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
+        a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)
         if a_type == 'Indicator':
             a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
-        b_type = relationships_object.get('target_ref').split('--')[0]
-        b_type = RELATIONS_TYPE_TO_DEMISTO_TYPES.get(b_type)
+        b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
+        b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
         if b_type == 'Indicator':
             b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
 

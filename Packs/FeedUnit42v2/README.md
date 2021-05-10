@@ -1,5 +1,9 @@
 The Unit42 feed provides access to published IOCs that contain known malicious indicators. You can configure the number of indicators to be returned. The default is 10.
 
+New Unit42 Feed V2 Pack Now using the STIX format, and ingesting Threat Intel.
+- Techniques and SubTechniques are now Attack Pattern
+- (New) Campaign object.
+
 In order to access the Unit42 feed, you need to sign up.
 
 1. Go to https://stix2.unit42.org/ to sign up.
