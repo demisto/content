@@ -292,7 +292,7 @@ def get_reputation_data_statuses(reputation_data: List) -> List[str]:
     return reputation_statuses
 
 
-def calculate_dbot_score(reputation_data: List, params: Dict[str, Any]) -> Common.DBotScore:
+def calculate_dbot_score(reputation_data: List, params: Dict[str, Any]) -> int:
     """
     Calculates the Dbot score of the given reputation command data, by the following logic:
     MALICIOUS > malicious threshold (50%) = Malicious
@@ -307,9 +307,9 @@ def calculate_dbot_score(reputation_data: List, params: Dict[str, Any]) -> Commo
     """
 
     # get user's thresholds:
-    malicious_threshold = int(params.get('malicious_threshold'))
-    suspicious_threshold = int(params.get('suspicious_threshold'))
-    non_malicious_threshold = int(params.get('non_malicious_threshold'))
+    malicious_threshold = int(params.get('malicious_threshold', 50))
+    suspicious_threshold = int(params.get('suspicious_threshold', 1))
+    non_malicious_threshold = int(params.get('non_malicious_threshold', 50))
 
     # collect and count reported statuses:
     reputation_statuses = get_reputation_data_statuses(reputation_data)
@@ -466,7 +466,7 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
     return results
 
 
-def file_command(client: Client, args: dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
+def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
     """
     Returns file's reputation
     """
@@ -542,7 +542,7 @@ def file_command(client: Client, args: dict[str, Any], params: Dict[str, Any]) -
     return results
 
 
-def domain_command(client: Client, args: dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
+def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
     """
     Returns domain's reputation
     """
@@ -614,7 +614,7 @@ def domain_command(client: Client, args: dict[str, Any], params: Dict[str, Any])
     return results
 
 
-def url_command(client: Client, args: dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
+def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> List[CommandResults]:
     """
     Returns URL's reputation
     """
@@ -714,8 +714,8 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Searches for subjective opinions on indicators of compromise stored in ThreatExchange.
     """
-    text = args.get('text')
-    type = args.get('type')
+    text = str(args.get('text'))
+    type = str(args.get('type'))
     since = arg_to_number(args.get('since'), arg_name='since')
     until = arg_to_number(args.get('until'), arg_name='until')
     limit = arg_to_number(args.get('limit'), arg_name='limit')
@@ -761,7 +761,7 @@ def tags_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     See Also:
         https://developers.facebook.com/docs/threat-exchange/reference/apis/threattags/v10.0
     """
-    text = args.get('text')
+    text = str(args.get('text'))
     before = args.get('before')
     after = args.get('after')
 
@@ -800,7 +800,7 @@ def tagged_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     See Also:
         https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-tags/v10.0
     """
-    tag_id = args.get('tag_id')
+    tag_id = str(args.get('tag_id'))
     tagged_since = arg_to_number(args.get('tagged_since'), arg_name='tagged_since')
     tagged_until = arg_to_number(args.get('tagged_until'), arg_name='tagged_until')
     before = args.get('before')
@@ -840,7 +840,7 @@ def object_get_by_id_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     Gets ThreatExchange object by ID.
     """
-    object_id = args.get('object_id')
+    object_id = str(args.get('object_id'))
 
     raw_response = client.object_get_by_id(object_id)
     if raw_response:
@@ -883,7 +883,7 @@ def main():
             verify=verify_certificate,
             proxy=proxy
         )
-
+        result: Union[str, CommandResults, List[CommandResults]]
         if command == 'test-module':
             result = test_module(client)
         elif command == 'ip':
@@ -905,7 +905,7 @@ def main():
         elif command == f'{COMMAND_PREFIX}-object-get-by-id':
             result = object_get_by_id_command(client, args)
         else:
-            raise NotImplemented(f'Command {command} is not implemented')
+            raise NotImplementedError(f'Command {command} is not implemented')
         return_results(result)
     # Log exceptions and return errors
     except Exception as e:
