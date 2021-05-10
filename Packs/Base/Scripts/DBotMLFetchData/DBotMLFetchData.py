@@ -114,7 +114,8 @@ LABEL_FIELDS_BLACKLIST = {EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIEL
                           'reminder', 'roles', 'runStatus', 'severity', 'sla', 'sortValues', 'sourceBrand',
                           'sourceInstance', 'status', 'timetoassignment', 'type', 'urlsslverification', 'version',
                           "index", 'allRead', 'allReadWrite', 'dbotCurrentDirtyFields', 'dbotDirtyFields',
-                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite'}
+                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite',
+                          'dbottextsuggestionhighlighted'}
 LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test',
                          'fp', 'tp', 'resolve', 'credentials', 'spear', 'malware', 'whaling', 'catphishing',
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
