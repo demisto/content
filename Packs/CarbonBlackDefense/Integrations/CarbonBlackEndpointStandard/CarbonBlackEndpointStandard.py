@@ -933,41 +933,47 @@ def test_module(client: Client, params: dict) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    try:
 
-        is_fetch = params.get('isFetch')
+    is_fetch = params.get('isFetch')
 
-        """There is 2 sets of api_key&api_secret_key 1 for all API's and 1 for the policy API.
-        check which set of keys to test (organization_key is not needed for the policy pair of keys).
-        at least one of the 2 sets is required.
-        Fetch uses the general api_key."""
-        if (client.api_key and client.api_secret_key and client.organization_key) or \
-                (client.policy_api_key and client.policy_api_secret_key and not is_fetch):
-            if client.api_key or client.api_secret_key or client.organization_key:
-                client.test_module_request()
-                if is_fetch:
-                    filters = fetch_incident_filters(params)
-                    client.search_alerts_request(suffix_url_path=filters.get('suffix_url_path'),
-                                                 minimum_severity=filters.get('min_severity'),
-                                                 policy_id=filters.get('policy_id'),
-                                                 device_username=filters.get('device_username'),
-                                                 device_id=filters.get('device_id'),
-                                                 query=filters.get('query'),
-                                                 alert_category=filters.get('category'))
-            if client.policy_api_key or client.policy_api_secret_key:
-                client.policy_test_module_request()
-            message = 'ok'
-        else:
+    # if is_fetch = true and custom API key's is no provided
+    if is_fetch and any(a == "" for a in [client.api_key, client.api_secret_key, client.organization_key]):
+        return 'To fetch incidents you must complete the following arguments beforehand, ' \
+               'Custom API key & Custom API secret key & the Organization key'
+
+    # if one of the custom API key's is provided
+    if client.api_key or client.api_secret_key or client.organization_key:
+        try:
+            client.test_module_request()
+
+            # if is_fetch = true, try to fetch
             if is_fetch:
-                raise DemistoException('To fetch incidents you must complete the following arguments beforehand, '
-                                       'Custom API key & Custom API secret key & the Organization key')
-            message = 'Please set a complete set of API Keys & Secret Keys.'
+                filters = fetch_incident_filters(params)
+                client.search_alerts_request(suffix_url_path=filters.get('suffix_url_path'),
+                                             minimum_severity=filters.get('min_severity'),
+                                             policy_id=filters.get('policy_id'),
+                                             device_username=filters.get('device_username'),
+                                             device_id=filters.get('device_id'),
+                                             query=filters.get('query'),
+                                             alert_category=filters.get('category'))
 
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+            message = 'ok'
+        except Exception as e:
+            if 'authenticated' in str(e):
+                return 'Authorization Error: make sure Custom API Key is correctly set'
+            else:
+                raise e
+
+    # if one of the api/live-response API key's is provided
+    if client.policy_api_key or client.policy_api_secret_key:
+        try:
+            client.policy_test_module_request()
+            message = 'ok'
+        except Exception as e:
+            if 'Authentication' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
     return message
 
 
