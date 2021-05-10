@@ -19,6 +19,10 @@ Analyze suspicious hashes, URLs, domains and IP addresses
     | Preferred Vendors List. CSV list of vendors which are considered more trustworthy. |  | False |
     | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  |  | False |
     | Determines whether to return all results, which can number in the thousands. If “true”, returns all results and overrides the _fullResponse_, _long_ arguments (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments in the command determines how results are returned. |  | False |
+    | IP Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
+    | Domain Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
+    | URL Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
+    | File Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -50,6 +54,11 @@ Checks the file reputation of the specified hash.
 | File.MD5 | unknown | Bad MD5 hash. | 
 | File.SHA1 | unknown | Bad SHA1 hash. | 
 | File.SHA256 | unknown | Bad SHA256 hash. | 
+| File.Relations.EntityA | String | The source of the relationship. |
+| File.Relations.EntityAType | String | The type of the source of the relationship. |
+| File.Relations.EntityB | String | The destination of the relationship. |
+| File.Relations.EntityBType | String | The type of the destination of the relationship. |
+| File.Relations.Relationship | String |  The name of the relationship. |
 | File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Detections | unknown | For malicious files, the total number of detections. | 
 | File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. | 
@@ -100,6 +109,11 @@ Checks the reputation of an IP address.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | unknown | Bad IP address. | 
+| IP.Relations.EntityA | String | The source of the relationship. |
+| IP.Relations.EntityAType | String | The type of the source of the relationship. |
+| IP.Relations.EntityB | String | The destination of the relationship. |
+| IP.Relations.EntityBType | String | The type of the destination of the relationship. |
+| IP.Relations.Relationship | String |  The name of the relationship. |
 | IP.ASN | unknown | Bad IP ASN. | 
 | IP.Geo.Country | unknown | Bad IP country. | 
 | IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. | 
@@ -153,6 +167,11 @@ Checks the reputation of a URL.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | URL.Data | unknown | Bad URLs found. | 
+| URL.Relations.EntityA | String | The source of the relationship. |
+| URL.Relations.EntityAType | String | The type of the source of the relationship. |
+| URL.Relations.EntityB | String | The destination of the relationship. |
+| URL.Relations.EntityBType | String | The type of the destination of the relationship. |
+| URL.Relations.Relationship | String |  The name of the relationship. |
 | URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. | 
 | URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -229,6 +248,11 @@ Checks the reputation of a domain.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | unknown | Bad domain found. | 
+| Domain.Relations.EntityA | String | The source of the relationship. |
+| Domain.Relations.EntityAType | String | The type of the source of the relationship. |
+| Domain.Relations.EntityB | String | The destination of the relationship. |
+| Domain.Relations.EntityBType | String | The type of the destination of the relationship. |
+| Domain.Relations.Relationship | String |  The name of the relationship. |
 | Domain.Malicious.Vendor | unknown | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | unknown | For malicious domains, the reason that the vendor made the decision. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
