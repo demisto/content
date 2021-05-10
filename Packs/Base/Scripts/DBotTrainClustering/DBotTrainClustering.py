@@ -17,6 +17,23 @@ import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
 
+GENERAL_EXPLANATION = "**In general clustering model aims to form groups of similar incidents based on some similarity** \n" \
+                      "In our case the model is splitted into 2 phases: \n" \
+                      "- **Phase 1 (Groups creation)** creates groups with all the incident fetched. " \
+                      "Most of the incidents should be grouped together but some will be considered as outliers " \
+                      "and won't be considered during the next stage. " \
+                      "This percentage can be seen in  **Percentage of clusterized samples**. \n" \
+                      "- **Phase 2 (Groups selection)** will be executed only if **fieldForClusterName** is given and valid. " \
+                      "It aims to remove low quality groups based on **fieldForClusterName**. Each sample will " \
+                      "have a family name from the value of " \
+                      "**fieldForClusterName field**. The model keeps incidents for which the family ratio is " \
+                      "above **minHomogeneityCluster** \n" \
+                      "- **Percentage of clusterized samples**: Percentage of samples that are not outliers **after " \
+                      "Phase 1** \n" \
+                      "- **Percentage of clusterized samples after selection**: Percentage of samples that are not " \
+                      "outliers after **Phase 1** and **Phase 2** \n" \
+                      "- **Percentage of cluster selected** : Percentage of groups kept after phase 1 and 2 \n"
+
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
                             "or increase the limit argument to more than %s."
@@ -596,7 +613,7 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
         'Percentage of clusterized samples': "%s  (%s/%s)" % (str(percentage_clusterized_samples),
                                                               str(number_of_clusterized),
                                                               str(number_of_sample)),
-        'Percentage of cluster selected': "%s  (%s/%s)" % (
+        'Percentage of cluster selected (Number of high quality groups/Total number of groups)': "%s  (%s/%s)" % (
             str(percentage_clusters_selected), str(number_clusters_selected),
             str(nb_clusters)),
         'Fields used for training': ' , '.join(fields_for_clustering),
@@ -887,7 +904,8 @@ def main():
         model_processed.global_msg = global_msg
 
         if debug:
-            return_outputs(readable_output=global_msg + tableToMarkdown("Summary", summary))
+            return_outputs(readable_output='### General explanation \n {}'.format(
+                GENERAL_EXPLANATION) + '### Warning \n {}'.format(global_msg) + tableToMarkdown("Summary", summary))
 
         # return Entry and summary
         output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)

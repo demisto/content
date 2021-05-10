@@ -2,7 +2,7 @@ import json
 
 from DBotTrainClustering import demisto, main, MESSAGE_INCORRECT_FIELD, MESSAGE_INVALID_FIELD, \
     preprocess_incidents_field, PREFIXES_TO_REMOVE, MESSAGE_CLUSTERING_NOT_VALID, check_list_of_dict, \
-    base64, datetime
+    base64, datetime, MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
 import dill as pickle
 
 PARAMETERS_DICT = {
@@ -186,6 +186,7 @@ def test_all_incorrect_fields(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     assert MESSAGE_INCORRECT_FIELD % ' , '.join(['field_1_wrong', 'field_2_wrong', 'name']) in msg
+    assert MESSAGE_NO_FIELD_NAME_OR_CLUSTERING in msg
 
     assert not output_clustering_json
     assert not model
