@@ -734,13 +734,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: SHA-256 hash(es) of the child process(es) binary. For any process(es)
-        terminated by the sensor.
-      isArray: false
-      name: blocked_hash
-      required: false
-      secret: false
-    - default: false
       description: The IP address of the endpoint according to Carbon Black Cloud.
         This IP address can differ from the device_internal_ip due to network proxy
         or NAT. Can be either IPv4 or IPv6 format.
@@ -804,12 +797,6 @@ script:
       - childproc
       - scriptload
       - fileless_scriptload
-      required: false
-      secret: false
-    - default: false
-      description: The MD5 and/or SHA-256 hash of the parent process binary.
-      isArray: false
-      name: parent_hash
       required: false
       secret: false
     - default: false
@@ -994,13 +981,6 @@ script:
       required: false
       secret: false
     - default: false
-      description: SHA-256 hash(es) of the child process(es) binary. For any process(es)
-        terminated by the sensor.
-      isArray: false
-      name: blocked_hash
-      required: false
-      secret: false
-    - default: false
       description: The IP address of the endpoint according to Carbon Black Cloud.
         This IP address can differ from the device_internal_ip due to network proxy
         or NAT. Can be either IPv4 or IPv6 format.
@@ -1056,12 +1036,6 @@ script:
       - childproc
       - scriptload
       - fileless_scriptload
-      required: false
-      secret: false
-    - default: false
-      description: The MD5 and/or SHA-256 hash of the parent process binary.
-      isArray: false
-      name: parent_hash
       required: false
       secret: false
     - default: false

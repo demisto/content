@@ -370,8 +370,8 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
     # The events API
-    def get_events(self, alert_category: List[str] = None, hash: List[str] = None, blocked_hash: List[str] = None,
-                   device_external_ip: List[str] = None, device_id: List[int] = None, parent_hash: List[str] = None,
+    def get_events(self, alert_category: List[str] = None, hash: List[str] = None,
+                   device_external_ip: List[str] = None, device_id: List[int] = None,
                    device_internal_ip: List[str] = None, device_name: List[str] = None,
                    device_os: List[str] = None, event_type: List[str] = None, parent_name: List[str] = None,
                    parent_reputation: List[str] = None, process_cmdline: List[str] = None,
@@ -394,10 +394,6 @@ class Client(BaseClient):
             (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
             enables one-step search for any matches on the specified hashes
 
-        :type blocked_hash: ``Optional[List[str]]``
-        :param blocked_hash: Searchable. MD5 and SHA-256 hash(es) of the child process(es) binary;
-            for any process(es) terminated by the sensor
-
         :type device_external_ip: ``Optional[List[str]]``
         :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
             can differ from device_internal_ip due to network proxy or NAT;
@@ -406,9 +402,6 @@ class Client(BaseClient):
         :type device_id: ``Optional[List[int]]``
         :param device_id: The ID assigned to the endpoint by Carbon Black Cloud;
             unique across all Carbon Black Cloud environments.
-
-        :type parent_hash: ``Optional[List[str]]``
-        :param parent_hash: Searchable. MD5 and/or SHA-256 hash of the parent process binary
 
         :type device_internal_ip ``Optional[List[str]]``
         :param device_internal_ip: The IP address of the endpoint reported by the sensor;
@@ -494,10 +487,8 @@ class Client(BaseClient):
             criteria=assign_params(  # one of the arguments (query or criteria) is required
                 alert_category=argToList(alert_category),
                 hash=argToList(hash),
-                blocked_hash=argToList(blocked_hash),
                 device_external_ip=argToList(device_external_ip),
                 device_id=argToList(device_id),
-                parent_hash=argToList(parent_hash),
                 device_internal_ip=argToList(device_internal_ip),
                 device_name=argToList(device_name),
                 device_os=argToList(device_os),
@@ -570,8 +561,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     # Processes API
-    def get_processes(self, alert_category: List[str] = None, hash: List[str] = None, blocked_hash: List[str] = None,
-                      device_external_ip: List[str] = None, device_id: List[int] = None, parent_hash: List[str] = None,
+    def get_processes(self, alert_category: List[str] = None, hash: List[str] = None,
+                      device_external_ip: List[str] = None, device_id: List[int] = None,
                       device_internal_ip: List[str] = None, device_name: List[str] = None, device_os: List[str] = None,
                       device_timestamp: List[str] = None, event_type: List[str] = None, parent_name: List[str] = None,
                       parent_reputation: List[str] = None, process_cmdline: List[str] = None,
@@ -594,10 +585,6 @@ class Client(BaseClient):
             (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
             enables one-step search for any matches on the specified hashes
 
-        :type blocked_hash: ``Optional[List[str]]``
-        :param blocked_hash: Searchable. MD5 and SHA-256 hash(es) of the child process(es) binary;
-            for any process(es) terminated by the sensor
-
         :type device_external_ip: ``Optional[List[str]]``
         :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
             can differ from device_internal_ip due to network proxy or NAT;
@@ -606,9 +593,6 @@ class Client(BaseClient):
         :type device_id: ``Optional[List[int]]``
         :param device_id: The ID assigned to the endpoint by Carbon Black Cloud;
             unique across all Carbon Black Cloud environments.
-
-        :type parent_hash: ``Optional[List[str]]``
-        :param parent_hash: Searchable. MD5 and/or SHA-256 hash of the parent process binary
 
         :type device_internal_ip ``Optional[List[str]]``
         :param device_internal_ip: The IP address of the endpoint reported by the sensor;
@@ -698,10 +682,8 @@ class Client(BaseClient):
             criteria=assign_params(  # one of the arguments (query or criteria) is required
                 alert_category=argToList(alert_category),
                 hash=argToList(hash),
-                blocked_hash=argToList(blocked_hash),
                 device_external_ip=argToList(device_external_ip),
                 device_id=argToList(device_id),
-                parent_hash=argToList(parent_hash),
                 device_internal_ip=argToList(device_internal_ip),
                 device_name=argToList(device_name),
                 device_os=argToList(device_os),
@@ -951,41 +933,47 @@ def test_module(client: Client, params: dict) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    try:
 
-        is_fetch = params.get('isFetch')
+    is_fetch = params.get('isFetch')
 
-        """There is 2 sets of api_key&api_secret_key 1 for all API's and 1 for the policy API.
-        check which set of keys to test (organization_key is not needed for the policy pair of keys).
-        at least one of the 2 sets is required.
-        Fetch uses the general api_key."""
-        if (client.api_key and client.api_secret_key and client.organization_key) or \
-                (client.policy_api_key and client.policy_api_secret_key and not is_fetch):
-            if client.api_key or client.api_secret_key or client.organization_key:
-                client.test_module_request()
-                if is_fetch:
-                    filters = fetch_incident_filters(params)
-                    client.search_alerts_request(suffix_url_path=filters.get('suffix_url_path'),
-                                                 minimum_severity=filters.get('min_severity'),
-                                                 policy_id=filters.get('policy_id'),
-                                                 device_username=filters.get('device_username'),
-                                                 device_id=filters.get('device_id'),
-                                                 query=filters.get('query'),
-                                                 alert_category=filters.get('category'))
-            if client.policy_api_key or client.policy_api_secret_key:
-                client.policy_test_module_request()
-            message = 'ok'
-        else:
+    # if is_fetch = true and custom API key's is no provided
+    if is_fetch and any(a == "" for a in [client.api_key, client.api_secret_key, client.organization_key]):
+        return 'To fetch incidents you must complete the following arguments beforehand, ' \
+               'Custom API key & Custom API secret key & the Organization key'
+
+    # if one of the custom API key's is provided
+    if client.api_key or client.api_secret_key or client.organization_key:
+        try:
+            client.test_module_request()
+
+            # if is_fetch = true, try to fetch
             if is_fetch:
-                raise DemistoException('To fetch incidents you must complete the following arguments beforehand, '
-                                       'Custom API key & Custom API secret key & the Organization key')
-            message = 'Please set a complete set of API Keys & Secret Keys.'
+                filters = fetch_incident_filters(params)
+                client.search_alerts_request(suffix_url_path=filters.get('suffix_url_path'),
+                                             minimum_severity=filters.get('min_severity'),
+                                             policy_id=filters.get('policy_id'),
+                                             device_username=filters.get('device_username'),
+                                             device_id=filters.get('device_id'),
+                                             query=filters.get('query'),
+                                             alert_category=filters.get('category'))
 
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+            message = 'ok'
+        except Exception as e:
+            if 'authenticated' in str(e):
+                return 'Authorization Error: make sure Custom API Key is correctly set'
+            else:
+                raise e
+
+    # if one of the api/live-response API key's is provided
+    if client.policy_api_key or client.policy_api_secret_key:
+        try:
+            client.policy_test_module_request()
+            message = 'ok'
+        except Exception as e:
+            if 'Authentication' in str(e):
+                return 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
     return message
 
 
