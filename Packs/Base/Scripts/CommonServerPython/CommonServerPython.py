@@ -2378,8 +2378,8 @@ class Common(object):
         :type feed_related_indicators: ``FeedRelatedIndicators``
         :param feed_related_indicators: List of indicators that are associated with the IP.
 
-        :type relations: ``list of EntityRelation``
-        :param relations: List of relations of the indicator.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
@@ -2397,7 +2397,7 @@ class Common(object):
                      hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
                      organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
-                     malware_family=None, relations=None):
+                     malware_family=None, relationships=None):
             self.ip = ip
             self.asn = asn
             self.as_owner = as_owner
@@ -2428,7 +2428,7 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.tags = tags
             self.malware_family = malware_family
-            self.relations = relations
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2546,9 +2546,10 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                ip_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                ip_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2833,8 +2834,8 @@ class Common(object):
         :type behaviors: ``Behaviors``
         :param behaviors: list of behaviors associated with the file.
 
-        :type relations: ``list of EntityRelation``
-        :param relations: List of relations of the indicator.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
@@ -2852,7 +2853,7 @@ class Common(object):
                      product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
                      feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
                      associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
-                     publications=None, threat_types=None, behaviors=None, relations=None):
+                     publications=None, threat_types=None, behaviors=None, relationships=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2884,7 +2885,7 @@ class Common(object):
             self.organization = organization
             self.associated_file_names = associated_file_names
             self.behaviors = behaviors
-            self.relations = relations
+            self.relationships = relationships
 
             self.dbot_score = dbot_score
 
@@ -2978,9 +2979,10 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                file_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                file_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -3004,14 +3006,14 @@ class Common(object):
         :param modified: The timestamp of when the CVE was last modified.
         :type description: ``str``
         :param description: A description of the CVE.
-        :type relations: ``list of EntityRelation``
-        :param relations: List of relations of the indicator.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description, relations=None):
+        def __init__(self, id, cvss, published, modified, description, relationships=None):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -3025,7 +3027,7 @@ class Common(object):
                 integration_name=None,
                 score=Common.DBotScore.NONE
             )
-            self.relations = relations
+            self.relationships = relationships
 
         def to_context(self):
             cve_context = {
@@ -3044,9 +3046,10 @@ class Common(object):
             if self.description:
                 cve_context['Description'] = self.description
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                cve_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                cve_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -3066,20 +3069,20 @@ class Common(object):
         :param domain: The domain of the Email.
         :type blocked: ``bool``
         :param blocked: Whether the email address is blocked.
-        :type relations: ``list of EntityRelation``
-        :param relations: List of relations of the indicator.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, dbot_score, domain=None, blocked=None, relations=None):
+        def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None):
             # type (str, str, bool) -> None
             self.address = address
             self.domain = domain
             self.blocked = blocked
             self.dbot_score = dbot_score
-            self.relations = relations
+            self.relationships = relationships
 
         def to_context(self):
             email_context = {
@@ -3090,9 +3093,10 @@ class Common(object):
             if self.blocked:
                 email_context['Blocked'] = self.blocked
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                email_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                email_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
@@ -3158,8 +3162,8 @@ class Common(object):
         :type publications: ``Publications``
         :param publications: List of publications on the URL that was published.
 
-        :type relations: ``list of EntityRelation``
-        :param relations: List of relations of the indicator.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
@@ -3172,7 +3176,7 @@ class Common(object):
         def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
                      feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
                      campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
-                     geo_country=None, organization=None, community_notes=None, publications=None, relations=None):
+                     geo_country=None, organization=None, community_notes=None, publications=None, relationships=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
@@ -3191,7 +3195,7 @@ class Common(object):
             self.organization = organization
             self.community_notes = community_notes
             self.publications = publications
-            self.relations = relations
+            self.relationships = relationships
 
             self.dbot_score = dbot_score
 
@@ -3259,9 +3263,10 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                url_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                url_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -3288,7 +3293,7 @@ class Common(object):
                      internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
                      community_notes=None, publications=None, geo_location=None, geo_country=None,
                      geo_description=None, tech_country=None, tech_name=None, tech_email=None, tech_organization=None,
-                     billing=None, relations=None):
+                     billing=None, relationships=None):
 
             self.domain = domain
             self.dns = dns
@@ -3336,7 +3341,7 @@ class Common(object):
             self.tech_organization = tech_organization
             self.tech_email = tech_email
             self.billing = billing
-            self.relations = relations
+            self.relationships = relationships
 
             self.dbot_score = dbot_score
 
@@ -3475,9 +3480,10 @@ class Common(object):
             if whois_context:
                 domain_context['WHOIS'] = whois_context
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                domain_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                domain_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -3496,7 +3502,7 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, relations=None, vendor=None, status=None,
+                     memory=None, processors=None, processor=None, relationships=None, vendor=None, status=None,
                      is_isolated=None):
             self.id = id
             self.hostname = hostname
@@ -3514,7 +3520,7 @@ class Common(object):
             self.vendor = vendor
             self.status = status
             self.is_isolated = is_isolated
-            self.relations = relations
+            self.relationships = relationships
 
         def to_context(self):
             endpoint_context = {
@@ -3557,9 +3563,10 @@ class Common(object):
             if self.processor:
                 endpoint_context['Processor'] = self.processor
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                endpoint_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                endpoint_context['Relationships'] = relationships_context
 
             if self.vendor:
                 endpoint_context['Vendor'] = self.vendor
@@ -3596,7 +3603,7 @@ class Common(object):
         def __init__(self, id, type=None, username=None, display_name=None, groups=None,
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
-                     dbot_score=None, relations=None):
+                     dbot_score=None, relationships=None):
             self.id = id
             self.type = type
             self.username = username
@@ -3613,7 +3620,7 @@ class Common(object):
             self.city = city
             self.street = street
             self.is_enabled = is_enabled
-            self.relations = relations
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -3646,9 +3653,10 @@ class Common(object):
                     'Description': self.dbot_score.malicious_description
                 }
 
-            if self.relations:
-                relations_context = [relation.to_context() for relation in self.relations if relation.to_context()]
-                account_context['Relationships'] = relations_context
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                account_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -4950,18 +4958,18 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
         raise ValueError('"{}" is not a valid date'.format(arg))
 
 
-# -------------------------------- Relations----------------------------------- #
+# -------------------------------- Relationships----------------------------------- #
 
 
-class EntityRelation:
+class EntityRelationship:
     """
-    XSOAR entity relation.
+    XSOAR entity relationship.
 
     :type name: ``str``
     :param name: Relationship name.
 
-    :type relation_type: ``str``
-    :param relation_type: Relationship type. (e.g. IndicatorToIndicator...).
+    :type relationship_type: ``str``
+    :param relationship_type: Relationship type. (e.g. IndicatorToIndicator...).
 
     :type entity_a: ``str``
     :param entity_a: A value, A aka source of the relationship.
@@ -4994,9 +5002,9 @@ class EntityRelation:
     :rtype: ``None``
     """
 
-    class RelationsTypes(object):
+    class RelationshipsTypes(object):
         """
-        Relations Types objects.
+        Relationships Types objects.
 
         :return: None
         :rtype: ``None``
@@ -5008,11 +5016,11 @@ class EntityRelation:
         def is_valid_type(_type):
             # type: (str) -> bool
 
-            return _type in EntityRelation.RelationsTypes.RELATIONSHIP_TYPES
+            return _type in EntityRelationship.RelationshipsTypes.RELATIONSHIP_TYPES
 
-    class RelationsFamily(object):
+    class RelationshipsFamily(object):
         """
-        Relations Family object list.
+        Relationships Family object list.
 
         :return: None
         :rtype: ``None``
@@ -5025,9 +5033,9 @@ class EntityRelation:
         def is_valid_type(_type):
             # type: (str) -> bool
 
-            return _type in EntityRelation.RelationsFamily.INDICATOR
+            return _type in EntityRelationship.RelationshipsFamily.INDICATOR
 
-    class Relations(object):
+    class Relationships(object):
 
         """
         Enum: Relations names and their reverse
@@ -5106,128 +5114,128 @@ class EntityRelation:
         USES = 'uses'
         VARIANT_OF = 'variant-of'
 
-        RELATIONS_NAMES = {'applied': 'applied-on',
-                           'attachment-of': 'attaches',
-                           'attaches': 'attachment-of',
-                           'attribute-of': 'owns',
-                           'attributed-by': 'attributed-to',
-                           'attributed-to': 'attributed-by',
-                           'authored-by': 'author-of',
-                           'beacons-to': 'communicated-by',
-                           'bundled-in': 'bundles',
-                           'bundles': 'bundled-in',
-                           'communicated-with': 'communicated-by',
-                           'communicated-by': 'communicates-with',
-                           'communicates-with': 'communicated-by',
-                           'compromises': 'compromised-by',
-                           'contains': 'part-of',
-                           'controls': 'controlled-by',
-                           'created-by': 'creates',
-                           'creates': 'created-by',
-                           'delivered-by': 'delivers',
-                           'delivers': 'delivered-by',
-                           'downloads': 'downloaded-by',
-                           'downloads-from': 'hosts',
-                           'dropped-by': 'drops',
-                           'drops': 'dropped-by',
-                           'duplicate-of': 'duplicate-of',
-                           'embedded-in': 'embeds',
-                           'embeds': 'embedded-on',
-                           'executed': 'executed-by',
-                           'executed-by': 'executes',
-                           'exfiltrates-to': 'exfiltrated-from',
-                           'exploits': 'exploited-by',
-                           'has': 'seen-on',
-                           'hosted-on': 'hosts',
-                           'hosts': 'hosted-on',
-                           'impersonates': 'impersonated-by',
-                           'indicated-by': 'indicator-of',
-                           'indicator-of': 'indicated-by',
-                           'injected-from': 'injects-into',
-                           'injects-into': 'injected-from',
-                           'investigates': 'investigated-by',
-                           'is-also': 'is-also',
-                           'mitigated-by': 'mitigates',
-                           'mitigates': 'mitigated-by',
-                           'originated-from': 'source-of',
-                           'owned-by': 'owns',
-                           'owns': 'owned-by',
-                           'part-of': 'contains',
-                           'related-to': 'related-to',
-                           'remediates': 'remediated-by',
-                           'resolved-by': 'resolves-to',
-                           'resolved-from': 'resolves-to',
-                           'resolves-to': 'resolved-from',
-                           'seen-on': 'has',
-                           'sent': 'attached-to',
-                           'sent-by': 'sent',
-                           'sent-from': 'received-by',
-                           'sent-to': 'received-by',
-                           'similar-to': 'similar-to',
-                           'sub-domain-of': 'supra-domain-of',
-                           'supra-domain-of': 'sub-domain-of',
-                           'subtechnique-of': 'parent-technique-of',
-                           'parent-technique-of': 'subtechnique-of',
-                           'targeted-by': 'targets',
-                           'targets': 'targeted-by',
-                           'Types': 'Reverse',
-                           'uploaded-to': 'hosts',
-                           'used-by': 'uses',
-                           'used-on': 'targeted-by',
-                           'uses': 'used-by',
-                           'variant-of': 'variant-of'}
+        RELATIONSHIPS_NAMES = {'applied': 'applied-on',
+                               'attachment-of': 'attaches',
+                               'attaches': 'attachment-of',
+                               'attribute-of': 'owns',
+                               'attributed-by': 'attributed-to',
+                               'attributed-to': 'attributed-by',
+                               'authored-by': 'author-of',
+                               'beacons-to': 'communicated-by',
+                               'bundled-in': 'bundles',
+                               'bundles': 'bundled-in',
+                               'communicated-with': 'communicated-by',
+                               'communicated-by': 'communicates-with',
+                               'communicates-with': 'communicated-by',
+                               'compromises': 'compromised-by',
+                               'contains': 'part-of',
+                               'controls': 'controlled-by',
+                               'created-by': 'creates',
+                               'creates': 'created-by',
+                               'delivered-by': 'delivers',
+                               'delivers': 'delivered-by',
+                               'downloads': 'downloaded-by',
+                               'downloads-from': 'hosts',
+                               'dropped-by': 'drops',
+                               'drops': 'dropped-by',
+                               'duplicate-of': 'duplicate-of',
+                               'embedded-in': 'embeds',
+                               'embeds': 'embedded-on',
+                               'executed': 'executed-by',
+                               'executed-by': 'executes',
+                               'exfiltrates-to': 'exfiltrated-from',
+                               'exploits': 'exploited-by',
+                               'has': 'seen-on',
+                               'hosted-on': 'hosts',
+                               'hosts': 'hosted-on',
+                               'impersonates': 'impersonated-by',
+                               'indicated-by': 'indicator-of',
+                               'indicator-of': 'indicated-by',
+                               'injected-from': 'injects-into',
+                               'injects-into': 'injected-from',
+                               'investigates': 'investigated-by',
+                               'is-also': 'is-also',
+                               'mitigated-by': 'mitigates',
+                               'mitigates': 'mitigated-by',
+                               'originated-from': 'source-of',
+                               'owned-by': 'owns',
+                               'owns': 'owned-by',
+                               'part-of': 'contains',
+                               'related-to': 'related-to',
+                               'remediates': 'remediated-by',
+                               'resolved-by': 'resolves-to',
+                               'resolved-from': 'resolves-to',
+                               'resolves-to': 'resolved-from',
+                               'seen-on': 'has',
+                               'sent': 'attached-to',
+                               'sent-by': 'sent',
+                               'sent-from': 'received-by',
+                               'sent-to': 'received-by',
+                               'similar-to': 'similar-to',
+                               'sub-domain-of': 'supra-domain-of',
+                               'supra-domain-of': 'sub-domain-of',
+                               'subtechnique-of': 'parent-technique-of',
+                               'parent-technique-of': 'subtechnique-of',
+                               'targeted-by': 'targets',
+                               'targets': 'targeted-by',
+                               'Types': 'Reverse',
+                               'uploaded-to': 'hosts',
+                               'used-by': 'uses',
+                               'used-on': 'targeted-by',
+                               'uses': 'used-by',
+                               'variant-of': 'variant-of'}
 
         @staticmethod
         def is_valid(_type):
             # type: (str) -> bool
 
-            return _type in EntityRelation.Relations.RELATIONS_NAMES.keys()
+            return _type in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
         @staticmethod
         def get_reverse(name):
             # type: (str) -> str
 
-            return EntityRelation.Relations.RELATIONS_NAMES[name]
+            return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
 
     def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
-                 reverse_name='', relation_type='IndicatorToIndicator', entity_a_family='Indicator',
+                 reverse_name='', relationship_type='IndicatorToIndicator', entity_a_family='Indicator',
                  entity_b_family='Indicator', source_reliability="", fields=None, brand=""):
 
-        # Relation
-        if not EntityRelation.Relations.is_valid(name):
-            raise ValueError("Invalid relation: " + name)
+        # Relationship
+        if not EntityRelationship.Relationships.is_valid(name):
+            raise ValueError("Invalid relationship: " + name)
         self._name = name
 
         if reverse_name:
-            if not EntityRelation.Relations.is_valid(reverse_name):
-                raise ValueError("Invalid reverse relation: " + reverse_name)
+            if not EntityRelationship.Relationships.is_valid(reverse_name):
+                raise ValueError("Invalid reverse relationship: " + reverse_name)
             self._reverse_name = reverse_name
         else:
-            self._reverse_name = EntityRelation.Relations.get_reverse(name)
+            self._reverse_name = EntityRelationship.Relationships.get_reverse(name)
 
-        if not EntityRelation.RelationsTypes.is_valid_type(relation_type):
-            raise ValueError("Invalid relation type: " + relation_type)
-        self._relation_type = relation_type
+        if not EntityRelationship.RelationshipsTypes.is_valid_type(relationship_type):
+            raise ValueError("Invalid relationship type: " + relationship_type)
+        self._relationship_type = relationship_type
 
         # Entity A - Source
         self._entity_a = entity_a
 
         self._entity_a_type = entity_a_type
 
-        if not EntityRelation.RelationsFamily.is_valid_type(entity_a_family):
+        if not EntityRelationship.RelationshipsFamily.is_valid_type(entity_a_family):
             raise ValueError("Invalid entity A Family type: " + entity_a_family)
         self._entity_a_family = entity_a_family
 
         # Entity B - Destination
         if not entity_b:
             demisto.info(
-                "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relation name {}".format(
+                "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relationship name {}".format(
                     str(entity_a), str(name)))
         self._entity_b = entity_b
 
         self._entity_b_type = entity_b_type
 
-        if not EntityRelation.RelationsFamily.is_valid_type(entity_b_family):
+        if not EntityRelationship.RelationshipsFamily.is_valid_type(entity_b_family):
             raise ValueError("Invalid entity B Family type: " + entity_b_family)
         self._entity_b_family = entity_b_family
 
@@ -5261,7 +5269,7 @@ class EntityRelation:
             entry = {
                 "name": self._name,
                 "reverseName": self._reverse_name,
-                "type": self._relation_type,
+                "type": self._relationship_type,
                 "entityA": self._entity_a,
                 "entityAFamily": self._entity_a_family,
                 "entityAType": self._entity_a_type,
@@ -5281,13 +5289,13 @@ class EntityRelation:
         :rtype: ``dict``
         :return: XSOAR entry representation.
         """
-        indicator_relation = {}
+        indicator_relationship = {}
 
         if self._entity_b:
-            indicator_relation = {
+            indicator_relationship = {
                 "name": self._name,
                 "reverseName": self._reverse_name,
-                "type": self._relation_type,
+                "type": self._relationship_type,
                 "entityA": self._entity_a,
                 "entityAFamily": self._entity_a_family,
                 "entityAType": self._entity_a_type,
@@ -5296,17 +5304,17 @@ class EntityRelation:
                 "entityBType": self._entity_b_type,
                 "fields": self._fields,
             }
-        return indicator_relation
+        return indicator_relationship
 
     def to_context(self):
         """ Convert object to XSOAR context
         :rtype: ``dict``
         :return: XSOAR context representation.
         """
-        indicator_relation_context = {}
+        indicator_relationship_context = {}
 
         if self._entity_b:
-            indicator_relation_context = {
+            indicator_relationship_context = {
                 "Relationship": self._name,
                 "EntityA": self._entity_a,
                 "EntityAType": self._entity_a_type,
@@ -5314,7 +5322,7 @@ class EntityRelation:
                 "EntityBType": self._entity_b_type,
             }
 
-        return indicator_relation_context
+        return indicator_relationship_context
 
 
 class CommandResults:
@@ -5353,6 +5361,9 @@ class CommandResults:
     :type ignore_auto_extract: ``bool``
     :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
 
+    :type relationships: ``list of EntityRelationship``
+    :param relationships: List of relationships of the indicator.
+
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
@@ -5366,7 +5377,7 @@ class CommandResults:
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
                  mark_as_note=False, polling_command=None, polling_args=None, polling_timeout=None,
-                 polling_next_run=None, relations=None, entry_type=None):
+                 polling_next_run=None, relationships=None, entry_type=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool,str, dict, str, str, list, int) -> None # noqa: E501
         if raw_response is None:
             raw_response = outputs
@@ -5408,11 +5419,11 @@ class CommandResults:
         self.polling_timeout = polling_timeout
         self.polling_next_run = polling_next_run
 
-        self.relations = relations
+        self.relationships = relationships
 
     def to_context(self):
         outputs = {}  # type: dict
-        relations = []  # type: list
+        relationships = []  # type: list
         if self.readable_output:
             human_readable = self.readable_output
         else:
@@ -5462,8 +5473,8 @@ class CommandResults:
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
-        if self.relations:
-            relations = [relation.to_entry() for relation in self.relations if relation.to_entry()]
+        if self.relationships:
+            relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
 
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
@@ -5478,7 +5489,7 @@ class CommandResults:
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note,
-            'Relationships': relations,
+            'Relationships': relationships,
         }
         if self.polling_command and self.polling_next_run:
             return_entry.update({
@@ -7411,18 +7422,24 @@ class TableOrListWidget(BaseWidget):
 
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
-     :type page: ``int``
+    :type page: ``int``
     :param page: the number of page from which we start search indicators from.
+
+    :type filter_fields: ``str``
+    :param filter_fields: comma separated fields to filter (e.g. "value,type")
 
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, page=0):
+    def __init__(self, page=0, filter_fields=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        # populateFields merged in https://github.com/demisto/server/pull/18398
+        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
+        self._filter_fields = filter_fields
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -7448,8 +7465,18 @@ class IndicatorsSearcher:
         :rtype: ``dict``
         """
         if self._can_use_search_after:
-            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
-                                           searchAfter=self._search_after_param)
+            # if search_after_param exists use it for paging, else use the page number
+            search_iocs_params = assign_params(
+                fromDate=from_date,
+                toDate=to_date,
+                query=query,
+                size=size,
+                value=value,
+                searchAfter=self._search_after_param,
+                populateFields=self._filter_fields if self._can_use_filter_fields else None,
+                page=self._page if not self._search_after_param else None
+            )
+            res = demisto.searchIndicators(**search_iocs_params)
             self._search_after_param = res[self._search_after_title]
 
             if res[self._search_after_title] is None:
