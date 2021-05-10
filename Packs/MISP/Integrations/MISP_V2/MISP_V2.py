@@ -28,20 +28,22 @@ requests.packages.urllib3.disable_warnings()
 warnings.warn = warn
 
 ''' GLOBALS/PARAMS '''
-MISP_KEY = demisto.params().get('api_key')
-MISP_URL = demisto.params().get('url')
-USE_SSL = not demisto.params().get('insecure')
+PARAMS = demisto.params()
+MISP_KEY = PARAMS.get('api_key')
+MISP_URL = PARAMS.get('url')
+USE_SSL = not PARAMS.get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
 MISP_ATTRIBUTE_PATH = 'MISP.Attribute(obj.ID === val.ID)'
 MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
-DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
+DATA_KEYS_TO_SAVE = PARAMS.get('context_select', [])
 try:
-    MAX_ATTRIBUTES = int(demisto.params().get('attributes_limit', 1000))
+    MAX_ATTRIBUTES = int(PARAMS.get('attributes_limit') or 1000)
 except ValueError:
     return_error("Maximum attributes in event must be a positive number")
-if MAX_ATTRIBUTES < 1:
-    return_error("Maximum attributes in event must be a positive number")
+else:
+    if MAX_ATTRIBUTES < 1:
+        return_error("Maximum attributes in event must be a positive number")
 
 """
 dict format :
