@@ -36,19 +36,25 @@ def test_incidents_info_md_happy_path(mocker):
 
     """
     # prepare
-    mocker.patch.object(demisto, 'results')
     mocker.patch('GetCampaignIncidentsInfo.update_incident_with_required_keys')
     mocker.patch('GetCampaignIncidentsInfo.get_campaign_incidents_from_context', return_value=MOCKED_INCIDENTS)
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'incidents', return_value=MOCKED_INCIDENTS)
+    mocker.patch.object(demisto, 'executeCommand')
 
     # run
     main()
     hr = demisto.results.call_args[0][0]['HumanReadable']
 
-    # validate
+    # validate required keys are header in the MD and the expected values are the table
     assert all(string_to_table_header(key) in hr for key in REQUIRED_KEYS)
     assert all(f'test_{key}_' in hr for key in STR_VAL_KEYS)
     assert all(status in hr for status in STATUS_DICT.values())
     assert all(f'[{i}](#/Details/{i})' in hr for i in range(NUM_OF_INCIDENTS))  # linkable incident id
+
+    # validate the call to update empty fields
+    args = demisto.executeCommand.call_args[0][1]
+    assert args['customFields'] == DEFAULT_CUSTOM_FIELDS
 
 
 def test_incidents_info_md_for_empty_context(mocker):

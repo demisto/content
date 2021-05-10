@@ -11,6 +11,12 @@ STATUS_DICT = {
     2: "Closed",
     3: "Archive",
 }
+DEFAULT_CUSTOM_FIELDS = {
+    'campaignclosenotes': 'Notes explaining why the incident was closed',
+    'campaignemailsubject': 'Campaign detected',
+    'campaignemailbody': 'Fill here message for the recipients',
+    'selectcampaignincidents': ['All']
+}
 
 
 def update_incident_with_required_keys(incidents, required_keys):
@@ -60,14 +66,13 @@ def get_incidents_info_md(incidents):
 
 
 def update_empty_fields():
-    custom_fields = {
-        'campaignclosenotes': 'Notes explaining why the incident was closed',
-        'campaignemailsubject': 'Campaign detected',
-        'campaignemailbody': 'Fill here message for the recipients',
-        'selectcampaignincidents': ['All']
-    }
-    incident_id = demisto.incidents()[0]['id']
-    demisto.executeCommand('setIncident', {'id': incident_id, 'customFields': custom_fields})
+    incident = demisto.incidents()[0]
+    custom_fields = incident.get('customFields', {})
+
+    for field in DEFAULT_CUSTOM_FIELDS.keys():
+        if not custom_fields.get(field):
+            custom_fields[field] = DEFAULT_CUSTOM_FIELDS[field]
+    demisto.executeCommand('setIncident', {'id': incident['id'], 'customFields': custom_fields})
 
 
 def main():
