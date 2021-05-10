@@ -872,7 +872,7 @@ def append_to_analysis_iocs_arrays(iocs, dbots, k):
     if k and k.get('ioc'):
         iocs.append(ioc_to_readable(k))
         dbots.append({
-            'Vendor': 'ThreatGrid',
+            'Vendor': 'Threat Grid',
             'Type': 'IOC',
             'Indicator': k.get('ioc'),
             'Score': calc_score(k.get('severity'))
