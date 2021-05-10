@@ -280,7 +280,7 @@ class SlackBlocks:
         packs_str = ""
 
         for pack in self._list_packs:
-            packs_str += f"*<{MP_PACK_LINK}/{pack.pan_dev_mp_id}|{pack.name}>* | "
+            packs_str += f"*<{MP_PACK_LINK}/{pack.pan_dev_mp_id}|{pack.name}>*, "
             packs_str += f"By: {pack.author} | "
             packs_str += f"{self.get_price_text(pack.price)} | "
             packs_str += f"{self.get_support_text(pack.support)}\n"
