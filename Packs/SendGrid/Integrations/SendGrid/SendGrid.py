@@ -42,7 +42,7 @@ def process_attachments(message, attachIDs="", attachNames=""):
             f_data = f.read()
         encoded_data = base64.b64encode(f_data).decode()
         file_type = mimetypes.guess_type(attachment_name)[0]
-        message.attachment = Attachment(FileContent(encoded_data), FileName(attachment_name), FileType(file_type),
+        message.attachment = Attachment(FileContent(encoded_data), FileName(attachment_name), FileType(file_type),  # type: ignore[name-defined]
                                         Disposition('attachment'))  # type: ignore[name-defined]
     return 'ok'
 
@@ -500,14 +500,14 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if click_tracking:
         click_tracking = click_tracking if type(click_tracking) is dict else json.loads(click_tracking)
         is_enable = False if click_tracking["enable"] == 'False' else True
-        tracking_settings.click_tracking = ClickTracking(is_enable,
-                                                         click_tracking["enable_text"])  # type: ignore[name-defined]
+        tracking_settings.click_tracking = ClickTracking(is_enable,  # type: ignore[name-defined]
+                                                         click_tracking["enable_text"])
 
     open_tracking = args.get('OpenTracking')
     if open_tracking:
         open_tracking = open_tracking if type(open_tracking) is dict else json.loads(open_tracking)
         is_enable = False if open_tracking["enable"] == 'False' else True
-        tracking_settings.open_tracking = OpenTracking(
+        tracking_settings.open_tracking = OpenTracking(  # type: ignore[name-defined]
             is_enable,
             OpenTrackingSubstitutionTag(open_tracking["substitution_tag"]))  # type: ignore[name-defined]
 
@@ -515,33 +515,33 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if sub_tracking:
         sub_tracking = sub_tracking if type(sub_tracking) is dict else json.loads(sub_tracking)
         is_enable = False if sub_tracking["enable"] == 'False' else True
-        tracking_settings.subscription_tracking = SubscriptionTracking(
+        tracking_settings.subscription_tracking = SubscriptionTracking(  # type: ignore[name-defined]
             is_enable,
-            SubscriptionText(sub_tracking["text"]),
-            SubscriptionHtml(sub_tracking["html"]),
+            SubscriptionText(sub_tracking["text"]),  # type: ignore[name-defined]
+            SubscriptionHtml(sub_tracking["html"]),  # type: ignore[name-defined]
             SubscriptionSubstitutionTag(sub_tracking["substitution_tag"]))  # type: ignore[name-defined]
 
     ganalytics = args.get('GAnalytics')
     if ganalytics:
         ganalytics = ganalytics if type(ganalytics) is dict else json.loads(ganalytics)
         is_enable = False if ganalytics["enable"] == 'False' else True
-        tracking_settings.ganalytics = Ganalytics(
+        tracking_settings.ganalytics = Ganalytics(  # type: ignore[name-defined]
             is_enable,
-            UtmSource(ganalytics["utm_source"]),
-            UtmMedium(ganalytics["utm_medium"]),
-            UtmTerm(ganalytics["utm_term"]),
-            UtmContent(ganalytics["utm_content"]),
+            UtmSource(ganalytics["utm_source"]),  # type: ignore[name-defined]
+            UtmMedium(ganalytics["utm_medium"]),  # type: ignore[name-defined]
+            UtmTerm(ganalytics["utm_term"]),  # type: ignore[name-defined]
+            UtmContent(ganalytics["utm_content"]),  # type: ignore[name-defined]
             UtmCampaign(ganalytics["utm_campaign"]))  # type: ignore[name-defined]
 
     message.tracking_settings = tracking_settings
 
     # Mail Settings
-    mail_settings = MailSettings()
+    mail_settings = MailSettings()  # type: ignore[name-defined]
     bcc_mail_set = args.get('BccSettings')
     if bcc_mail_set:
         bcc_mail_set = bcc_mail_set if type(bcc_mail_set) is dict else json.loads(bcc_mail_set)
         is_enable = False if bcc_mail_set["enable"] == 'False' else True
-        mail_settings.bcc_settings = BccSettings(
+        mail_settings.bcc_settings = BccSettings(  # type: ignore[name-defined]
             is_enable,
             BccSettingsEmail(bcc_mail_set["email"]))  # type: ignore[name-defined]
 
@@ -549,18 +549,18 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if footer:
         footer = footer if type(footer) is dict else json.loads(footer)
         is_enable = False if footer["enable"] == 'False' else True
-        mail_settings.footer_settings = FooterSettings(
+        mail_settings.footer_settings = FooterSettings(  # type: ignore[name-defined]
             is_enable,
-            FooterText(footer["text"]),
+            FooterText(footer["text"]),  # type: ignore[name-defined]
             FooterHtml(footer["html"]))  # type: ignore[name-defined]
 
     spam_check = args.get('SpamCheck')
     if spam_check:
         spam_check = spam_check if type(spam_check) is dict else json.loads(spam_check)
         is_enable = False if spam_check["enable"] == 'False' else True
-        mail_settings.spam_check = SpamCheck(
+        mail_settings.spam_check = SpamCheck(  # type: ignore[name-defined]
             is_enable,
-            SpamThreshold(spam_check["threshold"]),
+            SpamThreshold(spam_check["threshold"]),  # type: ignore[name-defined]
             SpamUrl(spam_check["post_to_url"]))  # type: ignore[name-defined]
 
     sandbox_mode = args.get('SandboxMode')
@@ -600,7 +600,7 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
     if reply_to_email:
         message.reply_to = ReplyTo(reply_to_email, None)  # type: ignore[name-defined]
 
-    message.from_email = From(sg_from_email, sg_sender_name)
+    message.from_email = From(sg_from_email, sg_sender_name)  # type: ignore[name-defined]
 
     to_emails = args.get('ToEmails')
     to_emails = to_emails if isinstance(to_emails, list) else to_emails.split(",")  # type: ignore[union-attr]
