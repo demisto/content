@@ -3,3 +3,4 @@
 !fireeye-cm-alert-acknowledge uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
 !fireeye-cm-get-artifacts-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
 !fireeye-cm-get-artifacts-metadata-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
+!fireeye-cm-get-events duration="48_hours" end_time="2021-05-14T01:08:04.000-02:00" mvx_correlated_only="true"

@@ -86,7 +86,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: TODO
+      description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
       isArray: false
       name: end_time
       required: false
@@ -253,6 +253,42 @@ script:
       type: string
     - contextPath: FireEyeCM.Alerts.artifactSize
       description: The zipped artifact size in bytes.
+      type: string
+  - arguments:
+    - default: false
+      description: Specifies the time interval to search. This filter is used with the end_time filter. If the duration is not specified, the system defaults to duration=12_hours, end_time=current_time.
+      auto: PREDEFINED
+      predefined:
+      - '1_hour'
+      - '2_hours'
+      - '6_hours'
+      - '12_hours'
+      - '24_hours'
+      - '48_hours'
+      isArray: false
+      name: duration
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the end time of the search. This filter is used with the duration filter. If the end_time is specified but not the duration, the system defaults to duration=12_hours, ending at the specified end_time. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om"
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 'false'
+      description: "Specifies whether to include all IPS events or MVX-correlated events only. Default is false"
+      isArray: false
+      name: mvx_correlated_only
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve information about existing IPS NX events. An IPS enabled appliance is a prequisite to be able to retrieve IPS event data.
+    execution: false
+    name: fireeye-cm-get-events
+    outputs:
+    - contextPath: FireEyeCM.Events.TODO
+      description: Universally unique ID (UUID) of the alert.
       type: string
   isfetch: false
   runonce: false
