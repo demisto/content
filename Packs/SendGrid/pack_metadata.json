@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-05-10T11:35:40Z",
-    "categories": [],
+    "categories": [
+        "Messaging"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
