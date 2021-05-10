@@ -50,7 +50,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'command-and-control': "Command \u0026 Control"
 }
 
-RELATIONSHIP_TYPES = EntityRelation.Relations.RELATIONS_NAMES.keys()
+RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
 
 class Client(BaseClient):
@@ -423,12 +423,12 @@ def create_list_relationships(relationships_objects, id_to_object):
         entity_a = get_ioc_value(relationships_object.get('source_ref'), id_to_object)
         entity_b = get_ioc_value(relationships_object.get('target_ref'), id_to_object)
 
-        entity_relation = EntityRelation(name=relationship_type,
-                                         entity_a=entity_a,
-                                         entity_a_type=a_type,
-                                         entity_b=entity_b,
-                                         entity_b_type=b_type,
-                                         fields=mapping_fields)
+        entity_relation = EntityRelationship(name=relationship_type,
+                                             entity_a=entity_a,
+                                             entity_a_type=a_type,
+                                             entity_b=entity_b,
+                                             entity_b_type=b_type,
+                                             fields=mapping_fields)
         relationships_list.append(entity_relation.to_indicator())
     return relationships_list
 
