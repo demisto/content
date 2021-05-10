@@ -167,7 +167,7 @@ def test_create_relationships():
     Then:
     - Validate that the relationships were created as expected.
     """
-    expected_name = ['communicates-with','communicates-with','related-to','related-to']
+    expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
 
     with open("./TestData/ip.json", encoding='utf-8') as f:
         ip_res = json.load(f)
@@ -180,4 +180,3 @@ def test_create_relationships():
         assert relation.get('name') == expected_relation_name
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityBType') == 'File'
-
