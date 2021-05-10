@@ -94,7 +94,7 @@ class Client:
 def format_date(date):
     if not date:
         return None
-    return dateparser.parse(date).strftime(DATE_FORMAT)
+    return dateparser.parse(date).strftime(DATE_FORMAT)  # type:ignore
 
 
 def str_to_bool(str_bool):
