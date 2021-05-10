@@ -189,7 +189,7 @@ def main() -> None:
 
     try:
         client = Client(api_key=api_key,
-                        verify_certificate=insecure,
+                        verify_certificate=not insecure,
                         proxy=proxy,
                         base_url=base_url,
                         reliability=reliability)
