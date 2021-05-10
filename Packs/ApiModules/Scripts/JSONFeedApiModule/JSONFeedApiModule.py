@@ -186,7 +186,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
 
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
-                                          use_prefix_flat, feedTags, auto_detect, mapping_function, create_relationships_function))
+                                          use_prefix_flat, feedTags, auto_detect, mapping_function,
+                                          create_relationships_function))
 
             if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
@@ -205,6 +206,7 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
                     indicator['fields'][fields[0]] = [{fields[1]: attributes.get(map_key)}]
             else:
                 indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
+
 
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
