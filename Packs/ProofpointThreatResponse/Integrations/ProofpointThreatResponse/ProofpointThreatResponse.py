@@ -512,6 +512,7 @@ def get_incidents_batch_by_time_request(params):
         'created_before': created_before.isoformat().split('.')[0] + 'Z'
     }
 
+    # while loop relevant for fetching old incidents
     while created_before < current_time and len(incidents_list) < fetch_limit:
         demisto.debug(
             "Entered the batch loop , with fetch_limit {} and incidents list {} and incident length {} "
@@ -522,7 +523,7 @@ def get_incidents_batch_by_time_request(params):
         new_incidents = get_new_incidents(request_params, last_fetched_id)
         incidents_list.extend(new_incidents)
 
-        # advancing fetch time one day forward
+        # advancing fetch time by given fetch delta time
         created_after = created_before
         created_before = created_before + time_delta
 
@@ -531,6 +532,7 @@ def get_incidents_batch_by_time_request(params):
         request_params['created_before'] = created_before.isoformat().split('.')[0] + 'Z'
         demisto.debug("End of the current batch loop with {} incidents".format(str(len(incidents_list))))
 
+    # fetching the last batch when created_before is bigger then current time = fetching new incidents
     if len(incidents_list) < fetch_limit:
         # fetching the last batch
         request_params['created_before'] = current_time.isoformat().split('.')[0] + 'Z'
@@ -553,7 +555,7 @@ def fetch_incidents_command():
     last_fetch = demisto.getLastRun().get('last_fetch', {})
     last_fetched_id = demisto.getLastRun().get('last_fetched_incident_id', {})
 
-    fetch_delta = integration_params.get('fetch_delta', '6')
+    fetch_delta = integration_params.get('fetch_delta', '6 hours')
     fetch_limit = integration_params.get('fetch_limit', '50')
 
     incidents_states = integration_params.get('states')
