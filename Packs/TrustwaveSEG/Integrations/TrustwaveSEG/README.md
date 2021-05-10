@@ -1,5 +1,5 @@
-Trustwave SEG is a secure messaging solution that protects businesses and users from email-borne threats, including phishing, blended threats, and spam.Trustwave Secure Email Gateway also delivers improved policy enforcement and data leakage prevention.
-This integration was integrated and tested with version 10 of trustwave secure email gateway
+Trustwave SEG is a secure messaging solution that protects businesses and users from email-borne threats, including phishing, blended threats, and spam. Trustwave Secure Email Gateway also delivers improved policy enforcement and data leakage prevention.
+This integration was integrated and tested with version 10 of trustwave secure email gateway.
 ## Configure trustwave secure email gateway on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trustwave-seg-get-version
 ***
-Get Trustwave version information
+Get Trustwave version information.
 
 
 #### Base Command
@@ -29,17 +29,15 @@ Get Trustwave version information
 `trustwave-seg-get-version`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Version.configVersion | Number | The configVersion of the Version |
-| TrustwaveSEG.Version.productVersion | String | The productVersion of the Version |
-| TrustwaveSEG.Version.rpcInterfaceVersion | Number | rpcInterfaceVersion of the Version |
+| TrustwaveSEG.Version.configVersion | Number | The configVersion of the Version. | 
+| TrustwaveSEG.Version.productVersion | String | The productVersion of the Version. | 
+| TrustwaveSEG.Version.rpcInterfaceVersion | Number | rpcInterfaceVersion of the Version. | 
 
 
 #### Command Example
@@ -68,7 +66,7 @@ Get Trustwave version information
 
 ### trustwave-seg-automatic-config-backup-list
 ***
-Return list of automatic config backups
+Return list of automatic config backups.
 
 
 #### Base Command
@@ -76,27 +74,25 @@ Return list of automatic config backups
 `trustwave-seg-automatic-config-backup-list`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.AutomaticBackupConfig.fileSize | Number | The fileSize of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.filename | String | The filename of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.backupTime | Number | The backupTime of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.backupTimeStr | Date | The backupTimeStr of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.backupType | String | The backupType of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.backupUser | String | The backupUser of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.commitDescription | String | The commitDescription of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.commitSetId | Number | The commitSetId of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.commitUser | String | The commitUser of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.configVersion | Number | The configVersion of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.containsDkimKeys | Boolean | The containsDkimKeys of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.info.productVersion | String | The product version of the AutomaticBackupConfig |
-| TrustwaveSEG.AutomaticBackupConfig.lastModified | Number | The lastModified of the AutomaticBackupConfig |
+| TrustwaveSEG.AutomaticBackupConfig.fileSize | Number | The fileSize of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.filename | String | The filename of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupTime | Number | The backupTime of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupTimeStr | Date | The backupTimeStr of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupType | String | The backupType of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupUser | String | The backupUser of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.commitDescription | String | The commitDescription of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.commitSetId | Number | The commitSetId of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.commitUser | String | The commitUser of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.configVersion | Number | The configVersion of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.containsDkimKeys | Boolean | The containsDkimKeys of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.productVersion | String | The product version of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.lastModified | Number | The lastModified of the AutomaticBackupConfig. | 
 
 
 #### Command Example
@@ -107,6 +103,330 @@ Return list of automatic config backups
 {
     "TrustwaveSEG": {
         "AutomaticBackupConfig": [
+            {
+                "backupTime": 1620650406,
+                "backupTimeStr": "2021-05-10T12:40:06Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 102,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69732378,
+                "filename": "MailMarshal-10.0.1-ManualBackup_10-May-2021-05-40-05",
+                "info": {
+                    "backupTime": 1620650406,
+                    "backupTimeStr": "2021-05-10T12:40:06Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 102,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620650415,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620601203,
+                "backupTimeStr": "2021-05-09T23:00:03Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Files updates automatically applied.",
+                "commitSetId": 100,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69732255,
+                "filename": "MailMarshal-10.0.1-AutomaticBackup_09-May-2021-16-00-00",
+                "info": {
+                    "backupTime": 1620601203,
+                    "backupTimeStr": "2021-05-09T23:00:03Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Files updates automatically applied.",
+                    "commitSetId": 100,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620601213,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620514801,
+                "backupTimeStr": "2021-05-08T23:00:01Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Files updates automatically applied.",
+                "commitSetId": 100,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69732256,
+                "filename": "MailMarshal-10.0.1-AutomaticBackup_08-May-2021-16-00-00",
+                "info": {
+                    "backupTime": 1620514801,
+                    "backupTimeStr": "2021-05-08T23:00:01Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Files updates automatically applied.",
+                    "commitSetId": 100,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620514812,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620428401,
+                "backupTimeStr": "2021-05-07T23:00:01Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Files updates automatically applied.",
+                "commitSetId": 100,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69732256,
+                "filename": "MailMarshal-10.0.1-AutomaticBackup_07-May-2021-16-00-00",
+                "info": {
+                    "backupTime": 1620428401,
+                    "backupTimeStr": "2021-05-07T23:00:01Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Files updates automatically applied.",
+                    "commitSetId": 100,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620428412,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620342000,
+                "backupTimeStr": "2021-05-06T23:00:00Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Files updates automatically applied.",
+                "commitSetId": 99,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69728288,
+                "filename": "MailMarshal-10.0.1-AutomaticBackup_06-May-2021-16-00-00",
+                "info": {
+                    "backupTime": 1620342000,
+                    "backupTimeStr": "2021-05-06T23:00:00Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Files updates automatically applied.",
+                    "commitSetId": 99,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620342009,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620300775,
+                "backupTimeStr": "2021-05-06T11:32:55Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 98,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723684,
+                "filename": "MailMarshal-10.0.1-ManualBackup_06-May-2021-04-32-55",
+                "info": {
+                    "backupTime": 1620300775,
+                    "backupTimeStr": "2021-05-06T11:32:55Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 98,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620300784,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620285980,
+                "backupTimeStr": "2021-05-06T07:26:20Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 96,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723497,
+                "filename": "MailMarshal-10.0.1-ManualBackup_06-May-2021-00-26-20",
+                "info": {
+                    "backupTime": 1620285980,
+                    "backupTimeStr": "2021-05-06T07:26:20Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 96,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620285989,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620285625,
+                "backupTimeStr": "2021-05-06T07:20:25Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 94,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723673,
+                "filename": "MailMarshal-10.0.1-ManualBackup_06-May-2021-00-20-25",
+                "info": {
+                    "backupTime": 1620285625,
+                    "backupTimeStr": "2021-05-06T07:20:25Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 94,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620285634,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620283437,
+                "backupTimeStr": "2021-05-06T06:43:57Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 93,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723593,
+                "filename": "MailMarshal-10.0.1-ManualBackup_05-May-2021-23-43-56",
+                "info": {
+                    "backupTime": 1620283437,
+                    "backupTimeStr": "2021-05-06T06:43:57Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 93,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620283446,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620283281,
+                "backupTimeStr": "2021-05-06T06:41:21Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 92,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723594,
+                "filename": "MailMarshal-10.0.1-ManualBackup_05-May-2021-23-41-20",
+                "info": {
+                    "backupTime": 1620283281,
+                    "backupTimeStr": "2021-05-06T06:41:21Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 92,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620283289,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620255600,
+                "backupTimeStr": "2021-05-05T23:00:00Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 89,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723546,
+                "filename": "MailMarshal-10.0.1-AutomaticBackup_05-May-2021-16-00-00",
+                "info": {
+                    "backupTime": 1620255600,
+                    "backupTimeStr": "2021-05-05T23:00:00Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 89,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620255609,
+                "productVersion": "10.0.1.2030"
+            },
+            {
+                "backupTime": 1620217869,
+                "backupTimeStr": "2021-05-05T12:31:09Z",
+                "backupType": "full",
+                "backupUser": "admin",
+                "commitDescription": "Committing Marshal RBL credentials update",
+                "commitSetId": 88,
+                "commitUser": "admin",
+                "configVersion": 39,
+                "containsDkimKeys": false,
+                "fileSize": 69723589,
+                "filename": "MailMarshal-10.0.1-ManualBackup_05-May-2021-05-31-09",
+                "info": {
+                    "backupTime": 1620217869,
+                    "backupTimeStr": "2021-05-05T12:31:09Z",
+                    "backupType": "full",
+                    "backupUser": "admin",
+                    "commitDescription": "Committing Marshal RBL credentials update",
+                    "commitSetId": 88,
+                    "commitUser": "admin",
+                    "configVersion": 39,
+                    "containsDkimKeys": false,
+                    "productVersion": "10.0.1.2030"
+                },
+                "lastModified": 1620217878,
+                "productVersion": "10.0.1.2030"
+            },
             {
                 "backupTime": 1620217689,
                 "backupTimeStr": "2021-05-05T12:28:09Z",
@@ -349,546 +669,6 @@ Return list of automatic config backups
                 },
                 "lastModified": 1620082809,
                 "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619996400,
-                "backupTimeStr": "2021-05-02T23:00:00Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 76,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707337,
-                "filename": "MailMarshal-10.0.1-AutomaticBackup_02-May-2021-16-00-00",
-                "info": {
-                    "backupTime": 1619996400,
-                    "backupTimeStr": "2021-05-02T23:00:00Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 76,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619996409,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619932515,
-                "backupTimeStr": "2021-05-02T05:15:15Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 76,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707337,
-                "filename": "MailMarshal-10.0.1-ManualBackup_01-May-2021-22-15-13",
-                "info": {
-                    "backupTime": 1619932515,
-                    "backupTimeStr": "2021-05-02T05:15:15Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 76,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619932524,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619910000,
-                "backupTimeStr": "2021-05-01T23:00:00Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 75,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707259,
-                "filename": "MailMarshal-10.0.1-AutomaticBackup_01-May-2021-16-00-00",
-                "info": {
-                    "backupTime": 1619910000,
-                    "backupTimeStr": "2021-05-01T23:00:00Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 75,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619910009,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619823600,
-                "backupTimeStr": "2021-04-30T23:00:00Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 75,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707260,
-                "filename": "MailMarshal-10.0.1-AutomaticBackup_30-Apr-2021-16-00-00",
-                "info": {
-                    "backupTime": 1619823600,
-                    "backupTimeStr": "2021-04-30T23:00:00Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 75,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619823609,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619737200,
-                "backupTimeStr": "2021-04-29T23:00:00Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 75,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707261,
-                "filename": "MailMarshal-10.0.1-AutomaticBackup_29-Apr-2021-16-00-00",
-                "info": {
-                    "backupTime": 1619737200,
-                    "backupTimeStr": "2021-04-29T23:00:00Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 75,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619737212,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619696250,
-                "backupTimeStr": "2021-04-29T11:37:30Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 75,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707261,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-37-30",
-                "info": {
-                    "backupTime": 1619696250,
-                    "backupTimeStr": "2021-04-29T11:37:30Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 75,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619696260,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619696108,
-                "backupTimeStr": "2021-04-29T11:35:08Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 74,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707161,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-35-08",
-                "info": {
-                    "backupTime": 1619696108,
-                    "backupTimeStr": "2021-04-29T11:35:08Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 74,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619696117,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619695997,
-                "backupTimeStr": "2021-04-29T11:33:17Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 73,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707156,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-33-17",
-                "info": {
-                    "backupTime": 1619695997,
-                    "backupTimeStr": "2021-04-29T11:33:17Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 73,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619696006,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619695795,
-                "backupTimeStr": "2021-04-29T11:29:55Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 72,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707292,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-29-54",
-                "info": {
-                    "backupTime": 1619695795,
-                    "backupTimeStr": "2021-04-29T11:29:55Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 72,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619695804,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619695689,
-                "backupTimeStr": "2021-04-29T11:28:09Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 71,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707197,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-28-09",
-                "info": {
-                    "backupTime": 1619695689,
-                    "backupTimeStr": "2021-04-29T11:28:09Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 71,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619695698,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619695557,
-                "backupTimeStr": "2021-04-29T11:25:57Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 70,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707172,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-25-57",
-                "info": {
-                    "backupTime": 1619695557,
-                    "backupTimeStr": "2021-04-29T11:25:57Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 70,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619695567,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619694943,
-                "backupTimeStr": "2021-04-29T11:15:43Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 69,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707174,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-15-42",
-                "info": {
-                    "backupTime": 1619694943,
-                    "backupTimeStr": "2021-04-29T11:15:43Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 69,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619694952,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619694706,
-                "backupTimeStr": "2021-04-29T11:11:46Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 68,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707146,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-11-45",
-                "info": {
-                    "backupTime": 1619694706,
-                    "backupTimeStr": "2021-04-29T11:11:46Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 68,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619694715,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619694577,
-                "backupTimeStr": "2021-04-29T11:09:37Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 67,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707117,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-09-37",
-                "info": {
-                    "backupTime": 1619694577,
-                    "backupTimeStr": "2021-04-29T11:09:37Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 67,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619694586,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619694441,
-                "backupTimeStr": "2021-04-29T11:07:21Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 66,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69707225,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-07-21",
-                "info": {
-                    "backupTime": 1619694441,
-                    "backupTimeStr": "2021-04-29T11:07:21Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 66,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619694451,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619693976,
-                "backupTimeStr": "2021-04-29T10:59:36Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 65,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69706937,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-03-59-35",
-                "info": {
-                    "backupTime": 1619693976,
-                    "backupTimeStr": "2021-04-29T10:59:36Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 65,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619693985,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619689730,
-                "backupTimeStr": "2021-04-29T09:48:50Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Files updates automatically applied.",
-                "commitSetId": 56,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69706907,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-02-48-49",
-                "info": {
-                    "backupTime": 1619689730,
-                    "backupTimeStr": "2021-04-29T09:48:50Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Files updates automatically applied.",
-                    "commitSetId": 56,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619689739,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619682899,
-                "backupTimeStr": "2021-04-29T07:54:59Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 55,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69672027,
-                "filename": "MailMarshal-10.0.1-ManualBackup_29-Apr-2021-00-54-59",
-                "info": {
-                    "backupTime": 1619682899,
-                    "backupTimeStr": "2021-04-29T07:54:59Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 55,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619682908,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619676401,
-                "backupTimeStr": "2021-04-29T06:06:41Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 50,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69672097,
-                "filename": "MailMarshal-10.0.1-ManualBackup_28-Apr-2021-23-06-40",
-                "info": {
-                    "backupTime": 1619676401,
-                    "backupTimeStr": "2021-04-29T06:06:41Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 50,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619676410,
-                "productVersion": "10.0.1.2030"
-            },
-            {
-                "backupTime": 1619650800,
-                "backupTimeStr": "2021-04-28T23:00:00Z",
-                "backupType": "full",
-                "backupUser": "admin",
-                "commitDescription": "Committing Marshal RBL credentials update",
-                "commitSetId": 47,
-                "commitUser": "admin",
-                "configVersion": 39,
-                "containsDkimKeys": false,
-                "fileSize": 69699436,
-                "filename": "MailMarshal-10.0.1-AutomaticBackup_28-Apr-2021-16-00-00",
-                "info": {
-                    "backupTime": 1619650800,
-                    "backupTimeStr": "2021-04-28T23:00:00Z",
-                    "backupType": "full",
-                    "backupUser": "admin",
-                    "commitDescription": "Committing Marshal RBL credentials update",
-                    "commitSetId": 47,
-                    "commitUser": "admin",
-                    "configVersion": 39,
-                    "containsDkimKeys": false,
-                    "productVersion": "10.0.1.2030"
-                },
-                "lastModified": 1619650809,
-                "productVersion": "10.0.1.2030"
             }
         ]
     }
@@ -900,6 +680,18 @@ Return list of automatic config backups
 >### Automatic Configured Backups
 >|Filename|Contains Dkim Keys|Backup User|Product Version|Config Version|Commit Description|Backup Type|
 >|---|---|---|---|---|---|---|
+>| MailMarshal-10.0.1-ManualBackup_10-May-2021-05-40-05 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-AutomaticBackup_09-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
+>| MailMarshal-10.0.1-AutomaticBackup_08-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
+>| MailMarshal-10.0.1-AutomaticBackup_07-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
+>| MailMarshal-10.0.1-AutomaticBackup_06-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
+>| MailMarshal-10.0.1-ManualBackup_06-May-2021-04-32-55 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-ManualBackup_06-May-2021-00-26-20 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-ManualBackup_06-May-2021-00-20-25 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-ManualBackup_05-May-2021-23-43-56 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-ManualBackup_05-May-2021-23-41-20 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-AutomaticBackup_05-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
+>| MailMarshal-10.0.1-ManualBackup_05-May-2021-05-31-09 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
 >| MailMarshal-10.0.1-ManualBackup_05-May-2021-05-28-09 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
 >| MailMarshal-10.0.1-ManualBackup_05-May-2021-05-25-31 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
 >| MailMarshal-10.0.1-ManualBackup_05-May-2021-05-21-50 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
@@ -909,31 +701,11 @@ Return list of automatic config backups
 >| MailMarshal-10.0.1-AutomaticBackup_04-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
 >| MailMarshal-10.0.1-ManualBackup_03-May-2021-23-50-35 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
 >| MailMarshal-10.0.1-AutomaticBackup_03-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
->| MailMarshal-10.0.1-AutomaticBackup_02-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_01-May-2021-22-15-13 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-AutomaticBackup_01-May-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-AutomaticBackup_30-Apr-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-AutomaticBackup_29-Apr-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-37-30 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-35-08 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-33-17 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-29-54 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-28-09 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-25-57 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-15-42 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-11-45 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-09-37 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-04-07-21 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-03-59-35 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-02-48-49 | false | admin | 10.0.1.2030 | 39 | Files updates automatically applied. | full |
->| MailMarshal-10.0.1-ManualBackup_29-Apr-2021-00-54-59 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-ManualBackup_28-Apr-2021-23-06-40 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
->| MailMarshal-10.0.1-AutomaticBackup_28-Apr-2021-16-00-00 | false | admin | 10.0.1.2030 | 39 | Committing Marshal RBL credentials update | full |
 
 
 ### trustwave-seg-automatic-config-backup-restore
 ***
-Restore a specific automatic config backup
+Restore a specific automatic config backup.
 
 
 #### Base Command
@@ -943,19 +715,19 @@ Restore a specific automatic config backup
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the backup to restore (e.g: MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10). | Required |
-| timeout | The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more seconds to the timeout. Default is 30. | Optional |
-| include_dkim | Choose if DKIM (DomainKeys Identified Mail) should be used. Possible values are: true, false. | Optional |
-| dkim_password | If include_dkim equals to true - The DKIM password for the action. | Optional |
+| name | The name of the backup to restore (e.g: MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10). | Required | 
+| timeout | The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more seconds to the timeout. Default is 30. | Optional | 
+| include_dkim | Choose if DKIM (DomainKeys Identified Mail) should be used. Possible values are: true, false. Default is false. | Optional | 
+| dkim_password | If include_dkim equals to true - The DKIM password for the action. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.AutomaticBackupRestore.errors | String | The errors of the AutomaticBackupRestore |
-| TrustwaveSEG.AutomaticBackupRestore.reason | String | The reason for the AutomaticBackupRestore |
-| TrustwaveSEG.AutomaticBackupRestore.warnings | String | The warnings of the AutomaticBackupRestore |
+| TrustwaveSEG.AutomaticBackupRestore.errors | String | The errors of the AutomaticBackupRestore. | 
+| TrustwaveSEG.AutomaticBackupRestore.reason | String | The reason for the AutomaticBackupRestore. | 
+| TrustwaveSEG.AutomaticBackupRestore.warnings | String | The warnings of the AutomaticBackupRestore. | 
 
 
 #### Command Example
@@ -984,7 +756,7 @@ Restore a specific automatic config backup
 
 ### trustwave-seg-automatic-config-backup-run
 ***
-Run automatic backup now
+Run automatic backup now.
 
 
 #### Base Command
@@ -994,17 +766,17 @@ Run automatic backup now
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| timeout | The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more seconds to the timeout. Default is 30. | Optional |
-| include_dkim | Choose if DKIM (DomainKeys Identified Mail) should be used. Possible values are: true, false. | Optional |
-| dkim_password | If include_dkim equals true - Please specify the DKIM password (defaults to configured password). | Optional |
+| timeout | The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more seconds to the timeout. Default is 30. | Optional | 
+| include_dkim | Choose if DKIM (DomainKeys Identified Mail) should be used. Possible values are: true, false. Default is false. | Optional | 
+| dkim_password | If include_dkim equals true - Please specify the DKIM password (defaults to configured password). | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.AutomaticBackupRun.backupName | String | The backup name of the AutomaticBackupRun |
-| TrustwaveSEG.AutomaticBackupRun.reason | String | The reason of the AutomaticBackupRun |
+| TrustwaveSEG.AutomaticBackupRun.backupName | String | The backup name of the AutomaticBackupRun. | 
+| TrustwaveSEG.AutomaticBackupRun.reason | String | The reason of the AutomaticBackupRun. | 
 
 
 #### Command Example
@@ -1015,7 +787,7 @@ Run automatic backup now
 {
     "TrustwaveSEG": {
         "AutomaticBackupRun": {
-            "backupName": "MailMarshal-10.0.1-ManualBackup_05-May-2021-05-31-09",
+            "backupName": "MailMarshal-10.0.1-ManualBackup_10-May-2021-05-50-37",
             "reason": "backup successful"
         }
     }
@@ -1027,12 +799,12 @@ Run automatic backup now
 >### Automatic Configuration Backup Run Completed
 >|Backup Name|Reason|
 >|---|---|
->| MailMarshal-10.0.1-ManualBackup_05-May-2021-05-31-09 | backup successful |
+>| MailMarshal-10.0.1-ManualBackup_10-May-2021-05-50-37 | backup successful |
 
 
 ### trustwave-seg-list-alerts
 ***
-Get a list of current alerts
+Get a list of current alerts.
 
 
 #### Base Command
@@ -1042,19 +814,19 @@ Get a list of current alerts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| active_only | Return only active alarms. Possible values are: true, false. | Optional |
+| active_only | Return only active alarms. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Alert.active | Boolean | The activity of the Alert |
-| TrustwaveSEG.Alert.description | String | The description of the Alert |
-| TrustwaveSEG.Alert.node | Number | The node of the Alert |
-| TrustwaveSEG.Alert.source | String | The source of the Alert |
-| TrustwaveSEG.Alert.triggered | Number | The triggered of the Alert |
-| TrustwaveSEG.Alert.type | Number | The type of the Alert |
+| TrustwaveSEG.Alert.active | Boolean | The activity of the Alert. | 
+| TrustwaveSEG.Alert.description | String | The description of the Alert. | 
+| TrustwaveSEG.Alert.node | Number | The node of the Alert. | 
+| TrustwaveSEG.Alert.source | String | The source of the Alert. | 
+| TrustwaveSEG.Alert.triggered | Number | The triggered of the Alert. | 
+| TrustwaveSEG.Alert.type | Number | The type of the Alert. | 
 
 
 #### Command Example
@@ -1143,33 +915,33 @@ Get Trustwave SEG statistics. Must provide start time or time range.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_range | An optional time range. i.e: 3 months, 1 week, 1 day ago, etc. | Optional |
-| start_time | Start time. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week, 1 day ago, etc.Given only the start_time, end_time will be set to the current time. | Optional |
-| end_time | End time. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week, 1 day ago, etc. | Optional |
+| time_range | An optional time range. i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
+| start_time | Start time. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time. | Optional | 
+| end_time | End time. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Statistics.maliciousUrls | Number | The malicious URLs of the Statistics |
-| TrustwaveSEG.Statistics.msgsBlendedThreats | Number | The messages Blended Threats of the Statistics |
-| TrustwaveSEG.Statistics.msgsIn | Number | The messages in of the Statistics |
-| TrustwaveSEG.Statistics.msgsInternal | Number | The messages Internal of the Statistics |
-| TrustwaveSEG.Statistics.msgsOut | Number | The messages Out of the Statistics |
-| TrustwaveSEG.Statistics.msgsSpam | Number | The message spam of the Statistics |
-| TrustwaveSEG.Statistics.msgsVirus | Number | The messages Virus of the Statistics |
-| TrustwaveSEG.Statistics.numQuarantined | Number | The number of quarantined of the Statistics |
-| TrustwaveSEG.Statistics.numQuarantinesPerMsg | Number | The number of quarantines per message of the Statistics |
-| TrustwaveSEG.Statistics.pFolders | Number | The pFolders of the Statistics |
-| TrustwaveSEG.Statistics.pThreats | Number | The pThreats of the Statistics |
-| TrustwaveSEG.Statistics.safeClicks | Number | The safe clicks of the Statistics |
-| TrustwaveSEG.Statistics.unsafeClicks | Number | The unsafe clicks of the Statistics |
-| TrustwaveSEG.Statistics.unsafeUrls | Number | The unsafe URLs of the Statistics |
-| TrustwaveSEG.Statistics.urlsFound | Number | The URLs found of the Statistics |
-| TrustwaveSEG.Statistics.urlsRewritten | Number | The urlsRewritten of the Statistics |
-| TrustwaveSEG.Statistics.virusDetected | Number | The virus detected of the Statistics |
-| TrustwaveSEG.Statistics.virusScanned | Number | The virus-scanned Statistics |
+| TrustwaveSEG.Statistics.maliciousUrls | Number | The malicious URLs of the Statistics. | 
+| TrustwaveSEG.Statistics.msgsBlendedThreats | Number | The messages Blended Threats of the Statistics. | 
+| TrustwaveSEG.Statistics.msgsIn | Number | The messages in of the Statistics. | 
+| TrustwaveSEG.Statistics.msgsInternal | Number | The messages Internal of the Statistics. | 
+| TrustwaveSEG.Statistics.msgsOut | Number | The messages Out of the Statistics. | 
+| TrustwaveSEG.Statistics.msgsSpam | Number | The message spam of the Statistics. | 
+| TrustwaveSEG.Statistics.msgsVirus | Number | The messages Virus of the Statistics. | 
+| TrustwaveSEG.Statistics.numQuarantined | Number | The number of quarantined of the Statistics. | 
+| TrustwaveSEG.Statistics.numQuarantinesPerMsg | Number | The number of quarantines per message of the Statistics. | 
+| TrustwaveSEG.Statistics.pFolders | Number | The pFolders of the Statistics. | 
+| TrustwaveSEG.Statistics.pThreats | Number | The pThreats of the Statistics. | 
+| TrustwaveSEG.Statistics.safeClicks | Number | The safe clicks of the Statistics. | 
+| TrustwaveSEG.Statistics.unsafeClicks | Number | The unsafe clicks of the Statistics. | 
+| TrustwaveSEG.Statistics.unsafeUrls | Number | The unsafe URLs of the Statistics. | 
+| TrustwaveSEG.Statistics.urlsFound | Number | The URLs found of the Statistics. | 
+| TrustwaveSEG.Statistics.urlsRewritten | Number | The urlsRewritten of the Statistics. | 
+| TrustwaveSEG.Statistics.virusDetected | Number | The virus detected of the Statistics. | 
+| TrustwaveSEG.Statistics.virusScanned | Number | The virus-scanned Statistics. | 
 
 
 #### Command Example
@@ -1205,7 +977,7 @@ Get Trustwave SEG statistics. Must provide start time or time range.
 
 #### Human Readable Output
 
->### Statistics Information between 04/05/2021, 12:31:05 to 05/05/2021, 12:31:05
+>### Statistics Information between 09/05/2021, 12:50:34 to 10/05/2021, 12:50:34
 >|Msgs In|Msgs Out|Malicious Urls|Msgs Blended Threats|Msgs Spam|Msgs Virus|Num Quarantined|Unsafe Clicks|Unsafe Urls|Virus Detected|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1213,7 +985,7 @@ Get Trustwave SEG statistics. Must provide start time or time range.
 
 ### trustwave-seg-list-servers
 ***
-Get a list of servers
+Get a list of servers.
 
 
 #### Base Command
@@ -1221,33 +993,31 @@ Get a list of servers
 `trustwave-seg-list-servers`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Server.configCommitSetId | Number | The config commit set ID of the Server |
-| TrustwaveSEG.Server.configTimeStamp | Number | The config timestamp of the Server |
-| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason of the Server |
-| TrustwaveSEG.Server.isActive | Boolean | Activation status of the server |
-| TrustwaveSEG.Server.isConfigDeferred | Boolean | The isConfigDeferred of the Server |
-| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the Server |
-| TrustwaveSEG.Server.osVersion | String | The OS version of the Server |
-| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the Server |
-| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the Server |
-| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the Server |
-| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The serviceId of the Server |
-| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the Server |
-| TrustwaveSEG.Server.productVersion | String | The product version of the Server |
-| TrustwaveSEG.Server.serverDescription | String | The description of the Server |
-| TrustwaveSEG.Server.serverId | Number | The ID of the Server |
-| TrustwaveSEG.Server.serverLocation | String | The location of the Server |
-| TrustwaveSEG.Server.serverName | String | The name of the Server |
-| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the Server |
-| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the Server |
+| TrustwaveSEG.Server.configCommitSetId | Number | The config commit set ID of the Server. | 
+| TrustwaveSEG.Server.configTimeStamp | Number | The config timestamp of the Server. | 
+| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason of the Server. | 
+| TrustwaveSEG.Server.isActive | Boolean | Activation status of the Server. | 
+| TrustwaveSEG.Server.isConfigDeferred | Boolean | The isConfigDeferred of the Server. | 
+| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the Server. | 
+| TrustwaveSEG.Server.osVersion | String | The OS version of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The serviceId of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the Server. | 
+| TrustwaveSEG.Server.productVersion | String | The product version of the Server. | 
+| TrustwaveSEG.Server.serverDescription | String | The description of the Server. | 
+| TrustwaveSEG.Server.serverId | Number | The ID of the Server. | 
+| TrustwaveSEG.Server.serverLocation | String | The location of the Server. | 
+| TrustwaveSEG.Server.serverName | String | The name of the Server. | 
+| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the Server. | 
+| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the Server. | 
 
 
 #### Command Example
@@ -1258,12 +1028,12 @@ Get a list of servers
 {
     "TrustwaveSEG": {
         "Server": {
-            "configCommitSetId": 88,
+            "configCommitSetId": 102,
             "configTimeStamp": 0,
             "disconnectedReason": "RPC call timed-out",
             "isActive": true,
             "isConfigDeferred": false,
-            "lastConnected": 1620217859,
+            "lastConnected": 1620650994,
             "osVersion": "Windows Server 2016 ",
             "pServiceStatus": [
                 {
@@ -1310,7 +1080,7 @@ Get a list of servers
 
 ### trustwave-seg-get-server
 ***
-Get server details
+Get server details.
 
 
 #### Base Command
@@ -1320,32 +1090,32 @@ Get server details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| server_id | The ID of the server to retrieve its information. | Required |
+| server_id | The ID of the Server to retrieve its information. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Server.configCommitSetId | Number | The config commit set ID of the Server |
-| TrustwaveSEG.Server.configTimeStamp | Number | The config timestamp of the Server |
-| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason of the Server |
-| TrustwaveSEG.Server.isActive | Boolean | Activation status of the server |
-| TrustwaveSEG.Server.isConfigDeferred | Boolean | The isConfigDeferred of the Server |
-| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the Server |
-| TrustwaveSEG.Server.osVersion | String | The OS version of the Server |
-| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the Server |
-| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the Server |
-| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the Server |
-| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The serviceId of the Server |
-| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the Server |
-| TrustwaveSEG.Server.productVersion | String | The product version of the Server |
-| TrustwaveSEG.Server.serverDescription | String | The description of the Server |
-| TrustwaveSEG.Server.serverId | Number | The ID of the Server |
-| TrustwaveSEG.Server.serverLocation | String | The location of the Server |
-| TrustwaveSEG.Server.serverName | String | The name of the Server |
-| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the Server |
-| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the Server |
+| TrustwaveSEG.Server.configCommitSetId | Number | The config commit set ID of the Server. | 
+| TrustwaveSEG.Server.configTimeStamp | Number | The config timestamp of the Server. | 
+| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason of the Server. | 
+| TrustwaveSEG.Server.isActive | Boolean | Activation status of the Server. | 
+| TrustwaveSEG.Server.isConfigDeferred | Boolean | The isConfigDeferred of the Server. | 
+| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the Server. | 
+| TrustwaveSEG.Server.osVersion | String | The OS version of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The serviceId of the Server. | 
+| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the Server. | 
+| TrustwaveSEG.Server.productVersion | String | The product version of the Server. | 
+| TrustwaveSEG.Server.serverDescription | String | The description of the Server. | 
+| TrustwaveSEG.Server.serverId | Number | The ID of the Server. | 
+| TrustwaveSEG.Server.serverLocation | String | The location of the Server. | 
+| TrustwaveSEG.Server.serverName | String | The name of the Server. | 
+| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the Server. | 
+| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the Server. | 
 
 
 #### Command Example
@@ -1356,12 +1126,12 @@ Get server details
 {
     "TrustwaveSEG": {
         "Server": {
-            "configCommitSetId": 88,
+            "configCommitSetId": 102,
             "configTimeStamp": 0,
             "disconnectedReason": "RPC call timed-out",
             "isActive": false,
             "isConfigDeferred": false,
-            "lastConnected": 1620217859,
+            "lastConnected": 1620650994,
             "osVersion": "Windows Server 2016 ",
             "pServiceStatus": [
                 {
@@ -1408,7 +1178,7 @@ Get server details
 
 ### trustwave-seg-list-classifications
 ***
-Get a list of classifications
+Get a list of classifications.
 
 
 #### Base Command
@@ -1416,18 +1186,16 @@ Get a list of classifications
 `trustwave-seg-list-classifications`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Classification.code | Number | The code of the Classification |
-| TrustwaveSEG.Classification.id | Number | The ID of the Classification |
-| TrustwaveSEG.Classification.name | String | The name of the Classification |
-| TrustwaveSEG.Classification.type | Number | The type of the Classification |
+| TrustwaveSEG.Classification.code | Number | The code of the Classification. | 
+| TrustwaveSEG.Classification.id | Number | The ID of the Classification. | 
+| TrustwaveSEG.Classification.name | String | The name of the Classification. | 
+| TrustwaveSEG.Classification.type | Number | The type of the Classification. | 
 
 
 #### Command Example
@@ -1977,7 +1745,7 @@ Get a list of classifications
 
 ### trustwave-seg-list-quarantine-folders
 ***
-Get a list of folders
+Get a list of folders.
 
 
 #### Base Command
@@ -1985,30 +1753,28 @@ Get a list of folders
 `trustwave-seg-list-quarantine-folders`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Folder.description | String | The description of the Folder |
-| TrustwaveSEG.Folder.folderId | Number | The folder ID of the Folder |
-| TrustwaveSEG.Folder.folderType | Number | The folder type of the Folder |
-| TrustwaveSEG.Folder.iconIndex | Number | The iconIndex of the Folder |
-| TrustwaveSEG.Folder.isDeleted | Boolean | The isDeleted of the Folder |
-| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | The isFingerprintingEnabled of the Folder |
-| TrustwaveSEG.Folder.isPassThru | Boolean | The isPassThru of the Folder |
-| TrustwaveSEG.Folder.isPublishedInbound | Boolean | The isPublishedInbound of the Folder |
-| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | The isPublishedOutbound of the Folder |
-| TrustwaveSEG.Folder.isReadOnly | Boolean | Is the folder read-only |
-| TrustwaveSEG.Folder.name | String | The name of the Folder |
-| TrustwaveSEG.Folder.numFiles | Number | The numFiles of the Folder |
-| TrustwaveSEG.Folder.parentId | Number | The parentId of the Folder |
-| TrustwaveSEG.Folder.path | String | The path of the Folder |
-| TrustwaveSEG.Folder.retention | Number | The retention of the Folder |
-| TrustwaveSEG.Folder.securityDescription | String | The security description of the Folder |
+| TrustwaveSEG.Folder.description | String | The description of the Folder. | 
+| TrustwaveSEG.Folder.folderId | Number | The folder ID of the Folder. | 
+| TrustwaveSEG.Folder.folderType | Number | The folder type of the Folder. | 
+| TrustwaveSEG.Folder.iconIndex | Number | The iconIndex of the Folder. | 
+| TrustwaveSEG.Folder.isDeleted | Boolean | The isDeleted of the Folder. | 
+| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | The isFingerprintingEnabled of the Folder. | 
+| TrustwaveSEG.Folder.isPassThru | Boolean | The isPassThru of the Folder. | 
+| TrustwaveSEG.Folder.isPublishedInbound | Boolean | The isPublishedInbound of the Folder. | 
+| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | The isPublishedOutbound of the Folder. | 
+| TrustwaveSEG.Folder.isReadOnly | Boolean | Is the folder read-only. | 
+| TrustwaveSEG.Folder.name | String | The name of the Folder. | 
+| TrustwaveSEG.Folder.numFiles | Number | The numFiles of the Folder. | 
+| TrustwaveSEG.Folder.parentId | Number | The parentId of the Folder. | 
+| TrustwaveSEG.Folder.path | String | The path of the Folder. | 
+| TrustwaveSEG.Folder.retention | Number | The retention of the Folder. | 
+| TrustwaveSEG.Folder.securityDescription | String | The security description of the Folder. | 
 
 
 #### Command Example
@@ -2983,7 +2749,7 @@ Get a list of folders
 
 ### trustwave-seg-list-quarantine-folders-with-day-info
 ***
-Get a list of folders with current day info
+Get a list of folders with current day info.
 
 
 #### Base Command
@@ -2991,31 +2757,29 @@ Get a list of folders with current day info
 `trustwave-seg-list-quarantine-folders-with-day-info`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Folder.dayItems | Unknown | The items of the day for the Folder |
-| TrustwaveSEG.Folder.description | String | The description of the Folder |
-| TrustwaveSEG.Folder.folderId | Number | The folder ID of the Folder |
-| TrustwaveSEG.Folder.folderType | Number | The folder type of the Folder |
-| TrustwaveSEG.Folder.iconIndex | Number | The iconIndex of the Folder |
-| TrustwaveSEG.Folder.isDeleted | Boolean | The isDeleted of the Folder |
-| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | The isFingerprintingEnabled of the Folder |
-| TrustwaveSEG.Folder.isPassThru | Boolean | The isPassThru of the Folder |
-| TrustwaveSEG.Folder.isPublishedInbound | Boolean | The isPublishedInbound of the Folder |
-| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | The isPublishedOutbound of the Folder |
-| TrustwaveSEG.Folder.isReadOnly | Boolean | Is the folder read-only |
-| TrustwaveSEG.Folder.name | String | The name of the Folder |
-| TrustwaveSEG.Folder.numFiles | Number | The numFiles of the Folder |
-| TrustwaveSEG.Folder.parentId | Number | The parentId of the Folder |
-| TrustwaveSEG.Folder.path | String | The path of the Folder |
-| TrustwaveSEG.Folder.retention | Number | The retention of the Folder |
-| TrustwaveSEG.Folder.securityDescription | String | The security description of the Folder |
+| TrustwaveSEG.Folder.dayItems | Unknown | The items of the day for the Folder. | 
+| TrustwaveSEG.Folder.description | String | The description of the Folder. | 
+| TrustwaveSEG.Folder.folderId | Number | The folder ID of the Folder. | 
+| TrustwaveSEG.Folder.folderType | Number | The folder type of the Folder. | 
+| TrustwaveSEG.Folder.iconIndex | Number | The iconIndex of the Folder. | 
+| TrustwaveSEG.Folder.isDeleted | Boolean | The isDeleted of the Folder. | 
+| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | The isFingerprintingEnabled of the Folder. | 
+| TrustwaveSEG.Folder.isPassThru | Boolean | The isPassThru of the Folder. | 
+| TrustwaveSEG.Folder.isPublishedInbound | Boolean | The isPublishedInbound of the Folder. | 
+| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | The isPublishedOutbound of the Folder. | 
+| TrustwaveSEG.Folder.isReadOnly | Boolean | Is the folder read-only. | 
+| TrustwaveSEG.Folder.name | String | The name of the Folder. | 
+| TrustwaveSEG.Folder.numFiles | Number | The numFiles of the Folder. | 
+| TrustwaveSEG.Folder.parentId | Number | The parentId of the Folder. | 
+| TrustwaveSEG.Folder.path | String | The path of the Folder. | 
+| TrustwaveSEG.Folder.retention | Number | The retention of the Folder. | 
+| TrustwaveSEG.Folder.securityDescription | String | The security description of the Folder. | 
 
 
 #### Command Example
@@ -3997,7 +3761,7 @@ Get a list of folders with current day info
 
 ### trustwave-seg-list-day-info-by-quarantine-folder
 ***
-Get current day info for a folder
+Get current day info for a folder.
 
 
 #### Base Command
@@ -4007,16 +3771,16 @@ Get current day info for a folder
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The id of the folder with quarantine day info. | Required |
+| folder_id | The id of the Folder with quarantine day info. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.DayInfo.endTime | Number | The end time of the day info |
-| TrustwaveSEG.DayInfo.numFiles | Number | The number of files of the day info |
-| TrustwaveSEG.DayInfo.startTime | Number | The start time of the day info |
+| TrustwaveSEG.DayInfo.endTime | Number | The end time of the day info. | 
+| TrustwaveSEG.DayInfo.numFiles | Number | The number of files of the day info. | 
+| TrustwaveSEG.DayInfo.startTime | Number | The start time of the day info. | 
 
 
 #### Command Example
@@ -4030,7 +3794,7 @@ Get current day info for a folder
 
 ### trustwave-seg-find-quarantine-message
 ***
-Find message by specified parameters
+Find message by specified parameters.
 
 
 #### Base Command
@@ -4040,49 +3804,49 @@ Find message by specified parameters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_range | An optional time range of the search. i.e: 3 months, 1 week, 1 day ago, etc. | Optional |
-| start_time | Start time of the search. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week, 1 day ago, etc.Given only the start_time, end_time will be set to the current time. | Optional |
-| end_time | End time of the search. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week, 1 day ago, etc. | Optional |
-| max_rows | The number of rows to return from the API. default to 10 rows. Default is 10. | Optional |
-| folder_id | The ID of the folder to search info in (e.g: 1006). | Optional |
-| message_name | The name of the message to search for. | Optional |
-| classification | The classification ID. Can be found by the classification command. (e.g: 37). | Optional |
-| from_user | Find a message that this email address sent. | Optional |
-| to_user | Find a message that this email address received. | Optional |
-| to_domain | Find a message that this domain received. | Optional |
-| min_size | The minimum size of in Bytes of the message (e.g: 0). | Optional |
-| max_size | The maximum size of in Bytes of the message (e.g: 1024). | Optional |
-| subject | The subject of the message to search for (e.g: "some subject"). | Optional |
-| search_history | Should the search include history. Possible values are: true, false. | Optional |
-| forwards | Should the search include forwarded messages. Possible values are: true, false. | Optional |
-| block_number | The block number of the message to search for (e.g: 106098471075840). | Optional |
-| search_blank_subject | Should the search include messages with a blank subject. Possible values are: true, false. | Optional |
+| time_range | An optional time range of the search. i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
+| start_time | Start time of the search. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time. | Optional | 
+| end_time | End time of the search. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
+| max_rows | The number of rows to return from the API. default to 10 rows. Default is 10. | Optional | 
+| folder_id | The ID of the Folder. to search info in (e.g: 1006). | Optional | 
+| message_name | The name of the Message. to search for. | Optional | 
+| classification | The classification ID. Can be found by the classification command. (e.g: 37). | Optional | 
+| from_user | Find a message that this email address sent. | Optional | 
+| to_user | Find a message that this email address received. | Optional | 
+| to_domain | Find a message that this domain received. | Optional | 
+| min_size | The minimum size of in Bytes of the Message. (e.g: 0). | Optional | 
+| max_size | The maximum size of in Bytes of the Message. (e.g: 1024). | Optional | 
+| subject | The subject of the Message. to search for (e.g: "some subject"). | Optional | 
+| search_history | Should the search include history. Possible values are: true, false. | Optional | 
+| forwards | Should the search include forwarded messages. Possible values are: true, false. | Optional | 
+| block_number | The block number of the message to search for (e.g: 106098471075840). | Optional | 
+| search_blank_subject | Should the search include messages with a blank subject. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Message.actionType | Number | The actionType of the Message |
-| TrustwaveSEG.Message.blockNumber | Number | The blockNumber of the Message |
-| TrustwaveSEG.Message.blockRecipientIndex | Number | The blockRecipientIndex of the Message |
-| TrustwaveSEG.Message.classification | Number | The classification of the Message |
-| TrustwaveSEG.Message.deleted | Number | The deleted of the Message |
-| TrustwaveSEG.Message.description | String | The description of the Message |
-| TrustwaveSEG.Message.edition | String | The edition of the Message |
-| TrustwaveSEG.Message.folderId | Number | The folderId of the Message |
-| TrustwaveSEG.Message.hasAttachments | Boolean | The hasAttachments of the Message |
-| TrustwaveSEG.Message.messageBody | String | The messageBody of the Message |
-| TrustwaveSEG.Message.messageName | String | The messageName of the Message |
-| TrustwaveSEG.Message.recipient | String | The recipient of the Message |
-| TrustwaveSEG.Message.sender | String | The sender of the Message |
-| TrustwaveSEG.Message.serverId | Number | The serverId of the Message |
-| TrustwaveSEG.Message.sessionNumber | Number | The sessionNumber of the Message |
-| TrustwaveSEG.Message.size | Number | The size of the Message |
-| TrustwaveSEG.Message.subject | String | The subject of the Message |
-| TrustwaveSEG.Message.timeArrived | Number | The timeArrived of the Message |
-| TrustwaveSEG.Message.timeLogged | Number | The timeLogged of the Message |
-| TrustwaveSEG.Message.unicodeSubject | String | The unicodeSubject of the Message |
+| TrustwaveSEG.Message.actionType | Number | The actionType of the Message. | 
+| TrustwaveSEG.Message.blockNumber | Number | The blockNumber of the Message. | 
+| TrustwaveSEG.Message.blockRecipientIndex | Number | The blockRecipientIndex of the Message. | 
+| TrustwaveSEG.Message.classification | Number | The classification of the Message. | 
+| TrustwaveSEG.Message.deleted | Number | The deleted of the Message. | 
+| TrustwaveSEG.Message.description | String | The description of the Message. | 
+| TrustwaveSEG.Message.edition | String | The edition of the Message. | 
+| TrustwaveSEG.Message.folderId | Number | The folderId of the Message. | 
+| TrustwaveSEG.Message.hasAttachments | Boolean | The hasAttachments of the Message. | 
+| TrustwaveSEG.Message.messageBody | String | The messageBody of the Message. | 
+| TrustwaveSEG.Message.messageName | String | The messageName of the Message. | 
+| TrustwaveSEG.Message.recipient | String | The recipient of the Message. | 
+| TrustwaveSEG.Message.sender | String | The sender of the Message. | 
+| TrustwaveSEG.Message.serverId | Number | The serverId of the Message. | 
+| TrustwaveSEG.Message.sessionNumber | Number | The sessionNumber of the Message. | 
+| TrustwaveSEG.Message.size | Number | The size of the Message. | 
+| TrustwaveSEG.Message.subject | String | The subject of the Message. | 
+| TrustwaveSEG.Message.timeArrived | Number | The timeArrived of the Message. | 
+| TrustwaveSEG.Message.timeLogged | Number | The timeLogged of the Message. | 
+| TrustwaveSEG.Message.unicodeSubject | String | The unicodeSubject of the Message. | 
 
 
 #### Command Example
@@ -4103,10 +3867,10 @@ Find message by specified parameters
                 "edition": "6082e3b60013",
                 "folderId": 1006,
                 "hasAttachments": false,
-                "messageBody": "xxxx",
-                "messageName": "xxx",
-                "recipient": "x@x.x",
-                "sender": "x@x.x",
+                "messageBody": "This is the body of the email\r",
+                "messageName": "B6082e3b60000",
+                "recipient": "sarb@qmasters.co",
+                "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": -474611712,
                 "size": 870,
@@ -4125,10 +3889,10 @@ Find message by specified parameters
                 "edition": "608249030012",
                 "folderId": 1006,
                 "hasAttachments": false,
-                "messageBody": "xxxx",
-                "messageName": "xxx",
-                "recipient": "x@x.x",
-                "sender": "x@x.x",
+                "messageBody": "This is the body of the email\r",
+                "messageName": "B608249020000",
+                "recipient": "sarb@qmasters.co",
+                "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": 1224933376,
                 "size": 870,
@@ -4147,10 +3911,10 @@ Find message by specified parameters
                 "edition": "608174e50003",
                 "folderId": 1007,
                 "hasAttachments": false,
-                "messageBody": "xxxx",
-                "messageName": "xxx",
-                "recipient": "x@x.x",
-                "sender": "x@x.x",
+                "messageBody": "This is the bodydhgdghdfghgfd54645645645fddfgdgdf\r",
+                "messageName": "B608174e50000",
+                "recipient": "bsitk25@gmail.com",
+                "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": 1961164800,
                 "size": 1279,
@@ -4169,10 +3933,10 @@ Find message by specified parameters
                 "edition": "6080e13e0000",
                 "folderId": 1007,
                 "hasAttachments": false,
-                "messageBody": "xxxx",
-                "messageName": "xxx",
-                "recipient": "x@x.x",
-                "sender": "x@x.x",
+                "messageBody": "This is the bodydhgdghdfghgfd54645645645fddfgdgdf\r",
+                "messageName": "B6080e1390000",
+                "recipient": "bsitk25@gmail.com",
+                "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": -516030464,
                 "size": 1279,
@@ -4191,10 +3955,10 @@ Find message by specified parameters
                 "edition": "607ef9ae0000",
                 "folderId": 1006,
                 "hasAttachments": false,
-                "messageBody": "xxxx",
-                "messageName": "xxx",
-                "recipient": "x@x.x",
-                "sender": "x@x.x",
+                "messageBody": "This is the body of the email\r",
+                "messageName": "B607ef9ac0000",
+                "recipient": "sarb@qmasters.co",
+                "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": -106037248,
                 "size": 870,
@@ -4213,16 +3977,16 @@ Find message by specified parameters
 >### Find Quarantine Messages Results
 >|Subject|Description|Block Number|Edition|Folder Id|Message Name|Recipient|Server Id|Time Logged|
 >|---|---|---|---|---|---|---|---|---|
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106115282632704 | 6082e3b60013 | 1006 | B6082e3b60000 | x@x.x | 1 | 1619190710 |
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106112687144960 | 608249030012 | 1006 | B608249020000 | x@x.x | 1 | 1619151106 |
->| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106109128212480 | 608174e50003 | 1007 | B608174e50000 | x@x.x | 1 | 1619096805 |
->| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106106651148288 | 6080e13e0000 | 1007 | B6080e1390000 | x@x.x | 1 | 1619059003 |
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106098471075840 | 607ef9ae0000 | 1006 | B607ef9ac0000 | x@x.x | 1 | 1618934189 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106115282632704 | 6082e3b60013 | 1006 | B6082e3b60000 | sarb@qmasters.co | 1 | 1619190710 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106112687144960 | 608249030012 | 1006 | B608249020000 | sarb@qmasters.co | 1 | 1619151106 |
+>| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106109128212480 | 608174e50003 | 1007 | B608174e50000 | bsitk25@gmail.com | 1 | 1619096805 |
+>| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106106651148288 | 6080e13e0000 | 1007 | B6080e1390000 | bsitk25@gmail.com | 1 | 1619059003 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106098471075840 | 607ef9ae0000 | 1006 | B607ef9ac0000 | sarb@qmasters.co | 1 | 1618934189 |
 
 
 ### trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
 ***
-Forward a message to spiderlabs as spam
+Forward a message to spiderlabs as spam.
 
 
 #### Base Command
@@ -4232,26 +3996,24 @@ Forward a message to spiderlabs as spam
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| block_number | The block number of the message to search for. Should be retrieved from the find message endpoint. (e.g: 106098471075840). | Required |
-| edition | edition of the message. Should be retrieved from the find message endpoint. (e.g: "607ef9ae0000"). | Required |
-| folder_id | folder ID of the message. Should be retrieved from the find message endpoint. (e.g: 1006). | Required |
-| message_name | The name of the message. Should be retrieved from the find message endpoint. (e.g: "B607ef9ac0000"). | Required |
-| recipient | The recipient of the message. Should be retrieved from the find message endpoint. (e.g: email@example.com). | Required |
-| server_id | The server ID of the message. Should be retrieved from the find message endpoint. (e.g: 1). | Required |
-| time_logged | The logged time of the message. Should be retrieved from the find message endpoint. (e.g: 1618934189). | Required |
-| spam_report_message | The message that should be shown with the message on Spiderlabs (e.g: "This message is spam..."). | Required |
-| is_spam | Is the message spam or not. Possible values are: true, false. | Required |
+| block_number | The block number of the Message to search for. Should be retrieved from the find message endpoint. (e.g: 106098471075840). | Required | 
+| edition | edition of the Message. Should be retrieved from the find message endpoint. (e.g: "607ef9ae0000"). | Required | 
+| folder_id | folder ID of the Message. Should be retrieved from the find message endpoint. (e.g: 1006). | Required | 
+| message_name | The name of the Message. Should be retrieved from the find message endpoint. (e.g: "B607ef9ac0000"). | Required | 
+| recipient | The recipient of the Message. Should be retrieved from the find message endpoint. (e.g: email@example.com). | Required | 
+| server_id | The server ID of the Message. Should be retrieved from the find message endpoint. (e.g: 1). | Required | 
+| time_logged | The logged time of the Message. Should be retrieved from the find message endpoint. (e.g: 1618934189). | Required | 
+| spam_report_message | The message that should be shown with the message on Spiderlabs. (e.g: "This message is spam..."). | Required | 
+| is_spam | Is the message spam or not. Possible values are: true, false. | Required | 
 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-
+There is no context output for this command.
 
 #### Command Example
-```!trustwave-seg-spiderlabs-forward-quarantine-message-as-spam block_number=106098471075840 edition=607ef9ae0000 folder_id=1006 is_spam="true" message_name=B607ef9ac0000 recipient=x@x.x server_id=1 spam_report_notification_from_address="This is a spam" time_logged=1618934189 spam_report_message="This is a spam"```
+```!trustwave-seg-spiderlabs-forward-quarantine-message-as-spam block_number=106098471075840 edition=607ef9ae0000 folder_id=1006 is_spam="true" message_name=B607ef9ac0000 recipient=sarb@qmasters.co server_id=1 spam_report_notification_from_address="This is a spam" time_logged=1618934189 spam_report_message="This is a spam"```
 
 #### Human Readable Output
 
->The message forwarded to Spiderlabs
+>The message was forwarded to Spiderlabs.
