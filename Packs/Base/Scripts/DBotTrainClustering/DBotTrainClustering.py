@@ -24,6 +24,8 @@ MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, plea
 MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
 MESSAGE_INVALID_FIELD = "- %s field(s) has/have too many missing values and won't be used in the model."
+MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering " \
+                                      "for training OR fieldForClusterName is incorrect."
 
 PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
@@ -73,6 +75,7 @@ class Clustering(object):
         # control
         self.TSNE_ = False
         self.centers = {}
+        self.centers_2d = {}
 
         self.create_model(parameters=params)
 
@@ -140,13 +143,15 @@ class Clustering(object):
 
     def reduce_dimension(self, dimension=2):
         """
-        Use TSNE technique to reduce dimenstion
+        Use TSNE technique to reduce dimension
         :param dimension:
         :return:
         """
         if not self.TSNE_:
-            tsne = TSNE(n_jobs=8, n_components=dimension, learning_rate=1000)
-            self.data_2d = tsne.fit_transform(self.data)
+            tsne = TSNE(n_jobs=-1, n_components=dimension, learning_rate=1000)
+            self.data_2d = tsne.fit_transform(pd.DataFrame(self.centers).T)
+            for coordinates, center in zip(self.data_2d, pd.DataFrame(self.centers).T.index):
+                self.centers_2d[center] = coordinates
             self.TSNE_ = True
 
     def compute_centers(self):
@@ -155,7 +160,7 @@ class Clustering(object):
         :return: None
         """
         for cluster_ in range(self.number_clusters):  # type: ignore
-            center = np.mean(self.data_2d[np.where(self.model.labels_ == cluster_)], axis=0)  # type: ignore
+            center = np.mean(self.data[self.model.labels_ == cluster_], axis=0)  # type: ignore
             self.centers[cluster_] = center
 
 
@@ -401,11 +406,33 @@ def normalize_json(obj) -> str:  # type: ignore
     :return:
     """
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
-    my_string = json.dumps(my_dict)
+    extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict) ]
+    my_string = ' '.join(extracted_values) # json.dumps(my_dict)
     pattern = re.compile('([^\s\w]|_)+')
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
+
+def json_extract(obj):
+    """Recursively fetch values from nested JSON."""
+    arr = []
+
+    def extract(obj, arr):
+        """Recursively search for values of key in JSON tree."""
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if isinstance(v, (dict, list)):
+                    extract(v, arr)
+                else:
+                    arr.append(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                extract(item, arr)
+        return arr
+
+    values = extract(obj, arr)
+    return values
+
 
 
 def normalize_command_line(command) -> str:
@@ -470,7 +497,9 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
-                                                   'modelHidden': model_hidden
+                                                   'modelHidden': model_hidden,
+                                                   'modelExtraInfo': {'modelSummaryMarkdown':
+                                                                          tableToMarkdown("Summary",model.summary)}
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -817,6 +846,7 @@ def main():
 
         # Case where no field for clustrering or field for cluster name if not empty and incorrect)
         if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
+            global_msg += "%s \n" % MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
             demisto.results(global_msg)
             return None, {}, global_msg
 
@@ -846,8 +876,8 @@ def main():
             return None, {}, global_msg
 
         # Reduce dimension
-        model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
         model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
+        model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
         model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
                                          generic_cluster_name)
 
