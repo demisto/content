@@ -35,7 +35,7 @@ class PolyswarmConnector():
                      positives: int,
                      permalink: str,
                      artifact: str,
-                     indicator: object = None) -> dict:
+                     indicator: object = None) -> object:
 
         results = {'Scan_UUID': artifact,
                    'Total': str(total_scans),
@@ -43,15 +43,13 @@ class PolyswarmConnector():
                    'Permalink': permalink,
                    'Artifact': artifact}
 
-        command_result = CommandResults(
+        return CommandResults(
             outputs_prefix=f'PolySwarm.{object_name}',
             outputs_key_field='Scan_UUID',
             outputs=results,
             indicator=indicator,
             ignore_auto_extract=True
         )
-
-        return command_result
 
     def test_connectivity(self) -> bool:
         EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'  # guardrails-disable-line
@@ -67,7 +65,7 @@ class PolyswarmConnector():
         return True
 
     def file_reputation(self,
-                        param: dict) -> dict:
+                        param: dict) -> object:
         file_hash = param.get('file', param.get('hash'))
         if not file_hash:
             return_error("Please specify a file hash to enrich.")
@@ -110,7 +108,7 @@ class PolyswarmConnector():
                                  positives, permalink,
                                  file_hash)
 
-    def get_file(self, param: dict):
+    def get_file(self, param: dict) -> object:
         demisto.debug(f'[get_file] Hash: {param["hash"]}')
 
         handle_file = io.BytesIO()
@@ -124,7 +122,7 @@ class PolyswarmConnector():
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-    def detonate_file(self, param: dict) -> dict:
+    def detonate_file(self, param: dict) -> object:
         title = 'PolySwarm File Detonation for Entry ID: %s' % param['entryID']
 
         demisto.debug(f'[detonate_file] {title}')
@@ -163,7 +161,7 @@ class PolyswarmConnector():
                                  positives, result.permalink,
                                  file_info['name'])
 
-    def rescan_file(self, param: dict) -> dict:
+    def rescan_file(self, param: dict) -> object:
         title = 'PolySwarm Rescan for Hash: %s' % param['hash']
 
         demisto.debug(f'[rescan_file] {title}')
@@ -196,76 +194,86 @@ class PolyswarmConnector():
 
     def url_reputation(self,
                        param: dict,
-                       artifact: str) -> dict:
-        title = 'PolySwarm %s Reputation for: %s' % (artifact.upper(),
-                                                     param[artifact])
+                       artifact_type: str) -> list:
 
-        demisto.debug(f'[url_reputation] {title}')
+        command_results = []
 
-        # default values
-        total_scans = 0
-        positives = 0
+        artifacts = argToList(param[artifact_type])
 
-        # IP validation
-        if artifact == 'ip':
+        for artifact in artifacts:
+            title = 'PolySwarm %s Reputation for: %s' % (artifact_type.upper(),
+                                                         artifact)
+
+            demisto.debug(f'[url_reputation] {title}')
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # IP validation
+            if artifact_type == 'ip':
+                try:
+                    socket.inet_aton(artifact)
+                except socket.error:
+                    return_error('Invalid IP Address: {ip}'.
+                                 format(ip=artifact))
+
             try:
-                socket.inet_aton(param[artifact])
-            except socket.error:
-                return_error('Invalid IP Address: {ip}'.
-                             format(ip=param[artifact]))
+                # PolySwarm API: URL, IP and Domain are artifact_type='url'
+                instance = self.polyswarm_api.submit(artifact,
+                                                     artifact_type='url')
+                result = self.polyswarm_api.wait_for(instance)
 
-        try:
-            instance = self.polyswarm_api.submit(param[artifact],
-                                                 artifact_type='url')
-            result = self.polyswarm_api.wait_for(instance)
+                if result.failed:
+                    return demisto.results('Error submitting URL.')
 
-            if result.failed:
-                return demisto.results('Error submitting URL.')
+                # iterate for getting positives and total_scan number
+                for assertion in result.assertions:
+                    if assertion.verdict:
+                        positives += 1
+                    total_scans += 1
 
-            # iterate for getting positives and total_scan number
-            for assertion in result.assertions:
-                if assertion.verdict:
-                    positives += 1
-                total_scans += 1
+            except Exception as err:
+                return_error('{ERROR_ENDPOINT}{err}'.
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
 
-        except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
+            score = Common.DBotScore.SUSPICIOUS if positives > 0 else Common.DBotScore.GOOD
 
-        score = Common.DBotScore.SUSPICIOUS if positives > 0 else Common.DBotScore.GOOD
+            if artifact_type == 'ip':
+                object_name = 'IP'
+                dbot_score_type = DBotScoreType.IP
+            elif artifact_type == 'url':
+                object_name = 'URL'
+                dbot_score_type = DBotScoreType.URL
+            elif artifact_type == 'domain':
+                object_name = 'Domain'
+                dbot_score_type = DBotScoreType.DOMAIN
 
-        if artifact == 'ip':
-            dbot_score_type = DBotScoreType.IP
-            object_name = 'IP'
-        elif artifact == 'url':
-            object_name = 'URL'
-            dbot_score_type = DBotScoreType.URL
-        elif artifact == 'domain':
-            object_name = 'Domain'
-            dbot_score_type = DBotScoreType.DOMAIN
+            dbot_score = Common.DBotScore(indicator=artifact,
+                                          indicator_type=dbot_score_type,
+                                          integration_name='PolySwarm',
+                                          score=score)
 
-        dbot_score = Common.DBotScore(indicator=param[artifact],
-                                      indicator_type=dbot_score_type,
-                                      integration_name='PolySwarm',
-                                      score=score)
-
-        indicator = None
-        if artifact == 'ip':
-            indicator = Common.IP(ip=param[artifact],
-                                  dbot_score=dbot_score)
-        elif artifact == 'url':
-            indicator = Common.URL(url=param[artifact],
-                                   dbot_score=dbot_score)
-        elif artifact == 'domain':
-            indicator = Common.Domain(domain=param[artifact],
+            indicator = None
+            if artifact_type == 'ip':
+                indicator = Common.IP(ip=artifact,
                                       dbot_score=dbot_score)
+            elif artifact_type == 'url':
+                indicator = Common.URL(url=artifact,
+                                       dbot_score=dbot_score)
+            elif artifact_type == 'domain':
+                indicator = Common.Domain(domain=artifact,
+                                          dbot_score=dbot_score)
 
-        return self._get_results(object_name, total_scans,
-                                 positives, result.permalink,
-                                 param[artifact], indicator)
+            results = self._get_results(object_name, total_scans,
+                                        positives, result.permalink,
+                                        artifact, indicator)
+            command_results.append(results)
 
-    def get_report(self, param: dict) -> dict:
+        return command_results
+
+    def get_report(self, param: dict) -> object:
         """
             UUID is equal to Hash.
         """
