@@ -184,7 +184,6 @@ class MicrosoftClient(BaseClient):
 
         if access_token and valid_until:
             if self.epoch_seconds() < valid_until:
-                demisto.error(f'Returning access toke, access token = {access_token}')
                 return access_token
 
         auth_type = self.auth_type
@@ -198,7 +197,6 @@ class MicrosoftClient(BaseClient):
                 access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
 
         else:
-            demisto.error('Getting access token from self deployed')
             access_token, expires_in, refresh_token = self._get_self_deployed_token(
                 refresh_token, scope, integration_context)
         time_now = self.epoch_seconds()
@@ -392,7 +390,6 @@ class MicrosoftClient(BaseClient):
         Returns:
             tuple: An access token, its expiry and refresh token.
         """
-        demisto.error('in get token device code')
         data = {
             'client_id': self.client_id,
             'scope': scope
@@ -415,8 +412,6 @@ class MicrosoftClient(BaseClient):
             response_json = response.json()
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
-
-        demisto.error(f'returned response by azure {response_json}')
 
         access_token = response_json.get('access_token', '')
         expires_in = int(response_json.get('expires_in', 3595))
