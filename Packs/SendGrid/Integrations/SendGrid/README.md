@@ -60,13 +60,6 @@ Send an email.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sg-get-global-email-stats
 ***
 Retrieves all of your global email statistics between a given date range.
@@ -91,14 +84,6 @@ Retrieves all of your global email statistics between a given date range.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Sendgrid.GlobalEmailStats | unknown | List of email statistics day/week/month wise. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### sg-get-category-stats
 ***
@@ -125,13 +110,6 @@ Retrieves all of your email statistics for each of your categories.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Sendgrid.CategoryStats | unknown | List of email category statistics day/week/month wise. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### sg-get-all-categories-stats
@@ -162,12 +140,6 @@ Retrieves the total sum of each email statistic for every category over the give
 | Sendgrid.AllCategoriesStats | unknown | List of all email statistics day/week/month wise. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### sg-list-categories
 ***
@@ -192,14 +164,6 @@ Retrieves a list of all of your categories.
 | --- | --- | --- |
 | Sendgrid.CategoriesList | unknown | List of categories. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sg-create-batch-id
 ***
 Generates a new batch ID.
@@ -219,14 +183,6 @@ Generates a new batch ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Sendgrid.BatchId | unknown | Returns a batch id, which can be used manage scheduled sends. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### sg-scheduled-status-change
 ***
@@ -250,14 +206,6 @@ Cancel or pause a scheduled send associated with a batch ID.
 | --- | --- | --- |
 | Sendgrid.ScheduledSendStatus | unknown | The latest status of the scheduled send. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sg-retrieve-all-scheduled-sends
 ***
 Retrieves all cancelled and paused scheduled send information.
@@ -277,14 +225,6 @@ Retrieves all cancelled and paused scheduled send information.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Sendgrid.ScheduledSends | unknown | List of all paused/cancelled scheduled sends. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
 
 ### sg-retrieve-scheduled-send
 ***
@@ -308,13 +248,6 @@ Retrieves the cancel/paused scheduled send information for a specific batch id.
 | Sendgrid.ScheduledSend | unknown | List of all paused/cancelled scheduled sends associated with the given batch id. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sg-update-scheduled-send
 ***
 Update the status of a scheduled send for the given batch id.
@@ -335,13 +268,6 @@ Update the status of a scheduled send for the given batch id.
 
 There is no context output for this command.
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sg-delete-scheduled-send
 ***
 Delete the cancellation/pause of a scheduled send.
@@ -360,10 +286,3 @@ Delete the cancellation/pause of a scheduled send.
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
