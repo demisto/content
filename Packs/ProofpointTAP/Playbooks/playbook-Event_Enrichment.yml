@@ -1,6 +1,5 @@
 id: Event Enrichment
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Event Enrichment
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -594,6 +594,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -767,6 +768,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -800,3 +802,7 @@ outputs:
 - contextPath: Proofpoint.Campaign
   description: 'Proofpoint Campaign '
   type: unknown
+tests:
+- ProofpointTAP-Test
+fromversion: 5.0.0
+description: ''

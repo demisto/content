@@ -1,16 +1,6 @@
 {
   "id": "WeeklyReport",
-  "version": -1,
   "modified": "2021-05-09T15:08:08.493330177+03:00",
-  "sortValues": null,
-  "packID": "",
-  "itemVersion": "",
-  "fromServerVersion": "",
-  "toServerVersion": "",
-  "vcShouldIgnore": false,
-  "vcShouldKeepItemLegacyProdMachine": false,
-  "commitMessage": "",
-  "shouldCommit": false,
   "startDate": "0001-01-01T00:00:00Z",
   "times": 0,
   "recurrent": false,
@@ -19,9 +9,7 @@
   "cronView": false,
   "scheduled": false,
   "name": "Weekly Report",
-  "prevName": "ProofPoint Weekly Report",
   "type": "pdf",
-  "prevType": "pdf",
   "system": false,
   "locked": false,
   "sections": [
@@ -259,15 +247,13 @@
       "titleStyle": null
     }
   ],
-  "recipients": null,
+  "recipients": [],
   "orientation": "portrait",
   "paperSize": "A4",
   "runOnce": false,
-  "latestReportName": "",
   "latestReportTime": "0001-01-01T00:00:00Z",
   "latestScheduledReportTime": "0001-01-01T00:00:00Z",
   "nextScheduledTime": "0001-01-01T00:00:00Z",
-  "latestReportUsername": "",
   "decoder": {
     "evidences.fetched": {
       "type": "date",
@@ -446,29 +432,15 @@
       "value": "Playground"
     }
   },
-  "reportType": "",
   "sensitive": false,
-  "runningUser": "",
-  "userAPIKeyID": "",
-  "userAPIKey": "",
   "disableHeader": false,
   "dashboard": {
     "id": "",
     "version": 0,
     "modified": "0001-01-01T00:00:00Z",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
     "period": {
-      "by": "",
       "byTo": "",
       "byFrom": "days",
       "toValue": null,
@@ -477,7 +449,6 @@
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
     "name": "ProofPoint Weekly Report",
-    "prevName": "",
     "layout": [
       {
         "id": "51bc4270-b0ba-11eb-9144-2718c2553097",
@@ -491,30 +462,15 @@
           "id": "68ed7af3-eda1-4bca-8090-a1752734634f",
           "version": 1,
           "modified": "2021-05-09T11:11:39.421375123+03:00",
-          "sortValues": null,
-          "packID": "",
-          "itemVersion": "",
-          "fromServerVersion": "",
-          "toServerVersion": "",
-          "propagationLabels": [
-            "all"
-          ],
-          "vcShouldIgnore": false,
-          "vcShouldKeepItemLegacyProdMachine": false,
-          "commitMessage": "",
-          "shouldCommit": false,
           "name": "Proofpoint Total Events",
-          "prevName": "Proofpoint Total Events",
           "dataType": "incidents",
           "widgetType": "pie",
           "query": "sourceBrand:\"Proofpoint TAP v3\"",
-          "sort": null,
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
             "toDate": "0001-01-01T00:00:00Z",
             "period": {
-              "by": "",
               "byTo": "",
               "byFrom": "days",
               "toValue": null,
@@ -590,8 +546,7 @@
               }
             ]
           },
-          "size": 0,
-          "category": ""
+          "size": 0
         }
       },
       {
@@ -606,30 +561,15 @@
           "id": "4ae6ad62-a651-45bb-8234-3d467d19193f",
           "version": 1,
           "modified": "2021-05-09T11:16:59.709973961+03:00",
-          "sortValues": null,
-          "packID": "",
-          "itemVersion": "",
-          "fromServerVersion": "",
-          "toServerVersion": "",
-          "propagationLabels": [
-            "all"
-          ],
-          "vcShouldIgnore": false,
-          "vcShouldKeepItemLegacyProdMachine": false,
-          "commitMessage": "",
-          "shouldCommit": false,
           "name": "ProofPoint Message Events",
-          "prevName": "ProofPoint Message Events",
           "dataType": "incidents",
           "widgetType": "pie",
           "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delievered\"",
-          "sort": null,
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
             "toDate": "0001-01-01T00:00:00Z",
             "period": {
-              "by": "",
               "byTo": "",
               "byFrom": "days",
               "toValue": null,
@@ -705,8 +645,7 @@
               }
             ]
           },
-          "size": 0,
-          "category": ""
+          "size": 0
         }
       },
       {
@@ -721,30 +660,15 @@
           "id": "4a7b0e8c-6ee8-4ec0-8320-081a72c5097d",
           "version": 1,
           "modified": "2021-05-09T11:15:38.358449867+03:00",
-          "sortValues": null,
-          "packID": "",
-          "itemVersion": "",
-          "fromServerVersion": "",
-          "toServerVersion": "",
-          "propagationLabels": [
-            "all"
-          ],
-          "vcShouldIgnore": false,
-          "vcShouldKeepItemLegacyProdMachine": false,
-          "commitMessage": "",
-          "shouldCommit": false,
           "name": "ProofpointTAP Clicks Events",
-          "prevName": "ProofpointTAP Clicks Events",
           "dataType": "incidents",
           "widgetType": "pie",
           "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Click Blocked\" or type:\"ProofPointTAP - Click Permitted\"",
-          "sort": null,
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
             "toDate": "0001-01-01T00:00:00Z",
             "period": {
-              "by": "",
               "byTo": "",
               "byFrom": "days",
               "toValue": null,
@@ -820,8 +744,7 @@
               }
             ]
           },
-          "size": 0,
-          "category": ""
+          "size": 0
         }
       },
       {
@@ -836,30 +759,15 @@
           "id": "7e3c5b00-6e78-45b5-82fd-5ab7d4e17488",
           "version": 1,
           "modified": "2021-05-09T14:11:40.776569425+03:00",
-          "sortValues": null,
-          "packID": "",
-          "itemVersion": "",
-          "fromServerVersion": "",
-          "toServerVersion": "",
-          "propagationLabels": [
-            "all"
-          ],
-          "vcShouldIgnore": false,
-          "vcShouldKeepItemLegacyProdMachine": false,
-          "commitMessage": "",
-          "shouldCommit": false,
           "name": "Most Attacked Mailboxed based on Proofpoint AttackIndex",
-          "prevName": "Most Attacked Mailboxed based on Proofpoint AttackIndex",
           "dataType": "scripts",
           "widgetType": "column",
           "query": "ProofPointTAPMostAttackedUsers",
-          "sort": null,
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
             "toDate": "0001-01-01T00:00:00Z",
             "period": {
-              "by": "",
               "byTo": "",
               "byFrom": "days",
               "toValue": null,
@@ -871,8 +779,7 @@
           "params": {
             "tableColumns": []
           },
-          "size": 0,
-          "category": ""
+          "size": 0
         }
       },
       {
@@ -887,30 +794,15 @@
           "id": "0ca5a07a-f220-4433-8a0f-5fd43d510f9a",
           "version": 1,
           "modified": "2021-05-09T14:26:49.172753838+03:00",
-          "sortValues": null,
-          "packID": "",
-          "itemVersion": "",
-          "fromServerVersion": "",
-          "toServerVersion": "",
-          "propagationLabels": [
-            "all"
-          ],
-          "vcShouldIgnore": false,
-          "vcShouldKeepItemLegacyProdMachine": false,
-          "commitMessage": "",
-          "shouldCommit": false,
           "name": "ProofPointTAP Top Clickers",
-          "prevName": "ProofPointTAP Top Clickers",
           "dataType": "scripts",
           "widgetType": "column",
           "query": "ProofPointTapTopClickers",
-          "sort": null,
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
             "toDate": "0001-01-01T00:00:00Z",
             "period": {
-              "by": "",
               "byTo": "",
               "byFrom": "days",
               "toValue": null,
@@ -922,15 +814,13 @@
           "params": {
             "tableColumns": []
           },
-          "size": 0,
-          "category": ""
+          "size": 0
         }
       }
-    ],
-    "system": false,
-    "isCommon": false,
-    "shared": false,
-    "owner": "",
-    "locked": false
-  }
+    ]
+  },
+  "tags": "",
+  "createdBy": "",
+  "fromVersion": "5.0.0",
+  "description": ""
 }
