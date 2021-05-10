@@ -48,9 +48,7 @@ class Client:
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._headers: Dict = get_headers(params)
-        self._proxy = params.get('proxy', False)
-        if self._proxy:
-            self._proxy = handle_proxy()
+        handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
         url: str = f'{self._base_url}{url_suffix}'
@@ -135,11 +133,15 @@ def create_file_sync(file_path, batch_size: int = 200):
 
 
 def get_iocs_size(query=None) -> int:
-    return demisto.searchIndicators(query=query if query else Client.query, page=0, size=1).get('total', 0)
+    search_indicators = IndicatorsSearcher()
+    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=1)\
+        .get('total', 0)
 
 
 def get_iocs(page=0, size=200, query=None) -> List:
-    return demisto.searchIndicators(query=query if query else Client.query, page=page, size=size).get('iocs', [])
+    search_indicators = IndicatorsSearcher(page=page)
+    return search_indicators.search_indicators_by_version(query=query if query else Client.query, size=size)\
+        .get('iocs', [])
 
 
 def demisto_expiration_to_xdr(expiration) -> int:
@@ -261,7 +263,8 @@ def get_indicators(indicators: str) -> List:
         iocs: list = []
         not_found = []
         for indicator in indicators.split(','):
-            data = demisto.searchIndicators(value=indicator).get('iocs')
+            search_indicators = IndicatorsSearcher()
+            data = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
             if data:
                 iocs.extend(data)
             else:
@@ -407,7 +410,8 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
     xdr_local: int = 0
     score = 0
     if indicator:
-        ioc = demisto.searchIndicators(value=indicator).get('iocs')
+        search_indicators = IndicatorsSearcher()
+        ioc = search_indicators.search_indicators_by_version(value=indicator).get('iocs')
         if ioc:
             ioc = ioc[0]
             score = ioc.get('score', 0)

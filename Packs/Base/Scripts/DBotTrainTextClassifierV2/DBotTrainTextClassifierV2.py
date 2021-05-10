@@ -17,12 +17,8 @@ GENERAL_SCORES = {
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
-MIN_INCIDENTS_THRESHOLD = 50
+MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
-
-
-def canonize_label(label):
-    return label.replace(" ", "_")
 
 
 def get_phishing_map_labels(comma_values):
@@ -41,7 +37,7 @@ def get_phishing_map_labels(comma_values):
         mapped_value = list(labels_dict.values())[0]
         error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
         return_error('\n'.join(error))
-    return {k: canonize_label(v) for k, v in labels_dict.items()}
+    return {k.encode('utf-8', 'ignore').decode("utf-8"): v for k, v in labels_dict.items()}
 
 
 def read_file(input_data, input_type):
@@ -98,7 +94,7 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     for row in data:
         original_label = row[tag_field]
         if labels_mapping == ALL_LABELS:
-            row[tag_field] = canonize_label(original_label)
+            row[tag_field] = original_label
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
@@ -155,7 +151,8 @@ def find_keywords(data, tag_field, text_field, min_score):
     human_readable = "# Keywords per category\n"
     for category, scores in keywords.items():
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        table_items = [{"Word": word, "Score": score} for word, score in sorted_scores if score >= min_score]
+        table_items = [{"Word": word, "Score": '{:.2f}'.format(score)} for
+                       word, score in sorted_scores if score >= min_score]
         human_readable += tableToMarkdown(category, table_items, ["Word", "Score"])
     demisto.results({
         'Type': entryTypes['note'],
@@ -172,7 +169,13 @@ def set_tag_field(data, tag_fields):
         found_field = False
         for field in tag_fields:
             if d.get(field) is not None:
-                d[DBOT_TAG_FIELD] = str(d[field])
+                label = d[field]
+                if isinstance(label, list) and len(label) > 0:
+                    label = label[0]
+                elif isinstance(label, list) and len(label) == 0:
+                    continue
+                label = label.encode('utf-8', 'ignore').decode("utf-8")
+                d[DBOT_TAG_FIELD] = str(label)
                 found_field = True
                 break
         if not found_field:
@@ -208,7 +211,7 @@ def output_model_evaluation(model_name, y_test, y_pred, res, context_field, huma
         }
     }
     demisto.results(result_entry)
-    return confusion_matrix_at_thresh
+    return confusion_matrix_at_thresh, metrics_df
 
 
 def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=False):
@@ -220,7 +223,7 @@ def get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, deta
                                                           })
     if is_error(res):
         return_error(get_error(res))
-    return res
+    return res[0]
 
 
 def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing_labels_counter):
@@ -269,7 +272,6 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             'HumanReadableFormat': formats['markdown'],
         }
         demisto.results(entry)
-    demisto.results(set([x[DBOT_TAG_FIELD] for x in data]))
     if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
         single_label = [x[DBOT_TAG_FIELD] for x in data][0]
         if labels_mapping == ALL_LABELS:
@@ -390,12 +392,12 @@ def main():
         target_recall = 1 - float(demisto.args()['maxBelowThreshold'])
     else:
         target_recall = 0
-    [threshold_metrics_entry, per_class_entry] = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall,
-                                                                         detailed=True)
-    demisto.results(per_class_entry)
+    threshold_metrics_entry = get_ml_model_evaluation(y_test, y_pred, target_accuracy, target_recall, detailed=True)
     # show results for the threshold found - last result so it will appear first
-    confusion_matrix = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
-                                               res=threshold_metrics_entry, context_field='DBotPhishingClassifier')
+    confusion_matrix, metrics_json = output_model_evaluation(model_name=model_name, y_test=y_test, y_pred=y_pred,
+                                                             res=threshold_metrics_entry,
+                                                             context_field='DBotPhishingClassifier')
+    actual_min_accuracy = min(v for k, v in metrics_json['Precision'].items() if k != 'All')
     if store_model:
         y_test_pred = [y_tuple[0] for y_tuple in ft_test_predictions]
         y_test_pred_prob = [y_tuple[1] for y_tuple in ft_test_predictions]
@@ -404,7 +406,7 @@ def main():
                                confusion_matrix=confusion_matrix, threshold=threshold, tokenizer=tokenizer_script,
                                y_test_true=y_test,
                                y_test_pred=y_test_pred, y_test_pred_prob=y_test_pred_prob,
-                               target_accuracy=target_accuracy)
+                               target_accuracy=actual_min_accuracy)
         demisto.results("Done training on {} samples model stored successfully".format(len(y)))
     else:
         demisto.results('Skip storing model')

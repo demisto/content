@@ -5,7 +5,7 @@
         "TypeName": "",
         "id": "Phishing",
         "kind": "details",
-        "modified": "2020-06-17T13:58:40.100384976Z",
+        "modified": "2021-01-28T17:13:05.254503735Z",
         "name": "",
         "system": false,
         "tabs": [
@@ -100,7 +100,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -119,7 +121,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -176,7 +180,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -195,7 +201,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -214,7 +222,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -233,7 +243,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -413,7 +425,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 5
+                        "y": 0
                     },
                     {
                         "displayType": "CARD",
@@ -630,11 +642,13 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "hideName": false,
                         "i": "swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -648,7 +662,9 @@
                                 "email_html_image",
                                 "url_screenshots"
                             ],
-                            "tags": [],
+                            "tags": [
+
+                            ],
                             "tagsAndOperator": true
                         },
                         "queryType": "warRoomFilter",
@@ -657,7 +673,7 @@
                         "type": "invTimeline",
                         "w": 1,
                         "x": 1,
-                        "y": 11
+                        "y": 10
                     },
                     {
                         "displayType": "ROW",
@@ -665,7 +681,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -678,7 +696,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 1,
-                        "y": 8
+                        "y": 7
                     },
                     {
                         "description": "",
@@ -687,7 +705,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -708,7 +728,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -730,7 +752,7 @@
                     {
                         "description": "The category of the email. In case of a phishing email, also shows the phishing sub-type.",
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "swtuqptgvs-ac6702e0-df84-11e9-9d3d-b355b2831118",
                         "items": [
@@ -765,7 +787,9 @@
                         "h": 4,
                         "hideName": false,
                         "i": "swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -781,7 +805,7 @@
                         "type": "invTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 11
+                        "y": 3
                     },
                     {
                         "description": "The result of SPF, DKIM and DMARC checks on the email.",
@@ -815,7 +839,7 @@
                     {
                         "description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
@@ -836,8 +860,8 @@
                         "name": "Critical Assets",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 12
+                        "x": 2,
+                        "y": 10
                     },
                     {
                         "description": "",
@@ -884,17 +908,18 @@
                     {
                         "description": "Headers extracted from the original email.",
                         "displayType": "ROW",
-                        "h": 5,
+                        "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "swtuqptgvs-a142dfe0-b078-11ea-b16f-0d66a9047a0e",
                         "items": [
                             {
-                                "endCol": 2,
+                                "endCol": 6,
                                 "fieldId": "emailheaders",
-                                "height": 24,
+                                "height": 106,
                                 "id": "c82b33a0-b078-11ea-b16f-0d66a9047a0e",
                                 "index": 0,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
@@ -904,9 +929,9 @@
                         "moved": false,
                         "name": "Email Headers",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "w": 3,
+                        "x": 0,
+                        "y": 13
                     }
                 ],
                 "type": "custom"
@@ -948,6 +973,7 @@
     },
     "typeId": "Phishing",
     "version": -1,
+    "toVersion": "5.9.9",
     "fromVersion": "5.0.0",
-    "toVersion": "5.9.9"
+    "description": ""
 }

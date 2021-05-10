@@ -193,7 +193,7 @@
                         "items": [
                             {
                                 "endCol": 4,
-                                "fieldId": "safebreachattacks",
+                                "fieldId": "safebreachattackids",
                                 "height": 53,
                                 "id": "64ebd0d0-b936-11ea-889b-1fa0b9f4938a",
                                 "index": 0,
@@ -256,7 +256,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "safebreachisremediated",
+                                "fieldId": "safebreachremediationstatus",
                                 "height": 53,
                                 "id": "66a83490-b93b-11ea-889b-1fa0b9f4938a",
                                 "index": 1,

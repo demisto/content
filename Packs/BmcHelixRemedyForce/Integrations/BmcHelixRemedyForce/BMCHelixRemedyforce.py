@@ -266,9 +266,9 @@ SALESFORCE_QUERIES: Dict[str, str] = {
 # in seconds
 REQUEST_TIMEOUT_MAX_VALUE = 120
 
-AVAILABLE_FIELD_LIST = ["category_id", "queue_id", "staff_id", "status_id", "urgency_id", "client_id"]
+AVAILABLE_FIELD_LIST = ["category_id", "queue_id", "staff_id", "status_id", "urgency_id", "client_id", 'impact_id']
 DEFAULT_INCIDENT_ARGUMENTS = ['client_id', 'description', 'open_datetime', 'due_datetime', 'queue_id', 'template_id',
-                              'category_id', 'urgency_id', 'status_id', 'staff_id']
+                              'category_id', 'urgency_id', 'status_id', 'staff_id', 'impact_id']
 
 ALL_INSTANCE_TYPE: Dict[str, str] = {
     'all_classes': 'All Classes',

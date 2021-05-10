@@ -1,0 +1,141 @@
+id: GraCase
+version: -1
+fromversion: 5.0.0
+name: GraCase
+starttaskid: "0"
+description: Playbook for fetching cases assosiated to high risk users.
+tasks:
+  "0":
+    id: "0"
+    taskid: 1e82f7ee-4723-476e-85e3-bd995d82b73b
+    type: start
+    task:
+      id: 1e82f7ee-4723-476e-85e3-bd995d82b73b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4ee3a132-11a7-4b59-8e18-105572b6766d
+    type: regular
+    task:
+      id: 4ee3a132-11a7-4b59-8e18-105572b6766d
+      version: -1
+      name: gra-user-anomalies
+      description: Retrieve Detailed anomaly Information for a Given User
+      script: Gurucul-GRA|||gra-user-anomalies
+      type: regular
+      iscommand: true
+      brand: Gurucul-GRA
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      employee_id:
+        simple: ${incident.name}
+      max: {}
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4824235d-58a7-4f42-86ac-eb7f9cfd5116
+    type: regular
+    task:
+      id: 4824235d-58a7-4f42-86ac-eb7f9cfd5116
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${Gra.User.Anomalies.anomaly_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d69501bb-3685-4d30-8adb-4bef06f2270f
+    type: title
+    task:
+      id: d69501bb-3685-4d30-8adb-4bef06f2270f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- TestGraPlayBook

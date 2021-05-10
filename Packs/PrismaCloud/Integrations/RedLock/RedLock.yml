@@ -1,69 +1,145 @@
+category: Network Security
 commonfields:
   id: RedLock
   version: -1
-name: RedLock
-display: Prisma Cloud (RedLock)
-category: Network Security
-description: Cloud threat defense
 configuration:
-- display: Server URL
+- defaultvalue: https://api.redlock.io/
+  display: Server URL
   name: url
-  defaultvalue: https://api.redlock.io/
-  type: 0
   required: true
+  type: 0
 - display: Username
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
+  type: 9
 - display: Customer name
   name: customer
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Fetch only incidents matching this rule name
   name: ruleName
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Fetch only incidents with this severity
   name: policySeverity
-  defaultvalue: ""
-  type: 0
   required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
+  type: 13
+description: Cloud threat defense
+display: Prisma Cloud (RedLock)
+name: RedLock
 script:
-  script: ''
-  type: python
-  subtype: python2
   commands:
-  - name: redlock-search-alerts
-    arguments:
-    - name: time-range-date-from
-      description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: time-range-date-to
-      description: End time for search in the following format -  MM/DD/YYYY
-    - name: time-range-value
-      description: The amount of units to go back in time
-    - name: time-range-unit
-      auto: PREDEFINED
+  - arguments:
+    - description: "The maximum number of records to return. '; limit search records\
+        \ to {}' is appended to every query where {} is the maximum number of records\
+        \ to return. If no value is provided, only 1 record is returned."
+      name: limit
+      required: false
+      default: false
+      isArray: false
+    - description: "The RQL query to run. Examples of RQL queries can be found here:\
+        \ https://docs.paloaltonetworks.com/prisma/prisma-cloud/prisma-cloud-rql-reference/rql-reference/rql-examples.\
+        \ Note that ` limit search records to 1` is automatically appended to each\
+        \ query and a `;` may need to be added to the end of the rql input to make\
+        \ the entire query valid.  The limit parameter adjusts this to be a value\
+        \ other than 1."
+      name: rql
+      required: true
+      default: false
+      isArray: false
+    name: redlock-get-rql-response
+    description: Runs an RQL query on the Prisma Cloud.
+    outputs:
+    - contextPath: Redlock.RQL.Query
+      description: 'The RQL query that was run.'
+      type: String
+    - contextPath: Redlock.RQL.Response.AccountId
+      description: 'The cloud account ID.'
+      type: Date
+    - contextPath: Redlock.RQL.Response.AccountName
+      description: 'The cloud account name.'
+      type: String
+    - contextPath: Redlock.RQL.Response.AllowDrillDown
+      description: 'Flag to allow drill down.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.CloudType
+      description: 'The cloud type.'
+      type: String
+    - contextPath: Redlock.RQL.Response.Data
+      description: 'The data object returned by the RQL response.'
+      type: Object
+    - contextPath: Redlock.RQL.Response.Deleted
+      description: 'Flag if deleted.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasAlert
+      description: 'Flag to check if RQL response has alerts.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasExtFindingRiskFactors
+      description: 'Flag if query returns external risk factors.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasExternalFinding
+      description: 'Flag for external findings.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasExternalIntegration
+      description: 'Flag for external integration.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.HasNetwork
+      description: 'Flag for determining if network exists.'
+      type: Boolean
+    - contextPath: Redlock.RQL.Response.Id
+      description: 'The RQL response ID.'
+      type: String
+    - contextPath: Redlock.RQL.Response.InsertTs
+      description: 'The response time.'
+      type: Date
+    - contextPath: Redlock.RQL.Response.Name
+      description: 'The RQL response name.'
+      type: String
+    - contextPath: Redlock.RQL.Response.RegionId
+      description: 'The cloud region ID.'
+      type: String
+    - contextPath: Redlock.RQL.Response.RegionName
+      description: 'The cloud region name.'
+      type: String
+    - contextPath: Redlock.RQL.Response.ResourceType
+      description: 'The resource type.'
+      type: String
+    - contextPath: Redlock.RQL.Response.Rrn
+      description: 'The account RRN.'
+      type: String
+    - contextPath: Redlock.RQL.Response.Service
+      description: 'The RQL response service.'
+      type: String
+    - contextPath: Redlock.RQL.Response.StateId
+      description: 'The response state ID.'
+      type: String
+  - arguments:
+    - description: Start time for search in the following string format -  MM/DD/YYYY
+      name: time-range-date-from
+    - description: End time for search in the following format -  MM/DD/YYYY
+      name: time-range-date-to
+    - description: The amount of units to go back in time
+      name: time-range-value
+    - auto: PREDEFINED
+      description: The search unit. login and epoch are only available if timeRangeValue
+        is not provided.
+      name: time-range-unit
       predefined:
       - hour
       - day
@@ -72,9 +148,9 @@ script:
       - year
       - login
       - epoch
-      description: The search unit. login and epoch are only available if timeRangeValue is not provided.
-    - name: policy-name
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy name
+      name: policy-name
       predefined:
       - IAM password policy does not have a symbol
       - IAM password policy does not expire in 90 days
@@ -106,111 +182,112 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
-    - name: policy-label
-      description: The policy label
-    - name: policy-compliance-standard
-      description: The policy compliance standard
-    - name: cloud-account
-      description: The cloud account
-    - name: cloud-region
-      description: The cloud region
-    - name: alert-rule-name
-      description: The alert rule name
-    - name: resource-id
-      description: The resource ID
-    - name: resource-name
-      description: The resource name
-    - name: resource-type
-      description: The resource type
-    - name: alert-status
-      auto: PREDEFINED
+    - description: The policy label
+      name: policy-label
+    - description: The policy compliance standard
+      name: policy-compliance-standard
+    - description: The cloud account
+      name: cloud-account
+    - description: The cloud region
+      name: cloud-region
+    - description: The alert rule name
+      name: alert-rule-name
+    - description: The resource ID
+      name: resource-id
+    - description: The resource name
+      name: resource-name
+    - description: The resource type
+      name: resource-type
+    - auto: PREDEFINED
+      defaultValue: open
+      description: The alert status
+      name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
-      defaultValue: open
-    - name: alert-id
-      description: The alert ID
-    - name: cloud-type
-      auto: PREDEFINED
+    - description: The alert ID
+      name: alert-id
+    - auto: PREDEFINED
+      description: The cloud type
+      name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
-    - name: risk-grade
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The risk grade
+      name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      description: The risk grade
-    - name: policy-type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy type
+      name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      description: The policy type
-    - name: policy-severity
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy severity
+      name: policy-severity
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
+    description: Search alerts on the Prisma Cloud (RedLock) platform
+    name: redlock-search-alerts
     outputs:
     - contextPath: Redlock.Alert.ID
-      description: ID of returned alert
+      description: The ID of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Status
-      description: Status of returned alert
+      description: The status of the returned alert.
       type: string
     - contextPath: Redlock.Alert.AlertTime
-      description: Time of alert
+      description: The time of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.ID
-      description: The policy ID
+      description: The policy ID of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Name
-      description: The policy name
+      description: The policy name of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Type
-      description: The policy type
+      description: The policy type of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Severity
-      description: The policy severity
+      description: The policy severity of the returned alert.
       type: string
     - contextPath: Redlock.Alert.Policy.Remediable
-      description: Whether or not the policy is remediable
+      description: Whether or not the policy is remediable.
       type: boolean
     - contextPath: Redlock.Alert.RiskDetail.Rating
-      description: The risk rating
+      description: The risk rating of the returned alert.
       type: string
     - contextPath: Redlock.Alert.RiskDetail.Score
-      description: The risk score
+      description: The risk score of the returned alert.
       type: string
     - contextPath: Redlock.Metadata.CountOfAlerts
-      description: The number of alerts found
+      description: The number of alerts found.
       type: number
-    description: Search alerts on the Prisma Cloud (RedLock) platform
-  - name: redlock-get-alert-details
-    arguments:
-    - name: alert-id
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: The alert ID
-    - name: detailed
-      auto: PREDEFINED
+      name: alert-id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "true"
+      description: Allows for retrieving entire / trimmed alert model
+      name: detailed
       predefined:
       - "true"
       - "false"
-      description: Allows for retrieving entire / trimmed alert model
-      defaultValue: "true"
+    description: Gets the details of an alert based on alert ID
+    name: redlock-get-alert-details
     outputs:
     - contextPath: Redlock.Alert.ID
       description: The alert ID
@@ -245,22 +322,36 @@ script:
     - contextPath: Redlock.Alert.RiskDetail.Score
       description: The risk score
       type: string
-    description: Gets the details of an alert based on alert ID
-  - name: redlock-dismiss-alerts
-    arguments:
-    - name: alert-id
-      description: comma separated list of string IDs to be dismissed
-    - name: dismissal-note
-      required: true
-      description: Reason for dismissal
-    - name: time-range-date-from
-      description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: time-range-date-to
-      description: End time for search in the following format -  MM/DD/YYYY
-    - name: time-range-value
-      description: The amount of units to go back in time
-    - name: time-range-unit
+  - arguments:
+    - description: comma separated list of string IDs to be dismissed
+      name: alert-id
+    - description: The amount of time to snooze. Both snooze value and unit must be
+        specified
+      name: snooze-value
+      required: false
+    - description: The time unit for if snoozing alert.  Both snooze value and unit
+        must be specified if snoozing.
+      name: snooze-unit
       auto: PREDEFINED
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - epoch
+    - description: Reason for dismissal
+      name: dismissal-note
+      required: true
+    - description: Start time for search in the following string format -  MM/DD/YYYY
+      name: time-range-date-from
+    - description: End time for search in the following format -  MM/DD/YYYY
+      name: time-range-date-to
+    - description: The amount of units to go back in time
+      name: time-range-value
+    - auto: PREDEFINED
+      description: The search unit
+      name: time-range-unit
       predefined:
       - hour
       - day
@@ -269,9 +360,9 @@ script:
       - year
       - login
       - epoch
-      description: The search unit
-    - name: policy-name
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy name
+      name: policy-name
       predefined:
       - IAM password policy does not have a symbol
       - IAM password policy does not expire in 90 days
@@ -303,80 +394,81 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
-    - name: policy-label
-      description: The policy label
-    - name: policy-compliance-standard
-      description: The policy compliance standard
-    - name: cloud-account
-      description: The cloud account
-    - name: cloud-region
-      description: The cloud region
-    - name: alert-rule-name
-      description: The alert rule name
-    - name: resource-id
-      description: The resource ID
-    - name: resource-name
-      description: The resource name
-    - name: resource-type
-      description: The resource type
-    - name: alert-status
-      auto: PREDEFINED
+    - description: The policy label
+      name: policy-label
+    - description: The policy compliance standard
+      name: policy-compliance-standard
+    - description: The cloud account
+      name: cloud-account
+    - description: The cloud region
+      name: cloud-region
+    - description: The alert rule name
+      name: alert-rule-name
+    - description: The resource ID
+      name: resource-id
+    - description: The resource name
+      name: resource-name
+    - description: The resource type
+      name: resource-type
+    - auto: PREDEFINED
+      description: The alert status
+      name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
-    - name: cloud-type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The cloud type
+      name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
-    - name: risk-grade
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The risk grade
+      name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      description: The risk grade
-    - name: policy-type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy type
+      name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      description: The policy type
-    - name: policy-severity
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy severity
+      name: policy-severity
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
-    - name: policy-id
-      description: comma separated string of policy IDs
+    - description: comma separated string of policy IDs
+      name: policy-id
+    description: Dismiss the alerts matching the given filter. Must provide either
+      policy IDs or alert IDs.
+    execution: true
+    name: redlock-dismiss-alerts
     outputs:
     - contextPath: Redlock.DismissedAlert.ID
       description: The IDs of the dismissed alerts
       type: string
-    description: Dismiss the alerts matching the given filter. Must provide either policy IDs or alert IDs.
-    execution: true
-  - name: redlock-reopen-alerts
-    arguments:
-    - name: alert-id
-      description: The IDs of alerts to reopen
-    - name: time-range-date-from
-      description: Start time for search in the following string format -  MM/DD/YYYY
-    - name: time-range-date-to
-      description: End time for search in the following format -  MM/DD/YYYY
-    - name: time-range-value
-      description: The amount of units to go back in time
-    - name: time-range-unit
-      auto: PREDEFINED
+  - arguments:
+    - description: The IDs of alerts to reopen
+      name: alert-id
+    - description: Start time for search in the following string format -  MM/DD/YYYY
+      name: time-range-date-from
+    - description: End time for search in the following format -  MM/DD/YYYY
+      name: time-range-date-to
+    - description: The amount of units to go back in time
+      name: time-range-value
+    - auto: PREDEFINED
+      description: The search unit
+      name: time-range-unit
       predefined:
       - hour
       - day
@@ -385,9 +477,9 @@ script:
       - year
       - login
       - epoch
-      description: The search unit
-    - name: policy-name
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy name
+      name: policy-name
       predefined:
       - IAM password policy does not have a symbol
       - IAM password policy does not expire in 90 days
@@ -419,71 +511,75 @@ script:
       - VPC Flow Logs not enabled
       - MFA not enabled for IAM users
       - Inactive users for more than 30 days
-      description: The policy name
-    - name: policy-label
-      description: The policy label
-    - name: policy-compliance-standard
-      description: The policy compliance standard
-    - name: cloud-account
-      description: The cloud account
-    - name: cloud-region
-      description: The cloud region
-    - name: alert-rule-name
-      description: The alert rule name
-    - name: resource-id
-      description: The resource ID
-    - name: resource-name
-      description: The resource name
-    - name: resource-type
-      description: The resource type
-    - name: alert-status
-      auto: PREDEFINED
+    - description: The policy label
+      name: policy-label
+    - description: The policy compliance standard
+      name: policy-compliance-standard
+    - description: The cloud account
+      name: cloud-account
+    - description: The cloud region
+      name: cloud-region
+    - description: The alert rule name
+      name: alert-rule-name
+    - description: The resource ID
+      name: resource-id
+    - description: The resource name
+      name: resource-name
+    - description: The resource type
+      name: resource-type
+    - auto: PREDEFINED
+      description: The alert status
+      name: alert-status
       predefined:
       - open
       - resolved
       - dismissed
-      description: The alert status
-    - name: cloud-type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The cloud type
+      name: cloud-type
       predefined:
       - aws
       - azure
       - gcp
-      description: The cloud type
-    - name: risk-grade
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The risk grade
+      name: risk-grade
       predefined:
       - A
       - B
       - C
       - F
-      description: The risk grade
-    - name: policy-type
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy type
+      name: policy-type
       predefined:
       - anomaly
       - audit_event
       - config
       - network
-      description: The policy type
-    - name: policy-severity
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      description: The policy severity
+      name: policy-severity
       predefined:
       - high
       - medium
       - low
-      description: The policy severity
+    description: Re-open the alerts matching the given filter.  Must provide either
+      policy IDs or alert IDs.
+    execution: true
+    name: redlock-reopen-alerts
     outputs:
     - contextPath: Redlock.ReopenedAlert.ID
       description: IDs of the re-opened alerts
       type: string
-    description: Re-open the alerts matching the given filter.  Must provide either policy IDs or alert IDs.
-    execution: true
-  - name: redlock-list-alert-filters
-    arguments: []
+  - arguments: []
     description: List the acceptable filters and values for alerts
-  - name: redlock-get-remediation-details
+    name: redlock-list-alert-filters
+  - arguments:
+    - description: The alert ID for which to get remediation details.
+      name: alert-id
     description: Gets remediation details for the given alert.
+    name: redlock-get-remediation-details
     outputs:
     - contextPath: Redlock.Alert.Remediation.Description
       description: Description of CLI remediation instructions.
@@ -494,11 +590,100 @@ script:
     - contextPath: Redlock.Alert.Remediation.CLI
       description: The exact CLI command string.
       type: string
-    arguments:
-    - name: alert-id
-      description: The alert ID for which to get remediation details.
+  - arguments:
+    - description: Start time for the search, in the following string format -  MM/DD/YYYY
+      name: time-range-date-from
+    - description: End time for the search, in the following format -  MM/DD/YYYY
+      name: time-range-date-to
+    - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
+      name: time-range-value
+    - auto: PREDEFINED
+      description: |-
+        The search unit. Possible values are: "hour", "week", "month", "year", "login", or "epoch". The "login" and "epoch" options are only available if timeRangeValue
+        is not provided.
+      name: time-range-unit
+      predefined:
+      - hour
+      - day
+      - week
+      - month
+      - year
+      - login
+      - epoch
+    - name: query
+      description: Query to run in Prisma Cloud config API using RQL language.
+      required: true
+    - name: limit
+      description: Maximum number of entries to return.
+      defaultValue: 100
+    description: Search configuration inventory on the Prisma Cloud (RedLock) platform using RQL language.
+    name: redlock-search-config
+    outputs:
+    - contextPath: Redlock.Asset.accountId
+      description: Cloud Account ID
+      type: Date
+    - contextPath: Redlock.Asset.accountName
+      description: Cloud Account Name
+      type: String
+    - contextPath: Redlock.Asset.allowDrillDown
+      description: ''
+      type: Boolean
+    - contextPath: Redlock.Asset.cloudType
+      description: Cloud Type
+      type: String
+    - contextPath: Redlock.Asset.deleted
+      description: Asset was deleted?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasAlert
+      description: Asset has Prisma Cloud alert?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasExtFindingRiskFactors
+      description: Has External Finding Risk Factors?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasExternalFinding
+      description: Has External Finding?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasExternalIntegration
+      description: Has External Integration?
+      type: Boolean
+    - contextPath: Redlock.Asset.hasNetwork
+      description: Has Network?
+      type: Boolean
+    - contextPath: Redlock.Asset.id
+      description: Redlock Asset ID
+      type: String
+    - contextPath: Redlock.Asset.data
+      description: Redlock Asset specific data
+      type: Unknown
+    - contextPath: Redlock.Asset.insertTs
+      description: Insert Ts
+      type: Date
+    - contextPath: Redlock.Asset.name
+      description: Asset Name
+      type: String
+    - contextPath: Redlock.Asset.regionId
+      description: Cloud Region ID
+      type: String
+    - contextPath: Redlock.Asset.regionName
+      description: Cloud Region Name
+      type: String
+    - contextPath: Redlock.Asset.resourceType
+      description: Cloud Resource type
+      type: String
+    - contextPath: Redlock.Asset.rrn
+      description: Cloud RRN
+      type: String
+    - contextPath: Redlock.Asset.service
+      description: Cloud service
+      type: String
+    - contextPath: Redlock.Asset.stateId
+      description: State ID
+      type: String
   isfetch: true
   runonce: false
+  script: ''
+  subtype: python2
+  type: python
+fromversion: 5.0.0
 defaultclassifier: RedLock
 defaultmapperin: RedLock-mapper
-fromversion: 5.0.0

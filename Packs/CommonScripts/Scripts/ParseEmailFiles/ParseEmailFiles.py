@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-
 from email import message_from_string
 from email.header import decode_header
 import base64
@@ -193,7 +192,17 @@ class DataModel(object):
             try:
                 res = chardet.detect(data_value)
                 enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
-                data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                if enc != 'ascii':
+                    if enc.lower() == 'windows-1252' and res['confidence'] < 0.9:
+                        demisto.debug('encoding detection confidence below threshold {}, '
+                                      'switching encoding to "windows-1250"'.format(res))
+                        enc = 'windows-1250'
+                    data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
+                elif '\x00' not in data_value:
+                    data_value = data_value.decode("ascii", errors="ignore").replace('\x00', '')
+                else:
+                    data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
+
             except UnicodeDecodeError:
                 data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 
@@ -2923,12 +2932,18 @@ class Message(object):
         property_name = property_details.get("name")
         property_type = property_details.get("data_type")
         if not property_type:
+            demisto.info('could not parse property type, skipping property "{}"'.format(property_details))
             return None
 
         try:
             raw_content = ole_file.openstream(stream_name).read()
         except IOError:
-            raw_content = None
+            raw_content = ''
+        if not raw_content:
+            demisto.debug('Could not read raw content from stream "{}", '
+                          'skipping property "{}"'.format(stream_name, property_details))
+            return None
+
         property_value = self._data_model.get_value(raw_content, data_type=property_type)
         if property_value:
             property_detail = {property_name: property_value}
@@ -3551,7 +3566,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     base64_encoded = "base64" in part.get("Content-Transfer-Encoding", "")
 
                     if isinstance(part.get_payload(), list) and len(part.get_payload()) > 0:
-                        if attachment_file_name is None or attachment_file_name == "":
+                        if attachment_file_name is None or attachment_file_name == "" or attachment_file_name == 'None':
                             # in case there is no filename for the eml
                             # we will try to use mail subject as file name
                             # Subject will be in the email headers
@@ -3604,7 +3619,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attachment_file_name = indiv_msg.get_filename()
                             try:
                                 # In some cases the body content is empty and cannot be decoded.
-                                msg_info = base64.b64decode(msg).decode('utf-8')
+                                msg_info = base64.b64decode(msg).decode('utf-8', errors='ignore')
                             except TypeError:
                                 msg_info = str(msg)
                             attached_emails.append(msg_info)
@@ -3617,7 +3632,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                     else:
                         file_content = part.get_payload(decode=True)
                         # fileResult will return an error if file_content is None.
-                        if file_content:
+                        if file_content and not attachment_file_name.endswith('.p7s'):
                             demisto.results(fileResult(attachment_file_name, file_content))
 
                         if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
@@ -3724,6 +3739,8 @@ def main():
 
         file_metadata = result[0]['FileMetadata']
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        if 'MIME entity text, ISO-8859 text' in file_type:
+            file_type = 'application/pkcs7-mime'
 
     except Exception as ex:
         return_error(
@@ -3738,7 +3755,7 @@ def main():
             output = create_email_output(email_data, attached_emails)
 
         elif any(eml_candidate in file_type_lower for eml_candidate in
-                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822']):
+                 ['rfc 822 mail', 'smtp mail', 'multipart/signed', 'message/rfc822', 'application/pkcs7-mime']):
             if 'unicode (with bom) text' in file_type_lower:
                 email_data, attached_emails = handle_eml(
                     file_path, False, file_name, parse_only_headers, max_depth, bom=True

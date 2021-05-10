@@ -2,7 +2,7 @@
     "name": "Flashpoint",
     "description": "Use the Flashpoint integration to reduce business risk.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.1.1",
     "author": "Flashpoint",
     "url": "",
     "email": "demisto_support@flashpoint-intel.com",
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "kashyap-solanki"
-    ]
+    ],
+    "certification": "certified"
 }

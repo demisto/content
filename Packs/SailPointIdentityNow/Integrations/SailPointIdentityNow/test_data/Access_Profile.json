@@ -1,0 +1,37 @@
+{
+    "source": {
+        "id": "2c9180876ff2de9601700b99e5fb51c6",
+        "name": "Direct Access Profile"
+    },
+    "entitlements": [
+        {
+            "description": null,
+            "attribute": "Profiles",
+            "value": "SYSTEM (System administrator (Superuser))",
+            "schema": null,
+            "id": "2c9180847503f67401750dff07114013",
+            "name": "SYSTEM (System administrator (Superuser))"
+        }
+    ],
+    "entitlementCount": 1,
+    "description": "Second tier of system entitlements.",
+    "created": "2020-02-04T21:38:32Z",
+    "modified": "2020-11-17T15:12:41Z",
+    "synced": "2021-01-29T06:30:20.861Z",
+    "enabled": true,
+    "requestable": true,
+    "requestCommentsRequired": false,
+    "owner": {
+        "email": "adam.kennedy@sailpoint.com",
+        "type": "IDENTITY",
+        "id": "2c91808363f06ad80163fb690fae55b8",
+        "name": "adam.kennedy"
+    },
+    "id": "2c91808a700d408901701223fb6b0077",
+    "name": "System Level 2",
+    "pod": "stg-uswest",
+    "org": "sailpoint-idn",
+    "tags": null,
+    "_type": "accessprofile",
+    "type": "accessprofile"
+}

@@ -1,0 +1,61 @@
+{
+    "totalResults": 2,
+    "startIndex": 1,
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "Resources": [
+        {
+            "owner": {
+                "displayName": "Richard Jackson",
+                "value": "8a8080824df45873014df45bbbb9002b",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bbbb9002b"
+            },
+            "policyName": "SOD Policy Accounts Payable Access-Accounts Receivable Access",
+            "identity": {
+                "displayName": "Frank Rivera",
+                "value": "8a8080824df45873014df45bc8480065",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bc8480065"
+            },
+            "meta": {
+                "created": "2015-06-14T18:20:55.634-05:00",
+                "location": "http://localhost:8088/iiq/scim/v2/PolicyViolations/8a8080824df45873014df46036521328",
+                "lastModified": "2020-10-08T15:45:43.388-05:00",
+                "version": "W/\"1602189943388\"",
+                "resourceType": "PolicyViolation"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:PolicyViolation"
+            ],
+            "id": "8a8080824df45873014df46036521328",
+            "constraintName": "Accounts Payable Access - Accounts Receivable Access constraint",
+            "status": "Open"
+        },
+        {
+            "owner": {
+                "displayName": "Amanda Ross",
+                "value": "8a8080824df45873014df45bb5ca000f",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bb5ca000f"
+            },
+            "policyName": "SOD Policy Internal Auditor Access-Windows Administrator Access",
+            "identity": {
+                "displayName": "Janet Washington",
+                "value": "8a8080824df45873014df45bd000008f",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/8a8080824df45873014df45bd000008f"
+            },
+            "meta": {
+                "created": "2015-06-14T18:21:02.413-05:00",
+                "location": "http://localhost:8088/iiq/scim/v2/PolicyViolations/8a8080824df45873014df46050cd13bc",
+                "lastModified": "2020-10-08T15:45:45.059-05:00",
+                "version": "W/\"1602189945059\"",
+                "resourceType": "PolicyViolation"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:PolicyViolation"
+            ],
+            "id": "8a8080824df45873014df46050cd13bc",
+            "constraintName": "Internal Auditor Access - Windows Administrator Access constraint",
+            "status": "Mitigated"
+        }
+    ]
+}

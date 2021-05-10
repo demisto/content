@@ -25,7 +25,8 @@
  "hidden": false,
  "associatedTypes": [
   "Phishing",
-  "Trend Micro CAS Event"
+  "Trend Micro CAS Event",
+  "Email Communication"
  ],
  "systemAssociatedTypes": [
   "Phishing",

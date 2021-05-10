@@ -1,5 +1,7 @@
 id: Cylance Protect v2 Test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cylance Protect v2 Test
 starttaskid: "0"
 tasks:
@@ -13,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -20,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 50
         }
       }
@@ -54,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 370
         }
       }
@@ -103,7 +106,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 545
         }
       }
@@ -141,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -176,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1245
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -212,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1245
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -269,7 +272,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 720
         }
       }
@@ -293,10 +296,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "19"
-      - "5"
       - "4"
-      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -319,7 +319,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 895
         }
       }
@@ -339,12 +339,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2120
+          "x": 50,
+          "y": 4920
         }
       }
     note: false
@@ -378,7 +379,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 195
         }
       }
@@ -413,7 +414,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 3870
         }
       }
     note: false
@@ -464,7 +465,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 4045
         }
       }
     note: false
@@ -499,7 +500,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 4220
         }
       }
     note: false
@@ -532,7 +533,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 4395
         }
       }
     note: false
@@ -563,7 +564,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 4570
         }
       }
     note: false
@@ -609,7 +610,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 4745
         }
       }
     note: false
@@ -649,8 +650,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1420
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -684,8 +685,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -719,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 50,
+          "y": 3345
         }
       }
     note: false
@@ -757,8 +758,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1770
+          "x": 50,
+          "y": 3520
         }
       }
     note: false
@@ -779,7 +780,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -798,8 +799,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1945
+          "x": 50,
+          "y": 3695
         }
       }
     note: false
@@ -840,8 +841,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1420
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -875,8 +876,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1595
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -911,8 +912,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1770
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -933,7 +934,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -953,8 +954,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1945
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -995,8 +996,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1420
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -1030,8 +1031,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1595
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -1065,8 +1066,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1770
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -1087,7 +1088,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "5"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1107,8 +1108,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1945
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -1116,15 +1117,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
-    "linkLabelsPosition": {
-      "7_19_yes": 0.9
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
-        "width": 1670,
+        "height": 4935,
+        "width": 380,
         "x": 50,
         "y": 50
       }
@@ -1133,3 +1133,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

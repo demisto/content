@@ -390,7 +390,7 @@ def search_events(start_time=None, end_time=None, account_name=None, event_name=
     if res['page']['totalElements'] == 0:
         return []
 
-    return res.get('_embedded', {}).get('eventResourceList', [])
+    return res.get('_embedded', {}).get('eventResources', [])
 
 
 def get_events_by_alarm_command():

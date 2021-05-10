@@ -100,12 +100,4 @@ There is no context output for this command.
 ##### Human Readable Output
 send to topic message
 
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
 

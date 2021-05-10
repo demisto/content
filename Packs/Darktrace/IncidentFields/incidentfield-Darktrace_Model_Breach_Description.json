@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Darktrace Model Breach"
+ ],
+ "caseInsensitive": true,
+ "cliName": "darktracemodelbreachdescription",
+ "closeForm": false,
+ "content": true,
+ "description": "Description of the Model Breach",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_darktracemodelbreachdescription",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Darktrace Model Breach Description",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "longText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

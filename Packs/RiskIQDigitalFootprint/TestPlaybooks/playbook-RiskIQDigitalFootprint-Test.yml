@@ -417,11 +417,6 @@ tasks:
             value:
               simple: RiskIQDigitalFootprint.AssetChanges.state
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: RiskIQDigitalFootprint.AssetChanges.priority
-            iscontext: true
       - - operator: isExists
           left:
             value:

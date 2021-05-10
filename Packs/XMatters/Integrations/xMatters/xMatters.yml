@@ -1,0 +1,209 @@
+commonfields:
+  id: xMatters
+  version: -1
+name: xMatters
+display: xMatters
+category: Utilities
+description: This is an integration for using xMatters.
+configuration:
+- display: Your xmatters instance base URL. (i.e. acme.xmatters.com)
+  name: instance
+  type: 0
+  required: true
+  additionalinfo: This is used to retrieve events and other api calls
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Username for your xMatters instance.
+  name: username
+  type: 0
+  required: true
+- display: Password for your xMatters instance.
+  name: password
+  type: 4
+  required: true
+- display: URL of an HTTP trigger in a flow.
+  name: url
+  defaultvalue: https://acme.xmatters.com
+  type: 0
+  required: true
+  additionalinfo: This is for creating events in xMatters from Cortex XSOAR. Used
+    for the xm-trigger-workflow command.
+- display: Fetch Type
+  additionalinfo: In a future release the xMatters incidents will be supported. For
+    now it's just events.
+  name: fetch_type
+  defaultvalue: events
+  type: 15
+  required: true
+  options:
+  - events
+- display: Fetch alerts with status (ACTIVE, TERMINATED, SUSPENDED)
+  name: status
+  type: 15
+  required: false
+  options:
+  - ACTIVE
+  - TERMINATED
+  - SUSPENDED
+- display: Priority of events to fetch
+  name: priority
+  type: 16
+  required: false
+  options:
+  - LOW
+  - MEDIUM
+  - HIGH
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Property Name
+  name: property_name
+  type: 0
+  required: false
+  additionalinfo: Property Name to look for in xMatters. Used for importing events.
+- display: Property Value
+  name: property_value
+  type: 0
+  required: false
+  additionalinfo: Property Value to look for in xMatters. Used for importing events.
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  defaultvalue: 7 days
+  name: first_fetch
+  required: false
+  type: 0
+- display: Maximum number of incidents to fetch
+  defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+  additionalinfo: Must be between 0 and 201.
+script:
+  commands:
+  - name: xm-trigger-workflow
+    arguments:
+    - name: recipients
+      required: true
+      description: Recipients of the xMatters Message
+    - name: subject
+      description: Subject of the xMatters Message
+    - name: body
+      description: Body of the xMatters Message
+    - name: incident_id
+      description: Incident ID of Incident referenced
+    - name: close_task_id
+      description: Id of task to close in playbook. Requires an incident_id as the
+        investigation id.
+    outputs:
+    - contextPath: xMatters.Workflow.request_id
+      description: Request ID from xMatters
+      type: string
+    description: sends the event to xMatters
+  - name: xm-get-events
+    arguments:
+    - name: request_id
+      description: The UUID returned from triggering a workflow.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - SUSPENDED
+      - TERMINATED
+      description: Status of the event.
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: Priority of the event.
+    - name: from
+      description: A date and time in UTC format that represents the start of the
+        time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
+    - name: to
+      description: A date and time in UTC format that represents the end of the time
+        range you want to search. (i.e. `2020-01-01T00:11:22Z`)
+    - name: workflow
+      description: The name of the workflow the event is tied to.
+    - name: form
+      description: The name of the form the event is tied to.
+    - name: property_name
+      description: An event property name to filter the events
+    - name: property_value
+      description: An event property value to filter the events
+    outputs:
+    - contextPath: xMatters.GetEvents.Events
+      description: Events from xMatters.
+    - contextPath: xMatters.GetEvents.Created
+      description: The date and time the event was created
+    - contextPath: xMatters.GetEvents.Terminated
+      description: The date and time the event was terminated. Populated only if the
+        event is terminated.
+    - contextPath: xMatters.GetEvents.ID
+      description: The UUID of the event
+    - contextPath: xMatters.GetEvents.Name
+      description: The subject of the event as seen in the event report
+    - contextPath: xMatters.GetEvents.PlanName
+      description: The name of the workflow the event is tied to
+    - contextPath: xMatters.GetEvents.FormName
+      description: The name of the form the event is tied to
+    - contextPath: xMatters.GetEvents.Status
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL,
+        SUPRESSED
+    - contextPath: xMatters.GetEvents.Priority
+      description: The priority of the event. LOW, MEDIUM, HIGH
+    - contextPath: xMatters.GetEvents.Properties
+      description: The list of properties tied to the event in name/value pairs
+    - contextPath: xMatters.GetEvents.SubmitterName
+      description: The user or integration that created the event
+    description: Get events from xMatters.
+  - name: xm-get-event
+    arguments:
+    - name: event_id
+      required: true
+      description: Unique identifier of the event
+    outputs:
+    - contextPath: xMatters.GetEvent.Events
+      description: Events from xMatters.
+    - contextPath: xMatters.GetEvent.Created
+      description: The date and time the event was created
+    - contextPath: xMatters.GetEvent.Terminated
+      description: The date and time the event was terminated. Populated only if the
+        event is terminated.
+    - contextPath: xMatters.GetEvent.ID
+      description: The UUID of the event
+    - contextPath: xMatters.GetEvent.Name
+      description: The subject of the event as seen in the event report
+    - contextPath: xMatters.GetEvent.PlanName
+      description: The name of the workflow the event is tied to
+    - contextPath: xMatters.GetEvent.FormName
+      description: The name of the form the event is tied to
+    - contextPath: xMatters.GetEvent.Status
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL,
+        SUPRESSED
+    - contextPath: xMatters.GetEvent.Priority
+      description: The priority of the event. LOW, MEDIUM, HIGH
+    - contextPath: xMatters.GetEvent.Properties
+      description: The list of properties tied to the event in name/value pairs
+    - contextPath: xMatters.GetEvent.SubmitterName
+      description: The user or integration that created the event
+    description: Get a single event from xMatters.
+  dockerimage: demisto/python3:3.8.6.13358
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+tests:
+- no tests

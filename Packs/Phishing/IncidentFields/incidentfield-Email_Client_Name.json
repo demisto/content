@@ -24,10 +24,12 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "Phishing"
+  "Phishing",
+  "Email Communication"
  ],
  "systemAssociatedTypes": [
-  "Phishing"
+  "Phishing",
+  "Email Communication"
  ],
  "associatedToAll": false,
  "unmapped": false,

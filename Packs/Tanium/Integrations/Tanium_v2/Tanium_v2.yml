@@ -1480,7 +1480,7 @@ script:
     - contextPath: Tanium.Action.UserName
       description: The name of the user who issued this action.
       type: String
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
   longRunning: false

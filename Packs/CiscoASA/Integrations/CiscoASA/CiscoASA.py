@@ -365,7 +365,7 @@ def create_rule_command(client: Client, args):
 
     remarks = argToList(args.get('remarks'), ',')
     position = args.get('position')
-    log_level = args.get('logging_level')
+    log_level = args.get('log_level')
     active = args.get('active', 'True')
 
     rule_body = {}  # type: dict
@@ -440,7 +440,7 @@ def edit_rule_command(client: Client, args):
 
     remarks = argToList(args.get('remarks'), ',')
     position = args.get('position')
-    log_level = args.get('logging_level')
+    log_level = args.get('log_level')
     active = args.get('active', 'True')
     source = args.get('source')
     dest = args.get('destination')

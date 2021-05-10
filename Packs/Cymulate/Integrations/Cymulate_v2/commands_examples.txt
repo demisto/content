@@ -1,0 +1,37 @@
+!cymulate-agent-list
+
+!cymulate-exfiltration-template-list
+!cymulate-exfiltration-start template_id="5df0e79b85a00138dc648e75" agent_name="CYMSRV2016" schedule="false" schedule_loop="one-time"
+!cymulate-exfiltration-status assessment_id="602e538affe5ad2fc85c1921"
+!cymulate-exfiltration-stop
+
+!cymulate-email-gateway-template-list
+!cymulate-email-gateway-start template_id="5c6920853659191ccf6858fc" agent_email="cymulatetests@cymulate.com" schedule="false" schedule_loop="one-time"
+!cymulate-email-gateway-status assessment_id="602d47f5fd72ea058cd63538"
+!cymulate-email-gateway-stop
+
+!cymulate-endpoint-security-template-list
+!cymulate-endpoint-security-start template_id="5e98461d312a740ee4839700" agent_name="CYMSRV2016" schedule="false" schedule_loop="one-time"
+!cymulate-endpoint-security-status assessment_id="5ff31ddb32664d1fc9bb36bc"
+!cymulate-endpoint-security-stop
+
+!cymulate-waf-template-list
+!cymulate-waf-start template_id="5ee0726cef621bbc25251d7a" sites="http://cymulatelabs.com" schedule="false" schedule_loop="one-time"
+!cymulate-waf-status assessment_id="5ff31ef451647c20338bd235"
+!cymulate-waf-stop
+
+!cymulate-immediate-threat-start edr_address="CYMSRV2016" template_id="603270ce63aa15930631b938"
+!cymulate-immediate-threat-status assessment_id="603505e0c3d4b76ab14c02e1"
+!cymulate-immediate-threat-stop
+
+!cymulate-lateral-movement-template-list
+!cymulate-lateral-movement-start agent_name="CYMSRV2016" template_id="5e41746171895006ef394607" upload_to_cymulate="false" schedule="false" schedule_loop="one-time"
+!cymulate-lateral-movement-status assessment_id="6037e9bec3d4b76ab14cc9fd"
+!cymulate-lateral-movement-stop
+
+!cymulate-phishing-awareness-contacts-group-list
+!cymulate-phishing-awareness-contacts-get group_id="5d7f43b497177063b8ceff92"
+!cymulate-phishing-awareness-contacts-group-create group_name="test_group_02"
+
+!cymulate-simulations-id-list module="kill-chain" from_date="2021-01-01"
+!cymulate-simulations-list module="waf" attack_id="603ba9adc3d4b76ab14dda28"

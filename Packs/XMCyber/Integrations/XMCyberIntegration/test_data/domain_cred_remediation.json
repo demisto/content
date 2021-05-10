@@ -1,0 +1,93 @@
+[
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "4c15efed1e048d98c884f6b8041b27ab",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Use application whitelisting software (e.g AppLocker) to restrict password dumping tools"
+    },
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "7694cf8388fa03b21c66a44beccb88ae",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Prevent the credential from being stored in the machine memory. This usually happens due to interactive logins, whether its from the keyboard/mouse connected to the machine, RDP, or service account. Using Event Viewer Security logs and looking for 4624 and 4648 events can help identify the exact reason."
+    },
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "d5a7ccd9c0be3afda2a8c3af96984d9a",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Implement a multi-factor authentication solution"
+    },
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "a2392993608cf80e110a4c6e25d1992a",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Block incoming connections to ports 445, 139, 135 and 3389"
+    },
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "277b3ebc3a84b0a5efc2d41e259ddbff",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Remove the following users from the local Administrators and Remote Desktop Users groups"
+    },
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "09a94bec89d1edbf0a6b807702d6538e",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Enable Protected Process Light for LSA"
+    },
+    {
+        "schemeDisplayName": "Remediation parameters",
+        "id": "b2faf8c84a405e4a666a66b6ee9e539e",
+        "adviceType": "remediationAdvice",
+        "adviceTypeDisplayName": "Remediation",
+        "displayName": "Implement Credential Guard to protect the LSA secrets"
+    },
+    {
+        "displayName": "Implement a password management/password vault solution",
+        "id": "d65eeafbd784526cb0f24e1fb5d3fba6",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+        "displayName": "Use RDP's restrictedAdmin feature when connecting from trusted machines to untrusted machines. Avoid using it on untrusted machines",
+        "id": "49bc771421cc5f4a08675a7df17a413c",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+        "displayName": "Enforce max password age and password complexity policy",
+        "id": "3a114e509af9fafbf49d3c8b095812bd",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+        "displayName": "Avoid using privileged domain accounts to execute services on domain devices",
+        "id": "cdcba633593929589c31759b66e6319a",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+        "displayName": "Add privileged domain accounts to the Protected Users group",
+        "id": "280d73fe3484a378b52e6bdb0b873c4f",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+        "displayName": "Use Microsoft Protected Process Light to protect critical processes",
+        "id": "ed7f1e0d2bd0320677836ecaee543704",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    },
+    {
+        "displayName": "Use Microsoft Windows Defender Credential Guard when possible",
+        "id": "9643df750656a95628aef30d468249d5",
+        "adviceType": "bestPractice",
+        "adviceTypeDisplayName": "Best Practice"
+    }
+]

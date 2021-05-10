@@ -1,0 +1,42 @@
+{
+  "items": [
+    {
+      "created": "2020-11-13T13:35:27.674Z",
+      "description": "Malware available for download from file-sharing sites",
+      "external_reference": [
+        {
+          "description": "Mitre attack tactics and technique reference",
+          "mitre_attack_tactic": "Build Capabilities",
+          "mitre_attack_tactic_id": "TA0024",
+          "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0024/",
+          "mitre_attack_technique": "Obtain/re-use payloads",
+          "mitre_attack_technique_id": "T1346",
+          "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1346/",
+          "source_name": "mitre-attack"
+        }
+      ],
+      "id": "indicator--6c5f8f9a-c31f-47f0-8719-b716ac05c770",
+      "labels": [
+        "malicious-activity",
+        "malware",
+        "Build Capabilities",
+        "Obtain/re-use payloads"
+      ],
+      "lang": "ru",
+      "modified": "2020-11-13T13:35:27.674Z",
+      "pattern": "[url:value = '<url_value>']",
+      "sixgill_actor": "<SIXGILL_ACTOR>",
+      "sixgill_confidence": 80,
+      "sixgill_feedid": "darkfeed_010",
+      "sixgill_feedname": "malware_download_urls",
+      "sixgill_postid": "<SIXGILL_POST_ID>",
+      "sixgill_posttitle": "<SIXGILL_POST_TITLE>",
+      "sixgill_severity": 70,
+      "sixgill_source": "<SIXGILL_SOURCE>",
+      "spec_version": "2.0",
+      "type": "indicator",
+      "valid_from": "2020-11-09T11:33:00Z"
+    }
+  ],
+  "total": 1
+}

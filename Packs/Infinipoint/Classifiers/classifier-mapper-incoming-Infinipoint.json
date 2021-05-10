@@ -7,14 +7,6 @@
     "Infinipoint Compliant": {
       "dontMapEventToLabels": false,
       "internalMapping": {
-        "Infinipoint complianceState ": {
-          "complex": null,
-          "simple": "complianceState"
-        },
-        "Infinipoint deviceID ": {
-          "complex": null,
-          "simple": "deviceID"
-        },
         "Infinipoint hostname": {
           "complex": null,
           "simple": "hostname"
@@ -32,14 +24,6 @@
     "Infinipoint NotCompliant": {
       "dontMapEventToLabels": false,
       "internalMapping": {
-        "Infinipoint complianceState ": {
-          "complex": null,
-          "simple": "complianceState"
-        },
-        "Infinipoint deviceID ": {
-          "complex": null,
-          "simple": "deviceID"
-        },
         "Infinipoint hostname": {
           "complex": null,
           "simple": "hostname"

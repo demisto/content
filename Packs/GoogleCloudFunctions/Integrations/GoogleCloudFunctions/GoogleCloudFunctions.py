@@ -107,6 +107,8 @@ def functions_list_command(client: GoogleClient, args: dict):
     project_id = client.project
     res = client.functions_list(region, project_id)
     functions = res.get('functions', [])
+    if not functions:
+        return 'No functions found.', {}, {}
     keys = list(functions[0].keys())
     keys.remove('name')
     disp_region = 'All' if client.region == '-' else client.region

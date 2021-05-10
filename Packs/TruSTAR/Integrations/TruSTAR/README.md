@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the TruSTAR integration to manage reports and indicators.</p>
+<p>Deprecated. Use the TruSTAR v2 integration instead.</p>
 <p>This integration was integrated and tested with TruSTAR v1.3. (TruSTAR Python SDK.)</p>
 <h2>Use Cases</h2>
 <ul>

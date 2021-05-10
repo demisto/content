@@ -1,10 +1,6 @@
 Allow integration with Zabbix api
-This integration was integrated and tested with version xx of Zabbix
 
 ## Zabbix Playbook
----
-
-## Use Cases
 ---
 
 ## Configure Zabbix on Demisto
@@ -33,8 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. zabbix-execute-command
 ---
 Execute command on Zabbix API
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `zabbix-execute-command`
@@ -118,8 +113,7 @@ Execute command on Zabbix API
 ### 2. test-module
 ---
 Test if module is working
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `test-module`
@@ -143,8 +137,7 @@ ok
 ### 3. zabbix-hostgroup-get
 ---
 Get host groups
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `zabbix-hostgroup-get`
@@ -211,8 +204,7 @@ Get host groups
 ### 4. zabbix-host-get
 ---
 Get hosts
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `zabbix-host-get`
@@ -356,8 +348,6 @@ Get hosts
 ### 5. zabbix-trigger-get
 ---
 Get triggers
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `zabbix-trigger-get`
@@ -459,8 +449,6 @@ Get triggers
 ### 6. zabbix-event-get
 ---
 Get events
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `zabbix-event-get`

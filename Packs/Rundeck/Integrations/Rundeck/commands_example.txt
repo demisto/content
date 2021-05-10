@@ -1,0 +1,11 @@
+!rundeck-projects-list
+!rundeck-jobs-list scheduled_filter=false id_list={first_id},{second_id}
+!rundeck-job-execute job_id={job_id} arg_string="-arg1 value1" as_user=galb log_level=ERROR
+!rundeck-job-execution-abort execution_id=65
+!rundeck-job-retry execution_id=122 job_id={job_id}
+!rundeck-job-executions-query adhoc=false max_results=3 project_name=Demisto user_filter=galb status_filter=failed
+!rundeck-adhoc-command-run exec_command="echo hello" as_user=adhocTest project_name=Demisto node_keepgoing=true
+!rundeck-adhoc-script-run entry_id=@121 as_user='test'
+!rundeck-webhook-event-send json=`{"test":1}` auth_token={auth_id}
+!rundeck-webhooks-list project_name="TEST"
+!rundeck-job-execution-output execution_id=118 aggregate_log=true

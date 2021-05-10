@@ -1,0 +1,84 @@
+category: IT Services
+commonfields:
+  id: DNS
+  version: -1
+configuration:
+- additionalinfo: DNS Server Address
+  display: Server Address
+  name: server
+  required: true
+  type: 0
+- additionalinfo: Use TSIG key name to authenticate against DNS `server'
+  display: TSIG Key Name
+  name: key_name
+  required: false
+  type: 0
+- additionalinfo: Use TSIG key secret, associated with `key_name', to authenticate
+    against `server'
+  display: TSIG Key Secret
+  name: key_secret
+  required: false
+  type: 4
+description: Manage DNS records using NSUpdate
+display: DNS
+name: DNS
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: present
+      description: Manage DNS record.
+      name: state
+      predefined:
+      - present
+      - absent
+    - defaultValue: "53"
+      description: Use this TCP port when connecting to `server`.
+      name: port
+    - auto: PREDEFINED
+      defaultValue: hmac-md5
+      description: Specify key algorithm used by `key_secret`.
+      name: key_algorithm
+      predefined:
+      - HMAC-MD5.SIG-ALG.REG.INT
+      - hmac-md5
+      - hmac-sha1
+      - hmac-sha224
+      - hmac-sha256
+      - hmac-sha384
+      - hmac-sha512
+    - description: |-
+        DNS record will be modified on this `zone`.
+        When omitted DNS will be queried to attempt finding the correct zone.
+        Starting with Ansible 2.7 this parameter is optional.
+      name: zone
+    - description: Sets the DNS record to modify. When zone is omitted this has to
+        be absolute (ending with a dot).
+      name: record
+      required: true
+    - defaultValue: A
+      description: Sets the record type.
+      name: type
+    - defaultValue: "3600"
+      description: Sets the record TTL.
+      name: ttl
+    - description: Sets the record value.
+      name: value
+    - auto: PREDEFINED
+      defaultValue: tcp
+      description: Sets the transport protocol (TCP or UDP). TCP is the recommended
+        and a more robust option.
+      name: protocol
+      predefined:
+      - tcp
+      - udp
+    description: Manage DNS records.
+    name: dns-nsupdate
+  dockerimage: demisto/ansible-runner:1.0.0.16542
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

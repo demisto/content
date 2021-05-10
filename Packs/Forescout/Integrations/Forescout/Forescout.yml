@@ -69,7 +69,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: name
       description: Each host field has three searchable parts, the 'name', 'label', and 'description'. By default only the 'name' will be searched. If you want to expand the search to include the description, you would enter 'name,description' for this argument.
       isArray: true
@@ -81,7 +81,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Determines whether to match the case of the entered search term.
       isArray: false
@@ -92,7 +92,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'False'
       description: Determines whether the search term is matched against the entirety of the potential host field instead of just seeing whether the host field contains the search term.
       isArray: false
@@ -109,7 +109,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: all_types
       description: Limit the search to host fields whose values are of a certain type. For example, to limit the search to host properties whose values are either boolean, ip, or a date, enter 'boolean,ip,date'.
       isArray: true
@@ -337,7 +337,7 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: update
       description: The type of update to perform on a host field.
       isArray: false
@@ -377,7 +377,7 @@ script:
     name: forescout-update-host-fields
   - arguments:
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: add_list_values
       description: The type of update to perform on a Forescout list.
       isArray: false
@@ -404,7 +404,7 @@ script:
     description: Update Forescout lists.
     execution: false
     name: forescout-update-lists
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   runonce: false
   script: '-'

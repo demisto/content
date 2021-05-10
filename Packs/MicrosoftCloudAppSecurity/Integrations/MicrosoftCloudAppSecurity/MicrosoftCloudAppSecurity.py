@@ -104,7 +104,7 @@ class Client(BaseClient):
     def dismiss_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
-            url_suffix='/alerts/dismiss_bulk/',
+            url_suffix='/alerts/close_false_positive/',
             json_data=request_data
         )
         return data
@@ -112,7 +112,7 @@ class Client(BaseClient):
     def resolve_bulk_alerts(self, request_data: dict):
         data = self._http_request(
             method='POST',
-            url_suffix='/alerts/resolve/',
+            url_suffix='/alerts/close_true_positive/',
             json_data=request_data
         )
         return data
@@ -214,6 +214,7 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
         request_data = json.loads(custom_filter)
     else:
         request_data = args_to_filter(arguments)
+    request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
     return request_data, url_suffix
 
 
@@ -321,17 +322,21 @@ def list_alerts_command(client: Client, args: dict):
     arguments = assign_params(**args)
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, alert_id)
     alerts_response_data = client.list_alerts(url_suffix, request_data)
-    list_alert = alerts_response_data.get('data') if alerts_response_data.get('data') else [alerts_response_data]
-    alerts = arrange_alerts_by_incident_type(list_alert)
-    alerts = arrange_alerts_descriptions(alerts)
-    alerts = set_alerts_is_open(alerts)
-    human_readable = alerts_to_human_readable(alerts)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-        outputs_key_field='_id',
-        outputs=alerts
-    )
+    list_alert = alerts_response_data.get('data') if 'data' in alerts_response_data.keys() else [alerts_response_data]
+    if list_alert:  # organize the output
+        alerts = arrange_alerts_by_incident_type(list_alert)
+        alerts = arrange_alerts_descriptions(alerts)
+        alerts = set_alerts_is_open(alerts)
+        human_readable = alerts_to_human_readable(alerts)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+            outputs_key_field='_id',
+            outputs=alerts
+        )
+    else:
+        human_readable = f"No alerts found for the given filter: {custom_filter}."
+        return CommandResults(readable_output=human_readable)
 
 
 def bulk_dismiss_alert_command(client: Client, args: dict):
@@ -345,7 +350,7 @@ def bulk_dismiss_alert_command(client: Client, args: dict):
     except Exception as e:
         if 'alertsNotFound' in str(e):
             raise DemistoException('Error: This alert id is already dismissed or does not exist.')
-    number_of_dismissed_alerts = dismissed_alerts_data['dismissed']
+    number_of_dismissed_alerts = dismissed_alerts_data['closed_false_positive']
     return CommandResults(
         readable_output=f'{number_of_dismissed_alerts} alerts dismissed',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
@@ -359,7 +364,7 @@ def bulk_resolve_alert_command(client: Client, args: dict):
     comment = args.get('comment')
     request_data = args_to_filter_for_dismiss_and_resolve_alerts(alert_ids, custom_filter, comment)
     resolve_alerts = client.resolve_bulk_alerts(request_data)
-    number_of_resolved_alerts = resolve_alerts['resolved']
+    number_of_resolved_alerts = resolve_alerts['closed_true_positive']
     return CommandResults(
         readable_output=f'{number_of_resolved_alerts} alerts resolved',
         outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
@@ -493,7 +498,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
         # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
         first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
         return first_fetch_time
@@ -555,6 +560,9 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     alerts = arrange_alerts_by_incident_type(alerts)
     incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
         alerts, fetch_start_time, last_run)
+    if incidents:
+        # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
+        fetch_start_time += 1
     next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
     return next_run, incidents
 

@@ -69,6 +69,14 @@ script:
       name: timespan
       required: false
       secret: false
+    - default: false
+      defaultValue: '10'
+      description: The amount of time (in seconds) that a request will wait for the
+        query response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Executes an Analytics query for data.
     execution: false
@@ -271,7 +279,7 @@ script:
     description: Deletes a specified saved search in the Log Analytics workspace.
     execution: false
     name: azure-log-analytics-delete-saved-search
-  dockerimage: demisto/crypto:1.0.0.10743
+  dockerimage: demisto/crypto:1.0.0.14297
   isfetch: false
   longRunning: false
   longRunningPort: false

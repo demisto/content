@@ -1,0 +1,45 @@
+{
+    "items": [
+        {
+            "created": "2020-11-18T10:25:58.138Z",
+            "description": "This domain is being sold on the dark web and may be used in an attack",
+            "external_reference": [
+                {
+                    "description": "Mitre attack tactics and technique reference",
+                    "mitre_attack_tactic": "Establish & Maintain Infrastructure",
+                    "mitre_attack_tactic_id": "TA0022",
+                    "mitre_attack_tactic_url": "https://attack.mitre.org/tactics/TA0022/",
+                    "mitre_attack_technique": "Buy domain name",
+                    "mitre_attack_technique_id": "T1328",
+                    "mitre_attack_technique_url": "https://attack.mitre.org/techniques/T1328/",
+                    "source_name": "mitre-attack"
+                }
+            ],
+            "id": "indicator--73a1c332-fcae-4b65-ad0a-4417e7493ab9",
+            "labels": [
+                "anomalous-activity",
+                "suspicious domain",
+                "phishing",
+                "cnc",
+                "c&c",
+                "Establish & Maintain Infrastructure",
+                "Buy domain name"
+            ],
+            "lang": "en",
+            "modified": "2020-11-18T10:25:58.138Z",
+            "pattern": "[domain-name:value = '<DOMAIN_NAME>']",
+            "sixgill_actor": "<SIXGILL_ACTOR>",
+            "sixgill_confidence": 60,
+            "sixgill_feedid": "darkfeed_003",
+            "sixgill_feedname": "domains_sold_dark_web",
+            "sixgill_postid": "<SIXGILL_POST_ID>",
+            "sixgill_posttitle": "<SIXGILL_POST_TITLE>",
+            "sixgill_severity": 60,
+            "sixgill_source": "<SIXGILL_SOURCE>",
+            "spec_version": "2.0",
+            "type": "indicator",
+            "valid_from": "2020-11-18T09:18:00Z"
+        }
+    ],
+    "total": 1
+}

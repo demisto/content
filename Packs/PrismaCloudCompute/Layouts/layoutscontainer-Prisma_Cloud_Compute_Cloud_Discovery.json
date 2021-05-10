@@ -170,7 +170,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "prismacloudcomputeaccountid",
+                                "fieldId": "prismacloudcomputeappid",
                                 "height": 55,
                                 "id": "f46843a0-3859-11ea-b3f4-7f5d26481e3a",
                                 "index": 1,

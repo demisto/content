@@ -2,8 +2,9 @@ import argparse
 import os
 import ast
 import demisto_client
+import logging
 
-from demisto_sdk.commands.common.tools import print_error
+from Tests.scripts.utils.log_util import install_simple_logging
 
 
 def options_handler():
@@ -36,25 +37,23 @@ def update_content(content_zip_path, server=None, username=None, password=None, 
         file_path = os.path.abspath(content_zip_path)
         files = {'file': file_path}
         header_params = {'Content-Type': 'multipart/form-data'}
-
-        msg = '\nMaking "POST" request to server - "{}" to upload'.format(server)
-        msg += ' the content zip file "{}"'.format(content_zip_path)
-        print(msg)
+        logging.info(
+            f'Making "POST" request to server - "{server}" to upload the content zip file "{content_zip_path}"')
         response_data, status_code, _ = client.api_client.call_api(resource_path='/content/upload', method='POST',
                                                                    header_params=header_params, files=files)
 
         if status_code >= 300 or status_code < 200:
             result_object = ast.literal_eval(response_data)
             message = result_object['message']
-            msg = "Upload has failed with status code " + str(status_code) + '\n' + message
-            raise Exception(msg)
+            raise Exception(f"Upload has failed with status code {status_code}\n{message}")
         else:
-            print('\n"{}" successfully uploaded to server "{}"'.format(content_zip_path, server))
-    except Exception as e:
-        print_error(str(e))
+            logging.success(f'"{content_zip_path}" successfully uploaded to server "{server}"')
+    except Exception:
+        logging.exception(f'Failed to upload {content_zip_path} to server {server}')
 
 
 def main():
+    install_simple_logging()
     options = options_handler()
     server_url = 'https://{}'
     server = options.server if options.server.startswith('http') else server_url.format(options.server)

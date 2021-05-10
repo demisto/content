@@ -35,10 +35,39 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 
         ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
         
+## Instance Creation Flow
+The integration supports two types of authorization:
+1. Basic authorization using username and password.
+2. OAuth 2.0 authorization.
+
+#### OAuth 2.0 Authorization
+To use OAuth 2.0 authorization follow the next steps:
+1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
+2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `Username` and `Password` fields of the instance configuration.
+3. Select the `Use OAuth Login` checkbox and click the `Done` button.
+4. Run the command `!servicenow-oauth-login` from the XSOAR CLI and fill in the username and password of the ServiceNow instance. This step generates an access token to the ServiceNow instance and is required only in the first time after configuring a new instance in the XSOAR platform.
+5. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
+
+**Notes:**
+1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
+2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+
+
+### Using Multi Factor Authentication (MFA)
+MFA can be used both when using basic authorization and when using OAuth 2.0 authorization, however we strongly recommend using OAuth 2.0 when using MFA.
+If MFA is enabled for your user, follow the next steps:
+1. Open the Google Authenticator application on your mobile device and make note of the number. The number refreshes every 30 seconds.
+2. Enter your username and password, and append the One Time Password (OTP) that you currently see on your mobile device to your password without any extra spaces. For example, if your password is `12345` and the current OTP code is `424 058`, enter `12345424058`.
+
+**Notes:**
+1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
+2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | ServiceNow URL, in the format `https://company.service-now.com/` | True |
 | credentials | Username | False |
+| use_oauth | Use OAuth | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | ticket_type | Default ticket type on which to run ticket commands and fetch incidents | False |
@@ -46,14 +75,16 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 | isFetch | Fetch incidents | False |
 | sysparm_query | The query to use when fetching incidents | False |
 | fetch_limit | How many incidents to fetch each time | False |
-| fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | timestamp_field | Timestamp field to filter by \(e.g., \`opened\_at\`\) This is how the filter is applied to the query: "ORDERBYopened\_at^opened\_at&gt;\[Last Run\]". To prevent duplicate incidents, this field is mandatory for fetching incidents. | False |
 | incidentType | Incident type | False |
 | get_attachments | Get incident attachments | False |
-| mirror_direction | Chose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out(from XSOAR to ServiceNow) or both direction. | None |
-| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | comments |
-| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | work_notes |
-| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | ForServiceNow |
+| mirror_direction | Choose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out (from XSOAR to ServiceNow), or both directions. | False |
+| comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
+| work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
+| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
+| mirror_limit | The maximum number of incidents to mirror incoming each time | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
@@ -133,12 +164,75 @@ match.
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
 
 
-* The final **source of truth** for the incident for Cortex XSOAR are the **values in Cortex XSOAR**. 
-Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+**Notes**
+- The final 'source of truth' for the incident for Cortex XSOAR are the values in Cortex XSOAR. 
+  Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
+- The integration queries ServiceNow for modified records based on the timestamp field set in the *update_timestamp_field* integration parameter and the limit set in the *mirror_limit* integration parameter.
+      If more records are modified in the timeframe when they are queried than are configured in the *limit* parameter, the extra records won't be mirrored in and the incidents in Cortex XSOAR will not be updated.  
+
 
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### servicenow-login
+***
+This function should be used once before running any command when using OAuth authentication.
+
+#### Base Command
+
+`servicenow-login`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username that should be used for login. | Required | 
+| password | The password that should be used for login. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!servicenow-login username=username password=password```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>### Logged in successfully
+
+### servicenow-test
+***
+Test the instance configuration when using OAuth authorization.
+
+
+#### Base Command
+
+`servicenow-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!servicenow-test```
+
+#### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>### Instance Configured Successfully
+
+
 ### servicenow-get-ticket
 ***
 Retrieves ticket information by ticket ID.
@@ -554,8 +648,8 @@ Retrieves ticket information according to the supplied query.
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
 | query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
-| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True" | Optional | 
+| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
 
 
 #### Context Output
@@ -864,7 +958,7 @@ Queries the specified table in ServiceNow.
 | query | The query to run. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | fields | Comma-separated list of table fields to display and output to the context, for example: name,tag,company. ID field is added by default. | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True" | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
 
 
 #### Context Output
@@ -1950,4 +2044,9 @@ Get remote data from a remote incident. This method does not update the current 
 There is no context output for this command.
 
 
+### Troubleshooting
 
+* Ensure that the date and time in SNOW are the same as the date and time in XSOAR to prevent mirroring issues.
+* If the date displayed in the layout is incorrect, please follow these steps to resolve the issue:
+1. Navigate to the `incoming-mapper` which you are using.
+2. In every field which uses the ``DateStringToISOFormat`` script, change the argument ``dayfirst`` to be ``true``.

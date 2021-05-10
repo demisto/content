@@ -1,0 +1,18 @@
+commonfields:
+  id: NCSCReportDetails_B
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: NCSCReportDetails_B
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+comment: 'This script generates the report details for the individual CAF Section.'

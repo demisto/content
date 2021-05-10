@@ -1,0 +1,47 @@
+{
+    "filter": {
+        "maxResults": 1000,
+        "supported": true
+    },
+    "patch": {
+        "supported": false
+    },
+    "authenticationSchemes": [
+        {
+            "documentationUri": "https://community.sailpoint.com/community/identityiq/product-downloads",
+            "name": "HTTP Basic",
+            "description": "Authentication Scheme using the Http Basic Standard",
+            "specUri": "http://www.ietf.org/rfc/rfc2617.txt",
+            "type": "httpbasic"
+        },
+        {
+            "documentationUri": "https://community.sailpoint.com/community/identityiq/product-downloads",
+            "name": "OAuth Bearer Token",
+            "description": "Authentication scheme using the OAuth Bearer Token Standard",
+            "specUri": "http://tools.ietf.org/html/rfc6750",
+            "type": "oauthbearertoken"
+        }
+    ],
+    "documentationUri": "https://community.sailpoint.com/community/identityiq/product-downloads",
+    "meta": {
+        "location": "http://localhost:8088/iiq/scim/v2/ServiceProviderConfig",
+        "resourceType": "ServiceProviderConfig"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig"
+    ],
+    "etag": {
+        "supported": true
+    },
+    "sort": {
+        "supported": true
+    },
+    "bulk": {
+        "maxPayloadSize": 0,
+        "maxOperations": 0,
+        "supported": false
+    },
+    "changePassword": {
+        "supported": true
+    }
+}

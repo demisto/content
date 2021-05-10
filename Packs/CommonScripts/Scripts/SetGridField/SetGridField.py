@@ -1,6 +1,6 @@
-# STD Libaries
+# STD Libraries
 from typing import Optional, List, Dict, Any
-# 3-rd party libaries
+# 3-rd party libraries
 import pandas as pd
 import phrases_case
 # Local packages
@@ -43,11 +43,12 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
     # Iterate over all the items in dictionary
     if keys[0] != "*":
         # create empty dict of given headers
-        new_dict = {key: "" for key in keys}
+        new_dict = {key: None for key in keys}
         for (key, value) in dict_obj.items():
             # Check if item satisfies the given condition then add to new dict
-            if key in keys:
+            if value not in ('', None) and key in keys:
                 new_dict[key] = value
+
     else:
         if max_keys:
             new_dict = dict(list(dict_obj.items())[:max_keys])
@@ -72,7 +73,7 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
 
     filtered_dict = filter_dict(entry_context, keys)
 
-    def recursively_unpack_data(item_to_unpack, path):
+    def recursively_unpack_data(item_to_unpack: Dict[Any, Any], path: str):
         for key, value in item_to_unpack.items():
             if isinstance(value, dict):
                 recursively_unpack_data(filter_dict(value, keys), path + '.' + key)
@@ -100,26 +101,28 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
     return unpacked_data
 
 
-def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
+@logger
+def get_current_table(grid_id: str) -> pd.DataFrame:
     """ Get current Data from the grid
 
     Args:
         grid_id: Grid ID to retrieve data from.
 
     Returns:
-        list: Existing grid data.
+        DataFrame: Existing grid data.
     """
     current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if current_table is None:
-        raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you "
-                         "entered the \"Machine name\" as it appears in the incident field editor in Settings->Advanced"
-                         "->Fields (Incident). Also make sure that this value appears in the incident Context Data "
-                         "under incident - if not then please consult with support.")
+        raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
+                         f"incident type with the \"Machine name\" as it appears in the incident field editor in "
+                         f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
+                         f"incident Context Data under incident - if not then please consult with support.")
 
     return pd.DataFrame(current_table)
 
 
-def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_elements: bool):
+@logger
+def validate_entry_context(context_path, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
             1. List[Dict[str, str/bool/int/float]]
@@ -129,51 +132,63 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
             1. Dict[str, Any]
 
     Args:
+        context_path: Path of entry context
         entry_context: Entry context to validate
-        keys: keys to collect data from
+        keys: Keys to collect data from
         unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
     Raises:
         ValueError: If structure is not valid.
         data_type (str): The type of information in the context path.
     """
-    exception_msg = "When unpack_nested_elements argument is set to True, the context object for the path should be " \
-                    "of type dict"
     if unpack_nested_elements:
         if not isinstance(entry_context, dict):
-            raise ValueError(exception_msg)
+            raise ValueError(
+                'When the unpack_nested_elements argument is set to True, the context object for the path should be '
+                'of type dict.')
         else:
             return
 
-    exception_msg = "The context object for the specified path should be of one of the following types:" \
-                    " dict[str,str] or list[dict[str,str]] or List[str/bool/int/float]"
     if not isinstance(entry_context, (list, dict)):
-        raise ValueError(exception_msg)
+        raise ValueError(
+            f'The context object {context_path} should be of type dict or list.\n'
+            f'Received type: {type(entry_context)}')
 
-    data_type = 'dicts'
+    data_type = 'dict'
 
     if isinstance(entry_context, dict):
         return data_type
 
     has_seen_dict = False
-    for item in entry_context:
+    for index, item in enumerate(entry_context):
         if not isinstance(item, dict):
-            if not has_seen_dict:
-                break
+            if has_seen_dict:
+                raise ValueError(
+                    f'The context object in index {index} - {item} is of invalid type ({type(item)}).\n'
+                    f'The object {context_path} should contain only dict type values.')
             else:
-                raise ValueError(exception_msg)
+                break
 
         has_seen_dict = True
         for key, value in item.items():
-            if key in keys:
-                if not isinstance(value, (str, int, float, bool)):
-                    raise ValueError(exception_msg)
+            if key not in keys:
+                continue
+            if value is not None and not isinstance(value, (str, int, float, bool)):
+                demisto.error(f'expected list of dictionaries with simple values, found a complex item with '
+                              f'key {type(key)} type:\t {key}\nproblematic item: {item}')
+                raise ValueError(
+                    f'The context path {context_path} in index {index} - key {key} contains a dict item with a '
+                    f'complex value.\n'
+                    f'The value must be of type: string, number, boolean.')
 
     if not has_seen_dict:
         data_type = 'list'
-        for item in entry_context:
+        for index, item in enumerate(entry_context):
             if not isinstance(item, (str, int, float, bool)):
-                raise ValueError(exception_msg)
+                raise ValueError(
+                    f'The context path {context_path} should contain a list of simple values '
+                    f'(string, number, boolean)\n'
+                    f'received item in index {index} of type {type(item)}:\n{item}')
 
     return data_type
 
@@ -197,7 +212,9 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
     # Retrieve entry context data
     entry_context_data = demisto.dt(demisto.context(), context_path)
     # Validate entry context structure
-    data_type = validate_entry_context(entry_context_data, keys, unpack_nested_elements)
+    data_type = validate_entry_context(context_path, entry_context_data, keys, unpack_nested_elements)
+
+    demisto.debug('context object is valid. starting to build the grid.')
     # Building new Grid
     if unpack_nested_elements:
         # Handle entry context as dict, with unpacking of nested elements
@@ -229,6 +246,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
     return table
 
 
+@logger
 def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns: List[str], overwrite: bool,
                        sort_by: str, unpack_nested_elements: bool) \
         -> List[Dict[Any, Any]]:
@@ -266,39 +284,52 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
                                          keys=keys,
                                          columns=columns,
                                          unpack_nested_elements=unpack_nested_elements)
-    # Merge tabels if not specified to overwrite.
+
+    # Merge tables if not specified to overwrite.
     if not overwrite:
         new_table = pd.concat([new_table, old_table])
-    # Sory by column name if specified
+
+    # Sort by column name if specified
     if sort_by and sort_by in new_table.columns:
         new_table.sort_values(by=sort_by)
 
-    new_table = new_table.where(new_table.notnull(), None)
-    return new_table.to_dict(orient='records')
+    # filter empty values in the generated table
+    filtered_table = []
+    for record in new_table.to_dict(orient='records'):
+        filtered_table.append({k: v for k, v in record.items() if pd.notnull(v)})
+
+    return filtered_table
 
 
 def main():
+    args = demisto.args()
     try:
         # Normalize grid id from any form to connected lower words, e.g. my_word/myWord -> myword
-        grid_id = normalized_string(demisto.getArg('grid_id'))
+        grid_id = normalized_string(args.get('grid_id'))
+        context_path = args.get('context_path')
         # Build updated table
         table = build_grid_command(grid_id=grid_id,
-                                   context_path=demisto.getArg('context_path'),
-                                   keys=argToList(demisto.getArg('keys')),
-                                   overwrite=demisto.getArg('overwrite').lower() == 'true',
-                                   columns=argToList(demisto.getArg('columns')),
-                                   sort_by=demisto.getArg('sort_by'),
-                                   unpack_nested_elements=demisto.getArg('unpack_nested_elements') == 'true')
+                                   context_path=context_path,
+                                   keys=argToList(args.get('keys')),
+                                   overwrite=argToBoolean(args.get('overwrite')),
+                                   columns=argToList(args.get('columns')),
+                                   sort_by=args.get('sort_by'),
+                                   unpack_nested_elements=argToBoolean(args.get('unpack_nested_elements')),
+                                   )
         # Execute automation 'setIncident` which change the Context data in the incident
-        demisto.executeCommand("setIncident",
-                               {
-                                   'customFields':
-                                       {
-                                           grid_id: table
-                                       }
-                               })
-    except Exception as e:
-        return_error(f'Failed to execute setGridField. Error: {str(e)}')
+        res = demisto.executeCommand("setIncident", {
+            'customFields': {
+                grid_id: table,
+            },
+        })
+        if is_error(res):
+            demisto.error(f'failed to execute "setIncident" with table: {table}')
+            return_results(res)
+        else:
+            return_results(f'Set grid {grid_id} using {context_path} successfully.')
+
+    except Exception as exc:
+        return_error(f'Failed to execute setGridField. Error: {str(exc)}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

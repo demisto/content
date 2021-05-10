@@ -20,6 +20,7 @@ The required scope is Event streams.
     * __Application ID__
     * __Event type to fetch__
     * __Offset to fetch events from__
+    * __Stream client read timeout__
     * __Incident type__
     * __Store sample events for mapping__
     * __Trust any certificate (not secure)__

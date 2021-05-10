@@ -1,0 +1,893 @@
+category: IT Services
+commonfields:
+  id: Nutanix Hypervisor
+  version: -1
+configuration:
+- display: Server URL
+  additionalinfo: (e.g., https://192.168.0.1:57261)
+  name: base_url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+  additionalinfo: The maximum number of incidents to fetch each time.
+- display: Alert Status Filters
+  name: alert_status_filters
+  type: 16
+  required: false
+  options:
+  - Resolved
+  - Unresolved
+  - Acknowledged
+  - Unacknowledged
+  - Auto Resolved
+  - Not Auto Resolved
+  additionalinfo: Fetches incidents by the status filters given. For example, if acknowledged
+    is true, then only alerts that have been acknowledged will be fetched. If 'Auto
+    Resolved' or 'Not Auto Resolved' is selected, then by default also 'Resolved'
+    will be set.
+- additionalinfo: Comma-separated list of alert type IDs. Fetches alerts whose type
+    ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert
+    E-mail Failure' has type ID A111066. If alert_type_ids = 'A111066', only alerts
+    of 'Alert E-mail Failure' will be displayed.
+  display: Alert type IDs
+  name: alert_type_ids
+  required: false
+  type: 0
+- additionalinfo: Comma-separated list  of impact types. Fetch alerts whose impact
+    type matches an impact type in Impact Types list. For example, alert 'Incorrect
+    NTP Configuration' has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator',
+    only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration'
+    will be displayed.
+  display: Impact Types
+  name: impact_types
+  options:
+  - Availability
+  - Capacity
+  - Configuration
+  - Performance
+  - SystemIndicator
+  required: false
+  type: 16
+- defaultvalue: 7 days
+  display: First fetch timestamp
+  additionalinfo: "format: <number> <time unit>', e.g., 12 hours, 7 days."
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Nutanix Hypervisor abstracts and isolates the VMs and their programs
+  from the underlying server hardware, enabling a more efficient use of physical resources,
+  simpler maintenance and operations, and reduced costs.
+display: Nutanix Hypervisor
+name: Nutanix Hypervisor
+script:
+  commands:
+  - arguments:
+    - description: "The filters used to retrieve hosts.. Each filter is written in
+         the following way: filter_name==filter_value or filter_name!=filter_value.
+         Here is a possible combination of OR (using comma ',') and AND (using semicolon
+         ';') filters: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x. Nutanix
+         will parse the filter in the following way: Return all hosts s.t (storage.capacity_bytes
+         == 2 AND host_nic_ids != 35) OR host_gpus == x. For further explanation
+         about possible filters, see Nutanix documentation."
+      name: filter
+    - description: Page number in the query response.
+      name: page
+      defaultValue: "1"
+    - defaultValue: "50"
+      description: Maximum number of physical hosts to retrieve. Possible values are
+        1-1000.
+      name: limit
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from Nutanix about hosts.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    description: Gets the list of physical hosts configured in the cluster.
+    name: nutanix-hypervisor-hosts-list
+    outputs:
+    - contextPath: NutanixHypervisor.Host.service_vmid
+      description: Service virtual machine ID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.uuid
+      description: Host UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.name
+      description: Host name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.service_vmexternal_ip
+      description: Service virtual machine external IP.
+      type: String
+    - contextPath: NutanixHypervisor.Host.service_vmnat_ip
+      description: Service virtual machine network address translation IP.
+      type: String
+    - contextPath: NutanixHypervisor.Host.service_vmnat_port
+      description: Service virtual machine network address translation port.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.oplog_disk_pct
+      description: Oplog disk pct.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.oplog_disk_size
+      description: Oplog disk size.
+      type: Date
+    - contextPath: NutanixHypervisor.Host.hypervisor_key
+      description: Hypervisor key.
+      type: String
+    - contextPath: NutanixHypervisor.Host.hypervisor_address
+      description: Hypervisor address.
+      type: String
+    - contextPath: NutanixHypervisor.Host.hypervisor_username
+      description: Hypervisor username.
+      type: String
+    - contextPath: NutanixHypervisor.Host.hypervisor_password
+      description: Hypervisor password.
+      type: String
+    - contextPath: NutanixHypervisor.Host.backplane_ip
+      description: Backplane IP.
+      type: String
+    - contextPath: NutanixHypervisor.Host.controller_vm_backplane_ip
+      description: Controller virtual machine backplane IP.
+      type: String
+    - contextPath: NutanixHypervisor.Host.rdma_backplane_ips
+      description: Remote directory memory access backplane IPs.
+      type: Unknown
+    - contextPath: NutanixHypervisor.Host.management_server_name
+      description: Management server name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.ipmi_address
+      description: Intelligent platform management interface address.
+      type: String
+    - contextPath: NutanixHypervisor.Host.ipmi_username
+      description: Intelligent platform management interface username.
+      type: String
+    - contextPath: NutanixHypervisor.Host.ipmi_password
+      description: Intelligent platform management interface password.
+      type: String
+    - contextPath: NutanixHypervisor.Host.monitored
+      description: Whether the host is monitored.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Host.position.ordinal
+      description: Host ordinal position.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.position.name
+      description: Host's position name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.position.physical_position
+      description: Physical position. Allowed values are [C, L, R, TL, TR, BL, BR].
+        Values are abbreviations for [Center, Left, Right, Top Left, Top Right, Bottom
+        Left, Bottom Right].
+      type: String
+    - contextPath: NutanixHypervisor.Host.serial
+      description: Host serial ID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.block_serial
+      description: Host block serial ID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.block_model
+      description: Host block model.
+      type: String
+    - contextPath: NutanixHypervisor.Host.block_model_name
+      description: Block model name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.block_location
+      description: Block location.
+      type: String
+    - contextPath: NutanixHypervisor.Host.host_maintenance_mode_reason
+      description: Host maintenance reason, if host is in maintenance.
+      type: String
+    - contextPath: NutanixHypervisor.Host.hypervisor_state
+      description: Host's hypervisor state.
+      type: String
+    - contextPath: NutanixHypervisor.Host.acropolis_connection_state
+      description: Acropolis connection status.
+      type: String
+    - contextPath: NutanixHypervisor.Host.metadata_store_status
+      description: Metadata store status.
+      type: String
+    - contextPath: NutanixHypervisor.Host.metadata_store_status_message
+      description: Metadata store status message.
+      type: String
+    - contextPath: NutanixHypervisor.Host.state
+      description: Host state.
+      type: String
+    - contextPath: NutanixHypervisor.Host.removal_status
+      description: Host removal status.
+      type: String
+    - contextPath: NutanixHypervisor.Host.vzone_name
+      description: Virtual zone name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.cpu_model
+      description: CPU model.
+      type: String
+    - contextPath: NutanixHypervisor.Host.num_cpu_cores
+      description: Number of CPU cores.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.num_cpu_threads
+      description: Number of CPU threads.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.num_cpu_sockets
+      description: Number of CPU sockets.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.hypervisor_full_name
+      description: Host's hypervisor full name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.hypervisor_type
+      description: Hypervisor's type.
+      type: String
+    - contextPath: NutanixHypervisor.Host.num_vms
+      description: Host number of virtual machines.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.boot_time_in_usecs
+      description: Boot time in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Host.boot_time
+      description: Boot time in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Host.is_degraded
+      description: Whether the host is degraded.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Host.is_secure_booted
+      description: Whether the host is secure booted.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Host.is_hardware_virtualized
+      description: Whether the hardware is virtualized.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Host.failover_cluster_fqdn
+      description: Failover cluster fully qualified domain name.
+      type: String
+    - contextPath: NutanixHypervisor.Host.failover_cluster_node_state
+      description: Failover cluster node state.
+      type: String
+    - contextPath: NutanixHypervisor.Host.reboot_pending
+      description: Whether reboot is pending.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Host.default_vm_location
+      description: Default virtual machine location.
+      type: String
+    - contextPath: NutanixHypervisor.Host.default_vm_storage_container_id
+      description: Default virtual machine storage container ID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.default_vm_storage_container_uuid
+      description: Default virtual machine storage container UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.default_vhd_location
+      description: Default virtual hard disk location.
+      type: String
+    - contextPath: NutanixHypervisor.Host.default_vhd_storage_container_id
+      description: Default virtual hard disk storage container ID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.default_vhd_storage_container_uuid
+      description: Default virtual hard disk storage container UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.bios_version
+      description: BIOS version.
+      type: String
+    - contextPath: NutanixHypervisor.Host.bios_model
+      description: BIOS model.
+      type: String
+    - contextPath: NutanixHypervisor.Host.bmc_version
+      description: BMC version.
+      type: String
+    - contextPath: NutanixHypervisor.Host.bmc_model
+      description: BMC model.
+      type: String
+    - contextPath: NutanixHypervisor.Host.hba_firmwares_list
+      description: Host bus adapter firmware list.
+      type: Unknown
+    - contextPath: NutanixHypervisor.Host.cluster_uuid
+      description: Host's cluster UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Host.has_csr
+      description: Whether the host has a certificate signing request.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Host.host_gpus
+      description: Host's GPUs.
+      type: Unknown
+    - contextPath: NutanixHypervisor.Host.gpu_driver_version
+      description: Host GPU driver version.
+      type: String
+    - contextPath: NutanixHypervisor.Host.host_type
+      description: Host type.
+      type: String
+    - contextPath: NutanixHypervisor.Host.host_in_maintenance_mode
+      description: Whether the host is in maintenance mode.
+      type: Boolean
+  - arguments:
+    - description: "Retrieve virtual machines that matches the filters given. . Nutanix
+         filters can be one of the fields returned in the response by nutanix GET
+         VMs API call as described at https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/. Some of the fields in the response are not supported. Known filters
+         Nutanix service supports are: *machine_type*, *power_state*, *ha_priority*,
+         *uefi_boot*. You can try to enter your own filter,  but if Nutanix does
+         not support the filter, an error will be thrown specifying the filter is
+         invalid. Each filter is written in the following way: filter_name==filter_value
+         or filter_name!=filter_value. Possible combinations of OR (using comma ',')
+         and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0
+         is parsed by Nutanix the following way: Return all virtual machines s.t
+         (machine type == pc AND power_state != off) OR ha_priority == 0."
+      name: filter
+    - description: Maximum number of virtual machines to retrieve.
+      name: limit
+      defaultValue: '50'
+    - description: The offset to start retrieving virtual machines.
+      name: offset
+    description: Gets a list of virtual machines.
+    name: nutanix-hypervisor-vms-list
+    outputs:
+    - contextPath: NutanixHypervisor.VM.affinity.policy
+      description: Affinity policy.
+      type: String
+    - contextPath: NutanixHypervisor.VM.affinity.host_uuids
+      description: List of host UUIDs of the affinity.
+      type: String
+    - contextPath: NutanixHypervisor.VM.allow_live_migrate
+      description: Whether the virtual machine allows live migration.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM.gpus_assigned
+      description: Whether the virtual machine has GPUs assigned.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM.boot.uefi_boot
+      description: Whether the Unified Extensible Firmware Interface boots.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM.ha_priority
+      description: High availability priority.
+      type: Number
+    - contextPath: NutanixHypervisor.VM.host_uuid
+      description: Host UUID of the virtual machine.
+      type: String
+    - contextPath: NutanixHypervisor.VM.memory_mb
+      description: The memory size in megabytes.
+      type: Number
+    - contextPath: NutanixHypervisor.VM.name
+      description: The name of the virtual machine.
+      type: String
+    - contextPath: NutanixHypervisor.VM.num_cores_per_vcpu
+      description: Number of cores per vCPU.
+      type: Number
+    - contextPath: NutanixHypervisor.VM.num_vcpus
+      description: Number of vCPUs.
+      type: Number
+    - contextPath: NutanixHypervisor.VM.power_state
+      description: The virtual machine current power state.
+      type: String
+    - contextPath: NutanixHypervisor.VM.timezone
+      description: The virtual machine time zone.
+      type: String
+    - contextPath: NutanixHypervisor.VM.uuid
+      description: The UUID of the virtual machine.
+      type: String
+    - contextPath: NutanixHypervisor.VM.vm_features.AGENT_VM
+      description: Whether the virtual machine has the AGENT VM feature.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM.vm_features.VGA_CONSOLE
+      description: Whether the virtual machine has the VGA CONSOLE feature.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM.vm_logical_timestamp
+      description: The logical timestamp of the virtual machine.
+      type: Number
+    - contextPath: NutanixHypervisor.VM.machine_type
+      description: The machine type of the virtual machine.
+      type: String
+  - arguments:
+    - description: "ID of the virtual machine to change its power status. Virtual machine ID is the 'uuid' field returned for by command 'nutanix-hypervisor-vms-list'"
+      name: vm_uuid
+      required: true
+    - description: "The UUID of the host to be used to run the virtual machine if the
+        virtual machine is transitioned with 'ON' or 'POWERCYCLE'. Host ID is the 'uuid' field returned for by command 'nutanix-hypervisor-hosts-list'"
+      name: host_uuid
+    - auto: PREDEFINED
+      description: The new power state to which you want to transfer the virtual machine
+        to.
+      name: transition
+      predefined:
+      - "ON"
+      - "OFF"
+      - POWERCYCLE
+      - RESET
+      - PAUSE
+      - SUSPEND
+      - RESUME
+      - SAVE
+      - ACPI_SHUTDOWN
+      - ACPI_REBOOT
+      required: true
+    description: Set power state of a virtual machine.  If the virtual machine is
+      being powered on and no host is specified, the host with the most available
+      CPU and memory will be chosen. Note that such a host may not be available. If
+      the virtual machine is being power cycled, a different host can be specified
+      to start it on. The command returns a task UUID that can be monitored by the
+      nutanix-hypervisor-task-results-get command.
+    name: nutanix-hypervisor-vm-powerstatus-change
+    outputs:
+    - contextPath: NutanixHypervisor.VMPowerStatus.task_uuid
+      description: The task UUID returned by Nutanix service for the power status
+        change request. With this task UUID the task status can be monitored by using
+        the nutanix-hypervisor-task-results-get command.
+      type: String
+  - arguments:
+    - description: "Comma-separated list of the task IDs to get results to. Task ID is the 'task_uuid' field returned for by command 'nutanix-hypervisor-vm-powerstatus-change'"
+      name: task_ids
+      required: true
+      isArray: true
+    description: Returns the results of given tasks. If a task is not ready, its status will be returned.
+    name: nutanix-hypervisor-task-results-get
+    outputs:
+    - contextPath: NutanixHypervisor.Task.timed_out
+      description: Indicates if a timeout occurred during the poll request from Nutanix.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Task.uuid
+      description: The task UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Task.meta_request.method_name
+      description: The name of the method performed for this task.
+      type: String
+    - contextPath: NutanixHypervisor.Task.meta_response.error_code
+      description: The error code returned for the task.
+      type: Number
+    - contextPath: NutanixHypervisor.Task.meta_response.error_detail
+      description: The error details if the error code was not 0.
+      type: String
+    - contextPath: NutanixHypervisor.Task.create_time_usecs
+      description: The time the task was created in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task.create_time
+      description: The time task was created in epoch.
+      type: date
+    - contextPath: NutanixHypervisor.Task.start_time_usecs
+      description: The start time of the task in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task.start_time
+      description: The start time of the task in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Task.complete_time_usecs
+      description: The completion time of the task in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task.complete_time
+      description: The completion time of the task in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Task.last_updated_time_usecs
+      description: The last update of the task in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task.last_updated
+      description: The last update of the task in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Task.entity_list.entity_id
+      description: ID of the entity.
+      type: String
+    - contextPath: NutanixHypervisor.Task.entity_list.entity_type
+      description: Type of the entity.
+      type: String
+    - contextPath: NutanixHypervisor.Task.entity_list.entity_name
+      description: The name of the entity.
+      type: String
+    - contextPath: NutanixHypervisor.Task.operation_type
+      description: Operation type of the task.
+      type: String
+    - contextPath: NutanixHypervisor.Task.message
+      description: Task message.
+      type: String
+    - contextPath: NutanixHypervisor.Task.percentage_complete
+      description: Completion percentage of the task.
+      type: Number
+    - contextPath: NutanixHypervisor.Task.progress_status
+      description: Progress status of the task, for example, Succeeded, Failed, etc.
+      type: String
+    - contextPath: NutanixHypervisor.Task.subtask_uuid_list
+      description: The list of the UUIDs of the subtasks for this task.
+      type: String
+    - contextPath: NutanixHypervisor.Task.cluster_uuid
+      description: The UUID of the cluster.
+      type: String
+  - arguments:
+    - description: The start date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        after the specified date/time will be retrieved. If no time zone is specified,
+        UTC time zone will be used.
+      name: start_time
+    - description: The end date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        before the specified date/time will be retrieved. If no time zone is specified,
+        UTC time zone will be used.
+      name: end_time
+    - auto: PREDEFINED
+      description: If true, retrieves alerts that have been resolved. If false, retrieves
+        alerts that have not been resolved.
+      name: resolved
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: If true, retrieves alerts that have been resolved, and were auto_resolved.
+        If false, retrieves alerts that have been resolved, and were not auto_resolved.
+      name: auto_resolved
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: If true, retrieves alerts that have been acknowledged. If false,
+        retrieves alerts that have not been acknowledged.
+      name: acknowledged
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Comma-separated list of the severity levels of the alerts to retrieve.
+      name: severity
+      predefined:
+      - CRITICAL
+      - WARNING
+      - INFO
+      - AUDIT
+    - description: Comma-separated list of alert type IDs. Will retrieve alerts whose
+        type ID matches an alert_type_id in the alert_type_ids list. For example,
+        alert 'Alert E-mail Failure' has type id of A111066. Given alert_type_ids=
+        'A111066', only alerts of 'Alert E-mail Failure' will be retrieved.
+      isArray: true
+      name: alert_type_ids
+    - auto: PREDEFINED
+      description: "Comma-separated list of impact types. Possible values: Availability,\
+        \ Capacity, Configuration, Performance, and System Indicator. Will retrieve\
+        \ alerts whose impact type matches an impact types in the impact_types list.\
+        \ For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.\
+        \ Given impact_types ='SystemIndicator',only alerts with impact type 'SystemIndicator',\
+        \ such as 'Incorrect NTP Configuration' will be retrieved."
+      isArray: true
+      name: impact_types
+      predefined:
+      - Availability
+      - Capacity
+      - Configuration
+      - Performance
+      - SystemIndicator
+    - description: Comma-separated list of entity types. Will retrieve alerts whose
+        entity_type matches an entity_type in the entity_types list. For details,
+        see the Nutanix README. If the Nutanix service cannot recognize the entity
+        type, it returns a 404 error.
+      isArray: true
+      name: entity_types
+    - description: Page number in the query response.
+      name: page
+      defaultValue: '1'
+    - description: Maximum number of physical hosts to retrieve. Possible values are
+        1-1000.
+      name: limit
+      defaultValue: '50'
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from Nutanix about alerts.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    description: Gets the list of alerts generated in the cluster that matches the
+      filters. Nutanix fetches the latest alerts created if there are more than the
+      defined maximum number of alerts.
+    name: nutanix-hypervisor-alerts-list
+    outputs:
+    - contextPath: NutanixHypervisor.Alerts.id
+      description: ID of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_type_uuid
+      description: UUID of the type of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.check_id
+      description: The check ID of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.resolved
+      description: Whether the alert was resolved.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alerts.auto_resolved
+      description: Whether the alert was auto resolved.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alerts.acknowledged
+      description: Whether the alert was acknowledged.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alerts.service_vmid
+      description: Service virtual machine ID of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.node_uuid
+      description: Node UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.created_time_stamp_in_usecs
+      description: The time the alert was created in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Alerts.created_time
+      description: The time alert was created in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Alerts.last_occurrence_time_stamp_in_usecs
+      description: The time of the last occurrence of the alert in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Alerts.last_occurrence
+      description: The time of the last occurrence of the alert in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Alerts.cluster_uuid
+      description: The cluster UUID of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.originating_cluster_uuid
+      description: The originating cluster UUID of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.impact_types
+      description: The impact types of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.classifications
+      description: The classifications of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.acknowledged_by_username
+      description: The username of whom acknowledged the alert, if the alert was acknowledged
+        by a user.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.message
+      description: Alert message.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.detailed_message
+      description: Alert detailed message.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_title
+      description: Alert title.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.operation_type
+      description: Alert operation type.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.acknowledged_time_stamp_in_usecs
+      description: The time the alert was acknowledged in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Alerts.acknowledged_time
+      description: The time the alert was acknowledged in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Alerts.resolved_time_stamp_in_usecs
+      description: The time the alert was resolved in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Alerts.resolved_time
+      description: The time alert was resolved in epoch time.
+      type: date
+    - contextPath: NutanixHypervisor.Alerts.resolved_by_username
+      description: The username whom resolved the alert, if the alert was resolved
+        by a user.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.user_defined
+      description: Whether the alert user was defined.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alerts.affected_entities.entity_type
+      description: Affected entity type.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.affected_entities.entity_type_display_name
+      description: The entity type display name of the affected entities.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.affected_entities.entity_name
+      description: The entity display name of the affected entities.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.affected_entities.uuid
+      description: The affected entity UUID.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.affected_entities.id
+      description: The affected entity ID.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.context_types
+      description: Alert context types.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.context_values
+      description: Alert context values.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.comparison_operator
+      description: Comparison operator used in the metric.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.condition_type
+      description: 'Condition type of the alert by metric. Can be: STATIC, THRESHOLD,
+        ANOMALY, SAFETY_ZONE.'
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.data_type
+      description: 'Data type used in the metric. Can be: LONG, DOUBLE, BOOLEAN, STRING.'
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.metric_category
+      description: Metric category.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.metric_display_name
+      description: Metric display name.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.metric_name
+      description: Metric name.
+      type: String
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.metric_value_details
+      description: Metric value details.
+      type: Unknown
+  - arguments:
+    - description: The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'
+      name: alert_id
+      required: true
+    description: Acknowledges the alert with the specified alert_id.
+    name: nutanix-hypervisor-alert-acknowledge
+    outputs:
+    - contextPath: NutanixHypervisor.AcknowledgedAlerts.id
+      description: ID of the alert to be acknowledged.
+      type: String
+    - contextPath: NutanixHypervisor.AcknowledgedAlerts.successful
+      description: Whether the alert was acknowledged successfully.
+      type: Boolean
+    - contextPath: NutanixHypervisor.AcknowledgedAlerts.message
+      description: The message returned by the acknowledge task.
+      type: String
+  - arguments:
+    - description: The ID of the alert to resolve.
+      name: alert_id
+      required: true
+    description: "Resolves the alert with the specified alert_id. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'"
+    name: nutanix-hypervisor-alert-resolve
+    outputs:
+    - contextPath: NutanixHypervisor.ResolvedAlerts.id
+      description: ID of the alert to be resolved.
+      type: String
+    - contextPath: NutanixHypervisor.ResolvedAlerts.successful
+      description: Whether the alert was resolved successfully.
+      type: Boolean
+    - contextPath: NutanixHypervisor.ResolvedAlerts.message
+      description: The message returned by the resolve task.
+      type: String
+  - arguments:
+    - description: The start date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        after the specified date/time will be acknowledged. If no time zone is specified,
+        UTC time zone will be used.
+      name: start_time
+    - description: The end date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        before the specified date/time will be acknowledged. If no time zone is specified,
+        UTC time zone will be used.
+      name: end_time
+    - auto: PREDEFINED
+      description: Comma-separated list of the severity levels of the alerts to resolve.
+      name: severity
+      predefined:
+      - CRITICAL
+      - WARNING
+      - INFO
+      - AUDIT
+    - description: Comma-separated list of impact types. Will acknowledge alerts whose
+        impact type matches an impact types in the impact_types list. For example,
+        alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given
+        impact_types ='SystemIndicator', only alerts with impact type 'SystemIndicator',
+        such as 'Incorrect NTP Configuration' will be acknowledged.
+      isArray: true
+      name: impact_types
+      predefined:
+      - Availability
+      - Capacity
+      - Configuration
+      - Performance
+      - SystemIndicator
+    - description: Comma-separated list of entity types. Will retrieve alerts whose
+        entity_type matches an entity_type in the entity_types list. For more details
+        see Nutanix README. If Nutanix service cannot recognize the entity type, it
+        returns a 404 error.
+      isArray: true
+      name: entity_types
+    - description: Maximum number of alerts to acknowledge. Nutanix does not have
+        a maximum for the limit, but a very high limit will cause a read timeout exception.
+      name: limit
+      defaultValue: '50'
+    description: Acknowledges alerts using a filter.
+    name: nutanix-hypervisor-alerts-acknowledge-by-filter
+    outputs:
+    - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.num_successful_updates
+      description: The number of the successful alerts acknowledged.
+      type: Number
+    - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.num_failed_updates
+      description: The number of the failed alerts to acknowledge.
+      type: Number
+    - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.id
+      description: ID of the status of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.successful
+      description: Whether acknowledgement for this task was successful.
+      type: Boolean
+    - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.message
+      description: Message returned by the acknowledge operation.
+      type: String
+  - arguments:
+    - description: The start date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        after the specified date/time will be resolved. If no time zone is specified,
+        UTC time zone will be used.
+      name: start_time
+    - description: The end date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        before the specified date/time will be resolved. If no time zone is specified,
+        UTC time zone will be used.
+      name: end_time
+    - auto: PREDEFINED
+      description: Comma-separated list of the severity levels of the alerts to resolve.
+      name: severity
+      predefined:
+      - CRITICAL
+      - WARNING
+      - INFO
+      - AUDIT
+    - description: "Comma-separated list of impact types. Will resolve alerts whose\
+        \ impact type matches an impact types in the impact_types list. For example,\
+        \ alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given\
+        \ impact_types = 'SystemIndicator', only alerts with impact type 'SystemIndicator',\
+        \ such as 'Incorrect NTP Configuration' will be resolved."
+      isArray: true
+      name: impact_types
+      predefined:
+      - Availability
+      - Capacity
+      - Configuration
+      - Performance
+      - SystemIndicator
+    - description: Comma-separated list of entity types. Will resolve alerts whose
+        entity_type matches an entity_type in the entity_types list. For more details
+        see Nutanix README. If Nutanix service cannot recognize the entity type, it
+        returns a 404 error.
+      name: entity_types
+    - description: Maximum number of alerts to resolve. Nutanix does not have a maximum
+        for the limit, but a very high limit value will cause a read timeout exception.
+      name: limit
+      defaultValue: '50'
+    description: Resolves alerts using a filter.
+    name: nutanix-hypervisor-alerts-resolve-by-filter
+    outputs:
+    - contextPath: NutanixHypervisor.ResolvedFilterAlerts.num_successful_updates
+      description: The number of successful alerts resolved.
+      type: Number
+    - contextPath: NutanixHypervisor.ResolvedFilterAlerts.num_failed_updates
+      description: The number of failed alerts to resolve.
+      type: Number
+    - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.id
+      description: ID of the status of the alert.
+      type: String
+    - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.successful
+      description: Whether the resolution for this task was successful.
+      type: Boolean
+    - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.message
+      description: Message returned by the resolve operation.
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- Nutanix-test
+defaultmapperin: NutanixHypervisor-mapper

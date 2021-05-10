@@ -1,7 +1,7 @@
 Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 For more information click [here](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-feeds.html).
 
-## Configure AutoFocus Feed on Demisto
+## Configure AutoFocus Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AutoFocus Feed.
@@ -10,7 +10,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
-| api_key | The AutoFocus API key. | True |
+| api_key | API Key. | False |
 | feedReputation | The indicator reputation. | False |
 | feedReliability | The source's reliability. | True |
 | tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
@@ -18,6 +18,7 @@ For more information click [here](https://docs.paloaltonetworks.com/autofocus/au
 | feedExpirationInterval | The interval after which the feed expires. | False |
 | feedFetchInterval | The feed fetch interval. | False |
 | feedBypassExclusionList | Whether to bypass exclusion list. | False |
+| override_default_credentials | Override default credentials | False | 
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
@@ -36,7 +37,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 
 ##### Base Command
 
-`autofocus-get-indicators`
+`autofocus-daily-get-indicators`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -50,7 +51,7 @@ Note: This command does not create indicators within Cortex XSOAR.
 There is no context output for this command.
 
 ##### Command Example
-```!autofocus-get-indicators limit=4```
+```!autofocus-daily-get-indicators limit=4```
 
 
 ##### Human Readable Output
@@ -63,4 +64,4 @@ There is no context output for this command.
 | demsito\<Span\>.com/some/aditional/path | URL |
 
 To bring the next batch of indicators run:
-`!autofocus-get-indicators limit=4 offset=4`
+`!autofocus-daily-get-indicators limit=4 offset=4`

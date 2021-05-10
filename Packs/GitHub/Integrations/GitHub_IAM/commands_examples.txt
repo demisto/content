@@ -1,0 +1,5 @@
+!get-user scim={"id":"83695e8e-c68c-11ea-9fde-b2f42c33cd6b"} using=GitHubITAdmin
+!create-user scim={"userName":"cortexXoar27July123@paloaltonetworks.com","name":{"familyName":"cortex27123","givenName":"XoarJuly123"},"emails":[{"value":"cotexXoar27July123@paloaltonetworks.com","type":"work","primary":true}]} using=GitHubITAdmin
+!update-user oldScim={"id":"83695e8e-c68c-11ea-9fde-b2f42c33cd6b"} newScim={"emails":[{"value":"XoarOkat12345@okta.example.com","type":"home"}]} using=GitHubITAdmin
+!enable-user scim={"userName":"cortexXoar271July12@paloaltonetworks.com","name":{"familyName":"cortex27112","givenName":"XoarJuly112"},"emails":[{"value":"cotexXoar27July112@paloaltonetworks.com","type":"work","primary":true}]} using=GitHubITAdmin
+!disable-user scim={"id":"034fde2c-d004-11ea-893c-7ff712fe8044"} using=GitHubITAdmin

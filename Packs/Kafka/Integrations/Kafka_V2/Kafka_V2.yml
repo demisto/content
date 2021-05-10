@@ -11,10 +11,7 @@ configuration:
   name: use_ssl
   required: false
   type: 8
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                   Certificate Settings
-    CA certificate of Kafka server (.cer)
+- display: CA certificate of Kafka server (.cer)
   name: ca_cert
   required: false
   type: 12
@@ -30,10 +27,7 @@ configuration:
   name: additional_password
   required: false
   type: 4
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                               Fetch Incidents Settings
-    Topic to fetch incidents from (Required for fetch incidents)
+- display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
   type: 0
@@ -41,7 +35,9 @@ configuration:
   name: partition
   required: false
   type: 0
-- additionalinfo: The initial offset to start fetching from, not including the value set (e.g. if 3 is set, the first event that will be fetched will be with offset 4).
+- additionalinfo: The initial offset to start fetching from, not including the value
+    set (e.g. if 3 is set, the first event that will be fetched will be with offset
+    4).
   display: Offset to fetch messages from (Exclusive)
   name: offset
   required: false
@@ -59,6 +55,14 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: |-
+    The max number of message bytes to retrieve in each attempted fetch request. Should be in multiples of 1024. If the fetching process is taking a long time, you should consider increasing this value. Default is '1048576'.
+  defaultvalue: '1048576'
+  display: Max number of bytes per message
+  hidden: false
+  name: max_bytes_per_message
+  required: false
+  type: 0
 description: The Open source distributed streaming platform
 display: Kafka v2
 name: Kafka V2
@@ -168,7 +172,7 @@ script:
     - contextPath: Kafka.Topic.Partition
       description: Prints all partitions for a topic.
       type: number
-  dockerimage: demisto/pykafka:1.0.0.9548
+  dockerimage: demisto/pykafka:1.0.0.19034
   feed: false
   isfetch: true
   longRunning: false

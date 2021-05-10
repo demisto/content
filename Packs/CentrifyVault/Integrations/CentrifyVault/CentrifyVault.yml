@@ -1,0 +1,303 @@
+category: Authentication
+commonfields:
+  id: Centrify Vault
+  version: -1
+configuration:
+- display: Centrify Tenant URL (e.g. https://vault.example.local)
+  name: tenantUrl
+  required: true
+  type: 0
+- display: Client ID of the Centrify Vault OAuth App
+  name: clientId
+  required: true
+  type: 0
+- display: Client Secret of the Centrify Vault OAuth App
+  name: clientSecret
+  required: true
+  type: 4
+- display: ID of the Centrify OAuth App
+  name: appId
+  required: true
+  type: 0
+- additionalinfo: Entity which defines the endpoint(s) that a client may access
+  display: Scope of the Centrify OAuth App
+  name: scope
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Leverage the Centrify Vault integration to create and manage Secrets.
+display: Centrify Vault
+name: Centrify Vault
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of holder where the secret is located. Values can be Folder
+        or Set. Please make sure to provide value in the "holderName" argument.
+      name: holderType
+      predefined:
+      - Folder
+      - Set
+    - description: 'Name of the holder (Folder/Set) where the secret is available.
+        Please choose "Folder" or "Set" in the "holderType" argument. Ex: XSOAR, XSOAR/SUB_FOLDER'
+      name: holderName
+    - description: 'Secret name which has the secret. Ex: client*, client_secret'
+      name: secretName
+    description: 'Retrieves the secret from centrify vault based on folder name, set
+      name or secret name. If folder name is not provided, all the secrets in the
+      parent folder will be fetched recursively. You can filter based on the secret
+      name and folder separately as well as combined. '
+    name: centrify-retrieve-secrets
+    outputs:
+    - contextPath: Centrify.Secrets.FolderName
+      description: Folder name of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretName
+      description: Secret name of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretText
+      description: Secret text of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretType
+      description: Type of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretDescription
+      description: Description of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretID
+      description: ID of the Secret retrieved
+      type: string
+  - arguments:
+    - description: ID of the secret
+      name: secretId
+      required: true
+    description: Retrieves the secret from centrify vault based on secret ID.
+    name: centrify-retrieve-secret-by-secretid
+    outputs:
+    - contextPath: Centrify.Secrets.FolderName
+      description: Folder name of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretName
+      description: Secret name of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretText
+      description: Secret text of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretType
+      description: Type of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretDescription
+      description: Description of the secret
+      type: string
+    - contextPath: Centrify.Secrets.SecretID
+      description: ID of the Secret retrieved
+      type: string
+  - arguments:
+    - description: Name of the folder to be created. This will be subfolder if "parentFolderName"
+        is provided.
+      name: folderName
+      required: true
+    - description: 'Name of the parent folder. Please note this is case sensitive. '
+      name: parentFolderName
+    - description: Description of the folder to be created.
+      name: folderDescription
+    description: Creates a folder in Centrify Vault
+    name: centrify-create-secretfolder
+    outputs:
+    - contextPath: Centrify.Folder.FolderName
+      description: Name of the folder created
+      type: string
+    - contextPath: Centrify.Folder.FolderID
+      description: ID of the folder created
+      type: string
+    - contextPath: Centrify.Folder.ParentFolderName
+      description: Name of the parent folder
+      type: string
+    - contextPath: Centrify.Folder.FolderDescription
+      description: Description of the folder created
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of holder where the secret will be created. Values can be
+        Folder or Set. Please make sure to provide value in the "holderName" argument.
+      name: holderType
+      predefined:
+      - Folder
+      - Set
+      required: true
+    - description: 'Name of the holder (Folder/Set) where the secret needs to be created.  Please
+        choose "Folder" or "Set" in the "holderType" argument. Ex: XSOAR, XSOAR/SUB_FOLDER '
+      name: holderName
+      required: true
+    - description: Name of the secret to be created
+      name: secretName
+      required: true
+    - description: Text of the secret
+      name: secretText
+      required: true
+    - auto: PREDEFINED
+      description: Type of the secret
+      name: secretType
+      predefined:
+      - Text
+      required: true
+    - description: Description of the secret
+      name: secretDescription
+    description: Creates a secret in Centrify Vault.
+    name: centrify-create-secret
+    outputs:
+    - contextPath: Centrify.Secrets.holderType
+      description: Type of the location where secret is created. It can be folder
+        or set.
+      type: string
+    - contextPath: Centrify.Secrets.SecretName
+      description: Name of the secret created
+      type: string
+    - contextPath: Centrify.Secrets.SecretID
+      description: ID of the secret created
+      type: string
+    - contextPath: Centrify.Secrets.SecretType
+      description: Type of the secret created
+      type: string
+    - contextPath: Centrify.Secrets.FolderName
+      description: Name of the folder where the secret is created
+      type: string
+    - contextPath: Centrify.Secrets.FolderID
+      description: ID of the folder where the secret is created
+      type: string
+    - contextPath: Centrify.Secrets.SetName
+      description: Name of the set where the secret is created
+      type: string
+    - contextPath: Centrify.Secrets.SetID
+      description: ID of the set where the secret is created
+      type: string
+    - contextPath: Centrify.Secrets.SecretDescription
+      description: Description of the created secret
+      type: string
+  - arguments:
+    - description: Name of the Set to be created
+      name: setName
+      required: true
+    - description: Description of the Set to be created
+      name: setDescription
+    description: Creates a set in Centrify Vault
+    name: centrify-create-set
+    outputs:
+    - contextPath: Centrify.Set.SetName
+      description: Name of the set created
+      type: string
+    - contextPath: Centrify.Set.SetID
+      description: ID of the set created
+      type: string
+    - contextPath: Centrify.Set.SetDescription
+      description: Description of the set created
+      type: string
+  - arguments: []
+    description: Fetch details of all folders in Centrify Vault
+    name: centrify-retrieve-folders
+    outputs:
+    - contextPath: Centrify.Folder.FolderName
+      description: Name of the folder
+      type: string
+    - contextPath: Centrify.Folder.FolderID
+      description: ID of the folder
+      type: string
+    - contextPath: Centrify.Folder.ParentFolder
+      description: Name of the parent folder
+      type: string
+    - contextPath: Centrify.Folder.FolderDescription
+      description: Description of the folder
+      type: string
+    - contextPath: Centrify.Folder.FolderDirectory
+      description: Complete directory of the folder
+      type: string
+  - arguments:
+    - description: Name of the folder to be deleted. Please provide parent foldername
+        in the argument "parentFolderName" if you are deleting a subfolder.
+      name: folderName
+      required: true
+    - description: Name of the parent folder
+      name: parentFolderName
+    description: Delete a folder from the Centrify Vault
+    name: centrify-delete-folder
+  - arguments:
+    - description: Name of the secret to be deleted
+      name: secretName
+      required: true
+    - description: 'Name of the folder from where the secret should be deleted. If
+        the secret is in subfolder, then provide parent folder followed by "/" and
+        subfolder name. Ex: XSOAR/Demisto'
+      name: folderName
+    - auto: PREDEFINED
+      description: '"Yes" if you want to delete all the secrets having same name in
+        all the subfolders recursively. "No" if you want do not want to delete the
+        secret in the subfolders.'
+      name: recursiveDelete
+      predefined:
+      - "Yes"
+      - "No"
+      required: true
+    - auto: PREDEFINED
+      description: '"Yes" if you want to delete the secret having the provided secretname
+        as a part of the Secret. "No" if you want to delete the secret with the exact
+        name match. Ex: Demisto* will delete all secrets like Demisto_1, Demisto_pwd,
+        Demisto. '
+      name: matchPartOfSecret
+      predefined:
+      - "Yes"
+      - "No"
+      required: true
+    description: 'Delete Secret from the Centrify Vault. Please note:  Enabling "recursiveDelete"
+      to "Yes" will delete all secrets if there multiple secrets with same name in
+      subfolders.'
+    name: centrify-delete-secret
+  - arguments:
+    - description: ID of the Secret to be deleted
+      name: secretId
+      required: true
+    description: Delete Secret from the Centrify Vault based on the Secret ID provided
+    name: centrify-delete-secret-by-secretid
+  - arguments:
+    - description: Name of the set where the secret will be added/moved
+      name: setName
+      required: true
+    - description: ID of the secret which needs to be moved to the set
+      name: secretId
+      required: true
+    description: Adds/Moves a secret to a set for the provided secretID. Use "centrify-retrieve-secrets"
+      to fetch secret ID's.
+    name: centrify-add-secret-to-set
+  - arguments: []
+    description: Fetches the details of all sets in the Centrify Vault
+    name: centrify-retrieve-sets
+    outputs:
+    - contextPath: Centrify.Set.SetName
+      description: Name of the set
+      type: string
+    - contextPath: Centrify.Set.SetID
+      description: ID of the set
+      type: string
+    - contextPath: Centrify.Set.SetDescription
+      description: Description of the set
+      type: string
+  - arguments:
+    - description: Name of the set to be deleted
+      name: setName
+      required: true
+    description: Delete set from the Centrify Vault
+    name: centrify-delete-set
+  dockerimage: demisto/python3:3.8.6.13358
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

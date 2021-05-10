@@ -137,9 +137,9 @@ def main():
 
         if demisto.command() == 'test-module':
             test_module()
-        elif demisto.command() == 'send-message':
+        elif demisto.command() == 'telegram-send-message' or demisto.command() == 'send-message':
             telegram_send_message()
-        elif demisto.command() == 'list-users':
+        elif demisto.command() == 'telegram-list-users' or demisto.command() == 'list-users':
             telegram_list_users()
 
     except Exception as ex:

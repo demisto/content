@@ -1,0 +1,56 @@
+{
+  "_kind": "tm:asm:policies:xml-profiles:xml-profilecollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/xml-profiles?ver=15.1.0",
+  "totalItems": 1,
+  "items": [
+    {
+      "defenseAttributes": {
+        "maximumAttributesPerElement": "any",
+        "allowCDATA": true,
+        "maximumDocumentDepth": "any",
+        "maximumAttributeValueLength": "any",
+        "maximumChildrenPerElement": "any",
+        "maximumDocumentSize": "any",
+        "tolerateNumericNames": true,
+        "maximumElements": "any",
+        "tolerateLeadingWhiteSpace": true,
+        "tolerateCloseTagShorthand": true,
+        "allowDTDs": true,
+        "maximumNameLength": "any",
+        "allowExternalReferences": true,
+        "maximumNSDeclarations": "any",
+        "maximumNamespaceLength": "any",
+        "allowProcessingInstructions": true
+      },
+      "sensitiveData": [
+        
+      ],
+      "attachmentsInSoapMessages": false,
+      "followSchemaLinks": false,
+      "useXmlResponsePage": false,
+      "_kind": "tm:asm:policies:xml-profiles:xml-profilestate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/xml-profiles/xml-profile-md5?ver=15.1.0",
+      "isDefault": true,
+      "id": "xml-profile-md5",
+      "enableWss": false,
+      "inspectSoapAttachments": false,
+      "metacharElementCheck": false,
+      "metacharAttributeCheck": false,
+      "name": "Default",
+      "lastUpdateMicros": 1596661131000000.0,
+      "validationFiles": [
+        
+      ],
+      "isReferenced": true,
+      "validationSoapActionHeader": false,
+      "description": "Default XML Profile",
+      "attackSignaturesCheck": true,
+      "soapMethods": [
+        
+      ],
+      "signatureOverrides": [
+        
+      ]
+    }
+  ]
+}

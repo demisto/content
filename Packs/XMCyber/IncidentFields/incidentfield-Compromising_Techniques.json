@@ -1,0 +1,69 @@
+{
+ "id": "incident_compromisingtechniques",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-20T20:55:42.645738146Z",
+ "name": "Compromising Techniques",
+ "ownerOnly": false,
+ "description": "Name of each attack technique that has compromised the entity and the count such attack vectors from the time period",
+ "cliName": "compromisingtechniques",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": true,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Critical Asset",
+  "XM Cyber Choke Point"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "name",
+   "displayName": "Name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "count",
+   "displayName": "Count",
+   "type": "number",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72
+}

@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p class="has-line-data" data-line-start="3" data-line-end="5">Use the iDefense integration to manage cyber threats and security issues in the iDefense security platform.<br> This integration was integrated and tested with version xx of iDefense</p>
+<p class="has-line-data" data-line-start="3" data-line-end="5">Use the iDefense integration to manage cyber threats and security issues in the iDefense security platform.<br> </p>
 <h2 class="code-line" data-line-start="11" data-line-end="12">Configure iDefense on Demisto</h2>
 <ol>
 <li class="has-line-data" data-line-start="14" data-line-end="15">Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

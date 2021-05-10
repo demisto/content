@@ -28,10 +28,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: tenable-sc-scan
+    taskid: 21ae3e2d-030a-4862-b433-1ae65f4e8503
     type: playbook
     task:
-      id: tenable-sc-scan
+      id: 21ae3e2d-030a-4862-b433-1ae65f4e8503
       version: -1
       name: Launch Scan - Tenable.sc
       description: Launches an existing Tenable.sc scan by scan ID and waits for the scan to finish by polling its status in pre-defined intervals.

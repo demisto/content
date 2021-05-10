@@ -2,15 +2,14 @@
     "name": "APIVoid",
     "description": "APIVoid wraps up a number of services such as ipvoid & urlvoid",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-    ],
+    "tags": [],
     "created": "2020-04-01T22:23:20Z",
     "useCases": [],
     "keywords": []

@@ -78,6 +78,7 @@ This playbook does not use any scripts.
 | Panorama.Monitor.Logs.ToZone | The zone to which the session was sent. | string |
 | Panorama.Monitor.Logs.TimeGenerated | The time that the log was generated on the dataplane. | string |
 | Panorama.Monitor.Logs.URLCategoryList | The list of URL filtering categories that the firewall used to enforce policy. | string |
+| Panorama.Monitor.Logs.Vsys | Vsys on the firewall that generated the log. | string |
 | Panorama.Monitor.JobID | The job ID of the log query. | unknown |
 | Panorama.Monitor.Status | The status of the log query. | string |
 | Panorama.Monitor.Message | The message of the log query. | string |

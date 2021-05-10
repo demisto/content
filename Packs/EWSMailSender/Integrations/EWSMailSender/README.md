@@ -1,86 +1,104 @@
-<!-- HTML_DOC -->
-<p>This integration enables sending e-mails from within Demisto. You can do this from any SMTP email address. </p>
-<p>To set up the integration on Demisto:</p>
-<ol>
-<li>Go to ‘Settings &gt; Integrations &gt; Servers &amp; Services’</li>
-<li>Locate ‘Mail Sender’ by searching for it using the search box on the top of the page.</li>
-<li>Click ‘Add instance’ to create and configure a new integration. You should configure the following settings:<br><strong>Name</strong>: A textual name for the integration instance. <br>
-<div class="field required error"><label>Mail server hostname or IP address - The hostname or IP address used for the email.<br><strong>SMTP Port</strong>: The SMTP port used for the mail. <br></label></div>
-<div id="credentials-box" class="credentials-box">
-<div class="user-password-input">
-<div class="field"><label><strong>Credentials and Password:</strong> <label>The </label>account and password to use. </label></div>
-</div>
-</div>
-<div class="field required">
-<label><label><strong>Sender address: </strong><label>The </label>email address that will appear as the sender of the email. <br></label></label>
-<div class="field">
-<div class="demisto-checkbox ui checkbox ">
-<label class="checkbox-label" title="Use TLS for connection"><label class="checkbox-label" title="Use TLS for connection"><strong>Use TLS for connection:</strong> </label></label> <label>The </label>Transport Layer Security (<strong>TLS</strong>) protocol to use.<br>
-<div class="field">
-<div class="demisto-checkbox ui checkbox ">
-<label class="checkbox-label" title="Do not validate server certificate (insecure)"><strong>Do not validate server certificate (insecure):</strong>  Select to avoid server certification validation. You may want to do this in case Demisto cannot validate the integration server certificate (due to missing CA certificate).<br><strong>Demisto engine:</strong> If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc. that prevent the Demisto server from accessing the remote networks. For more information on Demisto engines see: <a style="background-color: #ffffff;" href="https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines" rel="nofollow">https://demisto.zendesk.com/hc/en-us/articles/226274727-Settings-Integrations-Engines<br></a></label><strong>Require users to enter additional password:</strong> Select whether you’d like an additional step where users are required to authenticate themselves with a password.</div>
-<div class="demisto-checkbox ui checkbox "> </div>
-</div>
-</div>
-</div>
-</div>
-</li>
-<li>Press the ‘Test’ button to validate connection.<br>If you are experiencing issues with the service configuration, please contact Demisto support at <a href="mailto:support@demisto.com">support@demisto.com</a>
-</li>
-<li>After completing the test successfully, press the ‘Done’ button.</li>
-</ol>
-<h3> Top Use-cases:</h3>
-<ul>
-<li>Sending notifications to external users.</li>
-<li>Send an email asking for a response to be returned as part of a Playbook. <br>See <a href="https://support.demisto.com/hc/en-us/articles/115005287087-Automation-Receiving-an-email-reply" target="_blank" rel="noopener">Receiving an email reply</a>.</li>
-</ul>
-<h3> Commands:</h3>
-<ul>
-<li style="font-family: courier;">
-<strong>send-mail</strong> </li>
-</ul>
-<p class="wysiwyg-indent6">Input:</p>
-<table style="margin-left: 70px; width: 713px;">
-<tbody>
-<tr>
-<td style="width: 713px;">
-<p><strong>attachIDs</strong> - A comma-separated list of IDs of war room entries that contain the files that should be attached to the email.<br><strong>to</strong> - Email addresses for the 'To' field.<br><strong>bcc</strong> - Email addresses for the 'Bcc' field.<br><strong>subject</strong> - Subject for the email to be sent.<br><strong>body</strong> - The contents (body) of the email to be sent.<br><strong>cc</strong> - Email addresses for the 'Cc' field.<br><strong>attachNames</strong> - A comma-separated list to rename file-names of corresponding attachments IDs. (e.g. rename first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3)<br><strong>transientFile</strong> - Desired name for attached file. Multiple files are supported. (e.g. transientFile.1="t1.txt" transientFileContent.1="test 2" transientFile.2="t3.txt" transientFileContent.2="test 3")<br><strong>transientFileContent</strong> - Content for attached file. Multiple files are supported. (e.g. transientFile.1="t1.txt" transientFileContent.1="test 2" transientFile.2="t3.txt" transientFileContent.2="test 3")<br><strong>htmlBody</strong> - The contents (body) of the email to be sent in HTML format.<br><strong>replyTo</strong> - Address that should be used to reply to the message.</p>
-<div class="main-description" title="A comma-separated list of IDs of war room entries that contain files. Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8">
-<div class="main-description" title="Email addresses for the 'bcc' field">
-<div class="main-description" title="Email addresses for the 'cc' field">
-<div class="argument-item-data">
-<div class="ui two column left aligned padded grid">
-<div class="seven wide column">
-<div class="argument-name ellipsis semi-bold" title="noteEntryID">
-<div class="item-header ellipsis" title="replyTo"> </div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="wysiwyg-indent6">Context output:</p>
-<table style="margin-left: 70px; width: 713px;">
-<tbody>
-<tr>
-<td style="width: 713px;">
-<p>none</p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="wysiwyg-indent6">Raw output:</p>
-<table style="margin-left: 70px; width: 713px;">
-<tbody>
-<tr>
-<td style="width: 713px;">
-<p>none</p>
-</td>
-</tr>
-</tbody>
-</table>
+Exchange Web Services and Office 365 Email sender.
+## Configure EWS Mail Sender on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for EWS Mail Sender.
+3. Click **Add instance** to create and configure a new integration instance.
+    
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | ewsServer | Exchange URL or Server IP address | True |
+    | credentials | Authentication: Email address \(for Office 365\) or DOMAIN\\USERNAME \(e.g. DEMISTO.INT\\admin\) | True |
+    | defaultServerVersion | Server Version \(2007, 2010, 2010_SP2, 2013, or 2016\) | True |
+    | authType | Authentication Type \(NTLM, Basic, or Digest\). For Office 365 use Basic. | True |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | proxy | Use system proxy settings | False |
+    | impersonation | Has impersonation rights | False |
+    | mailbox | Sender Mailbox | False |
+    | Single engine | If relevant, select the engine that acts as a proxy to the server. Engines are used when you need to access a remote network segments and there are network devices such as proxies, firewalls, etc.  that prevent the Cortex XSOAR server from accessing the remote networks. For more information on Cortex XSOAR engines see: https://support.demisto.com/hc/en-us/articles/226274727-Settings-Integrations-Engines| False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Top Use-cases:
+- Send notifications to external users.
+- Send an email asking for a response to be returned as part of a playbook. See [Receiving an email reply](https://support.demisto.com/hc/en-us/articles/115005287087-Automation-Receiving-an-email-reply)
+
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### send-mail
+***
+Sends an email using EWS.
+
+#### Base Command
+
+`send-mail`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| to | A CSV list of email addresses for the 'to' field. | Required | 
+| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
+| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
+| subject | Subject for the email to be sent. | Required | 
+| replyTo | The email address specified in the 'reply to' field. | Optional | 
+| body | The contents (body) of the email to send. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!send-mail body="hello this is a test" subject=Hi to=avishai@demistodev.onmicrosoft.com```
+
+#### Human Readable Output
+
+>### Sent email
+>|attachments|from|subject|to|
+>|---|---|---|---|
+>|  | avishai@demistodev.onmicrosoft.com | Hi | avishai@demistodev.onmicrosoft.com |
+
+
+### reply-mail
+***
+Replies to an email using EWS.
+
+
+#### Base Command
+
+`reply-mail`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| inReplyTo | ID of the item to reply to. | Required | 
+| to | A CSV list of email addresses for the 'to' field. | Required | 
+| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
+| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
+| subject | Subject for the email to be sent. | Optional | 
+| body | The contents (body) of the email to send. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
+
+#### Human Readable Output
+
+>### Sent email
+>|attachments|from|subject|to|
+>|---|---|---|---|
+>|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
+

@@ -1,0 +1,20 @@
+[
+  {
+    "employeeId":"AB1234",
+    "account_name":"Acc1",
+    "resource_name":"Windows Security",
+    "event_desc":"Login failed",
+    "event_date":"01/12/2020 12:47:00",
+    "riskScore":88
+  },
+  {
+    "employeeId":"AB1234",
+    "account_name":"Acc2",
+    "resource_name":"Windows Security",
+    "event_desc":"Login success",
+    "event_date":"01/12/2020 12:47:00",
+    "riskScore":88
+  }
+]
+
+

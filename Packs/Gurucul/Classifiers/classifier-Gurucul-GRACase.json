@@ -1,0 +1,26 @@
+{
+    "defaultIncidentType": "GraCase",
+    "feed": false,
+    "id": "Gurucul-GRACases",
+    "keyTypeMap": {
+        "GRACase": "GraCase"
+    },
+    "name": "Gurucul-GRACases - Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [
+
+            ],
+            "root": "incidentType",
+            "transformers": [
+
+            ]
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Classifies Gurucul GRA Case Incident."
+}

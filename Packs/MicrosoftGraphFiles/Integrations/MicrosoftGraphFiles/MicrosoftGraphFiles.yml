@@ -32,9 +32,9 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: 'Use the Microsoft Graph Files integration to enable your app get authorized
+description: Use the Microsoft Graph Files integration to enable your app to get authorized
   access to files in OneDrive, SharePoint, and MS Teams across your entire organization.
-  This integration requires admin consent.'
+  This integration requires admin consent.
 display: Microsoft Graph Files
 name: Microsoft_Graph_Files
 script:
@@ -53,7 +53,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: MS Graph resource id.
+      description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       predefined:
@@ -61,7 +66,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the item to delete.
+      description: |-
+        The ID of the item to delete.
+        To get the ID of the file you want to delete, use the msgraph-list-drive-content command.
       isArray: false
       name: item_id
       required: true
@@ -84,31 +91,38 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of the item to upload.
+      description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: The ID of the folder in which to upload the file.
+      description: |-
+        The ID of the folder in which to upload the file.
+        To get the ID of a folder, use the msgraph-list-drive-content command.
       isArray: false
       name: parent_id
       required: true
       secret: false
     - default: false
-      description: A name for the file to upload.
+      description: The name of the file to upload.
       isArray: false
       name: file_name
       required: true
       secret: false
     - default: false
-      description: The Demisto entry ID of the file.
+      description: The Cortex XSOAR entry ID of the file.
       isArray: false
       name: entry_id
       required: true
       secret: false
     deprecated: false
-    description: Uploads a file from Demisto to the specified MS Graph resource.
+    description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
     execution: false
     name: msgraph-upload-new-file
     outputs:
@@ -125,7 +139,7 @@ script:
       description: The path of the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedDateTime
-      description: Timestamp of when the item was last modified.
+      description: The timestamp of when the item was last modified.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.File.MimeType
       description: The file type.
@@ -134,19 +148,19 @@ script:
       description: The file hash type.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedDateTime
-      description: Timestamp of when the item was created.
+      description: The timestamp of when the item was created.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.WebUrl
-      description: URL to the resource in the browser.
+      description: The URL of the resource in the browser.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.OdataContext
       description: The OData query.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.CreatedDateTime
-      description: Timestamp of when the item was created on a client.
+      description: The timestamp of when the item was created on a client.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.FileSystemInfo.LastModifiedDateTime
-      description: Timestamp of when the item was last modified on a client.
+      description: The timestamp of when the item was last modified on a client.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.LastModifiedBy.DisplayName
       description: The item display name.
@@ -155,7 +169,7 @@ script:
       description: The application, user, or device that last modified the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.DisplayName
-      description: The identity of the user, device,or application that created the
+      description: The identity of the user, device, or application that created the
         item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.CreatedBy.ID
@@ -165,7 +179,7 @@ script:
       description: The application, user, or device that created the item.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.DownloadUrl
-      description: URL to download this file's content.
+      description: The URL to download this file's content.
       type: String
     - contextPath: MsGraphFiles.UploadedFiles.Size
       description: The file size.
@@ -193,19 +207,27 @@ script:
       required: true
       secret: false
     - default: false
-      description: The MS Graph resource ID.
+      description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: The MS Graph item ID.
+      description: |-
+        The MS Graph item ID of the file you want to replace.
+        To get the ID of the file you want to replace, use the msgraph-list-drive-content command.
       isArray: false
       name: item_id
       required: true
       secret: false
     - default: false
-      description: The Demisto entry ID of the file.
+      description: The Cortex XSOAR entry ID of the new file that will replace the
+        current file.
       isArray: false
       name: entry_id
       required: true
@@ -295,13 +317,21 @@ script:
       required: true
       secret: false
     - default: false
-      description: The MS Graph resource ID.
+      description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: The ID of the drive in which to upload the new folder.
+      description: |-
+        The ID of the parent in which to upload the new folder.
+        Parent can be either 'root' or another folder.
+        To get the required folder ID, use the msgraph-list-drive-content command.
       isArray: false
       name: parent_id
       required: true
@@ -377,7 +407,9 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: The ID of the site for which to return available drive resources.
+      description: |-
+        The ID of the site for which to return available drive resources.
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
       isArray: false
       name: site_id
       required: false
@@ -389,7 +421,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The URL for the next results page.
+      description: |-
+        The URL for the next results page.
+        If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink.
       isArray: false
       name: next_page_url
       required: false
@@ -451,13 +485,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: The MS Graph resource ID.
+      description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: The Ms Graph item ID.
+      description: |-
+        The MS Graph item ID.
+        It can be either 'root' or another folder.
+        Passing a folder ID retrieves files from a specified folder.
+        The default is 'root': It retrieves the content in the root of the drive.
+
+        To get the required folder ID, use the msgraph-list-drive-content command and leave the argument empty in order to get a list of folders that are located in the root.
+
+        If your folder is nested inside another folder, pass the parent ID found when running the msgraph-list-drive-content command without an 'item_id' in this argument to get the required folder ID.
       isArray: false
       name: item_id
       required: false
@@ -469,7 +516,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The URL for the next results page.
+      description: |-
+        The URL for the next results page.
+        If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListChildren.OdataNextLink
       isArray: false
       name: next_page_url
       required: false
@@ -592,13 +641,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: The MS Graph resource ID.
+      description: |-
+        MS Graph resource ID.
+        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
       isArray: false
       name: object_type_id
       required: true
       secret: false
     - default: false
-      description: The MS Graph item ID.
+      description: |-
+        The MS Graph item ID.
+        To get the ID of the file you want to download, use the msgraph-list-drive-content command.
       isArray: false
       name: item_id
       required: true
@@ -627,7 +683,7 @@ script:
       description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
-      description: The Demisto file ID.
+      description: The Cortex XSOAR file ID.
       type: Unknown
     - contextPath: File.Info
       description: Information about the file.
@@ -638,7 +694,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.11433
+  dockerimage: demisto/python_pancloud:1.0.0.14303
   feed: false
   isfetch: false
   longRunning: false
@@ -647,6 +703,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - test_MsGraphFiles
+fromversion: 5.0.0

@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "states": [
+    {
+      "id": "5a62bd8cce983de89085429b",
+      "status": "resolved",
+      "assigned_to": "59b0eecfd8aaa4334ee41707",
+      "comments": [
+        {
+          "title": "sample title 1",
+          "time": 1516420000,
+          "comment": "sample comment 1"
+        },
+        {
+          "title": "sample title 2",
+          "time": 1516420000,
+          "comment": "sample comment 2"
+        }
+      ]
+    }
+  ]
+}

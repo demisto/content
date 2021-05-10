@@ -1,0 +1,16 @@
+{
+    "name": "Public DNS Feed",
+    "description": "The Public DNS Feed fetches known IPs associated with public DNS servers from https://public-dns.info/",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-10T16:20:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

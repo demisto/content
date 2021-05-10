@@ -6,19 +6,21 @@ import shutil
 import logging
 import re
 from zipfile import ZipFile
+from google.cloud.storage import Blob, Bucket
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, PackStatus, GCPConfig, PACKS_FULL_PATH, \
-    IGNORED_FILES, PACKS_FOLDER, PACKS_RESULTS_FILE
-from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, load_json, \
-    get_packs_summary
-from demisto_sdk.commands.common.tools import str2bool
+from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
+    load_json, store_successful_and_failed_packs_in_ci_artifacts, \
+    get_upload_data
+from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
+    PACKS_FULL_PATH, IGNORED_FILES
+from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 
-LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_]+/\d+\.\d+\.\d+/'
-                              r'[A-Za-z0-9-_]+\.zip$)')
+LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
+                              r'[A-Za-z0-9-_.]+\.zip$)')
 
 
-def get_pack_names(target_packs):
+def get_pack_names(target_packs: str) -> set:
     """
     Retrieves the paths of all relevant packs (that aren't ignored)
 
@@ -47,8 +49,8 @@ def get_pack_names(target_packs):
         sys.exit(1)
 
 
-def copy_index(index_folder_path, build_index_blob, build_index_generation, production_bucket,
-               build_bucket):
+def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_generation: str, production_bucket: Bucket,
+               build_bucket: Bucket):
     """ Copies the build bucket index to the production bucket index path.
 
     Args:
@@ -67,6 +69,9 @@ def copy_index(index_folder_path, build_index_blob, build_index_generation, prod
         prod_index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
         prod_index_blob = production_bucket.blob(prod_index_storage_path)
         prod_index_blob.cache_control = "no-cache,max-age=0"
+        prod_index_json_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.json")
+        prod_index_json_blob = production_bucket.blob(prod_index_json_storage_path)
+        prod_index_json_blob.cache_control = "no-cache,max-age=0"
 
         if build_current_index_generation == build_index_generation:
             copied_index = build_bucket.copy_blob(
@@ -75,21 +80,33 @@ def copy_index(index_folder_path, build_index_blob, build_index_generation, prod
             if copied_index.exists():
                 logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
             else:
-                logging.error("Failed copying index from, build index blob does not exists.")
+                logging.error("Failed copying index.zip from build index - blob does not exist.")
+                sys.exit(1)
+            copied_index_json_blob = build_bucket.blob(
+                os.path.join(GCPConfig.BUILD_BASE_PATH, f"{GCPConfig.INDEX_NAME}.json")
+            )
+            copied_index_json = build_bucket.copy_blob(
+                blob=copied_index_json_blob, destination_bucket=production_bucket, new_name=prod_index_json_storage_path
+            )
+            if copied_index_json.exists():
+                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.json to storage.")
+            else:
+                logging.error("Failed copying index.json from build index - blob does not exist.")
                 sys.exit(1)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
             logging.error(f"Current build index generation: {build_current_index_generation}")
             sys.exit(1)
-    except Exception:
-        logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}")
+    except Exception as e:
+        logging.exception(f"Failed copying {GCPConfig.INDEX_NAME}. Additional Info: {str(e)}")
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
 
 
-def upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket):
+def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
+                             build_bucket: Bucket):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
@@ -137,7 +154,7 @@ def upload_core_packs_config(production_bucket, build_number, extract_destinatio
     logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
 
 
-def download_and_extract_index(build_bucket, extract_destination_path):
+def download_and_extract_index(build_bucket: Bucket, extract_destination_path: str):
     """Downloads and extracts production and build indexes zip from cloud storage.
 
     Args:
@@ -186,26 +203,7 @@ def download_and_extract_index(build_bucket, extract_destination_path):
         sys.exit(1)
 
 
-def get_successful_and_failed_packs(packs_results_file_path):
-    """ Loads the packs_results.json file to get the successful and failed packs dicts
-
-    Args:
-        packs_results_file_path: The path to the file
-
-    Returns:
-        dict: The successful packs dict
-        dict: The failed packs dict
-
-    """
-    if os.path.exists(packs_results_file_path):
-        packs_results_file = load_json(packs_results_file_path)
-        successful_packs_dict = packs_results_file.get('successful_packs', {})
-        failed_packs_dict = packs_results_file.get('failed_packs', {})
-        return successful_packs_dict, failed_packs_dict
-    return {}, {}
-
-
-def copy_id_set(production_bucket, build_bucket):
+def copy_id_set(production_bucket: Bucket, build_bucket: Bucket):
     """ Copies the id_set.json artifact from the build bucket to the production bucket.
 
     Args:
@@ -218,16 +216,55 @@ def copy_id_set(production_bucket, build_bucket):
 
     if not build_id_set_blob.exists():
         logging.error(f"id_set.json file does not exists in build bucket in path: {build_id_set_path}")
+        sys.exit(1)
 
     prod_id_set_path = os.path.join(os.path.dirname(GCPConfig.STORAGE_BASE_PATH), 'id_set.json')
-    copied_blob = build_bucket.copy_blob(
-        blob=build_id_set_blob, destination_bucket=production_bucket, new_name=prod_id_set_path
-    )
+    try:
+        copied_blob = build_bucket.copy_blob(
+            blob=build_id_set_blob, destination_bucket=production_bucket, new_name=prod_id_set_path
+        )
+        if not copied_blob.exists():
+            logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
+            sys.exit(1)
+        else:
+            logging.success("Finished uploading id_set.json to storage.")
+    except Exception as e:
+        logging.exception(f"Failed copying ID Set. Additional Info: {str(e)}")
+        sys.exit(1)
 
-    if not copied_blob.exists():
-        logging.error(f"Failed to upload id_set.json to {prod_id_set_path}")
-    else:
-        logging.success("Finished uploading id_set.json to storage.")
+
+def verify_copy(successful_packs: list, pc_successful_packs_dict: dict):
+    """ Verify that all uploaded packs from Prepare were copied & verify that no packs were mistakenly copied
+
+    Args:
+        successful_packs: The packs that were copied successfully
+        pc_successful_packs_dict: The pack that were uploaded successfully in Prepare Content
+
+    """
+    pc_successful_packs_names = {*pc_successful_packs_dict}
+    successful_packs_names = {pack.name for pack in successful_packs}
+    not_uploaded = [pack for pack in pc_successful_packs_names if pack not in successful_packs_names]
+    mistakenly_uploaded = [pack for pack in successful_packs_names if pack not in pc_successful_packs_names]
+    error_str = "Mismatch in Prepare Content successful packs and Upload successful packs\n"
+    error_str += f"Packs not copied: {', '.join(not_uploaded)}\n" if not_uploaded else ""
+    error_str += f"Packs mistakenly copied: {', '.join(mistakenly_uploaded)}\n" if mistakenly_uploaded else ""
+    assert not not_uploaded and not mistakenly_uploaded, error_str
+
+
+def check_if_need_to_upload(pc_successful_packs_dict: dict, pc_failed_packs_dict: dict,
+                            pc_successful_private_packs_dict: dict):
+    """ If the three dicts are empty then no upload was done in Prepare Content step, so we need to skip uploading
+
+    Args:
+        pc_successful_packs_dict: The successful packs dict
+        pc_failed_packs_dict: The failed packs dict
+        pc_successful_private_packs_dict : The successful private packs dict
+
+    """
+    if not pc_successful_packs_dict and not pc_failed_packs_dict and not pc_successful_private_packs_dict:
+        logging.warning("Production bucket is updated with origin/master.")
+        logging.warning("Skipping Upload To Marketplace Storage Step.")
+        sys.exit(0)
 
 
 def options_handler():
@@ -260,8 +297,6 @@ def options_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=True)
     parser.add_argument('-c', '--circle_branch',
                         help="CircleCi branch of current build", required=True)
-    parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
-                        type=str2bool, default=False, required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
     # disable-secrets-detection-end
@@ -269,7 +304,7 @@ def options_handler():
 
 
 def main():
-    install_logging('Copy and Upload Packs.log')
+    install_logging('Copy_and_Upload_Packs.log')
     options = options_handler()
     packs_artifacts_path = options.artifacts_path
     extract_destination_path = options.extract_path
@@ -278,7 +313,6 @@ def main():
     service_account = options.service_account
     build_number = options.ci_build_number
     circle_branch = options.circle_branch
-    override_all_packs = options.override_all_packs
     production_base_path = options.production_base_path
     target_packs = options.pack_names
 
@@ -287,20 +321,32 @@ def main():
     production_bucket = storage_client.bucket(production_bucket_name)
     build_bucket = storage_client.bucket(build_bucket_name)
 
-    # Initialize base paths
+    # Initialize build and prod base paths
     build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number)
     GCPConfig.BUILD_BASE_PATH = os.path.join(build_bucket_path, GCPConfig.STORAGE_BASE_PATH)
     if production_base_path:
         GCPConfig.STORAGE_BASE_PATH = production_base_path
+
+    # Relevant when triggering test upload flow
+    if production_bucket_name:
+        GCPConfig.PRODUCTION_BUCKET = production_bucket_name
 
     # Download and extract build index from build and prod buckets
     build_index_folder_path, build_index_blob, build_index_generation = \
         download_and_extract_index(build_bucket, extract_destination_path)
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
-    successful_packs_dict, failed_packs_dict = get_successful_and_failed_packs(
-        os.path.join(os.path.dirname(packs_artifacts_path), PACKS_RESULTS_FILE)
-    )
+    packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
+    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
+        pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+
+    logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
+    logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
+    logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
+    logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
+
+    # Check if needs to upload or not
+    check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict)
 
     # Detect packs to upload
     pack_names = get_pack_names(target_packs)
@@ -311,7 +357,7 @@ def main():
     # Starting iteration over packs
     for pack in packs_list:
         # Indicates whether a pack has failed to upload on Prepare Content step
-        task_status, pack_status = pack.is_failed_to_upload(failed_packs_dict)
+        task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
             pack.status = pack_status
             pack.cleanup()
@@ -319,32 +365,24 @@ def main():
 
         task_status, user_metadata = pack.load_user_metadata()
         if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_integration_images(production_bucket, build_bucket)
+        task_status = pack.copy_integration_images(production_bucket, build_bucket, pc_uploaded_images)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_author_image(production_bucket, build_bucket)
+        task_status = pack.copy_author_image(production_bucket, build_bucket, pc_uploaded_images)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
             continue
 
-        # Create a local copy of the pack's index changelog
-        task_status = pack.create_local_changelog(build_index_folder_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-            pack.cleanup()
-            continue
-
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(production_bucket, build_bucket,
-                                                                              override_all_packs, pack.latest_version,
-                                                                              successful_packs_dict)
+                                                                              pc_successful_packs_dict)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
@@ -369,6 +407,15 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+
+    # Store successful and failed packs list in CircleCI artifacts
+    store_successful_and_failed_packs_in_ci_artifacts(
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs,
+        list(pc_successful_private_packs_dict)
+    )
+
+    # verify that the successful from Prepare content and are the ones that were copied
+    verify_copy(successful_packs, pc_successful_packs_dict)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)

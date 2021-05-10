@@ -11,12 +11,14 @@ def test_normalized_string(phrase: str, norm_phrase: str):
     assert norm_phrase == normalized_string(phrase)
 
 
-@pytest.mark.parametrize(argnames="before_dict, keys, max_keys, after_dict",
-                         argvalues=[
-                             ({'a': 1, 'b': 2}, ['a'], None, {'a': 1}),
-                             ({'a': 1, 'b': 2}, ['*'], 1, {'a': 1}),
-                             ({'a': 1, 'b': 2}, ['*'], 2, {'a': 1, 'b': 2})
-                         ])
+@pytest.mark.parametrize(
+    argnames="before_dict, keys, max_keys, after_dict",
+    argvalues=[
+        ({'a': 1, 'b': 2}, ['a'], None, {'a': 1}),
+        ({'a': 1, 'b': 2}, ['*'], 1, {'a': 1}),
+        ({'a': 1, 'b': 2}, ['*'], 2, {'a': 1, 'b': 2}),
+        ({'a': 1, 'b': [1, 2, 3]}, ['a'], None, {'a': 1}),
+    ])
 def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dict: dict):
     from SetGridField import filter_dict
     assert after_dict == filter_dict(dict_obj=before_dict,
@@ -32,15 +34,18 @@ def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dic
                              (['a', 'b', 1, False], ['b'], False, False),
                              (['a', 'b', 1, False, []], ['*'], True, False),
                          ])
-def test_validate_entry_context(entry_context: dict, keys: list, raise_exception: bool, unpack_nested: bool):
+def test_validate_entry_context(capfd, entry_context: dict, keys: list, raise_exception: bool, unpack_nested: bool):
     from SetGridField import validate_entry_context
     if raise_exception:
-        with pytest.raises(ValueError):
-            validate_entry_context(entry_context=entry_context,
+        # disabling the stdout check cause along with the exception, we write additional data to the log.
+        with pytest.raises(ValueError), capfd.disabled():
+            validate_entry_context(context_path='Path',
+                                   entry_context=entry_context,
                                    keys=keys,
                                    unpack_nested_elements=unpack_nested)
     else:
-        validate_entry_context(entry_context=entry_context,
+        validate_entry_context(context_path='Path',
+                               entry_context=entry_context,
                                keys=keys,
                                unpack_nested_elements=unpack_nested)
 

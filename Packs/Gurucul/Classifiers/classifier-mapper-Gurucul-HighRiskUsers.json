@@ -1,0 +1,30 @@
+{
+    "defaultIncidentType": "GraHighRiskUser",
+    "description": "",
+    "feed": false,
+    "id": "Gurucul-HighRiskUsers-mapper",
+    "mapping": {
+        "GraHighRiskUser": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "employeeId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Gurucul-HighRiskUsers Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

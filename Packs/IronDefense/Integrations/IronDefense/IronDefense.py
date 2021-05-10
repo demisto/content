@@ -1,15 +1,8 @@
 import functools
 from typing import List, Dict
 import demistomock as demisto
-import json
-import requests
-import traceback
 from http.client import HTTPException
-import datetime
-try:
-    from CommonServerPython import return_outputs, tableToMarkdown, return_error
-except ImportError:
-    pass
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -182,7 +175,7 @@ class IronDefense:
                     notif = {
                         "name": str(n["category"]) + " IronDome Notification",
                         "details": "Received a {} IronDome Notification at {} from communities {}.".
-                        format(n["category"], str(datetime.datetime.now()), n["dome_tags"]),
+                        format(n["category"], str(datetime.now()), n["dome_tags"]),
                         "occurred": n["created"],
                         "rawJSON": json.dumps(n)
                     }
@@ -238,7 +231,7 @@ class IronDefense:
                         notif = {
                             "name": str(alert_notification["alert_action"]) + " Alert Notification",
                             "details": "Received a {} Alert Notification at {}.".
-                            format(alert_notification["alert_action"], str(datetime.datetime.now())),
+                            format(alert_notification["alert_action"], str(datetime.now())),
                             "occurred": alert["updated"],
                             "rawJSON": json.dumps(alert)
                         }
@@ -294,7 +287,7 @@ class IronDefense:
                         notif = {
                             "name": str(event_notification["event_action"]) + " Event Notification",
                             "details": "Received a {} Event Notification at {}.".
-                            format(event_notification["event_action"], str(datetime.datetime.now())),
+                            format(event_notification["event_action"], str(datetime.now())),
                             "occurred": event["updated"],
                             "rawJSON": json.dumps(event)
                         }

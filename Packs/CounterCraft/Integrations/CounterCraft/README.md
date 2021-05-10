@@ -734,11 +734,5 @@ You will be able to manage only the breadcrumbs you have access to.
 
 Please check the Deception Director user manual for more guidance on how to use and deploy campaigns.
 
-## Known Limitations
----
-
-## Troubleshooting
----
-
 
 

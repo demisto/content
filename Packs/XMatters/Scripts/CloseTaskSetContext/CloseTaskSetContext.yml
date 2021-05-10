@@ -1,0 +1,32 @@
+commonfields:
+  id: CloseTaskSetContext
+  version: -1
+name: CloseTaskSetContext
+script: ''
+type: python
+tags:
+- Utilities
+comment: 'Close a task with the closeComplete command, but then also add the "comments"
+  to the incident context. '
+enabled: true
+args:
+- name: entry_id
+  required: true
+  default: true
+  description: Enter an entry id or tag to close
+  defaultValue: ${lastCompletedTaskEntries}
+- name: context_key
+  required: true
+  description: The context key to place the comments
+- name: comments
+  required: true
+  description: The comments to place into the context
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

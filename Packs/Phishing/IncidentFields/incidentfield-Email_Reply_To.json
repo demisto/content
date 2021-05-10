@@ -24,7 +24,8 @@
  "group": 0,
  "hidden": false,
  "associatedTypes": [
-  "Phishing"
+  "Phishing",
+  "Email Communication"
  ],
  "systemAssociatedTypes": [
   "Phishing",

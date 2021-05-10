@@ -1,5 +1,5 @@
 Integration with Okta's cloud-based identity management service
-This integration was integrated and tested with version xx of Okta v2
+
 ## Configure Okta v2 on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

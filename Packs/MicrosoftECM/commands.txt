@@ -7,10 +7,13 @@
 !ms-ecm-script-list script_name="XSOAR StartService"
 !ms-ecm-script-create script_name="My new script" script_text="$PSVersionTable"
 !ms-ecm-script-approve comment="Some comment" script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2
-!ms-ecm-script-invoke script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2 collection_name="All Systems"
+!ms-ecm-script-invoke script_guid=394EDB29-5D89-4B9B-9745-A1F6DC8214E2 collection_name="All Systems" poll_results=true
 !ms-ecm-script-invocation-results operation_id=16777267
-!ms-ecm-user-get-primary device_name=EC2AMAZ-2AKQ815
 !ms-ecm-user-last-log-on device_name=EC2AMAZ-2AKQ815
-!ms-ecm-service-restart service_name=dnscache collection_name="All Systems"
-!ms-ecm-service-start service_name=dnscache collection_name="All Systems"
-!ms-ecm-service-stop service_name=dnscache collection_name="All Systems"
+!ms-ecm-service-restart service_name=dnscache collection_name="All Systems" poll_results=true timeout=15
+!ms-ecm-service-start service_name=dnscache collection_name="All Systems" poll_results=true timeout=15
+!ms-ecm-service-stop service_name=dnscache collection_name="All Systems" poll_results=true timeout=15
+!ms-ecm-device-list collection_name="All Systems" limit=1
+!ms-ecm-device-get-collection-member device_names=EC2AMAZ-2AKQ815
+!ms-ecm-device-get-resource device_names=EC2AMAZ-2AKQ815
+!ms-ecm-get-user-device-affinity device_names=EC2AMAZ-2AKQ815

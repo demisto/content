@@ -568,12 +568,6 @@ script:
       name: update_reason
       required: false
       secret: false
-    - default: false
-      description: Comments added while changing the request's status.
-      isArray: false
-      name: status_change_comments
-      required: false
-      secret: false
     deprecated: false
     description: Updates the specified request.
     execution: false
@@ -812,7 +806,7 @@ script:
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false

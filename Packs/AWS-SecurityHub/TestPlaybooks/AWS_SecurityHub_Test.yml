@@ -218,13 +218,13 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: bc61a68e-f765-465d-8a44-5e984c689937
+    taskid: 3d84ef2a-936a-4a64-8a62-ab0f1a16fb49
     type: regular
     task:
-      id: bc61a68e-f765-465d-8a44-5e984c689937
+      id: 3d84ef2a-936a-4a64-8a62-ab0f1a16fb49
       version: -1
       name: Update findings
-      description: Used by Security Hub customers to update information about their investigation into a finding. Requested by master accounts or member accounts. Master accounts can update findings for their account and their member accounts. Member accounts can update findings for their account. Updates from BatchUpdateFindings do not affect the value of UpdatedAt for a finding. Master accounts can use BatchUpdateFindings to update the following finding fields and objects. *   Confidence *   Criticality *   Note *   RelatedFindings *   Severity *   Types *   UserDefinedFields *   VerificationState *   Workflow Member accounts can only use BatchUpdateFindings to update the Note object.
+      description: ""
       script: '|||aws-securityhub-batch-update-findings'
       type: regular
       iscommand: true
@@ -238,21 +238,13 @@ tasks:
           root: AWS-SecurityHub.Findings
           accessor: Id
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+          - operator: FirstArrayElement
       finding_identifiers_product_arn:
         complex:
           root: AWS-SecurityHub.Findings
           accessor: ProductArn
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+          - operator: FirstArrayElement
       note_text:
         simple: Test
       note_updated_by:
@@ -284,10 +276,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 3eaf5473-e562-4921-8625-cc6114ff50c9
+    taskid: 3440ab85-889a-4138-818a-29dd41e68108
     type: regular
     task:
-      id: 3eaf5473-e562-4921-8625-cc6114ff50c9
+      id: 3440ab85-889a-4138-818a-29dd41e68108
       version: -1
       name: Get updated finding
       description: Returns a list of findings that match the specified criteria.
@@ -321,11 +313,7 @@ tasks:
           root: AWS-SecurityHub.Findings
           accessor: Id
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+          - operator: FirstArrayElement
       keyword_value: {}
       last_observed_at_end: {}
       last_observed_at_start: {}
@@ -373,11 +361,7 @@ tasks:
           root: AWS-SecurityHub.Findings
           accessor: ProductArn
           transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+          - operator: FirstArrayElement
       product_fields_comparison: {}
       product_fields_key: {}
       product_fields_value: {}
@@ -490,10 +474,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: a6d734d9-9060-4d5e-852a-96f944ae0765
+    taskid: 06ef1bd1-ca82-45f9-82e8-5264f6d89c50
     type: condition
     task:
-      id: a6d734d9-9060-4d5e-852a-96f944ae0765
+      id: 06ef1bd1-ca82-45f9-82e8-5264f6d89c50
       version: -1
       name: Verify updated
       type: condition
@@ -512,6 +496,8 @@ tasks:
               complex:
                 root: AWS-SecurityHub
                 accessor: Findings.Note.UpdatedBy
+                transformers:
+                - operator: FirstArrayElement
             iscontext: true
           right:
             value:

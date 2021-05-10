@@ -1,0 +1,20 @@
+{
+  "attackSignaturesCheck": "true",
+  "defenseAttributes": {
+    "maximumTotalLengthOfGWTData": "any",
+    "maximumValueLength": "any",
+    "tolerateGWTParsingWarnings": "false"
+  },
+  "description": "",
+  "id": "GWT-md5",
+  "isDefault": "false",
+  "isReferenced": "false",
+  "_kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
+  "lastUpdateMicros": 1596553383000000,
+  "metacharElementCheck": "false",
+  "name": "GWT_test",
+  "selfLink": "https://gwt-profiles/GWT-md5?ver=15.1.0",
+  "signatureOverrides": [
+
+  ]
+}

@@ -2,12 +2,7 @@
     "id": "incident_expansebusinessunit",
     "version": -1,
     "modified": "2020-06-15T20:19:59.726221414Z",
-    "sortValues": null,
-    "vcShouldIgnore": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "name": "Expanse Business Unit",
-    "prevName": "Expanse Business Unit",
     "ownerOnly": false,
     "placeholder": "",
     "description": "Business Unit for Incident",
@@ -27,7 +22,6 @@
     "system": false,
     "content": true,
     "group": 0,
-    "mergeStrategy": "",
     "hidden": false,
     "associatedTypes": [
         "Expanse Appearance",
@@ -43,6 +37,5 @@
     "sla": 0,
     "threshold": 72,
     "breachScript": "",
-    "validatedError": "",
     "fromVersion": "5.0.0"
 }
