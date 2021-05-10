@@ -2840,11 +2840,14 @@ script:
     execution: false
     name: GitHub-list-team-members
     outputs:
-    - contextPath: GitHub.TEAMMEMBER.ID
+    - contextPath: GitHub.TeamMember.ID
       description: The ID of the team member.
       type: Number
-    - contextPath: GitHub.TEAMMEMBER.Login
+    - contextPath: GitHub.TeamMember.Login
       description: The login name of the team member.
+      type: String
+    - contextPath: GitHub.TeamMember.Team
+      description: The user's team.
       type: String
   dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false

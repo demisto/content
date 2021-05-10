@@ -1673,9 +1673,9 @@ List team members.
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GitHub.GitHub.ID | String | The ID of the team member. | 
-| GitHub.TEAMMEMBER.Login | String | The login name of the team member. |
-| GitHub.TEAMMEMBER.Team | String | The user's team. |
+| GitHub.TeamMember.ID | String | The ID of the team member. | 
+| GitHub.TeamMember.Login | String | The login name of the team member. |
+| GitHub.TeamMember.Team | String | The user's team. |
 #### Command Example
 ```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
 
@@ -1685,8 +1685,8 @@ List team members.
     "GitHub.GitHub": [
         {
             "ID": 1234567, 
-            "Login": user1, 
-            "Team": content, 
+            "Login": "user1", 
+            "Team": "content", 
         }
     ]
 }
@@ -1694,6 +1694,6 @@ List team members.
 
 #### Human Readable Output
 ## Team Member of team content in organization demisto
-|ID|Login|
-|--- |---|
-|1234567|user1|
+|ID|Login|Team|
+|--- |---|---|
+|1234567|user1|content|

@@ -1347,7 +1347,7 @@ def list_team_members_command():
 
     return_results(CommandResults(
         readable_output=human_readable,
-        outputs_prefix='GitHub.TEAMMEMBER',
+        outputs_prefix='GitHub.TeamMember',
         outputs_key_field='ID',
         outputs=members if members else None,
         raw_response=response,
