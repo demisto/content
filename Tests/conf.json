@@ -3289,6 +3289,7 @@
             "nightly": true
         },
         {
+            "integrations": "Proofpoint TAP v2",
             "playbookID": "ProofpointTAP-Test"
         }
     ],
