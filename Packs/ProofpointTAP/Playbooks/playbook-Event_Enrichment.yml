@@ -1,0 +1,802 @@
+id: Event Enrichment
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Event Enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d0a6d09f-cfce-4fbe-8803-cd7c64d5dc12
+    type: start
+    task:
+      id: d0a6d09f-cfce-4fbe-8803-cd7c64d5dc12
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 48616210-819b-4048-87fa-01814beece76
+    type: condition
+    task:
+      id: 48616210-819b-4048-87fa-01814beece76
+      version: -1
+      name: Which Proofpoint Event?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Clicks:
+      - "3"
+      Message:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: Message
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: message
+          ignorecase: true
+    - label: Clicks
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value:
+              simple: click
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9c5be5b3-a31f-4d3a-84a5-213eebe31da2
+    type: condition
+    task:
+      id: 9c5be5b3-a31f-4d3a-84a5-213eebe31da2
+      version: -1
+      name: Check if Campaign ID Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Campaign ID Found:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: Campaign ID Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.proofpointtapthreatinfomap
+                accessor: campaignid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3e9a3555-0065-4ae1-8102-f853013de3de
+    type: condition
+    task:
+      id: 3e9a3555-0065-4ae1-8102-f853013de3de
+      version: -1
+      name: Check if Campaign ID Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      'Campiagn ID Found ':
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: 'Campiagn ID Found '
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: proofpointtapcampaignid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b6080c55-d2fe-4644-8cc1-50082789585d
+    type: regular
+    task:
+      id: b6080c55-d2fe-4644-8cc1-50082789585d
+      version: -1
+      name: No ThreatID or Campaign ID retrieved
+      description: Prints text to war room (Markdown supported)
+      tags:
+      - ProofPoint Event Enrichment
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: No information to enrich
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8f9c207b-7d3b-4b6a-8965-af68cc2d5920
+    type: regular
+    task:
+      id: 8f9c207b-7d3b-4b6a-8965-af68cc2d5920
+      version: -1
+      name: Get Campaign Information given ID
+      description: Get details for a given campaign.
+      tags:
+      - ProofPoint Event Enrichment
+      script: '|||proofpoint-get-campaign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      campaign_id:
+        complex:
+          root: ProofPointTAP
+          accessor: campaignid
+          transformers:
+          - operator: uniq
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 8a736af5-f5bf-489b-8700-fa51e06caea6
+    type: regular
+    task:
+      id: 8a736af5-f5bf-489b-8700-fa51e06caea6
+      version: -1
+      name: Get forensics given Campaign ID
+      description: Returns forensics evidence.
+      tags:
+      - ProofPoint Event Enrichment
+      script: Proofpoint TAP v3|||proofpoint-get-forensics
+      type: regular
+      iscommand: true
+      brand: Proofpoint TAP v3
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      campaignId:
+        complex:
+          root: ProofPointTAP
+          accessor: campaignid
+          transformers:
+          - operator: uniq
+      includeCampaignForensics: {}
+      threatId: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 35d2c547-db00-429c-893d-0869932001df
+    type: regular
+    task:
+      id: 35d2c547-db00-429c-893d-0869932001df
+      version: -1
+      name: Get forensics Information given ThreatID
+      description: Returns forensics evidence.
+      tags:
+      - ProofPoint Event Enrichment
+      script: Proofpoint TAP v3|||proofpoint-get-forensics
+      type: regular
+      iscommand: true
+      brand: Proofpoint TAP v3
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      campaignId: {}
+      includeCampaignForensics: {}
+      threatId:
+        complex:
+          root: ProofPointTAP
+          accessor: threatid
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d3b0b130-58fe-4073-8cdf-da4d4917932f
+    type: regular
+    task:
+      id: d3b0b130-58fe-4073-8cdf-da4d4917932f
+      version: -1
+      name: Extract CampaignID to Context
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: ProofPointTAP.campaignid
+      value:
+        complex:
+          root: incident.proofpointtapthreatinfomap
+          accessor: campaignid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1002.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 3c2ef72f-1875-415c-8c4a-7f02190378ee
+    type: regular
+    task:
+      id: 3c2ef72f-1875-415c-8c4a-7f02190378ee
+      version: -1
+      name: Extract CampaignID to Context
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: ProofPointTAP.campaignid
+      value:
+        complex:
+          root: incident
+          accessor: proofpointtapcampaignid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1432.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e8fcc011-af74-408f-8b89-85b1f8d329c7
+    type: condition
+    task:
+      id: e8fcc011-af74-408f-8b89-85b1f8d329c7
+      version: -1
+      name: Check if Threat ID Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Threat ID Found:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Threat ID Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.proofpointtapthreatinfomap
+                accessor: threatid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6b0ea10b-0313-4f41-8621-651a62cfd7d6
+    type: regular
+    task:
+      id: 6b0ea10b-0313-4f41-8621-651a62cfd7d6
+      version: -1
+      name: Extract ThreatID to Context
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: ProofPointTAP.threatid
+      value:
+        complex:
+          root: incident.proofpointtapthreatinfomap
+          accessor: threatid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b6934d1a-597f-4db0-896c-3b965d654714
+    type: condition
+    task:
+      id: b6934d1a-597f-4db0-896c-3b965d654714
+      version: -1
+      name: Check if ThreatID Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      'Threat ID Found ':
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: 'Threat ID Found '
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: proofpointtapthreatid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 54f00b3a-ef0b-4400-8961-c673d1c7d9c8
+    type: regular
+    task:
+      id: 54f00b3a-ef0b-4400-8961-c673d1c7d9c8
+      version: -1
+      name: Extract ThreatID to Context
+      description: Sets key/value pair in incident's context
+      scriptName: SetContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: ProofPointTAP.threatid
+      value:
+        complex:
+          root: incident
+          accessor: proofpointtapthreatid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ca494bb6-4186-4cc2-822a-8795ec2b3c47
+    type: condition
+    task:
+      id: ca494bb6-4186-4cc2-822a-8795ec2b3c47
+      version: -1
+      name: Check if Threat ID Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      Threat ID Found:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Threat ID Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.proofpointtapthreatinfomap
+                accessor: threatid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1002.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 0bac57c8-4807-4da9-8599-2971334011c1
+    type: title
+    task:
+      id: 0bac57c8-4807-4da9-8599-2971334011c1
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 6627bc6e-175a-4d83-8162-c2e8bb519454
+    type: condition
+    task:
+      id: 6627bc6e-175a-4d83-8162-c2e8bb519454
+      version: -1
+      name: Check if ThreatID Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      'Threat ID Found ':
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: 'Threat ID Found '
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: proofpointtapthreatid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1432.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 8c2eefe5-2298-4c20-8c47-7f5fe5fb97cc
+    type: condition
+    task:
+      id: 8c2eefe5-2298-4c20-8c47-7f5fe5fb97cc
+      version: -1
+      name: What Information have been fetched?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      'Campaign ID ':
+      - "6"
+      Campaign ID and ThreatID:
+      - "18"
+      ThreatID:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Campaign ID and ThreatID
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ProofPointTAP
+                accessor: threatid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ProofPointTAP
+                accessor: campaignid
+            iscontext: true
+    - label: 'Campaign ID '
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ProofPointTAP
+                accessor: campaignid
+            iscontext: true
+    - label: ThreatID
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ProofPointTAP
+                accessor: threatid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 13201885-5bd2-41fb-8d04-e38d7b31d42e
+    type: regular
+    task:
+      id: 13201885-5bd2-41fb-8d04-e38d7b31d42e
+      version: -1
+      name: Get forensics Information given ThreatID
+      description: Returns forensics evidence.
+      tags:
+      - ProofPoint Event Enrichment
+      script: Proofpoint TAP v3|||proofpoint-get-forensics
+      type: regular
+      iscommand: true
+      brand: Proofpoint TAP v3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      campaignId: {}
+      includeCampaignForensics: {}
+      threatId:
+        complex:
+          root: ProofPointTAP
+          accessor: threatid
+          transformers:
+          - operator: uniq
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 95e67cf0-0f94-4a5d-84a2-1a2be7dd4977
+    type: title
+    task:
+      id: 95e67cf0-0f94-4a5d-84a2-1a2be7dd4977
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1950,
+        "width": 1762.5,
+        "x": 50,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: Proofpoint.Report
+  description: Proofpoint Report
+  type: unknown
+- contextPath: Proofpoint.Campaign
+  description: 'Proofpoint Campaign '
+  type: unknown

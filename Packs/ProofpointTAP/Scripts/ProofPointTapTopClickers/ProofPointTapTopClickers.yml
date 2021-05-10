@@ -1,0 +1,16 @@
+commonfields:
+  id: ProofPointTapTopClickers
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: ProofPointTapTopClickers
+script: ''
+type: python
+tags:
+- widget
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.4.19537
+runas: DBotWeakRole
