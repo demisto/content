@@ -45,7 +45,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
     # default values
     asn = as_owner = None
     feed_related_indicators: List[Common.FeedRelatedIndicators] = []
-    relations = []
+    relationships = []
 
     if not raw_result:
         return command_results
@@ -54,13 +54,13 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
     hostname_indicator_type = FeedIndicatorType.URL if urlRegex.find(hostname) else FeedIndicatorType.Domain
     feed_related_indicators.append(Common.FeedRelatedIndicators(hostname, hostname_indicator_type, 'Hostname'))
 
-    relations.append(EntityRelation(name=EntityRelation.Relations.RESOLVES_TO,
-                                    entity_a=ip,
-                                    entity_a_type=FeedIndicatorType.IP,
-                                    entity_b=hostname,
-                                    entity_b_type=FeedIndicatorType.Domain,
-                                    brand='IPinfo',
-                                    source_reliability=reliability))
+    relationships.append(EntityRelationship(name=EntityRelationship.Relationships.RESOLVES_TO,
+                                            entity_a=ip,
+                                            entity_a_type=FeedIndicatorType.IP,
+                                            entity_b=hostname,
+                                            entity_b_type=FeedIndicatorType.Domain,
+                                            brand='IPinfo',
+                                            source_reliability=reliability))
 
     if 'org' in raw_result:
         org = raw_result.get('org', '')
@@ -150,7 +150,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
         geo_description=description or None,
         geo_country=country,
         tags=','.join(tags),
-        relations=relations)
+        relationships=relationships)
 
     command_results.append(
         CommandResults(readable_output=tableToMarkdown(f'IPinfo results for {ip}', raw_result),
@@ -159,7 +159,7 @@ def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List
                        outputs=entry_context,
                        outputs_key_field=outputs_key_field,
                        indicator=indicator,
-                       relations=relations
+                       relationships=relationships
                        )
     )
 
