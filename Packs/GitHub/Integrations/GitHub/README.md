@@ -1647,7 +1647,7 @@ Get list of files from the given path in the repository.
 | GitHub.File.Size | Number | The size of the file in bytes. | 
 | GitHub.File.Path | String | The file path inside the repository. | 
 | GitHub.File.DownloadUrl | String | Link to download the file content. | 
-| GitHub.File.SHAl | String | The SHA of the file. | 
+| GitHub.File.SHA | String | The SHA of the file. | 
 
 #### Command Example
 ```!Github-list-files path=Index```
