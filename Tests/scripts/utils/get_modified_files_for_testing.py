@@ -65,13 +65,8 @@ def resolve_type(file_path: str) -> Optional[FileType]:
     if checked_type(file_path, [LANDING_PAGE_SECTIONS_JSON_PATH]):
         return FileType.LANDING_PAGE_SECTIONS_JSON
     # MetaData files
-    elif any(
-            file in file_path
-            for file in (
-                    constants.PACKS_PACK_META_FILE_NAME,
-                    constants.PACKS_WHITELIST_FILE_NAME,
-            )
-    ):
+    elif any(file in file_path
+             for file in (constants.PACKS_PACK_META_FILE_NAME, constants.PACKS_WHITELIST_FILE_NAME,)):
         return FileType.METADATA
     # Whitelist file type
     elif checked_type(file_path, [SECRETS_WHITE_LIST]):
