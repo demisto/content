@@ -1570,7 +1570,7 @@ script:
       name: interval
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '100'
       description: The maximum number of campaign IDs to produce in the response.
         Defaults to 100 and the max supported value is 200.
@@ -1578,7 +1578,7 @@ script:
       name: limit
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: The page of results to return, in multiples of the specified size.
       isArray: false
@@ -1650,14 +1650,14 @@ script:
       - '90'
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1000'
       description: The maximum number of users to produce in the response.
       isArray: false
       name: limit
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: The page of results to return.
       isArray: false
@@ -1700,7 +1700,7 @@ script:
       - '90'
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '100'
       description: The maximum number of top clickers to produce in the response.The
         max supported value is 200.
@@ -1708,7 +1708,7 @@ script:
       name: limit
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: The page of results to return.
       isArray: false
@@ -1752,7 +1752,7 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded
       type: Boolean
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.9.4.19537
   feed: false
   isfetch: true
   longRunning: false
