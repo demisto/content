@@ -125,10 +125,10 @@ function evaluate(operator, lhs, rhs, options) {
     }
 }
 
-if (args.op && args.op.indexOf("equals") >= 0) {
-    throw "Legacy parameter (equals) is not supported for `op`, please use lhs and rhs or leave it blank";
+if (args.condition && args.condition.indexOf("equals") >= 0) {
+    throw "Legacy parameter (equals) is not supported for `condition`, please use lhs and rhs or leave it blank";
 }
-const condition = args.op ? args.op.trim() : 'value==equals';
+const condition = args.condition ? args.condition.trim() : 'value==equals';
 const options = makeOptions(args.options);
 const [lhs_name, lhs] = getValue(args, condition, options, true);
 const [rhs_name, rhs] = getValue(args, condition, options, false);

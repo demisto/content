@@ -18,7 +18,7 @@ args:
   description: Return this value if 'condition' is true
 - name: else
   description: Return this value if 'condition' is false
-- name: op
+- name: condition
   auto: PREDEFINED
   predefined:
   - lhs===rhs

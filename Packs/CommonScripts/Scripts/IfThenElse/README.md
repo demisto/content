@@ -15,17 +15,17 @@ A transformer for simple if-then-else logic. This can potentially reduce the num
 | **Argument Name** | **Description** |
 | --- | --- |
 | value | (Optional) The value to evaluate |
-| equals | (Optional, Depreciated) If value equals this |
-| then | (Optional) Return this value if 'op' is true |
-| else | (Optional) Return this value if 'op' is false |
-| op | (Optional) The condition expression to evaluate, See `Condition` |
-| lhs | (Optional) The value to compare in the condition given in `op` (left hand side). |
-| rhs | (Optional) The value to compare in the condition given in `op` (right hand side). |
+| equals | (Optional, Deprecated) If value equals this |
+| then | (Optional) Return this value if 'condition' is true |
+| else | (Optional) Return this value if 'condition' is false |
+| condition | (Optional) The condition expression to evaluate, See `Condition` |
+| lhs | (Optional) The value to compare in the condition given in `condition` (left hand side). |
+| rhs | (Optional) The value to compare in the condition given in `condition` (right hand side). |
 | options | (Optional) Option flags (comma separated list), See `Options` |
 
 #### Condition
 
-The evaluation performs with the condition expression given in the `op` parameter.<br>
+The evaluation performs with the condition expression given in the `condition` parameter.<br>
 The format of the condition expression is:
 
     <lhs> <operator> <rhs>
