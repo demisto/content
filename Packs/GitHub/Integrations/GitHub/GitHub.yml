@@ -8,12 +8,12 @@ configuration:
   required: false
   type: 8
 - defaultvalue: Issue
-  display: Select an Issue or PR to Fetch
+  display: Select an Issue or Pull requests to Fetch
   hidden: false
   name: fetch_object
   options:
   - Issue
-  - PR
+  - Pull_requests
   required: false
   type: 15
 - display: API Token
