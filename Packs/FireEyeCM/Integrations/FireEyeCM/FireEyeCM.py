@@ -66,6 +66,22 @@ class Client(BaseClient):
 
 
 @logger
+def to_fe_datetime_converter(time_given):
+    """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
+    Args:
+        time_given: the time given, could be now or a time in any format.
+
+    Returns:
+
+    """
+    date_obj = dateparser.parse(time_given)
+    end_time = date_obj.strftime(FE_DATE_FORMAT)
+    end_time += f'.{date_obj.strftime("%f")[:3]}'
+    end_time += f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
+    return end_time
+
+
+@logger
 def test_module(client: Client) -> str:
     # check get alerts for fetch purposes
     return 'ok'
@@ -78,9 +94,11 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     raw_response = client.get_alerts_request(alert_id)
 
     alerts = raw_response.get('alert')
-
-    headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
-    md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alerts, headers=headers, removeNull=True)
+    if not alerts:
+        md_ = 'No alerts with teh given arguments were found.'
+    else:
+        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alerts, headers=headers, removeNull=True)
 
     return CommandResults(
         readable_output=md_,
@@ -178,20 +196,18 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
 @logger
 def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
     duration = args.get('duration', '12_hours')
-    date_obj = dateparser.parse(args.get('end_time', datetime.now()))
-    end_time = date_obj.strftime(FE_DATE_FORMAT)
-    end_time += f'.{date_obj.strftime("%f")[:3]}'
-    end_time += f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'
-
-    # raise Exception(str(end_time))
+    end_time = to_fe_datetime_converter(args.get('end_time', datetime.now()))
     mvx_correlated_only = argToBoolean(args.get('mvx_correlated_only', 'false'))
 
     raw_response = client.get_events_request(duration, end_time, mvx_correlated_only)
 
     events = raw_response.get('event')
-
-    # headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
-    md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Events:', t=raw_response, removeNull=True)
+    if not events:
+        md_ = 'No events in the given timeframe were found.'
+    else:
+        # TODO - actual events
+        # headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Events:', t=raw_response, removeNull=True)
 
     return CommandResults(
         readable_output=md_,
