@@ -1,3 +1,4 @@
+# type: ignore
 from CommonServerPython import *
 import jwt
 import uuid
