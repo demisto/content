@@ -971,9 +971,10 @@ def test_module(client: Client, params: dict) -> str:
                 return 'Authorization Error: make sure Custom API Key is correctly set'
             else:
                 raise e
-    # if only one of the custom API key's is provided
+    # if one or more of the custom API keys are provided
     elif client.api_key or client.api_secret_key or client.organization_key:
-        return 'Please fill the following parameters: Custom API key, Custom API secret key and Organization key'
+        return 'Missing custom API parameters. Please fill all the relevant parameters: ' \
+               'Custom API key, Custom API secret key and Organization key.'
 
     # if all of the api/live-response API key's is provided
     if client.policy_api_key and client.policy_api_secret_key:
@@ -985,9 +986,9 @@ def test_module(client: Client, params: dict) -> str:
                 return 'Authorization Error: make sure API Key is correctly set'
             else:
                 raise e
-    # if only one of the api/live-response API key's is provided
+    # if only one of the api/live-response API keys are provided
     elif client.policy_api_key or client.policy_api_secret_key:
-        return 'Please fill the following parameters: API key, API secret key'
+        return 'Missing API parameters. Please fill all the relevant parameters: API key, API secret key'
 
     return message
 
