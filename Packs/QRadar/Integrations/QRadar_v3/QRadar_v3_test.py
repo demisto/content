@@ -344,16 +344,16 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
     """
     if status_exception:
         requests_mock.get(
-            f'{client.server}/ariel/searches/{search_id}',
+            f'{client.server}/api/ariel/searches/{search_id}',
             exc=status_exception
         )
     else:
         requests_mock.get(
-            f'{client.server}/ariel/searches/{search_id}',
+            f'{client.server}/api/ariel/searches/{search_id}',
             json=status_response
         )
     requests_mock.get(
-        f'{client.server}/ariel/searches/{search_id}/results',
+        f'{client.server}/api/ariel/searches/{search_id}/results',
         json=results_response
     )
     assert poll_offense_events_with_retry(client, search_id, 1, 1) == expected

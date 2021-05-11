@@ -954,11 +954,14 @@ def get_last_update_in_splunk_time(last_update):
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
     params = demisto.params()
-    splunk_timezone = params.get('timezone')
-    if not splunk_timezone:
+
+    try:
+        splunk_timezone = int(params['timezone'])
+    except (KeyError, ValueError):
         raise Exception('Cannot mirror incidents when timezone is not configured. Please enter the '
                         'timezone of the Splunk server being used in the integration configuration.')
-    dt = last_update_utc_datetime + timedelta(minutes=int(splunk_timezone))
+
+    dt = last_update_utc_datetime + timedelta(minutes=splunk_timezone)
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
@@ -1602,11 +1605,12 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(' table (?P<table>.*)(\|)?', args.get('query', ''))
+            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
             if search_for_table_args:
                 table_args = search_for_table_args.group('table')
                 table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field for field in re.split(' |,', table_args) if field]
+                chosen_fields = [field.strip('"')
+                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
 
                 headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
@@ -1978,15 +1982,27 @@ def kv_store_collection_config(service):
     return_outputs("KV store collection {} configured successfully".format(app), {}, {})
 
 
+def batch_kv_upload(kv_data_service_client, json_data):
+    if json_data.startswith('[') and json_data.endswith(']'):
+        return json.loads(kv_data_service_client._post(
+            'batch_save', headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data).body.read().decode('utf-8'))
+    elif json_data.startswith('{') and json_data.endswith('}'):
+        return kv_data_service_client.insert(json_data)
+    else:
+        raise DemistoException('kv_store_data argument should be in json format. '
+                               '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]')
+
+
 def kv_store_collection_add_entries(service):
     args = demisto.args()
     kv_store_data = args.get('kv_store_data', '').encode('utf-8')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
-    service.kvstore[kv_store_collection_name].data.insert(kv_store_data)
+    batch_kv_upload(service.kvstore[kv_store_collection_name].data, kv_store_data)
     timeline = None
     if indicator_path:
-        indicator = extract_indicator(indicator_path, [json.loads(kv_store_data)])
+        kv_store_data = json.loads(kv_store_data)
+        indicator = extract_indicator(indicator_path, [kv_store_data] if not isinstance(kv_store_data, list) else kv_store_data)
         timeline = {
             'Value': indicator,
             'Message': 'Indicator added to {} store in Splunk'.format(kv_store_collection_name),

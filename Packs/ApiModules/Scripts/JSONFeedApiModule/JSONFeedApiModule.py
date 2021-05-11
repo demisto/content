@@ -13,8 +13,8 @@ class Client:
     def __init__(self, url: str = '', credentials: dict = None,
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
                  extractor: str = '', indicator: str = 'indicator',
-                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None,
-                 tlp_color: Optional[str] = None, **_):
+                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: Union[dict, str] = None,
+                 tlp_color: Optional[str] = None, data: Union[str, dict] = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
         :param url: URL of the feed.
@@ -28,10 +28,14 @@ class Client:
         Hidden parameters:
         :param: cert_file: client certificate
         :param: key_file: private key of the client certificate
-        :param: headers: Header parameters are optional to specify a user-agent or an api-token
-        Example: headers = {'user-agent': 'my-app/0.0.1'} or Authorization: Bearer
-        (curl -H "Authorization: Bearer " "https://api-url.com/api/v1/iocs?first_seen_since=2016-1-1")
+        :param: headers: Header parameters are optional to specify a user-agent or an api-token.
+            Support also a multiline string where each line contains a header of the format 'Name: Value'
+            Example: headers = {'user-agent': 'my-app/0.0.1'} or "Authorization: Bearer"
+            (curl -H "Authorization: Bearer " "https://api-url.com/api/v1/iocs?first_seen_since=2016-1-1")
         :param tlp_color: Traffic Light Protocol color.
+        :param data: Data to post. If not specified will do a GET request. May also be passed as dict as
+            supported by requests. If passed as a string will set content-type to
+            application/x-www-form-urlencoded if not specified in the headers.
 
          Example:
             Example feed config:
@@ -57,15 +61,13 @@ class Client:
         self.url = url
         self.verify = not insecure
         self.auth: Optional[tuple] = None
-        self.headers = headers
+        self.headers = self.parse_headers(headers)
 
         if credentials:
             username = credentials.get('identifier', '')
             if username.startswith('_header:'):
                 header_name = username.split(':')[1]
                 header_value = credentials.get('password', '')
-                if not self.headers:
-                    self.headers = {}
                 self.headers[header_name] = header_value
             else:
                 password = credentials.get('password', '')
@@ -74,16 +76,57 @@ class Client:
 
         self.cert = (cert_file, key_file) if cert_file and key_file else None
         self.tlp_color = tlp_color
+        self.post_data = data
+
+        if isinstance(self.post_data, str):
+            content_type_header = 'Content-Type'
+            if content_type_header.lower() not in [k.lower() for k in self.headers.keys()]:
+                self.headers[content_type_header] = 'application/x-www-form-urlencoded'
+
+    @staticmethod
+    def parse_headers(headers: Optional[Union[dict, str]]) -> dict:
+        """Parse headers if passed as a string. Support a multiline string where each line contains a header
+        of the format 'Name: Value'
+
+        Args:
+            headers (Optional[Union[dict, str]]): either dict or string to parse
+
+        Returns:
+            dict: returns a headers dict or None
+        """
+        if not headers:
+            return {}
+        if isinstance(headers, str):
+            res = {}
+            for line in headers.splitlines():
+                if line.strip():  # ignore empty lines
+                    key_val = line.split(':', 1)
+                    res[key_val[0].strip()] = key_val[1].strip()
+            return res
+        else:
+            return headers
 
     def build_iterator(self, feed: dict, **kwargs) -> List:
-        r = requests.get(
-            url=feed.get('url', self.url),
-            verify=self.verify,
-            auth=self.auth,
-            cert=self.cert,
-            headers=self.headers,
-            **kwargs
-        )
+        url = feed.get('url', self.url)
+        if not self.post_data:
+            r = requests.get(
+                url=url,
+                verify=self.verify,
+                auth=self.auth,
+                cert=self.cert,
+                headers=self.headers,
+                **kwargs
+            )
+        else:
+            r = requests.post(
+                url=url,
+                data=self.post_data,
+                verify=self.verify,
+                auth=self.auth,
+                cert=self.cert,
+                headers=self.headers,
+                **kwargs
+            )
 
         try:
             r.raise_for_status()
@@ -144,7 +187,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function))
 
-            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
+            if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
     return indicators
@@ -176,6 +219,8 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
 
     if not current_indicator_type:
+        demisto.debug(f'Could not determine indicator type for value: {indicator_value} from field: {indicator_field}.'
+                      f' Skipping item: {item}')
         return []
 
     indicator = {
@@ -199,6 +244,9 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
 
     if mapping:
         mapping_function(mapping, indicator, attributes)
+
+    if feed_config.get('rawjson_include_indicator_type'):
+        item['_indicator_type'] = current_indicator_type
 
     indicator['rawJSON'] = item
 
