@@ -2,12 +2,7 @@ id: Prisma Cloud Remediation - Azure Network Misconfiguration
 version: -1
 fromversion: 5.0.0
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.6.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma Cloud Remediation - Azure Network Misconfiguration
 description: |-
   This playbook remediates Prisma Cloud Azure Network alerts.  It calls sub-playbooks that perform the actual remediation steps.
@@ -240,14 +235,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: ${incident.id} Autoremediate?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -795,7 +790,7 @@ inputs:
     simple: "no"
   required: false
   description: Execute Azure Network remediation automatically?
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -810,7 +805,7 @@ inputs:
               simple: policyId
   required: false
   description: Grab the Prisma Cloud policy Id.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: portNumber
   value:
     complex:
@@ -834,7 +829,7 @@ inputs:
       - operator: ParseJSON
   required: false
   description: Port number.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: incident.resourcename
   description: Security group name.

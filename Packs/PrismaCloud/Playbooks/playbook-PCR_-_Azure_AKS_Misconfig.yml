@@ -2,12 +2,7 @@ id: Prisma Cloud Remediation - Azure AKS Misconfiguration
 version: -1
 fromversion: 5.0.0
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.6.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma Cloud Remediation - Azure AKS Misconfiguration
 description: |
   This playbook remediates Prisma Cloud Azure AKS alerts.  It calls sub-playbooks that perform the actual remediation steps.
@@ -218,14 +213,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: ${incident.id} Autoremediate?
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -558,7 +553,7 @@ inputs:
     simple: "no"
   required: false
   description: Execute Azure AKS remediation automatically?
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -573,7 +568,7 @@ inputs:
               simple: policyId
   required: false
   description: Grab the Prisma Cloud policy Id.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: incident.labels.resource.name
   description: AKS cluster name.

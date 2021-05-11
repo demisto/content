@@ -2,12 +2,7 @@ id: Prisma Cloud Remediation - Azure SQL Database Misconfiguration
 version: -1
 fromversion: 5.0.0
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.6.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma Cloud Remediation - Azure SQL Database Misconfiguration
 description: |-
   This playbook remediates the following Prisma Cloud Azure SQL database alerts.
@@ -444,7 +439,7 @@ inputs:
   value: {}
   required: true
   description: Prisma Cloud policy Id.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No Test
