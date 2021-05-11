@@ -239,6 +239,8 @@ def process_timeline(detection_id):
                 'SHA256': image['sha256'],
                 'StartTime': get_time_str(get_time_obj(process['started_at'])),
                 'CommandLine': process['command_line']['attributes']['command_line'],
+                'ID': process['native_id'],
+                'PID': process['operating_system_pid'],
             })
 
         elif activity['attributes']['type'] == 'network_connection_activity_occurred':

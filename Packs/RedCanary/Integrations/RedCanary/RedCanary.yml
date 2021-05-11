@@ -406,6 +406,12 @@ script:
     - contextPath: Process.CommandLine
       description: Process command line
       type: string
+    - contextPath: Process.ID
+      description: ID of process in EDR solution
+      type: string
+    - contextPath: Process.PID
+      description: System PID
+      type: number
     description: Get a detection by unique identifier.
   isfetch: true
   runonce: false
