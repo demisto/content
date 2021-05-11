@@ -52,8 +52,8 @@ script:
       description: The value of the given field.
     - name: limit
       required: false
-      description: 'The maximum number of domains to display. Possible values are: "0", "1",
-        "5", "10", "25", "100", "250", or 1"000. Default is "25".'
+      description: 'The maximum number of domains to display. Possible values are:
+        "0", "1", "5", "10", "25", "100", "250", or 1"000. Default is "25".'
     outputs:
     - contextPath: HostIo.Search.Field
       description: The field to look up.
@@ -112,7 +112,7 @@ script:
       description: Name of the server where the domain exists.
       type: String
     description: Returns domain information.
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   runonce: false
   subtype: python3
 fromversion: 5.0.0
