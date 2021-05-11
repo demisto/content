@@ -1,16 +1,19 @@
-import argparse
-import logging
-import demisto_client
-import time
-import demisto_sdk.commands.common.tools as tools
-import pandas as pd
-from demisto_client.demisto_api.rest import ApiException
+from subprocess import PIPE, Popen
 from io import StringIO
+import pandas as pd
+import urllib3
 
-EDL_EXPECTED_SIZES = (10*1000, 50*1000, 100*1000)
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+# disable insecure warnings
+urllib3.disable_warnings()
+
+EDL_EXPECTED_SIZES = (10 * 1000, 50 * 1000, 100 * 1000)
 CONCURRENT_LIMITS = (1, 4, 8, 16)
 TIMEOUT_LIMITS = (3, 5, 10, 30)
 
+# ---------- CLASSES ---------- #
 
 class EDLQueryBuilder:
     """
@@ -36,8 +39,7 @@ class EDLQueryBuilder:
         return self._get_query('IP')
 
 
-class PerformanceResult:
-
+class EDLPerformanceResult:
     def __init__(self, timeout: int, concurrent: int, ioc_type: str, size: int, result: str):
         self._t = timeout
         self._c = concurrent
@@ -45,7 +47,7 @@ class PerformanceResult:
         self._size = size
         self._result = result
 
-    def to_result(self):
+    def to_csv_line(self):
         df = pd.read_csv(StringIO(self._result), usecols=['response-time'])
         if len(df) == 0:
             max_time = 0
@@ -63,24 +65,23 @@ class PerformanceResult:
         return "type,size,timeout,concurrency,requests,max-time,average-time\nֿ"
 
 
-def poll_until_server_is_ready(ioc_total_target: int):
-    api_instance = demisto_client.configure(base_url="http://localhost:8080", username="admin", password="admin")
-    indicator_filter = demisto_client.demisto_api.IndicatorFilter(query="*", size=1, page=0)
-    timeout = time.time() + 60 * 10  # 10 minutes from now
-    while True:
-        try:
-            api_response = api_instance.indicators_search(indicator_filter=indicator_filter)
-            total = api_response.total
-            if time.time() > timeout:
-                raise TimeoutError(f"Exception when waited for server to create [{ioc_total_target}] iocs. "
-                                   f"fetched so far {total}")
-            if total < ioc_total_target:
-                time.sleep(60)
-            else:
-                break
-        except ApiException as e:
-            print(f"Exception when calling DefaultApi->indicators_search: {str(e)}\n")
-    logging.info(f"Got {total} iocs")
+# ---------- HELPER FUNCTIONS ---------- #
+
+def run_command(command: str) -> str:
+    """Run a bash command in the shell.
+
+    Args:
+        command (string): The string of the command you want to execute.
+
+    Returns:
+        string. The output of the command you are trying to execute.
+    """
+    p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
+    output, err = p.communicate()
+    if err:
+        raise RuntimeError('Failed to run command {}\nerror details:\n{}'.format(command, err))
+
+    return output
 
 
 def run_test_for_ioc_types(hey_query: str, t: int, c: int, size: int) -> str:
@@ -94,12 +95,12 @@ def run_test_for_ioc_types(hey_query: str, t: int, c: int, size: int) -> str:
 
     for ioc_type, edl_query in tests_map.items():
         result = tools.run_command(f'{hey_query}{edl_query}"')
-        perf_results += PerformanceResult(t, c, ioc_type, size, result).to_result()
+        perf_results += EDLPerformanceResult(t, c, ioc_type, size, result).to_csv_line()
     return perf_results
 
 
 def run_performance_test(edl_url: str) -> pd.DataFrame:
-    test_results = PerformanceResult.get_headers()
+    test_results = EDLPerformanceResult.get_headers()
     for c in CONCURRENT_LIMITS:
         for t in TIMEOUT_LIMITS:
             for size in EDL_EXPECTED_SIZES:
@@ -110,29 +111,25 @@ def run_performance_test(edl_url: str) -> pd.DataFrame:
     return pd.read_csv(StringIO(test_results)).sort_values(by=['type', 'size', 'concurrency'])
 
 
-def options_handler():
-    parser = argparse.ArgumentParser(description='Utility for running performance tests on EDL using '
-                                                 '`Create-Mock-Feed` and `rakyll/hey`')
-    parser.add_argument('-u', '--user', help='The username for the login', required=True)
-    parser.add_argument('-p', '--password', help='The password for the login', required=True)
-    options = parser.parse_args()
+def hey_edl_test_command(url: str, edl_suffix: str, n: str = None, t: str = None, c: str = None, z: str = None):
+    edl_url =
 
-    return options
-
-
-def main():
-    # LOAD OPTIONS
-    url = 'http://localhost:8080'  # todo https
-    edl_url = url + '/instance/execute/performance'  # todo: add edl name from options
-    ioc_total_target = 100000  # todo: take from options
-
-    # POLL UNTIL SERVER IS READY
-    poll_until_server_is_ready(ioc_total_target)
-
-    # RUN PERFORMANCE TESTS
-    test_results = run_performance_test(edl_url)
-    test_results.to_csv("performance_test.csv", index=False)
+def main() -> None:
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+    url = params.get('url')
+    if isinstance(url, str) and url.endswith("/"):
+        url = url[:-1]
+    try:
+        demisto.debug(f'Command being called is {command}')
+        if command == 'hey-test-edl':
+            hey_edl_test_command(url=url, **args)
+    # Log exceptions and return errors
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
-if __name__ == "__main__":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -3281,9 +3281,15 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "edl-performance-test",
             "integrations": [
                 "EDL",
                 "Create-Mock-Feed"
+            ],
+            "instance_names": [
+                "mock_feed_domain",
+                "mock_feed_url",
+                "mock_feed_ip"
             ]
         }
     ],
@@ -3625,6 +3631,9 @@
         "GCP Whitelist Feed",
         "Cortex Data Lake",
         "Mail Listener v2"
+    ],
+    "performance_tests": [
+        "EDL Performance TestPlaybook"
     ],
     "docker_thresholds": {
         
