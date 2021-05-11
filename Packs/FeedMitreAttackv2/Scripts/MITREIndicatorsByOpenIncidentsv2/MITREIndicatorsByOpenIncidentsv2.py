@@ -7,16 +7,18 @@ def main():
     try:
         from_date = demisto.args().get('from', '')
         to_date = demisto.args().get('to', '')
-        query = 'type:"MITRE ATT&CK" and investigationsCount:>0'
-        res = demisto.searchIndicators(query=query, fromDate=from_date, toDate=to_date)
+        query = 'type:"Attack Pattern" and investigationsCount:>0'
+        search_indicators = IndicatorsSearcher()
+
+        res = search_indicators.search_indicators_by_version(query=query, from_date=from_date, to_date=to_date)
 
         indicators = []
         for ind in res.get('iocs', []):
             indicators.append({
                 'Value': dict_safe_get(ind, ['value']),
-                'Name': dict_safe_get(ind, ['CustomFields', 'mitrename']),
-                'Phase Name': dict_safe_get(ind, ['CustomFields', 'mitrekillchainphases', 0, 'phase_name']),
-                'Description': dict_safe_get(ind, ['CustomFields', 'mitredescription']),
+                'Name': dict_safe_get(ind, ['CustomFields', 'mitreid']),
+                'Phase Name': dict_safe_get(ind, ['CustomFields', 'killchainphases']),
+                'Description': dict_safe_get(ind, ['CustomFields', 'description']),
 
             })
 
@@ -31,3 +33,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
