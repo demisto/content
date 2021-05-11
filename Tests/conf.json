@@ -3385,7 +3385,9 @@
         "playbook_TrendmicroCAS_Test": "Issue 32730",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "Rundeck_test": "Issue 31174",
-        "Azure NSG - Test": "Issue 33217"
+        "Azure NSG - Test": "Issue 33217",
+        "AutoFocus V2 test": "Issue 26464",
+        "VirusTotal (API v3) Detonate Test": "Issue 36004"
     },
     "skipped_integrations": {
         
