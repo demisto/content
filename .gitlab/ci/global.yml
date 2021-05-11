@@ -13,6 +13,19 @@
     policy: pull
 
 
+### Shared Script Snippets ###
+
+.download-demisto-conf:
+  - echo "======= Download configuration ========"
+  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+
+.open-ssh-tunnel:
+  - mv $SSH_CONFIGURATION ~/.ssh/config
+  - chmod 700 ~/.ssh/config
+  - Tests/scripts/open_ssh_tunnel.sh
+
+
+
 .default-before_script:
   before_script:
     - source .gitlab/helper_functions.sh

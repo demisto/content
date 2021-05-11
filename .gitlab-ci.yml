@@ -12,6 +12,7 @@ stages:
   - create-instances
   - run-instances
   - upload-to-marketplace
+  - testing
 
 
 variables:
@@ -35,3 +36,4 @@ include:
   - local: .gitlab/ci/global.yml
   - local: .gitlab/ci/on-push.yml
   - local: .gitlab/ci/instance-test.yml
+  - local: .gitlab/ci/sdk-nightly.yml

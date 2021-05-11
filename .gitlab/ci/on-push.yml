@@ -93,9 +93,7 @@ create-instances:
         echo "Instance with role $INSTANCE_ROLE was not created"
         exit 0
       fi
-    - mv $SSH_CONFIGURATION ~/.ssh/config
-    - chmod 700 ~/.ssh/config
-    - Tests/scripts/open_ssh_tunnel.sh
+    - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"

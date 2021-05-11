@@ -8,130 +8,201 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY && $GCS_MARKET_BUCKET == "marketplace-dist"'
 
 
-# copy the conf file that was updated in 'demisto_sdk_nightly:setup' from artifacts to expected location in content repo
-.copy-updated-test-conf: &copy_updated_test_conf
-  - echo "======= Copying Updated Tests Conf ========"
-  - cp "$ARTIFACTS_FOLDER/conf.json" ./Tests/conf.json
+# # copy the conf file that was updated in 'demisto_sdk_nightly:setup' from artifacts to expected location in content repo
+# .copy-updated-test-conf: &copy_updated_test_conf
+#   - echo "======= Copying Updated Tests Conf ========"
+#   - cp "$ARTIFACTS_FOLDER/conf.json" ./Tests/conf.json
 
 
-demisto_sdk_nightly:setup:
+# demisto_sdk_nightly:setup:
+#   extends: 
+#     - .default-job-settings
+#     - .sdk-nightly-schedule-rule
+#   cache:
+#     policy: pull-push
+#   stage: setup
+#   script:
+#     - echo "=== Secrets Detection ==="
+#     - demisto-sdk secrets --post-commit --ignore-entropy
+#     - echo "=== Update Conf ==="
+#     - |
+#       python3 ./Tests/scripts/update_conf_json.py >> $ARTIFACTS_FOLDER/logs/update_conf_json.log 2>&1
+#       cp ./Tests/conf.json $ARTIFACTS_FOLDER
+#     - |
+#       demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log 2>&1
+#       cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+#     - |
+#       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+#       echo "successfully activated google cloud service account"
+#     - |
+#       # Download private ID set
+#       gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+#       echo "successfully downloaded private ID set"
+#     - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+#     - |
+#       # Merge public and private ID sets
+#       demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
+#       echo "successfully merged public and private ID sets"
+
+
+# demisto_sdk_nightly:check_idset_dependent_commands:
+#   extends: 
+#     - .default-job-settings
+#     - .sdk-nightly-schedule-rule
+#   stage: unittests-and-validations
+#   needs: ["demisto_sdk_nightly:setup"]
+#   dependencies:
+#     - demisto_sdk_nightly:setup
+#   inherit:
+#     variables: true
+#   variables:
+#     IS_NIGHTLY: "false"
+#   script:
+#     - echo "=== Build Content Descriptor ==="
+#     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+#     - cp content-descriptor.json $ARTIFACTS_FOLDER
+#     - |
+#       # Common Server Documentation
+#       ./Documentation/commonServerDocs.sh
+#     - |
+#       # Collect Test List and Content Packs
+#       python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+#     - |
+#       # Calculate Packs Dependencies
+#       python3 ./Tests/Marketplace/packs_dependencies.py -i $ARTIFACTS_FOLDER/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+
+
+# demisto_sdk_nightly:infrastructure_testing:
+#   extends: 
+#     - .default-job-settings
+#     - .sdk-nightly-schedule-rule
+#   stage: unittests-and-validations
+#   needs: ["demisto_sdk_nightly:setup"]
+#   dependencies:
+#     - demisto_sdk_nightly:setup
+#   script:
+#     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
+#     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
+#     - python3 -m pytest ./Tests/scripts/utils/tests -v
+#     - python3 -m pytest ./Tests/tests -v
+#     - python3 -m pytest ./Tests/private_build/ -v
+#     - python3 -m pytest Utils -v
+#     - ./Tests/scripts/sdk_pylint_check.sh
+
+
+# demisto_sdk_nightly:validate_files:
+#   extends: 
+#     - .default-job-settings
+#     - .correct-bucket-schedule-rule
+#   stage: unittests-and-validations
+#   needs: ["demisto_sdk_nightly:setup"]
+#   dependencies:
+#     - demisto_sdk_nightly:setup
+#   script:
+#     - |
+#       # Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting
+#       ./Tests/scripts/pyflake.sh *.py
+#     - find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+#     - *copy_updated_test_conf
+#     - ./Tests/scripts/validate.sh
+
+
+# demisto_sdk_nightly:lint_and_unittest:
+#   extends: 
+#     - .default-job-settings
+#     - .correct-bucket-schedule-rule
+#   stage: unittests-and-validations
+#   needs: ["demisto_sdk_nightly:setup"]
+#   dependencies:
+#     - demisto_sdk_nightly:setup
+#   script:
+#     - |
+#       echo "demisto-sdk version: $(demisto-sdk --version)"
+#       echo "mypy version: $(mypy --version)"
+#       echo "flake8 py2 version: $(python2 -m flake8 --version)"
+#       echo "flake8 py3 version: $(python3 -m flake8 --version)"
+#       echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
+#       echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
+#       echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
+#       echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
+#     - *copy_updated_test_conf
+#     - |
+#       SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+#       mkdir ./unit-tests
+#       if [ -n "$SHOULD_LINT_ALL" ]; then
+#         echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
+#         demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
+#       else
+#         demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
+#       fi
+
+
+.upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
+  - |
+    demisto-sdk upload -i Packs/HelloWorld/Integrations/ --insecure
+    demisto-sdk upload -i Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld-Test.yml --insecure
+    demisto-sdk upload -i Packs/HelloWorld/Layouts/layoutscontainer-Hello_World_Test_Layout.json --insecure
+    demisto-sdk upload -i Packs/HelloWorld/IncidentFields/incidentfield-Hello_World_Incident_Test.json --insecure
+    demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
+    demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
+
+
+demisto-sdk-nightly:create-instances:
   extends: 
-    - .default-job-settings
+    - create-instances
     - .sdk-nightly-schedule-rule
-  cache:
-    policy: pull-push
-  stage: setup
-  script:
-    - echo "=== Secrets Detection ==="
-    - demisto-sdk secrets --post-commit --ignore-entropy
-    - echo "=== Update Conf ==="
-    - |
-      python3 ./Tests/scripts/update_conf_json.py >> $ARTIFACTS_FOLDER/logs/update_conf_json.log 2>&1
-      cp ./Tests/conf.json $ARTIFACTS_FOLDER
-    - |
-      demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log 2>&1
-      cp ./Tests/id_set.json $ARTIFACTS_FOLDER
-    - |
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
-      echo "successfully activated google cloud service account"
-    - |
-      # Download private ID set
-      gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
-      echo "successfully downloaded private ID set"
-    - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
-    - |
-      # Merge public and private ID sets
-      demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
-      echo "successfully merged public and private ID sets"
-
-
-demisto_sdk_nightly:check_idset_dependent_commands:
-  extends: 
-    - .default-job-settings
-    - .sdk-nightly-schedule-rule
-  stage: unittests-and-validations
-  needs: ["demisto_sdk_nightly:setup"]
-  dependencies:
-    - demisto_sdk_nightly:setup
-  inherit:
-    variables: true
   variables:
-    IS_NIGHTLY: "false"
-  script:
-    - echo "=== Build Content Descriptor ==="
-    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
-    - cp content-descriptor.json $ARTIFACTS_FOLDER
-    - |
-      # Common Server Documentation
-      ./Documentation/commonServerDocs.sh
-    - |
-      # Collect Test List and Content Packs
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
-    - |
-      # Calculate Packs Dependencies
-      python3 ./Tests/Marketplace/packs_dependencies.py -i $ARTIFACTS_FOLDER/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    DEMISTO_SDK_NIGHTLY: 'true'
 
 
-demisto_sdk_nightly:infrastructure_testing:
+demisto-sdk-nightly:server_master:
   extends: 
+    - server_master
+    - .sdk-nightly-schedule-rule
+  variables:
+    DEMISTO_SDK_NIGHTLY: 'true'
+  needs: ["demisto-sdk-nightly:create-instances"]
+  dependencies:
+    - demisto-sdk-nightly:create-instances
+
+
+demisto-sdk-nightly:run-commands-against-instance:
+  extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
-  stage: unittests-and-validations
-  needs: ["demisto_sdk_nightly:setup"]
+  stage: testing
+  variables:
+    DEMISTO_SDK_NIGHTLY: 'true'
+  needs: ["demisto-sdk-nightly:server_master"]
   dependencies:
-    - demisto_sdk_nightly:setup
+    - demisto-sdk-nightly:server_master
   script:
-    - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
-    - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/scripts/utils/tests -v
-    - python3 -m pytest ./Tests/tests -v
-    - python3 -m pytest ./Tests/private_build/ -v
-    - python3 -m pytest Utils -v
-    - ./Tests/scripts/sdk_pylint_check.sh
-
-
-demisto_sdk_nightly:validate_files:
-  extends: 
-    - .default-job-settings
-    - .correct-bucket-schedule-rule
-  stage: unittests-and-validations
-  needs: ["demisto_sdk_nightly:setup"]
-  dependencies:
-    - demisto_sdk_nightly:setup
-  script:
+    - !reference [.open-ssh-tunnel]
+    - !reference [.download-demisto-conf]
+#    - section_start Unlock HelloWorld Integration and Playbook
+    - echo "Unlock HelloWorld Integration and Playbook"
+    - python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
+#    - section_end Unlock HelloWorld Integration and Playbook
+#    - section_start Create & Upload Entities to XSOAR Instance
+    - echo "Create & Upload Entities to XSOAR Instance"
+    - python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $ARTIFACTS_FOLDER
+    - *upload-entities-to-cortex-xsoar
+#    - section_end Create & Upload Entities to XSOAR Instance
+#    - section_start Download Entities from XSOAR Instance
+    - echo "Download Entities from XSOAR Instance"
     - |
-      # Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting
-      ./Tests/scripts/pyflake.sh *.py
-    - find . -maxdepth 1 -type d -not \( -path . -o -path ./Packs -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
-    - *copy_updated_test_conf
-    - ./Tests/scripts/validate.sh
-
-
-demisto_sdk_nightly:lint_and_unittest:
-  extends: 
-    - .default-job-settings
-    - .correct-bucket-schedule-rule
-  stage: unittests-and-validations
-  needs: ["demisto_sdk_nightly:setup"]
-  dependencies:
-    - demisto_sdk_nightly:setup
-  script:
-    - |
-      echo "demisto-sdk version: $(demisto-sdk --version)"
-      echo "mypy version: $(mypy --version)"
-      echo "flake8 py2 version: $(python2 -m flake8 --version)"
-      echo "flake8 py3 version: $(python3 -m flake8 --version)"
-      echo "bandit py2 version: $(python2 -m bandit --version 2>&1)"
-      echo "bandit py3 version: $(python3 -m bandit --version 2>&1)"
-      echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
-      echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
-    - *copy_updated_test_conf
-    - |
-      SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-      mkdir ./unit-tests
-      if [ -n "$SHOULD_LINT_ALL" ]; then
-        echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-        demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
-      else
-        demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
-      fi
+      demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld --insecure -f
+      demisto-sdk download -o Packs/HelloWorld/ -i HelloWorld-Test --insecure -f
+      demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Incident Test" --insecure -f
+      demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
+      demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
+#    - section_end Download Entities from XSOAR Instance
+    - echo "Format Content Items"
+    - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
+    - echo "Run Validate"
+    - demisto-sdk validate -i Packs/HelloWorld/
+    - echo "Run Lint"
+    - demisto-sdk lint -i Packs/HelloWorld/
+    - *upload-entities-to-cortex-xsoar
+  after_script:
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
