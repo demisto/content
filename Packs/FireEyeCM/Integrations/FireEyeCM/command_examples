@@ -5,3 +5,5 @@
 !fireeye-cm-get-artifacts-metadata-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
 !fireeye-cm-get-events duration="48_hours" end_time="2021-05-14T01:08:04.000-02:00" mvx_correlated_only="true"
 !fireeye-cm-get-quarantined-emails start_time="1 year" limit=4
+!fireeye-cm-release-quarantined-emails queue_ids=<queue_id> sensor_name=<sensor_name>
+!fireeye-cm-delete-quarantined-emails queue_ids=<queue_id> sensor_name=<sensor_name>

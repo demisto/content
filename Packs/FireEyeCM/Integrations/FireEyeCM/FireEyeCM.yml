@@ -363,6 +363,48 @@ script:
     - contextPath: FireEyeCM.QuarantinedEmail.subject
       description: The quarantined email subject.
       type: string
+  - arguments:
+    - default: false
+      description: The quarantined emails queue IDs. Supports up to 100 IDs.
+      isArray: true
+      name: queue_ids
+      required: true
+      secret: false
+    - default: false
+      description: The sensor display name.
+      isArray: false
+      name: sensor_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Release and delete quarantined emails. This is not available when the Email Security is in Drop mode.
+    execution: false
+    name: fireeye-cm-release-quarantined-emails
+    outputs:
+    - contextPath: FireEyeCM.QuarantinedEmail.TODO
+      description: a.
+      type: string
+  - arguments:
+    - default: false
+      description: The quarantined emails queue IDs. Supports up to 100 IDs.
+      isArray: true
+      name: queue_ids
+      required: true
+      secret: false
+    - default: false
+      description: The sensor display name.
+      isArray: false
+      name: sensor_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete quarantined emails. This is not available when the Email Security is in Drop mode.
+    execution: false
+    name: fireeye-cm-delete-quarantined-emails
+    outputs:
+    - contextPath: FireEyeCM.QuarantinedEmail.TODO
+      description: a.
+      type: string
   isfetch: false
   runonce: false
   script: '-'

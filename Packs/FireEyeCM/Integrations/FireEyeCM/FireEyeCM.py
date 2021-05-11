@@ -79,11 +79,23 @@ class Client(BaseClient):
         if appliance_id:
             params['appliance_id'] = appliance_id
 
-        return self._http_request(method='GET',
-                                  url_suffix='emailmgmt/quarantine',
-                                  params=params,
+        return self._http_request(method='GET', url_suffix='emailmgmt/quarantine', params=params, resp_type='json')
+
+    @logger
+    def release_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
+        return self._http_request(method='POST',
+                                  url_suffix='emailmgmt/quarantine/release',
+                                  params={'sensorName': sensor_name},
+                                  json_data={"queue_ids": queue_ids},
                                   resp_type='json')
 
+    @logger
+    def delete_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
+        return self._http_request(method='POST',
+                                  url_suffix='emailmgmt/quarantine/delete',
+                                  params={'sensorName': sensor_name},
+                                  json_data={"queue_ids": queue_ids},
+                                  resp_type='json')
 
 @logger
 def to_fe_datetime_converter(time_given: str = 'now') -> str:
@@ -249,6 +261,7 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
     subject = args.get('subject', '')
     appliance_id = args.get('appliance_id', '')
     limit = int(args.get('limit', '10000'))
+
     raw_response = client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
     if not raw_response:
         md_ = 'No emails with the given query arguments were found.'
@@ -256,6 +269,48 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
         headers = ['email_uuid', 'from', 'subject', 'message_id', 'completed_at']
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Quarantined emails:', t=raw_response,
                               headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
+        outputs_key_field='email_uuid',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@logger
+def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sensor_name = args.get('sensor_name', '')
+    queue_ids = argToList(args.get('queue_ids', ''))
+
+    raw_response = client.release_quarantined_emails_request(sensor_name, queue_ids)
+
+    if not raw_response:
+        md_ = 'No emails were released.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Released emails:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
+        outputs_key_field='email_uuid',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
+@logger
+def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sensor_name = args.get('sensor_name', '')
+    queue_ids = argToList(args.get('queue_ids', ''))
+
+    raw_response = client.delete_quarantined_emails_request(sensor_name, queue_ids)
+
+    if not raw_response:
+        md_ = 'No emails were deleted.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Deleted emails:', t=raw_response, removeNull=True)
 
     return CommandResults(
         readable_output=md_,
@@ -294,6 +349,8 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-get-artifacts-metadata-by-uuid': get_artifacts_metadata_by_uuid,
             f'{INTEGRATION_COMMAND_NAME}-get-events': get_events,
             f'{INTEGRATION_COMMAND_NAME}-get-quarantined-emails': get_quarantined_emails,
+            f'{INTEGRATION_COMMAND_NAME}-release-quarantined-emails': release_quarantined_emails,
+            f'{INTEGRATION_COMMAND_NAME}-delete-quarantined-emails': delete_quarantined_emails,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))
