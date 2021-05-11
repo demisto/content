@@ -222,6 +222,8 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
 
     if not current_indicator_type:
+        demisto.debug(f'Could not determine indicator type for value: {indicator_value} from field: {indicator_field}.'
+                      f' Skipping item: {item}')
         return []
 
     indicator = {
