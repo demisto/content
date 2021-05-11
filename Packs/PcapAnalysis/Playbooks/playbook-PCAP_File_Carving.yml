@@ -560,7 +560,7 @@ tasks:
       id: 55096f3d-649a-4fae-8b96-fcfdba886bf1
       version: -1
       name: Auto enrich files?
-      description: Checks wether to enrich the files extracted from the PCAP automaticlly
+      description: Checks whjether to enrich the files extracted from the PCAP automatically.
       type: condition
       iscommand: false
       brand: ""
@@ -732,14 +732,14 @@ inputs:
     simple: "True"
   required: false
   description: This input specifies whether to detonate files extracted from the PCAP.
-    The default value is True, any other value will be considered as false.
+    The default value is True. Any other value will be considered as false.
   playbookInputQuery:
 - key: AutoEnrichFiles
   value:
     simple: "True"
   required: false
-  description: This input specifies whether to Enrich files extracted from the PCAP.
-    The default value is True, any other value will be considered as false.
+  description: This input specifies whether to enrich files extracted from the PCAP.
+    The default value is True. Any other value will be considered as false.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore
@@ -752,37 +752,37 @@ outputs:
   description: The File malicious description
   type: string
 - contextPath: File.Size
-  description: The File size
+  description: The file size.
   type: string
 - contextPath: File.MD5
-  description: The File MD5
+  description: The file MD5 hash.
   type: string
 - contextPath: File.SHA1
-  description: The File SHA1
+  description: The file SHA1 hash.
   type: string
 - contextPath: File.SHA256
-  description: The File SHA256
+  description: The file SHA256 hash.
   type: string
 - contextPath: File.SHA512
-  description: The File SHA512
+  description: The file SHA512 hash.
   type: string
 - contextPath: File.Name
-  description: The File name
+  description: The file name.
   type: string
 - contextPath: File.SSDeep
-  description: The File SSDeep
+  description: The file SSDeep.
   type: string
 - contextPath: File.EntryID
-  description: The File Entry ID
+  description: The file entry ID.
   type: string
 - contextPath: File.Info
-  description: The File information
+  description: The file information.
   type: string
 - contextPath: File.Type
-  description: The File type
+  description: The file type.
   type: string
 - contextPath: File.Extension
-  description: The File extension
+  description: The file extension.
   type: string
 tests:
 - PCAP File Carving Test
