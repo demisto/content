@@ -7,3 +7,4 @@
 !fireeye-cm-get-quarantined-emails start_time="1 year" limit=4
 !fireeye-cm-release-quarantined-emails queue_ids=<queue_id> sensor_name=<sensor_name>
 !fireeye-cm-delete-quarantined-emails queue_ids=<queue_id> sensor_name=<sensor_name>
+!fireeye-cm-delete-download-emails queue_ids=<queue_id> sensor_name=<sensor_name>

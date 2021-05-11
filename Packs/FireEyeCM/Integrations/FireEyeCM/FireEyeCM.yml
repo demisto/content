@@ -405,6 +405,27 @@ script:
     - contextPath: FireEyeCM.QuarantinedEmail.TODO
       description: a.
       type: string
+  - arguments:
+    - default: false
+      description: The quarantined emails queue ID.
+      isArray: false
+      name: queue_id
+      required: true
+      secret: false
+    - default: false
+      description: The sensor display name.
+      isArray: false
+      name: sensor_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Download quarantined emails.
+    execution: false
+    name: fireeye-cm-download-quarantined-emails
+    outputs:
+    - contextPath: FireEyeCM.QuarantinedEmail.TODO
+      description: a.
+      type: string
   isfetch: false
   runonce: false
   script: '-'

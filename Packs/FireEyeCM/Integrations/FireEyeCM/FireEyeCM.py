@@ -97,6 +97,15 @@ class Client(BaseClient):
                                   json_data={"queue_ids": queue_ids},
                                   resp_type='json')
 
+    @logger
+    def download_quarantined_emails_request(self, sensor_name: str, queue_id: str, timeout: str):
+        self._headers.pop('Accept')  # returns a file, hence this header is disruptive
+        return self._http_request(method='GET',
+                                  url_suffix=f'emailmgmt/quarantine/{queue_id}',
+                                  params={'sensorName': sensor_name},
+                                  resp_type='content',
+                                  timeout=timeout)
+
 @logger
 def to_fe_datetime_converter(time_given: str = 'now') -> str:
     """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
@@ -321,6 +330,26 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
+@logger
+def download_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sensor_name = args.get('sensor_name', '')
+    queue_id = args.get('queue_id', '')
+    timeout = int(args.get('timeout', '120'))
+
+    raw_response = client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
+    raise Exception(str(raw_response))
+    if not raw_response:
+        md_ = 'No emails were deleted.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Deleted emails:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
+        outputs_key_field='email_uuid',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
 def main() -> None:
     params = demisto.params()
     username = params.get('credentials').get('identifier')
@@ -351,6 +380,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-get-quarantined-emails': get_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-release-quarantined-emails': release_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-delete-quarantined-emails': delete_quarantined_emails,
+            f'{INTEGRATION_COMMAND_NAME}-download-quarantined-emails': download_quarantined_emails,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))
