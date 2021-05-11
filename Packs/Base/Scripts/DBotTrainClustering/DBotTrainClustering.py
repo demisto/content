@@ -17,7 +17,7 @@ import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
 
-GENERAL_EXPLANATION = "**In general clustering model aims to form groups of similar incidents based on some similarity** \n" \
+GENERAL_EXPLANATION = "**In general clustering model aims to form groups of similar incidents based on some similarities** \n" \
                       "In our case the model is splitted into 2 phases: \n" \
                       "- **Phase 1 (Groups creation)** creates groups with all the incident fetched. " \
                       "Most of the incidents should be grouped together but some will be considered as outliers " \
@@ -26,7 +26,7 @@ GENERAL_EXPLANATION = "**In general clustering model aims to form groups of simi
                       "- **Phase 2 (Groups selection)** will be executed only if **fieldForClusterName** is given and valid. " \
                       "It aims to remove low quality groups based on **fieldForClusterName**. Each sample will " \
                       "have a family name from the value of " \
-                      "**fieldForClusterName field**. The model keeps incidents for which the family ratio is " \
+                      "**fieldForClusterName** field. The model keeps incidents for which the family ratio is " \
                       "above **minHomogeneityCluster** \n" \
                       "- **Percentage of clusterized samples**: Percentage of samples that are not outliers **after " \
                       "Phase 1** \n" \
@@ -607,15 +607,19 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
     percentage_clusterized_samples = round(100 * (number_of_clusterized / number_of_sample), 0)
     summary = {
         'Total number of samples ': str(number_of_sample),
-        'Percentage of clusterized samples after selection': "%s  (%s/%s)" % (str(percentage_selected_samples),
-                                                                              str(nb_clusterized_after_selection),
-                                                                              str(number_of_sample)),
-        'Percentage of clusterized samples': "%s  (%s/%s)" % (str(percentage_clusterized_samples),
+        'Percentage of clusterized samples after selection (after Phase 1 and Phase 2)': "%s  (%s/%s)"
+                                                                                         % (str(percentage_selected_samples),
+                                                                                            str(nb_clusterized_after_selection),
+                                                                                            str(number_of_sample)),
+        'Percentage of clusterized samples (after Phase 1)': "%s  (%s/%s)" %
+                                                             (str(percentage_clusterized_samples),
                                                               str(number_of_clusterized),
                                                               str(number_of_sample)),
-        'Percentage of cluster selected (Number of high quality groups/Total number of groups)': "%s  (%s/%s)" % (
-            str(percentage_clusters_selected), str(number_clusters_selected),
-            str(nb_clusters)),
+        'Percentage of cluster selected (Number of high quality groups/Total number of groups)':
+            "%s  (%s/%s)" %
+            (str(percentage_clusters_selected),
+             str(number_clusters_selected),
+             str(nb_clusters)),
         'Fields used for training': ' , '.join(fields_for_clustering),
         'Fields used for cluster name': field_for_cluster_name[0] if field_for_cluster_name else "",
         'Training time': str(model_processed.date_training)
@@ -682,16 +686,16 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
     return incidents_df
 
 
-def most_frequent(l: List):
+def most_frequent(list_: List):
     """
     Return most frequent element of a list if not empty elase return empty string
     :param l: list with element
     :return: item in list with most occurrence
     """
-    if not l:
+    if not list_:
         return ""
     else:
-        return max(set(l), key=l.count)
+        return max(set(list_), key=list_.count)
 
 
 def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
