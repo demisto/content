@@ -189,7 +189,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                                           use_prefix_flat, feedTags, auto_detect, mapping_function,
                                           create_relationships_function))
 
-            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
+            if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
     return indicators
