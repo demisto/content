@@ -1,5 +1,5 @@
 {
-    "name": "Carbon Black Defense",
+    "name": "Carbon Black Endpoint Standard",
     "description": "Next-generation antivirus + EDR in one cloud-delivered platform that stops commodity malware, advanced malware, non-malware attacks and ransomware.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
