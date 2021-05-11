@@ -162,7 +162,6 @@ class Client(BaseClient):
         See Also:
             https://developers.virustotal.com/v3.0/reference#ip-comments-get
         """
-        demisto.info('in get_ip_comments')
 
         return self._http_request(
             'GET',
@@ -1148,7 +1147,7 @@ def build_domain_output(
         score = score_calculator.analyze_premium_domain_score(client, domain, score)
     logs = score_calculator.get_logs()
     demisto.debug(logs)
-    relationships_list = create_relationships(entity_a=domain, entity_a_type='Domain',
+    relationships_list = create_relationships(entity_a=domain, entity_a_type=FeedIndicatorType.Domain,
                                               relationships_response=relationships_response,
                                               reliability=client.reliability)
     domain_indicator = Common.Domain(
@@ -1225,7 +1224,7 @@ def build_url_output(
     relationships_response = data.get('relationships', {})
     positive_detections = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
-    relationships_list = create_relationships(entity_a=url, entity_a_type='URL',
+    relationships_list = create_relationships(entity_a=url, entity_a_type=FeedIndicatorType.URL,
                                               relationships_response=relationships_response,
                                               reliability=client.reliability)
     url_indicator = Common.URL(
@@ -1289,7 +1288,7 @@ def build_ip_output(client: Client, score_calculator: ScoreCalculator, ip: str, 
     last_analysis_stats = attributes.get('last_analysis_stats')
     positive_engines = last_analysis_stats.get('malicious', 0)
     detection_engines = sum(last_analysis_stats.values())
-    relationships_list = create_relationships(entity_a=ip, entity_a_type='IP',
+    relationships_list = create_relationships(entity_a=ip, entity_a_type=FeedIndicatorType.IP,
                                               relationships_response=relationships_response,
                                               reliability=client.reliability)
     ip_indicator = Common.IP(
@@ -1346,7 +1345,7 @@ def build_file_output(
     demisto.debug(logs)
     signature_info = attributes.get('signature_info', {})
     exiftool = attributes.get('exiftool', {})
-    relationships_list = create_relationships(entity_a=file_hash, entity_a_type='File',
+    relationships_list = create_relationships(entity_a=file_hash, entity_a_type=FeedIndicatorType.File,
                                               relationships_response=relationships_response,
                                               reliability=client.reliability)
     file_indicator = Common.File(
@@ -2062,7 +2061,7 @@ def main(params: dict, args: dict, command: str):
     url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
-    demisto.info(domain_relationships)
+
     demisto.debug(f'Command called {command}')
     if command == 'test-module':
         results = check_module(client)
