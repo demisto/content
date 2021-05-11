@@ -1647,7 +1647,7 @@ Get list of files from the given path in the repository.
 | GitHub.File.Size | Number | The size of the file in bytes. | 
 | GitHub.File.Path | String | The file path inside the repository. | 
 | GitHub.File.DownloadUrl | String | Link to download the file content. | 
-
+| GitHub.File.SHA | String | The SHA of the file. | 
 
 #### Command Example
 ```!Github-list-files path=Index```
@@ -1658,3 +1658,42 @@ Get list of files from the given path in the repository.
 |--- |--- |--- |--- |--- |
 |README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
 |images|Index/images|dir|0||
+
+### GitHub-list-team-members
+***
+List team members.
+#### Base Command
+`GitHub-list-team-members`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+| team_slug | The name of the team under the organiztion. | Required | 
+| maximum_users | The maximum number of users to return | Optional | 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.TeamMember.ID | String | The ID of the team member. | 
+| GitHub.TeamMember.Login | String | The login name of the team member. |
+| GitHub.TeamMember.Team | String | The user's team. |
+#### Command Example
+```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
+
+##### Context Example
+```
+{
+    "GitHub.GitHub": [
+        {
+            "ID": 1234567, 
+            "Login": "user1", 
+            "Team": "content", 
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+## Team Member of team content in organization demisto
+|ID|Login|Team|
+|--- |---|---|
+|1234567|user1|content|
