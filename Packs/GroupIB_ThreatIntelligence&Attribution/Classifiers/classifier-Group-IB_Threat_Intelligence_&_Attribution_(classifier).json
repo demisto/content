@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Group-IB Threat Intelligence \u0026 Attribution",
+    "id": "Group-IB Threat Intelligence & Attribution",
     "keyTypeMap": {
         "bp/phishing": "GIB Brand Protection Phishing",
         "bp/phishing_kit": "GIB Brand Protection Phishing Kit",
@@ -11,7 +11,7 @@
         "osi/git_leak": "GIB OSI Git Leak",
         "osi/public_leak": "GIB OSI Public Leak"
     },
-    "name": "Group-IB Threat Intelligence \u0026 Attribution (classifier)",
+    "name": "Group-IB Threat Intelligence & Attribution (classifier)",
     "transformer": {
         "complex": null,
         "simple": "gibType"

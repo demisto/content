@@ -453,7 +453,7 @@ class Client(BaseClient):
             params = {'df': date_from, 'limit': limit, 'seqUpdate': seq_update}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name + '/updated',
-                                         params=params, timeout=60., 
+                                         params=params, timeout=60.,
                                          retries=4, status_list_to_retry=[429, 500])
             if portion.get("count") == 0:
                 break
@@ -477,7 +477,7 @@ class Client(BaseClient):
             params = {'df': date_from, 'limit': limit, 'resultId': result_id}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=60., 
+                                         params=params, timeout=60.,
                                          retries=4, status_list_to_retry=[429, 500])
             if len(portion.get('items')) == 0:
                 break
@@ -493,7 +493,7 @@ class Client(BaseClient):
         :param feed_id: id of feed to search.
         """
 
-        portion = self._http_request(method="GET", url_suffix=collection_name + '/' + feed_id, timeout=60., 
+        portion = self._http_request(method="GET", url_suffix=collection_name + '/' + feed_id, timeout=60.,
                                      retries=4, status_list_to_retry=[429, 500])
         return portion
 
