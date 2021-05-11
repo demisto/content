@@ -169,6 +169,17 @@ def test_data_filtering(mocker):
     assert build_context(full_response) == filtered_response
 
 
+def test_attributes_data_filtering(mocker):
+    mock_misp(mocker)
+
+    from test_data import test_constants
+    from MISP_V2 import build_attribute_context
+
+    full_response = test_constants.full_attributes_response
+    filtered_response = test_constants.filtered_attributes_response
+    assert build_attribute_context(full_response) == filtered_response
+
+
 def test_limit_data(mocker):
     """
    Scenario: Create context for misp event with limiting the amount of attributes

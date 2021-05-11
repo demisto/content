@@ -117,6 +117,9 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
+    - contextPath: GitHub.Issue.Organization
+      description: The repository organization.
+      type: String
   - arguments:
     - default: false
       description: The number of the issue to close.
@@ -161,6 +164,9 @@ script:
       type: Date
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
+      type: String
+    - contextPath: GitHub.Issue.Organization
+      description: The repository organization.
       type: String
   - arguments:
     - default: false
@@ -241,6 +247,9 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
+    - contextPath: GitHub.Issue.Organization
+      description: The repository organization.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -257,7 +266,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of issues to return. Default is 50. Maximum is 200.
+      description: The number of issues to return. Default is 50. Maximum is 100.
       isArray: false
       name: limit
       required: false
@@ -300,6 +309,73 @@ script:
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
       type: String
+    - contextPath: GitHub.Issue.Organization
+      description: The repository organization.
+      type: String
+  - arguments:
+    - default: false
+      description: The query line for the search. For more information see the GitHub
+        documentation at https://docs.github.com/en/github/searching-for-information-on-github/searching-code
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: The page number.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      description: The size of the requested page. Maximum is 100.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for code in repositories that match a given query.
+    execution: false
+    name: GitHub-search-code
+    outputs:
+    - contextPath: GitHub.CodeSearchResults.name
+      description: The file name where the code found.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.path
+      description: The full file path where the code found.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.html_url
+      description: The url to the file.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.full_name
+      description: The repository name.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.html_url
+      description: The url to the repository.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.description
+      description: Repository description.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.private
+      description: True if repository is private. and false if public.
+      type: Boolean
+    - contextPath: GitHub.CodeSearchResults.repository.id
+      description: The ID of the repository.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.releases_url
+      description: The url to the releases of the repository.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.branches_url
+      description: The url to the branches of the repository.
+      type: String
+    - contextPath: GitHub.CodeSearchResults.repository.commits_url
+      description: The url to the commits of the repository.
+      type: String
   - arguments:
     - default: false
       description: The query line for the search. For more information see the GitHub
@@ -310,7 +386,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of issues to return. Default is 50. Maximum is 200.
+      description: The number of issues to return. Default is 50. Maximum is 100.
       isArray: false
       name: limit
       required: false
@@ -352,6 +428,9 @@ script:
       type: Date
     - contextPath: GitHub.Issue.Closed_by
       description: User who closed the issue.
+      type: String
+    - contextPath: GitHub.Issue.Organization
+      description: The repository organization.
       type: String
   - deprecated: false
     description: Returns the total number of downloads for all releases for the specified
@@ -614,6 +693,17 @@ script:
       name: pull_number
       required: true
       secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
+      name: organization
+      required: false
+    - default: false
+      description: The repository of the pull request.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
     deprecated: false
     description: Lists the pull request files.
     execution: false
@@ -763,6 +853,18 @@ script:
       isArray: false
       name: pull_number
       required: true
+      secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The repository of the pull request.
+      isArray: false
+      name: repository
+      required: false
       secret: false
     deprecated: false
     description: Get a pull request
@@ -2665,7 +2767,89 @@ script:
     - contextPath: GitHub.FileContent.Branch
       description: The branch from which the file was fetched.
       type: Unknown
-  dockerimage: demisto/pyjwt3:1.0.0.16907
+  - arguments:
+    - default: false
+      description: The path in the branch to get the files from.
+      isArray: false
+      name: path
+      required: false
+      secret: false
+    - default: false
+      description: The name of the organization.
+      isArray: false
+      name: organization
+      required: false
+      secret: false
+    - default: false
+      description: The name of the repository.
+      isArray: false
+      name: repository
+      required: false
+      secret: false
+    - default: false
+      description: The branch name from which to get the files.
+      isArray: false
+      name: branch
+      required: false
+      secret: false
+    deprecated: false
+    description: Get list of files from the given path in the repository.
+    execution: false
+    name: Github-list-files
+    outputs:
+    - contextPath: GitHub.File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: GitHub.File.Type
+      description: Whether the item is file or directory.
+      type: String
+    - contextPath: GitHub.File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: GitHub.File.Path
+      description: The file path inside the repository.
+      type: String
+    - contextPath: GitHub.File.DownloadUrl
+      description: Link to download the file content.
+      type: String
+    - contextPath: GitHub.File.SHA
+      description: The SHA of the file.
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: organization
+      description: The name of the organization.
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: team_slug
+      description: Team name.
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      isArray: false
+      name: maximum_users
+      description: Miximum number of users to return.
+      required: false
+      secret: false
+    deprecated: false
+    description: List team members
+    execution: false
+    name: GitHub-list-team-members
+    outputs:
+    - contextPath: GitHub.TeamMember.ID
+      description: The ID of the team member.
+      type: Number
+    - contextPath: GitHub.TeamMember.Login
+      description: The login name of the team member.
+      type: String
+    - contextPath: GitHub.TeamMember.Team
+      description: The user's team.
+      type: String
+  dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
   longRunning: false

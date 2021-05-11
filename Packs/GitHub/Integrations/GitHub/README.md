@@ -60,6 +60,7 @@ Creates an issue in GitHub.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -67,9 +68,9 @@ Creates an issue in GitHub.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|
-|---|---|---|---|---|---|---|
-|138|Git-Integration|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
+|---|---|---|---|---|---|---|---|
+|138|Git-Integration|demisto|“newbug”|open|“found|2019-06-17T15:14:10Z|2019-06-17T15:14:10Z|
 
 ### GitHub-close-issue
 
@@ -101,6 +102,7 @@ Closes an existing issue.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -108,9 +110,9 @@ Closes an existing issue.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
-|--- |--- |--- |--- |--- |--- |--- |--- |--- |
-|136|Git-Integration|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
+|ID|Repository|Organization|Title|State|Created_at|Updated_at|Closed_at|Closed_by|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|136|Git-Integration|demisto|new|closed|2019-06-17T14:48:15Z|2019-06-17T15:14:12Z|2019-06-17T15:14:12Z|roysagi|bug, else, new|
 
 ### GitHub-update-issue
 
@@ -147,6 +149,7 @@ Updates the parameters of a specified issue.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -154,9 +157,9 @@ Updates the parameters of a specified issue.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|
-|--- |--- |--- |--- |--- |--- |--- |
-|137|Git-Integration|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|
+|--- |--- |--- |--- |--- |--- |--- |--- |
+|137|Git-Integration|demisto|“new_title”|open|“new|2019-06-17T15:09:50Z|2019-06-17T15:14:13Z|
 
 
 ### GitHub-list-all-issues
@@ -190,6 +193,7 @@ Lists all issues that the user has access to view.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -197,10 +201,130 @@ Lists all issues that the user has access to view.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
-|--- |--- |--- |--- |--- |--- |--- |--- |--- |
-|109|Git-Integration|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
-|110|Git-Integration|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- |--- |
+|109|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|newbug|
+|110|Git-Integration|demisto|"new issue"|closed|"new information"|2019-06-04T11:53:19Z|2019-06-04T11:53:22Z|2019-06-04T11:53:22Z|newbug|
+
+
+### GitHub-search-code
+***
+Searches for code in repositories that match a given query.
+
+
+#### Base Command
+
+`GitHub-search-code`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The query line for the search. For more information see the GitHub documentation at https://docs.github.com/en/github/searching-for-information-on-github/searching-code. | Required | 
+| page_number | The page number. | Optional | 
+| page_size | The size of the requested page. Maximum is 100. | Optional | 
+| limit | The number of results to return. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.CodeSearchResults.name | String | The file name where the code found. | 
+| GitHub.CodeSearchResults.path | String | The full file path where the code found. | 
+| GitHub.CodeSearchResults.html_url | String | The url to the file. | 
+| GitHub.CodeSearchResults.repository.full_name | String | The repository name. | 
+| GitHub.CodeSearchResults.repository.html_url | String | The url to the repository. | 
+| GitHub.CodeSearchResults.repository.description | String | Repository description. | 
+| GitHub.CodeSearchResults.repository.private | Boolean | True if repository is private. and false if public. | 
+| GitHub.CodeSearchResults.repository.id | String | The ID of the repository. | 
+| GitHub.CodeSearchResults.repository.releases_url | String | The url to the releases of the repository. | 
+| GitHub.CodeSearchResults.repository.branches_url | String | The url to the branches of the repository. | 
+| GitHub.CodeSearchResults.repository.commits_url | String | The url to the commits of the repository. | 
+
+
+#### Command Example
+```!GitHub-search-code query="create_artifacts+repo:demisto/demisto-sdk" page_size="2" limit="5"```
+
+#### Context Example
+```json
+{
+    "GitHub": {
+        "CodeSearchResults": [
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml",
+                "name": ".pre-commit-config.yaml",
+                "path": ".pre-commit-config.yaml",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            },
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py",
+                "name": "content_create_artifacts_integration_test.py",
+                "path": "demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            },
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py",
+                "name": "content_artifacts_creator_test.py",
+                "path": "demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            },
+            {
+                "html_url": "https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py",
+                "name": "pack_metadata_test.py",
+                "path": "demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py",
+                "repository": {
+                    "branches_url": "https://api.github.com/repos/demisto/demisto-sdk/branches{/branch}",
+                    "commits_url": "https://api.github.com/repos/demisto/demisto-sdk/commits{/sha}",
+                    "desrciption": "Demisto SDK - Create Demisto Content with ease and efficiency",
+                    "full_name": "demisto/demisto-sdk",
+                    "html_url": "https://github.com/demisto/demisto-sdk",
+                    "id": 219291269,
+                    "private": false,
+                    "releases_url": "https://api.github.com/repos/demisto/demisto-sdk/releases{/id}"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Returned 5 out of 6 total results.
+>|Name|Path|Repository Name|Repository Description|Is Repository Private|
+>|---|---|---|---|---|
+>| [.pre-commit-config.yaml](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/.pre-commit-config.yaml) | .pre-commit-config.yaml | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_create_artifacts_integration_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py) | demisto_sdk/tests/integration_tests/content_create_artifacts_integration_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_artifacts_creator_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py) | demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [pack_metadata_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py) | demisto_sdk/commands/common/content/tests/objects/pack_objects/pack_metadata/pack_metadata_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
+>| [content_artifacts_creator_test.py](https://github.com/demisto/demisto-sdk/blob/bfd4c375f9c61d4fdd4974ecf244a4bede13b8ed/demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py) | demisto_sdk/commands/create_artifacts/tests/content_artifacts_creator_test.py | demisto/demisto-sdk | Demisto SDK - Create Demisto Content with ease and efficiency | false |
 
 
 ### GitHub-search-issues
@@ -217,7 +341,7 @@ Searches for and returns issues that match a given query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query line for the search. For more information see the GitHub documentation at https://help.github.com/en/articles/searching-issues-and-pull-requests. | Required | 
-| limit | The number of issues to return. Default is 50. Maximum is 200. Default is 50. | Optional | 
+| limit | The number of issues to return. Default is 50. Maximum is 100. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -234,6 +358,7 @@ Searches for and returns issues that match a given query.
 | GitHub.Issue.Updated_at | Date | Date when the issue was last updated. | 
 | GitHub.Issue.Closed_at | Date | Date when the issue was closed. | 
 | GitHub.Issue.Closed_by | String | User who closed the issue. | 
+| GitHub.Issue.Organization | String | The repository owner. | 
 
 #### Command Example
 
@@ -241,9 +366,9 @@ Searches for and returns issues that match a given query.
 
 #### Human Readable Output
 ## Issues:
-|ID|Repository|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
-|--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|
-|109|Git-Integration|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
+|ID|Repository|Organization|Title|State|Body|Created_at|Updated_at|Closed_at|Assignees|Labels|
+|--- |--- |--- |--- |--- |--- |--- |--- |--- | ---|--- |
+|109|Git-Integration|demisto|"new issue"|open|"new information"|2019-06-04T11:52:11Z|2019-06-04T11:52:13Z|2019-06-04T11:52:13Z|teizenman|newbug|
 
 ### GitHub-get-download-count
 
@@ -555,6 +680,8 @@ Lists the pull request files.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pull_number | The number of the pull request. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository of the pull request. | Optional | 
 
 #### Context Output
 
@@ -707,6 +834,8 @@ Get a pull request
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | pull_number | The number of the pull request to retrieve. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository of the pull request. | Optional | 
 
 #### Context Output
 
@@ -1492,3 +1621,79 @@ Gets the content of a file from GitHub.
 |---|---|---|---|
 |branch-test|This is the content of the file|raw|file.json| 
 
+### Github-list-files
+***
+Get list of files from the given path in the repository.
+
+
+#### Base Command
+
+`Github-list-files`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| path | The path in the branch to get the files from. | Optional | 
+| organization | The name of the organization. | Optional | 
+| repository | The name of the repository. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.File.Name | String | The name of the file. | 
+| GitHub.File.Type | String | Whether the item is file or directory. | 
+| GitHub.File.Size | Number | The size of the file in bytes. | 
+| GitHub.File.Path | String | The file path inside the repository. | 
+| GitHub.File.DownloadUrl | String | Link to download the file content. | 
+| GitHub.File.SHA | String | The SHA of the file. | 
+
+#### Command Example
+```!Github-list-files path=Index```
+
+#### Human Readable Output
+## Files in path: Index
+|Name|Path|Type|Size|DownloadUrl|
+|--- |--- |--- |--- |--- |
+|README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
+|images|Index/images|dir|0||
+
+### GitHub-list-team-members
+***
+List team members.
+#### Base Command
+`GitHub-list-team-members`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+| team_slug | The name of the team under the organiztion. | Required | 
+| maximum_users | The maximum number of users to return | Optional | 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.TeamMember.ID | String | The ID of the team member. | 
+| GitHub.TeamMember.Login | String | The login name of the team member. |
+| GitHub.TeamMember.Team | String | The user's team. |
+#### Command Example
+```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
+
+##### Context Example
+```
+{
+    "GitHub.GitHub": [
+        {
+            "ID": 1234567, 
+            "Login": "user1", 
+            "Team": "content", 
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+## Team Member of team content in organization demisto
+|ID|Login|Team|
+|--- |---|---|
+|1234567|user1|content|

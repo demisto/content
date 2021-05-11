@@ -40,7 +40,13 @@ configuration:
   name: is_public
   required: false
   type: 8
-description: Urlscan.io reputation
+- defaultvalue: 'true'
+  additionalinfo: Create relationships between indicators as part of Enrichment.
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+description: Use urlscan.io integration to perform scans on suspected URLs and see their reputation.
 display: urlscan.io
 name: urlscan.io
 script:
@@ -278,6 +284,21 @@ script:
       type: string
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
+      type: string
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
       type: string
     - contextPath: URLScan.RelatedIPs
       description: The IP addresses related to the scanned URL.

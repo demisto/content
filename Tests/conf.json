@@ -40,6 +40,7 @@
         },
         {
             "integrations": "AzureWAF",
+            "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -91,9 +92,8 @@
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
-            "instance_names": "ewv2_regular",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "timeout": 1000
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
@@ -250,6 +250,12 @@
             "playbookID": "JSON_Feed_Test",
             "fromversion": "5.5.0",
             "instance_names": "JSON Feed_auto_detect"
+        },
+        {
+            "integrations": "JSON Feed",
+            "playbookID": "JSON_Feed_Test",
+            "fromversion": "5.5.0",
+            "instance_names": "JSON Feed_post"
         },
         {
             "integrations": "Google Cloud Functions",
@@ -1043,7 +1049,13 @@
         },
         {
             "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne V2 - test"
+            "instance_names": "SentinelOne_v2.0",
+            "playbookID": "SentinelOne V2.0 - Test"
+        },
+        {
+            "integrations": "SentinelOne V2",
+            "instance_names": "SentinelOne_v2.1",
+            "playbookID": "SentinelOne V2.1 - Test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
@@ -1256,10 +1268,6 @@
         },
         {
             "playbookID": "Test IP Indicator Fields",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "Dedup - Generic v2 - Test",
             "fromversion": "5.0.0"
         },
         {
@@ -1842,11 +1850,6 @@
             "playbookID": "VxStream Test",
             "nightly": true,
             "is_mockable": false
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
-            "timeout": 240
         },
         {
             "integrations": "QRadar",
@@ -2455,6 +2458,7 @@
         },
         {
             "integrations": "AWS - EC2",
+            "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
             "memory_threshold": 90
@@ -2885,13 +2889,13 @@
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_currently__active",
-            "playbookID": "playbook-feodotrackeripblock_test",
+            "playbookID": "playbook-feodotrackeripblock_test_currently__active",
             "fromversion": "5.5.0"
         },
         {
             "integrations": "Feodo Tracker IP Blocklist Feed",
             "instance_names": "feodo_tracker_ip_30_days",
-            "playbookID": "playbook-feodotrackeripblock_test",
+            "playbookID": "playbook-feodotrackeripblock_test_30_days",
             "fromversion": "5.5.0"
         },
         {
@@ -3258,20 +3262,12 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTest",
-            "instance_names": [
-                "ml_dummy_prod"
-            ],
             "fromversion": "4.5.0",
             "timeout": 1000
         },
         {
-            "integrations": "AzureWAF",
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "instance_names": [
-                "ml_dummy_prod"
-            ],
             "fromversion": "5.5.0",
             "timeout": 1000
         },
@@ -3279,6 +3275,24 @@
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "Armis",
+            "playbookID": "Armis-Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Tidy - Test",
+            "integrations": [
+                "AWS - EC2",
+                "Demisto REST API",
+                "Tidy"
+            ],
+            "instance_names": [
+                "aws_alloacte_host"
+            ],
+            "fromversion": "6.0.0",
+            "nightly": true
         }
     ],
     "skipped_tests": {
@@ -3286,10 +3300,10 @@
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
+        "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "RedLockTest": "Issue 24600",
-        "SentinelOne V2 - test": "Issue 24933",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
@@ -3319,7 +3333,7 @@
         "hashIncidentFields-test": "Issue 26850",
         "Fidelis Elevate Network": "Issue 26453",
         "Cortex XDR - IOC - Test": "Issue 25598",
-        "Cherwell Example Scripts - test": "Issue 27107",
+        "Cherwell Example Scripts - test": "Issue 26780",
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
@@ -3354,17 +3368,24 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
-        "pyEWS_Test": "Issue 27942",
         "EWS search-mailbox test": "Issue 27943",
-        "EWS Public Folders Test": "Issue 27941",
-        "Azure NSG - Test": "Issue 33217",
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
-        "PAN-OS EDL Setup v3 Test": "Issue 35386"
+        "PAN-OS EDL Setup v3 Test": "Issue 35386",
+        "Google-Vault-Generic-Test": "Issue 24347",
+        "FireEyeNX-Test": "Issue 33216",
+        "GmailTest": "Issue 27057",
+        "Gmail Single User - Test": "Issue 27361",
+        "AWS - EC2 Test Playbook": "Issue 36486",
+        "BitcoinAbuse-test": "Issue 36688",
+        "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
+        "playbook_TrendmicroCAS_Test": "Issue 32730",
+        "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "Rundeck_test": "Issue 31174",
+        "Azure NSG - Test": "Issue 33217"
     },
     "skipped_integrations": {
         
@@ -3391,7 +3412,6 @@
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
-        "SentinelOne": "No instance",
         "Vectra v2": "No instance",
         "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
@@ -3445,6 +3465,7 @@
         "Akamai WAF": "Issue 32318",
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
+        "Armis": "No instance - developed by SOAR Experts",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3468,7 +3489,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "SentinelOne V2": "License expired issue #24933",
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3484,7 +3507,6 @@
         "urlscan.io": "Uses data that comes in the headers",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
-        "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
@@ -3494,7 +3516,7 @@
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "SecurityAndCompliance": "Integration doesn't support proxy",
-        "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
+        "Cherwell": "Submits a file - tests that send files shouldn't be mocked. this problem was fixed but the test is not running anymore because the integration is skipped",
         "Maltiverse": "issue 24335",
         "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
@@ -3657,6 +3679,9 @@
             "demisto/powershell-ubuntu": {
                 "pid_threshold": 40,
                 "memory_threshold": 200
+            },
+            "demisto/boto3": {
+                "memory_threshold": 90
             }
         }
     }

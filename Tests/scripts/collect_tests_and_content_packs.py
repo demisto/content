@@ -127,11 +127,11 @@ _FAILED = False
 ID_SET = {}
 CONF: Union[TestConf, dict] = {}
 
-if os.path.isfile('./Tests/id_set.json'):
-    with open('./Tests/id_set.json', 'r') as conf_file:
+if os.path.isfile('./artifacts/id_set.json'):
+    with open('./artifacts/id_set.json', 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
-if os.path.isfile('./Tests/conf.json'):
+if os.path.isfile('./artifacts/conf.json'):
     with open('./Tests/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
@@ -305,8 +305,7 @@ def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
-        else:
-            logging.critical(f'Could not find integration "{integration}" in the id_set')
+    logging.critical(f'Could not find integration "{integration_id}" in the id_set')
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
@@ -1265,6 +1264,16 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
+def is_release_branch():
+    """
+    Checks for the current build's branch
+    Returns:
+        True if the branch name under the 'CI_COMMIT_BRANCH' env variable is a release branch, else False.
+    """
+    branch_name = os.getenv('CI_COMMIT_BRANCH', '')
+    return re.match(r'[0-9]{2}\.[0-9]{1,2}\.[0-9]', branch_name)
+
+
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
@@ -1289,8 +1298,15 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
+    # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
+    # server in release branches.
+    if is_release_branch():
+        marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
+        for key in marketplace_server_keys:
+            envs_to_test[key] = False
+
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
+    with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
@@ -1348,11 +1364,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if not skip_save:
         logging.info("Creating filter_file.txt")
-        with open("./Tests/filter_file.txt", "w") as filter_file:
+        with open("./artifacts/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
         # content_packs_to_install.txt is not used in nightly build
         logging.info("Creating content_packs_to_install.txt")
-        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
+        with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:
