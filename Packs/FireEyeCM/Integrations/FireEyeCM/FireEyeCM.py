@@ -64,21 +64,44 @@ class Client(BaseClient):
                                   },
                                   resp_type='json')
 
+    @logger
+    def get_quarantined_emails_request(self, start_time: str, end_time: str, from_: str, subject: str,
+                                       appliance_id: str, limit: int) -> Dict[str, str]:
+        params = {
+            'start_time': start_time,
+            'end_time': end_time,
+            'limit': limit
+        }
+        if from_:
+            params['from'] = from_
+        if subject:
+            params['subject'] = subject
+        if appliance_id:
+            params['appliance_id'] = appliance_id
+
+        return self._http_request(method='GET',
+                                  url_suffix='emailmgmt/quarantine',
+                                  params=params,
+                                  resp_type='json')
+
 
 @logger
-def to_fe_datetime_converter(time_given):
+def to_fe_datetime_converter(time_given: str = 'now') -> str:
     """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
     Args:
-        time_given: the time given, could be now or a time in any format.
+        time_given: the time given, if none given, the default is now.
 
     Returns:
-
+        The time given in FireEye format.
     """
     date_obj = dateparser.parse(time_given)
-    end_time = date_obj.strftime(FE_DATE_FORMAT)
-    end_time += f'.{date_obj.strftime("%f")[:3]}'
-    end_time += f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
-    return end_time
+    fe_time = date_obj.strftime(FE_DATE_FORMAT)
+    fe_time += f'.{date_obj.strftime("%f")[:3]}'
+    given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
+    if len(given_timezone) == ':':
+        given_timezone = '+00:00'
+    fe_time += given_timezone
+    return fe_time
 
 
 @logger
@@ -196,7 +219,7 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
 @logger
 def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
     duration = args.get('duration', '12_hours')
-    end_time = to_fe_datetime_converter(args.get('end_time', datetime.now()))
+    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     mvx_correlated_only = argToBoolean(args.get('mvx_correlated_only', 'false'))
 
     raw_response = client.get_events_request(duration, end_time, mvx_correlated_only)
@@ -214,6 +237,31 @@ def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Events',
         outputs_key_field='uuid',
         outputs=events,
+        raw_response=raw_response
+    )
+
+
+@logger
+def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
+    start_time = to_fe_datetime_converter(args.get('start_time', '1 day'))
+    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    from_ = args.get('from', '')
+    subject = args.get('subject', '')
+    appliance_id = args.get('appliance_id', '')
+    limit = int(args.get('limit', '10000'))
+    raw_response = client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
+    if not raw_response:
+        md_ = 'No emails with the given query arguments were found.'
+    else:
+        headers = ['email_uuid', 'from', 'subject', 'message_id', 'completed_at']
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Quarantined emails:', t=raw_response,
+                              headers=headers, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
+        outputs_key_field='email_uuid',
+        outputs=raw_response,
         raw_response=raw_response
     )
 
@@ -245,6 +293,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid': get_artifacts_by_uuid,
             f'{INTEGRATION_COMMAND_NAME}-get-artifacts-metadata-by-uuid': get_artifacts_metadata_by_uuid,
             f'{INTEGRATION_COMMAND_NAME}-get-events': get_events,
+            f'{INTEGRATION_COMMAND_NAME}-get-quarantined-emails': get_quarantined_emails,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))

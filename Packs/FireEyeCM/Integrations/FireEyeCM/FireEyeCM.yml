@@ -296,6 +296,73 @@ script:
     - contextPath: FireEyeCM.Events.TODO
       description: Universally unique ID (UUID) of the alert.
       type: string
+  - arguments:
+    - default: false
+      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: The sender email.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: The email Subject. Must be URL encoded.
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: The appliance ID.
+      isArray: false
+      name: appliance_id
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10000'
+      description: Number of records to return. Default is 10000.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search and retrieve quarantined emails.
+    execution: false
+    name: fireeye-cm-get-quarantined-emails
+    outputs:
+    - contextPath: FireEyeCM.QuarantinedEmail.appliance_id
+      description: The appliance ID associated with the quarantined email.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.completed_at
+      description: The time the email has been quarantined.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.email_uuid
+      description: The quarantined email UUID.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.from
+      description: The quarantined email sender.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.message_id
+      description: The quarantined email message id.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.quarantine_path
+      description: The quarantined email path.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.The quarantined email queue id.
+      description: The quarantined email queue id.
+      type: string
+    - contextPath: FireEyeCM.QuarantinedEmail.subject
+      description: The quarantined email subject.
+      type: string
   isfetch: false
   runonce: false
   script: '-'
