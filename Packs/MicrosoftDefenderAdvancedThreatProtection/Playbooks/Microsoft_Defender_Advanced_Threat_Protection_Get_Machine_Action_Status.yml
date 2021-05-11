@@ -72,7 +72,8 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: MicrosoftATP.MachineAction(val.Status == "Pending" || val.Status == "InProgress" ).ID
+        simple: MicrosoftATP.MachineAction(val.Status == "Pending" || val.Status ==
+          "InProgress" ).ID
     separatecontext: true
     view: |-
       {
@@ -175,7 +176,8 @@ outputs:
   description: The file identifier
   type: string
 - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-  description: 'The type of the file identifier with the possible values: "Sha1" ,"Sha256" and "Md5"'
+  description: 'The type of the file identifier with the possible values: "Sha1" ,"Sha256"
+    and "Md5"'
   type: string
 tests:
 - No test - no testplaybook, but unitest exist
