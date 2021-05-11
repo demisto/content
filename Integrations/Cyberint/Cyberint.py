@@ -397,10 +397,6 @@ def create_fetch_incident_attachment(raw_response: Response, attachment_file_nam
 
     attachment_name = get_attachment_name(attachment_file_name)
     file_result = fileResult(filename=attachment_name, data=raw_response.content)
-    # check for error
-    if file_result["Type"] == EntryType.ERROR:
-        print("1111111111")
-        demisto.error(f'file result type error {file_result["Contents"]}')
 
     return {
         "path": file_result["FileID"],
@@ -522,7 +518,6 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
             'attachment': incident_attachments
         }
         incidents.append(incident)
-
 
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
