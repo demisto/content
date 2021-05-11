@@ -14,6 +14,7 @@
 
 .default-before_script:
   before_script:
+    - python -c "import os;print(os.cpu_count())"
     - echo "=== Running before script ==="
     - git checkout $CI_COMMIT_BRANCH
     - git config diff.renameLimit 6000
