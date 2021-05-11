@@ -18,12 +18,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f48e65f8-2745-49a0-8b45-96b96614eac1
+      id: 9982c446-02ac-4081-880c-0c41d87f1861
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: f48e65f8-2745-49a0-8b45-96b96614eac1
+    taskid: 9982c446-02ac-4081-880c-0c41d87f1861
     timertriggers: []
     type: start
     view: |-
@@ -42,20 +42,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 3eb3a49e-24b9-4ecf-8d77-6979631836a9
+      id: 8e546a1e-651d-414d-831c-20044a45a9b0
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 3eb3a49e-24b9-4ecf-8d77-6979631836a9
+    taskid: 8e546a1e-651d-414d-831c-20044a45a9b0
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 550,
-          "y": 1410
+          "y": 1380
         }
       }
   "9":
@@ -86,7 +86,6 @@ tasks:
     ignoreworker: false
     nexttasks:
       '#default#':
-      - "18"
       - "19"
       Doesn't need:
       - "7"
@@ -97,12 +96,12 @@ tasks:
     task:
       brand: ""
       description: Checks if this incident type needs postprocessing.
-      id: 33af64f4-e6d8-43b6-8bc8-18d3007f2bff
+      id: d4367d06-672b-4458-8285-e5d4ed682c34
       iscommand: false
       name: Does this incident type need postprocessing?
       type: condition
       version: -1
-    taskid: 33af64f4-e6d8-43b6-8bc8-18d3007f2bff
+    taskid: d4367d06-672b-4458-8285-e5d4ed682c34
     timertriggers: []
     type: condition
     view: |-
@@ -113,7 +112,6 @@ tasks:
         }
       }
   "10":
-    continueonerror: true
     id: "10"
     ignoreworker: false
     nexttasks:
@@ -137,24 +135,23 @@ tasks:
       brand: Group-IB Threat Intelligence & Attribution
       description: Command performs Group IB event lookup in hi/threat_actor (or in
         apt/threat_actor if the APT flag is true) collection with provided ID.
-      id: c4d8df84-aa73-455a-885b-20d67f95345a
+      id: 4443932a-f0e4-4b54-8aa4-9731cd6b4a19
       iscommand: true
       name: gibtia-get-threat-actor-info
       script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-actor-info
       type: regular
       version: -1
-    taskid: c4d8df84-aa73-455a-885b-20d67f95345a
+    taskid: 4443932a-f0e4-4b54-8aa4-9731cd6b4a19
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 585
+          "x": 550,
+          "y": 610
         }
       }
   "11":
-    continueonerror: true
     id: "11"
     ignoreworker: false
     nexttasks:
@@ -178,20 +175,20 @@ tasks:
       brand: Group-IB Threat Intelligence & Attribution
       description: Command performs Group IB event lookup in hi/threat (or in apt/threat
         if the APT flag is true) collection with provided ID.
-      id: af0c4aa5-99f7-4a6b-845f-3f15cec83aea
+      id: 7a166c88-de20-44f3-8dbc-0fae277a3fee
       iscommand: true
       name: gibtia-get-threat-info
       script: Group-IB Threat Intelligence & Attribution|||gibtia-get-threat-info
       type: regular
       version: -1
-    taskid: af0c4aa5-99f7-4a6b-845f-3f15cec83aea
+    taskid: 7a166c88-de20-44f3-8dbc-0fae277a3fee
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 1005
+          "x": 550,
+          "y": 1035
         }
       }
   "16":
@@ -219,100 +216,19 @@ tasks:
     task:
       brand: ""
       description: Checks if there is a threat report in the threat actor info.
-      id: e61a62c5-9338-4380-81bb-82ffc91b9a59
+      id: cacfaa97-de63-4e53-8397-51f3a53b17dd
       iscommand: false
       name: Is there a report?
       type: condition
       version: -1
-    taskid: e61a62c5-9338-4380-81bb-82ffc91b9a59
+    taskid: cacfaa97-de63-4e53-8397-51f3a53b17dd
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 770
-        }
-      }
-  "17":
-    id: "17"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      incidentId:
-        complex:
-          accessor: id
-          root: incident
-      indicatorsIDs: {}
-      indicatorsValues:
-        complex:
-          accessor: gibrelatedindicatorsdata
-          root: incident
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Associate one or more indicators to incident. You can specify the
-        indicators by either indicator ID or the value of the indicator
-      id: 1de34015-1388-48b6-862c-99a475e3a544
-      iscommand: true
-      name: associateIndicatorsToIncident
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      version: -1
-    taskid: 1de34015-1388-48b6-862c-99a475e3a544
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1120,
-          "y": 680
-        }
-      }
-  "18":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: gibrelatedindicatorsdata
-                root: incident
-          operator: isNotEmpty
-      label: "yes"
-    id: "18"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "17"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Checks if there is related indicators data to tie with the incident.
-      id: b16e6f15-6e9c-46b6-862a-28a5492c2aa0
-      iscommand: false
-      name: |
-        Is there an indicator?
-      type: condition
-      version: -1
-    taskid: b16e6f15-6e9c-46b6-862a-28a5492c2aa0
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1120,
-          "y": 400
+          "x": 550,
+          "y": 790
         }
       }
   "19":
@@ -340,35 +256,33 @@ tasks:
     task:
       brand: ""
       description: Checks if there is a threat actor in the incident.
-      id: 9f96bba7-ea63-42da-88fd-c22cc7cb261c
+      id: be53e648-4c78-4f8d-8a2c-f45ff17982c7
       iscommand: false
       name: Is there a threat actor?
       type: condition
       version: -1
-    taskid: 9f96bba7-ea63-42da-88fd-c22cc7cb261c
+    taskid: be53e648-4c78-4f8d-8a2c-f45ff17982c7
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 400
+          "x": 550,
+          "y": 410
         }
       }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {
-      "16_7_#default#": 0.39,
-      "18_7_#default#": 0.24,
-      "19_7_#default#": 0.33,
-      "9_7_Doesn't need": 0.14
+      "19_7_#default#": 0.38,
+      "9_7_Doesn't need": 0.78
     },
     "paper": {
       "dimensions": {
-        "height": 1435,
-        "width": 1500,
-        "x": 0,
+        "height": 1405,
+        "width": 380,
+        "x": 550,
         "y": 40
       }
     }

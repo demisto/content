@@ -471,7 +471,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       id:
-        simple: WPVDB-ID:8877
+        simple: CVE-2021-32489
     separatecontext: false
     skipunavailable: false
     task:
@@ -1533,7 +1533,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: WPVDB-ID:8877
+              simple: CVE-2021-32489
       label: Correct
     id: "40"
     ignoreworker: false

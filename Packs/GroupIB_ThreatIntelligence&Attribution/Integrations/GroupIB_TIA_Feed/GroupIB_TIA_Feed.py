@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 """ IMPORTS """
 
-import time
 from typing import Dict, Generator, List, Optional, Tuple, Union
 
 import dateparser
@@ -454,11 +453,10 @@ class Client(BaseClient):
             params = {'df': date_from, 'limit': limit, 'seqUpdate': seq_update}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name + '/updated',
-                                         params=params, timeout=60., retries=3)
+                                         params=params, timeout=60., 
+                                         retries=4, status_list_to_retry=[429, 500])
             if portion.get("count") == 0:
                 break
-            elif portion.get("count") < limit:
-                time.sleep(1)
             seq_update = portion.get("seqUpdate")
             date_from = None
             yield portion.get('items')
@@ -479,11 +477,10 @@ class Client(BaseClient):
             params = {'df': date_from, 'limit': limit, 'resultId': result_id}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=60., retries=3)
+                                         params=params, timeout=60., 
+                                         retries=4, status_list_to_retry=[429, 500])
             if len(portion.get('items')) == 0:
                 break
-            elif len(portion.get('items')) < limit:
-                time.sleep(1)
             result_id = portion.get("resultId")
             date_from = None
             yield portion.get('items')
@@ -496,7 +493,8 @@ class Client(BaseClient):
         :param feed_id: id of feed to search.
         """
 
-        portion = self._http_request(method="GET", url_suffix=collection_name + '/' + feed_id, timeout=60., retries=3)
+        portion = self._http_request(method="GET", url_suffix=collection_name + '/' + feed_id, timeout=60., 
+                                     retries=4, status_list_to_retry=[429, 500])
         return portion
 
 
@@ -666,7 +664,11 @@ def fetch_indicators_command(client: Client, last_run: Dict, first_fetch_time: s
         date_from = None
         seq_update = None
         if not last_fetch:
-            date_from = dateparser.parse(first_fetch_time).strftime('%Y-%m-%d')
+            date_from = dateparser.parse(first_fetch_time)
+            if date_from is None:
+                raise DemistoException('Inappropriate indicators_first_fetch format, '
+                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
+            date_from = date_from.strftime('%Y-%m-%d')
         else:
             seq_update = last_fetch
 

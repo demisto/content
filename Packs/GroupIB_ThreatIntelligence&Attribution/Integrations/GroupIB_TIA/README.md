@@ -1,6 +1,7 @@
 
 
 
+
 Pack helps to integrate Group-IB Threat Intelligence & Attribution and get incidents directly into Cortex XSOAR. 
 The list of included collections:
 Compromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware.
@@ -18,8 +19,8 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
     | Trust any certificate (not secure) | Whether to allow connections without verifying SSL certificates validity. | False |
     | Use system proxy settings | Whether to use XSOAR system proxy settings to connect to the API. | False |
     | Colletions to fetch | Type\(s\) of incidents to fetch from the third party API. | False |
-    | Incidents first fetch | Days ago to start fetching incidents from. | False |
-    | Number of requests per collection | A number of requests per collection that integration sends in one fetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
+    | Incidents first fetch | Date to start fetching incidents from. | False |
+    | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

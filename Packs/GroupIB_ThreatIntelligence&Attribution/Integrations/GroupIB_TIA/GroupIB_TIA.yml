@@ -43,21 +43,13 @@ configuration:
   - malware/targeted_malware
   required: false
   type: 16
-- additionalinfo: Days ago to start fetching incidents from.
+- additionalinfo: Date to start fetching incidents from.
   defaultvalue: 3 days
   display: Incidents first fetch
   hidden: false
   name: first_fetch
-  options:
-  - 1 day
-  - 2 days
-  - 3 days
-  - 4 days
-  - 5 days
-  - 6 days
-  - 7 days
   required: false
-  type: 15
+  type: 0
 - additionalinfo: A number of requests per collection that integration sends in one
     fetch iteration (each request picks up to 200 incidents). If you face some runtime
     errors, lower the value.
@@ -81,7 +73,7 @@ description: "Pack helps to integrate Group-IB Threat Intelligence & Attribution
   \ get incidents directly into Cortex XSOAR. \nThe list of included collections:\n\
   Compromised Accounts, Compromised Cards, Brand Protection Phishing, Brand Protection\
   \ Phishing Kit, OSI Git Leak, OSI Public Leak, Targeted Malware."
-display: Group-IB Threat Intelligence & Attribution (Partner Contribution)
+display: Group-IB Threat Intelligence & Attribution
 name: Group-IB Threat Intelligence & Attribution
 script:
   commands:
@@ -1255,7 +1247,7 @@ script:
     - contextPath: additional_info
       description: Additional info about feed
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   feed: false
   isfetch: true
   longRunning: false

@@ -21,7 +21,7 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
     | Feed Fetch Interval |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Indicator collections | Collections List to include for fetching. | False |
-    | Indicator first fetch | Days ago to start first indicators fetch. | False |
+    | Indicator first fetch | Date to start fetching indicators from. | False |
     | Number of requests per collection | A number of requests per collection that integration sends in one fetch iteration \(each request picks up to 200 objects with different amount of indicators\). If you face some runtime errors, lower the value. | False |
     | Tags | Supports CSV values. | False |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |

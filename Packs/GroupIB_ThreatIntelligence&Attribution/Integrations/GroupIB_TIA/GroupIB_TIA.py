@@ -4,11 +4,11 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 import json
-import time
 from typing import Dict, Generator, List, Optional, Tuple, Union
 
 import dateparser
 import urllib3
+import random
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -37,9 +37,7 @@ MAPPING: dict = {
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
                 {
-                    "main_field": "client_ipv4_ip", "main_field_type": "GIB Victim IP",
-                    "add_fields": ["client_ipv4_asn", "client_ipv4_countryName", "client_ipv4_region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
+                    "main_field": "client_ipv4_ip",
                 }
             ]
     },
@@ -78,18 +76,10 @@ MAPPING: dict = {
                     "main_field": "url", "main_field_type": "URL"
                 },
                 {
-                    "main_field": "phishingDomain_domain", "main_field_type": "Domain",
-                    "add_fields":
-                        [
-                            "phishingDomain_dateRegistered", "phishingDomain_registrar",
-                            "phishingDomain_title"
-                        ],
-                    "add_fields_types": ["creationdate", "registrarname", "gibphishingtitle"]
+                    "main_field": "phishingDomain_domain", "main_field_type": "Domain"
                 },
                 {
-                    "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
+                    "main_field": "ipv4_ip", "main_field_type": "IP"
                 }
             ]
     },
@@ -134,8 +124,8 @@ MAPPING: dict = {
             [
                 {
                     "main_field": "md5", "main_field_type": "File",
-                    "add_fields": ["fileName", "fileType", "md5", "sha1", "sha256", "size"],
-                    "add_fields_types": ["gibfilename", "filetype", "md5", "sha1", "sha256", "size"]
+                    "add_fields": ["fileName", "md5", "sha1", "sha256", "size"],
+                    "add_fields_types": ["gibfilename", "md5", "sha1", "sha256", "size"]
                 }
             ]
     },
@@ -148,10 +138,6 @@ MAPPING: dict = {
             "Compromised Mule",
         "indicators":
             [
-                {
-                    "main_field": "account", "main_field_type": "GIB Compromised Mule",
-                    "add_fields": ["dateAdd", "sourceType"],
-                    "add_fields_types": ["creationdate", "source"]},
                 {
                     "main_field": "cnc_url", "main_field_type": "URL",
                 },
@@ -182,20 +168,6 @@ MAPPING: dict = {
                     "main_field": "cnc_ipv4_ip", "main_field_type": "IP",
                     "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
-                },
-                {
-                    "main_field": "device_imei", "main_field_type": "GIB Compromised IMEI",
-                    "add_fields":
-                        [
-                            "dateDetected", "dateCompromised", "device_model",
-                            "client_ipv4_asn", "client_ipv4_countryName",
-                            "client_ipv4_region", "client_ipv4_ip"
-                        ],
-                    "add_fields_types":
-                        [
-                            "creationdate", "gibdatecompromised", "devicemodel",
-                            "asn", "geocountry", "geolocation", "ipaddress"
-                        ]
                 }
             ]
     },
@@ -217,11 +189,6 @@ MAPPING: dict = {
                     "add_fields": ["cnc_ipv4_asn", "cnc_ipv4_countryName", "cnc_ipv4_region"],
                     "add_fields_types": ["asn", "geocountry", "geolocation"]
                 },
-                {
-                    "main_field": "target_ipv4_ip", "main_field_type": "GIB Victim IP",
-                    "add_fields": ["target_ipv4_asn", "target_ipv4_countryName", "target_ipv4_region"],
-                    "add_fields_types": ["asn", "geocountry", "geolocation"]
-                }
             ]
     },
     "attacks/deface": {
@@ -256,18 +223,8 @@ MAPPING: dict = {
                 },
                 {
                     "main_field": "phishingDomain_domain", "main_field_type": "Domain",
-                    "add_fields":
-                    [
-                        "phishingDomain_dateRegistered", "phishingDomain_registrar",
-                        "phishingDomain_title", "targetBrand",
-                        "targetCategory", "targetDomain"
-                    ],
-                    "add_fields_types":
-                    [
-                        "creationdate", "registrarname",
-                        "gibphishingtitle", "gibtargetbrand",
-                        "gibtargetcategory", "gibtargetdomain"
-                    ]
+                    "add_fields": ["phishingDomain_registrar"],
+                    "add_fields_types": ["registrarname"]
                 },
                 {
                     "main_field": "ipv4_ip", "main_field_type": "IP",
@@ -363,16 +320,8 @@ MAPPING: dict = {
             [
                 {
                     "main_field": "ipv4_ip", "main_field_type": "IP",
-                    "add_fields":
-                    [
-                        "ipv4_asn", "ipv4_countryName", "ipv4_region",
-                        "port", "anonymous", "source"
-                    ],
-                    "add_fields_types":
-                    [
-                        "asn", "geocountry", "geolocation",
-                        "gibproxyport", "gibproxyanonymous", "source"
-                    ]
+                    "add_fields": ["ipv4_asn", "ipv4_countryName", "ipv4_region"],
+                    "add_fields_types": ["asn", "geocountry", "geolocation"]
                 }
             ]
     },
@@ -419,16 +368,8 @@ MAPPING: dict = {
             [
                 {
                     "main_field": "id", "main_field_type": "CVE",
-                    "add_fields":
-                    [
-                        "cvss_score", "cvss_vector", "softwareMixed",
-                        "description", "dateLastSeen", "datePublished"
-                    ],
-                    "add_fields_types":
-                    [
-                        "cvss", "gibcvssvector", "gibsoftwaremixed",
-                        "cvedescription", "cvemodified", "published"
-                    ]
+                    "add_fields": ["cvss_score", "description", "dateLastSeen", "datePublished"],
+                    "add_fields_types": ["cvss", "cvedescription", "cvemodified", "published"]
                 }
             ]
     },
@@ -468,11 +409,9 @@ class Client(BaseClient):
             params = {"df": date_from, "limit": limit, "seqUpdate": seq_update}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name + "/updated", params=params,
-                                         timeout=60., retries=3)
+                                         timeout=60., retries=4, status_list_to_retry=[429, 500])
             if portion.get("count") == 0:
                 break
-            elif portion.get("count") < limit:
-                time.sleep(1)
             seq_update = portion.get("seqUpdate")
             date_from = None
             yield portion.get("items")
@@ -495,14 +434,12 @@ class Client(BaseClient):
             params = {'df': date_from, 'dt': date_to, 'limit': limit, 'resultId': result_id, 'q': query}
             params = {key: value for key, value in params.items() if value}
             portion = self._http_request(method="GET", url_suffix=collection_name,
-                                         params=params, timeout=60., retries=3)
+                                         params=params, timeout=60., retries=4, status_list_to_retry=[429, 500])
             if portion.get('count') > 2000:
                 raise DemistoException('Portion is too large (count > 2000), this can cause timeout in Demisto.'
                                        'Please, change or set date_from/date_to arguments.')
             if len(portion.get('items')) == 0:
                 break
-            elif len(portion.get('items')) < limit:
-                time.sleep(1)
             result_id = portion.get("resultId")
             date_from, date_to, query = None, None, None
             yield portion.get('items')
@@ -514,15 +451,18 @@ class Client(BaseClient):
         :param collection_name: in what collection to search.
         :param feed_id: id of feed to search.
         """
+        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=60.,
+                                     retries=4, backoff_factor=random.random() * 10 + 1,
+                                     status_list_to_retry=[429, 500])
 
-        portion = self._http_request(method="GET", url_suffix=collection_name + "/" + feed_id, timeout=60., retries=3)
         return portion
 
     def get_available_collections(self):
         """
         Gets list of available collections from GIB Ti&A API.
         """
-        response = self._http_request(method="GET", url_suffix="sequence_list", timeout=60., retries=3)
+        response = self._http_request(method="GET", url_suffix="sequence_list", timeout=60.,
+                                      retries=4, status_list_to_retry=[429, 500])
         buffer_list = list(response.get("list").keys())
         collections_list = []
         for key in MAPPING:
@@ -532,7 +472,8 @@ class Client(BaseClient):
 
     def search_by_query(self, q):
         results = self._http_request(method="GET", url_suffix="search",
-                                     params={'q': q}, timeout=60., retries=3)
+                                     params={'q': q}, timeout=60., retries=4,
+                                     status_list_to_retry=[429, 500])
         return results
 
 
@@ -562,27 +503,35 @@ def find_element_by_key(obj, key):
     path = key.split("_", 1)
     if len(path) == 1:
         if isinstance(obj, list):
-            return [i.get(path[0]) for i in obj]
+            return [i.get(path[0]) for i in obj if i not in ["255.255.255.255", "0.0.0.0", ""]]
         elif isinstance(obj, dict):
-            return obj.get(path[0])
+            if obj.get(path[0]) in ["255.255.255.255", "0.0.0.0", ""]:
+                return None
+            else:
+                return obj.get(path[0])
         else:
-            return obj
+            if obj in ["255.255.255.255", "0.0.0.0", ""]:
+                return None
+            else:
+                return obj
     else:
         if isinstance(obj, list):
             return [find_element_by_key(i.get(path[0]), path[1]) for i in obj]
         elif isinstance(obj, dict):
             return find_element_by_key(obj.get(path[0]), path[1])
         else:
-            return obj
+            if obj in ["255.255.255.255", "0.0.0.0", ""]:
+                return None
+            else:
+                return obj
 
 
-def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name, manual_command):
+def transform_to_command_results(iocs, ioc_type, fields, fields_names, collection_name):
     """
     Recursively ties together and transforms indicator data.
     """
 
-    unpacked = []
-    info_for_tie = []
+    parsed_info = []
     if isinstance(iocs, list):
         for i, ioc in enumerate(iocs):
             buf_fields = []
@@ -591,41 +540,87 @@ def unpack_iocs(iocs, ioc_type, fields, fields_names, collection_name, manual_co
                     buf_fields.append(field[i])
                 else:
                     buf_fields.append(field)
-            full_info, main_info = unpack_iocs(ioc, ioc_type, buf_fields, fields_names,
-                                               collection_name, manual_command)
-            unpacked.extend(full_info)
-            info_for_tie.extend(main_info)
-        return unpacked, info_for_tie
+            parsed_info.extend(transform_to_command_results(ioc, ioc_type, buf_fields, fields_names, collection_name))
+        return parsed_info
     else:
-        if iocs in ["255.255.255.255", "0.0.0.0", "", None]:
-            return [], []
+        if iocs is None:
+            return []
 
         fields = {fields_names[i]: fields[i] for i in range(len(fields_names)) if fields[i] is not None}
 
-        # Transforming into correct date format
-        if collection_name in ["bp/phishing", "attacks/phishing"]:
-            if fields.get("creationdate"):
-                fields["creationdate"] = dateparser.parse(fields["creationdate"]).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        # For manual command, we need every indicator to be a CommandResults class object.
-        if manual_command:
-            output = parse_to_outputs(iocs, ioc_type, fields)
-            if output:
-                results = [CommandResults(
-                    readable_output=tableToMarkdown("{0} indicator".format(ioc_type), {"value": iocs, **fields}),
-                    indicator=output,
-                    ignore_auto_extract=True
-                )]
-                return results, []
-            else:
-                return [], []
-
+        output = parse_to_outputs(iocs, ioc_type, fields)
+        if output:
+            results = [CommandResults(
+                readable_output=tableToMarkdown("{0} indicator".format(ioc_type), {"value": iocs, **fields}),
+                indicator=output,
+                ignore_auto_extract=True
+            )]
+            return results
         else:
-            fields.update({"gibcollection": collection_name})
-            full_info = [{"value": iocs, "type": ioc_type,
-                          "raw_json": {"value": iocs, "type": ioc_type, **fields}, "fields": fields}]
-            main_info = [iocs]
-            return full_info, main_info
+            return []
+
+
+def parse_to_outputs(value, indicator_type, fields):
+    def calculate_dbot_score(type_):
+        severity = fields.get("severity")
+        if severity == "green":
+            score = Common.DBotScore.GOOD
+        elif severity == "orange":
+            score = Common.DBotScore.SUSPICIOUS
+        elif severity == "red":
+            score = Common.DBotScore.BAD
+        else:
+            score = Common.DBotScore.NONE
+
+        return Common.DBotScore(
+            indicator=value,
+            indicator_type=type_,
+            integration_name="GIB TI&A",
+            score=score
+        )
+
+    if indicator_type == "IP":
+        return Common.IP(ip=value, asn=fields.get("asn"), geo_country=fields.get("geocountry"),
+                         geo_description=fields.get("geolocation"),
+                         dbot_score=calculate_dbot_score(DBotScoreType.IP))
+    elif indicator_type == "Domain":
+        return Common.Domain(domain=value, registrar_name=fields.get("registrarname"),
+                             dbot_score=calculate_dbot_score(DBotScoreType.DOMAIN))
+    elif indicator_type == "File":
+        return Common.File(md5=value, sha1=fields.get("sha1"), sha256=fields.get("sha256"),
+                           name=fields.get("gibfilename"), size=fields.get("size"),
+                           dbot_score=calculate_dbot_score(DBotScoreType.FILE))
+    elif indicator_type == "URL":
+        return Common.URL(url=value, dbot_score=calculate_dbot_score(DBotScoreType.URL))
+    elif indicator_type == "CVE":
+        return Common.CVE(id=value, cvss=fields.get("cvss"), published=fields.get("published"),
+                          modified=fields.get("cvemodified"), description=fields.get("cvedescription"))
+    return None
+
+
+def find_iocs_in_feed(feed: Dict, collection_name: str) -> List:
+    """
+    Finds IOCs in the feed and transform them to the appropriate format to ingest them into Demisto.
+
+    :param feed: feed from GIB TI&A.
+    :param collection_name: which collection this feed belongs to.
+    """
+
+    indicators = []
+    indicators_info = MAPPING.get(collection_name, {}).get("indicators", [])
+    for i in indicators_info:
+        main_field = find_element_by_key(feed, i["main_field"])
+        main_field_type = i["main_field_type"]
+        add_fields = []
+        add_fields_list = i.get("add_fields", []) + ["evaluation_severity"]
+        add_fields_types = i.get("add_fields_types", []) + ["severity"]
+        for j in add_fields_list:
+            add_fields.append(find_element_by_key(feed, j))
+        parsed_info = transform_to_command_results(main_field, main_field_type,
+                                                   add_fields, add_fields_types, collection_name)
+        indicators.extend(parsed_info)
+
+    return indicators
 
 
 def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
@@ -701,79 +696,9 @@ def transform_some_fields_into_markdown(collection_name, feed: Dict) -> Dict:
     return feed
 
 
-def find_iocs_in_feed(feed: Dict, collection_name: str, manual_command: bool = False) -> Tuple[List, List]:
-    """
-    Finds IOCs in the feed and transform them to the appropriate format to ingest them into Demisto.
-
-    :param feed: feed from GIB TI&A.
-    :param collection_name: which collection this feed belongs to.
-    :param manual_command: defines if this command was executed for fetching or for one of the manual commands.
-    """
-
-    indicators = []
-    related_indicators_data = []
-    indicators_info = MAPPING.get(collection_name, {}).get("indicators", [])
-    for i in indicators_info:
-        main_field = find_element_by_key(feed, i["main_field"])
-        main_field_type = i["main_field_type"]
-        add_fields = []
-        add_fields_list = i.get("add_fields", []) + ["id"]
-        add_fields_types = i.get("add_fields_types", []) + ["gibid"]
-        if manual_command:
-            add_fields_list += ["evaluation_severity"]
-            add_fields_types += ["severity"]
-        for j in add_fields_list:
-            add_fields.append(find_element_by_key(feed, j))
-        full_info, main_info = unpack_iocs(main_field, main_field_type,
-                                           add_fields, add_fields_types,
-                                           collection_name, manual_command)
-        indicators.extend(full_info)
-        related_indicators_data.extend(main_info)
-
-    return indicators, related_indicators_data
-
-
 def get_human_readable_feed(collection_name, feed):
     return tableToMarkdown(name="Feed from {0} with ID {1}".format(collection_name, feed.get("id")),
                            t=feed, removeNull=True)
-
-
-def parse_to_outputs(value, indicator_type, fields):
-    def calculate_dbot_score(type_):
-        severity = fields.get("severity")
-        if severity == "green":
-            score = Common.DBotScore.GOOD
-        elif severity == "orange":
-            score = Common.DBotScore.SUSPICIOUS
-        elif severity == "red":
-            score = Common.DBotScore.BAD
-        else:
-            score = Common.DBotScore.NONE
-
-        return Common.DBotScore(
-            indicator=value,
-            indicator_type=type_,
-            integration_name="GIB TI&A",
-            score=score
-        )
-
-    if indicator_type == "IP":
-        return Common.IP(ip=value, asn=fields.get("asn"), geo_country=fields.get("geocountry"),
-                         geo_description=fields.get("geolocation"),
-                         dbot_score=calculate_dbot_score(DBotScoreType.IP))
-    elif indicator_type == "Domain":
-        return Common.Domain(domain=value, registrar_name=fields.get("registrarname"),
-                             dbot_score=calculate_dbot_score(DBotScoreType.DOMAIN))
-    elif indicator_type == "File":
-        return Common.File(md5=value, sha1=fields.get("sha1"), sha256=fields.get("sha256"),
-                           name=fields.get("gibfilename"), size=fields.get("size"),
-                           dbot_score=calculate_dbot_score(DBotScoreType.FILE))
-    elif indicator_type == "URL":
-        return Common.URL(url=value, dbot_score=calculate_dbot_score(DBotScoreType.URL))
-    elif indicator_type == "CVE":
-        return Common.CVE(id=value, cvss=fields.get("cvss"), published=fields.get("published"),
-                          modified=fields.get("cvemodified"), description=fields.get("cvedescription"))
-    return None
 
 
 def transform_function(result, previous_keys="", is_inside_list=False):
@@ -825,7 +750,7 @@ def transform_function(result, previous_keys="", is_inside_list=False):
 
 
 def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: str,
-                            incident_collections: List, requests_count: int) -> Tuple[Dict, List, List]:
+                            incident_collections: List, requests_count: int) -> Tuple[Dict, List]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -839,7 +764,6 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
     """
 
     incidents = []
-    indicators = []
     next_run: Dict[str, Dict[str, Union[int, Any]]] = {"last_fetch": {}}
     for collection_name in incident_collections:
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
@@ -848,7 +772,11 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
         date_from = None
         seq_update = None
         if last_fetch:
-            date_from = dateparser.parse(first_fetch_time).strftime("%Y-%m-%d")
+            date_from = dateparser.parse(first_fetch_time)
+            if date_from is None:
+                raise DemistoException('Inappropriate first_fetch format, '
+                                       'please use something like this: 2020-01-01 or January 1 2020 or 3 days')
+            date_from = date_from.strftime('%Y-%m-%d')
         else:
             seq_update = last_fetch
 
@@ -871,11 +799,14 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
                 elif severity == "red":
                     system_severity = 3
 
-                feed_iocs, related_indicators_data = find_iocs_in_feed(feed, collection_name)
-                indicators.extend(feed_iocs)
+                related_indicators_data = []
+                indicators_info = MAPPING.get(collection_name, {}).get("indicators", [])
+                for i in indicators_info:
+                    if find_element_by_key(feed, i["main_field"]) is not None:
+                        related_indicators_data.append(find_element_by_key(feed, i["main_field"]))
 
                 incident_created_time = dateparser.parse(feed.get(mapping.get("date")))
-                feed.update({"relatedIndicatorsData": ",".join(related_indicators_data)})
+                feed.update({"relatedIndicatorsData": related_indicators_data})
                 feed.update({"systemSeverity": system_severity})
                 if collection_name in ["osi/git_leak", "osi/public_leak", "bp/phishing_kit"]:
                     feed = transform_some_fields_into_markdown(collection_name, feed)
@@ -891,7 +822,7 @@ def fetch_incidents_command(client: Client, last_run: Dict, first_fetch_time: st
 
         next_run["last_fetch"][collection_name] = seq_update
 
-    return next_run, indicators, incidents
+    return next_run, incidents
 
 
 def get_available_collection_command(client: Client, args):
@@ -948,7 +879,7 @@ def get_info_by_id_command(collection_name: str):
 
         indicators: List[CommandResults] = []
         if coll_name not in ["apt/threat_actor", "hi/threat_actor"]:
-            indicators, _ = find_iocs_in_feed(result, coll_name, manual_command=True)
+            indicators = find_iocs_in_feed(result, coll_name)
 
         if coll_name in ["apt/threat", "hi/threat"]:
             del result["indicatorMalwareRelationships"], result["indicatorRelationships"], \
@@ -1101,15 +1032,12 @@ def main():
 
         elif command == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, indicators, incidents = fetch_incidents_command(client=client, last_run=demisto.getLastRun(),
-                                                                      first_fetch_time=incidents_first_fetch,
-                                                                      incident_collections=incident_collections,
-                                                                      requests_count=requests_count)
+            next_run, incidents = fetch_incidents_command(client=client, last_run=demisto.getLastRun(),
+                                                          first_fetch_time=incidents_first_fetch,
+                                                          incident_collections=incident_collections,
+                                                          requests_count=requests_count)
             demisto.setLastRun(next_run)
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
             demisto.incidents(incidents)
-
         else:
             return_results(commands[command](client, args))
 

@@ -11,7 +11,7 @@ with open('test_data/results.json') as results:
 # Because of errors with markdown tables
 RESULTS.update({
     'osi/git_leak': (
-        {'last_fetch': {'osi/git_leak': 1611219371626093}}, [],
+        {'last_fetch': {'osi/git_leak': 1611219371626093}},
         [
             {
                 'name': 'Git Leak: conf/nginx/sites-available/whatsinmyyogurt',
@@ -41,9 +41,9 @@ RESULTS.update({
                            'sZURpZmYtNTQwOGFmNDAxNmU1ZmQxY2E2ZWFkMzU4Y2MzYjJiNGI2MDVmNTRmNjg1OGM3OGJlZjB'
                            'jZWJlMmRlZTA2ZjA4Zg==) | some@gmail.ru | sadsdsa | 2019-06-20T13:13:35+00:00 |\\n", '
                            '"seqUpdate": 1611219371626093, "source": "github", '
-                           '"gibType": "osi/git_leak", "relatedIndicatorsData": "", "systemSeverity": 1}'}]),
+                           '"gibType": "osi/git_leak", "relatedIndicatorsData": [], "systemSeverity": 1}'}]),
     'osi/public_leak': (
-        {'last_fetch': {'osi/public_leak': 1601909532153438}}, [],
+        {'last_fetch': {'osi/public_leak': 1601909532153438}},
         [
             {
                 'name': 'Public Leak: a9a5b5cb9b971a2a037e3a0a30654185ea148095',
@@ -67,12 +67,12 @@ RESULTS.update({
                            '"seqUpdate": 1601909532153438, "size": "345 B", "updated": '
                            '"2020-10-05T17:51:31+03:00", "useful": 1, "name": '
                            '"Public Leak: a9a5b5cb9b971a2a037e3a0a30654185ea148095", "gibType": '
-                           '"osi/public_leak", "relatedIndicatorsData": "", "systemSeverity": 2}'
+                           '"osi/public_leak", "relatedIndicatorsData": [], "systemSeverity": 2}'
             }
         ]
     ),
     'bp/phishing_kit': (
-        {'last_fetch': {'bp/phishing_kit': 1614921031175}}, [],
+        {'last_fetch': {'bp/phishing_kit': 1614921031175}},
         [
             {'name': 'Phishing Kit: 8d7ea805fe20d6d77f57e2f0cadd17b1',
              'occurred': '2021-01-14T12:10:41Z',
@@ -96,7 +96,7 @@ RESULTS.update({
                         '"seqUpdate": 1614921031175, "targetBrand": [], "tsFirstSeen": '
                         'null, "tsLastSeen": null, "variables": null, "name": '
                         '"Phishing Kit: 8d7ea805fe20d6d77f57e2f0cadd17b1", "gibType": '
-                        '"bp/phishing_kit", "relatedIndicatorsData": "", '
+                        '"bp/phishing_kit", "relatedIndicatorsData": [[]], '
                         '"systemSeverity": 2}'}]),
 })
 COLLECTION_NAMES = ['compromised/account', 'compromised/card', 'osi/git_leak', 'osi/public_leak',

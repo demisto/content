@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Group-IB Threat Intelligence & Attribution - mapper",
+    "id": "Group-IB Threat Intelligence \u0026 Attribution - mapper",
     "mapping": {
         "GIB Brand Protection Phishing": {
             "dontMapEventToLabels": true,
@@ -381,6 +381,15 @@
                         "accessor": "isAPT",
                         "filters": [],
                         "root": "threatActor",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "GIB Victim IP": {
+                    "complex": {
+                        "accessor": "ip",
+                        "filters": [],
+                        "root": "client.ipv4",
                         "transformers": []
                     },
                     "simple": ""
@@ -1594,7 +1603,7 @@
             "internalMapping": null
         }
     },
-    "name": "Group-IB Threat Intelligence & Attribution (mapper)",
+    "name": "Group-IB Threat Intelligence \u0026 Attribution (mapper)",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

@@ -98,17 +98,13 @@ configuration:
   - malware/cnc
   required: false
   type: 16
-- additionalinfo: Days ago to start first indicators fetch.
+- additionalinfo: Date to start fetching indicators from.
   defaultvalue: 3 days
   display: Indicator first fetch
   hidden: false
   name: indicators_first_fetch
-  options:
-  - 1 day
-  - 2 days
-  - 3 days
   required: false
-  type: 15
+  type: 0
 - additionalinfo: A number of requests per collection that integration sends in one
     fetch iteration (each request picks up to 200 objects with different amount of
     indicators). If you face some runtime errors, lower the value.
