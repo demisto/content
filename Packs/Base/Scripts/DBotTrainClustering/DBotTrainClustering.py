@@ -34,6 +34,10 @@ GENERAL_EXPLANATION = "**In general clustering model aims to form groups of simi
                       "outliers after **Phase 1** and **Phase 2** \n" \
                       "- **Percentage of cluster selected** : Percentage of groups kept after phase 1 and 2 \n"
 
+GENERAL_MESSAGE_RESULTS = "We succeeded to group **%s incidents into %s groups**. The grouping was based " \
+                          "on the **%s** field(s).Each group name is based on the largest value of **%s** field in the group. " \
+                          "For %s incidents, we didn’t find any matching. \n"
+
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
                             "or increase the limit argument to more than %s."
@@ -589,6 +593,13 @@ def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[st
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]  # type: ignore
 
 
+def get_results(model_processed: Type[PostProcessing]):
+    number_of_sample = model_processed.stats["General"]["Nb sample"]
+    number_clusters_selected = len(model_processed.selected_clusters)
+    number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
+    return number_of_sample, number_clusters_selected, number_of_outliers
+
+
 def create_summary(model_processed: Type[PostProcessing], fields_for_clustering: List[str],
                    field_for_cluster_name: List[str]) -> dict:
     """
@@ -910,6 +921,13 @@ def main():
         if debug:
             return_outputs(readable_output='### General explanation \n {}'.format(
                 GENERAL_EXPLANATION) + '### Warning \n {}'.format(global_msg) + tableToMarkdown("Summary", summary))
+        else:
+            field_clustering = ' , '.join(fields_for_clustering)
+            field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
+            number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
+            msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
+                                             field_clustering, field_name, number_of_outliers)
+            return_outputs(readable_output='### General results \n {}'.format(msg) + '### Warning \n {}'.format(global_msg))
 
         # return Entry and summary
         output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
