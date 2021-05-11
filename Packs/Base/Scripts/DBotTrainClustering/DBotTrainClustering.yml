@@ -8,9 +8,9 @@ args:
   secret: false
 - default: false
   description: Incident field that represents the family name for each cluster created.
-    The model will compute homogeneity of the cluster based on this value. If
-    there are multiple different values in the fieldForClusterName field, the model
-    will select the cluster based on minHomogeneityCluster.
+    The model will compute homogeneity of the cluster based on this value. If there
+    are multiple different values in the fieldForClusterName field, the model will
+    select the cluster based on minHomogeneityCluster.
   isArray: true
   name: fieldForClusterName
   required: false
@@ -73,8 +73,8 @@ args:
   secret: false
 - default: false
   defaultValue: '0.4'
-  description: Keep samples in the cluster when the family ratio is above
-    this number. Will be effective only if fieldForClusterName is given.
+  description: Keep samples in the cluster when the family ratio is above this number.
+    Will be effective only if fieldForClusterName is given.
   isArray: false
   name: minHomogeneityCluster
   required: false
@@ -91,8 +91,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Type of incident to train the model on. If empty, will consider
-    all types.
+  description: Type of incident to train the model on. If empty, will consider all
+    types.
   isArray: false
   name: type
   required: false
@@ -107,8 +107,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Whether to return more information about the clustering. Default
-    is "False".
+  description: Whether to return more information about the clustering. Default is
+    "False".
   isArray: false
   name: debug
   predefined:
@@ -129,8 +129,7 @@ args:
   secret: false
 - default: false
   defaultValue: '24'
-  description: Period of time (in hours) before retraining the model. Default
-    is "24".
+  description: Period of time (in hours) before retraining the model. Default is "24".
   isArray: false
   name: modelExpiration
   predefined:
@@ -139,7 +138,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'False'
+  defaultValue: 'True'
   description: Whether to hide the model in the ML page.
   isArray: false
   name: modelHidden
@@ -162,6 +161,6 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/mlclustering:1.0.0.19269
-fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.2.0

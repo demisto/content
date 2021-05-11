@@ -553,7 +553,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'name': model_processed.selected_clusters[cluster_number]['clusterName'],
              'dataType': 'incident',
              'color': PALETTE_COLOR[divmod(cluster_number, len(PALETTE_COLOR))[1]],
-             'pivot': str(cluster_number),
+             'pivot': "clusterId:" + str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
              'query': 'type:%s' % type,  # type: ignore
