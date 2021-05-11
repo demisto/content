@@ -298,6 +298,7 @@ script:
       type: string
   - arguments:
     - default: false
+      defaultValue: '1 day'
       description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
       isArray: false
       name: start_time
@@ -422,6 +423,69 @@ script:
     description: Download quarantined emails.
     execution: false
     name: fireeye-cm-download-quarantined-emails
+    outputs:
+    - contextPath: FireEyeCM.QuarantinedEmail.TODO
+      description: a.
+      type: string
+  - arguments:
+    - default: false
+      description: "The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports."
+      auto: PREDEFINED
+      predefined:
+      - 'empsEmailAVReport'
+      - 'empsEmailActivity'
+      - 'empsEmailExecutiveSummary'
+      - 'empsEmailHourlyStat'
+      - 'mpsCallBackServer'
+      - 'mpsExecutiveSummary'
+      - 'mpsInfectedHostsTrend'
+      - 'mpsMalwareActivity'
+      - 'mpsWebAVReport'
+      - 'ipsExecutiveSummary'
+      - 'ipsTopNAttack'
+      - 'ipsTopNAttacker'
+      - 'ipsTopNVictim'
+      - 'ipsTopNMvxVerified'
+      - 'alertDetailsReport'
+      isArray: false
+      name: report_type
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1 week'
+      description: "Specifies the start time of the search. This filter is optional. Default is last week. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: "Specifies the end time of the search. Default is now. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Default is 100. This option is required only for IPS TopN reports. The limit option sets the maximum number (N) of items covered by each report.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      predefined:
+      - 'A'
+      - 'B'
+      - 'AB'
+      description: This option is required only for IPS reports. The interface option sets ihe Internet interface to one of the values.
+      isArray: false
+      name: interface
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns reports on selected alerts.
+    execution: false
+    name: fireeye-cm-get-reports
     outputs:
     - contextPath: FireEyeCM.QuarantinedEmail.TODO
       description: a.

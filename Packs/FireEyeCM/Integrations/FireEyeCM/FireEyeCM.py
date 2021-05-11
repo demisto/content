@@ -106,6 +106,23 @@ class Client(BaseClient):
                                   resp_type='content',
                                   timeout=timeout)
 
+    @logger
+    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: int, interface: str):
+        # self._headers.pop('Accept')  # returns a file, hence this header is disruptive
+        params = {
+            'report_type': report_type,
+            'start_time': start_time,
+            'end_time': end_time
+        }
+        if limit:
+            params['limit'] = limit
+        if interface:
+            params['interface'] = interface
+
+        return self._http_request(method='GET',
+                                  url_suffix='reports/report',
+                                  params=params,
+                                  resp_type='content')
 @logger
 def to_fe_datetime_converter(time_given: str = 'now') -> str:
     """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
@@ -338,6 +355,7 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]) -> Command
 
     raw_response = client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
     raise Exception(str(raw_response))
+
     if not raw_response:
         md_ = 'No emails were deleted.'
     else:
@@ -350,6 +368,32 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]) -> Command
         outputs=raw_response,
         raw_response=raw_response
     )
+
+
+@logger
+def get_reports(client: Client, args: Dict[str, Any]) -> CommandResults:
+    report_type = args.get('report_type', '')
+    start_time = to_fe_datetime_converter(args.get('start_time', '1 week'))
+    end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
+    limit = int(args.get('limit', '100'))
+    interface = args.get('interface', '')
+
+    raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface)
+    raise Exception(str(raw_response))
+    if not raw_response:
+        md_ = 'No emails were deleted.'
+    else:
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Deleted emails:', t=raw_response, removeNull=True)
+
+    return CommandResults(
+        readable_output=md_,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
+        outputs_key_field='email_uuid',
+        outputs=raw_response,
+        raw_response=raw_response
+    )
+
+
 def main() -> None:
     params = demisto.params()
     username = params.get('credentials').get('identifier')
@@ -369,7 +413,6 @@ def main() -> None:
     LOG(f'Command being called is {command}')
     try:
         client = Client(base_url=base_url, username=username, password=password, verify=verify, proxy=proxy)
-        # raise Exception(client._headers['X-FeApi-Token'])
         commands = {
             f'{INTEGRATION_COMMAND_NAME}-get-alerts': get_alerts,
             f'{INTEGRATION_COMMAND_NAME}-get-alert-details': get_alert_details,
@@ -381,6 +424,7 @@ def main() -> None:
             f'{INTEGRATION_COMMAND_NAME}-release-quarantined-emails': release_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-delete-quarantined-emails': delete_quarantined_emails,
             f'{INTEGRATION_COMMAND_NAME}-download-quarantined-emails': download_quarantined_emails,
+            f'{INTEGRATION_COMMAND_NAME}-get-reports': get_reports,
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))
