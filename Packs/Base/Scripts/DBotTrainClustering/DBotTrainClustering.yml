@@ -147,6 +147,12 @@ args:
   - 'False'
   required: false
   secret: false
+- default: false
+  description: Search query input from the dashboard.
+  isArray: false
+  name: searchQuery
+  required: false
+  secret: false
 comment: Train clustering model on any incident type.
 commonfields:
   id: DBotTrainClustering

@@ -34,9 +34,9 @@ GENERAL_EXPLANATION = "**In general clustering model aims to form groups of simi
                       "outliers after **Phase 1** and **Phase 2** \n" \
                       "- **Percentage of cluster selected** : Percentage of groups kept after phase 1 and 2 \n"
 
-GENERAL_MESSAGE_RESULTS = "We succeeded to group **%s incidents into %s groups**. The grouping was based " \
-                          "on the **%s** field(s).Each group name is based on the largest value of **%s** field in the group. " \
-                          "For %s incidents, we didn’t find any matching. \n"
+GENERAL_MESSAGE_RESULTS = "- We succeeded to group **%s incidents into %s groups**.\n - The grouping was based " \
+                          "on the **%s** field(s).\n - Each group name is based on the majority value of **%s** field in the group.\n" \
+                          "- For %s incidents, we didn’t find any matching.\n"
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
@@ -518,8 +518,7 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
                                                    'modelHidden': model_hidden,
-                                                   'modelExtraInfo': {'modelSummaryMarkdown':
-                                                                      tableToMarkdown("Summary", model.summary)}
+                                                   'modelExtraInfo': {'modelSummaryMarkdown': model.summary_description}
                                                    })
     if is_error(res):
         return_error(get_error(res))
@@ -839,7 +838,18 @@ def main():
     if not retrain:
         if debug:
             return_outputs(readable_output=global_msg + tableToMarkdown("Summary", model_processed.summary))
-        return_entry_clustering(output_clustering=model_processed.json, tag="trained")
+        data_clusters_json = model_processed.json
+        search_query = demisto.args().get('searchQuery')
+        if search_query:
+            data_clusters = json.loads(model_processed.json)
+            filtered_clusters_data = []
+            for row in data_clusters['data']:
+                if row['pivot'] in search_query.split(" "):
+                    filtered_clusters_data.append(row)
+            data_clusters['data'] = filtered_clusters_data
+            data_clusters_json = json.dumps(data_clusters)
+
+        return_entry_clustering(output_clustering=data_clusters_json, tag="trained")
         return model_processed, model_processed.json, ""
     else:
         # Check if user gave a field for cluster name - if not use generic cluster name
@@ -928,6 +938,7 @@ def main():
             msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
                                              field_clustering, field_name, number_of_outliers)
             return_outputs(readable_output='### General results \n {}'.format(msg) + '### Warning \n {}'.format(global_msg))
+            model_processed.summary_description = msg
 
         # return Entry and summary
         output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
