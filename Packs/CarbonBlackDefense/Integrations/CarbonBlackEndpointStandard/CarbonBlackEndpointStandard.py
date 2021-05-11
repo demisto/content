@@ -1610,15 +1610,13 @@ def main() -> None:
 
     verify_certificate = not params.get('insecure', False)
 
-    proxy = params.get('proxy', False)
-
     demisto.info(f'Command being called is {command}')
 
     try:
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
-            proxies=proxy,
+            proxies=handle_proxy(),
             api_key=api_key,
             api_secret_key=api_secret_key,
             policy_api_key=policy_api_key,
