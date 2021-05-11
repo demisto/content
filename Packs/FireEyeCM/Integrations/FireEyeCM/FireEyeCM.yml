@@ -69,6 +69,7 @@ script:
       description: "The time interval to search. This filter is used with either the start_time or end_time filter.
       If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time.
       If only the duration is specified, the end_time defaults to the current_time."
+      auto: PREDEFINED
       predefined:
       - '1_hour'
       - '2_hours'
@@ -106,6 +107,7 @@ script:
     - default: false
       defaultValue: 'concise'
       description: Specifies the level of information to be returned. The default is concise.
+      auto: PREDEFINED
       predefined:
         - 'concise'
         - 'normal'
@@ -277,6 +279,10 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - 'false'
+        - 'true'
       description: "Specifies whether to include all IPS events or MVX-correlated events only. Default is false"
       isArray: false
       name: mvx_correlated_only
