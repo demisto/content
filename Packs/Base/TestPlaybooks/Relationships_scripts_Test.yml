@@ -469,7 +469,7 @@ tasks:
       id: 7fc16a96-465e-4940-85f6-b4c41abdd8de
       version: -1
       name: sleep 10
-      description: Sleep for X seconds
+      description: Sleep for 10 seconds
       scriptName: Sleep
       type: regular
       iscommand: false
