@@ -248,12 +248,13 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     if mapping:
         mapping_function(mapping, indicator, attributes)
 
+    if feed_config.get('rawjson_include_indicator_type'):
+        item['_indicator_type'] = current_indicator_type
+        
     if relations_function:
         indicator['relationships'] = relations_function(feed_config, mapping, attributes)
 
     indicator['rawJSON'] = item
-
-    demisto.debug(str(indicator))
 
     indicator_list.append(indicator)
 
