@@ -2815,6 +2815,40 @@ script:
     - contextPath: GitHub.File.SHA
       description: The SHA of the file.
       type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: organization
+      description: The name of the organization.
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: team_slug
+      description: Team name.
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      isArray: false
+      name: maximum_users
+      description: Miximum number of users to return.
+      required: false
+      secret: false
+    deprecated: false
+    description: List team members
+    execution: false
+    name: GitHub-list-team-members
+    outputs:
+    - contextPath: GitHub.TeamMember.ID
+      description: The ID of the team member.
+      type: Number
+    - contextPath: GitHub.TeamMember.Login
+      description: The login name of the team member.
+      type: String
+    - contextPath: GitHub.TeamMember.Team
+      description: The user's team.
+      type: String
   dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
