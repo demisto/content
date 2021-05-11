@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 CBD_LR_PREFIX = 'cbd-lr'
+IGNORED_FILES_IN_DIR = {'.', '..'}
 
 
 # Using Py API
@@ -44,9 +45,9 @@ def delete_file_command(api_client: CBCloudAPI, sensor_id: str, source_path: str
 
 
 # Using Py API
-def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_path: str):
+def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_path: str, limit: Union[int, str]):
     """
-       Get list of directory entries in th remote sensor
+       Get list of directory entries in the remote sensor
 
        :param api_client: The API client
 
@@ -54,21 +55,33 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
 
        :param directory_path: Directory to list. This parameter should end with the path separator
 
+       :param limit: Limit the result entries count to be the given limit
+
        :return: CommandResult represent the API command result
        :rtype: ``CommandResults``
     """
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
-    directories_readable = []
-    headers = ['name', 'type', 'date_modified', 'size']
     dir_content = session.list_directory(directory_path)
-    context_entry = dict(content=dir_content, sensor_id=sensor_id)
+
+    limit = arg_to_number(limit)
+    if limit and len(dir_content) > limit:
+        dir_content = dir_content[:limit]
+
+    directories_readable = []
+    context_entry_items = []
+    headers = ['name', 'type', 'date_modified', 'size']
     for item in dir_content:
-        directories_readable.append({
-            'name': item['filename'],
-            'type': 'Directory' if item['attributes'] and 'DIRECTORY' in item['attributes'] else 'File',
-            'date_modified': epochToTimestamp(int(item['last_write_time']) * 1000),
-            'size': item['size']
-        })
+        file_name = item['filename']
+        if file_name not in IGNORED_FILES_IN_DIR:
+            context_entry_items.append(item)
+            directories_readable.append({
+                'name': item['filename'],
+                'type': 'Directory' if item['attributes'] and 'DIRECTORY' in item['attributes'] else 'File',
+                'date_modified': timestamp_to_datestring(int(item['last_write_time']) * 1000, is_utc=True),
+                'size': item['size']
+            })
+
+    context_entry = dict(content=context_entry_items, sensor_id=sensor_id)
 
     readable_output = tableToMarkdown(f'Directory of {directory_path}',
                                       t=directories_readable,
@@ -103,13 +116,17 @@ def set_reg_value_command(
 
 
 # Using Py API
-def list_reg_sub_keys_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str):
+def list_reg_sub_keys_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str, limit: Union[int, str]):
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
     sub_keys = session.list_registry_keys_and_values(reg_path).get('sub_keys', [])
-    context_entry = dict(sub_keys=sub_keys, sensor_id=sensor_id, key=reg_path)
     if not sub_keys:
         return f'The key: {reg_path} does not contain any sub keys'
 
+    limit = arg_to_number(limit)
+    if limit and len(sub_keys) > limit:
+        sub_keys = sub_keys[:limit]
+
+    context_entry = dict(sub_keys=sub_keys, sensor_id=sensor_id, key=reg_path)
     human_readable = tableToMarkdown(name='Carbon Black Defense Live Response Registry sub keys',
                                      t=sub_keys,
                                      headers=['Sub keys'])
@@ -123,14 +140,18 @@ def list_reg_sub_keys_command(api_client: CBCloudAPI, sensor_id: str, reg_path: 
 
 
 # Using Py API
-def get_reg_values_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str):
+def get_reg_values_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str, limit: Union[int, str]):
     """Get the values of the given registry key in the remote sensor"""
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
     values = session.list_registry_values(reg_path)
-    context_entry = dict(key=reg_path, values=values, sensor_id=sensor_id)
     if not values:
         return f'The key: {reg_path} does not contain any value'
 
+    limit = arg_to_number(limit)
+    if limit and len(values) > limit:
+        values = values[:limit]
+
+    context_entry = dict(key=reg_path, values=values, sensor_id=sensor_id)
     human_readable = [dict(name=val['value_name'], type=val['value_type'], data=val['value_data']) for val in values]
 
     readable_output = tableToMarkdown('Carbon Black Defense Live Response Registry key values',
@@ -156,20 +177,28 @@ def delete_reg_value_command(api_client: CBCloudAPI, sensor_id: str, reg_path: s
 
 
 # Using Py API
-def delete_reg_key_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str):
+def delete_reg_key_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str, force: Union[bool, str] = False):
     """Delete a registry key on the remote machine, the key must be without any sub keys"""
 
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
-    session.delete_registry_key(reg_path)
+    if argToBoolean(force):
+        delete_reg_key_recursive(session, reg_path)
+    else:
+        session.delete_registry_key(reg_path)
+
     return f'Registry key: {reg_path} was deleted successfully.'
 
 
 # Using Py API
-def list_processes_command(api_client: CBCloudAPI, sensor_id: str):
+def list_processes_command(api_client: CBCloudAPI, sensor_id: str, limit: Union[int, str]):
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
     processes = session.list_processes()
     if not processes:
         return 'There is no active processes in the remote sensor'
+
+    limit = arg_to_number(limit)
+    if limit and len(processes) > limit:
+        processes = processes[:limit]
 
     headers = ['path', 'pid', 'command_line', 'username']
     processes_readable = [dict(
@@ -194,9 +223,9 @@ def list_processes_command(api_client: CBCloudAPI, sensor_id: str):
 
 
 # Using Py API
-def kill_process_command(api_client: CBCloudAPI, sensor_id: str, pid: Any):
+def kill_process_command(api_client: CBCloudAPI, sensor_id: str, pid: Union[int, str]):
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
-    success = session.kill_process(pid)  # the API returns True if success, False if failure
+    success = session.kill_process(arg_to_number(pid))  # the API returns True if success, False if failure
     if not success:
         return_error(f'Can not kill the process: {pid}')
 
@@ -221,9 +250,9 @@ def create_process_command(
         wait_for_completion=argToBoolean(wait_for_completion),
         **additional_params,
     )
-
-    process_results_str = str(process_results_bytes)
+    process_results_str = None
     if wait_for_output and process_results_bytes:
+        process_results_str = process_results_bytes.decode('utf-8')
         human_readable = tableToMarkdown(name='Carbon Black Defense Live Response Process Execution Result',
                                          t=[process_results_str],
                                          headers=['Process output'])
@@ -258,6 +287,15 @@ def command_test_module(api_client: CBCloudAPI) -> str:
     return 'ok'
 
 
+def delete_reg_key_recursive(session, reg_path: str):
+    sub_keys = session.list_registry_keys_and_values(reg_path).get('sub_keys', [])
+    if sub_keys:
+        for key in sub_keys:
+            delete_reg_key_recursive(session, f'{reg_path}\\{key}')
+
+    session.delete_registry_key(reg_path)
+
+
 def main():
     commands = {
         'test-module': command_test_module,
@@ -281,11 +319,12 @@ def main():
         f'{CBD_LR_PREFIX}-memdump': memdump_command
     }
 
-    url = demisto.params().get('url')
-    cb_custom_key = demisto.params().get('custom_key')
-    cb_custom_id = demisto.params().get('custom_id')
-    cb_org_key = demisto.params().get('org_key')
-    verify_certificate = not demisto.params().get('insecure', True)
+    params = demisto.params()
+    url = params.get('url')
+    cb_custom_key = params.get('custom_key')
+    cb_custom_id = params.get('custom_id')
+    cb_org_key = params.get('org_key')
+    verify_certificate = not params.get('insecure', True)
     handle_proxy()
 
     command = demisto.command()
@@ -306,7 +345,7 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

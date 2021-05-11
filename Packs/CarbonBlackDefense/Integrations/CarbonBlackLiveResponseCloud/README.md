@@ -1,6 +1,17 @@
-VMware Carbon Black Endpoint Standard Live Response is a feature that’s allows security operators to collect information and take action on remote endpoints in real time, These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, execute and terminate processes.
+Allows security operators to collect information and take action on remote endpoints in real time, These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, execute and terminate processes.
 ## Configure CarbonBlackLiveResponseCloud on Cortex XSOAR
 
+
+**Creating an API Key**
+1. To create an API Key, go to Settings > API Access > API Keys tab in the Carbon Black Cloud console.
+2. Select “Add API Key” from the far right.
+3. Give the API Key a unique name, and select the Live Response access level.
+4. Hit save, and you will be provided with your API Key Credentials:
+  - API Secret Key
+  - API ID
+5. Go to Settings > API Access and copy the ORG KEY from the top left corner of the page
+
+**Set up integration instance**
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for CarbonBlackLiveResponseCloud.
 3. Click **Add instance** to create and configure a new integration instance.

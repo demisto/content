@@ -9,5 +9,5 @@ Set up API Keys in the Carbon Black Cloud.
 4. Hit save, and you will be provided with your API Key Credentials:
   - API Secret Key
   - API ID
-
-5. Set up Carbon Black Cloud Live Response integration instance with the created API Secret Key and API ID
+5. Go to Settings > API Access and copy the ORG KEY from the top left corner of the page
+6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and created API Secret Key and API ID
