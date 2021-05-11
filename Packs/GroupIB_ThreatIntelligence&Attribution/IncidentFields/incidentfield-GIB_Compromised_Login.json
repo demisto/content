@@ -13,7 +13,7 @@
     "id": "incident_gibcompromisedlogin",
     "isReadOnly": false,
     "locked": false,
-    "name": " GIB Compromised Login",
+    "name": "GIB Compromised Login",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

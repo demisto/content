@@ -13,7 +13,7 @@
     "id": "incident_gibcardvalidthru",
     "isReadOnly": false,
     "locked": false,
-    "name": " GIB Card Valid Thru",
+    "name": "GIB Card Valid Thru",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,

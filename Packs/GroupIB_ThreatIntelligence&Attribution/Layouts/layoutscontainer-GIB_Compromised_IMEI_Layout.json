@@ -313,15 +313,6 @@
                                 "index": 8,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "gibtype",
-                                "height": 22,
-                                "id": "b9f37480-7375-11eb-8aef-c39e29f029fe",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxH": null,
