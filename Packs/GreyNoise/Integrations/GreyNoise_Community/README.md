@@ -19,7 +19,6 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | api_key | GreyNoise API Key | True |
-    | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
