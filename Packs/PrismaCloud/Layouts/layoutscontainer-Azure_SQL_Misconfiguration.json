@@ -1,8 +1,7 @@
 {
-    "id": "Azure SQL Misconfiguration",
+    "id": "Azure SQL Misconfiguration Incident",
     "group": "incident",
     "name": "Azure SQL Misconfiguration Incident",
-    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -638,5 +637,6 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "description": ""
 }

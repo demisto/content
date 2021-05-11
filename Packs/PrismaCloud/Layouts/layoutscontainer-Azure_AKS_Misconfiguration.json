@@ -1,8 +1,7 @@
 {
-    "id": "Azure AKS Misconfiguration",
+    "id": "Azure AKS Misconfiguration Incident",
     "group": "incident",
     "name": "Azure AKS Misconfiguration Incident",
-    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -638,5 +637,6 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "description": ""
 }

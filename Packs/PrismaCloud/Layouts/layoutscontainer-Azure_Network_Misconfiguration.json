@@ -1,8 +1,7 @@
 {
-    "id": "Azure Network Misconfiguration",
+    "id": "Azure Network Misconfiguration Incident",
     "group": "incident",
     "name": "Azure Network Misconfiguration Incident",
-    "description": "",
     "version": -1,
     "fromVersion": "6.0.0",
     "detailsV2": {
@@ -638,5 +637,6 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "description": ""
 }
