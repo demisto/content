@@ -390,6 +390,11 @@ class TableData:
                     return row
 
 
+class SortedTableData(TableData):
+    def __init__(self, data, name, sort_key):
+        sorted_data = sorted(data, key=lambda i: i[sort_key].lower())
+        super(SortedTableData, self).__init__(sorted_data, name)
+
 class SingleFieldData:
     def __init__(self, name, data):
         self.data = data
@@ -655,8 +660,8 @@ def get_enabled_integrations():
         if instance.get("enabled"):
             enabled_instances.append(instance)
 
-    rd = TableData(enabled_instances, "Enabled Instances")
-    # return_results(rd.as_markdown(headers=["name", "brand"]))
+    rd = SortedTableData(enabled_instances, "Enabled Instances", "name")
+
     return rd
 
 
@@ -666,7 +671,7 @@ def get_installed_packs():
     :return: TableData
     """
     r = get_api_request(DEMISTO_INSTALLED_PATH)
-    rd = TableData(r, "Installed Content Packs")
+    rd = SortedTableData(r, "Installed Content Packs", "name")
     return rd
 
 
@@ -678,8 +683,9 @@ def get_custom_playbooks():
     r = post_api_request(DEMISTO_PLAYBOOKS_PATH, {"query": "system:F AND hidden:F"}).get("playbooks")
     for pb in r:
         pb["TotalTasks"] = len(pb.get("tasks", []))
-    rd = TableData(r, "Custom Playbooks")
+    rd = SortedTableData(r, "Custom Playbooks", "name")
     return rd
+
 
 def get_custom_reports():
     """
@@ -694,6 +700,7 @@ def get_custom_reports():
             reports.append(report)
     rd = TableData(reports, "Custom Reports")
     return rd
+
 
 def get_custom_dashboards():
     """
@@ -764,6 +771,9 @@ def get_playbook_dependencies(playbook_name):
     """
     playbooks = get_all_playbooks()
     playbook = playbooks.search("name", playbook_name)
+    if not playbook:
+        return_error(f"Playbook {playbook_name} not found.")
+        sys.exit()
     playbook_id = playbook.get("id")
     body = {
         "items": [
@@ -797,7 +807,7 @@ def get_playbook_dependencies(playbook_name):
     result_table_datas = {}
     for k, v in types.items():
         if v:
-            td = TableData(v, f"{k}s")
+            td = SortedTableData(v, f"{k}s", sort_key="name")
             result_table_datas[k] = td
 
     return result_table_datas
@@ -805,7 +815,7 @@ def get_playbook_dependencies(playbook_name):
 
 def get_custom_automations():
     r = post_api_request(DEMISTO_AUTOMATIONS_PATH, {"query": "system:F AND hidden:F"}).get("scripts")
-    rd = TableData(r, "Custom Automations")
+    rd = SortedTableData(r, "Custom Automations", "name")
     return rd
 
 
