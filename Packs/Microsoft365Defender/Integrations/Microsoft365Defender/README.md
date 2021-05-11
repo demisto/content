@@ -12,7 +12,7 @@ protection against sophisticated attacks.
        | --- | --- | --- |
    | APP ID | The API Key to use for connection | True |
    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-   | Number of incidents for each fetch. | Due to API limitation the maximum is 100 | False |
+   | Number of incidents for each fetch. | Due to API limitations, the maximum is 100 | False |
    | Trust any certificate (not secure) |  | False |
    | Use system proxy settings |  | False |
    | Incident type |  | False |
@@ -156,17 +156,17 @@ Get the most recent incidents.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Microsoft365Defender.Incident.incidentId | Number | Incident's ID | 
-| Microsoft365Defender.Incident.redirectIncidentId | Unknown | Only populated in case an incident is being grouped together with another incident, as part of the incident processing logic. | 
-| Microsoft365Defender.Incident.incidentName | String | The name of the Incident. | 
-| Microsoft365Defender.Incident.createdTime | Date | The date and time \(in UTC\) the Incident was created. | 
-| Microsoft365Defender.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the Incident was last updated. | 
-| Microsoft365Defender.Incident.assignedTo | String | Owner of the Incident. | 
-| Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, TruePositive. | 
-| Microsoft365Defender.Incident.determination | String | Specifies the determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other. | 
-| Microsoft365Defender.Incident.status | String | Specifies the current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
-| Microsoft365Defender.Incident.severity | String | Severity of the Incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
-| Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents | 
+| Microsoft365Defender.Incident.incidentId | Number | Incident's ID. | 
+| Microsoft365Defender.Incident.redirectIncidentId | Unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
+| Microsoft365Defender.Incident.incidentName | String | The name of the incident. | 
+| Microsoft365Defender.Incident.createdTime | Date | The date and time \(in UTC\) the incident was created. | 
+| Microsoft365Defender.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the incident was last updated. | 
+| Microsoft365Defender.Incident.assignedTo | String | Owner of the incident. | 
+| Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
+| Microsoft365Defender.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
+| Microsoft365Defender.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
+| Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
 
 
 #### Command Example
@@ -193,29 +193,29 @@ Update incident with the given ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Categorize incidents (as Active,  Resolved or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
-| assigned_to | Owner of the incident.	. | Optional | 
-| id | Incident's id. | Required | 
-| classification | The specification for the incident. Possible values are: Unknown, FalsePositive, TruePositive. | Optional | 
-| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other.. | Optional | 
-| tags | Custom tags associated with an incident. Separated by commas without spaces (CSV) for example: tag1,tag2,tag3. | Optional | 
+| status | Categorize incidents. Possible values are: Active, Resolved, and Redirected. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| id | Incident's ID. | Required | 
+| classification | The specification for the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | Optional | 
+| determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | Optional | 
+| tags | A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Microsoft365Defender.Incident.incidentId | Number | Incident's ID | 
-| Microsoft365Defender.Incident.redirectIncidentId | Unknown | Only populated in case an incident is being grouped together with another incident, as part of the incident processing logic. | 
-| Microsoft365Defender.Incident.incidentName | String | The name of the Incident. | 
-| Microsoft365Defender.Incident.createdTime | Date | The date and time \(in UTC\) the Incident was created. | 
-| Microsoft365Defender.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the Incident was last updated. | 
-| Microsoft365Defender.Incident.assignedTo | String | Owner of the Incident. | 
-| Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, TruePositive. | 
-| Microsoft365Defender.Incident.determination | String | Specifies the determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, Other. | 
-| Microsoft365Defender.Incident.status | String | Specifies the current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
-| Microsoft365Defender.Incident.severity | String | Severity of the Incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
-| Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents | 
+| Microsoft365Defender.Incident.incidentId | Number | Incident's ID, | 
+| Microsoft365Defender.Incident.redirectIncidentId | Unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
+| Microsoft365Defender.Incident.incidentName | String | The name of the incident. | 
+| Microsoft365Defender.Incident.createdTime | Date | The date and time \(in UTC\) the incident was created. | 
+| Microsoft365Defender.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the incident was last updated. | 
+| Microsoft365Defender.Incident.assignedTo | String | Owner of the incident. | 
+| Microsoft365Defender.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
+| Microsoft365Defender.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
+| Microsoft365Defender.Incident.status | String |The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
+| Microsoft365Defender.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
+| Microsoft365Defender.Incident.alerts | Unknown | List of alerts relevant for the incidents. | 
 
 
 #### Command Example
@@ -241,15 +241,15 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Todo. | Required | 
+| query | Advanced hunting query. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key | 
-| Microsoft365Defender.Hunt.results. | Unknown | The results of the query | 
+| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. | 
+| Microsoft365Defender.Hunt.results. | Unknown | The results of the query. | 
 
 
 #### Command Example
