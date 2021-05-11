@@ -84,6 +84,7 @@ create-instances:
   stage: run-instances
   dependencies:
     - create-instances
+  allow_failure: true
   script:
     - *download_demisto_conf
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
