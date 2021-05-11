@@ -1,18 +1,12 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: greynoise_community
+  id: GreyNoise Community
   version: -1
 configuration:
 - display: API Key
   name: api_key
   required: true
   type: 4
-- additionalinfo: Whether to allow connections without verifying SSL certificates
-    validity.
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - additionalinfo: Whether to use XSOAR's system proxy settings to connect to the API.
   display: Use system proxy settings
   name: proxy
@@ -21,9 +15,10 @@ configuration:
 description: GreyNoise is a cybersecurity platform that collects and analyzes Internet-wide
   scan and attack traffic. With this integration, users can contextualize existing
   alerts, filter false-positives, identify compromised devices, and track emerging
-  threats.
+  threats. This Integration is design specifically for GreyNoise Community users and
+  only provides the subset of intel available via the GreyNoise Community API.
 display: GreyNoise Community
-name: greynoise_community
+name: GreyNoise Community
 script:
   commands:
   - arguments:

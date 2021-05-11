@@ -13,6 +13,10 @@ They also help automate repetitive tasks associated with routable IPv4 addresses
 - Pull stats from the GreyNoise data set for threat hunting and identifying emerging threats
 - Calculate the severity of the incident using GreyNoise IP reputation data
 
+This Pack Contains two Integrations: GreyNoise and GreyNoise Community
+- GreyNoise: is intended for those users that have a Paid GreyNoise subscription
+- GreyNoise Community: is intended for those users that use the free GreyNoise Community API
+
 _For more information, visit our [GreyNoise Developer Documentation](https://developer.greynoise.io)_
 
 _For pricing information, visit our [GreyNoise Pricing](https://greynoise.io/pricing) or contact 
