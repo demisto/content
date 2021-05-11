@@ -319,7 +319,6 @@ def extract_all_fields_from_indicator(indicator: Dict, indicator_key: str, flat_
 
 
 def feed_main(params, feed_name, prefix):
-    demisto.log("MAIN")
     handle_proxy()
     client = Client(**params)
     indicator_type = params.get('indicator_type')
