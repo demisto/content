@@ -4,6 +4,7 @@ import logging
 import os
 import tempfile
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from ruamel.yaml import YAML
@@ -16,7 +17,7 @@ from Tests.scripts.collect_tests_and_content_packs import (
     PACKS_DIR, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs)
+    remove_ignored_tests, remove_tests_for_non_supported_packs, is_release_branch)
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, ModifiedFiles
 from Tests.scripts.utils import content_packs_util
 
@@ -1251,3 +1252,30 @@ def test_get_from_version_and_to_version_bounderies_modified_metadata():
 
     assert '6.1.0' in from_version
     assert '99.99.99' in to_version
+
+
+@patch.dict('os.environ', {'CI_COMMIT_BRANCH': '21.12.0'})
+def test_is_release_branch_positive():
+    """
+    Given:
+        - That branch name found from 'CI_COMMIT_BRANCH' env variable is a release branch.
+    When:
+        - running is_release_branch method.
+    Then:
+        - Validate the response is positive.
+    """
+    assert is_release_branch()
+
+
+@pytest.mark.parametrize('mocked_branch_name', ['some_branch_name', ''])
+def test_is_release_branch_negative(mocked_branch_name):
+    """
+    Given:
+        - That branch name found from 'CI_COMMIT_BRANCH' env variable is a regular branch name or an empty value
+    When:
+        - running is_release_branch method.
+    Then:
+        - Validate the response is negative.
+    """
+    with patch.dict('os.environ', {'CI_COMMIT_BRANCH': mocked_branch_name}):
+        assert not is_release_branch()
