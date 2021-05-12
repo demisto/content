@@ -1,7 +1,7 @@
-id: Rubrik Polaris - Anomaly Analysis (DEPRECATED)
+id: Rubrik Polaris - Anomaly Analysis
 deprecated: true
 inputs: []
-name: Rubrik Polaris - Anomaly Analysis (DEPRECATED)
+name: Rubrik Polaris - Anomaly Analysis
 outputs: []
 starttaskid: "0"
 tasks:
