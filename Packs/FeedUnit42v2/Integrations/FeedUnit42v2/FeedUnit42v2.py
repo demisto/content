@@ -24,7 +24,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'campaign': 'Campaign',
     'attack-pattern': 'Attack Pattern',
     'report': 'Report',
-    'indicator': 'Indicator',
+    'indicator': 'IOC',
     'malware': 'Malware',
     'course-of-action': 'Course of Action',
     'intrusion-set': 'Intrusion Set'
@@ -135,17 +135,18 @@ def get_campaign_from_sub_reports(report_object, id_to_object):
     object_refs = report_object.get('object_refs', [])
     for obj in object_refs:
         if obj.startswith('report--'):
-            sub_report_obj = id_to_object.get(obj)
+            sub_report_obj = id_to_object.get(obj, {})
             for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
                 if sub_report_obj_ref.startswith('campaign--'):
                     related_campaign = id_to_object.get(sub_report_obj_ref)
 
-                    entity_relation = EntityRelationship(name='related-to',
-                                                         entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
-                                                         entity_a_type='Report',
-                                                         entity_b=related_campaign.get('name'),
-                                                         entity_b_type='Campaign')
-                    report_relationships.append(entity_relation.to_indicator())
+                    if related_campaign:
+                        entity_relation = EntityRelationship(name='related-to',
+                                                             entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
+                                                             entity_a_type='Report',
+                                                             entity_b=related_campaign.get('name'),
+                                                             entity_b_type='Campaign')
+                        report_relationships.append(entity_relation.to_indicator())
     return report_relationships
 
 
@@ -449,10 +450,30 @@ def get_ioc_value(ioc, id_to_obj):
         if ioc_obj.get('type') == 'report':
             return f"[Unit42 ATOM] {ioc_obj.get('name')}"
         elif ioc_obj.get('type') == 'attack-pattern':
-            value, _ = get_attack_id_and_value_from_name(ioc_obj)
+            _, value = get_attack_id_and_value_from_name(ioc_obj)
             return value
         else:
             return ioc_obj.get('name')
+
+
+def get_a_type(relationships_object, id_to_object):
+    a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
+    a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)
+
+    if a_type == 'IOC':
+        a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
+
+    return a_type
+
+
+def get_b_type(relationships_object, id_to_object):
+    b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
+    b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
+
+    if b_type == 'IOC':
+        b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
+
+    return b_type
 
 
 def create_list_relationships(relationships_objects, id_to_object):
@@ -477,15 +498,8 @@ def create_list_relationships(relationships_objects, id_to_object):
                 demisto.debug(f"Invalid relation type: {relationship_type}")
                 continue
 
-        a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
-        a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)
-        if a_type == 'Indicator':
-            a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
-
-        b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
-        b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
-        if b_type == 'Indicator':
-            b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
+        a_type = get_a_type(relationships_object, id_to_object)
+        b_type = get_b_type(relationships_object, id_to_object)
 
         if not a_type or not b_type:
             continue
@@ -568,12 +582,18 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     if dummy_indicator:
         ioc_indicators.append(dummy_indicator)
 
-    demisto.debug(f'{len(ioc_indicators)} XSOAR Indicators were created.')
-    demisto.debug(f'{len(reports)} XSOAR Reports Indicators were created.')
-    demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
-    demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
-    demisto.debug(f'{len(course_of_actions)} Course of Actions Indicators were created.')
-    demisto.debug(f'{len(intrusion_sets)} Intrusion Sets Indicators were created.')
+    if ioc_indicators:
+        demisto.debug(f'{len(ioc_indicators)} XSOAR Indicators were created.')
+    if reports:
+        demisto.debug(f'{len(reports)} XSOAR Reports Indicators were created.')
+    if campaigns:
+        demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
+    if attack_patterns:
+        demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
+    if course_of_actions:
+        demisto.debug(f'{len(course_of_actions)} Course of Actions Indicators were created.')
+    if intrusion_sets:
+        demisto.debug(f'{len(intrusion_sets)} Intrusion Sets Indicators were created.')
 
     return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets
 
