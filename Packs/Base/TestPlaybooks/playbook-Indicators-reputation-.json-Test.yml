@@ -1017,7 +1017,7 @@ tasks:
           right:
             value:
               simple: http://www.foo.bar/taz?())
-      - - operator: notContainsGeneral
+      - - operator: containsGeneral
           left:
             value:
               simple: ${URL.Data}
