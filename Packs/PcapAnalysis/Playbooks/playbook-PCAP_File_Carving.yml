@@ -560,7 +560,7 @@ tasks:
       id: 55096f3d-649a-4fae-8b96-fcfdba886bf1
       version: -1
       name: Auto enrich files?
-      description: Checks whjether to enrich the files extracted from the PCAP automatically.
+      description: Checks whether to enrich the files extracted from the PCAP automatically.
       type: condition
       iscommand: false
       brand: ""
