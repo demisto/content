@@ -1,4 +1,6 @@
-# type: ignore
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 from CommonServerPython import *
 import jwt
 import uuid
