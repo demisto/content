@@ -363,7 +363,6 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]) -> Command
     timeout = int(args.get('timeout', '120'))
 
     raw_response = client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
-    raise Exception(str(raw_response))
 
     if not raw_response:
         md_ = 'No emails were deleted.'
