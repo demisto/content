@@ -75,7 +75,7 @@ def checked_type(file_path: str, regex_list: Iterable[str]) -> bool:
 
 
 def is_code_test_file(file_path: str) -> bool:
-    """Whatever is a pytest file or not depends on the file name.
+    """Whatever is a pytest file or pester(powershell test) file or not depends on the file name.
 
     Args:
         file_path: File path to check

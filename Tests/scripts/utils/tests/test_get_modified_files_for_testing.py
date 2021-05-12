@@ -348,7 +348,7 @@ class TestGetModifiedFilesForTesting:
         assert modified_files_instance.is_indicator_json is False
         assert modified_files_instance.is_landing_page_sections_json is False
 
-    @pytest.mark.parametrize('file_type, file_path, dictionary, yml_path, return_type', [
+    @pytest.mark.parametrize('file_type, file_path, get_dict_from_file_mocked_response, yml_path, return_type', [
         (FileType.PYTHON_FILE, "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py", {"category": "cat"},
          "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml", FileType.INTEGRATION),
         (FileType.POWERSHELL_FILE, "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1",
@@ -356,7 +356,8 @@ class TestGetModifiedFilesForTesting:
         (FileType.JAVASCRIPT_FILE, "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.js",
          {"category": "cat"}, "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml", FileType.INTEGRATION)
     ])
-    def test_remove_code_files(self, mocker, file_type, file_path, dictionary, yml_path, return_type):
+    def test_remove_code_files(self, mocker, file_type, file_path, get_dict_from_file_mocked_response, yml_path,
+                               return_type):
         """
         Given:
             - A python, js and powershell files
@@ -372,7 +373,7 @@ class TestGetModifiedFilesForTesting:
             "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
             return_value=[yml_path],
         )
-        mock_get_dict_from_yaml(mocker, dictionary, "yml")
+        mock_get_dict_from_yaml(mocker, get_dict_from_file_mocked_response, "yml")
 
         result = remove_code_files_by_types(types_to_files, file_type)
         assert result == {return_type: {yml_path},
