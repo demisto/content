@@ -73,6 +73,7 @@
 
 .default-after-script:
   after_script:
+    - source .gitlab/helper_functions.sh
     - section_start "Notify Slack"
     - |
       if [ -n "${SLACK_ONLY_IF}" ]; then
