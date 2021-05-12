@@ -1,121 +1,114 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
 
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-import CofenseIntelligenceV2
 from CommonServerPython import *
 import demistomock as demisto
 import pytest
 import requests
 import json
+import base64
 import io
 from CofenseIntelligenceV2 import *
-import demistomock as
+
+
+mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major'}
+
+mock_base_url = 'mock_base_url'
+mock_username = 'mock_username'
+mock_password = 'mock_password'
+
+headers: Dict = {
+    "Authorization": f"Basic {base64.b64encode(':'.join([mock_username, mock_password]).encode()).decode().strip()}"
+}
+client = Client(
+    base_url=mock_base_url,
+    verify=True,
+    headers=headers,
+    proxy=False)
+
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
-
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-
-
 def test_threats_analysis():
-    indicator='email1'
-    threshold='Major'
+    indicator = 'email1'
+    threshold = 'Major'
     mock_threats = util_load_json('test_data/test_threats.json').get('threats')
-    mock_md_data =util_load_json('test_data/test_threats.json').get('mock_md_data')
+    mock_md_data = util_load_json('test_data/test_threats.json').get('mock_md_data')
     mock_dbot_score = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
     md_data, dbot_score = threats_analysis(mock_threats, indicator, threshold)
     assert mock_dbot_score == dbot_score
     assert mock_md_data == md_data
 
+
 def test_create_threat_md_row():
-    threat=util_load_json('test_data/test_threats.json').get('threats')[0]
-    severity_level=util_load_json('test_data/test_threats.json').get('mock_dbot_score')
-    threat_md_row=create_threat_md_row(threat, severity_level)
+    threat = util_load_json('test_data/test_threats.json').get('threats')[0]
+    severity_level = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
+    threat_md_row = create_threat_md_row(threat, severity_level)
     mock_threat_md_row = util_load_json('test_data/test_threats.json').get('mock_md_data')[0]
     assert mock_threat_md_row == threat_md_row
 
 
 def test_extracted_string(mocker):
-    mock_args={'str': 'str', 'limit': '10'}
-    mock_base_url = 'mock_base_url'
-    mock_username ='mock_username'
-    mock_password = 'mock_password'
-    headers: Dict = {
-        "Authorization": f"Basic {base64.b64encode(':'.join([mock_username, mock_password]).encode()).decode().strip()}"
-    }
-    client = CofenseIntelligenceV2.Client(
-        base_url=mock_base_url,
-        verify=True,
-        headers=headers,
-        proxy=False)
-    return_value=util_load_json('test_data/test_threats.json')
+    mock_args = {'str': 'str', 'limit': '10'}
+    test_data = util_load_json('test_data/test_extracted_string.json')
+
+    return_value = test_data.get('string_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
-    mock_response=extracted_string(client, mock_args)
-    with requests_mock
-    return CommandResults(
-        outputs_prefix='CofenseIntelligence',
-        outputs_key_field='id',
-        outputs={'CofenseIntelligence': {"String": string, "NumOfThreats": count_threats}},
-        raw_response=result,
-        readable_output=tableToMarkdown(f'There are {count_threats} threats regarding your string search\n', md_data))
+    response = extracted_string(client, mock_args)
 
-def test_pipeline_query_command(mocker):
-    """
-        Given:
-            collection - where to search.
-            pipeline - json pipeline query
+    mock_outputs = test_data.get('mock_outputs')
+    mock_readable_outputs = test_data.get('mock_readable')
+    assert mock_outputs == response.outputs
+    assert mock_readable_outputs == response.readable_output
 
-        When:
-            calling `pipeline_query_command`
 
-        Then:
-            validate the readable output and context
-        """
-    client = Client(['aaaaa'], 'a', 'b', 'd')
-    return_value = [
-        {'title': 'test_title', 'color': 'red', 'year': '2019', '_id': '6034a5a62f605638740dba55'},
-        {'title': 'test_title', 'color': 'yellow', 'year': '2020', '_id': '6034a5c52f605638740dba57'}
-    ]
-    mocker.patch.object(client, 'pipeline_query', return_value=return_value)
-    readable_outputs, outputs, raw_response = pipeline_query_command(
-        client=client,
-        collection='test_collection',
-        pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"
-    )
+def test_search_url_command(mocker):
+    mock_args = {'url': 'url'}
+    test_data = util_load_json('test_data/test_search_url.json')
+    return_value = test_data.get('url_search_response')
+    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    response = search_url_command(client, mock_args, mock_params)
+    mock_outputs = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+    assert mock_outputs == str(response.outputs)
+    assert mock_readable_outputs == response.readable_output
 
-    expected_context = list()
-    for item in copy.deepcopy(raw_response):
-        item.update({'collection': 'test_collection'})
-        expected_context.append(item)
 
-    assert 'Total of 2 entries were found in MongoDB collection' in readable_outputs
-    assert outputs.get('MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)') == expected_context
+def test_check_email_command(mocker):
+    mock_args = {'email': 'email@email.com'}
+    test_data = util_load_json('test_data/test_search_email.json')
+    return_value = test_data.get('email_search_response')
+    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    response = check_email_command(client, mock_args, mock_params)
+    print(response.outputs)
+    print(response.readable_output)
+    mock_output = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+    assert mock_output == str(response.outputs)
+    assert mock_readable_outputs == response.readable_output
 
+
+def test_check_ip_command(mocker):
+    mock_args = {'ip': '1.1.1.1'}
+    test_data = util_load_json('test_data/test_search_ip.json')
+    return_value = test_data.get('ip_search_response')
+    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    response = check_ip_command(client, mock_args, mock_params)
+    print(response)
+    mock_outputs = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+    assert mock_outputs == str(response.outputs)
+    assert mock_readable_outputs == response.readable_output
+
+
+def test_check_md5_command(mocker):
+    mock_args = {'file': 'file'}
+    test_data = util_load_json('test_data/test_search_file.json')
+    return_value = test_data.get('file_search_response')
+    mocker.patch.object(client, 'threat_search_call', return_value=return_value)
+    response = check_md5_command(client, mock_args, mock_params)
+    mock_outputs = test_data.get('mock_output')
+    mock_readable_outputs = test_data.get('mock_readable')
+    assert mock_outputs == str(response.outputs)
+    assert mock_readable_outputs == response.readable_output
