@@ -737,8 +737,14 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
     if not offense_types_ids:
         return dict()
-    offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
-                                         fields='id,name')
+    try:
+        offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
+                                             fields='id,name')
+    except Exception as e:
+        print_debug_msg(
+            f'Error occurred in offenses types call. '
+            f'''filter parameter is: {id in ({','.join(map(str, offense_types_ids))})}''')
+        raise e
     return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
 
 
@@ -757,8 +763,14 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
                           if offense.get('closing_reason_id') is not None}
     if not closing_reason_ids:
         return dict()
-    closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
-                                                  fields='id,text')
+    try:
+        closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
+                                                      fields='id,text')
+    except Exception as e:
+        print_debug_msg(
+            f'Error occurred in closing reasons list call. '
+            f'''filter parameter is: id in ({','.join(map(str, closing_reason_ids))})''')
+        raise e
     return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
 
 
@@ -816,7 +828,12 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
     url_suffix = f'{address_type}_addresses'
 
     def get_addresses_for_batch(b: List):
-        return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
+        try:
+            return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
+        except Exception as e:
+            print_debug_msg('Error occurred in get offense addresses call. '
+                            f'''filter parameter is: id in ({','.join(map(str, b))})''')
+            raise e
 
     addresses_ids = [address_id for offense in offenses
                      for address_id in offense.get(address_list_field, [])]
@@ -1367,7 +1384,11 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
 
-    offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    try:
+        offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    except Exception as e:
+        print_debug_msg(f'Error occurred in offenses list call. filter parameter is: {filter_fetch_query}')
+        raise e
     new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
 
     if fetch_mode != FetchMode.no_events.value:
@@ -1463,6 +1484,7 @@ def long_running_execution_command(client: Client, params: Dict):
             demisto.createIncidents(incidents)
 
         except Exception as e:
+            demisto.error(traceback.format_exc())
             demisto.error(str(e))
 
         finally:
