@@ -1,2 +1,3 @@
 [file:README.md]
-ignore=RM102
+ignore=RM102[file:README.md]
+ignore=RM104
