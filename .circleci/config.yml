@@ -1132,9 +1132,6 @@ jobs:
           name: Instance Test
           command: |
             ./Tests/scripts/instance_test.sh
-            export RETVAL=$?
-            cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
-            exit $RETVAL
           when: always
       - *destroy_instances
       - *store_artifacts

@@ -11,6 +11,10 @@
 create-instances:
   extends:
     - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$NIGHTLY'
+    - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
     when: always

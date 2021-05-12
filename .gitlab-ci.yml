@@ -28,11 +28,10 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
   IFRA_ENV_TYPE: "Content-Env"
-  ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
 
 
 include:
   - local: .gitlab/ci/global.yml
   - local: .gitlab/ci/on-push.yml
-  - local: .gitlab/ci/nightly.yml
   - local: .gitlab/ci/bucket-upload.yml
+  - local: .gitlab/ci/instance-test.yml
