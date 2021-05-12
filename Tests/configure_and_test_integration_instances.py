@@ -725,7 +725,7 @@ def update_content_on_demisto_instance(client, server, ami_name):
     """
     content_zip_path = 'artifacts/all_content.zip'
     update_content(content_zip_path, server=server, client=client)
-
+    raise ValueError('This is an error to see that it can fail.')
     # Check if content update has finished installing
     sleep_interval = 20
     updating_content = is_content_update_in_progress(client)

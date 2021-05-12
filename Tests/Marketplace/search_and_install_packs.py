@@ -381,6 +381,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         lock (Lock): A lock object.
     """
     pack_data = []
+    raise ValueError('This is an error to see that it can fail.')
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
@@ -462,6 +463,7 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     :param service_account: The full path to the service account json.
     :return: None. Prints the response from the server in the build.
     """
+    raise ValueError('This is an error to see that it can fail.')
     all_packs = []
 
     # Initiate the GCS client and get the production bucket
@@ -521,6 +523,7 @@ def upload_zipped_packs(client: demisto_client,
             host (str): The server URL.
             pack_path (str): path to pack zip.
         """
+    raise ValueError('This is an error to see that it can fail.')
     header_params = {
         'Content-Type': 'multipart/form-data'
     }
