@@ -387,7 +387,6 @@ def get_device_threats():
             threat['cylance_score'] = normalize_score(threat['cylance_score'])
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
-        print(threat)
         dbot_score_array.append({
             'Indicator': threat.get('sha256'),
             'Type': 'file',

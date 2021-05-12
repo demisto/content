@@ -1002,7 +1002,7 @@ script:
     - contextPath: Cylance.Device.Deleted
       description: A boolean to check if the device was deleted.
       type: boolean
-  dockerimage: demisto/pyjwt:1.0.0.12779
+  dockerimage: demisto/pyjwt:1.0.0.19034
   feed: false
   isfetch: true
   longRunning: false
