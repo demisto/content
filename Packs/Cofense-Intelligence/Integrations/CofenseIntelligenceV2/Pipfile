@@ -12,6 +12,8 @@ pytest-asyncio = "*"
 
 [packages]
 requests = "*"
+mocker = "*"
+pytest-mock = "*"
 
 [requires]
 python_version = "3.9"
