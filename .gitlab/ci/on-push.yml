@@ -13,7 +13,10 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
-    - if: '$FORCE_BUCKET_UPLOAD != "true" && $BUCKET_UPLOAD != "true" && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$INSTANCE_TESTS && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$DEMISTO_SDK_NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
   script:
     - |
       if [ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]; then
@@ -141,9 +144,18 @@ server_master:
   extends:
     - .test_content_on_server_instances_base
     - .nightly-rule
-    - .notify-slack
   variables:
     INSTANCE_ROLE: "Server Master"
     SLACK_TEST_TYPE: "test_playbooks"
     SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
     SLACK_ONLY_IF: "true"
+
+run-validations:
+  extends:
+    - .run-validations
+    - .push-rule
+
+run-unittests-and-lint:
+  extends:
+    - .run-unittests-and-lint
+    - .push-rule

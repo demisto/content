@@ -63,27 +63,26 @@
     - npm --version
     - demisto-sdk --version
 
-
-.default-job-settings:
-  extends:
-    - .default-cache
-    - .default-before_script
-
-.notify-slack:
+.default-after-script:
   after_script:
-    - echo "=====Notify Slack====="
+    - section_start "Notify Slack"
     - |
       if [ -n "${SLACK_ONLY_IF}" ]; then
         ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
       else
         echo "Skipping Slack"
       fi
+    - section_end "Notify Slack"
 
-run-unittests-and-lint:
+.default-job-settings:
+  extends:
+    - .default-cache
+    - .default-before_script
+    - .default-after-script
+
+.run-unittests-and-lint:
   needs: []
   stage: unittests-and-validations
-  rules:
-    - if: '$FORCE_BUCKET_UPLOAD != "true" && $INSTANCE_TESTS != "true"'
   artifacts:
     expire_in: 48 hrs
     paths:
@@ -91,13 +90,12 @@ run-unittests-and-lint:
       - /builds/xsoar/content/artifacts/*
   extends:
     - .default-job-settings
-    - .notify-slack
   variables:
     SLACK_TEST_TYPE: "unittests"
     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
     SLACK_ONLY_IF: $BUCKET_UPLOAD
   script:
-    - echo "====Test Infrustracture===="
+    - section_start "Test Infrustracture"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
     - python3 -m pytest ./Tests/scripts/utils/tests -v
@@ -108,7 +106,8 @@ run-unittests-and-lint:
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ] ; then
       ./Tests/scripts/sdk_pylint_check.sh
       fi
-    - echo "====Run Unit Testing and Lint===="
+    - section_end "Test Infrustracture"
+    - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
         echo "Skipping validations when uploading to a test bucket."
@@ -130,25 +129,27 @@ run-unittests-and-lint:
           demisto-sdk lint -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER
         fi
       fi
+    - section_end "Run Unit Testing and Lint"
 
-run-validations:
+.run-validations:
   stage: unittests-and-validations
   extends:
     - .default-job-settings
   needs: []
-  rules:
-    - if: '$FORCE_BUCKET_UPLOAD != "true"'
   artifacts:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
   script:
+    - section_start "Look For Secrets"
     - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy
-    - echo "====Create id set===="
+    - section_end "Look For Secrets"
+    - section_start "Create id set"
     - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/create_id_set.log
     - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
-    - echo "====Merge public and private id sets===="
+    - section_end "Create id set"
+    - section_start "Merge public and private id sets"
     - |
       if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
           echo "Skipping, Should not run on contributor's branch."
@@ -165,10 +166,12 @@ run-validations:
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
         echo "successfully merged public and private ID sets"
       fi
-    - echo "====Update Tests===="
+    - section_end "Merge public and private id sets"
+    - section_start "Update Tests"
     - python3 ./Tests/scripts/update_conf_json.py
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
-    - echo "====Validate Files and Yaml===="
+    - section_end "Update Tests"
+    - section_start "Validate Files and Yaml"
     - |
       if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
@@ -183,9 +186,11 @@ run-validations:
         find ./Tests/scripts -maxdepth 1 -type d -not \( -path ./Tests/scripts -o -path ./Tests/scripts/awsinstancetool \) | xargs ./Tests/scripts/pyflake.sh
         ./Tests/scripts/validate.sh
       fi
-    - echo "====Check Spelling===="
+    - section_end "Validate Files and Yaml"
+    - section_start "Check Spelling"
     - python3 ./Tests/scripts/circleci_spell_checker.py $CI_COMMIT_BRANCH
-    - echo "====Check Build Files Are Up To Date===="
+    - section_end "Check Spelling"
+    - section_start "Check Build Files Are Up To Date"
     - |
       if [[ $$CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
         echo "Skipping, Should not run on contributor's branch."
@@ -194,7 +199,8 @@ run-validations:
         ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py2.txt
         ./Tests/scripts/is_file_up_to_date.sh .dev-requirements-py3.txt
       fi
-    - echo "====Validate content-test-conf Branch Merged===="
+    - section_end "Check Build Files Are Up To Date"
+    - section_start "Validate content-test-conf Branch Merged"
     - |
       if [[ $CI_COMMIT_BRANCH = "master" ]]; then
         echo "Skipping, Should not run on master branch."
@@ -210,7 +216,8 @@ run-validations:
           fi
         }
       fi
-    - echo "====Validate landingPageSections.json===="
+    - section_end "Validate content-test-conf Branch Merged"
+    - section_start "Validate landingPageSections.json"
     - echo "Download index.zip"
     - INDEX_PATH=$(mktemp)
     - |
@@ -221,3 +228,4 @@ run-validations:
     - unzip $INDEX_PATH -d $UNZIP_PATH > $ARTIFACTS_FOLDER/logs/unzip_index.log
 
     - python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
+    - section_end "Validate landingPageSections.json"
