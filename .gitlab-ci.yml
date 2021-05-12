@@ -1,5 +1,5 @@
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.18863
+  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.18999
   artifacts:
     expire_in: 30 days
     paths:
@@ -28,6 +28,7 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
   IFRA_ENV_TYPE: "Content-Env"
+  ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
 
 
 include:
