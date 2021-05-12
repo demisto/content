@@ -13,7 +13,6 @@ def test_fetch_incidents(requests_mock):
 
     mock_response = util_load_json('test_data/soc_monitoring_cases.json')
     requests_mock.get('https://test.com/api/v1/rest/noauth/third_party/read_object/xsoar/v1', json=mock_response['alerts'])
-
     client = Client(
         base_url='https://test.com/api/v1',
         verify=False,
@@ -30,7 +29,6 @@ def test_fetch_incidents(requests_mock):
         last_run=last_run,
         alert_status='ACTIVE',
         min_severity='Low',
-        alert_type=None,
         first_fetch_time='3 days',
     )
 
