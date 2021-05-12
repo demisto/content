@@ -37,7 +37,7 @@ configuration:
   required: false
   type: 0
 - display: Radar Critical Severity Level Mapping
-  additionalinfo: When a Radar event of Critical severity is detected and fetched, this setting is what severity will get assigned within XSOAR.
+  additionalinfo: When a Radar event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   name: radar_critical_severity_mapping
   defaultvalue: XSOAR HIGH
   type: 15
@@ -48,7 +48,7 @@ configuration:
   - XSOAR MEDIUM
   - XSOAR LOW
 - display: Radar Warning Severity Level Mapping
-  additionalinfo: When a Radar event of Warning severity is detected and fetched, this setting is what severity will get assigned within XSOAR.
+  additionalinfo: When a Radar event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   name: radar_warning_severity_mapping
   defaultvalue: XSOAR LOW
   type: 15
