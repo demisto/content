@@ -3279,6 +3279,10 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CofenseIntelligenceV2",
+            "playbookID": "Cofense Intelligence v2 test"
         }
     ],
     "skipped_tests": {
