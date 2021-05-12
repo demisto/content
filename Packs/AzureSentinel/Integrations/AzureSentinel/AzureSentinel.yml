@@ -338,7 +338,7 @@ script:
     - default: false
       description: Email of the incident assignee. NOTE it shows as owner in the API.
       isArray: false
-      name: owner_email
+      name: assignee_email
       required: false
       secret: false
     - default: false

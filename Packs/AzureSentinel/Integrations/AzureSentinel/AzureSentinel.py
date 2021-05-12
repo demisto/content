@@ -26,7 +26,7 @@ AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access t
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'AssigneeName',
                     'AssigneeEmail', 'Labels', 'FirstActivityTimeUTC', 'LastActivityTimeUTC', 'LastModifiedTimeUTC',
                     'CreatedTimeUTC', 'AlertsCount', 'BookmarksCount', 'CommentsCount', 'AlertProductNames',
-                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated', 'Etag', 'Labels']
+                    'Tactics', 'FirstActivityTimeGenerated', 'LastActivityTimeGenerated', 'Etag']
 
 COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', 'CreatedTimeUTC']
 
@@ -36,15 +36,14 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 class Client:
     def __init__(self, self_deployed: bool, refresh_token: str, auth_and_token_url: str, enc_key: str,
-                 redirect_uri: str, auth_code: str, subscription_id: str, resource_group_name: str,
-                 workspace_name: str, verify: bool, proxy: bool, timeout: Union[int, None] = None):
+                 redirect_uri: str, auth_code: str, subscription_id: str, resource_group_name: str, workspace_name: str,
+                 verify: bool, proxy: bool):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}/' \
                    f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                    f'{workspace_name}/providers/Microsoft.SecurityInsights'
-        self.timeout = timeout
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,
@@ -70,17 +69,12 @@ class Client:
         if not full_url:
             params['api-version'] = API_VERSION
 
-        kwargs = dict()
-        if self.timeout:
-            kwargs['timeout'] = self.timeout
-
         res = self.ms_client.http_request(method=method,  # disable-secrets-detection
                                           url_suffix=url_suffix,
                                           full_url=full_url,
                                           json_data=data,
                                           params=params,
-                                          resp_type='response',
-                                          **kwargs)
+                                          resp_type='response')
         res_json = res.json()
 
         if res.status_code in (400, 401, 403, 404):
@@ -120,9 +114,9 @@ def incident_data_to_demisto_format(inc_data):
         'Status': properties.get('status'),
         'AssigneeName': properties.get('owner', {}).get('assignedTo'),
         'AssigneeEmail': properties.get('owner', {}).get('email'),
-        'Label': [{
-            'Name': label.get('name'),
-            'Type': label.get('type')
+        'Labels': [{
+            'Name': label.get('labelName'),
+            'Type': label.get('labelType')
         } for label in properties.get('labels', [])],
         'FirstActivityTimeUTC': format_date(properties.get('firstActivityTimeUtc')),
         'LastActivityTimeUTC': format_date(properties.get('lastActivityTimeUtc')),
@@ -152,7 +146,7 @@ def get_update_incident_request_data(client: Client, args: Dict[str, str]):
     classification = args.get('classification')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
-    labels = args.get('labels')
+    labels_raw = args.get('labels')
 
     if not title:
         title = demisto.get(result, 'properties.title')
@@ -164,11 +158,10 @@ def get_update_incident_request_data(client: Client, args: Dict[str, str]):
         status = demisto.get(result, 'properties.status')
     if not assignee_email:
         assignee_email = demisto.get(result, 'properties.owner.email')
-    if not labels:
+    if not labels_raw:
         labels_formatted = demisto.get(result, 'properties.labels')
     else:  # if labels are provided in args
-        labels_formatted = [{"labelName": label} for label in labels]
-
+        labels_formatted = [{"labelName": label} for label in argToList(labels_raw) if label]  # labels can not be blank
     inc_data = {
         'etag': result.get('etag'),
         'properties': {
@@ -638,12 +631,8 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
-
     LOG(f'Command being called is {demisto.command()}')
     try:
-        raw_timeout = params.get('timeout')
-        timeout = int(raw_timeout) if raw_timeout else None
-
         client = Client(
             self_deployed=params.get('self_deployed', False),
             auth_and_token_url=params.get('auth_id', ''),
@@ -655,8 +644,7 @@ def main():
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False),
-            timeout=timeout
+            proxy=params.get('proxy', False)
         )
 
         commands = {
