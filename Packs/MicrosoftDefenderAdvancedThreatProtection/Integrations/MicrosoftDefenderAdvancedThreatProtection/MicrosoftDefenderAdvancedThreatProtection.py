@@ -715,7 +715,6 @@ class MsClient:
             'GET', full_url=cmd_url, url_suffix=None, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response'
         )
-        demisto.info(f'$$$ raw response for microsoft-atp-indicator-list: {resp}')
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
