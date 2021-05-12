@@ -499,6 +499,6 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 5.5.0
 description: This playbook uses the SolarWinds integration and tests all the commands
   of the integration.

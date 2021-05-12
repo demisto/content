@@ -58,7 +58,7 @@ configuration:
   required: false
   type: 16
 - additionalinfo: To filter the alerts based on the type of property to monitor. If
-    specified none, it will fetch all types of alerts. To list additional object types,
+    not specified, it will fetch all types of alerts. To list additional object types,
     use query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in swis-query
     command.
   display: Object Types
@@ -92,7 +92,7 @@ configuration:
   - Wireless Controller
   required: false
   type: 16
-- additionalinfo: To filter events based on the type. If specified none, it will fetch
+- additionalinfo: To filter events based on the type. If not specified, it will fetch
     all types of events. To list additional event types, use query 'SELECT Name FROM
     Orion.EventTypes' in swis-query command.
   display: Event Types
@@ -318,8 +318,6 @@ script:
         Possible values are: Information, Warning, Critical, Serious, Notice.
       isArray: true
       name: severity
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
@@ -546,4 +544,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+fromversion: 5.5.0

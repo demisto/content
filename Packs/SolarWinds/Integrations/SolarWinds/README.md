@@ -1,5 +1,21 @@
 The SolarWinds integration interacts with the SWIS API to allow users to fetch alerts and events. It also provides commands to retrieve lists of alerts and events.
 This integration was integrated and tested with version 3.0.0 of SolarWinds Information Service (SWIS API).
+
+## SolarWinds Help
+
+SolarWinds Integration requires installation of SolarWinds Orion Platform which consolidates the full suite of monitoring capabilities into one platform. Following products used in this integration are managed under Orion
+
+1. Network Performance Manager
+2. Netflow Traffic Analyzer
+3. Network Configuration Manager
+4. IP Address Manager
+5. Log Analyzer
+6. Server and Application Monitor
+
+## How to install SolarWinds Orion Platform
+
+Follow this [link](https://documentation.solarwinds.com/en/success_center/orionplatform/content/install-new-deployment.htm), it contains a comprehensive guide on how to install Orion and the managed products.
+
 ## Configure SolarWinds on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -22,9 +38,11 @@ This integration was integrated and tested with version 3.0.0 of SolarWinds Info
     | Fetch incidents |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### swis-event-list
 ***
 Retrieves a list of events on the filter values provided in the command arguments.
@@ -43,7 +61,7 @@ Retrieves a list of events on the filter values provided in the command argument
 | node | To retrieve events of specific nodes. | Optional | 
 | sort_key | Key based on which the response will be sorted.<br/>Possible values are: EventID, EventTime, Message, TimeStamp, EventTypeName, Node, etc. Default is EventID. | Optional | 
 | sort_order | Order in which the response will be sorted. Possible values are: ascending, descending. Default is ascending. | Optional | 
-| page | Specify a page number to retrieve events. By default, per page limit is  50 events and the user can change it by specifying a limit in argument. Default is 0. | Optional | 
+| page | Specify a page number to retrieve events. By default, the per-page limit is 50 events and the user can change it by specifying a limit in the argument. Default is 0. | Optional | 
 | limit | Number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
 
 
@@ -162,7 +180,7 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 | severity | To retrieve alerts of specific severity levels.<br/>Possible values are: Information, Warning, Critical, Serious, Notice. | Optional | 
 | sort_key | Key based on which the response will be sorted.<br/>Possible values are: AlertID, AlertActiveID, AlertObjectID, TriggeredDateTime, TriggeredMessage, AcknowledgedDateTime, EngineID, Name, ObjectType, etc. Default is AlertActiveID. | Optional | 
 | sort_order | Order in which the response will be sorted. Possible values are: ascending, descending. Default is ascending. | Optional | 
-| page | Specify a page number to retrieve alerts. By default, per page limit is  50 alerts and the user can change it by specifying a limit in argument. Default is 0. | Optional | 
+| page | Specify a page number to retrieve alerts. By default, the per-page limit is 50 alerts and the user can change it by specifying a limit in the argument. Default is 0. | Optional | 
 | limit | The number of records to be retrieved.<br/>Note: The maximum value supported by the limit is maxValue int32. Default is 50. | Optional | 
 
 

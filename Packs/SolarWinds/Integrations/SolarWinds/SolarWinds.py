@@ -84,7 +84,12 @@ QUERY_PARAM = {
                     "FROM Orion.AlertActive AS A "
                     "INNER JOIN Orion.AlertObjects AS B ON A.AlertObjectID = B.AlertObjectID "
                     "INNER JOIN Orion.AlertConfigurations AS C ON B.AlertID = C.AlertID "
-                    "INNER JOIN Orion.AlertConfigurationsCustomProperties AS D ON C.AlertID = D.AlertID"
+                    "INNER JOIN Orion.AlertConfigurationsCustomProperties AS D ON C.AlertID = D.AlertID",
+    "FETCH_EVENTS": "SELECT TOP {} A.EventID, A.EventTime, A.NetworkNode, A.NetObjectID, A.NetObjectValue,"
+                    "A.EngineID, A.EventType, A.Message, A.Acknowledged, A.NetObjectType, A.TimeStamp,"
+                    "A.DisplayName, A.Description, A.InstanceType, A.Uri,A.InstanceSiteId, B.Name "
+                    "FROM Orion.Events as A "
+                    "INNER JOIN Orion.EventTypes as B ON A.EventType=B.EventType"
 }
 
 ''' CLIENT CLASS '''
@@ -173,6 +178,7 @@ def prepare_query_for_fetch_alerts(last_run: dict, params: dict) -> str:
 
     query = QUERY_PARAM["FETCH_ALERTS"].format(max_fetch)
 
+    # The AlertActiveIDs are unique for alerts, so it is used instead of timestamp for the last run for simplicity
     if last_run.get('alert_active_id'):
         query += f" WHERE A.AlertActiveID>{last_run.get('alert_active_id')}"
     else:
@@ -205,11 +211,7 @@ def prepare_query_for_fetch_events(last_run: dict, params: dict) -> str:
     first_fetch = params.get("first_fetch")
     event_types = params.get("event_types")
 
-    query = (f"SELECT TOP {max_fetch} A.EventID, A.EventTime, A.NetworkNode, A.NetObjectID, A.NetObjectValue,"
-             f"A.EngineID, A.EventType, A.Message, A.Acknowledged, A.NetObjectType, A.TimeStamp,"
-             f"A.DisplayName, A.Description, A.InstanceType, A.Uri,A.InstanceSiteId, B.Name "
-             f"FROM Orion.Events as A "
-             f"INNER JOIN Orion.EventTypes as B ON A.EventType=B.EventType")
+    query = QUERY_PARAM["FETCH_EVENTS"].format(max_fetch)
 
     if last_run.get('event_id'):
         query += f" WHERE A.EventID>{last_run.get('event_id')}"
@@ -509,7 +511,7 @@ def fetch_incidents(client: Client, last_run: dict, params: Dict, is_test=False)
         })
 
     if results:
-        if fetch_type == "Alert":
+        if fetch_type == DEFAULT_FETCH_TYPE:
             next_run['alert_active_id'] = results[-1]['AlertActiveID']
         else:
             next_run['event_id'] = results[-1]['EventID']

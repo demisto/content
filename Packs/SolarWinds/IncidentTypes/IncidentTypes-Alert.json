@@ -19,5 +19,5 @@
     "disabled": false,
     "reputationCalc": 0,
     "layout": "SolarWinds Alert",
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }
