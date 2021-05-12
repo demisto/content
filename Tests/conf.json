@@ -1471,6 +1471,11 @@
             "playbookID": "IPInfoTest"
         },
         {
+            "integrations": "ipinfo_v2",
+            "playbookID": "IPInfo_v2Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
@@ -3612,6 +3617,7 @@
         "Tanium",
         "LogRhythmRest",
         "ipinfo",
+        "ipinfo_v2",
         "Demisto REST API",
         "syslog",
         "ElasticsearchFeed",
