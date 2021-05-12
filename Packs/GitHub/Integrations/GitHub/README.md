@@ -1647,7 +1647,7 @@ Get list of files from the given path in the repository.
 | GitHub.File.Size | Number | The size of the file in bytes. | 
 | GitHub.File.Path | String | The file path inside the repository. | 
 | GitHub.File.DownloadUrl | String | Link to download the file content. | 
-
+| GitHub.File.SHA | String | The SHA of the file. | 
 
 #### Command Example
 ```!Github-list-files path=Index```
@@ -1658,6 +1658,45 @@ Get list of files from the given path in the repository.
 |--- |--- |--- |--- |--- |
 |README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
 |images|Index/images|dir|0||
+
+### GitHub-list-team-members
+***
+List team members.
+#### Base Command
+`GitHub-list-team-members`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+| team_slug | The name of the team under the organiztion. | Required | 
+| maximum_users | The maximum number of users to return | Optional | 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.TeamMember.ID | String | The ID of the team member. | 
+| GitHub.TeamMember.Login | String | The login name of the team member. |
+| GitHub.TeamMember.Team | String | The user's team. |
+#### Command Example
+```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
+
+##### Context Example
+```
+{
+    "GitHub.GitHub": [
+        {
+            "ID": 1234567, 
+            "Login": "user1", 
+            "Team": "content", 
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+## Team Member of team content in organization demisto
+|ID|Login|Team|
+|--- |---|---|
+|1234567|user1|content|
 
 ### GitHub-list-branch-pull-requests
 ***
@@ -1848,152 +1887,152 @@ Get pull requests corresponding to the given branch name.
 #### Context Example
 ```json
 {
-    "GitHub": {
-        "PR": {
-            "ActiveLockReason": null,
-            "Additions": null,
-            "AuthorAssociation": "MEMBER",
-            "Base": {
-                "Label": "demisto:master",
-                "Ref": "master",
-                "Repo": {
-                    "AllowMergeCommit": null,
-                    "AllowRebaseMerge": null,
-                    "AllowSquashMerge": null,
-                    "Archived": false,
-                    "CreatedAt": "2016-06-06T12:17:02Z",
-                    "DefaultBranch": "master",
-                    "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
-                    "Disabled": false,
-                    "Fork": false,
-                    "ForksCount": 678,
-                    "FullName": "demisto/content",
-                    "HasDownloads": true,
-                    "HasIssues": false,
-                    "HasPages": false,
-                    "HasProjects": true,
-                    "HasWiki": false,
-                    "ID": 60525392,
-                    "Language": "Python",
-                    "Name": "content",
-                    "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
-                    "OpenIssuesCount": 181,
-                    "Owner": {
-                        "ID": 11011767,
-                        "Login": "demisto",
-                        "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
-                        "SiteAdmin": false,
-                        "Type": "Organization"
-                    },
-                    "Private": false,
-                    "PushedAt": "2021-05-06T11:49:07Z",
-                    "Size": 371861,
-                    "StargazersCount": 635,
-                    "SucscribersCount": null,
-                    "Topics": null,
-                    "UpdatedAt": "2021-05-06T11:41:27Z",
-                    "WatchersCount": 635
-                },
-                "SHA": "9adf770fb981ec8bc9d6e87669be75da23176693",
-                "User": {
-                    "ID": 11011767,
-                    "Login": "demisto",
-                    "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
-                    "SiteAdmin": false,
-                    "Type": "Organization"
-                }
-            },
-            "Body": "Updated Docker Images For Integrations",
-            "ChangedFiles": null,
-            "ClosedAt": null,
-            "Comments": null,
-            "Commits": null,
-            "CreatedAt": "2021-05-03T14:29:25Z",
-            "Deletions": null,
-            "Draft": false,
-            "Head": {
-                "Label": "demisto:Update-Docker-Image",
-                "Ref": "Update-Docker-Image",
-                "Repo": {
-                    "AllowMergeCommit": null,
-                    "AllowRebaseMerge": null,
-                    "AllowSquashMerge": null,
-                    "Archived": false,
-                    "CreatedAt": "2016-06-06T12:17:02Z",
-                    "DefaultBranch": "master",
-                    "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
-                    "Disabled": false,
-                    "Fork": false,
-                    "ForksCount": 678,
-                    "FullName": "demisto/content",
-                    "HasDownloads": true,
-                    "HasIssues": false,
-                    "HasPages": false,
-                    "HasProjects": true,
-                    "HasWiki": false,
-                    "ID": 60525392,
-                    "Language": "Python",
-                    "Name": "content",
-                    "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
-                    "OpenIssuesCount": 181,
-                    "Owner": {
-                        "ID": 11011767,
-                        "Login": "demisto",
-                        "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
-                        "SiteAdmin": false,
-                        "Type": "Organization"
-                    },
-                    "Private": false,
-                    "PushedAt": "2021-05-06T11:49:07Z",
-                    "Size": 371861,
-                    "StargazersCount": 635,
-                    "SucscribersCount": null,
-                    "Topics": null,
-                    "UpdatedAt": "2021-05-06T11:41:27Z",
-                    "WatchersCount": 635
-                },
-                "SHA": "baee6e30aaa0f52e676987c1968ffd3ce11d7e57",
-                "User": {
-                    "ID": 11011767,
-                    "Login": "demisto",
-                    "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
-                    "SiteAdmin": false,
-                    "Type": "Organization"
-                }
-            },
-            "ID": 629143674,
-            "Label": [
-                {
-                    "Color": null,
-                    "Default": false,
-                    "Description": "",
-                    "ID": 1523790036,
-                    "Name": "docs-approved",
-                    "NodeID": "MDU6TGFiZWwxNTIzNzkwMDM2"
-                }
-            ],
-            "Locked": false,
-            "MaintainerCanModify": null,
-            "MergeCommitSHA": "5854633d909c5672ba6ccf118c4dae68eb4e38c0",
-            "Mergeable": null,
-            "MergeableState": null,
-            "Merged": null,
-            "MergedAt": null,
-            "NodeID": "MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0",
-            "Number": 12510,
-            "Rebaseable": null,
-            "ReviewComments": null,
-            "State": "open",
-            "UpdatedAt": "2021-05-03T14:48:58Z",
-            "User": {
-                "ID": 55035720,
-                "Login": "content-bot",
-                "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
-                "SiteAdmin": false,
-                "Type": "User"
-            }
-        }
-    }
+ "GitHub": {
+     "PR": {
+         "ActiveLockReason": null,
+         "Additions": null,
+         "AuthorAssociation": "MEMBER",
+         "Base": {
+             "Label": "demisto:master",
+             "Ref": "master",
+             "Repo": {
+                 "AllowMergeCommit": null,
+                 "AllowRebaseMerge": null,
+                 "AllowSquashMerge": null,
+                 "Archived": false,
+                 "CreatedAt": "2016-06-06T12:17:02Z",
+                 "DefaultBranch": "master",
+                 "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
+                 "Disabled": false,
+                 "Fork": false,
+                 "ForksCount": 678,
+                 "FullName": "demisto/content",
+                 "HasDownloads": true,
+                 "HasIssues": false,
+                 "HasPages": false,
+                 "HasProjects": true,
+                 "HasWiki": false,
+                 "ID": 60525392,
+                 "Language": "Python",
+                 "Name": "content",
+                 "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
+                 "OpenIssuesCount": 181,
+                 "Owner": {
+                     "ID": 11011767,
+                     "Login": "demisto",
+                     "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                     "SiteAdmin": false,
+                     "Type": "Organization"
+                 },
+                 "Private": false,
+                 "PushedAt": "2021-05-06T11:49:07Z",
+                 "Size": 371861,
+                 "StargazersCount": 635,
+                 "SucscribersCount": null,
+                 "Topics": null,
+                 "UpdatedAt": "2021-05-06T11:41:27Z",
+                 "WatchersCount": 635
+             },
+             "SHA": "9adf770fb981ec8bc9d6e87669be75da23176693",
+             "User": {
+                 "ID": 11011767,
+                 "Login": "demisto",
+                 "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                 "SiteAdmin": false,
+                 "Type": "Organization"
+             }
+         },
+         "Body": "Updated Docker Images For Integrations",
+         "ChangedFiles": null,
+         "ClosedAt": null,
+         "Comments": null,
+         "Commits": null,
+         "CreatedAt": "2021-05-03T14:29:25Z",
+         "Deletions": null,
+         "Draft": false,
+         "Head": {
+             "Label": "demisto:Update-Docker-Image",
+             "Ref": "Update-Docker-Image",
+             "Repo": {
+                 "AllowMergeCommit": null,
+                 "AllowRebaseMerge": null,
+                 "AllowSquashMerge": null,
+                 "Archived": false,
+                 "CreatedAt": "2016-06-06T12:17:02Z",
+                 "DefaultBranch": "master",
+                 "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
+                 "Disabled": false,
+                 "Fork": false,
+                 "ForksCount": 678,
+                 "FullName": "demisto/content",
+                 "HasDownloads": true,
+                 "HasIssues": false,
+                 "HasPages": false,
+                 "HasProjects": true,
+                 "HasWiki": false,
+                 "ID": 60525392,
+                 "Language": "Python",
+                 "Name": "content",
+                 "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
+                 "OpenIssuesCount": 181,
+                 "Owner": {
+                     "ID": 11011767,
+                     "Login": "demisto",
+                     "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                     "SiteAdmin": false,
+                     "Type": "Organization"
+                 },
+                 "Private": false,
+                 "PushedAt": "2021-05-06T11:49:07Z",
+                 "Size": 371861,
+                 "StargazersCount": 635,
+                 "SucscribersCount": null,
+                 "Topics": null,
+                 "UpdatedAt": "2021-05-06T11:41:27Z",
+                 "WatchersCount": 635
+             },
+             "SHA": "baee6e30aaa0f52e676987c1968ffd3ce11d7e57",
+             "User": {
+                 "ID": 11011767,
+                 "Login": "demisto",
+                 "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                 "SiteAdmin": false,
+                 "Type": "Organization"
+             }
+         },
+         "ID": 629143674,
+         "Label": [
+             {
+                 "Color": null,
+                 "Default": false,
+                 "Description": "",
+                 "ID": 1523790036,
+                 "Name": "docs-approved",
+                 "NodeID": "MDU6TGFiZWwxNTIzNzkwMDM2"
+             }
+         ],
+         "Locked": false,
+         "MaintainerCanModify": null,
+         "MergeCommitSHA": "5854633d909c5672ba6ccf118c4dae68eb4e38c0",
+         "Mergeable": null,
+         "MergeableState": null,
+         "Merged": null,
+         "MergedAt": null,
+         "NodeID": "MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0",
+         "Number": 12510,
+         "Rebaseable": null,
+         "ReviewComments": null,
+         "State": "open",
+         "UpdatedAt": "2021-05-03T14:48:58Z",
+         "User": {
+             "ID": 55035720,
+             "Login": "content-bot",
+             "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
+             "SiteAdmin": false,
+             "Type": "User"
+         }
+     }
+  }
 }
 ```
 
