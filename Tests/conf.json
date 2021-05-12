@@ -3617,6 +3617,7 @@
         "Tanium",
         "LogRhythmRest",
         "ipinfo",
+        "ipinfo_v2",
         "Demisto REST API",
         "syslog",
         "ElasticsearchFeed",
