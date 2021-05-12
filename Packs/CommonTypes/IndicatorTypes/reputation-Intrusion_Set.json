@@ -1,0 +1,48 @@
+{
+    "id": "Intrusion Set",
+    "version": -1,
+    "modified": "2021-05-02T14:25:44.543877+03:00",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Intrusion Set",
+    "prevDetails": "Intrusion Set",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "aliases": {
+            "simple": "IntrusionSet.aliases",
+            "complex": null
+        },
+        "description": {
+            "simple": "IntrusionSet.description",
+            "complex": null
+        },
+        "goals": {
+            "simple": "IntrusionSet.goals",
+            "complex": null
+        },
+        "primarymotivation": {
+            "simple": "IntrusionSet.primarymotivation",
+            "complex": null
+        },
+        "resourcelevel": {
+            "simple": "IntrusionSet.resourcelevel",
+            "complex": null
+        },
+        "secondarymotivations": {
+            "simple": "IntrusionSet.secondarymotivations",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "IntrusionSet.stixid",
+            "complex": null
+        }
+    },
+    "expiration": 0,
+    "layout": "Intrusion Set",
+    "fromVersion": "5.5.0"
+}
