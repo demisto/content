@@ -3304,6 +3304,10 @@
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
             "is_mockable": false
+        },
+        {
+           "integrations": "HPEArubaClearpass",
+            "playbookID": "HPEArubaClearpass_TestPlaybook"
         }
     ],
     "skipped_tests": {
@@ -3654,7 +3658,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
