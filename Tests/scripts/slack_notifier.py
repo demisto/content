@@ -339,7 +339,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         logging.info(f'Content team attachments:\n{content_team_attachments}')
-        logging.info(f"Sending Slack messages to {slack_channel}")
+        logging.info(f'Sending Slack messages to {slack_channel}')
         slack_client = SlackClient(slack_token)
         username = 'Content GitlabCI' if gitlab_server else 'Content CircleCI'
         slack_client.api_call(
