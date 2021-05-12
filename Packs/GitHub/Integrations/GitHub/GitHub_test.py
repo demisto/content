@@ -32,17 +32,27 @@ def test_search_code(requests_mock, mocker):
 
     results = demisto.results.call_args[0][0]
     assert results['Contents'] == raw_response
-    assert len(results['EntryContext']['GitHub.CodeSearchResults(val.html_url == obj.html_url)']) == 7
+    assert len(results['EntryContext']['GitHub.CodeSearchResults(val.html_url && val.html_url == obj.html_url)']) == 7
     assert 'Repository Name' in results['HumanReadable']
 
 
-def mock_http_request(method, url_suffix, params=None, data=None):
-    return {"items": [{"repository_url": "", "limit": params.get("per_page")}]}
+def mock_http_request(method, url_suffix, params=None, data=None, headers=None, is_raw_response=False):
+    if url_suffix == "/search/issues":
+        return {"items": [{"repository_url": "", "limit": params.get("per_page")}]}
+    elif url_suffix == "/orgs/demisto/teams/content/members" and params.get('page') == 1:
+        return [{"login": 'test1', 'id': '12345'}]
+    elif url_suffix == "/orgs/demisto/teams/content/members" and params.get('page') == 2:
+        return []
 
 
 SEARCH_CASES = [
     (200, 100),
     (40, 40)
+]
+
+LIST_TEAM_MEMBERS_CASES = [
+    (200, {'page': 1, 'per_page': 100}),
+    (40, {'page': 1, 'per_page': 40})
 ]
 
 
@@ -68,3 +78,29 @@ def test_search_command(mocker, limit, expected_result):
     search_command()
 
     assert mocker_output.call_args.args[2].get('items')[0].get('limit') == expected_result
+
+
+@pytest.mark.parametrize('maximum_users, expected_result1', LIST_TEAM_MEMBERS_CASES)
+def test_list_team_members_command(mocker, maximum_users, expected_result1):
+    """
+    Given:
+        when we want to list the team members and to limit the number of users to return
+    When:
+        list_team_members_command is running
+    Then:
+        Assert that the number of users in single page is compatible with the maximum_users number and with the github
+        page size limit
+    """
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value={
+        'organization': 'demisto',
+        'team_slug': 'content',
+        'maximum_users': maximum_users
+    })
+    mock_list_members = mocker.patch('GitHub.http_request', side_effect=mock_http_request)
+    from GitHub import list_team_members_command
+
+    list_team_members_command()
+
+    url_suffix = '/orgs/demisto/teams/content/members'
+    mock_list_members.call_args_list[0]('GET', url_suffix, expected_result1)
