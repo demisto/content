@@ -188,10 +188,7 @@ class TestGetModifiedFilesForTesting:
 
     @pytest.mark.parametrize(
         "path",
-        (
-                "Packs/HelloWorld/IndicatorTypes/reputation-cidr.json",
-                "Packs/HelloWorld/IndicatorTypes/reputations.json",
-        ),
+        ("Packs/HelloWorld/IndicatorTypes/reputation-cidr.json", "Packs/HelloWorld/IndicatorTypes/reputations.json"),
     )
     def test_reputations_list(self, path: str, mocker):
         diff_line = f"M {path}"
