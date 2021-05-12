@@ -518,8 +518,23 @@ script:
     execution: false
     name: fireeye-cm-get-reports
     outputs:
-    - contextPath: FireEyeCM.QuarantinedEmail.TODO
-      description: a.
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the artifact file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: The extension of the artifact file.
+      type: string
+    - contextPath: InfoFile.Name
+      description: The name of the artifact file.
+      type: string
+    - contextPath: InfoFile.Info
+      description: The info of the artifact file.
+      type: string
+    - contextPath: InfoFile.Size
+      description: The size of the artifact file.
+      type: number
+    - contextPath: InfoFile.Type
+      description: The type of the artifact file.
       type: string
   isfetch: false
   runonce: false
