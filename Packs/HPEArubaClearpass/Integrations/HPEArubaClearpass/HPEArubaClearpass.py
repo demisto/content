@@ -133,8 +133,7 @@ def parse_items_response(response: dict, active_sessions_parsing=None):  # type:
     human_readable = []
     if items_list:
         for item in items_list:
-            if item.get('_links'):
-                del item['_links']  # useless information, won't be displayed
+            delete_redundant_data(item)
             if active_sessions_parsing:
                 item = active_sessions_parsing(item)
             human_readable.append(item)
@@ -200,10 +199,12 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def delete_redundant_data(res: Dict[str, Any]):
-    try:
+    """
+    Removes the '_links' entity from the response. This entity includes a url to Aruba server for the given object which
+    equals the requested url suffix.
+    """
+    if res and '_links' in res:
         del res['_links']
-    except KeyError:
-        pass
 
 
 def get_endpoint_request_body(status, mac_address, description, device_insight_tags, attributes_values, attributes):
@@ -257,7 +258,8 @@ def attributes_filter_to_json_object(attribute_id, name, entity_name):
 def check_api_limitation_on_specific_data_types(args: Dict[str, Any]):
     """ Checks if the attribute data_type match the api limitations like:
     1. allow_multiple is available only when data_type is String.
-    1. allowed_value is available only when data_type is List.
+    2. allowed_value is available only when data_type is List.
+    API docs are here: {Aruba_url_server}/api-docs/Dictionaries-v1#!/Attribute
     """
     data_type = args.get('data_type')
     allow_multiple_data_type_string = argToBoolean(args.get('allow_multiple', False))
