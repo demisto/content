@@ -353,5 +353,4 @@ view: |-
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-description: Monitor the progress of a Rubrik Radar anamoly event and use Rubrik Sonar
-  to check for data classification hits.
+description: THIS PLAYBOOK HAS BEEN DEPRECATED.  Please use the Rubrik Post Intrusion Ransomware Investigation Playbook instead.
