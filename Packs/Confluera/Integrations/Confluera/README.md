@@ -7,6 +7,11 @@ Please make sure you look at the integration source code and comments.
 
 This integration was built to get the insights of Confluera API(Autonomouse Detetcions and Response).
 
+This integration was tested against product version 2.2.3
+
+Supported Product Versions: 2.2.3 and above.
+
+
 ## Configure Confluera on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -18,10 +23,8 @@ This integration was built to get the insights of Confluera API(Autonomouse Dete
 | IQ-Hub url | Server URL \(e.g. https://test.confluera.com\) | True |
 | Trust any certificate | Not Secure | False |
 | Use system proxy settings | Proxy Settings | False |
-| Username |Usernme \(admin@confluera.com\) | True|
-| Password | Password \(admin@1234\) | True |
-| Detections Url | URL \(e.g. https://test.confluera.com/#/detections) | Optional |
-| Progressions Url | URL \(e.g. https://test.confluera.com/#/monitor/cyber-attacks/active) | Optional |
+| Username |Usernme \(e.g. username@confluera.com\) | True|
+| Password | Password \(e.g. userpassword\) | True |
 
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -30,53 +33,6 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 <br/>
-
-### confluera-login
-***
-confluera-login - Authenticates user to confuera Iq-Hub portal
-
-
-#### Base Command
-
-`confluera-login`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| | |  | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Confluera.LoginData| Unknown | Login response | 
-
-
-#### Command Example
-```!confluera-login```
-
-#### Context Example
-```
-{
-    "message": "Logged in as admin@confluera.com",
-    "firstname": "admin",
-    "lastname": "confluera",
-    "email": "admin@confluera.com",
-    "access_token": "eyJ0eXAiOi....",
-    "expires": 161855311,
-    "onboard": {}
-}
-```
-
-#### Human Readable Output
-
-
-| **access_token** | **email** | **expires** | **Pfirstname** | **lastname** | **onboard** |
-| --- | --- | --- |--- | --- | --- |
-| eyJ0eXAiOi.... | admin@confluera.com| 161855311|admin|confluera |  |
-
-<br/><br/>
 
 ### confluera-fetch-detections
 ***
@@ -90,7 +46,6 @@ Fetches list of detections in confluera for past x hours.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| access_token | Token used to access API endpoints from Iq-Hub portal. | Mandatory | 
 | hours | Specifies the time duration for which detections need to be fetched  | Optional | 
 
 
@@ -103,7 +58,7 @@ Fetches list of detections in confluera for past x hours.
 
 
 #### Command Example
-```!confluera-fetch-detections access-token="eyJ0eXAiOi...." hours="23"```
+```!confluera-fetch-detections hours="23"```
 
 #### Context Example
 ```
@@ -180,7 +135,6 @@ Fetches list of progressions in confluera for past x hours.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-|access_token| token used to access apis from Iq-Hub portal. | Required | 
 |hours|Specifies the time duration for which progressions need to be fetched |Optional|
 
 
@@ -192,7 +146,7 @@ Fetches list of progressions in confluera for past x hours.
 
 
 #### Command Example
-```!confluera-fetch-progressions access-token="eyJ0eXAiOi...." hours="72"```
+```!confluera-fetch-progressions hours="72"```
 
 #### Context Example
 ```
@@ -315,7 +269,6 @@ Fetches progression details of which provided trailId is a part of.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| access_token| Token used to access apis from Iq-Hub portal. | Required | 
 | trail_id| Id of a detection in iq-hub protal. | Required | 
 
 
@@ -327,7 +280,7 @@ Fetches progression details of which provided trailId is a part of.
 
 
 #### Command Example
-```!confluera-fetch-trail-details access-token="eyJ0eXAiOi...." trail-id="22796349"```
+```!confluera-fetch-trail-details trail-id="22796349"```
 
 #### Context Example
 ```

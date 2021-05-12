@@ -1,6 +1,8 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import json
+
 # Executes confluera-fetch-progressions command/script
 progressions_data = demisto.executeCommand('confluera-fetch-progressions', {'hours': '72'})
 
@@ -24,16 +26,6 @@ for idx, progression in enumerate(progressions):
         "data": [progression['riskScore']],
         "color": color
     }
-
     data.append(temp_dct)
 
-return_results({
-    "Type": 17,
-    "ContentsFormat": "bar",
-    "Contents": {
-        "stats": data,
-        "params": {
-            "layout": "vertical"
-        }
-    }
-})
+return_results(json.dumps(data))

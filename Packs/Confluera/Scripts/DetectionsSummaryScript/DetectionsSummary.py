@@ -1,6 +1,7 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import json
 from itertools import cycle
 
 # Executes confluera-fetch-detections command/script
@@ -29,7 +30,6 @@ colors = cycle([
 
 for idx, ioc in enumerate(detections):
     element = [item for item in data if item['name'] == ioc['iocTactic']]
-
     if element and len(element) != 0:
         element[0]['data'][0] += 1
     else:
@@ -40,10 +40,4 @@ for idx, ioc in enumerate(detections):
         }
         data.append(chart_item)
 
-return_results({
-    "Type": 17,
-    "ContentsFormat": "pie",
-    "Contents": {
-        "stats": data
-    }
-})
+return_results(json.dumps(data))

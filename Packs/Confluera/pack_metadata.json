@@ -1,17 +1,17 @@
 {
     "name": "Confluera",
-    "description": "Confluera-Cortex XSOAR integration pack",
+    "description": "Use the Confluera integration to fetch live data (detections & progressions) from confluera's Iq-Hub portal",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "confluera",
     "url": "https://www.confluera.com",
-    "email": "",
+    "email": "sheetal@confluera.com",
     "created": "2021-01-01T10:21:07Z",
     "categories": [
-        "Analytics & SIEM"
+        "Incident Investigation"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": ["https://github.com/shubhamyadav-coditas"]
 }

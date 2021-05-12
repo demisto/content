@@ -1,4 +1,3 @@
-!confluera-login
-!confluera-fetch detections access_token="eyJ0eXAiOiJKV1QiLCJhbGc..." hours="24"
-!confluera-fetch progressions access_token="eyJ0eXAiOiJKV1QiLCJhbGc..." hours="72"
-!confluera-fetch trail details access_token="eyJ0eXAiOiJKV1QiLCJhbGc..." trail_id="prod_0_11_.agent-11:17869700"
+!confluera-fetch detections hours="72"
+!confluera-fetch progressions hours="72"
+!confluera-fetch trail details trail_id="prod_0_11_.agent-11:17869700"

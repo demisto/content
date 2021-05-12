@@ -1,13 +1,12 @@
 commonfields:
-  id: ConflueraDetectionsDataWarroom
+  id: ConflueraDetectionsSummary
   version: -1
-name: ConflueraDetectionsDataWarroom
+name: ConflueraDetectionsSummary
 script: '-'
 type: python
-tags:
-- dynamic-section
+tags: []
 comment: |-
-  Logs detections data ( detection vs risk-contribution )
+  Logs detections data ( categories of detections )
 enabled: true
 scripttarget: 0
 subtype: python3

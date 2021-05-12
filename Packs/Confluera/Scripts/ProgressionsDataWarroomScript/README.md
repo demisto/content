@@ -1,4 +1,4 @@
-# Progressions_Data_Warroom Script
+# ProgressionsDataWarroom Script
 
 <br>
 
@@ -38,7 +38,7 @@
 
 ### Human Readable Output
 ---
-![alt text](../../doc_files/ProgressionsDataWarrrom-Script.png)
+![alt text](../../doc_files/ProgressionsDataWarroom-Script.png)
 
 
 

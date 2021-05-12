@@ -15,21 +15,16 @@ class Client(BaseClient):
     Should do requests and return data
     """
 
-    def login(self, username: str, password: str) -> Dict[str, Any]:
-        """ Returns access_token
+    def __init__(self, base_url: str, username: str, password: str, verify: bool, proxy: bool):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self._server = base_url
+        self._username = username
+        self._password = password
 
-        :type username: ``str``
-        :param username: username to log user in to confluera iq-hub
-
-        :type password: ``str``
-        :param password: password to log user in to confluera iq-hub
-
-        :return: Dictionary containing access token
-        :rtype: ``Dict``
-        """
+    def login(self) -> Dict[str, Any]:
         data = {
-            "email": username,
-            "password": password
+            "email": self._username,
+            "password": self._password
         }
 
         return self._http_request(
@@ -37,6 +32,32 @@ class Client(BaseClient):
             url_suffix='/login',
             data=data
         )
+
+    def get_access_token(self):
+        """
+        Get an access token that was previously cerated. If it is still valid, else, genearte a new access token from
+        the login API.
+        :return: String containing access token
+        :rtype: ``str``
+        """
+        previous_token = get_integration_context()
+
+        # check if there is an existing access token
+        if previous_token.get('access_token') and previous_token.get('expires') > int(time.time()):
+            return previous_token.get('access_token')
+        else:
+            try:
+                res = self.login()
+                if res['access_token']:
+                    integration_cotext = {
+                        'access_token': res['access_token'],
+                        'expires': res['expires'],
+                    }
+                    set_integration_context(integration_cotext)
+                    return res['access_token']
+            except Exception as e:
+                return_error(
+                    f'Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}')
 
     def fetch_detections(self, token: str, hours: str) -> Dict[str, Any]:
         headers = {
@@ -72,44 +93,23 @@ class Client(BaseClient):
         )
 
 
-def login_command(client: Client, username: str, password: str) -> CommandResults:
-    """confluera-login command : Returns login response including access token
+def test_module(client: Client, args: Dict[str, Any]) -> str:
+    token = client.get_access_token()
+    hours = args.get('hours', '72')
 
-    :type client: ``Client``
-    :param Client: Confluera client to use
+    if not token:
+        raise ValueError('Invalid access token')
+    if not hours:
+        raise ValueError('hours not specified')
 
-    :type username: ``str``
-    :param username: username to log into Iq-Hub portal
-
-    :type password: ``str``
-    :param password: password to log into Iq-Hub portal
-
-    :return:
-      A ``CommandResults`` object that is then passed to ``return_results``,
-      that contains the login response from Iq-Hub portal
-
-    :rtype: ``CommandResults``
-    """
-
-    if not username:
-        raise ValueError('Username not specified')
-    if not password:
-        raise ValueError('Password not specified')
-
-    result = client.login(username, password)
-
-    markdown = '### IQ-HUB login successful.\n'
-    markdown += tableToMarkdown('Login Response :', result)
-
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Confluera.LoginData',
-        outputs_key_field='access_token',
-        outputs=result
-    )
+    try:
+        client.fetch_detections(token, hours)
+    except DemistoException as e:
+        raise e
+    return 'ok'
 
 
-def fetch_detections_command(client: Client, args: Dict[str, Any], detections_url: str) -> List[CommandResults]:
+def fetch_detections_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """confluera-fetch-detections command : Returns detections present in Confluera
       Iq-Hub portal.
 
@@ -122,16 +122,13 @@ def fetch_detections_command(client: Client, args: Dict[str, Any], detections_ur
         ``args['token']`` is used as access token
         ``args['hours']`` is used as timestamp for which detections will be fetched
 
-    :type detections_url: ``str``
-    :param detections_url: Endpoint to access detections present on Confluera's Iq-Hub portal.
-
     :return:
       A ``CommandResults`` object that is then passed to ``return_results``,
       that contains the login response from Iq-Hub portal
 
     :rtype: ``CommandResults``
     """
-    token = args.get('access_token', None)
+    token = client.get_access_token()
     hours = args.get('hours', None)
 
     if not token:
@@ -150,7 +147,7 @@ def fetch_detections_command(client: Client, args: Dict[str, Any], detections_ur
     # output 1
     detections_log = {
         "Total Detections": total_detections,
-        "Detections URL": detections_url,
+        "Detections URL": client._server + '/#/detections',
     }
     command_results.append(CommandResults(
         readable_output=tableToMarkdown('Detections Log: ', detections_log, url_keys=('Detections URL')),
@@ -174,7 +171,7 @@ def fetch_detections_command(client: Client, args: Dict[str, Any], detections_ur
     return command_results
 
 
-def fetch_progressions_command(client: Client, args: Dict[str, Any], progressions_url: str) -> List[CommandResults]:
+def fetch_progressions_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """confluera-fetch-progressions command : Returns progressions present in Confluera
       Iq-Hub portal.
 
@@ -187,16 +184,13 @@ def fetch_progressions_command(client: Client, args: Dict[str, Any], progression
         ``args['token']`` is used as access token
         ``args['hours']`` is used as timestamp for which progressions will be fetched
 
-    :type progressions_url: ``str``
-    :param progressions_url: Endpoint to access progressions present on Confluera's Iq-Hub portal.
-
     :return:
       A ``CommandResults`` object that is then passed to ``return_results``,
       that contains the login response from Iq-Hub portal
 
     :rtype: ``CommandResults``
     """
-    token = args.get('access_token', None)
+    token = client.get_access_token()
     hours = args.get('hours', None)
 
     if not token:
@@ -215,7 +209,7 @@ def fetch_progressions_command(client: Client, args: Dict[str, Any], progression
     # output 1
     progressions_log = {
         "Total Progressions": total_progressions,
-        "Progressions URL": progressions_url,
+        "Progressions URL": client._server + '/#/monitor/cyber-attacks/active',
     }
     command_results.append(CommandResults(
         readable_output=tableToMarkdown('Progressions Log: ', progressions_log, url_keys=('Progressions URL')),
@@ -258,7 +252,7 @@ def fetch_trail_details_command(client: Client, args: Dict[str, Any]) -> Command
 
     :rtype: ``CommandResults``
     """
-    token = args.get('access_token', None)
+    token = client.get_access_token()
     trail_id = args.get('trail_id', None)
 
     if not token:
@@ -284,27 +278,27 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     base_url = demisto.params().get('url')
-    username = demisto.params().get('username', None)
-    password = demisto.params().get('password', None)
-    detections_url = demisto.params().get('detections_url', None)
-    progressions_url = demisto.params().get('progressions_url', None)
+    username = demisto.params().get('username', None)['identifier']
+    password = demisto.params().get('password', None)['identifier']
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
     try:
         client = Client(
             base_url=base_url,
+            username=username,
+            password=password,
             verify=verify_certificate,
             proxy=proxy)
 
-        if demisto.command() == 'confluera-login':
-            return_results(login_command(client, username, password))
+        if demisto.command() == 'test-module':
+            return_results(test_module(client, demisto.args()))
 
         elif demisto.command() == 'confluera-fetch-progressions':
-            return_results(fetch_progressions_command(client, demisto.args(), progressions_url))
+            return_results(fetch_progressions_command(client, demisto.args()))
 
         elif demisto.command() == 'confluera-fetch-detections':
-            return_results(fetch_detections_command(client, demisto.args(), detections_url))
+            return_results(fetch_detections_command(client, demisto.args()))
 
         elif demisto.command() == 'confluera-fetch-trail-details':
             return_results(fetch_trail_details_command(client, demisto.args()))

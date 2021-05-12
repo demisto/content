@@ -1,4 +1,4 @@
-# DetectionsDataWarrrom Script
+# DetectionsData Script
 
 <br>
 
@@ -30,10 +30,10 @@
 
 ### Script Example
 ---
-```!DetectionsDataWarroom```
+```!DetectionsData```
 
 <br>
 
 ### Human Readable Output
 ---
-![alt text](../../doc_files/DetectionsDataWarroom-Script.png)
+![alt text](../../doc_files/DetectionsData-Script.png)

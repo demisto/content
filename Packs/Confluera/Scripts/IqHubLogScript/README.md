@@ -1,4 +1,4 @@
-# DetectionsDataWarrrom Script
+# IqHubLog Script
 
 <br>
 
@@ -30,10 +30,10 @@
 
 ### Script Example
 ---
-```!DetectionsDataWarroom```
+```!IqHubLog```
 
 <br>
 
 ### Human Readable Output
 ---
-![alt text](../../doc_files/DetectionsDataWarroom-Script.png)
+![alt text](../../doc_files/IqHubLog-Script.png)

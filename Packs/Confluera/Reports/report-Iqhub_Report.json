@@ -1,6 +1,7 @@
 {
-    "id": "8a040494-97dd-4780-8c43-3693c8d557d2",
-    "modified": "2021-02-19T10:59:23.522454614Z",
+    "id": "IQ-Hub Report",
+    "fromVersion": "6.0.0",
+    "modified": "2021-05-11T19:06:50.937942438Z",
     "startDate": "0001-01-01T00:00:00Z",
     "times": 0,
     "recurrent": false,
@@ -19,28 +20,81 @@
     "locked": false,
     "sections": [
         {
-            "type": "table",
+            "type": "number",
             "data": null,
             "layout": {
-                "classes": "striped stackable small compact",
                 "columnPos": 0,
                 "h": 2,
-                "i": "55b437a0-72a0-11eb-b965-a5983290cff6",
-                "readableHeaders": {
-                    "Count": "Count",
-                    "URL": "URL"
+                "i": "db478db0-b28b-11eb-95ce-a72ccc0b5d68",
+                "layout": "horizontal",
+                "rowPos": 2,
+                "sign": "",
+                "signAlignment": "left",
+                "style": {
+
                 },
-                "rowPos": 0,
-                "tableColumns": [
-                    "Count",
-                    "URL"
-                ],
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "DetectionsCount",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Detections Count",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "barSize": 35,
+                    "format": "DD MMM Y",
+                    "isDatesChart": false,
+                    "layout": "horizontal"
+                },
+                "chartType": "column",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 300,
+                    "width": 1049
+                },
+                "h": 3,
+                "i": "dbd37a00-b28b-11eb-95ce-a72ccc0b5d68",
+                "legendStyle": {
+                    "align": "right",
+                    "hideLegend": false,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "wrapperStyle": {
+                        "top": 5
+                    }
+                },
+                "rowPos": 7,
                 "w": 12
             },
             "query": {
                 "type": "scripts",
                 "filter": {
-                    "query": "IqHub_Log",
+                    "query": "DetectionsData",
                     "period": {
                         "by": "",
                         "byFrom": "days",
@@ -59,89 +113,7 @@
                 "args": null,
                 "noEvent": false
             },
-            "title": "IQ-HUB Log",
-            "titleStyle": null
-        },
-        {
-            "type": "number",
-            "data": null,
-            "layout": {
-                "columnPos": 0,
-                "h": 2,
-                "i": "5d4e52c0-72a0-11eb-b965-a5983290cff6",
-                "layout": "horizontal",
-                "rowPos": 2,
-                "sign": "",
-                "signAlignment": "left",
-                "style": {
-
-                },
-                "w": 6
-            },
-            "query": {
-                "type": "scripts",
-                "filter": {
-                    "query": "Detections_Count",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z"
-                }
-            },
-            "automation": {
-                "name": "",
-                "id": "",
-                "args": null,
-                "noEvent": false
-            },
-            "title": "Detections Count",
-            "titleStyle": null
-        },
-        {
-            "type": "number",
-            "data": null,
-            "layout": {
-                "columnPos": 6,
-                "h": 2,
-                "i": "61fe1f30-72a0-11eb-b965-a5983290cff6",
-                "layout": "horizontal",
-                "rowPos": 2,
-                "sign": "",
-                "signAlignment": "left",
-                "style": {
-
-                },
-                "w": 6
-            },
-            "query": {
-                "type": "scripts",
-                "filter": {
-                    "query": "Progressions_Count",
-                    "period": {
-                        "by": "",
-                        "byFrom": "days",
-                        "byTo": "",
-                        "field": "",
-                        "fromValue": 7,
-                        "toValue": null
-                    },
-                    "fromDate": "0001-01-01T00:00:00Z",
-                    "toDate": "0001-01-01T00:00:00Z"
-                }
-            },
-            "automation": {
-                "name": "",
-                "id": "",
-                "args": null,
-                "noEvent": false
-            },
-            "title": "Progressions Count",
+            "title": "Confluera Detections Data",
             "titleStyle": null
         },
         {
@@ -163,7 +135,7 @@
                     "width": 1049
                 },
                 "h": 3,
-                "i": "67e75600-72a0-11eb-b965-a5983290cff6",
+                "i": "dcccce20-b28b-11eb-95ce-a72ccc0b5d68",
                 "legendStyle": {
                     "align": "left",
                     "hideLegend": false,
@@ -178,7 +150,7 @@
             "query": {
                 "type": "scripts",
                 "filter": {
-                    "query": "Detections_Summary",
+                    "query": "DetectionsSummary",
                     "period": {
                         "by": "",
                         "byFrom": "days",
@@ -197,7 +169,48 @@
                 "args": null,
                 "noEvent": false
             },
-            "title": "Detections Summary",
+            "title": "Confluera Detections Summary",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 6,
+                "h": 2,
+                "i": "df908200-b28b-11eb-95ce-a72ccc0b5d68",
+                "layout": "horizontal",
+                "rowPos": 2,
+                "sign": "",
+                "signAlignment": "left",
+                "style": {
+
+                },
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "ProgressionsCount",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Progressions Count",
             "titleStyle": null
         },
         {
@@ -213,11 +226,11 @@
                 "chartType": "bar",
                 "columnPos": 0,
                 "dimensions": {
-                    "height": 420,
+                    "height": 156,
                     "width": 1049
                 },
-                "h": 4,
-                "i": "6f38cf60-72a0-11eb-b965-a5983290cff6",
+                "h": 3,
+                "i": "e00c41b0-b28b-11eb-95ce-a72ccc0b5d68",
                 "legendStyle": {
                     "align": "center",
                     "hideLegend": false,
@@ -225,18 +238,18 @@
                     "layout": "horizontal",
                     "verticalAlign": "top",
                     "wrapperStyle": {
-                        "maxHeight": 120,
+                        "maxHeight": 96,
                         "top": 5,
                         "width": "100%"
                     }
                 },
-                "rowPos": 7,
+                "rowPos": 10,
                 "w": 12
             },
             "query": {
                 "type": "scripts",
                 "filter": {
-                    "query": "Progressions_Data",
+                    "query": "ProgressionsData",
                     "period": {
                         "by": "",
                         "byFrom": "days",
@@ -255,44 +268,32 @@
                 "args": null,
                 "noEvent": false
             },
-            "title": "Progressions Data",
+            "title": "Confluera Progressions Data",
             "titleStyle": null
         },
         {
-            "type": "chart",
+            "type": "table",
             "data": null,
             "layout": {
-                "chartProperties": {
-                    "barSize": 35,
-                    "format": "DD MMM Y",
-                    "isDatesChart": false,
-                    "layout": "horizontal"
-                },
-                "chartType": "column",
+                "classes": "striped stackable small compact",
                 "columnPos": 0,
-                "dimensions": {
-                    "height": 300,
-                    "width": 1049
+                "h": 2,
+                "i": "e16716c0-b28b-11eb-95ce-a72ccc0b5d68",
+                "readableHeaders": {
+                    "Count": "Count",
+                    "URL": "URL"
                 },
-                "h": 3,
-                "i": "78a56090-72a0-11eb-b965-a5983290cff6",
-                "legendStyle": {
-                    "align": "right",
-                    "hideLegend": false,
-                    "iconType": "circle",
-                    "layout": "vertical",
-                    "verticalAlign": "top",
-                    "wrapperStyle": {
-                        "top": 5
-                    }
-                },
-                "rowPos": 11,
+                "rowPos": 0,
+                "tableColumns": [
+                    "Count",
+                    "URL"
+                ],
                 "w": 12
             },
             "query": {
                 "type": "scripts",
                 "filter": {
-                    "query": "Detections_Data",
+                    "query": "IqHubLog",
                     "period": {
                         "by": "",
                         "byFrom": "days",
@@ -311,7 +312,7 @@
                 "args": null,
                 "noEvent": false
             },
-            "title": "Detections Data",
+            "title": "IQ-HUB Log",
             "titleStyle": null
         }
     ],
@@ -521,158 +522,21 @@
         "name": "IQ-Hub Report",
         "layout": [
             {
-                "id": "55b437a0-72a0-11eb-b965-a5983290cff6",
-                "forceRange": false,
-                "x": 0,
-                "y": 0,
-                "i": "55b437a0-72a0-11eb-b965-a5983290cff6",
-                "w": 12,
-                "h": 2,
-                "widget": {
-                    "id": "Iq hub log",
-                    "version": 1,
-                    "modified": "2021-02-19T10:42:59.427316944Z",
-                    "name": "IQ-HUB Log",
-                    "dataType": "scripts",
-                    "widgetType": "table",
-                    "query": "IqHub_Log",
-                    "isPredefined": false,
-                    "dateRange": {
-                        "fromDate": "0001-01-01T00:00:00Z",
-                        "toDate": "0001-01-01T00:00:00Z",
-                        "period": {
-                            "byTo": "",
-                            "byFrom": "",
-                            "toValue": null,
-                            "fromValue": null,
-                            "field": ""
-                        },
-                        "fromDateLicense": "0001-01-01T00:00:00Z"
-                    },
-                    "params": null,
-                    "size": 0
-                }
-            },
-            {
-                "id": "5d4e52c0-72a0-11eb-b965-a5983290cff6",
+                "id": "db478db0-b28b-11eb-95ce-a72ccc0b5d68",
                 "forceRange": false,
                 "x": 0,
                 "y": 2,
-                "i": "5d4e52c0-72a0-11eb-b965-a5983290cff6",
+                "i": "db478db0-b28b-11eb-95ce-a72ccc0b5d68",
                 "w": 6,
                 "h": 2,
                 "widget": {
                     "id": "detcount",
-                    "version": 1,
-                    "modified": "2021-02-19T10:42:48.788551907Z",
-                    "name": "Detections Count",
+                    "version": 3,
+                    "modified": "2021-05-11T18:54:25.406907061Z",
+                    "name": "Confluera Detections Count",
                     "dataType": "scripts",
                     "widgetType": "number",
-                    "query": "Detections_Count",
-                    "isPredefined": false,
-                    "dateRange": {
-                        "fromDate": "0001-01-01T00:00:00Z",
-                        "toDate": "0001-01-01T00:00:00Z",
-                        "period": {
-                            "byTo": "",
-                            "byFrom": "days",
-                            "toValue": null,
-                            "fromValue": null,
-                            "field": ""
-                        },
-                        "fromDateLicense": "0001-01-01T00:00:00Z"
-                    },
-                    "params": {
-                        "colors": {
-                            "isEnabled": true,
-                            "items": {
-                                "#1DB846": {
-                                    "value": 0
-                                },
-                                "#D13C3C": {
-                                    "value": 40
-                                },
-                                "#EF9700": {
-                                    "value": 25
-                                }
-                            },
-                            "type": "above"
-                        },
-                        "tableColumns": [
-
-                        ]
-                    },
-                    "size": 0
-                }
-            },
-            {
-                "id": "61fe1f30-72a0-11eb-b965-a5983290cff6",
-                "forceRange": false,
-                "x": 6,
-                "y": 2,
-                "i": "61fe1f30-72a0-11eb-b965-a5983290cff6",
-                "w": 6,
-                "h": 2,
-                "widget": {
-                    "id": "progressioncount",
-                    "version": 1,
-                    "modified": "2021-02-19T10:43:08.538560027Z",
-                    "name": "Progressions Count",
-                    "dataType": "scripts",
-                    "widgetType": "number",
-                    "query": "Progressions_Count",
-                    "isPredefined": false,
-                    "dateRange": {
-                        "fromDate": "0001-01-01T00:00:00Z",
-                        "toDate": "0001-01-01T00:00:00Z",
-                        "period": {
-                            "byTo": "",
-                            "byFrom": "days",
-                            "toValue": null,
-                            "fromValue": null,
-                            "field": ""
-                        },
-                        "fromDateLicense": "0001-01-01T00:00:00Z"
-                    },
-                    "params": {
-                        "colors": {
-                            "isEnabled": true,
-                            "items": {
-                                "#1DB846": {
-                                    "value": 0
-                                },
-                                "#D13C3C": {
-                                    "value": 25
-                                },
-                                "#EF9700": {
-                                    "value": 10
-                                }
-                            },
-                            "type": "above"
-                        },
-                        "tableColumns": [
-
-                        ]
-                    },
-                    "size": 0
-                }
-            },
-            {
-                "id": "67e75600-72a0-11eb-b965-a5983290cff6",
-                "forceRange": false,
-                "x": 0,
-                "y": 4,
-                "i": "67e75600-72a0-11eb-b965-a5983290cff6",
-                "w": 12,
-                "h": 3,
-                "widget": {
-                    "id": "detsummary",
-                    "version": 1,
-                    "modified": "2021-02-19T10:42:52.685236329Z",
-                    "name": "Detections Summary",
-                    "dataType": "scripts",
-                    "widgetType": "pie",
-                    "query": "Detections_Summary",
+                    "query": "DetectionsCount",
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
@@ -691,54 +555,153 @@
                 }
             },
             {
-                "id": "6f38cf60-72a0-11eb-b965-a5983290cff6",
+                "id": "dbd37a00-b28b-11eb-95ce-a72ccc0b5d68",
                 "forceRange": false,
                 "x": 0,
                 "y": 7,
-                "i": "6f38cf60-72a0-11eb-b965-a5983290cff6",
-                "w": 12,
-                "h": 4,
-                "widget": {
-                    "id": "progressionchart",
-                    "version": 1,
-                    "modified": "2021-02-19T10:43:04.154277084Z",
-                    "name": "Progressions Data",
-                    "dataType": "scripts",
-                    "widgetType": "bar",
-                    "query": "Progressions_Data",
-                    "isPredefined": false,
-                    "dateRange": {
-                        "fromDate": "0001-01-01T00:00:00Z",
-                        "toDate": "0001-01-01T00:00:00Z",
-                        "period": {
-                            "byTo": "",
-                            "byFrom": "",
-                            "toValue": null,
-                            "fromValue": null,
-                            "field": ""
-                        },
-                        "fromDateLicense": "0001-01-01T00:00:00Z"
-                    },
-                    "params": null,
-                    "size": 0
-                }
-            },
-            {
-                "id": "78a56090-72a0-11eb-b965-a5983290cff6",
-                "forceRange": false,
-                "x": 0,
-                "y": 11,
-                "i": "78a56090-72a0-11eb-b965-a5983290cff6",
+                "i": "dbd37a00-b28b-11eb-95ce-a72ccc0b5d68",
                 "w": 12,
                 "h": 3,
                 "widget": {
                     "id": "detchart",
-                    "version": 1,
-                    "modified": "2021-02-19T10:42:44.147326546Z",
-                    "name": "Detections Data",
+                    "version": 3,
+                    "modified": "2021-05-11T18:55:28.183105807Z",
+                    "name": "Confluera Detections Data",
                     "dataType": "scripts",
                     "widgetType": "column",
-                    "query": "Detections_Data",
+                    "query": "DetectionsData",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "dcccce20-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 4,
+                "i": "dcccce20-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "detsummary",
+                    "version": 3,
+                    "modified": "2021-05-11T18:55:59.905774944Z",
+                    "name": "Confluera Detections Summary",
+                    "dataType": "scripts",
+                    "widgetType": "pie",
+                    "query": "DetectionsSummary",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "df908200-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 6,
+                "y": 2,
+                "i": "df908200-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "progressioncount",
+                    "version": 3,
+                    "modified": "2021-05-11T18:56:36.888452052Z",
+                    "name": "Confluera Progressions Count",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "ProgressionsCount",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "e00c41b0-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 10,
+                "i": "e00c41b0-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "progressionchart",
+                    "version": 3,
+                    "modified": "2021-05-11T18:56:57.857765239Z",
+                    "name": "Confluera Progressions Data",
+                    "dataType": "scripts",
+                    "widgetType": "bar",
+                    "query": "ProgressionsData",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "e16716c0-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 0,
+                "i": "e16716c0-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 2,
+                "widget": {
+                    "id": "Iq hub log",
+                    "version": 2,
+                    "modified": "2021-05-02T18:44:24.184852265Z",
+                    "name": "IQ-HUB Log",
+                    "dataType": "scripts",
+                    "widgetType": "table",
+                    "query": "IqHubLog",
                     "isPredefined": false,
                     "dateRange": {
                         "fromDate": "0001-01-01T00:00:00Z",
@@ -757,6 +720,5 @@
                 }
             }
         ]
-    },
-    "fromVersion": "5.0.0"
+    }
 }

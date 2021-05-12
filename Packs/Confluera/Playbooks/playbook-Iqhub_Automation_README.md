@@ -9,14 +9,8 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 * Confluera
 
-### Scripts
-* DetectionsDataWarroom
-* DetectionsSummaryWarrrom
-* ProgressionsDataWarroom
-
 
 ### Commands
-* confluera-login
 * confluera-fetch-progressions
 * confluera-fetch-detections
 * confluera-fetch-trial-details

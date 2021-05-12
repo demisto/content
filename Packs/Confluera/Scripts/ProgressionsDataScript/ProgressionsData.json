@@ -1,11 +1,11 @@
 {
   "id": "progressionchart",
-  "name": "Progressions Data",
+  "name": "Confluera Progressions Data",
   "dataType": "scripts",
   "widgetType": "bar",
   "query": "ProgressionsData",
   "version": -1,
   "description": "Logs progressions data ( progression vs risk-score )",
   "isPredefined": true,
-  "fromVersion": "5.0.0"
+  "fromVersion": "6.0.0"
 }

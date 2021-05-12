@@ -7,5 +7,5 @@
   "version": -1,
   "description": "Logs detections & progression counts along with respective links to confluera Iq-Hub portal.",
   "isPredefined": true,
-  "fromVersion": "5.0.0"
+  "fromVersion": "6.0.0"
 }

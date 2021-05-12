@@ -1,7 +1,7 @@
 commonfields:
-  id: ConflueraProgressionsDataWarroom
+  id: ConflueraProgressionsData
   version: -1
-name: ConflueraProgressionsDataWarroom
+name: ConflueraProgressionsData
 script: '-'
 type: python
 tags: []
@@ -12,10 +12,8 @@ scripttarget: 0
 subtype: python3
 dependson:
   must:
-  - Confluera|||confluera-login
   - Confluera|||confluera-fetch-progressions
   should:
-  - Confluera|||confluera-login
   - Confluera|||confluera-fetch-progressions
 runonce: false
 dockerimage: demisto/python3:3.9.4.19537

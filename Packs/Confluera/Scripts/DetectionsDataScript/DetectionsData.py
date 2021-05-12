@@ -1,6 +1,8 @@
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import json
+
 # Executes confluera-fetch-detections command/script
 detections_data = demisto.executeCommand('confluera-fetch-detections', {'hours': '72'})
 
@@ -28,13 +30,4 @@ for idx, ioc in enumerate(detections):
 
     data.append(chart_item)
 
-return_results({
-    "Type": 17,
-    "ContentsFormat": "bar",
-    "Contents": {
-        "stats": data,
-        "params": {
-            "layout": "horizontal"
-        }
-    }
-})
+return_results(json.dumps(data))

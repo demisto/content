@@ -1,21 +1,22 @@
 commonfields:
-  id: ConflueraProgressionsDataWarroom
+  id: IqHubLog
   version: -1
-name: ConflueraProgressionsDataWarroom
+name: IqHubLog
 script: '-'
 type: python
 tags: []
 comment: |-
-  Logs progressions data ( progression vs risk-score )
+  Logs detection and progression count with respective links to confluera's IQ-Hub portal
+  in tabular format
 enabled: true
 scripttarget: 0
 subtype: python3
 dependson:
   must:
-  - Confluera|||confluera-login
+  - Confluera|||confluera-fetch-detections
   - Confluera|||confluera-fetch-progressions
   should:
-  - Confluera|||confluera-login
+  - Confluera|||confluera-fetch-detections
   - Confluera|||confluera-fetch-progressions
 runonce: false
 dockerimage: demisto/python3:3.9.4.19537

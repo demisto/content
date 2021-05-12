@@ -1,6 +1,9 @@
+''' IMPORTS '''
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 import json
 import io
-# import requests_mock
 
 
 def util_load_json(path):
@@ -8,79 +11,71 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_login(requests_mock):
-    from Confluera import Client, login_command
-
+def util_mock_login(requests_mock):
     mock_response = util_load_json('test_data/login.json')
     requests_mock.post(
         'https://test.com/login',
         json=mock_response)
 
-    client = Client(
-        base_url="https://test.com",
-        verify=False,
-        proxy=False)
-
-    username = 'Admin'
-    password = 'Admin'
-
-    response = login_command(client, username, password)
-
-    assert response.outputs_prefix == 'Confluera.LoginData'
-    assert response.outputs_key_field == 'access_token'
-    assert response.outputs == mock_response
-
 
 def test_fetch_detections(mocker, requests_mock):
     from Confluera import Client, fetch_detections_command
 
-    mock_response = util_load_json('test_data/fetch_detections.json')
+    util_mock_login(requests_mock)
+    mock_response1 = util_load_json('test_data/fetch_detections.json')
 
     args = {
-        'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTgyMzkzNjQsIm5iZiI6MTYxODIzO...',
-        'hours': '24',
+        'hours': '72'
     }
-    detections_url = 'https://test.com/ioc-detections/24'
+    detections_url = 'https://test.com/#/detections'
 
     requests_mock.get(
-        'https://test.com/ioc-detections/24',
-        json=mock_response)
+        'https://test.com/ioc-detections/72',
+        json=mock_response1)
 
     client = Client(
         base_url="https://test.com",
+        username={"identifier": "user@confluera.com"},
+        password={"identifier": "userpassword"},
         verify=False,
-        auth=("test", "test"),
         proxy=False)
 
-    response = fetch_detections_command(client, args, detections_url)
+    integration_cotext = {
+        'access_token': "eFjyTwjisflSI90sfjkI",
+        'expires': 19237845,
+    }
+    set_integration_context(integration_cotext)
+
+    response = fetch_detections_command(client, args)
 
     assert response[0].outputs["Detections URL"] == detections_url
     assert response[1].outputs_prefix == "Confluera.Detections"
-    assert response[1].outputs == mock_response
+    assert response[1].outputs == mock_response1
 
 
 def test_fetch_progressions(mocker, requests_mock):
     from Confluera import Client, fetch_progressions_command
 
+    util_mock_login(requests_mock)
     mock_response = util_load_json('test_data/fetch_progressions.json')
 
     args = {
-        'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTgyMzkzNjQsIm5iZiI6MTYxODIzO...',
-        'hours': '24',
+        'hours': '72'
     }
-    progressions_url = 'https://test.com/ioc-detections/24'
+    progressions_url = 'https://test.com/#/monitor/cyber-attacks/active'
 
     requests_mock.get(
-        'https://test.com/trails/24',
+        'https://test.com/trails/72',
         json=mock_response)
 
     client = Client(
         base_url="https://test.com",
+        username={"identifier": "user@confluera.com"},
+        password={"identifier": "userpassword"},
         verify=False,
-        auth=("test", "test"),
         proxy=False)
 
-    response = fetch_progressions_command(client, args, progressions_url)
+    response = fetch_progressions_command(client, args)
 
     assert response[0].outputs["Progressions URL"] == progressions_url
     assert response[1].outputs_prefix == "Confluera.Progressions"
@@ -90,6 +85,7 @@ def test_fetch_progressions(mocker, requests_mock):
 def test_fetch_trail_details(mocker, requests_mock):
     from Confluera import Client, fetch_trail_details_command
 
+    util_mock_login(requests_mock)
     mock_response = util_load_json('test_data/fetch_progressions.json')
 
     requests_mock.get(
@@ -98,12 +94,12 @@ def test_fetch_trail_details(mocker, requests_mock):
 
     client = Client(
         base_url="https://test.com",
+        username={"identifier": "user@confluera.com"},
+        password={"identifier": "userpassword"},
         verify=False,
-        auth=("test", "test"),
         proxy=False)
 
     args = {
-        'access_token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2MTgyMzkzNjQsIm5iZiI6MTYxODIzO...',
         'trail_id': 'prod_0_11_.agent-11:17869700'
     }
 
