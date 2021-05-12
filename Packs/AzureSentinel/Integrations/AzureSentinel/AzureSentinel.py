@@ -641,7 +641,6 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-
         raw_timeout = params.get('timeout')
         timeout = int(raw_timeout) if raw_timeout else None
 
