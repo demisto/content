@@ -396,7 +396,7 @@ def get_device_threats():
         })
     if device_threats:
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
-        threats_context = add_capitalised_hash(threats_context)
+        threats_context = add_capitalized_hash(threats_context)
         ec = {
             'File': threats_context,
             'DBotScore': dbot_score_array
@@ -414,35 +414,6 @@ def get_device_threats():
     else:
         demisto.results('No threats found.')
 
-
-def add_capitalized_hash(threats_context):
-    """Add capitalized hash keys to the context such as SHA256 and MD5,
-    the keys are redundant since they are used for avoiding BC issues
-
-    Args:
-        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
-        the key 'Sha256' (and possibly (Md5)).
-
-    Returns:
-        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
-        the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
-    """
-    if isinstance(threats_context, list):
-        for i in range(len(threats_context)):
-            threats_context[i] = add_capitalized_hash_single(threats_context[i])
-
-    elif isinstance(threats_context, dict):
-        threats_context = add_capitalized_hash_single(threats_context)
-
-    return threats_context
-
-
-def add_capitalized_hash_single(threat_context):
-    if threat_context.get('Sha256'):
-        threat_context['SHA256'] = threat_context.get('Sha256')
-    if threat_context.get('Md5'):
-        threat_context['MD5'] = threat_context.get('Md5')
-    return threat_context
 
 def get_device_threats_request(device_id, page=None, page_size=None):
     access_token = get_authentication_token(scope=SCOPE_DEVICE_THREAT_LIST)
@@ -1379,6 +1350,47 @@ def fetch_incidents():
 
     demisto.incidents(incidents)
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
+
+
+def add_capitalized_hash(threats_context):
+    """Add capitalized hash keys to the context such as SHA256 and MD5,
+    the keys are redundant since they are used for avoiding BC issues.
+
+    Args:
+        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
+        the key 'Sha256' (and possibly (Md5)).
+
+    Returns:
+        threats_context(list): list of dicts of context outputs for the threats of interest, each containing
+        the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
+    """
+    if isinstance(threats_context, list):
+        for i in range(len(threats_context)):
+            threats_context[i] = add_capitalized_hash_single(threats_context[i])
+
+    elif isinstance(threats_context, dict):
+        threats_context = add_capitalized_hash_single(threats_context)
+
+    return threats_context
+
+
+def add_capitalized_hash_single(threat_context):
+    """Add capitalized hash keys for a single dict representing the context outputs for a single threat, for the keys
+     SHA256 and MD5. the keys are redundant since they are used for avoiding BC issues.
+
+    Args:
+        threats_context(dict): a dicts of context outputs for the threat of interest, containing
+        the key 'Sha256' (and possibly (Md5)).
+
+    Returns:
+        threats_context(dict): dicts of context outputs for the threat of interest, containing
+        the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
+    """
+    if threat_context.get('Sha256'):
+        threat_context['SHA256'] = threat_context.get('Sha256')
+    if threat_context.get('Md5'):
+        threat_context['MD5'] = threat_context.get('Md5')
+    return threat_context
 
 
 # EXECUTION
