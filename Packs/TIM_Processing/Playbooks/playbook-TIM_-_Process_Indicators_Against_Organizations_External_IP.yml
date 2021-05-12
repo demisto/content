@@ -418,21 +418,15 @@ inputs:
   value: {}
   required: false
   description: A Cortex XSOAR list containing the organization's External IP address
-    values. The value should be taken from the Lists inputs.
+    values. The value should be taken from the Lists inputs. The list should be with comma separated values.
   playbookInputQuery:
 - key: OrganizationsExternalCIDRList
   value: {}
   required: false
   description: A Cortex XSOAR list containing the organization's External CIDR values.
-    The value should be taken from the Lists inputs.
+    The value should be taken from the Lists inputs. The list should be with comma separated values.
   playbookInputQuery:
-outputs:
-- contextPath: OrganizationExternalIP
-  description: IP addresses that are found in the  organization's external IP list.
-  type: string
-- contextPath: NotOrganizationExternalIP
-  description: IP addresses that are not found in the organization's external IP list.
-  type: string
+outputs: []
 quiet: true
 tests:
 - No tests (auto formatted)
