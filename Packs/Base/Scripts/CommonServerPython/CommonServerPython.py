@@ -5449,6 +5449,9 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
+    :type entry_type: ``int`` code of EntryType
+    :param entry_type: type of return value, see EntryType
+
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
@@ -5458,16 +5461,20 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, scheduled_command=None, relationships=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list) -> None  # noqa: E501
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
             raise ValueError('outputs_prefix is missing')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
+        if entry_type is None:
+            entry_type = EntryType.NOTE
+
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
         self.indicator = indicator  # type: Optional[Common.Indicator]
+        self.entry_type = entry_type  # type: int
 
         self.outputs_prefix = outputs_prefix
 
@@ -5555,7 +5562,7 @@ class CommandResults:
             content_format = EntryFormat.TEXT
 
         return_entry = {
-            'Type': EntryType.NOTE,
+            'Type': self.entry_type,
             'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
