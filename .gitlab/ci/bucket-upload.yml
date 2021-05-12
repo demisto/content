@@ -1,5 +1,3 @@
-include:
-  - local: on-push.yml
 .bucket-upload-rule:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
