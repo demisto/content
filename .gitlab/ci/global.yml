@@ -157,7 +157,6 @@
       - /builds/xsoar/content/artifacts/*
   script:
     - section_start "Look For Secrets"
-    - echo "====Look For Secrets===="
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
     - section_start "Create id set"
