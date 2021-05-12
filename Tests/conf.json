@@ -92,9 +92,8 @@
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
-            "instance_names": "ewv2_regular",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "timeout": 1000
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
@@ -1470,6 +1469,11 @@
         {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
+        },
+        {
+            "integrations": "ipinfo_v2",
+            "playbookID": "IPInfo_v2Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "VerifyHumanReadableFormat"
@@ -3296,8 +3300,10 @@
             "nightly": true
         },
         {
-            "integrations": "HPEArubaClearpass",
-            "playbookID": "HPEArubaClearpass_TestPlaybook"
+            "integrations": "Carbon Black Endpoint Standard",
+            "playbookID": "carbonBlackEndpointStandardTestPlaybook",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3373,7 +3379,6 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
@@ -3390,10 +3395,13 @@
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "playbook_TrendmicroCAS_Test": "Issue 32730",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "Rundeck_test": "Issue 31174"
+        "Rundeck_test": "Issue 31174",
+        "Azure NSG - Test": "Issue 33217",
+        "AutoFocus V2 test": "Issue 26464",
+        "VirusTotal (API v3) Detonate Test": "Issue 36004"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
@@ -3471,19 +3479,19 @@
         "FraudWatch": "Issue 34299",
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3609,6 +3617,7 @@
         "Tanium",
         "LogRhythmRest",
         "ipinfo",
+        "ipinfo_v2",
         "Demisto REST API",
         "syslog",
         "ElasticsearchFeed",
