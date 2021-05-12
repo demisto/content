@@ -593,13 +593,11 @@ def search_and_install_packs_and_their_dependencies(
         future_to_pack: Dict[concurrent.futures.Future, str] = {
             executor.submit(
                 search_pack_and_its_dependencies,
-                kwargs={
-                    'client': client,
-                    'pack_id': pack_id,
-                    'packs_to_install': packs_to_install,
-                    'installation_request_body': installation_request_body,
-                    'lock': lock
-                }
+                client=client,
+                pack_id=pack_id,
+                packs_to_install=packs_to_install,
+                installation_request_body=installation_request_body,
+                lock=lock
             ): pack_id for pack_id in pack_ids
         }
         is_error = False
@@ -613,7 +611,7 @@ def search_and_install_packs_and_their_dependencies(
             else:
                 logging.debug(f'Pack {pack_id} successfully installed')
         if is_error:
-            PackInstallError('Could not install some pack, see log.')
+            PackInstallError('Could not install some packs, see log.')
 
     install_packs(client, host, installation_request_body)
 

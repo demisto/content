@@ -14,12 +14,17 @@ from datetime import datetime
 from distutils.version import LooseVersion
 from enum import IntEnum
 from pprint import pformat
-from threading import Thread
 from time import sleep
 from typing import List, Tuple
 
 import demisto_client
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_command, get_yaml, \
+    str2bool, format_version, find_type
 from demisto_sdk.commands.test_content.constants import SSH_USER
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
 from Tests.Marketplace.Errors import PackInstallError
@@ -30,12 +35,6 @@ from Tests.test_content import extract_filtered_tests, get_server_numeric_versio
 from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
 from Tests.update_content_data import update_content
-from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
-    str2bool, format_version, find_type
-from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
-from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
@@ -48,8 +47,8 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
-    # noqa: E501
+    'python.pass.extra.keys':
+        f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
@@ -991,14 +990,15 @@ def nightly_install_packs(build, install_method=install_all_content_packs, pack_
                 kwargs['service_account'] = service_account
             if pack_path:
                 kwargs['pack_path'] = pack_path
-            future_to_kwargs[executor.submit(install_method, kwargs=kwargs)] = kwargs
+            future_to_kwargs[executor.submit(install_method, **kwargs)] = kwargs
     is_error = False
     for future in concurrent.futures.as_completed(future_to_kwargs):
         kwargs = future_to_kwargs[future]
         try:
             future.result()
         except Exception:
-            logging.exception(f'Could not install pack {json.dumps(kwargs, indent=4)=}')
+            logging.exception(
+                f'Could not install {kwargs.get("service_account", kwargs.get("pack_path"))}: {kwargs.get("host")}')
             is_error = True
     if is_error:
         raise PackInstallError('Could not install some pack, see log.')
@@ -1204,7 +1204,7 @@ def update_content_till_v6(build: Build):
             futures_to_kwargs[
                 executor.submit(
                     update_content_on_demisto_instance,
-                    kwargs=kwargs
+                    **kwargs
                 )
             ] = kwargs
         is_error = False
@@ -1213,7 +1213,7 @@ def update_content_till_v6(build: Build):
             try:
                 future.result()
             except Exception:
-                logging.exception(f'Could not install content on {json.dumps(kwargs, indent=4)}')
+                logging.exception(f'Could not install content on {kwargs["ami_name"]}: {kwargs["server"]}')
                 is_error = True
         if is_error:
             raise PackInstallError('Could not install content on a server. See log.')
