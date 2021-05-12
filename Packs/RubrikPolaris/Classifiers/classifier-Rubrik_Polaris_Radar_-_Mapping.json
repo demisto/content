@@ -65,6 +65,10 @@
                     "complex": null,
                     "simple": "message"
                 },
+                "Rubrik Polaris Analysis Pipeline": {
+                    "complex": null,
+                    "simple": "message"
+                },
                 "Rubrik Polaris Object ID": {
                     "complex": {
                         "accessor": "",
