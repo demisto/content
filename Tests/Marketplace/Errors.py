@@ -1,0 +1,2 @@
+class PackInstallError(BaseException):
+    pass

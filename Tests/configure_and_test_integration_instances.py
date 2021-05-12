@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import argparse
 import ast
+import concurrent.futures
 import json
 import logging
 import os
@@ -21,6 +22,7 @@ import demisto_client
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from ruamel import yaml
 
+from Tests.Marketplace.Errors import PackInstallError
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
@@ -46,7 +48,8 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',    # noqa: E501
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',
+    # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
@@ -120,7 +123,8 @@ def get_id_set(id_set_path) -> dict:
 class Build:
     # START CHANGE ON LOCAL RUN #
     content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
-    test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv('CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
+    test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv(
+        'CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CI_RUN
     env_results_path = './artifacts/env_results.json'
@@ -977,17 +981,27 @@ def get_pack_ids_to_install():
 
 
 def nightly_install_packs(build, install_method=install_all_content_packs, pack_path=None, service_account=None):
-    threads_list = []
+    future_to_kwargs = {}
 
     # For each server url we install pack/ packs
-    for thread_index, server in enumerate(build.servers):
-        kwargs = {'client': server.client, 'host': server.internal_ip}
-        if service_account:
-            kwargs['service_account'] = service_account
-        if pack_path:
-            kwargs['pack_path'] = pack_path
-        threads_list.append(Thread(target=install_method, kwargs=kwargs))
-    run_threads_list(threads_list)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for server in build.servers:
+            kwargs = {'client': server.client, 'host': server.internal_ip}
+            if service_account:
+                kwargs['service_account'] = service_account
+            if pack_path:
+                kwargs['pack_path'] = pack_path
+            future_to_kwargs[executor.submit(install_method, kwargs=kwargs)] = kwargs
+    is_error = False
+    for future in concurrent.futures.as_completed(future_to_kwargs):
+        kwargs = future_to_kwargs[future]
+        try:
+            future.result()
+        except Exception:
+            logging.exception(f'Could not install pack {json.dumps(kwargs, indent=4)=}')
+            is_error = True
+    if is_error:
+        raise PackInstallError('Could not install some pack, see log.')
 
 
 def install_nightly_pack(build):
@@ -1178,14 +1192,31 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
 
 
 def update_content_till_v6(build: Build):
-    threads_list = []
     # For each server url we install content
-    for thread_index, server in enumerate(build.servers):
-        t = Thread(target=update_content_on_demisto_instance,
-                   kwargs={'client': server.client, 'server': server.internal_ip, 'ami_name': build.ami_env})
-        threads_list.append(t)
-
-    run_threads_list(threads_list)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures_to_kwargs = dict()
+        for server in build.servers:
+            kwargs = {
+                'client': server.client,
+                'server': server.internal_ip,
+                'ami_name': build.ami_env
+            }
+            futures_to_kwargs[
+                executor.submit(
+                    update_content_on_demisto_instance,
+                    kwargs=kwargs
+                )
+            ] = kwargs
+        is_error = False
+        for future in concurrent.futures.as_completed(futures_to_kwargs):
+            kwargs = futures_to_kwargs[future]
+            try:
+                future.result()
+            except Exception:
+                logging.exception(f'Could not install content on {json.dumps(kwargs, indent=4)}')
+                is_error = True
+        if is_error:
+            raise PackInstallError('Could not install content on a server. See log.')
 
 
 def disable_instances(build: Build):

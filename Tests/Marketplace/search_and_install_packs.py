@@ -1,21 +1,22 @@
 from __future__ import print_function
 
+import ast
+import concurrent.futures
+import glob
+import json
 import logging
 import os
-import ast
-import json
-import glob
 import re
-import sys
-import demisto_client
-from threading import Thread, Lock
-from demisto_sdk.commands.common.tools import run_threads_list
-from google.cloud.storage import Bucket
 from distutils.version import LooseVersion
-from typing import List
+from threading import Lock
+from typing import List, Dict
 
-from Tests.Marketplace.marketplace_services import init_storage_client
+import demisto_client
+from google.cloud.storage import Bucket
+
+from Tests.Marketplace.Errors import PackInstallError
 from Tests.Marketplace.marketplace_constants import GCPConfig, PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
+from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.scripts.utils.content_packs_util import is_pack_deprecated
 
 PACK_METADATA_FILE = 'pack_metadata.json'
@@ -245,7 +246,8 @@ def install_nightly_packs(client: demisto_client,
             else:
                 result_object = ast.literal_eval(response_data)
                 message = result_object.get('message', '')
-                raise Exception(f'Failed to install packs on server {host}- with status code {status_code}\n{message}\n')
+                raise Exception(
+                    f'Failed to install packs on server {host}- with status code {status_code}\n{message}\n')
             break
 
         except Exception as e:
@@ -260,7 +262,8 @@ def install_nightly_packs(client: demisto_client,
                 logging.exception(
                     f'The pack {malformed_pack_id} has failed to install even though it was not in the installation list')
                 raise
-            logging.warning(f'The request to install packs on server {host} has failed, retrying without {malformed_pack_id}')
+            logging.warning(
+                f'The request to install packs on server {host} has failed, retrying without {malformed_pack_id}')
             # Remove the malformed pack from the pack to install list.
             packs_to_install = [pack for pack in packs_to_install if pack['id'] not in malformed_pack_id]
             request_data = {
@@ -527,20 +530,18 @@ def upload_zipped_packs(client: demisto_client,
     logging.info(f'Making "POST" request to server {host} - to install all packs from file {pack_path}')
 
     # make the pack installation request
-    try:
-        response_data, status_code, _ = client.api_client.call_api(resource_path='/contentpacks/installed/upload',
-                                                                   method='POST',
-                                                                   header_params=header_params, files=files)
+    response_data, status_code, _ = client.api_client.call_api(
+        resource_path='/contentpacks/installed/upload',
+        method='POST',
+        header_params=header_params, files=files
+    )
 
-        if 200 <= status_code < 300:
-            logging.info(f'All packs from file {pack_path} were successfully installed on server {host}')
-        else:
-            result_object = ast.literal_eval(response_data)
-            message = result_object.get('message', '')
-            raise Exception(f'Failed to install packs - with status code {status_code}\n{message}')
-    except Exception:
-        logging.exception('The request to install packs has failed.')
-        sys.exit(1)
+    if 200 <= status_code < 300:
+        logging.info(f'All packs from file {pack_path} were successfully installed on server {host}')
+    else:
+        result_object = ast.literal_eval(response_data)
+        message = result_object.get('message', '')
+        raise Exception(f'Failed to install packs - with status code {status_code}\n{message}')
 
 
 def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
@@ -565,8 +566,10 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
     return SUCCESS_FLAG
 
 
-def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client):
+def search_and_install_packs_and_their_dependencies(
+        pack_ids: list,
+        client: demisto_client
+):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
     Args:
@@ -584,18 +587,33 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
     packs_to_install = []  # we save all the packs we want to install, to avoid duplications
     installation_request_body = []  # the packs to install, in the request format
 
-    threads_list = []
     lock = Lock()
 
-    for pack_id in pack_ids:
-        thread = Thread(target=search_pack_and_its_dependencies,
-                        kwargs={'client': client,
-                                'pack_id': pack_id,
-                                'packs_to_install': packs_to_install,
-                                'installation_request_body': installation_request_body,
-                                'lock': lock})
-        threads_list.append(thread)
-    run_threads_list(threads_list)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future_to_pack: Dict[concurrent.futures.Future, str] = {
+            executor.submit(
+                search_pack_and_its_dependencies,
+                kwargs={
+                    'client': client,
+                    'pack_id': pack_id,
+                    'packs_to_install': packs_to_install,
+                    'installation_request_body': installation_request_body,
+                    'lock': lock
+                }
+            ): pack_id for pack_id in pack_ids
+        }
+        is_error = False
+        for future in concurrent.futures.as_completed(future_to_pack):
+            pack_id = future_to_pack[future]
+            try:
+                future.result()
+            except Exception:
+                logging.exception(f'Failed to install pack {pack_id}.')
+                is_error = True
+            else:
+                logging.debug(f'Pack {pack_id} successfully installed')
+        if is_error:
+            PackInstallError('Could not install some pack, see log.')
 
     install_packs(client, host, installation_request_body)
 
