@@ -265,6 +265,9 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the threat.
       type: string
+    - contextPath: File.MD5
+      description: The SHA256 hash of the threat.
+      type: string
     - contextPath: File.SubClassification
       description: The Cylance threat sub-classification.
       type: string
