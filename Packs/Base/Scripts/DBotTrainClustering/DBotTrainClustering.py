@@ -34,9 +34,9 @@ GENERAL_EXPLANATION = "**In general clustering model aims to form groups of simi
                       "outliers after **Phase 1** and **Phase 2** \n" \
                       "- **Percentage of cluster selected** : Percentage of groups kept after phase 1 and 2 \n"
 
-GENERAL_MESSAGE_RESULTS = "- We succeeded to group **%s incidents into %s groups**.\n - The grouping was based " \
-                          "on the **%s** field(s).\n - Each group name is based on the majority value of **%s** field in the group.\n" \
-                          "- For %s incidents, we didn’t find any matching.\n"
+GENERAL_MESSAGE_RESULTS = "- We succeeded to group **%s incidents into %s groups**.\n - The grouping was based on " \
+                          "the **%s** field(s).\n - Each group name is based on the majority value of **%s** field in " \
+                          "the group.\n - For %s incidents, we didn’t find any matching.\n"
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
@@ -518,7 +518,8 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
                                                    'modelHidden': model_hidden,
-                                                   'modelExtraInfo': {'modelSummaryMarkdown': model.summary_description}
+                                                   'modelExtraInfo': {'modelSummaryMarkdown':
+                                                                      model.summary_description}  # type:ignore
                                                    })
     if is_error(res):
         return_error(get_error(res))
