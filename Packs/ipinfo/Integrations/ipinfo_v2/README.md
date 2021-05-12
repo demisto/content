@@ -87,13 +87,6 @@ Check IP reputation (when information is available, returns a JSON with details)
             "Score": 0,
             "Type": "ip",
             "Vendor": "IPinfo_v2"
-        },
-        {
-            "Indicator": "1.1.1.1",
-            "Reliability": "C - Fairly reliable",
-            "Score": 1,
-            "Type": "ip",
-            "Vendor": "VirusTotal"
         }
     ],
     "IP": {
