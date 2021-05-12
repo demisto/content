@@ -204,7 +204,7 @@ script:
       secret: false
     - default: false
       defaultValue: '120'
-      description: Timeout to retrieve the artifacts, Default is 120.
+      description: Timeout to retrieve the artifacts. Default is 120.
       isArray: false
       name: timeout
       required: false
@@ -480,6 +480,37 @@ script:
       description: This option is required only for IPS reports. The interface option sets ihe Internet interface to one of the values.
       isArray: false
       name: interface
+      required: false
+      secret: false
+    - default: false
+      description: Alert ID. This argument is only relevant when retrieving a report of type alertDetailsReport.
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    - default: false
+      description: Infection ID. This argument is only relevant when retrieving a report of type alertDetailsReport with conjuction to the infection_type argument.
+      isArray: false
+      name: infection_id
+      required: false
+      secret: false
+    - default: false
+      description: Infection Type. This argument is only relevant when retrieving a report of type alertDetailsReport with conjuction to the infection_id argument.
+      auto: PREDEFINED
+      predefined:
+        - 'malware-object'
+        - 'malware-callback'
+        - 'infection-match'
+        - 'domain-match'
+        - 'web-infection'
+      name: infection_type
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '120'
+      description: Timeout to retrieve the reports. Default is 120.
+      isArray: false
+      name: timeout
       required: false
       secret: false
     deprecated: false

@@ -107,8 +107,8 @@ class Client(BaseClient):
                                   timeout=timeout)
 
     @logger
-    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: int, interface: str):
-        # self._headers.pop('Accept')  # returns a file, hence this header is disruptive
+    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: int, interface: str,
+                            alert_id: str, infection_type: str, infection_id: str, timeout: int):
         params = {
             'report_type': report_type,
             'start_time': start_time,
@@ -118,11 +118,20 @@ class Client(BaseClient):
             params['limit'] = limit
         if interface:
             params['interface'] = interface
+        if alert_id:
+            params['id'] = alert_id
+        if infection_type:
+            params['infection_type'] = infection_type
+        if infection_id:
+            params['infection_id'] = infection_id
 
         return self._http_request(method='GET',
                                   url_suffix='reports/report',
                                   params=params,
-                                  resp_type='content')
+                                  resp_type='content',
+                                  timeout=timeout)
+
+
 @logger
 def to_fe_datetime_converter(time_given: str = 'now') -> str:
     """Generates a string in the FireEye format, e.g: 2015-01-24T16:30:00.000-07:00
@@ -136,7 +145,7 @@ def to_fe_datetime_converter(time_given: str = 'now') -> str:
     fe_time = date_obj.strftime(FE_DATE_FORMAT)
     fe_time += f'.{date_obj.strftime("%f")[:3]}'
     given_timezone = f'{date_obj.strftime("%z")[:3]}:{date_obj.strftime("%z")[3:]}'  # converting the timezone
-    if len(given_timezone) == ':':
+    if not given_timezone or given_timezone == ':':
         given_timezone = '+00:00'
     fe_time += given_timezone
     return fe_time
@@ -371,27 +380,36 @@ def download_quarantined_emails(client: Client, args: Dict[str, Any]) -> Command
 
 
 @logger
-def get_reports(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_reports(client: Client, args: Dict[str, Any]):
     report_type = args.get('report_type', '')
     start_time = to_fe_datetime_converter(args.get('start_time', '1 week'))
     end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     limit = int(args.get('limit', '100'))
     interface = args.get('interface', '')
+    alert_id = args.get('alert_id', '')
+    infection_id = args.get('infection_id', '')
+    infection_type = args.get('infection_type', '')
+    timeout = int(args.get('timeout', '120'))
 
-    raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface)
-    raise Exception(str(raw_response))
-    if not raw_response:
-        md_ = 'No emails were deleted.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Deleted emails:', t=raw_response, removeNull=True)
+    if report_type == 'alertDetailsReport':  # validate arguments
+        # can use either alert_id, or infection_type and infection_id
+        err_str = 'The alertDetailsReport can be retrieved using alert_id argument alone, ' \
+                  'or by infection_type and infection_id'
+        if alert_id:
+            if infection_id or infection_type:
+                raise DemistoException(err_str)
+        else:
+            if not infection_id and not infection_type:
+                raise DemistoException(err_str)
 
-    return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
-        outputs_key_field='email_uuid',
-        outputs=raw_response,
-        raw_response=raw_response
-    )
+    raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
+                                              infection_type, infection_id, timeout)
+
+    csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
+                   'mpsWebAVReport'}
+    prefix = 'csv' if report_type in csv_reports else 'pdf'
+    demisto.results(fileResult(f'report_{report_type}_{start_time}.{prefix}', data=raw_response,
+                               file_type=EntryType.ENTRY_INFO_FILE))
 
 
 def main() -> None:
@@ -440,6 +458,8 @@ def main() -> None:
         #     demisto.incidents(incidents)
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid':
             get_artifacts_by_uuid(client, args)
+        elif command == f'{INTEGRATION_COMMAND_NAME}-get-reports':
+            get_reports(client, args)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
