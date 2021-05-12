@@ -74,8 +74,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: All
-  description: Whether to compare the new incident to closed incidents, non closed
-    incidents or all incidents.
+  description: Whether to compare the new incident to closed incidents, unclosed incidents,
+    or all incidents.
   isArray: false
   name: statusScope
   predefined:
@@ -116,10 +116,9 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-seperated list of fields to display and store in the context.
-    An example is "emailclassification,closereason". If a list of fields is provided,
-    and a campaign is detected, these incidents fields will be displayed and stored
-    in the context.
+  description: A comma-seperated list of fields to display. An example is "emailclassification,closereason".
+    If a list of fields is provided, and a campaign is detected, these incidents fields
+    will be displayed.
   isArray: false
   name: fieldsToDisplay
   predefined:
@@ -176,7 +175,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.19515
+dockerimage: demisto/sklearn:1.0.0.17983
 tests:
 - No tests (auto formatted)
 runonce: true
