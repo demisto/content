@@ -37,7 +37,11 @@
             }
         ]
     },
+    "description": "",
+    "detached": false,
+    "details": null,
     "detailsV2": {
+        "TypeName": "",
         "tabs": [
             {
                 "id": "caseinfoid",
@@ -345,7 +349,7 @@
             {
                 "hidden": false,
                 "id": "sl6z3tlmim",
-                "mobileHidden": false,
+                "mobileHidden": true,
                 "name": "Investigation",
                 "readOnly": false,
                 "roles": [],
@@ -702,7 +706,10 @@
             {
                 "hidden": false,
                 "id": "hvgnzvwyfg",
+                "mobileHidden": false,
                 "name": "cusntom_4",
+                "readOnly": false,
+                "roles": [],
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -740,15 +747,27 @@
                         "y": 0
                     }
                 ],
-                "type": "custom"
+                "type": "custom",
+                "webHidden": true
             }
         ]
     },
+    "edit": null,
+    "fromServerVersion": "",
     "group": "incident",
     "id": "Yonah",
+    "indicatorsDetails": null,
+    "indicatorsQuickView": null,
+    "itemVersion": "1.2.2",
+    "locked": false,
+    "mobile": null,
     "name": "Yonah",
+    "packPropagationLabels": [
+        "all"
+    ],
+    "propagationLabels": [],
+    "quickView": null,
     "system": true,
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "toServerVersion": "",
+    "version": -1
 }
