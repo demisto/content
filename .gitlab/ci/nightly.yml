@@ -1,4 +1,0 @@
-.nightly-rule:
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
-    - if: '$NIGHTLY'
