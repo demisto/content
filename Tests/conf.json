@@ -1472,7 +1472,8 @@
         },
         {
             "integrations": "ipinfo_v2",
-            "playbookID": "IPInfo_v2Test"
+            "playbookID": "IPInfo_v2Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "VerifyHumanReadableFormat"
