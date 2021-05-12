@@ -915,6 +915,23 @@ def get_team_membership(team_id: Union[int, str], user_name: str) -> dict:
     return response
 
 
+def get_team_members(organization: str, team_slug: str, maximum_users: int = 30) -> list:
+    page = 1
+    results: list = []
+    while len(results) < maximum_users:
+        results_per_page = maximum_users - len(results)
+        results_per_page = min(results_per_page, 100)
+        params = {'page': page, 'per_page': results_per_page}
+        suffix = f'/orgs/{organization}/teams/{team_slug}/members'
+        response = http_request('GET', url_suffix=suffix, params=params)
+        if not response:
+            break
+        results.extend(response)
+        page += 1
+
+    return results
+
+
 def get_team_membership_command():
     args = demisto.args()
     team_id = args.get('team_id')
@@ -1309,6 +1326,34 @@ def get_workflow_usage(owner_name, repository_name, workflow_id):
     return workflow_usage
 
 
+def list_team_members_command():
+    args = demisto.args()
+    org = args.get('organization')
+    team_slug = args.get('team_slug')
+    maximum_users = int(args.get('maximum_users'))
+    response = get_team_members(org, team_slug, maximum_users)
+    members = []
+    for member in response:
+        context_data = {
+            'ID': member.get("id"),
+            'Login': member.get("login"),
+            'Team': team_slug,
+        }
+        members.append(context_data)
+    if members:
+        human_readable = tableToMarkdown(f'Team Member of team {team_slug} in organization {org}', t=members, removeNull=True)
+    else:
+        human_readable = f'There is no team members under team {team_slug} in organization {org}'
+
+    return_results(CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='GitHub.TeamMember',
+        outputs_key_field='ID',
+        outputs=members if members else None,
+        raw_response=response,
+    ))
+
+
 def get_github_actions_usage():
     """ List github actions workflows usage of private repositories.
 
@@ -1572,6 +1617,7 @@ COMMANDS = {
     'Github-list-files': list_files_command,
     'GitHub-get-file-content': get_file_content_from_repo,
     'GitHub-search-code': search_code_command,
+    'GitHub-list-team-members': list_team_members_command,
     'Github-get-check-run': get_github_get_check_run,
 
 }
