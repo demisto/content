@@ -12,7 +12,7 @@ requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
 TOKEN_TIMEOUT = 300  # 5 minutes
-
+# TEST
 URI_AUTH = 'auth/v2/token'
 URI_DEVICES = 'devices/v2'
 URI_POLICIES = 'policies/v2'
