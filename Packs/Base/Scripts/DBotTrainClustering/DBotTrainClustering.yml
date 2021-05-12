@@ -8,9 +8,9 @@ args:
   secret: false
 - default: false
   description: Incident field that represents the family name for each cluster created.
-    The model will compute homogeneity of the cluster based on this value. If there
-    are multiple different values in the fieldForClusterName field, the model will
-    select the cluster based on minHomogeneityCluster.
+    The model determines how many incidents in the cluster have the same value in
+    the fieldForClusterName field. The largest numbers of incidents with the same
+    value, determine the cluster name.
   isArray: true
   name: fieldForClusterName
   required: false
@@ -151,6 +151,13 @@ args:
   description: Search query input from the dashboard.
   isArray: false
   name: searchQuery
+  required: false
+  secret: false
+- default: false
+  description: Comma-separated list of additional incident fields to display, but
+    which will not be taken into account when computing similarity.
+  isArray: false
+  name: fieldsToDisplay
   required: false
   secret: false
 comment: Train clustering model on any incident type.

@@ -17,29 +17,12 @@ import hdbscan
 from datetime import datetime
 from typing import Type, Tuple
 
-GENERAL_EXPLANATION = "**In general clustering model aims to form groups of similar incidents based on some similarities** \n" \
-                      "In our case the model is splitted into 2 phases: \n" \
-                      "- **Phase 1 (Groups creation)** creates groups with all the incident fetched. " \
-                      "Most of the incidents should be grouped together but some will be considered as outliers " \
-                      "and won't be considered during the next stage. " \
-                      "This percentage can be seen in  **Percentage of clusterized samples**. \n" \
-                      "- **Phase 2 (Groups selection)** will be executed only if **fieldForClusterName** is given and valid. " \
-                      "It aims to remove low quality groups based on **fieldForClusterName**. Each sample will " \
-                      "have a family name from the value of " \
-                      "**fieldForClusterName** field. The model keeps incidents for which the family ratio is " \
-                      "above **minHomogeneityCluster** \n" \
-                      "- **Percentage of clusterized samples**: Percentage of samples that are not outliers **after " \
-                      "Phase 1** \n" \
-                      "- **Percentage of clusterized samples after selection**: Percentage of samples that are not " \
-                      "outliers after **Phase 1** and **Phase 2** \n" \
-                      "- **Percentage of cluster selected** : Percentage of groups kept after phase 1 and 2 \n"
-
-GENERAL_MESSAGE_RESULTS = "- We succeeded to group **%s incidents into %s groups**.\n - The grouping was based on " \
-                          "the **%s** field(s).\n - Each group name is based on the majority value of **%s** field in " \
-                          "the group.\n - For %s incidents, we didn’t find any matching.\n"
+GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
+                          "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
+                          "the group.\n #### - For %s incidents, we didn’t find any matching.\n"
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
-MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s, please either enlarge the time period " \
+MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s. please either enlarge the time period " \
                             "or increase the limit argument to more than %s."
 MESSAGE_CLUSTERING_NOT_VALID = "Clustering cannot be created with this dataset"
 MESSAGE_INCORRECT_FIELD = "- %s field(s) don't/doesn't exist within the fetched incidents."
@@ -299,6 +282,10 @@ def get_args():  # type: ignore
     field_for_cluster_name = demisto.args().get('fieldForClusterName', '').split(',')
     field_for_cluster_name = extract_fields_from_args(field_for_cluster_name)
 
+    display_fields = demisto.args().get('fieldsToDisplay', '').split(',')
+    display_fields = extract_fields_from_args(display_fields)
+    display_fields = list(set(['id', 'created', 'name'] + display_fields))
+
     min_homogeneity_cluster = float(demisto.args().get('minHomogeneityCluster'))
 
     from_date = demisto.args().get('fromDate')
@@ -317,7 +304,7 @@ def get_args():  # type: ignore
     model_expiration = float(demisto.args().get('modelExpiration'))
     model_hidden = demisto.args().get('model_hidden', 'False') == 'True'
 
-    return fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
+    return fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
         max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden
 
@@ -538,7 +525,7 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     return True
 
 
-def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str) -> str:
+def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str, display_fields: List[str]) -> str:
     """
 
     :param model_processed: Postprocessing
@@ -560,6 +547,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'pivot': "clusterId:" + str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
+             'incidents': incidents_df[display_fields].to_json(orient='records'),
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
@@ -826,7 +814,7 @@ def main():
     generic_cluster_name = False
 
     # Get argument of the automation
-    fields_for_clustering, field_for_cluster_name, from_date, to_date, limit, query, incident_type, \
+    fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
         max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden = get_args()
 
@@ -858,7 +846,7 @@ def main():
             generic_cluster_name = True
 
         # Get all the incidents from query, date and field similarity and field family
-        populate_fields = fields_for_clustering + field_for_cluster_name
+        populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
         incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query,
                                                                     # type: ignore
                                                                     limit, incident_type)  # type: ignore
@@ -930,19 +918,18 @@ def main():
         model_processed.global_msg = global_msg
 
         if debug:
-            return_outputs(readable_output='### General explanation \n {}'.format(
-                GENERAL_EXPLANATION) + '### Warning \n {}'.format(global_msg) + tableToMarkdown("Summary", summary))
+            return_outputs(readable_output='## Warning \n {}'.format(global_msg) + tableToMarkdown("Summary", summary))
         else:
             field_clustering = ' , '.join(fields_for_clustering)
             field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
             number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
             msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
                                              field_clustering, field_name, number_of_outliers)
-            return_outputs(readable_output='### General results \n {}'.format(msg) + '### Warning \n {}'.format(global_msg))
+            return_outputs(readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
             model_processed.summary_description = msg
 
         # return Entry and summary
-        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type)
+        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields)
         model_processed.json = output_clustering_json
         return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
         if store_model:
