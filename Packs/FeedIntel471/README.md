@@ -9,6 +9,6 @@ This feed provides data from closed sources (typically referred to as the deep a
 * Intel471's Malware Indicator feed provides a high fidelity and timely stream of indicators with rich context. This feed allows customers to alert/block and gain an understanding of the latest crimeware campaigns and is for those that value timeliness, confidence (little to no false positives), and seek rich context and insight around the attacks they are seeing.
 
 In order to access the Intel 471 feed, you need to have valid credentials.  For further information, please see:
-* Website: https://www.intel471.com
+* Website: [https://www.intel471.com](https://www.intel471.com)
 * Email: sales@intel471.com
 * Tel: (800) 833-1471
