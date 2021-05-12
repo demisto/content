@@ -204,17 +204,11 @@ class Build:
 
     @staticmethod
     def get_servers(ami_env):
-        logging.info('DDD2')
         env_conf = get_env_conf()
-        logging.info('DDD3')
         server_to_port_mapping = map_server_to_port(env_conf, ami_env)
-        logging.info('DDD4')
         if Build.run_environment == Running.CI_RUN:
-            logging.info('DDD5')
             server_numeric_version = get_server_numeric_version(ami_env)
-            logging.info('DDD6')
         else:
-            logging.info('DDD7')
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
         return server_to_port_mapping, server_numeric_version
 

@@ -13,7 +13,7 @@ test_instances:
   script:
     - echo "======= Download configuration ========"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
-    - mv $SSH_CONFIGURATION ~/.ssh/config
+    - cat $SSH_CONFIGURATION >> ~/.ssh/config
     - chmod 700 ~/.ssh/config
     - Tests/scripts/open_ssh_tunnel.sh
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
