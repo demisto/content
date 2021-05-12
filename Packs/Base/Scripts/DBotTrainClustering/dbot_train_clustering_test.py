@@ -22,24 +22,24 @@ PARAMETERS_DICT = {
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [
-    {'id': '1', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.1', 'field_2': 'powershell.exe',
+    {'id': '1', 'created': "2021-01-30", 'name': 'name_1', 'field_1': 'powershell IP=1.1.1.1', 'field_2': 'powershell.exe',
      'entityname': 'powershell'},
-    {'id': '2', 'created': "2021-01-30", 'field_1': 'nmap port 1', 'field_2': 'nmap.exe',
+    {'id': '2', 'created': "2021-01-30", 'name': 'name_2', 'field_1': 'nmap port 1', 'field_2': 'nmap.exe',
      'entityname': 'nmap'},
-    {'id': '3', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.2', 'field_2': 'powershell',
+    {'id': '3', 'created': "2021-01-30", 'name': 'name_3', 'field_1': 'powershell IP=1.1.1.2', 'field_2': 'powershell',
      'entityname': 'powershell'},
-    {'id': '4', 'created': "2021-01-30", 'field_1': 'nmap port 2', 'field_2': 'nmap',
+    {'id': '4', 'created': "2021-01-30", 'name': 'name_4', 'field_1': 'nmap port 2', 'field_2': 'nmap',
      'entityname': 'nmap'},
 ]
 
 FETCHED_INCIDENT_NOT_EMPTY_MULTIPLE_NAME = [
-    {'id': '1', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.1', 'field_2': 'powershell.exe',
+    {'id': '1', 'created': "2021-01-30", 'name': 'name_1', 'field_1': 'powershell IP=1.1.1.1', 'field_2': 'powershell.exe',
      'entityname': ['powershell', 'powershell', 'nmap']},
-    {'id': '2', 'created': "2021-01-30", 'field_1': 'nmap port 1', 'field_2': 'nmap.exe',
+    {'id': '2', 'created': "2021-01-30", 'name': 'name_2', 'field_1': 'nmap port 1', 'field_2': 'nmap.exe',
      'entityname': ['powershell', 'nmap', 'nmap']},
-    {'id': '3', 'created': "2021-01-30", 'field_1': 'powershell IP=1.1.1.2', 'field_2': 'powershell',
+    {'id': '3', 'created': "2021-01-30", 'name': 'name_3', 'field_1': 'powershell IP=1.1.1.2', 'field_2': 'powershell',
      'entityname': ['powershell', 'powershell', 'nmap']},
-    {'id': '4', 'created': "2021-01-30", 'field_1': 'nmap port 2', 'field_2': 'nmap',
+    {'id': '4', 'created': "2021-01-30", 'name': 'name_4', 'field_1': 'nmap port 2', 'field_2': 'nmap',
      'entityname': ['powershell', 'nmap', 'nmap']},
 ]
 
@@ -185,7 +185,7 @@ def test_all_incorrect_fields(mocker):
                         return_value=PARAMETERS_DICT)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
-    assert MESSAGE_INCORRECT_FIELD % ' , '.join(['field_1_wrong', 'field_2_wrong', 'name']) in msg
+    assert MESSAGE_INCORRECT_FIELD % ' , '.join(['field_1_wrong', 'field_2_wrong']) in msg
     assert MESSAGE_NO_FIELD_NAME_OR_CLUSTERING in msg
 
     assert not output_clustering_json

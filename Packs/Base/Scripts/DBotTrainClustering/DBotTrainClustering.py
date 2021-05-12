@@ -525,7 +525,8 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     return True
 
 
-def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str, display_fields: List[str]) -> str:
+def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str,
+                         display_fields: List[str]) -> str:
     """
 
     :param model_processed: Postprocessing
@@ -867,8 +868,8 @@ def main():
         # Check Field that appear in populate_fields but are not in the incidents_df and return message
         global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
 
-        fields_for_clustering, field_for_cluster_name = \
-            remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name,
+        fields_for_clustering, field_for_cluster_name, display_fields = \
+            remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, display_fields,
                                           incorrect_fields=incorrect_fields)
 
         # Remove fields that are not valid (like too small number of sample)
