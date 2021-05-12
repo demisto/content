@@ -92,9 +92,8 @@
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
-            "instance_names": "ewv2_regular",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "timeout": 1000
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
@@ -3294,6 +3293,12 @@
             ],
             "fromversion": "6.0.0",
             "nightly": true
+        },
+        {
+            "integrations": "Carbon Black Endpoint Standard",
+            "playbookID": "carbonBlackEndpointStandardTestPlaybook",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3369,7 +3374,6 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
@@ -3386,7 +3390,10 @@
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "playbook_TrendmicroCAS_Test": "Issue 32730",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
-        "Rundeck_test": "Issue 31174"
+        "Rundeck_test": "Issue 31174",
+        "Azure NSG - Test": "Issue 33217",
+        "AutoFocus V2 test": "Issue 26464",
+        "VirusTotal (API v3) Detonate Test": "Issue 36004"
     },
     "skipped_integrations": {
         
