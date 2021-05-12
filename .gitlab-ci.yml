@@ -15,7 +15,7 @@ stages:
 
 variables:
   DONT_CACHE_LAST_RESPONSE: "true"
-  GCS_MARKET_BUCKET: "marketplace-dist"
+  GCS_MARKET_BUCKET: "marketplace-dist-dev"
   SLACK_CHANNEL: "dmst-content-team"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"

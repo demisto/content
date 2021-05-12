@@ -28,7 +28,7 @@ def main():
     options = options_handler()
 
     # Get the host by the ami env
-    server_to_port_mapping, server_version = Build.get_servers(options.ami_env)
+    server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json_file(path=options.secret)

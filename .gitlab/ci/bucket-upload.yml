@@ -1,3 +1,5 @@
+include:
+  - local: on-push.yml
 .bucket-upload-rule:
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
@@ -10,16 +12,7 @@
     if [ -z $INSTANCE_CREATED ]; then
       echo "Skipping - instance was not created"
     else
-      # Modifying ssh config file
-      echo "Host 10.0.*
-        StrictHostKeyChecking no
-        LogLevel ERROR
-        ProxyJump content-build@content-build-lb.demisto.works  # disable-secrets-detection
-       Host content-build-lb.demisto.works
-        Port 43567
-        UserKnownHostsFile /dev/null
-        StrictHostKeyChecking no
-        LogLevel ERROR" >> ~/.ssh/config
+      cat $SSH_CONFIGURATION >> ~/.ssh/config
     fi
   - echo "Open SSH Tunnel"
   - Tests/scripts/open_ssh_tunnel.sh

@@ -19,6 +19,7 @@ from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 urllib3.disable_warnings()
 
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
@@ -82,7 +83,7 @@ def main():
     instance_name_to_wait_on = sys.argv[1]
 
     ready_ami_list = []
-    env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
+    env_results_path = os.path.join(ARTIFACTS_FOLDER, 'env_results.json')
     with open(env_results_path, 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
