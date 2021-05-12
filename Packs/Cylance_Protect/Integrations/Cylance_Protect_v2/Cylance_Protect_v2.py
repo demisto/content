@@ -1363,33 +1363,16 @@ def add_capitalized_hash(threats_context):
         threats_context(list): list of dicts of context outputs for the threats of interest, each containing
         the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
     """
-    if isinstance(threats_context, list):
-        for i in range(len(threats_context)):
-            threats_context[i] = add_capitalized_hash_single(threats_context[i])
-
-    elif isinstance(threats_context, dict):
-        threats_context = add_capitalized_hash_single(threats_context)
+    if not isinstance(threats_context, list):
+        threats_context = [threats_context]
+       
+    for context_item in threats_context:
+        if context_item.get('Sha256'):
+            context_item['SHA256'] = context_item.get('Sha256')
+        if context_item.get('Md5'):
+            context_item['MD5'] = context_item.get('Md5')
 
     return threats_context
-
-
-def add_capitalized_hash_single(threat_context):
-    """Add capitalized hash keys for a single dict representing the context outputs for a single threat, for the keys
-     SHA256 and MD5. the keys are redundant since they are used for avoiding BC issues.
-
-    Args:
-        threats_context(dict): a dicts of context outputs for the threat of interest, containing
-        the key 'Sha256' (and possibly (Md5)).
-
-    Returns:
-        threats_context(dict): dicts of context outputs for the threat of interest, containing
-        the key and value 'Sha256' (and possibly Md5) as well as the key and value 'SHA256' (and possible MD5).
-    """
-    if threat_context.get('Sha256'):
-        threat_context['SHA256'] = threat_context.get('Sha256')
-    if threat_context.get('Md5'):
-        threat_context['MD5'] = threat_context.get('Md5')
-    return threat_context
 
 
 # EXECUTION
