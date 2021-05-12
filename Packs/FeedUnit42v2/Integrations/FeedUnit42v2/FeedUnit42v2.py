@@ -26,7 +26,8 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'report': 'Report',
     'indicator': 'Indicator',
     'malware': 'Malware',
-    'course-of-action': 'Course of Action'
+    'course-of-action': 'Course of Action',
+    'intrusion-set': 'Intrusion Set'
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
@@ -129,20 +130,53 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
     return indicators
 
 
-def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
+def get_campaign_from_sub_reports(report_object, id_to_object):
+    report_relationships = []
+    object_refs = report_object.get('object_refs', [])
+    for obj in object_refs:
+        if obj.startswith('report--'):
+            sub_report_obj = id_to_object.get(obj)
+            for sub_report_obj_ref in sub_report_obj.get('object_refs', []):
+                if sub_report_obj_ref.startswith('campaign--'):
+                    related_campaign = id_to_object.get(sub_report_obj_ref)
+
+                    entity_relation = EntityRelationship(name='related-to',
+                                                         entity_a=f"[Unit42 ATOM] {report_object.get('name')}",
+                                                         entity_a_type='Report',
+                                                         entity_b=related_campaign.get('name'),
+                                                         entity_b_type='Campaign')
+                    report_relationships.append(entity_relation.to_indicator())
+    return report_relationships
+
+
+def is_sub_report(report_obj):
+    obj_refs = report_obj.get('object_refs', [])
+    for obj_ref in obj_refs:
+        if obj_ref.startswith('report--'):
+            return False
+    return True
+
+
+def parse_reports_and_report_relationships(report_objects: list, feed_tags: list = [],
+                                           tlp_color: Optional[str] = None, id_to_object={}):
     """Parse the Reports objects retrieved from the feed.
 
     Args:
       report_objects: a list of report objects containing the reports.
       feed_tags: feed tags.
       tlp_color: Traffic Light Protocol color.
+      id_to_object: a dict in the form of - id: stix_object.
 
     Returns:
         A list of processed reports.
     """
     reports = []
+    report_relationships = []
 
     for report_object in report_objects:
+        if is_sub_report(report_object):
+            continue
+
         report = dict()  # type: Dict[str, Any]
 
         report['type'] = 'Report'
@@ -167,9 +201,11 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
             'unit42_object_refs': report_object.get('object_refs')
         }
 
+        report_relationships.extend(get_campaign_from_sub_reports(report_object, id_to_object))
+
         reports.append(report)
 
-    return reports
+    return reports, report_relationships
 
 
 def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
@@ -346,6 +382,35 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
     return course_of_action_indicators
 
 
+def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
+    course_of_action_indicators = []
+
+    for intrusion_set in intrusion_sets_objects:
+
+        publications = get_indicator_publication(intrusion_set)
+
+        indicator = {
+            "value": intrusion_set.get('name'),
+            "type": 'Intrusion Set',
+            "score": 3,
+            "fields": {
+                'stixid': intrusion_set.get('id'),
+                "firstseenbysource": handle_multiple_dates_in_one_field('created', intrusion_set.get('created')),
+                "modified": handle_multiple_dates_in_one_field('modified', intrusion_set.get('modified')),
+                'description': intrusion_set.get('description', ''),
+                "publications": publications,
+                "reportedby": 'Unit42',
+                "tags": feed_tags,
+            }
+        }
+        if tlp_color:
+            indicator['fields']['trafficlightprotocol'] = tlp_color
+
+        course_of_action_indicators.append(indicator)
+
+    return course_of_action_indicators
+
+
 def get_ioc_type(indicator, id_to_object):
     """
     Get IOC type by extracting it from the pattern field.
@@ -376,11 +441,18 @@ def get_ioc_value(ioc, id_to_obj):
         id_to_obj: a dict in the form of - id: stix_object.
 
     Returns:
-        str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix.
+        str. the IOC value. if its reports we add to it [Unit42 ATOM] prefix,
+        if its attack pattern remove the id from the name.
     """
     ioc_obj = id_to_obj.get(ioc)
     if ioc_obj:
-        return f"[Unit42 ATOM] {ioc_obj.get('name')}" if ioc_obj.get('type') == 'report' else ioc_obj.get('name')
+        if ioc_obj.get('type') == 'report':
+            return f"[Unit42 ATOM] {ioc_obj.get('name')}"
+        elif ioc_obj.get('type') == 'attack-pattern':
+            value, _ = get_attack_id_and_value_from_name(ioc_obj)
+            return value
+        else:
+            return ioc_obj.get('name')
 
 
 def create_list_relationships(relationships_objects, id_to_object):
@@ -414,6 +486,9 @@ def create_list_relationships(relationships_objects, id_to_object):
         b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
         if b_type == 'Indicator':
             b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
+
+        if not a_type or not b_type:
+            continue
 
         mapping_fields = {
             'lastseenbysource': relationships_object.get('modified'),
@@ -458,33 +533,36 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         List. Processed indicators from feed.
     """
     item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship',
-                                    'course-of-action']
+                                    'course-of-action', 'intrusion-set']
     client.get_stix_objects(items_types=item_types_to_fetch_from_api)
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
 
-    ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
-    reports = parse_reports(client.objects_data['report'], feed_tags, tlp_color)
-    campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
-    attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'], feed_tags, tlp_color)
-    course_of_actions = create_course_of_action_indicators(client.objects_data['course-of-action'],
-                                                           feed_tags, tlp_color)
-
     id_to_object = {
         obj.get('id'): obj for obj in
         client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware']
         + client.objects_data['campaign'] + client.objects_data['attack-pattern']
-        + client.objects_data['course-of-action']
+        + client.objects_data['course-of-action'] + client.objects_data['intrusion-set']
     }
+
+    ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
+    reports, report_relationships = parse_reports_and_report_relationships(client.objects_data['report'], feed_tags,
+                                                                           tlp_color, id_to_object)
+    campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
+    attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'], feed_tags, tlp_color)
+    intrusion_sets = create_intrusion_sets(client.objects_data['intrusion-set'], feed_tags, tlp_color)
+    course_of_actions = create_course_of_action_indicators(client.objects_data['course-of-action'],
+                                                           feed_tags, tlp_color)
 
     dummy_indicator = {}
     if create_relationships:
         list_relationships = create_list_relationships(client.objects_data['relationship'], id_to_object)
+        all_relationships = list_relationships + report_relationships
 
         dummy_indicator = {
             "value": "$$DummyIndicator$$",
-            "relationships": list_relationships
+            "relationships": all_relationships
         }
 
     if dummy_indicator:
@@ -495,8 +573,9 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
     demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
     demisto.debug(f'{len(course_of_actions)} Course of Actions Indicators were created.')
+    demisto.debug(f'{len(intrusion_sets)} Intrusion Sets Indicators were created.')
 
-    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions
+    return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
