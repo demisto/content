@@ -95,15 +95,14 @@ create-instances:
         ./Tests/scripts/upload_artifacts.sh
       fi
 
-
 .test_content_on_server_instances_base:
   extends:
     - .default-job-settings
     - .push-rule
   needs: ["create-instances"]
   stage: run-instances
-  dependencies:
-    - create-instances
+  variables:
+    DESTROY_INSTANCES: "true"
   script:
     - *download_demisto_conf
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -119,16 +118,11 @@ create-instances:
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-    - exit $EXIT_CODE
-  after_script:
-    - source ./venv/bin/activate
-    - source $BASH_ENV
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-
+    - exit $EXIT_CODE
 
 server_5_0:
   extends: .test_content_on_server_instances_base

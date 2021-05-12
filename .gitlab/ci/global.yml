@@ -81,6 +81,12 @@
         echo "Skipping Slack"
       fi
     - section_end "Notify Slack"
+    - section_start "Destroy instances"
+    - |
+      if [ -n "${DESTROY_INSTANCES}" ]; then
+        python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+      fi
+    - section_end "Destroy instances"
 
 .default-job-settings:
   extends:
