@@ -13,16 +13,14 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_ENTRIES = 100
-TIMEOUT = 30
+TIMEOUT = '30'
 ''' CLIENT CLASS '''
 
-
-# todo Add configurable base_url in parameter.
-# todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
 # todo Add timeout argument for list commands.
+
+# todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
 # todo Add documentation connection in the query argument in the hunting command.
 # todo Add limit argument to hunting command - default value 50.
-# todo drop first fetch to 12 hours
 # todo Add default value for timeout param
 
 class Client(BaseClient):
@@ -51,8 +49,8 @@ class Client(BaseClient):
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     @logger
-    def incidents_list(self, limit: int = MAX_ENTRIES, status: Optional[str] = None, assigned_to: Optional[str] = None,
-                       timeout: int = TIMEOUT, from_date: Optional[datetime] = None,
+    def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
+                       assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
                        skip: Optional[int] = None) -> Dict:
         """
         GET request from the client using OData operators:
@@ -101,7 +99,7 @@ class Client(BaseClient):
     @logger
     def update_incident(self, incident_id: int, status: Optional[str], assigned_to: Optional[str],
                         classification: Optional[str],
-                        determination: Optional[str], tags: Optional[List[str]], timeout: int = TIMEOUT) -> Dict:
+                        determination: Optional[str], tags: Optional[List[str]], timeout: int) -> Dict:
         """
         PATCH request to update single incident.
         Args:
@@ -128,7 +126,7 @@ class Client(BaseClient):
         return updated_incident
 
     @logger
-    def advanced_hunting(self, query: str, timeout: int = TIMEOUT):
+    def advanced_hunting(self, query: str, timeout: int):
         """
         POST request to the advanced hunting API:
         Args:
@@ -274,8 +272,9 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     status = args.get('status')
     assigned_to = args.get('assigned_to')
     offset = arg_to_number(args.get('offset'))
+    timeout = arg_to_number(args.get('timeout', TIMEOUT))
 
-    response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to, skip=offset)
+    response = client.incidents_list(limit=limit, status=status, assigned_to=assigned_to, skip=offset, timeout=timeout)
 
     raw_incidents = response.get('value')
     readable_incidents = [convert_incident_to_readable(incident) for incident in raw_incidents]
@@ -314,10 +313,11 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
     classification = args.get('classification')
     determination = args.get('determination')
     incident_id = arg_to_number(args.get('id'))
+    timeout = args.get('timeout')
 
     updated_incident = client.update_incident(incident_id=incident_id, status=status, assigned_to=assigned_to,
-                                              classification=classification,
-                                              determination=determination, tags=tags)
+                                              classification=classification, determination=determination, tags=tags,
+                                              timeout=timeout)
     if updated_incident.get('@odata.context'):
         del updated_incident['@odata.context']
 
@@ -420,9 +420,10 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
 
     """
     query = args.get('query')
+    limit = args.get('limit')
+    timeout = args.get('timeout')
 
-    response = client.advanced_hunting(query)
-
+    response = client.advanced_hunting(query=query, limit=limit, timeout=timeout)
     results = response.get('Results')
     schema = response.get('Schema', {})
     headers = [item.get('Name') for item in schema]
@@ -452,6 +453,8 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
     app_id = demisto.params().get('app_id')
+    base_url = demisto.params().get('base_url')
+
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     fetch_limit = demisto.params().get('max_fetch', 10)
     fetch_timeout = demisto.params().get('fetch_timeout')
@@ -464,6 +467,7 @@ def main() -> None:
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
+            base_url=base_url,
             proxy=proxy)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.

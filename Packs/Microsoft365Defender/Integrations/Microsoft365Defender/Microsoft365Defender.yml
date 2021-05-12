@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - additionalinfo: The API Key to use for connection
   defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
-Fi  display: Application ID
+  display: Application ID
   name: app_id
   required: true
   type: 4
@@ -113,6 +113,13 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Get the most recent incidents.
     execution: false
@@ -214,6 +221,13 @@ script:
       name: tags
       required: false
       secret: false
+    - default: false
+      defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Update incident with the given ID.
     execution: false
@@ -264,6 +278,13 @@ script:
       isArray: false
       name: query
       required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: The time limit in seconds for the http request to run.
+      isArray: false
+      name: timeout
+      required: false
       secret: false
     deprecated: false
     description: Advanced hunting is a threat-hunting tool that uses specially constructed
