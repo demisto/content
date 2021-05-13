@@ -3,3 +3,6 @@ ignore=auto-test
 
 [file:Okta_IAM.yml]
 ignore=IN135
+
+[file:README.md]
+ignore=RM104
