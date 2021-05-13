@@ -175,7 +175,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.17983
+dockerimage: demisto/sklearn:1.0.0.19770
 tests:
 - No tests (auto formatted)
 runonce: true

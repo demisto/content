@@ -20,6 +20,16 @@ DEFAULT_CUSTOM_FIELDS = {
 
 
 def update_incident_with_required_keys(incidents, required_keys):
+    """
+        Update the given incident dict (from context) with values retrieved by GetIncidentsByQuery command
+
+        :type incidents: ``list``
+        :param incidents: campaign incidents from the context
+
+        :type required_keys: ``list``
+        :param required_keys: keys need to be updated
+
+    """
     ids = [str(incident['id']) for incident in incidents]
     res = demisto.executeCommand('GetIncidentsByQuery', {
         'query': "id:({})".format(' '.join(ids))
@@ -36,6 +46,18 @@ def update_incident_with_required_keys(incidents, required_keys):
 
 
 def get_incident_val(incident, key):
+    """
+        Get the value from incident dict and convert it in some cases e.g. make id linkable etc.
+
+        :type incident: ``dict``
+        :param incident: the incident to get the value from
+
+        :type key: ``str``
+        :param key: the key in dict
+
+        :rtype: ``str``
+        :return the value form dict
+    """
     if key == 'status':
         return STATUS_DICT.get(incident.get(key))
 
@@ -50,6 +72,16 @@ def get_campaign_incidents_from_context():
 
 
 def get_incidents_info_md(incidents):
+    """
+        Get the campaign incidents relevant info in MD table
+
+        :type incidents: ``list``
+        :param incidents: the campaign incidents to collect the info from
+
+        :rtype: ``str``
+        :return the MD table str
+
+    """
     if incidents:
         incidents_info = [
             {key: get_incident_val(incident, key) for key in INCIDENTS_HEADER} for incident in incidents
@@ -66,6 +98,9 @@ def get_incidents_info_md(incidents):
 
 
 def update_empty_fields():
+    """
+        Update the campaign dynamic section empty field with default values in order for them to appear in the page
+    """
     incident = demisto.incidents()[0]
     custom_fields = incident.get('customFields', {})
 
@@ -77,7 +112,6 @@ def update_empty_fields():
 
 def main():
     try:
-
         incidents = get_campaign_incidents_from_context()
         if incidents:
             update_incident_with_required_keys(incidents, KEYS_FETCHED_BY_QUERY)
@@ -86,12 +120,7 @@ def main():
         else:
             readable_output = NO_CAMPAIGN_INCIDENTS_MSG
 
-        result = CommandResults(
-            readable_output=readable_output,
-            outputs_prefix='',
-            outputs_key_field=''
-        )
-        return_results(result)
+        return_results(CommandResults(readable_output=readable_output))
     except Exception as err:
         return_error(str(err))
 

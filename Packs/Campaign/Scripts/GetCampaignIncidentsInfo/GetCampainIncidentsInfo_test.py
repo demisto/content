@@ -61,7 +61,7 @@ def test_incidents_info_md_for_empty_context(mocker):
     """
 
     Given:
-        - Empty incident list
+        - There is no campaign incidents in context
 
     When:
         - Get the campaign incidents info
@@ -85,7 +85,7 @@ def test_incidents_info_md_with_invalid_keys(mocker):
     """
 
     Given:
-        - Mocked incidents with some invalid keys (e.g. status),
+        - Incidents in campaign context contains some invalid keys (e.g. status),
 
     When:
         -  Get value from incident (GetCampaignIncidentsInfo.get_incident_val)
@@ -116,7 +116,7 @@ def test_some_error(mocker):
     """
 
     Given:
-        -
+        - Dynamic section try to populate the MD from script
 
     When:
         - Get incident info
@@ -142,7 +142,7 @@ def test_some_error(mocker):
 def test_updated_status_and_severity(mocker):
     """
         Given -
-            Mocked incidents with updated status and severity
+            Status or severity of incidents in campaign was changed
 
         When -
             Get the incidents info

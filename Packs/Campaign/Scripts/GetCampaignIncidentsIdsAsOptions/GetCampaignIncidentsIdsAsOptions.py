@@ -7,6 +7,13 @@ NO_ID_IN_CONTEXT = 'There is no \"id\" key in the incidents'
 
 
 def get_campaign_incidents():
+    """
+        Get the campaign incidents form the incident's context
+
+        :rtype: ``list``
+        :return: list of campaign incidents
+    """
+
     incident_id = demisto.incidents()[0]['id']
     res = demisto.executeCommand('getContext', {'id': incident_id})
     if isError(res):
@@ -16,13 +23,22 @@ def get_campaign_incidents():
 
 
 def get_incident_ids_as_options(incidents):
+    """
+        Collect the campaign incidents ids form the context and return them as options for MultiSelect field
+
+        :type incidents: ``list``
+        :param incidents: the campaign incidents to collect ids from
+
+        :rtype: ``dict``
+        :return: dict with the ids as options for MultiSelect field e.g {"hidden": False, "options": ids}
+    """
     try:
         ids = [str(incident['id']) for incident in incidents]
         ids.sort(key=lambda incident_id: int(incident_id))
         ids.insert(0, ALL_OPTION)
         return {"hidden": False, "options": ids}
-    except KeyError:
-        raise Exception(NO_ID_IN_CONTEXT)
+    except KeyError as e:
+        raise DemistoException(NO_ID_IN_CONTEXT) from e
 
 
 def main():
@@ -33,12 +49,11 @@ def main():
             result = get_incident_ids_as_options(incidents)
         else:
             result = NO_CAMPAIGN_INCIDENTS_MSG
-            demisto.debug(result)
 
-        demisto.results(result)
+        return_results(result)
 
     except Exception as err:
-        return_error(str(err))
+        return_error(str(err), error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

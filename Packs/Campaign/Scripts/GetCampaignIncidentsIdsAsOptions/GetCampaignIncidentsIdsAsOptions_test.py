@@ -15,7 +15,7 @@ def test_get_incident_ids_as_options_happy_path(mocker):
     """
 
     Given:
-        - Mocked incidents
+        - The "Select Incidents" multi select field try to populate the available ids
 
     When:
         - Get the incident ids as option for info
@@ -49,7 +49,7 @@ def test_get_ids_where_no_campaign_incidents_exist(mocker):
     """
 
     Given -
-        Empty Campaign Incidents list
+        There is no campaign in the context
 
     When -
         Try to get the incident ids
@@ -69,13 +69,12 @@ def test_get_ids_where_no_campaign_incidents_exist(mocker):
 
     # validate
     assert demisto.results.call_args[0][0] == NO_CAMPAIGN_INCIDENTS_MSG
-    assert demisto.debug.call_args[0][0] == NO_CAMPAIGN_INCIDENTS_MSG
 
 
 def test_there_is_no_id_in_incident(mocker):
     """
     Given -
-        List of incident with one incident without id
+        Incident in campaign in context doesn't have id
 
     When -
         Try to get the ids for the multi select field

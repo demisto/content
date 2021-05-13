@@ -2,11 +2,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ALL_OPTION = 'All'
+NO_CAMPAIGN_INCIDENTS_MSG = 'There is no Campaign Incidents in the Context'
 COMMAND_ERROR_MSG = 'Error occurred while trying to perform \"{action}\" on the selected incident ids: {ids}'
 ACTION_ON_CAMPAIGN_FIELD_NAME = 'actionsoncampaignincidents'
 SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME = 'selectcampaignincidents'
 
-COMMAND_SUCCESS = 'The following incidents was successfully {action}, {ids}'
+COMMAND_SUCCESS = 'The following incidents was successfully {action}: {ids}'
 
 
 def get_custom_field(filed_name):
@@ -16,13 +17,24 @@ def get_custom_field(filed_name):
 
 
 def get_campaign_incident_ids():
-    res = demisto.executeCommand('GetCampaignIncidentsIdsAsOptions', {})
-    if isError(res):
-        return_error(f'Error occurred while trying to get the incident ids: {get_error(res)}')
+    """
+        Collect the campaign incidents ids form the context
 
-    ids = demisto.get(res[0], 'Contents.options')
-    ids.remove(ALL_OPTION)
-    return ids
+        :rtype: ``list``
+        :return: list of campaign incident ids if exist, None otherwise
+    """
+    incident_id = demisto.incidents()[0]['id']
+    res = demisto.executeCommand('getContext', {'id': incident_id})
+    if isError(res):
+        return_error(f'Error occurred while trying to get the incident context: {get_error(res)}')
+
+    incidents = demisto.get(res[0], 'Contents.context.EmailCampaign.incidents')
+    if incidents:
+        ids = [str(incident.get('id')) for incident in incidents]
+        ids.sort(key=lambda val: int(val))
+        return ids
+
+    return None
 
 
 def get_close_notes():
@@ -81,8 +93,8 @@ def main():
         if ALL_OPTION in ids:
             ids = get_campaign_incident_ids()
 
-        res = ACTIONS_MAPPER[action](ids, action)
-        demisto.results(res)
+        res = ACTIONS_MAPPER[action](ids, action) if ids else NO_CAMPAIGN_INCIDENTS_MSG
+        return_results(res)
 
     except Exception as err:
         return_error(str(err))

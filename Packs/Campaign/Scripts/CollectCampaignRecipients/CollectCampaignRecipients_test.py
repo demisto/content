@@ -30,10 +30,10 @@ def test_collect_campaign_recipients(mocker, selected_ids, num_of_selected_ids):
     """
 
     Given:
-        - Mocked incidents
+        - Campaign incidents selected in the campaign section
 
     When:
-        - Collect campaign recipients
+        - Collect campaign recipients from the incidents
 
     Then:
         - Validate the recipients was returned
@@ -61,13 +61,13 @@ def test_collect_campaign_recipients_no_demisto_args(mocker):
     """
 
     Given:
-        - Mocked incidents
+        - Campaign incident selected but no "new" param was pass
 
     When:
         - Collect campaign recipients
 
     Then:
-        - Validate the recipients was returned
+        - Validate the return_error was called and SystemExit was occurred
 
     """
 
@@ -76,8 +76,7 @@ def test_collect_campaign_recipients_no_demisto_args(mocker):
     mocker.patch.object(demisto, 'args', return_value={})  # without the required arg 'new'
 
     # run
-    try:
+    with pytest.raises(SystemExit) as exc_info:
         main()
-        assert False, 'SystemExit should occurred as return_error was called'
-    except SystemExit:
-        pass  # expected
+
+    assert exc_info.type == SystemExit, 'SystemExit should occurred as return_error was called'

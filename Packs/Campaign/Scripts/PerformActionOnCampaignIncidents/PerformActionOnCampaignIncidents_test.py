@@ -28,13 +28,13 @@ def prepare(mocker):
 def test_perform_action_happy_path(mocker, action):
     """
         Given -
-            Selected incident ids and Action to perform on them
+            Perform action button was clicked and there is Selected incident ids
 
         When -
             Run the perform_action script
 
         Then -
-            Validate
+            Validate the correct message is returned
 
     """
     prepare(mocker)
@@ -54,7 +54,7 @@ def test_perform_action_happy_path(mocker, action):
 def test_invalid_action(mocker):
     """
         Given -
-            Invalid action to run on selected ids
+             Invalid action in the perform action field
 
         When -
             Run the main of PerformActionOnCampaignIncidents
@@ -79,7 +79,7 @@ def test_invalid_action(mocker):
 def test_error_in_execute_command(mocker, action):
     """
         Given -
-            Mocked isError to indicate there is error
+            isError is return true to indicate there is error
 
         When -
             Run the main of PerformActionOnCampaignIncidents
@@ -101,3 +101,23 @@ def test_error_in_execute_command(mocker, action):
         if action == 'link & close':
             action = 'link'  # command failed on link
         assert res['Contents'] == COMMAND_ERROR_MSG.format(action=action, ids=','.join(INCIDENT_IDS))
+
+
+def test_no_incidents_in_context(mocker):
+    """
+        Given - there is no email campaign in context
+
+        When - user click on perform action button
+
+        Then - validate the return message about there is no campaign in context
+
+    """
+
+    prepare(mocker)
+    CUSTOM_FIELDS[SELECT_CAMPAIGN_INCIDENTS_FIELD_NAME] = []
+
+    # run
+    main()
+
+    # validate
+    assert demisto.results.call_args[0][0] == NO_CAMPAIGN_INCIDENTS_MSG
