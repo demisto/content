@@ -1,12 +1,7 @@
 id: Cortex XDR - Isolate Endpoint
-version: 16
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: CortexXDR
-    itemVersion: 3.0.10
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Cortex XDR - Isolate Endpoint
 description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo
   Alto Networks Cortex XDR - Investigation and Response' integration.
@@ -22,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -91,6 +87,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -147,6 +144,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -171,6 +169,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -491,6 +490,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -554,7 +554,7 @@ inputs:
   required: false
   description: The endpoint ID (string) to isolate. You can retrieve the ID using
     the xdr-get-endpoints command.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: hostname
   value:
     complex:
@@ -564,7 +564,7 @@ inputs:
       - operator: uniq
   required: false
   description: A comma-separated list of hostnames.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ip_list
   value:
     complex:
@@ -574,7 +574,7 @@ inputs:
       - operator: uniq
   required: false
   description: A comma-separated list of IP addresses.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
   description: The endpoint ID.
@@ -588,3 +588,6 @@ outputs:
   description: Whether the endpoint is isolated.
 - contextPath: Endpoint.Hostname
   description: The hostname that is mapped to this endpoint.
+tests:
+- no tests
+fromversion: 5.0.0
