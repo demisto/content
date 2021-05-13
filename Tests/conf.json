@@ -2550,8 +2550,7 @@
         },
         {
             "integrations": "GitHub",
-            "playbookID": "Git_Integration-Test",
-            "fromversion": "6.1.0"
+            "playbookID": "Git_Integration-Test"
         },
         {
             "integrations": "GitHub IAM",
@@ -3601,7 +3600,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected."
+        "MISP V2": "Cleanup process isn't performed as expected.",
+        "GitHub": "Cannot use proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",
