@@ -94,9 +94,9 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                                     num_of_seconds_to_wait=num_of_seconds_to_wait + 3)
             elif res.status_code in (401, 403):
                 raise AuthorizationError(res.content)
-            elif res.status_code == 400:
-                raise Exception('Bad request. If you are trying to add urls, this could be due to reaching your'
-                                ' organizations quota. Run the command zscaler-url-quota for more info.' )
+            elif res.status_code == 400 and method == 'PUT' and '/urlCategories/' in url_suffix:
+                raise Exception('Bad request, This could be due to reaching your organizations quota.'
+                                ' For more info about your quota usage, run the command zscaler-url-quota.' )
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
