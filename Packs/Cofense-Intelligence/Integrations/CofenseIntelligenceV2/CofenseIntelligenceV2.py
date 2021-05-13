@@ -91,7 +91,7 @@ def threats_analysis(threats: List, indicator: str, threshold: str):
     return md_data, dbot_score
 
 
-def testing_module(client: Client) -> str:
+def connectivity_testing(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -368,7 +368,7 @@ def main() -> None:
         args = demisto.args()
         params = demisto.params()
         if demisto.command() == 'test-module':
-            return_results(testing_module(client))
+            return_results(connectivity_testing(client))
         elif command == "url":
             return_results(search_url_command(client, args, params))
         elif command == "cofense-search":
