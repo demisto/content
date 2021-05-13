@@ -1866,7 +1866,6 @@ def get_user_alerts_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
-###################################
 def get_machine_alerts_command(client: MsClient, args: dict):
     """Retrieves a collection of Alerts related to a given machine ID.
 
