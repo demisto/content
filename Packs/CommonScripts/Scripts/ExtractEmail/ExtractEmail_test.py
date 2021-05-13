@@ -2,16 +2,15 @@ from ExtractEmail import verify_is_email, main
 import pytest
 import demistomock as demisto
 
-# Bitcoin address, expected_output
 testdata = [
     ('Xsoar@test.org.de', True),
-    ('Xsoar@test.uk', True),
+    ('xsoar@test.net.bla', True),
     ('Xsoar@test.uk.Png', False),
     ('Xsoar@test.pNG', False),
     ('Xsoar@test.new.Docx', False),
-    ('entry@id.com.GIF', False),
-    ('Xsoar@test.com', True),
-    ('Xsoar@test.BmP', False),
+    ('entry@id.com.gif', False),
+    ('randomName@randomDomain.com', True),
+    ('Xsoar@xsoar.xlsx', False),
     ('Xsoa r@ test.BmP', False),
 ]
 
@@ -30,8 +29,8 @@ def test_verify_is_email(address, valid):
 
 
 ARGS = {
-    'input': 'Xsoar@test.org.de, Xsoar@test.uk, Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il,Xsoar@xsoar.bla.test'}
-EXPECTED_RESULTS = ['Xsoar@test.org.de', 'Xsoar@test.uk', 'Xsoar@xsoar.co.il', 'Xsoar@xsoar.bla.test']
+    'input': 'Xsoar@test.org.de,Xsoar@test.pNG, Xsoar@test.uk, Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il'}
+EXPECTED_RESULTS = ['Xsoar@test.org.de', 'Xsoar@test.uk', 'Xsoar@xsoar.co.il']
 
 
 def test_main(mocker):
