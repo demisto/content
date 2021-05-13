@@ -1,5 +1,5 @@
-Aruba ClearPass Policy Manager provides role and devicebased network access control for employees, contractors and guests across any multivendor wired, wireless and VPN infrastructure.
-This integration was integrated and tested with version 6.9 of HPE Aruba Clearpass
+Aruba ClearPass Policy Manager provides role and device-based network access control for employees, contractors, and guests across any multi-vendor wired, wireless, and VPN infrastructure.
+This integration was integrated and tested with version 6.9 of HPE Aruba Clearpass.
 ## Configure HPE Aruba Clearpass on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,7 +8,7 @@ This integration was integrated and tested with version 6.9 of HPE Aruba Clearpa
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL (e.g. https://example.net:57123) |  | True |
+    | Your server URL (e.g., https://example.net:57123) |  | True |
     | Client ID | HPE Aruba Clearpass client identifier. | True |
     | Client Secret | HPE Aruba Clearpass client secret. | True |
     | Trust any certificate (not secure) |  | False |
@@ -30,10 +30,10 @@ Get a list of endpoints.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mac_address | MAC Address of the required endpoint. If not given, all the endpoints will be returned. | Optional | 
-| status | Status of the required endpoint. Can be Known/Unknown/Disabled. Possible values are: Known, Unknown, Disabled. | Optional | 
-| offset | Zero based offset to start from. The default value is 0. | Optional | 
-| limit | Maximum number of items to return in range of 1 – 1000. The default value is 25. | Optional | 
+| mac_address | MAC address of the required endpoint. If not given, all the endpoints will be returned. | Optional | 
+| status | Status of the required endpoint. Possible values: Known, Unknown, Disabled. | Optional | 
+| offset | Zero based offset to start from. Defaut is 0. | Optional | 
+| limit | Maximum number of items to return in the range of 1 – 1000. Default is 25. | Optional | 
 
 
 #### Context Output
@@ -41,11 +41,11 @@ Get a list of endpoints.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPEArubaClearpass.endpoints.id | Number | The ID of the endpoint. | 
-| HPEArubaClearpass.endpoints.mac_address | string | The MAC Address of the endpoint. | 
+| HPEArubaClearpass.endpoints.mac_address | string | The MAC address of the endpoint. | 
 | HPEArubaClearpass.endpoints.description | string | The description of the endpoint. | 
 | HPEArubaClearpass.endpoints.status | string | The status of the endpoint. | 
 | HPEArubaClearpass.endpoints.device_insight_tags | Unknown | List of Device Insight Tags. | 
-| HPEArubaClearpass.endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) may be stored with the endpoint. | 
+| HPEArubaClearpass.endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) that may be stored with the endpoint. | 
 
 
 #### Command Example
@@ -104,11 +104,11 @@ Updates some fields of an endpoint.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_id | Numeric ID of the endpoint. | Required | 
-| mac_address | MAC Address of the endpoint to be set. If not given, all the endpoints will be returned. | Optional | 
-| status | Status of the endpoint to be set. Can be Known/Unknown/Disabled. Possible values are: Known, Unknown, Disabled. | Optional | 
+| mac_address | MAC address of the endpoint to be set. If not given, all the endpoints will be returned. | Optional | 
+| status | Status of the endpoint to be set. Can be Known/Unknown/Disabled. Possible values: Known, Unknown, Disabled. | Optional | 
 | description | Description of the endpoint to be set. | Optional | 
-| device_insight_tags | A comma seperated list of Device Insight Tags. | Optional | 
-| attributes | Additional attributes (key/value pairs) may be stored with the endpoint. An example for an attribute - [{"demisto_test": "aaaaa"},{"test":"good"}]. | Optional | 
+| device_insight_tags | A comma-separated list of Device Insight Tags. | Optional | 
+| attributes | Additional attributes (key/value pairs) that may be stored with the endpoint. For example: [{"demisto_test": "aaaaa"},{"test":"good"}]. | Optional | 
 
 
 #### Context Output
@@ -116,11 +116,11 @@ Updates some fields of an endpoint.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HPEArubaClearpass.endpoints.id | Number | The ID of the endpoint. | 
-| HPEArubaClearpass.endpoints.mac_address | string | The MAC Address of the endpoint. | 
+| HPEArubaClearpass.endpoints.mac_address | string | The MAC address of the endpoint. | 
 | HPEArubaClearpass.endpoints.description | string | The description of the endpoint. | 
 | HPEArubaClearpass.endpoints.status | string | The status of the endpoint. | 
 | HPEArubaClearpass.endpoints.device_insight_tags | Unknown | List of Device Insight Tags. | 
-| HPEArubaClearpass.endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) may be stored with the endpoint. | 
+| HPEArubaClearpass.endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) that may be stored with the endpoint. | 
 
 
 #### Command Example
@@ -169,8 +169,8 @@ Get a list of attributes. If no arguments were given, all of the attributes will
 | attribute_id | Numeric ID of the required attribute. | Optional | 
 | name | Name of the required attribute. | Optional | 
 | entity_name | Entity name of the required attribute. Possible values are: Device, LocalUser, GuestUser, Endpoint, Onboard. | Optional | 
-| offset | Zero based offset to start from. The default value is 0. | Optional | 
-| limit | Maximum number of items to return in range of 1 – 1000. The default value is 25. | Optional | 
+| offset | Zero-based offset to start from. Default is 0. | Optional | 
+| limit | Maximum number of items to return in the range of 1 – 1000. Default is 25. | Optional | 
 
 
 #### Context Output
@@ -180,9 +180,9 @@ Get a list of attributes. If no arguments were given, all of the attributes will
 | HPEArubaClearpass.attributes.id | Number | The ID of the attribute. | 
 | HPEArubaClearpass.attributes.name | string | The name of the attribute. | 
 | HPEArubaClearpass.attributes.entity_name | string | The entity name of the attribute. | 
-| HPEArubaClearpass.attributes.data_type | string | The data type of the attribute \(can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay\). | 
-| HPEArubaClearpass.attributes.mandatory | Boolean | Whether this attribute mandatory for the given entity_name. | 
-| HPEArubaClearpass.attributes.default_value | Unknown | Default Value of the attribute. | 
+| HPEArubaClearpass.attributes.data_type | string | The data type of the attribute \(can be one of the following - Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay\). | 
+| HPEArubaClearpass.attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
+| HPEArubaClearpass.attributes.default_value | Unknown | Default value of the attribute. | 
 | HPEArubaClearpass.attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
 | HPEArubaClearpass.attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
 
@@ -445,12 +445,12 @@ Create a new attribute.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the attribute to be set. | Required | 
-| entity_name | Entity name of the attribute to be set. Can be Device/LocalUser/GuestUser/Endpoint/Onboard. Possible values are: Device, LocalUser, GuestUser, Endpoint, Onboard. | Required | 
-| data_type | Data Type of the attribute to be set. Possible values are: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | Required | 
-| mandatory | Whether to make this attribute mandatory for the given entity_name. Default is false. Possible values are: True, False. | Optional | 
-| default_value | Default Value of the attribute. Default is an empty string. | Optional | 
-| allow_multiple | Whether to allow multiple values of the attribute with data type String only (API limitation). Default is false. Possible values are: True, False. | Optional | 
-| allowed_value | Possible value for attribute with data type List only - API limitation (e.g., example1,example2,example3). Default is an empty string. | Optional | 
+| entity_name | Entity name of the attribute to be set. Possible values: Device, LocalUser, GuestUser, Endpoint, Onboard. | Required | 
+| data_type | Data Type of the attribute to be set. Possible values: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | Required | 
+| mandatory | Whether to make this attribute mandatory for the given entity_name. Default is False. Possible values are: True, False. | Optional | 
+| default_value | Default value of the attribute. Default is an empty string. | Optional | 
+| allow_multiple | Whether to allow multiple values of the attribute with data type String only (API limitation). Default is False. Possible values are: True, False. | Optional | 
+| allowed_value | Possible value for attribute with data type List only (API limitation) (e.g., example1,example2,example3). Default is an empty string. | Optional | 
 
 
 #### Context Output
@@ -460,9 +460,9 @@ Create a new attribute.
 | HPEArubaClearpass.attributes.id | Number | The ID of the attribute. | 
 | HPEArubaClearpass.attributes.name | string | The name of the attribute. | 
 | HPEArubaClearpass.attributes.entity_name | string | The entity name of the attribute. | 
-| HPEArubaClearpass.attributes.data_type | string | The data type of the attribute \(can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay\). | 
-| HPEArubaClearpass.attributes.mandatory | Boolean | Whether this attribute mandatory for the given entity_name. | 
-| HPEArubaClearpass.attributes.default_value. | Unknown | Default Value of the attribute. | 
+| HPEArubaClearpass.attributes.data_type | string | The data type of the attribute. Can be one of the following: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | 
+| HPEArubaClearpass.attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
+| HPEArubaClearpass.attributes.default_value. | Unknown | Default value of the attribute. | 
 | HPEArubaClearpass.attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
 | HPEArubaClearpass.attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
 
@@ -508,12 +508,12 @@ Update some fields of an attribute by the attribute's ID.
 | --- | --- | --- |
 | attribute_id | Numeric ID of the attribute to be updated. | Required | 
 | name | Name of the attribute to be set. | Optional | 
-| entity_name | Entity Name of the attribute to be set. Can be Device/LocalUser/GuestUser/Endpoint/Onboard. Possible values are: Device, LocalUser, GuestUser, Endpoint, Onboard. | Optional | 
-| data_type | Data Type of the attribute to be set. Possible values are: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | Optional | 
-| mandatory | Whether to make this attribute mandatory for the given entity_name. Default is false. Possible values are: True, False. | Optional | 
-| default_value | Default Value of the attribute. Default is an empty string. | Optional | 
-| allow_multiple | Whether to allow multiple values of the attribute with data type String only (API limitation). Default is false. Possible values are: True, False. | Optional | 
-| allowed_value | Possible value for attribute with data type List only - API limitation (e.g., example1,example2,example3). Default is an empty string. | Optional | 
+| entity_name | Entity Name of the attribute to be set. Possible values: Device, LocalUser, GuestUser, Endpoint, Onboard. | Optional | 
+| data_type | Data type of the attribute to be set. Possible values are: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | Optional | 
+| mandatory | Whether to make this attribute mandatory for the given entity_name. Default is False. Possible values are: True, False. | Optional | 
+| default_value | Default value of the attribute. Default is an empty string. | Optional | 
+| allow_multiple | Whether to allow multiple values of the attribute with data type String only (API limitation). Default is False. Possible values are: True, False. | Optional | 
+| allowed_value | Possible value for attribute with data type List only (API limitation) (e.g., example1,example2,example3). Default is an empty string. | Optional | 
 
 
 #### Context Output
@@ -523,9 +523,9 @@ Update some fields of an attribute by the attribute's ID.
 | HPEArubaClearpass.attributes.id | Number | The ID of the attribute. | 
 | HPEArubaClearpass.attributes.name | string | The name of the attribute. | 
 | HPEArubaClearpass.attributes.entity_name | string | The entity name of the attribute. | 
-| HPEArubaClearpass.attributes.data_type | string | The data type of the attribute \(can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay\). | 
-| HPEArubaClearpass.attributes.mandatory | Boolean | Whether this attribute mandatory for the given entity_name. | 
-| HPEArubaClearpass.attributes.default_value. | Unknown | Default Value of the attribute. | 
+| HPEArubaClearpass.attributes.data_type | string | The data type of the attribute. Can be one of the following: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | 
+| HPEArubaClearpass.attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
+| HPEArubaClearpass.attributes.default_value. | Unknown | Default value of the attribute. | 
 | HPEArubaClearpass.attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
 | HPEArubaClearpass.attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
 
@@ -639,8 +639,8 @@ Disconnect active session.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearpass.sessions.Error_code | Number | Error status code of response \(non-zero if a problem occurred\). | 
-| HPEArubaClearpass.sessions.Response_message | String | Describes the result of the disconnect operation. | 
+| HPEArubaClearpass.sessions.Error_code | Number | Error status code of the response \(non-zero if a problem occurred\). | 
+| HPEArubaClearpass.sessions.Response_message | String | Describes the result of the disconnected operation. | 
 
 
 #### Command Example
