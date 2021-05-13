@@ -129,8 +129,8 @@ script:
       description: Incident's ID.
       type: Number
     - contextPath: Microsoft365Defender.Incident.redirectIncidentId
-      description: Only populated in case an incident is grouped together with
-        another incident, as part of the incident processing logic.
+      description: Only populated in case an incident is grouped together with another
+        incident, as part of the incident processing logic.
       type: Unknown
     - contextPath: Microsoft365Defender.Incident.incidentName
       description: The name of the incident.
@@ -145,17 +145,16 @@ script:
       description: Owner of the incident.
       type: String
     - contextPath: Microsoft365Defender.Incident.classification
-      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive, and
-        TruePositive.'
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
+        and TruePositive.'
       type: String
     - contextPath: Microsoft365Defender.Incident.determination
-      description: 'The determination of the incident. Possible values are:
-        NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and
-        Other.'
+      description: 'The determination of the incident. Possible values are: NotAvailable,
+        Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
       type: String
     - contextPath: Microsoft365Defender.Incident.status
-      description: 'The current status of the incident. Possible values
-        are: Active, Resolved, and Redirected.'
+      description: 'The current status of the incident. Possible values are: Active,
+        Resolved, and Redirected.'
       type: String
     - contextPath: Microsoft365Defender.Incident.severity
       description: 'Severity of the incident. Possible values are: UnSpecified, Informational,
@@ -215,7 +214,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'
+      description: 'A comma-separated list of custom tags associated with an incident.
+        For example: tag1,tag2,tag3.'
       isArray: true
       name: tags
       required: false
@@ -236,8 +236,8 @@ script:
       description: Incident's ID.
       type: Number
     - contextPath: Microsoft365Defender.Incident.redirectIncidentId
-      description: Only populated in case an incident is grouped together with
-        another incident, as part of the incident processing logic.
+      description: Only populated in case an incident is grouped together with another
+        incident, as part of the incident processing logic.
       type: Unknown
     - contextPath: Microsoft365Defender.Incident.incidentName
       description: The name of the incident.
@@ -252,17 +252,16 @@ script:
       description: Owner of the incident.
       type: String
     - contextPath: Microsoft365Defender.Incident.classification
-      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive, and
-        TruePositive.'
+      description: 'Specification of the incident. Possible values are: Unknown, FalsePositive,
+        and TruePositive.'
       type: String
     - contextPath: Microsoft365Defender.Incident.determination
-      description: 'The determination of the incident. Possible values are:
-        NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and
-        Other.'
+      description: 'The determination of the incident. Possible values are: NotAvailable,
+        Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
       type: String
     - contextPath: Microsoft365Defender.Incident.status
-      description: 'The current status of the incident. Possible values
-        are: Active, Resolved, and Redirected.'
+      description: 'The current status of the incident. Possible values are: Active,
+        Resolved, and Redirected.'
       type: String
     - contextPath: Microsoft365Defender.Incident.severity
       description: 'Severity of the incident. Possible values are: UnSpecified, Informational,
@@ -286,8 +285,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Advanced hunting is a threat-hunting tool that uses specially constructed
+    description: 'Advanced hunting is a threat-hunting tool that uses specially constructed
       queries to examine the past 30 days of event data in Microsoft 365 Defender.
+      Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.'
     execution: false
     name: microsoft-365-defender-advanced-hunting
     outputs:
