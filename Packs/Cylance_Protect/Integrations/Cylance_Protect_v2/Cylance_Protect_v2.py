@@ -395,7 +395,7 @@ def get_device_threats():
         })
     if device_threats:
         threats_context = createContext(data=device_threats, keyTransform=underscoreToCamelCase)
-        threats_context = add_capitalized_hash(threats_context)
+        threats_context = add_capitalized_hash_to_context(threats_context)
         ec = {
             'File': threats_context,
             'DBotScore': dbot_score_array
@@ -638,7 +638,7 @@ def get_threat():
             threshold = demisto.args().get('threshold', FILE_THRESHOLD)
             dbot_score = translate_score(threat['cylance_score'], int(threshold))
         context_threat = createContext(data=threat, keyTransform=underscoreToCamelCase, removeNull=True)
-        context_threat = add_capitalized_hash(context_threat)
+        context_threat = add_capitalized_hash_to_context(context_threat)
         ec = {
             'File': context_threat,
             'DBotScore': {
@@ -693,7 +693,7 @@ def get_threats():
             'Score': dbot_score
         })
     context_threat = createContext(data=threats, keyTransform=underscoreToCamelCase, removeNull=True)
-    context_threat = add_capitalized_hash(context_threat)
+    context_threat = add_capitalized_hash_to_context(context_threat)
     ec = {
         'File': context_threat,
         'DBotScore': dbot_score_array
@@ -835,7 +835,7 @@ def get_list():
         })
     if lst:
         context_list = createContext(data=lst, keyTransform=underscoreToCamelCase, removeNull=True)
-        context_list = add_capitalized_hash((context_list))
+        context_list = add_capitalized_hash_to_context((context_list))
         ec = {
             'File': context_list,
             'DBotScore': dbot_score_array
@@ -1351,7 +1351,7 @@ def fetch_incidents():
     demisto.setLastRun({'time': current_run.isoformat().split('.')[0]})
 
 
-def add_capitalized_hash(threats_context):
+def add_capitalized_hash_to_context(threats_context):
     """Add capitalized hash keys to the context such as SHA256 and MD5,
     the keys are redundant since they are used for avoiding BC issues.
 
