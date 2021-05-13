@@ -51,6 +51,11 @@ configuration:
   name: fetch_size
   required: false
   type: 0
+- defaultvalue: '60'
+  display: Request time (in secondes). The default is 60.
+  name: timeout
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
