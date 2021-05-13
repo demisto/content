@@ -1032,7 +1032,11 @@ def fetch_incidents_long_running_events(
         new_incidents_samples if new_incidents_samples else last_run.get("samples", [])
     )
 
-    context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample}
+    if incidents_batch_for_sample:
+        context = {LAST_FETCH_KEY: offense_id, "samples": incidents_batch_for_sample[:1]}
+    else:
+        context = {LAST_FETCH_KEY: offense_id, "samples": []}
+
     set_integration_context(context, sync=SYNC_CONTEXT)
 
 
