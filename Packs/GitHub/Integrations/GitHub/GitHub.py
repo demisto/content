@@ -1469,6 +1469,68 @@ def list_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
+def list_check_runs(owner_name, repository_name, run_id, commit_id):
+    url_suffix = None
+
+    if run_id:
+        url_suffix = f"/repos/{owner_name}/{repository_name}/check-runs/{run_id}"
+    elif commit_id:
+        url_suffix = f"/repos/{owner_name}/{repository_name}/commits/{commit_id}/check-runs"
+    else:
+        raise DemistoException("You have to specify either the check run id of the head commit reference")
+
+    check_runs = http_request(method="GET", url_suffix=url_suffix)
+
+    return [r for r in check_runs.get('check_runs')]
+
+
+def get_github_get_check_run():
+    """ List github check runs.
+
+    """
+    command_args = demisto.args()
+    owner_name = command_args.get('owner', '')
+    repository_name = command_args.get('repository', '')
+    run_id = command_args.get('run_id', '')
+    commit_id = command_args.get('commit_id', '')
+
+    check_run_result = []
+
+    check_runs = list_check_runs(owner_name=owner_name, repository_name=repository_name, run_id=run_id, commit_id=commit_id)
+
+    for check_run in check_runs:
+        check_run_id = check_run.get('id', '')
+        check_external_id = check_run.get('external_id', '')
+        check_run_name = check_run.get('name', '')
+        check_run_app_name = check_run['app'].get('name', '')
+        check_run_pr = check_run.get('pull_requests')
+        check_run_status = check_run.get('status', '')
+        check_run_conclusion = check_run.get('conclusion', '')
+        check_run_started_at = check_run.get('started_at', '')
+        check_run_completed_at = check_run.get('completed_at', '')
+        check_run_output = check_run.get('output', '')
+
+        check_run_result.append({
+            'CheckRunID': check_run_id,
+            'CheckExternalID': check_external_id,
+            'CheckRunName': check_run_name,
+            'CheckRunAppName': check_run_app_name,
+            'CheckRunPR': check_run_pr,
+            'CheckRunStatus': check_run_status,
+            'CheckRunConclusion': check_run_conclusion,
+            'CheckRunStartedAt': check_run_started_at,
+            'CheckRunCompletedAt': check_run_completed_at,
+            'CheckRunOutPut': check_run_output
+        })
+    command_results = CommandResults(
+        outputs_prefix='GitHub.CheckRuns',
+        outputs_key_field='CheckRunID',
+        outputs=check_run_result,
+        raw_response=check_run_result,
+    )
+    return_results(command_results)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1478,23 +1540,45 @@ def fetch_incidents_command():
         start_time = datetime.now() - timedelta(days=int(FETCH_TIME))
 
     last_time = start_time
-    issue_list = http_request(method='GET',
-                              url_suffix=ISSUE_SUFFIX,
-                              params={'state': 'all'})
-
     incidents = []
-    for issue in issue_list:
-        updated_at_str = issue.get('created_at')
-        updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
-        if updated_at > start_time:
-            inc = {
-                'name': issue.get('url'),
-                'occurred': updated_at_str,
-                'rawJSON': json.dumps(issue)
-            }
-            incidents.append(inc)
-            if updated_at > last_time:
-                last_time = updated_at
+
+    if demisto.params().get('fetch_object') == "Pull_requests":
+        pr_list = http_request(method='GET',
+                               url_suffix=PULLS_SUFFIX,
+                               params={
+                                   'state': 'open',
+                                   'sort': 'created',
+                                   'page': 1
+                               })
+        for pr in pr_list:
+            updated_at_str = pr.get('created_at')
+            updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+            if updated_at > start_time:
+                inc = {
+                    'name': pr.get('url'),
+                    'occurred': updated_at_str,
+                    'rawJSON': json.dumps(pr)
+                }
+                incidents.append(inc)
+                if updated_at > last_time:
+                    last_time = updated_at
+    else:
+        issue_list = http_request(method='GET',
+                                  url_suffix=ISSUE_SUFFIX,
+                                  params={'state': 'all'})
+
+        for issue in issue_list:
+            updated_at_str = issue.get('created_at')
+            updated_at = datetime.strptime(updated_at_str, '%Y-%m-%dT%H:%M:%SZ')
+            if updated_at > start_time:
+                inc = {
+                    'name': issue.get('url'),
+                    'occurred': updated_at_str,
+                    'rawJSON': json.dumps(issue)
+                }
+                incidents.append(inc)
+                if updated_at > last_time:
+                    last_time = updated_at
 
     demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
     demisto.incidents(incidents)
@@ -1534,6 +1618,8 @@ COMMANDS = {
     'GitHub-get-file-content': get_file_content_from_repo,
     'GitHub-search-code': search_code_command,
     'GitHub-list-team-members': list_team_members_command,
+    'Github-get-check-run': get_github_get_check_run,
+
 }
 
 
