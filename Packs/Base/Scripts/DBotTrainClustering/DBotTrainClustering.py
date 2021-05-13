@@ -537,7 +537,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     clustering = model_processed.clustering
     data = {}  # type: ignore
     data['data'] = []
-    for cluster_number, coordinates in clustering.centers.items():
+    for cluster_number, coordinates in clustering.centers_2d.items():
         if cluster_number not in model_processed.selected_clusters.keys():
             continue
         d = {'x': float(coordinates[0]),
@@ -797,6 +797,15 @@ def transform_names_if_list(incidents_df, field_for_cluster_name):
     return incidents_df
 
 
+def keep_high_level_field(incidents_field: List[str]) -> List[str]:
+    """
+    Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
+    :param incidents_field: list of incident fields
+    :return: Return list of fields
+    """
+    return [x.split('.')[0] if '.' in x else x for x in incidents_field]
+
+
 def calculate_range(data):
     all_data_size = list(map(lambda x: x['data'][0], data['data']))
     max_size = max(all_data_size)
@@ -848,7 +857,8 @@ def main():
 
         # Get all the incidents from query, date and field similarity and field family
         populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
-        incidents, msg = get_all_incidents_for_time_window_and_type(populate_fields, from_date, to_date, query,
+        populate_high_level_fields = keep_high_level_field(populate_fields)
+        incidents, msg = get_all_incidents_for_time_window_and_type(populate_high_level_fields, from_date, to_date, query,
                                                                     # type: ignore
                                                                     limit, incident_type)  # type: ignore
         global_msg += "%s \n" % msg
