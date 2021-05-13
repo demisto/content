@@ -1,2 +1,5 @@
 [file:ServiceDeskPlus.yml]
 ignore=IN126
+
+[file:ServiceDeskPlus_On_Premise.yml]
+ignore=BA108,BA109
