@@ -244,7 +244,7 @@ script:
       required: true
       description: Indicator value
     description: Add Threat Intel Indicator to Threat Intel Source
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   isfetch: true
   runonce: false
   subtype: python3
