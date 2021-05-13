@@ -1,0 +1,70 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "name"
+        ],
+        "keys": [
+            "sum|errorCount"
+        ],
+        "showOthers": false,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 5
+            }
+        ],
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "Playbook name",
+        "yAxisLabel": "Error count"
+    },
+    "query": "type:playbook and errorCount:\u003e0",
+    "modified": "2021-05-13T13:19:44.839087499Z",
+    "name": "Errors per Playbooks (top 5)",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 30,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "playbooks_with_errors",
+    "description": "Failed Automations",
+    "widgetType": "column",
+    "fromVersion": "6.0.0"
+}
