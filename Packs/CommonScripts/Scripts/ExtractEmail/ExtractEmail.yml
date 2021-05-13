@@ -1,0 +1,22 @@
+commonfields:
+  id: ExtractEmail
+  version: 5
+name: ExtractEmail
+script: '-'
+type: python
+tags:
+- indicator-format
+comment: Verifies that an email address is valid and only returns the address if it is valid..
+enabled: true
+args:
+- name: input
+  default: true
+  description: The Emails to process.
+  isArray: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.4.18682
+fromversion: 5.5.0
+tests:
+  - ExtractEmail-Test
