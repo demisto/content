@@ -22,9 +22,9 @@ def test_verify_is_email(address, valid):
     Given
     - address.
     When
-    - When there is an address that looks like a bitcoin address.
+    - When an email address was auto-extracted
     Then
-    - Checks if it's a bitcoin address or not
+    - Checks if it's an email address or not
     """
     assert verify_is_email(address) is valid
 
