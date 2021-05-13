@@ -548,7 +548,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'pivot': "clusterId:" + str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
-             'incidents': incidents_df[display_fields].to_json(orient='records'),
+             'incidents': incidents_df[clustering.model.labels_ == cluster_number][display_fields].to_json(orient='records'),
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
