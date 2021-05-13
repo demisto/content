@@ -2849,6 +2849,44 @@ script:
     - contextPath: GitHub.TeamMember.Team
       description: The user's team.
       type: String
+  - arguments:
+    - default: false
+      description: Commit message.
+      isArray: false
+      name: commit_message
+      required: true
+      secret: false
+    - default: false
+      description: Path to the file in the Github repo (including file name and file
+        ending).
+      isArray: false
+      name: path_to_file
+      required: true
+      secret: false
+    - default: false
+      description: Entry ID for the file to commit.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: master
+      description: 'The branch name. '
+      isArray: false
+      name: branch_name
+      required: true
+      secret: false
+    - default: false
+      description: Required if you are updating a file. The blob SHA of the file being
+        replaced.
+      isArray: false
+      name: file_sha
+      required: false
+      secret: false
+    deprecated: false
+    description: Commit a given file
+    execution: false
+    name: Github-commit-file
   dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true

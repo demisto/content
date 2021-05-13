@@ -25,6 +25,7 @@ USER_SUFFIX: str
 ISSUE_SUFFIX: str
 RELEASE_SUFFIX: str
 PULLS_SUFFIX: str
+FILE_SUFFIX: str
 HEADERS: dict
 
 BASE_URL = 'https://api.github.com'
@@ -1469,6 +1470,28 @@ def list_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
+def commit_file_command():
+    args = demisto.args()
+    commit_message = args.get('commit_message')
+    path_to_file = args.get('path_to_file')
+    branch = args.get('branch_name')
+    entry_id = args.get('entry_id')
+    file_sha = args.get('file_sha')
+    file_path = demisto.getFilePath(entry_id).get('path')
+    with open(file_path, 'rb') as f:
+        file_content = f.read()
+    decoded_content = base64.b64encode(file_content).decode("utf-8")
+    data = {
+        'message': commit_message,
+        'content': decoded_content,
+        'branch': branch
+    }
+    if file_sha:
+        data['sha'] = file_sha
+    res = http_request(method='PUT', url_suffix='{}/{}'.format(FILE_SUFFIX, path_to_file), data=data)
+    return_outputs(res)
+
+
 def fetch_incidents_command():
     last_run = demisto.getLastRun()
     if last_run and 'start_time' in last_run:
@@ -1534,6 +1557,7 @@ COMMANDS = {
     'GitHub-get-file-content': get_file_content_from_repo,
     'GitHub-search-code': search_code_command,
     'GitHub-list-team-members': list_team_members_command,
+    'Github-commit-file': commit_file_command,
 }
 
 
@@ -1550,6 +1574,7 @@ def main():
     global ISSUE_SUFFIX
     global RELEASE_SUFFIX
     global PULLS_SUFFIX
+    global FILE_SUFFIX
     global HEADERS
 
     params = demisto.params()
@@ -1567,6 +1592,7 @@ def main():
     ISSUE_SUFFIX = USER_SUFFIX + '/issues'
     RELEASE_SUFFIX = USER_SUFFIX + '/releases'
     PULLS_SUFFIX = USER_SUFFIX + '/pulls'
+    FILE_SUFFIX = USER_SUFFIX + '/contents'
 
     if TOKEN == '' and PRIVATE_KEY != '':
         try:
