@@ -1,4 +1,7 @@
-This playbook use the generic command !endpoint to retrieve details on specific endpoint. 
+This playbook use the generic command !endpoint to retrieve details on specific endpoint.
+This command currently supporting the next integration:
+- Palo Alto Networks Cortex XDR - Investigation and Response.
+- CrowdStrike Falcon. 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,7 +13,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 * endpoint
