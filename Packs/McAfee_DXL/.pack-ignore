@@ -1,2 +1,5 @@
 [file:McAfee_DXL]
 ignore=PA116
+
+[file:README.md]
+ignore=RM104
