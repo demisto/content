@@ -117,7 +117,7 @@ def testing_module(client: Client) -> str:
     return message
 
 
-def search_url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
     url = args.get('url')
     if not url:
         raise ValueError('url not specified')
@@ -145,7 +145,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params: Dict[str, A
     )
 
 
-def check_ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
     ip = args.get('ip')
     if not ip:
         raise ValueError('IP not specified')
@@ -217,7 +217,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any
     )
 
 
-def check_email_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def check_email_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
     email = args.get('email')
     if not email:
         raise ValueError('Email not specified')
@@ -247,7 +247,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params: Dict[str, 
     )
 
 
-def check_md5_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
     file = args.get('file', None)
     if not file:
         raise ValueError('file not specified')
