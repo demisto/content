@@ -4,13 +4,18 @@ import boto3
 from botocore.config import Config
 
 
-def get_timeout(timeout):
-    if not timeout:
-        timeout = "60,10"  # default values
-    timeout_vals = timeout.split(',')
-    read_timeout = int(timeout_vals[0])
-    connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
-    return read_timeout, connect_timeout
+def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key):
+    """
+    Validates that the provided parameters are compatible with the appropriate authentication method.
+    """
+    if not aws_default_region:
+        raise DemistoException('You must specify AWS default region.')
+
+    if bool(aws_access_key_id) != bool(aws_secret_access_key):
+        raise DemistoException('You must provide Access Key id and Secret key id to configure the instance with '
+                               'credentials.')
+    if bool(aws_role_arn) != bool(aws_role_session_name):
+        raise DemistoException('When using role ARN you must provide role session name.')
 
 
 class AWSClient:
@@ -27,7 +32,7 @@ class AWSClient:
         self.verify_certificate = verify_certificate
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-        (read_timeout, connect_timeout) = get_timeout(timeout)
+        (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
         self.config = Config(
             connect_timeout=connect_timeout,
             read_timeout=read_timeout,
@@ -91,7 +96,6 @@ class AWSClient:
         elif self.aws_access_key_id and self.aws_role_arn:  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
-                region_name=region if region else self.aws_default_region,
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
@@ -111,7 +115,7 @@ class AWSClient:
                 verify=self.verify_certificate,
                 config=self.config
             )
-        elif self.aws_access_key_id and not self.aws_role_arn:   # login with access key id
+        elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
             if region is not None:
                 client = boto3.client(
                     service_name=service,
@@ -137,3 +141,16 @@ class AWSClient:
                 client = boto3.client(service_name=service, region_name=self.aws_default_region)
 
         return client
+
+    @staticmethod
+    def get_timeout(timeout):
+        if not timeout:
+            timeout = "60,10"  # default values
+        try:
+            timeout_vals = timeout.split(',')
+            read_timeout = int(timeout_vals[0])
+        except ValueError:
+            "You can specify just the read timeout (for example 60) or also the connect timeout followed after " \
+             "a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+        connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
+        return read_timeout, connect_timeout
