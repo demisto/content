@@ -91,7 +91,7 @@ def threats_analysis(threats: List, indicator: str, threshold: str):
     return md_data, dbot_score
 
 
-def test_module(client: Client) -> str:
+def testing_module(client: Client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -117,7 +117,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def search_url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     url = args.get('url')
     if not url:
         raise ValueError('url not specified')
@@ -145,7 +145,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandR
     )
 
 
-def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def check_ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     ip = args.get('ip')
     if not ip:
         raise ValueError('IP not specified')
@@ -217,7 +217,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
     )
 
 
-def check_email_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def check_email_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     email = args.get('email')
     if not email:
         raise ValueError('Email not specified')
@@ -247,7 +247,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> Command
     )
 
 
-def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def check_md5_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
     file = args.get('file', None)
     if not file:
         raise ValueError('file not specified')
@@ -349,7 +349,7 @@ def main() -> None:
     username = demisto.params().get('credentials', {}).get('identifier')
     password = demisto.params().get('credentials', {}).get('password')
     # get the service API url
-    base_url = demisto.params()['url']
+    base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
@@ -368,7 +368,7 @@ def main() -> None:
         args = demisto.args()
         params = demisto.params()
         if demisto.command() == 'test-module':
-            return_results(test_module(client))
+            return_results(testing_module(client))
         elif command == "url":
             return_results(search_url_command(client, args, params))
         elif command == "cofense-search":
