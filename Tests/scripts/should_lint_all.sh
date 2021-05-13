@@ -34,7 +34,7 @@ elif [ "$CI_COMMIT_BRANCH" == "master" ]; then
         fi
     fi
 else
-    DIFF_COMPARE=origin/master...${$CI_COMMIT_BRANCH}
+    DIFF_COMPARE=origin/master...${CI_COMMIT_BRANCH}
 fi
 
 # test if any of the lint libraries has been updated

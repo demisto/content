@@ -92,9 +92,8 @@
         {
             "integrations": "SecurityAndCompliance",
             "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
-            "instance_names": "ewv2_regular",
             "fromversion": "5.5.0",
-            "timeout": 700
+            "timeout": 1000
         },
         {
             "integrations": "SecurityIntelligenceServicesFeed",
@@ -1050,7 +1049,13 @@
         },
         {
             "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne V2 - test"
+            "instance_names": "SentinelOne_v2.0",
+            "playbookID": "SentinelOne V2.0 - Test"
+        },
+        {
+            "integrations": "SentinelOne V2",
+            "instance_names": "SentinelOne_v2.1",
+            "playbookID": "SentinelOne V2.1 - Test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
@@ -1464,6 +1469,11 @@
         {
             "integrations": "ipinfo",
             "playbookID": "IPInfoTest"
+        },
+        {
+            "integrations": "ipinfo_v2",
+            "playbookID": "IPInfo_v2Test",
+            "fromversion": "5.5.0"
         },
         {
             "playbookID": "VerifyHumanReadableFormat"
@@ -2453,6 +2463,7 @@
         },
         {
             "integrations": "AWS - EC2",
+            "instance_names": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
             "memory_threshold": 90
@@ -3274,6 +3285,25 @@
             "integrations": "Armis",
             "playbookID": "Armis-Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "Tidy - Test",
+            "integrations": [
+                "AWS - EC2",
+                "Demisto REST API",
+                "Tidy"
+            ],
+            "instance_names": [
+                "aws_alloacte_host"
+            ],
+            "fromversion": "6.0.0",
+            "nightly": true
+        },
+        {
+            "integrations": "Carbon Black Endpoint Standard",
+            "playbookID": "carbonBlackEndpointStandardTestPlaybook",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3281,10 +3311,10 @@
         "Calculate Severity - Standard - Test": "Issue 32715",
         "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
+        "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue 28168",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "RedLockTest": "Issue 24600",
-        "SentinelOne V2 - test": "Issue 24933",
         "TestDedupIncidentsPlaybook": "Issue 24344",
         "CreateIndicatorFromSTIXTest": "Issue 24345",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
@@ -3349,11 +3379,9 @@
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
-        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482",
         "Test-BPA": "Issue 28406",
         "Test-BPA_Integration": "Issue 28236",
         "EWS search-mailbox test": "Issue 27943",
-        "Azure NSG - Test": "Issue 33217",
         "TestTOPdeskPlaybook": "Issue 35412",
         "PAN OS EDL Management - Test": "Issue 35652",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "Issue 31032",
@@ -3361,7 +3389,16 @@
         "Google-Vault-Generic-Test": "Issue 24347",
         "FireEyeNX-Test": "Issue 33216",
         "GmailTest": "Issue 27057",
-        "Gmail Single User - Test": "Issue 27361"
+        "Gmail Single User - Test": "Issue 27361",
+        "AWS - EC2 Test Playbook": "Issue 36486",
+        "BitcoinAbuse-test": "Issue 36688",
+        "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
+        "playbook_TrendmicroCAS_Test": "Issue 32730",
+        "Carbon Black Enterprise EDR Test": "Issue 29775",
+        "Rundeck_test": "Issue 31174",
+        "Azure NSG - Test": "Issue 33217",
+        "AutoFocus V2 test": "Issue 26464",
+        "VirusTotal (API v3) Detonate Test": "Issue 36004"
     },
     "skipped_integrations": {
         
@@ -3388,7 +3425,6 @@
         "GuardiCore": "No instance",
         "Nessus": "No instance",
         "Cisco CloudLock": "No instance",
-        "SentinelOne": "No instance",
         "Vectra v2": "No instance",
         "AWS - IAM": "Issue 21401",
         "GoogleCloudSCC": "No instance, outsourced",
@@ -3466,7 +3502,9 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "SentinelOne V2": "License expired issue #24933",
+        "G Suite Security Alert Center": "Developed by crest, need to add permissions to our instance"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3579,6 +3617,7 @@
         "Tanium",
         "LogRhythmRest",
         "ipinfo",
+        "ipinfo_v2",
         "Demisto REST API",
         "syslog",
         "ElasticsearchFeed",
