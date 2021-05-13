@@ -75,8 +75,8 @@ def threats_analysis(threats: List, indicator: str, threshold: str):
         severity_level = 0
         for block in threat.get('blockSet'):
             if block.get('impact'):
-                threat_score = SEVERITY_SCORE.get(block.get('impact'))
-                adjusted_score = int(3 if threshold_score <= threat_score else threat_score)
+                threat_score: int = SEVERITY_SCORE.get(block.get('impact'))
+                adjusted_score = 3 if threshold_score <= threat_score else threat_score
                 if block.get('data') == indicator:
                     dbot_score = severity_level = adjusted_score
                     indicator_found = True
