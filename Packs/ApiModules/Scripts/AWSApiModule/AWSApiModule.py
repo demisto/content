@@ -128,7 +128,7 @@ class AWSClient:
             timeout_vals = timeout.split(',')
             read_timeout = int(timeout_vals[0])
         except ValueError:
-            "You can specify just the read timeout (for example 60) or also the connect timeout followed after " \
-             "a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+            "You can specify just the read timeout (for example 60) or also the connect timeout followed after a " \
+                "comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
         connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
         return read_timeout, connect_timeout

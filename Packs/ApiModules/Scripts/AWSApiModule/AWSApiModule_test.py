@@ -1,5 +1,4 @@
 from AWSApiModule import *
-import demistomock as demisto
 import pytest
 from pytest import raises
 
