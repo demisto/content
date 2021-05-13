@@ -2128,7 +2128,9 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
     :param last_run: last run dict
     :return:
     """
+    print_log(f'original last run is: {last_run}')
     last_run = get_last_run(client, last_run)
+    print_log(f'formatted last run {last_run}')
 
     try:
         last_emails = fetch_last_emails(
@@ -2143,6 +2145,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         )
         incidents = []
         incident: Dict[str, str] = {}
+        print_log('starting processing emails')
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
@@ -2151,6 +2154,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
                 if len(incidents) >= client.max_fetch:
                     break
+        print_log('processing done')
 
         last_run_time = incident.get("occurred", last_run.get(LAST_RUN_TIME))
         if isinstance(last_run_time, EWSDateTime):
@@ -2162,7 +2166,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
             LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0,
         }
-
+        print_log(f'new_last_run: {new_last_run}')
         demisto.setLastRun(new_last_run)
         return incidents
 
@@ -2189,22 +2193,28 @@ def fetch_last_emails(
     :param (Optional) exclude_ids: exclude ids from fetch
     :return: list of exchangelib.Items
     """
+    print_log('starting get folder')
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
     if since_datetime:
+        print_log(f'since_datetime: {since_datetime}')
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone("UTC")) - timedelta(
             minutes=10
         )
+        print_log(f'since_datetime: {since_datetime}')
         qs = qs.filter(last_modified_time__gte=last_10_min)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
-
+    print_log('starting the fetch')
     result = qs.all()
+    print_log('fetch done')
     result = [x for x in result if isinstance(x, Message)]
+    original_result_len = len(result)
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
         result = [x for x in result if x.message_id not in exclude_ids]
+    print_log(f'{original_result_len - len(result)} droped')
     return result
 
 
@@ -2415,6 +2425,11 @@ def main():
 
 
 from MicrosoftApiModule import *  # noqa: E402
+
+
+def print_log(msg):
+    demisto.info(f'timeout-error-info-log: {msg}')
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
