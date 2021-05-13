@@ -122,8 +122,7 @@ configuration:
   - '* urls'
   required: false
   type: 16
-  defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,
-  parent,referrer files,siblings,* soa records,subdomains,* urls'
+  defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
 - additionalinfo: 'Select the list of relationships which will be brought from the api. Note that relationships that are signed with * key are
                                       available only for VirusTotal premium api key'
   display: URL Relationships
@@ -150,30 +149,28 @@ configuration:
   - '* carbonblack children'
   - '* carbonblack parents'
   - '* compressed parents'
-  - contacted domains
-  - contacted ips
-  - contacted urls
-  - dropped files
+  - 'contacted domains'
+  - 'contacted ips'
+  - 'contacted urls'
+  - 'dropped files'
   - '* email attachments'
   - '* email parents'
   - '* embedded domains'
   - '* embedded ips'
   - '* embedded urls'
-  - execution parents
+  - 'execution parents'
   - '* itw domains'
   - '* itw ips'
   - '* overlay children'
   - '* overlay parents'
   - '* pcap children'
   - '* pcap parents'
-  - pe resource children
-  - pe resource parents
+  - 'pe resource children'
+  - 'pe resource parents'
   - '* similar files'
   required: false
   type: 16
-  defaultvalue: '* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,
-  * email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,
-  * overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files'
+  defaultvalue: "* carbonblack children,* carbonblack parents,* compressed parents,contacted domains,contacted ips,contacted urls,dropped files,* email attachments,* email parents,* embedded domains,* embedded ips,* embedded urls,execution parents,* itw domains,* itw ips,* overlay children,* overlay parents,* pcap children,* pcap parents,pe resource children,pe resource parents,* similar files"
 - display: Use system proxy settings
   name: proxy
   defaultvalue: ''

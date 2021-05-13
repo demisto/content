@@ -16,6 +16,7 @@ INTEGRATION_ENTRY_CONTEXT = "VirusTotal"
 
 INDICATOR_TYPE = {
     'ip': FeedIndicatorType.IP,
+    'ip_address': FeedIndicatorType.IP,
     'domain': FeedIndicatorType.Domain,
     'file': FeedIndicatorType.File,
     'url': FeedIndicatorType.URL
@@ -1071,6 +1072,8 @@ def create_relationships(entity_a: str, entity_a_type: str, relationships_respon
             entity_b = relation.get('id', '')
             entity_b_type = INDICATOR_TYPE.get(relation.get('type', '').lower())
             if entity_b and entity_b_type and name:
+                if entity_b_type == FeedIndicatorType.URL:
+                    entity_b = dict_safe_get(relation, ['context_attributes', 'url'])
                 relationships_list.append(
                     EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=name,
                                        entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=reliability,
