@@ -128,7 +128,7 @@ tasks:
     task:
       id: c99055c4-1d15-466c-8d56-bcabec710ac2
       version: -1
-      name: Verify only  Xsoar@Xsoar.com was extracted
+      name: Verify only Xsoar@Xsoar.com was extracted
       description: Verify given entry contains a string
       scriptName: VerifyHumanReadableContains
       type: regular
@@ -148,7 +148,7 @@ tasks:
                 value:
                   simple: "0"
       substring:
-        simple: ' Xsoar@Xsoar.com'
+        simple: 'Xsoar@Xsoar.com'
     separatecontext: false
     view: |-
       {
