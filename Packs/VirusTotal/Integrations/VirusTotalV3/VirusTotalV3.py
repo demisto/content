@@ -1075,6 +1075,9 @@ def create_relationships(entity_a: str, entity_a_type: str, relationships_respon
                     EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=name,
                                        entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=reliability,
                                        brand=INTEGRATION_NAME))
+            else:
+                demisto.info(
+                    f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {name}")
     return relationships_list
 
 
