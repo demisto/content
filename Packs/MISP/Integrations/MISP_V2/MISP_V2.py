@@ -959,7 +959,8 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
         'last',
         'eventid',
         'uuid',
-        'to_ids'
+        'to_ids',
+        'enforceWarninglist'
     ]
 
     args = dict()
@@ -973,6 +974,9 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
+    if 'enforceWarninglist' in args:
+        args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
     # build MISP complex filter
     if 'tags' in args:
         args['tags'] = build_misp_complex_filter(args['tags'])
@@ -1029,7 +1033,8 @@ def search_attributes() -> Tuple[dict, Any]:
         'uuid',
         'to_ids',
         'last',
-        'include_decay_score'
+        'include_decay_score',
+        'enforceWarninglist'
     ]
     args = dict()
     # Create dict to pass into the search
@@ -1042,7 +1047,9 @@ def search_attributes() -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-
+     # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
+    if 'enforceWarninglist' in args:
+        args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
 
