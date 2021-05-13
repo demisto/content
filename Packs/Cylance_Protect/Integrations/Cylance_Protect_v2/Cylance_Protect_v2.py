@@ -1365,7 +1365,7 @@ def add_capitalized_hash_to_context(threats_context):
     """
     if not isinstance(threats_context, list):
         threats_context = [threats_context]
-       
+
     for context_item in threats_context:
         if context_item.get('Sha256'):
             context_item['SHA256'] = context_item.get('Sha256')
