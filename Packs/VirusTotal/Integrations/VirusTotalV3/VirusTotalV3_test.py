@@ -169,7 +169,8 @@ def test_create_relationships():
     """
     expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
     relationships = create_relationships(entity_a='Test', entity_a_type='IP',
-                                         relationships_response=json.load(open('./TestData/relationships.json')), reliability='B - Usually reliable')
+                                         relationships_response=json.load(open('./TestData/relationships.json')),
+                                         reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
 
     for relation, expected_relation_name in zip(relation_entry, expected_name):
