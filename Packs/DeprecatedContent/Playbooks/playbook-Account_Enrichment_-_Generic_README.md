@@ -39,4 +39,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Account Enrichment - Generic](Insert the link to your image here)
+![Account_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Account_Enrichment_Generic.png)
