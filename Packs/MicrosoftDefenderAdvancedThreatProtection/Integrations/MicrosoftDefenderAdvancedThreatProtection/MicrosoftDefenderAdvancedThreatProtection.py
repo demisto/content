@@ -2445,7 +2445,6 @@ def main():
         elif command == 'microsoft-atp-get-user-alerts':
             return_outputs(*get_user_alerts_command(client, args))
 
-        ##################################
         elif command == 'microsoft-atp-get-machine-alerts':
             return_outputs(*get_machine_alerts_command(client, args))
         ##################################
