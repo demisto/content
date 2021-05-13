@@ -19,7 +19,6 @@ TIMEOUT = '30'
 # todo Add timeout argument for list commands.
 
 # todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
-# todo Add documentation connection in the query argument in the hunting command.
 # todo Add limit argument to hunting command - default value 50.
 # todo Add default value for timeout param
 
@@ -406,6 +405,15 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                         'incidents_queue': incidents_queue[fetch_limit:]})
     return oldest_incidents
 
+def _query_set_limit(query: str, limit:int)->str:
+    """
+    Add limit to given query. If the query has limt, change it
+    Args:
+        query: the original query
+        limit: number of entries in the query
+    Returns: query with limit parameters
+    """
+    # break query
 
 @logger
 def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) -> CommandResults:
@@ -415,11 +423,10 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
               - query (str) - The query to run (required)
-
     Returns:
 
     """
-    query = args.get('query')
+    query = args.get('query', '')
     limit = args.get('limit')
     timeout = args.get('timeout')
 
