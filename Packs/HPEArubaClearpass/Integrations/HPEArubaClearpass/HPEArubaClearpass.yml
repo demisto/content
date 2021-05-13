@@ -3,7 +3,7 @@ commonfields:
   id: HPEArubaClearpass
   version: -1
 configuration:
-- display: Your server URL (e.g. https://example.net:57123)
+- display: Your server URL (e.g., https://example.net:57123)
   name: url
   required: true
   type: 0
@@ -25,16 +25,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Aruba ClearPass Policy Manager provides role and devicebased network
-  access control for employees, contractors and guests across any multivendor wired,
-  wireless and VPN infrastructure.
+description: Aruba ClearPass Policy Manager provides role and device-based network
+  access control for employees, contractors, and guests across any multi-vendor wired,
+  wireless, and VPN infrastructure.
 display: HPE Aruba Clearpass
 name: HPEArubaClearpass
 script:
   commands:
   - arguments:
     - default: false
-      description: MAC Address of the required endpoint. If not given, all the endpoints
+      description: MAC address of the required endpoint. If not given, all the endpoints
         will be returned.
       isArray: false
       name: mac_address
@@ -42,7 +42,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Status of the required endpoint. Can be Known/Unknown/Disabled.
+      description: Status of the required endpoint. Possible values- Known, Unknown,
+        Disabled.
       isArray: false
       name: status
       predefined:
@@ -52,14 +53,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Zero based offset to start from. The default value is 0.
+      description: Zero based offset to start from. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: Maximum number of items to return in range of 1 – 1000. The default
-        value is 25.
+      description: Maximum number of items to return in the range of 1 – 1000. Default
+        is 25.
       isArray: false
       name: limit
       required: false
@@ -73,7 +74,7 @@ script:
       description: The ID of the endpoint.
       type: Number
     - contextPath: HPEArubaClearpass.endpoints.mac_address
-      description: The MAC Address of the endpoint.
+      description: The MAC address of the endpoint.
       type: string
     - contextPath: HPEArubaClearpass.endpoints.description
       description: The description of the endpoint.
@@ -85,8 +86,8 @@ script:
       description: List of Device Insight Tags.
       type: Unknown
     - contextPath: HPEArubaClearpass.endpoints.attributes
-      description: Additional attributes (key/value pairs) may be stored with the
-        endpoint.
+      description: Additional attributes (key/value pairs) that may be stored with
+        the endpoint.
       type: Unknown
   - arguments:
     - default: false
@@ -96,7 +97,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: MAC Address of the endpoint to be set. If not given, all the endpoints
+      description: MAC address of the endpoint to be set. If not given, all the endpoints
         will be returned.
       isArray: false
       name: mac_address
@@ -120,14 +121,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma seperated list of Device Insight Tags.
+      description: A comma-seperated list of Device Insight Tags.
       isArray: true
       name: device_insight_tags
       required: false
       secret: false
     - default: false
-      description: 'Additional attributes (key/value pairs) may be stored with the
-        endpoint. An example for an attribute - [{"demisto_test": "aaaaa"},{"test":"good"}]'
+      description: 'Additional attributes (key/value pairs) that may be stored with
+        the endpoint. For example: [{"demisto_test": "aaaaa"},{"test":"good"}].'
       isArray: true
       name: attributes
       required: false
@@ -183,14 +184,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Zero based offset to start from. The default value is 0.
+      description: Zero-based offset to start from. Default is 0.
       isArray: false
       name: offset
       required: false
       secret: false
     - default: false
-      description: Maximum number of items to return in range of 1 – 1000. The default
-        value is 25.
+      description: Maximum number of items to return in the range of 1 – 1000. Default
+        is 25.
       isArray: false
       name: limit
       required: false
@@ -211,13 +212,14 @@ script:
       description: The entity name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.data_type
-      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
+      description: The data type of the attribute (can be one of the following - Boolean,
+        Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.mandatory
       description: Whether this attribute mandatory for the given entity_name.
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.default_value
-      description: Default Value of the attribute.
+      description: Default value of the attribute.
       type: Unknown
     - contextPath: HPEArubaClearpass.attributes.allow_multiple
       description: Whether to allow multiple values of the attribute with data type
@@ -268,7 +270,7 @@ script:
       secret: false
     - default: false
       description: Whether to make this attribute mandatory for the given entity_name.
-        Default is false.
+        Default is False.
       isArray: false
       auto: PREDEFINED
       name: mandatory
@@ -278,14 +280,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Default Value of the attribute. Default is an empty string.
+      description: Default value of the attribute. Default is an empty string.
       isArray: false
       name: default_value
       required: false
       secret: false
     - default: false
       description: Whether to allow multiple values of the attribute with data type
-        String only (API limitation). Default is false.
+        String only (API limitation). Default is False.
       isArray: false
       name: allow_multiple
       auto: PREDEFINED
@@ -295,7 +297,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Possible value for attribute with data type List only - API limitation
+      description: Possible value for attribute with data type List only (API limitation)
         (e.g., example1,example2,example3). Default is an empty string.
       isArray: false
       name: allowed_value
@@ -316,13 +318,14 @@ script:
       description: The entity name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.data_type
-      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
+      description: The data type of the attribute (can be one of the following - Boolean,
+        Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.mandatory
-      description: Whether this attribute mandatory for the given entity_name.
+      description: Whether this attribute is mandatory for the given entity_name.
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.default_value.
-      description: Default Value of the attribute.
+      description: Default value of the attribute.
       type: Unknown
     - contextPath: HPEArubaClearpass.attributes.allow_multiple
       description: Whether to allow multiple values of the attribute with data type
@@ -359,7 +362,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Data Type of the attribute to be set. Can be one of the following
+      description: Data type of the attribute to be set. Can be one of the following
         - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay.
       isArray: false
       name: data_type
@@ -379,7 +382,7 @@ script:
       secret: false
     - default: false
       description: Whether to make this attribute mandatory for the given entity_name.
-        Default is false.
+        Default is False.
       isArray: false
       auto: PREDEFINED
       name: mandatory
@@ -389,14 +392,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Default Value of the attribute. Default is an empty string.
+      description: Default value of the attribute. Default is an empty string.
       isArray: false
       name: default_value
       required: false
       secret: false
     - default: false
       description: Whether to allow multiple values of the attribute with data type
-        String only (API limitation). Default is false.
+        String only (API limitation). Default is False.
       isArray: false
       name: allow_multiple
       auto: PREDEFINED
@@ -406,7 +409,7 @@ script:
       - 'False'
       secret: false
     - default: false
-      description: Possible value for attribute with data type List only - API limitation
+      description: Possible value for attribute with data type List only (API limitation)
         (e.g., example1,example2,example3). Default is an empty string.
       isArray: false
       name: allowed_value
@@ -427,13 +430,14 @@ script:
       description: The entity name of the attribute.
       type: string
     - contextPath: HPEArubaClearpass.attributes.data_type
-      description: The data type of the attribute (can be one of the following - Boolean,Date,Day,IPv4Address,Integer32,List,MACAddress,String,Text,Time,TimeOfDay).
+      description: The data type of the attribute (can be one of the following - Boolean,
+        Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay).
       type: string
     - contextPath: HPEArubaClearpass.attributes.mandatory
-      description: Whether this attribute mandatory for the given entity_name.
+      description: Whether this attribute mandatory is for the given entity_name.
       type: Boolean
     - contextPath: HPEArubaClearpass.attributes.default_value.
-      description: Default Value of the attribute.
+      description: Default value of the attribute.
       type: Unknown
     - contextPath: HPEArubaClearpass.attributes.allow_multiple
       description: Whether to allow multiple values of the attribute with data type
@@ -517,12 +521,12 @@ script:
     name: aruba-clearpass-active-session-disconnect
     outputs:
     - contextPath: HPEArubaClearpass.sessions.Error_code
-      description: Error status code of response (non-zero if a problem occurred).
+      description: Error status code of the response (non-zero if a problem occurred).
       type: Number
     - contextPath: HPEArubaClearpass.sessions.Response_message
-      description: Describes the result of the disconnect operation.
+      description: Describes the result of the disconnected operation.
       type: String
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.9.4.19849
   script: '-'
   subtype: python3
   type: python
