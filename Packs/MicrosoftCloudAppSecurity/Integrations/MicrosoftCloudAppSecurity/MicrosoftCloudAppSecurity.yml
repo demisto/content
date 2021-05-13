@@ -61,8 +61,14 @@ configuration:
   type: 16
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass
     the custom_filter argument it will override the other filters from the integration
-    instance configuration. Example for Custom Filter: {"entity.policy":{"eq":"Impossible
-    travel"}}. For more information about filter syntax, please refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
+    instance configuration. Example for Custom Filter: {"severity":{"eq":2}}.
+    Note that for filtering by "entity.policy", one should use the id of the policy.
+    For example, for retrieving the policy:
+    {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel",
+     "type": "policyRule"}"
+    please query on {"entity.policy":{"eq":1234}}.
+    For more information about filter syntax, please refer to
+    https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
   display: Custom Filter
   hidden: false
   name: custom_filter
