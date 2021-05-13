@@ -1383,12 +1383,10 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     filter_fetch_query = f'id>{offense_highest_id}{user_query}'
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
+    print_debug_msg(f'Query for offenses: {filter_fetch_query}')
 
-    try:
-        offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
-    except Exception as e:
-        print_debug_msg(f'Error occurred in offenses list call. filter parameter is: {filter_fetch_query}')
-        raise e
+    offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
+    print_debug_msg(f'Fetched {len(offenses)} from QRadar.')
     new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
 
     if fetch_mode != FetchMode.no_events.value:
