@@ -47,4 +47,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![PANW - Hunting and threat detection by indicator type V2](Insert the link to your image here)
+![PANW_Hunting_and_threat_detection_by_indicator_type_V2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PANW_Hunting_and_threat_detection_by_indicator_type_V2.png)
