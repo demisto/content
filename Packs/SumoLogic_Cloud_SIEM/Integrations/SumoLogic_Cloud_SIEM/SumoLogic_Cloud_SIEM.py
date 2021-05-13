@@ -113,7 +113,7 @@ def insight_signal_to_readable(obj):
     if obj.get('status'):
         if 'displayName' in obj['status']:
             cap_obj['Status'] = obj['status']['displayName']
-    
+
     # For Assignee show username (email)
     cap_obj['Assignee'] = ''
     if obj.get('assignee'):
