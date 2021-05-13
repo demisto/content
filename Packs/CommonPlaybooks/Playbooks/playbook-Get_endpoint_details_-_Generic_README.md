@@ -43,4 +43,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Get endpoint details - Generic](Insert the link to your image here)
+![Get endpoint details - Generic](https://github.com/demisto/content/blob/ee07059dc8769d6f5652a4a07b668d63266cafaf/Packs/CommonPlaybooks/doc_files/Get_endpoint_details_-_Generic.png)
