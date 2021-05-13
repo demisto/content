@@ -1,7 +1,5 @@
-Deprecated. Investigates suspected malware presence on an endpoint. This is a master playbook.
-
-Labels:
- - System: the hostname for the endpoint being investigated
+Deprecated. Use the "Account Enrichment - Generic v2.1" playbook instead.
+Enrich the accounts under the Account context key with details from relevant integrations such as AD.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,9 +11,8 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* ExposeModules
 * Exists
-* Autoruns
+* ADGetUser
 
 ### Commands
 This playbook does not use any commands.
@@ -26,4 +23,8 @@ There are no inputs for this playbook.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook. 
+There are no outputs for this playbook.
+
+## Playbook Image
+---
+![Account Enrichment](Insert the link to your image here)
