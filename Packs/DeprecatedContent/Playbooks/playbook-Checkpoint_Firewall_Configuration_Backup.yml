@@ -325,3 +325,4 @@ inputs: []
 outputs: []
 tests:
 - No test - old playbook
+deprecated: true
