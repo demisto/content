@@ -2550,7 +2550,8 @@
         },
         {
             "integrations": "GitHub",
-            "playbookID": "Git_Integration-Test"
+            "playbookID": "Git_Integration-Test",
+            "fromversion": "6.1.0"
         },
         {
             "integrations": "GitHub IAM",
