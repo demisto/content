@@ -1470,7 +1470,6 @@ def list_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
-<<<<<<< HEAD
 def commit_file_command():
     args = demisto.args()
     commit_message = args.get('commit_message')
@@ -1491,7 +1490,8 @@ def commit_file_command():
         data['sha'] = file_sha
     res = http_request(method='PUT', url_suffix='{}/{}'.format(FILE_SUFFIX, path_to_file), data=data)
     return_outputs(res)
-=======
+
+
 def list_check_runs(owner_name, repository_name, run_id, commit_id):
     url_suffix = None
 
@@ -1552,7 +1552,6 @@ def get_github_get_check_run():
         raw_response=check_run_result,
     )
     return_results(command_results)
->>>>>>> master
 
 
 def fetch_incidents_command():
@@ -1644,7 +1643,6 @@ COMMANDS = {
     'GitHub-list-team-members': list_team_members_command,
     'Github-get-check-run': get_github_get_check_run,
     'Github-commit-file': commit_file_command,
-    'Github-get-check-run': get_github_get_check_run,
 }
 
 
