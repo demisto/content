@@ -73,15 +73,15 @@ class AWSClient:
                 sts_client = boto3.client('sts', config=self.config, verify=self.verify_certificate,
                                           region_name=self.aws_default_region)
                 sts_response = sts_client.assume_role(**kwargs)
-                    client = boto3.client(
-                        service_name=service,
-                        region_name=region if region else self.aws_default_region,
-                        aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                        aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                        aws_session_token=sts_response['Credentials']['SessionToken'],
-                        verify=self.verify_certificate,
-                        config=self.config
-                    )
+                client = boto3.client(
+                    service_name=service,
+                    region_name=region if region else self.aws_default_region,
+                    aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
+                    aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
+                    aws_session_token=sts_response['Credentials']['SessionToken'],
+                    verify=self.verify_certificate,
+                    config=self.config
+                )
         elif self.aws_access_key_id and self.aws_role_arn:  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
@@ -105,29 +105,17 @@ class AWSClient:
                 config=self.config
             )
         elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
-            if region is not None:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=region,
-                    aws_access_key_id=self.aws_access_key_id,
-                    aws_secret_access_key=self.aws_secret_access_key,
-                    verify=self.verify_certificate,
-                    config=self.config
-                )
-            else:
-                client = boto3.client(
-                    service_name=service,
-                    region_name=self.aws_default_region,
-                    aws_access_key_id=self.aws_access_key_id,
-                    aws_secret_access_key=self.aws_secret_access_key,
-                    verify=self.verify_certificate,
-                    config=self.config
-                )
+            client = boto3.client(
+                service_name=service,
+                region_name=region if region else self.aws_default_region,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
+                verify=self.verify_certificate,
+                config=self.config
+            )
         else:  # login with default permissions, permissions pulled from the service metadata
-            if region is not None:
-                client = boto3.client(service_name=service, region_name=region)
-            else:
-                client = boto3.client(service_name=service, region_name=self.aws_default_region)
+            client = boto3.client(service_name=service,
+                                  region_name=region if region else self.aws_default_region)
 
         return client
 
