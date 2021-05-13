@@ -1888,7 +1888,6 @@ def get_machine_alerts_command(client: MsClient, args: dict):
     }
     return human_readable, entry_context, response
 
-####################################
 
 
 def get_user_machine_command(client: MsClient, args: dict):
