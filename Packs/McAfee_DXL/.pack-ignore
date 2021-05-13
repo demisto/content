@@ -1,2 +1,5 @@
 [file:McAfee_DXL]
 ignore=PA116
+
+[file:McAfee_DXL.yml]
+ignore=BA108,BA109

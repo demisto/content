@@ -3,3 +3,6 @@ ignore=IN110,IN109
 
 [file:layoutscontainer-Traps.json]
 ignore=BA101
+
+[file:PaloAltoNetworks_Traps.yml]
+ignore=BA108,BA109
