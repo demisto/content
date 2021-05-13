@@ -49,7 +49,7 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='/threat/search', params=params)
 
 
-def create_threat_md_row(threat: Dict, severity_level: int=None):
+def create_threat_md_row(threat: Dict, severity_level: int = None):
     threat_row = {"Threat ID": threat.get("id", ""),
                   "Threat Types": "\n".join(
                       [m.get("description", "") for m in threat.get("malwareFamilySet", [])]),
@@ -76,7 +76,7 @@ def threats_analysis(threats: List, indicator: str, threshold: str):
         for block in threat.get('blockSet'):
             if block.get('impact'):
                 threat_score = SEVERITY_SCORE.get(block.get('impact'))
-                adjusted_score = 3 if threshold_score <= threat_score else threat_score
+                adjusted_score = int(3 if threshold_score <= threat_score else threat_score)
                 if block.get('data') == indicator:
                     dbot_score = severity_level = adjusted_score
                     indicator_found = True

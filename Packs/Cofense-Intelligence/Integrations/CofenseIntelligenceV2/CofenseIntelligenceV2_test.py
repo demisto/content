@@ -1,10 +1,3 @@
-
-from CommonServerPython import *
-import demistomock as demisto
-import pytest
-import requests
-import json
-import base64
 import io
 from CofenseIntelligenceV2 import *
 
