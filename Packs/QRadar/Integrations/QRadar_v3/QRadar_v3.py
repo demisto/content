@@ -743,7 +743,7 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     except Exception as e:
         print_debug_msg(
             f'Error occurred in offenses types call. '
-            f'''filter parameter is: {id in ({','.join(map(str, offense_types_ids))})}''')
+            f'''filter parameter is: id in ({','.join(map(str, offense_types_ids))})''')
         raise e
     return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
 
