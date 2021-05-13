@@ -660,8 +660,6 @@ class MsClient:
         """
         cmd_url = f'/machines/{machine_id}/alerts'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
-# End custom function
-###########################
 
     def get_domain_machines(self, domain):
         """Retrieves a collection of Machines that have communicated to or from a given domain address.
