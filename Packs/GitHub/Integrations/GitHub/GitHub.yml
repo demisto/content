@@ -2909,7 +2909,6 @@ script:
       type: String
   - arguments:
     - default: false
-<<<<<<< HEAD
       description: Commit message.
       isArray: false
       name: commit_message
@@ -2946,7 +2945,8 @@ script:
     description: Commit a given file
     execution: false
     name: Github-commit-file
-=======
+  - arguments:
+    - default: false
       description: The branch name from which to retrieve pull requests.
       isArray: false
       name: branch_name
@@ -3506,7 +3506,6 @@ script:
     - contextPath: GitHub.PR.ChangedFiles
       description: The number of changed files in the pull request
       type: Number
->>>>>>> master
   dockerimage: demisto/pyjwt3:1.0.0.19327
   feed: false
   isfetch: true
