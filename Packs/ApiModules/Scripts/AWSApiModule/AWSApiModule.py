@@ -67,6 +67,7 @@ class AWSClient:
             kwargs.update({'Policy': role_policy})
         elif self.aws_role_policy is not None:
             kwargs.update({'Policy': self.aws_role_policy})
+
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
 
             if not self.aws_access_key_id:

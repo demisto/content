@@ -3,29 +3,28 @@ import demistomock as demisto
 import pytest
 from pytest import raises
 
-VALIDATE_CASES = [
-    ({
+VALIDATE_CASES = \
+    [{
      'aws_default_region': 'test',
      'aws_role_arn': 'test',
      'aws_role_session_name': 'test',
      'aws_access_key_id': 'test',
      'aws_secret_access_key': 'test'
-    }),
-    ({
+     },
+     {
      'aws_default_region': 'region test',
      'aws_role_arn': None,
      'aws_role_session_name': None,
      'aws_access_key_id': None,
      'aws_secret_access_key': None
-    }),
-    ({
+     },
+     {
      'aws_default_region': 'region test',
      'aws_role_arn': None,
      'aws_role_session_name': None,
      'aws_access_key_id': 'test',
      'aws_secret_access_key': 'test'
-    })
-]
+     }]
 
 
 VALIDATE_CASES_MISSING_PARAMS = [
@@ -72,7 +71,7 @@ def test_validate_params_with_missing_values(mocker, params, raised_message):
     assert raised_message == str(exception.value)
 
 
-@pytest.mark.parametrize('params', VALIDATE_CASES_MISSING_PARAMS)
+@pytest.mark.parametrize('params', VALIDATE_CASES)
 def test_validate_params(mocker, params):
     """
     Given
