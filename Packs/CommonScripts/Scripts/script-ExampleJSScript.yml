@@ -65,7 +65,7 @@ script: >-
 
   // Util function http
 
-  var res = http('http://www.demisto.com');
+  var res = http('http://www.paloaltonetworks.com');
 
   log('Http GET call result StatusCode = ' +res.StatusCode);
 
