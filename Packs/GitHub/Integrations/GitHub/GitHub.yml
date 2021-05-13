@@ -7,6 +7,15 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- defaultvalue: Issue
+  display: Select an Issue or Pull requests to Fetch
+  hidden: false
+  name: fetch_object
+  options:
+  - Issue
+  - Pull_requests
+  required: false
+  type: 15
 - display: API Token
   name: token
   required: false
@@ -698,6 +707,7 @@ script:
       isArray: false
       name: organization
       required: false
+      secret: false
     - default: false
       description: The repository of the pull request.
       isArray: false
@@ -2716,6 +2726,54 @@ script:
       description: GitHub action worflow usage on different OS.
       type: Unknown
   - arguments:
+    - default: false
+      description: Organization or Owner
+      isArray: false
+      name: owner
+      required: true
+      secret: false
+    - default: false
+      description: Git Repository Name
+      isArray: false
+      name: repository
+      required: true
+      secret: false
+    - default: false
+      description: Check Run ID
+      isArray: false
+      name: run_id
+      required: false
+      secret: false
+    - default: false
+      description: Head Commit ID
+      isArray: false
+      name: commit_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a check run details
+    execution: false
+    name: Github-get-check-run
+    outputs:
+    - contextPath: GitHub.CheckRuns.CheckRunConclusion
+      description: Check Run Conculsion
+      type: String
+    - contextPath: GitHub.CheckRuns.CheckRunAppName
+      description: Check Run App Name
+      type: String
+    - contextPath: GitHub.CheckRuns.CheckExternalID
+      description: Check Run External ID
+      type: String
+    - contextPath: GitHub.CheckRuns.CheckRunName
+      description: Check Run Name
+      type: String
+    - contextPath: GitHub.CheckRuns.CheckRunStatus
+      description: Check Run Status
+      type: String
+    - contextPath: GitHub.CheckRuns.CheckRunID
+      description: Check Run ID
+      type: String
+  - arguments:
     - default: true
       description: The path of the file.
       isArray: false
@@ -2729,25 +2787,25 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: raw
       description: 'The media type in which the file contents will be fetched. Possible
         values are: "raw" and "html". Default value is "raw".'
       isArray: false
-      defaultValue: 'raw'
       name: media_type
       predefined:
-        - raw
-        - html
+      - raw
+      - html
       required: false
       secret: false
     - default: false
+      defaultValue: 'false'
       description: 'Whether to create a file entry in the War Room with the file contents.
         Possible values are: "true" and "false". Default value is "false".'
       isArray: false
-      defaultValue: 'false'
       name: create_file_from_content
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
