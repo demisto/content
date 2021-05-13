@@ -114,7 +114,7 @@ class AWSClient:
                 verify=self.verify_certificate,
                 config=self.config
             )
-        else:  # login with default permissions, permissions pulled from the service metadata
+        else:  # login with default permissions, permissions pulled from the ec2 metadata
             client = boto3.client(service_name=service,
                                   region_name=region if region else self.aws_default_region)
 
