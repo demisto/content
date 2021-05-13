@@ -1,140 +1,278 @@
-import json
-from datetime import datetime
+"""Integration for Sumo Logic Cloud SIEM
 
-import demistomock as demisto  # noqa: F401
-import requests
+"""
+from datetime import datetime
+from typing import Any, Dict, Tuple, cast
 from CommonServerPython import *  # noqa: F401
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import traceback
+import demistomock as demisto  # noqa: F401
 
-URL = demisto.getParam('api_endpoint')
-if URL[-1] != '/':
-    URL += '/'
-ACCESS_ID = demisto.getParam('access_id')
-ACCESS_KEY = demisto.getParam('access_key')
-FETCH_LIMIT_PARAM = int(demisto.params().get('max_fetch', 20))
-FETCH_LIMIT = 20 if FETCH_LIMIT_PARAM > 20 else FETCH_LIMIT_PARAM
-USE_SSL = not demisto.params().get('insecure', False)
+''' CONSTANTS '''
+
+MAX_INCIDENTS_TO_FETCH = 20
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
 }
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
-def req(method, path, query=None, data=None, headers=None):
+''' CLIENT CLASS '''
+
+
+class Client(BaseClient):
+    """Client class to interact with the service API
+
+    This Client implements API calls, and does not contain any XSOAR logic.
+    Should only do requests and return data.
+    """
+
+    def req(self, method, url_suffix, params=None, json_data=None, headers=None):
+        '''
+        Send the request to Sumo Logic and return the JSON response
+        '''
+        if headers is None:
+            headers = DEFAULT_HEADERS
+        json_data = {} if json_data is None else json_data
+        r = self._http_request(
+            headers=headers,
+            method=method,
+            params=params,
+            json_data=json_data,
+            url_suffix=url_suffix,
+            resp_type='json'
+        )
+        return r
+
+
+''' HELPER FUNCTIONS '''
+
+
+def translate_severity(severity):
     '''
-    Send the request to Sumo Logic and return the JSON response
+    Translate from Sumo Logic CSE insight severity to Demisto severity
     '''
-    if headers is None:
-        headers = DEFAULT_HEADERS
-    data = {} if data is None else data
-    url = URL + path
-
-    r = requests.request(method,
-                         url,
-                         params=query,
-                         data=data,
-                         headers=headers,
-                         verify=USE_SSL,
-                         auth=(ACCESS_ID, ACCESS_KEY)
-                         )
-    if r.status_code != requests.codes.ok:
-        return 'Error in API call to Sumo Logic service - {}'.format(r.text)
-    if not r.text:
-        return {}
-    return r.json()
+    _severities = {
+        'LOW': 1,
+        'MEDIUM': 2,
+        'HIGH': 3
+    }
+    return _severities.get(severity, 4)
 
 
-def get_insight_details():
+def add_to_query(q):
+    if len(q) > 0:
+        return '{} '.format(q)  # No need for 'AND' here
+    else:
+        return q
+
+
+def arg_time_query_to_q(q, argval, timefield):
+    '''
+    Convert last-seen argument to querystring
+    '''
+    if not argval or argval == 'All time':
+        return q
+    if argval == 'Last week':
+        return add_to_query(q) + '{}:NOW-7D..NOW'.format(timefield)
+    if argval == 'Last 48 hours':
+        return add_to_query(q) + '{}:NOW-48h..NOW'.format(timefield)
+    if argval == 'Last 24 hours':
+        return add_to_query(q) + '{}:NOW-24h..NOW'.format(timefield)
+
+
+def add_list_to_q(q, fields, args):
+    '''
+    Add arguments to querystring
+    '''
+    for arg_field in fields:
+        arg_value = args.get(arg_field, None)
+        if arg_value:
+            if ',' in arg_value:
+                quoted_values = ['"{}"'.format(v) for v in arg_value.split(',')]
+                q = add_to_query(q) + '{}:in({})'.format(arg_field, ','.join(quoted_values))
+            else:
+                q = add_to_query(q) + '{}:"{}"'.format(arg_field, arg_value)
+    return q
+
+
+def insight_signal_to_readable(obj):
+    '''
+    Readable json output from insight/signal object
+    '''
+    # Capitalize fields
+    cap_obj = {(k[0].capitalize() + k[1:]): v for k, v in obj.items()}
+
+    # Only show Entity name (Insights and Signals)
+    cap_obj['Entity'] = ''
+    if obj.get('entity'):
+        if 'name' in obj['entity']:
+            cap_obj['Entity'] = obj['entity']['name']
+
+    # Only show status displayName (Insights only)
+    if obj.get('status'):
+        if 'displayName' in obj['status']:
+            cap_obj['Status'] = obj['status']['displayName']
+    
+    # For Assignee show username (email)
+    cap_obj['Assignee'] = ''
+    if obj.get('assignee'):
+        if 'username' in obj['assignee']:
+            cap_obj['Assignee'] = obj['assignee']['username']
+
+    # Remove some deprecated fields, replaced by "Assignee"
+    cap_obj.pop('AssignedTo', None)
+    cap_obj.pop('TeamAssignedTo', None)
+
+    return cap_obj
+
+
+def entity_to_readable(obj):
+    '''
+    Readable json output from entity object
+    '''
+    # Capitalize fields
+    cap_obj = {(k[0].capitalize() + k[1:]): v for k, v in obj.items()}
+
+    # For Entities, show 'OperatingSystem'
+    if 'Os' in cap_obj:
+        cap_obj['OperatingSystem'] = cap_obj.pop('Os', None)
+    else:
+        cap_obj['OperatingSystem'] = None
+
+    if len(cap_obj.get('Inventory', [])) > 0:
+        invdata = cap_obj['Inventory'][0]
+        if 'metadata' in invdata:
+            if 'operatingSystem' in invdata['metadata']:
+                cap_obj['OperatingSystem'] = invdata['metadata']['operatingSystem']
+        cap_obj['InventoryData'] = True
+    else:
+        cap_obj['InventoryData'] = False
+
+    cap_obj.pop('Inventory', None)  # don't need to display data from inventory
+    cap_obj.pop('Ip', None)  # don't need to display Ip object
+
+    return cap_obj
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    message: str = ''
+    try:
+        client.req('GET', 'sec/v1/insights', {})
+        message = 'ok'
+    except DemistoException as e:
+        if 'Unauthorized' in str(e):
+            message = 'Authorization Error: make sure Access ID and Access Key are correctly set'
+        else:
+            raise e
+    return message
+
+
+def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get insight details
     '''
-    insight_id = demisto.getArg('insight-id')
-    resp_json = req('GET', 'sec/v1/insights/' + insight_id, {})
-    insight = {(k[0].capitalize() + k[1:]): v for k, v in resp_json['data'].items()}
-    details_md = tableToMarkdown('Insight Details:', [insight],
-                                 ['Id', 'ReadableId', 'Name', 'Action', 'AssignedTo', 'Description', 'LastUpdated',
-                                  'LastUpdatedBy', 'Severity', 'Closed', 'ClosedBy'])
+    insight_id = args.get('insight-id')
+    if not insight_id:
+        raise ValueError('insight-id not specified')
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': insight,
-        'HumanReadable': details_md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), {'exclude': 'signals.allRecords'})
+    insight = insight_signal_to_readable(resp_json['data'])
+    readable_output = tableToMarkdown(
+        'Insight Details:', [insight],
+        ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.Insight',
+        outputs_key_field='Id',
+        outputs=insight
+    )
 
 
-def get_insight_comments():
+def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get comments for insight
     '''
-    insight_id = demisto.getArg('insight-id')
-    resp_json = req('GET', 'sec/v1/insights/{}/comments'.format(insight_id), {})
+    insight_id = args.get('insight-id')
+    resp_json = client.req('GET', 'sec/v1/insights/{}/comments'.format(insight_id))
     comments = [{'Id': c['id'], 'Body':c['body'], 'Author': c['author']['username'],
                  'Timestamp': c['timestamp'], 'InsightId': insight_id} for c in resp_json['data']['comments']]
-    md = tableToMarkdown('Insight Comments:', comments,
-                         ['Id', 'InsightId', 'Author', 'Body', 'LastUpdated', 'Timestamp'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'SumoLogicSEC.Insight(val.Id == obj.Id).CommentList': comments},
-        'HumanReadable': md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    readable_output = tableToMarkdown('Insight Comments:', comments, [
+                                      'Id', 'InsightId', 'Author', 'Body', 'LastUpdated', 'Timestamp'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.Insight.CommentList',
+        outputs_key_field='Id',
+        outputs=comments
+    )
 
 
-def get_signal_details():
+def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get signal details
     '''
-    signal_id = demisto.getArg('signal-id')
-    resp_json = req('GET', 'sec/v1/signals/' + signal_id, {})
+    signal_id = args.get('signal-id', None)
+    if not signal_id:
+        raise ValueError('signal-id not specified')
+
+    resp_json = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
     signal = resp_json['data']
     signal.pop('allRecords', None)  # don't need to display records from signal
-    signal = {(k[0].capitalize() + k[1:]): v for k, v in signal.items()}
-    md = tableToMarkdown('Signal Details:', [signal],
-                         ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'SumoLogicSEC.Signal(val.Id == obj.Id)': signal},
-        'HumanReadable': md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    signal = insight_signal_to_readable(signal)
+    readable_output = tableToMarkdown(
+        'Signal Details:', [signal],
+        ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.Signal',
+        outputs_key_field='Id',
+        outputs=signal
+    )
 
 
-def get_entity_details():
+def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get entity details
     '''
-    entity_id = demisto.getArg('entity-id')
-    resp_json = req('GET', 'sec/v1/entities/' + entity_id, {})
-    entity = {(k[0].capitalize() + k[1:]): v for k, v in resp_json['data'].items()}
-    if 'Os' in entity:
-        entity['OperatingSystem'] = entity.pop('Os', None)
-    else:
-        entity['OperatingSystem'] = ''
-    md = tableToMarkdown('Entity Details:', [entity],
-                         ['Id', 'Name', 'FirstSeen', 'LastSeen',
-                          'Hostname', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'SumoLogicSEC.Entity': entity},
-        'HumanReadable': md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    entity_id = args.get('entity-id', None)
+    if not entity_id:
+        raise ValueError('entity-id not specified')
+
+    resp_json = client.req('GET', 'sec/v1/entities/{}'.format(entity_id), {'expand': 'inventory'})
+    entity = entity_to_readable(resp_json['data'])
+    readable_output = tableToMarkdown(
+        'Entity Details:', [entity],
+        ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.Entity',
+        outputs_key_field='Id',
+        outputs=entity
+    )
 
 
-def convert_date_to_unix(d):
-    '''
-    Convert a given date to seconds
-    '''
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
-
-
-def search_insights():
+def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Search insights using available filters
 
@@ -177,244 +315,176 @@ def search_insights():
     created after 12 PM UTC time on March 18th, 2021.
     '''
     query = {}
-    query['q'] = demisto.getArg('query')
-    query['offset'] = demisto.getArg('offset')
-    query['limit'] = demisto.getArg('limit')
-    resp_json = req('GET', 'sec/v1/insights', query)
+    q = args.get('query', '')
+    q = arg_time_query_to_q(q, args.get('created'), 'created')
+    q = add_list_to_q(q, ['status', 'assignee'], args)
+    query['q'] = q
+    query['offset'] = args.get('offset')
+    query['limit'] = args.get('limit')
+    query['exclude'] = 'signals.allRecords'
+
+    resp_json = client.req('GET', 'sec/v1/insights', query)
     insights = []
     for insight in resp_json['data']['objects']:
-        cap_insight = {(k[0].capitalize() + k[1:]): v for k, v in insight.items()}
-        cap_insight['Entity'] = ''
-        if 'entity' in insight:
-            if 'name' in insight['entity']:
-                cap_insight['Entity'] = insight['entity']['name']
-        insights.append(cap_insight)
-    ec = {'SumoLogicSEC.Insight(val.Id == obj.Id)': insights}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': resp_json,
-        'EntryContext': ec,
-        'HumanReadable': tableToMarkdown('Insights:', insights,
-                                         ['Id', 'ReadableId', 'Name', 'Action', 'AssignedTo', 'Description', 'LastUpdated',
-                                          'LastUpdatedBy', 'Severity', 'Closed', 'ClosedBy', 'Timestamp', 'Entity'])
-    })
+        insights.append(insight_signal_to_readable(insight))
+
+    readable_output = tableToMarkdown(
+        'Insights:', insights,
+        ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.InsightList',
+        outputs_key_field='Id',
+        outputs=insights
+    )
 
 
-def search_signals():
-    '''
-    Search signals using available filters
-    '''
-    query = {}
-    query['q'] = demisto.getArg('query')
-    query['offset'] = demisto.getArg('offset')
-    query['limit'] = demisto.getArg('limit')
-
-    resp_json = req('GET', 'sec/v1/signals', query)
-    signals = []
-    for signal in resp_json['data']['objects']:
-        cap_signal = {(k[0].capitalize() + k[1:]): v for k, v in signal.items()}
-        cap_signal['Entity'] = ''
-        if 'entity' in signal:
-            if 'name' in signal['entity']:
-                cap_signal['Entity'] = signal['entity']['name']
-        signals.append(cap_signal)
-    ec = {'SumoLogicSEC.Signal(val.Id == obj.Id)': signals}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': resp_json['data'],
-        'EntryContext': ec,
-        'HumanReadable': tableToMarkdown('Signals:', signals,
-                                         ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'Stage', 'Timestamp',
-                                          'ContentType', 'Tags'])
-    })
-
-
-def search_entities():
+def entity_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Search entities using the available filters
     '''
     query = {}
-    query['q'] = demisto.getArg('query')
-    query['offset'] = demisto.getArg('offset')
-    query['limit'] = demisto.getArg('limit')
+    q = args.get('query', '')
+    q = add_list_to_q(q, ['ip', 'hostname', 'username', 'type', 'whitelisted', 'tag'], args)
+    query['q'] = q
+    query['offset'] = args.get('offset')
+    query['limit'] = args.get('limit')
+    query['sort_by'] = args.get('sort')
+    query['expand'] = 'inventory'
 
-    resp_json = req('GET', 'sec/v1/entities', query)
+    resp_json = client.req('GET', 'sec/v1/entities', query)
     entities = []
     for entity in resp_json['data']['objects']:
-        cap_entity = {(k[0].capitalize() + k[1:]): v for k, v in entity.items()}
-        if 'Os' in entity:
-            entity['OperatingSystem'] = entity.pop('Os', None)
-        else:
-            entity['OperatingSystem'] = ''
-        entities.append(cap_entity)
-    ec = {'SumoLogicSEC.Entity(val.Id == obj.Id)': entities}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': resp_json['data'],
-        'EntryContext': ec,
-        'HumanReadable': tableToMarkdown('Entities:', entities, ['Id', 'Name', 'FirstSeen', 'LastSeen',
-                                         'Hostname', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem'])
-    })
+        entities.append(entity_to_readable(entity))
+
+    readable_output = tableToMarkdown(
+        'Entities:', entities,
+        ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.EntityList',
+        outputs_key_field='Id',
+        outputs=entities
+    )
 
 
-def translate_severity(severity):
+def signal_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
-    Translate from Sumo Logic CSE insight severity to Demisto severity
+    Search signals using available filters
     '''
-    _severities = {
-        'LOW': 1,
-        'MEDIUM': 2,
-        'HIGH': 3
-    }
-    return _severities.get(severity, 4)
-
-
-def fetch_incidents():
-    '''
-    Retrieve new incidents periodically based on pre-defined instance parameters
-    '''
-    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-    last_run_object = demisto.getLastRun()
-    if last_run_object and last_run_object.get('last_run_time'):
-        last_run = convert_date_to_unix(datetime.strptime(last_run_object.get('last_run_time'), DATE_FORMAT))
-    else:
-        # How much time before the first fetch to retrieve incidents
-        first_fetch_time = arg_to_datetime(
-            arg=demisto.params().get('first_fetch', '1 days'),
-            arg_name='First fetch time',
-            required=True
-        )
-        first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-        # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-        assert isinstance(first_fetch_timestamp, int)
-        last_run = first_fetch_timestamp  # first fetch is in ms
-
-    next_fetch = last_run
-    q = 'timestamp:>{}'.format(last_run)
-    if demisto.getParam('fetchQuery'):
-        q += ' ' + demisto.getParam('fetchQuery')
-    else:
-        q = q + ' status:in("new", "inprogress")'
     query = {}
+    q = args.get('query', '')
+    q = arg_time_query_to_q(q, args.get('created'), 'created')
+    q = add_list_to_q(q, ['category', 'contentType'], args)
     query['q'] = q
-    query['offset'] = '0'
-    query['limit'] = str(FETCH_LIMIT)
-    resp_json = req('GET', 'sec/v1/insights', query)
-    incidents = []
-    for a in resp_json['data']['objects']:
-        current_fetch = a.get('timestamp')
-        if current_fetch:
-            try:
-                current_fetch = datetime.strptime(current_fetch, '%Y-%m-%dT%H:%M:%S')
-            except ValueError:
-                current_fetch = datetime.strptime(current_fetch, '%Y-%m-%dT%H:%M:%S.%f')
-            current_fetch = convert_date_to_unix(current_fetch)
-            if current_fetch > last_run:
-                incidents.append({
-                    'name': a.get('name', 'No name') + ' - ' + a.get('id'),
-                    'occurred': a.get('timestamp') + 'Z',
-                    'details': a.get('description'),
-                    'severity': translate_severity(a.get('severity')),
-                    'rawJSON': json.dumps(a)
-                })
-            if current_fetch > next_fetch:
-                next_fetch = current_fetch
+    query['offset'] = args.get('offset')
+    query['limit'] = args.get('limit')
 
-    demisto.incidents(incidents)
-    demisto.setLastRun({
-        'last_run_time': datetime.fromtimestamp(next_fetch / 1e3).strftime(DATE_FORMAT),
-        'incidents': incidents
-    })
+    resp_json = client.req('GET', 'sec/v1/signals', query)
+    signals = []
+    for signal in resp_json['data']['objects']:
+        signal.pop('allRecords', None)  # don't need to display records from signal
+        signals.append(insight_signal_to_readable(signal))
+
+    readable_output = tableToMarkdown(
+        'Signals:', signals,
+        ['Id', 'Name', 'Entity', 'RuleId', 'Description', 'Severity', 'Stage', 'Timestamp', 'ContentType', 'Tags'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.SignalList',
+        outputs_key_field='Id',
+        outputs=signals
+    )
 
 
-def set_insight_status():
+def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Change status of insight
 
     Provide "reason" arg when closing an Insight with status=closed.
     '''
-    insight_id = demisto.getArg('insight-id')
+    insight_id = args.get('insight-id')
     reqbody = {}
-    reqbody['status'] = demisto.getArg('status')
-    if demisto.getArg('status') == 'closed':
+    reqbody['status'] = args.get('status')
+    if args.get('status') == 'closed' and args.get('resolution'):
         # resolution should only be specified when the status is set to "closed"
-        reqbody['resolution'] = demisto.getArg('resolution').replace('_', ' ')
-    json_data = json.dumps(reqbody)
+        reqbody['resolution'] = args['resolution']
 
-    resp_json = req('PUT', 'sec/v1/insights/{}/status'.format(insight_id), None, json_data, DEFAULT_HEADERS)
-    insight = {(k[0].capitalize() + k[1:]): v for k, v in resp_json['data'].items()}
-    insight['Status'] = insight['Status']['displayName']
-    details_md = tableToMarkdown('Insight Details:', [insight],
-                                 ['Id', 'ReadableId', 'Name', 'Description', 'AssignedTo', 'Created', 'LastUpdated',
-                                  'Status', 'Closed', 'ClosedBy', 'Resolution'])
+    resp_json = client.req('PUT', 'sec/v1/insights/{}/status'.format(insight_id), None, reqbody)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': insight,
-        'HumanReadable': details_md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    insight = resp_json['data']
+    # remove allRecords from signals
+    for s in insight['signals']:
+        s.pop('allRecords', None)
+
+    insight = insight_signal_to_readable(insight)
+
+    readable_output = tableToMarkdown(
+        'Insight Details:', [insight],
+        ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.Insight',
+        outputs_key_field='Id',
+        outputs=insight
+    )
 
 
-def get_match_lists():
+def match_list_get(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get match lists
     '''
     query = {}
-    query['offset'] = demisto.getArg('offset')
-    query['limit'] = demisto.getArg('limit')
-    query['sort'] = demisto.getArg('sort')
-    query['sortDir'] = demisto.getArg('sortDir')
+    query['offset'] = args.get('offset')
+    query['limit'] = args.get('limit')
+    query['sort'] = args.get('sort')
+    query['sortDir'] = args.get('sortDir')
 
-    resp_json = req('GET', 'sec/v1/match-lists', query, None, DEFAULT_HEADERS)
+    resp_json = client.req('GET', 'sec/v1/match-lists', query)
     match_lists = []
     for match_list in resp_json['data']['objects']:
         cap_match_list = {(k[0].capitalize() + k[1:]): v for k, v in match_list.items()}
         match_lists.append(cap_match_list)
-    match_lists_md = tableToMarkdown('Match lists:', match_lists,
-                                     headers=['Id', 'Name', 'TargetColumn', 'DefaultTtl'])
+    readable_output = tableToMarkdown('Match lists:', match_lists, headers=['Id', 'Name', 'TargetColumn', 'DefaultTtl'])
     # Filtered out from readable output: 'Description', 'Created', 'CreatedBy', 'LastUpdated', 'LastUpdatedBy'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': resp_json,
-        'HumanReadable': match_lists_md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.MatchLists',
+        outputs_key_field='Id',
+        outputs=match_lists
+    )
 
 
-def add_to_match_list():
+def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Add to match list
     '''
-    match_list_id = demisto.getArg('match-list-id')
+    match_list_id = args.get('match-list-id')
     item = {}
-    item['active'] = demisto.getArg('active')
-    item['description'] = demisto.getArg('description')
-    item['expiration'] = demisto.getArg('expiration')
-    item['value'] = demisto.getArg('value')
-    json_data = json.dumps({"items": [item]})
+    item['active'] = args.get('active')
+    item['description'] = args.get('description')
+    item['expiration'] = args.get('expiration')
+    item['value'] = args.get('value')
 
-    resp_json = req('POST', 'sec/v1/match-lists/{}/items'.format(match_list_id), None, json_data, DEFAULT_HEADERS)
-    result = {'Result': 'Success' if resp_json['data'] else 'Failed', 'Server response': resp_json['data']}
-    result_md = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
+    resp_json = client.req('POST', 'sec/v1/match-lists/{}/items'.format(match_list_id), None, {'items': [item]})
+    result = {'Result': 'Success' if resp_json['data'] is True else 'Failed', 'Server response': resp_json['data']}
+    readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': result,
-        'HumanReadable': result_md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.UpdateResult',
+        outputs=result
+    )
 
 
-def search_threat_intel_indicators():
+def threat_intel_search_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Search Threat Intel Indicators
 
@@ -442,124 +512,254 @@ def search_threat_intel_indicators():
     - created
     '''
     query = {}
-    if demisto.getArg('query'):
-        query['q'] = demisto.getArg('query')
-    query['value'] = demisto.getArg('value')
-    query['sourceIds'] = demisto.getArg('sourceIds').split(',')
-    query['offset'] = demisto.getArg('offset')
-    query['limit'] = demisto.getArg('limit')
+    if args.get('query'):
+        query['q'] = args.get('query')
+    query['value'] = args.get('value')
+    if args.get('sourceIds'):
+        query['sourceIds'] = args['sourceIds'].split(',')
+    query['offset'] = args.get('offset')
+    query['limit'] = args.get('limit')
 
-    resp_json = req('GET', 'sec/v1/threat-intel-indicators', query)
+    resp_json = client.req('GET', 'sec/v1/threat-intel-indicators', query)
     indicators = []
     for indicator in resp_json['data']['objects']:
         cap_indicator = {(k[0].capitalize() + k[1:]): v for k, v in indicator.items()}
         indicators.append(cap_indicator)
-    ec = {'SumoLogicSEC.ThreatIntelIndicator(val.Id == obj.Id)': indicators}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': resp_json['data'],
-        'EntryContext': ec,
-        'HumanReadable': tableToMarkdown('Threat Intel Indicators:', indicators,
-                                         ['Id', 'Value', 'Active', 'Expiration'])
-        # Filtered out from readable output: Meta
-    })
+
+    readable_output = tableToMarkdown('Threat Intel Indicators:', indicators, ['Id', 'Value', 'Active', 'Expiration'])
+    # Filtered out from readable output: Meta
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.ThreatIntelIndicators',
+        outputs_key_field='Id',
+        outputs=indicators
+    )
 
 
-def get_threat_intel_sources():
+def threat_intel_get_sources(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get the list of Threat Intel Sources
     '''
     query = {}
-    query['offset'] = demisto.getArg('offset')
-    query['limit'] = demisto.getArg('limit')
-    query['sort'] = demisto.getArg('sort')
-    query['sortDir'] = demisto.getArg('sortDir')
+    query['offset'] = args.get('offset')
+    query['limit'] = args.get('limit')
+    query['sort'] = args.get('sort')
+    query['sortDir'] = args.get('sortDir')
 
-    resp_json = req('GET', 'sec/v1/threat-intel-sources', query)
+    resp_json = client.req('GET', 'sec/v1/threat-intel-sources', query)
     threat_intel_sources = []
     for threat_intel_source in resp_json['data']['objects']:
         cap_threat_intel_source = {(k[0].capitalize() + k[1:]): v for k, v in threat_intel_source.items()}
         threat_intel_sources.append(cap_threat_intel_source)
-    threat_intel_sources_md = tableToMarkdown('Threat intel sources:', threat_intel_sources,
-                                              headers=['Id', 'Name', 'Description', 'SourceType'])
+    readable_output = tableToMarkdown('Threat intel sources:', threat_intel_sources,
+                                      headers=['Id', 'Name', 'Description', 'SourceType'])
     # Filtered out from readable output: Created', 'CreatedBy', 'LastUpdated', 'LastUpdatedBy'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': resp_json,
-        'HumanReadable': threat_intel_sources_md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.ThreatIntelSources',
+        outputs_key_field='Id',
+        outputs=threat_intel_sources
+    )
 
 
-def add_to_threat_intel_source():
+def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Add Indicator to a Threat Intel Source
     '''
-    threat_intel_source_id = demisto.getArg('threat-intel-source-id')
+    threat_intel_source_id = args.get('threat-intel-source-id')
     item = {}
-    item['active'] = demisto.getArg('active')
-    item['description'] = demisto.getArg('description')
-    item['expiration'] = demisto.getArg('expiration')
-    item['value'] = demisto.getArg('value')
-    json_data = json.dumps({"indicators": [item]})
+    item['active'] = args.get('active')
+    item['description'] = args.get('description')
+    item['expiration'] = args.get('expiration')
+    item['value'] = args.get('value')
 
-    resp_json = req('POST', 'sec/v1/threat-intel-sources/{}/items'.format(threat_intel_source_id),
-                    None, json_data, DEFAULT_HEADERS)
+    resp_json = client.req('POST', 'sec/v1/threat-intel-sources/{}/items'.format(threat_intel_source_id),
+                           None, {'indicators': [item]})
     result = {'Result': 'Success' if resp_json['data'] else 'Failed', 'Server response': resp_json['data']}
-    result_md = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
+    readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': result,
-        'HumanReadable': result_md,
-        'Contents': resp_json['data'],
-        'ContentsFormat': formats['json']
-    })
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='SumoLogic.Sec.UpdateResult',
+        outputs=result
+    )
 
 
-def main():
+def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int],
+                    fetch_query: Optional[str]) -> Tuple[Dict[str, int], List[dict]]:
+    '''
+    Retrieve new incidents periodically based on pre-defined instance parameters
+    '''
+
+    # Get the last fetch time, if exists
+    # last_run is a dict with a single key, called last_fetch
+    last_fetch = last_run.get('last_fetch', None)
+    # Handle first fetch time
+    if last_fetch is None:
+        # if missing, use what provided via first_fetch_time
+        last_fetch = first_fetch_time
+    else:
+        # otherwise use the stored last fetch
+        last_fetch = int(last_fetch)
+
+    # for type checking, making sure that latest_created_time is int
+    latest_created_time = cast(int, last_fetch)
+
+    # Initialize an empty list of incidents to return
+    # Each incident is a dict with a string as a key
+    incidents: List[Dict[str, Any]] = []
+
+    q = 'timestamp:>{}'.format(latest_created_time)
+    if fetch_query:
+        q += ' ' + fetch_query
+    else:
+        q = q + ' status:in("new", "inprogress")'
+    query = {}
+    query['q'] = q
+    query['offset'] = '0'
+    query['limit'] = str(max_results)
+    resp_json = client.req('GET', 'sec/v1/insights', query)
+    incidents = []
+    for a in resp_json['data']['objects']:
+
+        # If no created_time set is as epoch (0). We use time in ms so we must
+        # convert it from the API response
+        insight_timestamp = a.get('timestamp')
+        if insight_timestamp:
+            try:
+                incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
+            except ValueError:
+                incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+
+            incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
+            incident_created_time_ms = incident_created_time * 1000
+
+            # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+            if last_fetch:
+                if incident_created_time <= last_fetch:
+                    continue
+
+            incidents.append({
+                'name': a.get('name', 'No name') + ' - ' + a.get('id'),
+                'occurred': timestamp_to_datestring(incident_created_time_ms),
+                'details': a.get('description'),
+                'severity': translate_severity(a.get('severity')),
+                'rawJSON': json.dumps(a)
+            })
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
+
+    # Save the next_run as a dict with the last_fetch key to be stored
+    next_run = {'last_fetch': latest_created_time}
+    return next_run, incidents
+
+
+''' MAIN FUNCTION '''
+
+
+def main() -> None:
+    """main function, parses params and runs command functions
+
+    :return:
+    :rtype:
+    """
+
+    proxy = demisto.params().get('proxy', False)
+    base_url = demisto.getParam('api_endpoint')
+    access_id = demisto.getParam('access_id')
+    access_key = demisto.getParam('access_key')
+    verify_certificate = not demisto.params().get('insecure', False)
+
+    # How much time before the first fetch to retrieve incidents
+    first_fetch_time = arg_to_datetime(
+        arg=demisto.params().get('first_fetch', '1 day'),
+        arg_name='First fetch time',
+        required=True
+    )
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
+    # Using assert as a type guard (since first_fetch_time is always an int when required=True)
+    assert isinstance(first_fetch_timestamp, int)
+
+    fetch_query = demisto.params().get('fetch_query')
+
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        handle_proxy()
+
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            headers=DEFAULT_HEADERS,
+            proxy=proxy,
+            auth=(access_id, access_key),
+            ok_codes=[200])
+
         if demisto.command() == 'test-module':
-            req('GET', 'sec/v1/insights', {})
-            demisto.results('ok')
+            # This is the call made when pressing the integration Test button.
+            result = test_module(client)
+            return_results(result)
         elif demisto.command() == 'sumologic-sec-insight-get-details':
-            get_insight_details()
+            return_results(insight_get_details(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-insight-get-comments':
-            get_insight_comments()
+            return_results(insight_get_comments(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-signal-get-details':
-            get_signal_details()
+            return_results(signal_get_details(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-entity-get-details':
-            get_entity_details()
+            return_results(entity_get_details(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-insight-search':
-            search_insights()
+            return_results(insight_search(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-entity-search':
-            search_entities()
+            return_results(entity_search(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-signal-search':
-            search_signals()
+            return_results(signal_search(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-insight-set-status':
-            set_insight_status()
+            return_results(insight_set_status(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-match-list-get':
-            get_match_lists()
+            return_results(match_list_get(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-match-list-update':
-            add_to_match_list()
+            return_results(match_list_update(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-threat-intel-search-indicators':
-            search_threat_intel_indicators()
+            return_results(threat_intel_search_indicators(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-threat-intel-get-sources':
-            get_threat_intel_sources()
+            return_results(threat_intel_get_sources(client, demisto.args()))
         elif demisto.command() == 'sumologic-sec-threat-intel-update-source':
-            add_to_threat_intel_source()
+            return_results(threat_intel_update_source(client, demisto.args()))
+
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            max_results = arg_to_number(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
+
+            next_run, incidents = fetch_incidents(
+                client=client,
+                max_results=max_results,
+                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+                first_fetch_time=first_fetch_timestamp,
+                fetch_query=fetch_query
+            )
+
+            # saves next_run for the time fetch-incidents is invoked
+            demisto.setLastRun(next_run)
+            # fetch-incidents calls ``demisto.incidents()`` to provide the list
+            # of incidents to create
+            demisto.incidents(incidents)
+
+    # Log exceptions and return errors
     except Exception as e:
-        LOG(e)
-        LOG.print_log(False)
-        return_error(e)
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
-# python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

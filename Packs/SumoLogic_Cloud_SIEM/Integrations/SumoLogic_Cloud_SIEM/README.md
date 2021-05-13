@@ -49,9 +49,9 @@ Get Insight details for a specific Insight ID.
 
 #### Human Readable Output
 Insight Details:
-|Id|ReadableId|Name|Action|AssignedTo|Description|LastUpdated|LastUpdatedBy|Severity|Closed|ClosedBy|
-|---|---|---|---|---|---|---|---|---|---|---|
-| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-02-18T22:09:00.059232 |  | HIGH |  |  |
+|Id|ReadableId|Name|Action|Status|Assignee|Description|LastUpdated|LastUpdatedBy|Severity|Closed|ClosedBy|Timestamp|Entity|Resolution|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-10T23:48:10.016204 |  | HIGH | 2021-05-10T23:48:09.961023 | obfuscated@email.com | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
 
 
 
@@ -109,9 +109,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 Signal Details:
-|Id|Name|RuleId|Description|Severity|ContentType|Timestamp|
-|---|---|---|---|---|---|---|
-| e0e7096b-2f91-5b72-b1a2-db48ce882dfc | Potential malicious JVM download | LEGACY-S00062 | A document was downloaded and opened followed by a file download using a Java user-agent. | 4 | RULE | 2021-02-18T22:04:08.230000 |
+|Id|Name|RuleId|Description|Severity|ContentType|Timestamp|Entity
+|---|---|---|---|---|---|---|---|
+| e0e7096b-2f91-5b72-b1a2-db48ce882dfc | Potential malicious JVM download | LEGACY-S00062 | A document was downloaded and opened followed by a file download using a Java user-agent. | 4 | RULE | 2021-02-18T22:04:08.230000 | 1.2.3.4
 
 
 ### sumologic-sec-entity-get-details
@@ -138,9 +138,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 ### Entity Details:
-|Id|Name|FirstSeen|LastSeen|Hostname|ActivityScore|IsWhitelisted|OperatingSystem|
+|Id|Name|FirstSeen|LastSeen|ActivityScore|IsWhitelisted|OperatingSystem|InventoryData
 |---|---|---|---|---|---|---|---|
-| _hostname-win10--admin.obfuscated | win10-admin.obfuscated |  | 2021-04-21T14:43:38.526000 | win10-admin.obfuscated | 9 | false |  |
+| _hostname-win10--admin.obfuscated | win10-admin.obfuscated |  | 2021-04-21T14:43:38.526000 | 9 | false | Windows 10 Enterprise | true |
 
 
 
@@ -170,11 +170,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 Insights:
-|Id|ReadableId|Name|Action|AssignedTo|Description|LastUpdated|LastUpdatedBy|Severity|Closed|ClosedBy|Timestamp|Entity|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 00853cdd-763e-3e31-a2e4-f74277922f9f | INSIGHT-220 | Command and Control with Defense Evasion and Execution |  |  | Initial Access, Command and Control, Defense Evasion, Execution | 2021-03-23T20:06:51.565599 |  | HIGH | 2021-03-23T20:06:51.511505 | obfuscated@email.com | 2021-02-22T16:27:51 | testcomputer.somedomain.net |
-| eefdff8d-7447-3b47-83e0-66a0b210d618 | INSIGHT-219 | Discovery with Credential Access and Execution |  |  | Initial Access, Credential Access, Initial Access, Execution, Discovery, Credential Access | 2021-03-23T21:21:55.029798 |  | HIGH | 2021-03-23T21:21:54.914061 | obfuscated@email.com | 2021-02-22T16:24:07.959000 | 1.2.3.4 |
-| 8a77d12e-5905-3401-ae7c-2e17b1fd3060 | INSIGHT-221 | Privilege Escalation with Persistence and Execution |  |  | Execution, Privilege Escalation, Persistence, Execution | 2021-04-22T22:11:45.270272 |  | HIGH | 2021-04-22T22:11:45.218508 | obfuscated@email.com | 2021-02-22T16:24:07.959000 | 5.6.7.8 |
+|Id|ReadableId|Name|Action|Status|Assignee|Description|LastUpdated|LastUpdatedBy|Severity|Closed|ClosedBy|Timestamp|Entity|Resolution|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 00853cdd-763e-3e31-a2e4-f74277922f9f | INSIGHT-220 | Command and Control with Defense Evasion and Execution |  | Closed |  | Initial Access, Command and Control, Defense Evasion, Execution | 2021-03-23T20:06:51.565599 |  | HIGH | 2021-03-23T20:06:51.511505 | obfuscated@email.com | 2021-02-22T16:27:51 | testcomputer.somedomain.net | No Action |
+| eefdff8d-7447-3b47-83e0-66a0b210d618 | INSIGHT-219 | Discovery with Credential Access and Execution |  | Closed |  | Initial Access, Credential Access, Initial Access, Execution, Discovery, Credential Access | 2021-03-23T21:21:55.029798 |  | HIGH | 2021-03-23T21:21:54.914061 | obfuscated@email.com | 2021-02-22T16:24:07.959000 | 1.2.3.4 | No Action |
+| 8a77d12e-5905-3401-ae7c-2e17b1fd3060 | INSIGHT-221 | Privilege Escalation with Persistence and Execution |  | Closed | obfuscated@email.com | Execution, Privilege Escalation, Persistence, Execution | 2021-05-12T21:47:08.297222 |  | HIGH | 2021-05-12T21:47:08.132251 | obfuscated@email.com | 2021-02-22T16:24:07.959000 | 5.6.7.8 | No Action |
 
 
 
@@ -204,9 +204,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 Signals:
-|Id|Name|RuleId|Description|Severity|Stage|Timestamp|ContentType|Tags|
-|---|---|---|---|---|---|---|---|---|
-| b50fd570-341b-576d-85b5-8b5cd17c0aee | IP Address Scan - Internal | LEGACY-S00050 | A scan of IP addresses | 3 | Discovery | 2021-04-22T04:08:13.514000 | RULE | _mitreAttackTactic:TA0007,<br>_mitreAttackTactic:TA0043,<br>_mitreAttackTechnique:T1046,<br>_mitreAttackTechnique:T1595 |
+|Id|Name|Entity|RuleId|Description|Severity|Stage|Timestamp|ContentType|Tags|
+|---|---|---|---|---|---|---|---|---|---|
+| b50fd570-341b-576d-85b5-8b5cd17c0aee | IP Address Scan - Internal | 1.2.3.4 | LEGACY-S00050 | A scan of IP addresses | 3 | Discovery | 2021-04-22T04:08:13.514000 | RULE | _mitreAttackTactic:TA0007,<br>_mitreAttackTactic:TA0043,<br>_mitreAttackTechnique:T1046,<br>_mitreAttackTechnique:T1595 |
 
 
 ### sumologic-sec-entity-search
@@ -235,9 +235,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 Entities:
-|Id|Name|FirstSeen|LastSeen|Hostname|ActivityScore|IsWhitelisted|OperatingSystem|
+|Id|Name|FirstSeen|LastSeen|ActivityScore|IsWhitelisted|OperatingSystem|InventoryData|
 |---|---|---|---|---|---|---|---|
-| _ip-specops_analysis_lab-1.2.3.4 | 1.2.3.4 |  | 2021-04-22T04:08:13.514000 |  | 3 | false |  |
+| _ip-specops_analysis_lab-1.2.3.4 | 1.2.3.4 |  | 2021-04-22T04:08:13.514000 | 3 | false |  | false |
 
 
 
@@ -263,14 +263,13 @@ Change status of Insight
 There is no context output for this command.
 
 #### Command Example
-`!sumologic-sec-insight-set-status insight-id=INSIGHT-116 status=closed resolution=No_Action`
+`!sumologic-sec-insight-set-status insight-id=INSIGHT-116 status=closed resolution="No Action"`
 
 #### Human Readable Output
 Insight Details:
-|Id|ReadableId|Name|Description|AssignedTo|Created|LastUpdated|Status|Closed|ClosedBy|Resolution|
-|---|---|---|---|---|---|---|---|---|---|---|
-| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access |  | 2021-02-18T22:08:33.042468 | 2021-04-23T15:45:35.089145 | Closed | 2021-04-23T15:45:34.944217 | obfuscated@email.com | No Action |
-
+|Id|ReadableId|Name|Action|Status|Assignee|Description|LastUpdated|LastUpdatedBy|Severity|Closed|ClosedBy|Timestamp|Entity|Resolution|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-13T01:28:32.648352 |  | HIGH | 2021-05-13T01:28:32.580039 | obfuscated@email.com | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
 
 
 ### sumologic-sec-match-list-get
