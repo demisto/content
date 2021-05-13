@@ -649,8 +649,6 @@ class MsClient:
         cmd_url = f'/users/{username}/alerts'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-###########################
-# Custom function
     def get_machine_alerts(self, machine_id):
         """Retrieves a collection of Alerts related to a given machine ID.
 
