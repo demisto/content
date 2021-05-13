@@ -201,7 +201,6 @@ def main() -> None:
     base_url = urljoin(params.get('url'), BASE_URL)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers: Dict = {"X-Authorization-Token": access_token, "Content-Type": 'application/json'}
@@ -211,18 +210,19 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
+        args = demisto.args()
 
         if demisto.command() == 'test-module':
             return_results(test_module(client))
 
         elif demisto.command() == 'f5-silverline-ip-objects-list':
-            return_results(get_ip_objects_list_command(client, demisto.args()))
+            return_results(get_ip_objects_list_command(client, args))
 
         elif demisto.command() == 'f5-silverline-ip-object-add':
-            return_results(add_ip_objects_command(client, demisto.args()))
+            return_results(add_ip_objects_command(client, args))
 
         elif demisto.command() == 'f5-silverline-ip-object-delete':
-            return_results(delete_ip_objects_command(client, demisto.args()))
+            return_results(delete_ip_objects_command(client, args))
         else:
             raise NotImplementedError(f'{demisto.command()} is not an existing F5 Silverline command')
 
