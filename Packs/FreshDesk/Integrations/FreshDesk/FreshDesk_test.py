@@ -1,6 +1,7 @@
 import demistomock as demisto
-import pytest
-from test_data.response_constants import RESPONSE_SECOND_PAGE_INCIDENTS, RESPONSE_FIRST_PAGE_INCIDENTS
+import io
+import json
+
 
 MOCK_PARAMS = {
     'credentials': {
@@ -10,6 +11,11 @@ MOCK_PARAMS = {
     'url': 'https://MOCK_URL',
     'maxFetch': '14',
 }
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_fetch_incidents_no_pagination(mocker, requests_mock):
@@ -29,12 +35,13 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
 
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     from FreshDesk import fetch_incidents
-
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2021-05-01-04:58:18'})
+    raw_response = util_load_json('test_data/first_page_incindents_respone.json')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2021-05-01-04:58:18',
+                                                             'last_created_incident_timestamp': 1619834298000})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
     requests_mock.get('https://MOCK_URL/api/v2/tickets',
-                      json=RESPONSE_FIRST_PAGE_INCIDENTS)
+                      json=raw_response)
     requests_mock.get('https://MOCK_URL/api/v2/tickets?page=2',
                       json=[])
     fetch_incidents()
@@ -59,14 +66,17 @@ def test_fetch_incidents_with_pagination(mocker, requests_mock):
 
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     from FreshDesk import fetch_incidents
+    raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
+    raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2021-05-01-04:58:18'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2021-05-01-04:58:18',
+                                                             'last_created_incident_timestamp': 1619834298000})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
     requests_mock.get('https://MOCK_URL/api/v2/tickets',
-                      json=RESPONSE_FIRST_PAGE_INCIDENTS)
+                      json=raw_response_first)
     requests_mock.get('https://MOCK_URL/api/v2/tickets?page=2',
-                      json=RESPONSE_SECOND_PAGE_INCIDENTS)
+                      json=raw_response_second)
     requests_mock.get('https://MOCK_URL/api/v2/tickets?page=3',
                       json=[])
     fetch_incidents()
