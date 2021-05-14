@@ -31,7 +31,7 @@ FETCH_TIME = PARAMS.get('fetch_time', '24 hours')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS['url'][:-1] if (PARAMS.get('url') and PARAMS['url'].endswith('/')) else PARAMS['url']
 # Should we use SSL
-USE_SSL = not demisto.params().get('unsecure', False)
+USE_SSL = not demisto.params().get('insecure', False)
 # Service base URL
 BASE_URL = SERVER + '/api/v2/'
 
@@ -43,10 +43,15 @@ HEADERS = {
 # Headers to be used when making a request to POST a multi-part encoded file
 MULTIPART_HEADERS = {'Accept': 'application/json'}
 
-# Default amount of results returned per-page/per-api-call when the
-# fd-search-tickets command's results that match the command's specified
-# filter criteria exceeds 30
-PER_PAGE = 30
+# Amount of results returned per-page/per-api-call the maximum is 100 and minimum 50
+MAX_INCIDENTS = int(PARAMS.get('maxFetch', 50))
+
+if MAX_INCIDENTS >= 100:
+    PER_PAGE = 100
+elif MAX_INCIDENTS <= 50:
+    PER_PAGE = 50
+else:
+    PER_PAGE = MAX_INCIDENTS
 
 # The API response ticket attributes that will be included
 # in most command's context outputs
@@ -197,7 +202,7 @@ def reformat_ticket_context(context):
     return new_context
 
 
-def handle_search_tickets_pagination(args, response):
+def handle_search_tickets_pagination(args, response, limit=-1):
     """
     Retrieve all resulting tickets even over the default 30 returned by a single API call.
 
@@ -236,6 +241,9 @@ def handle_search_tickets_pagination(args, response):
         page = 1
         next_page = tickets
         while next_page and page <= max_pages:
+            # Stop pagination if limit is defined and we exceeded it
+            if 0 < limit < len(tickets):
+                break
             page += 1
             args['page'] = page
             next_page = search_tickets(args)
@@ -784,12 +792,13 @@ def fetch_incidents():
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
-    args = {'updated_since': updated_since, 'order_type': 'asc'}
+    args = {'updated_since': updated_since, 'order_type': 'asc', 'per_page': PER_PAGE}
 
     response = search_tickets(args)  # page 1
-    tickets = handle_search_tickets_pagination(args, response)
+    tickets = handle_search_tickets_pagination(args, response, limit=MAX_INCIDENTS)
     # convert the ticket/events to demisto incidents
     incidents = []
+    tickets = tickets[:MAX_INCIDENTS] if tickets else []
     for ticket in tickets:
         incident = ticket_to_incident(ticket)
         incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
@@ -1159,6 +1168,7 @@ def search_tickets(args):
         url_params['page'] = page
 
     # Make request and get raw response
+    url_params['per_page'] = args.get('per_page')
     response = http_request('GET', endpoint_url, params=url_params)
     return response
 
