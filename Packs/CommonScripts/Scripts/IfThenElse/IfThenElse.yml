@@ -13,7 +13,7 @@ args:
 - name: value
   description: The value to evaluate
 - name: equals
-  description: (Depreciated) If value equals this
+  description: (Deprecated) If value equals this
 - name: then
   description: Return this value if 'condition' is true
 - name: else
