@@ -12,8 +12,10 @@
       - .npm/
     policy: pull
 
+
 .default-before_script:
   before_script:
+    - source .gitlab/helper_functions.sh
     - echo "=== Running before script ==="
     - git checkout $CI_COMMIT_BRANCH
     - git config diff.renameLimit 6000
@@ -25,43 +27,49 @@
     - source .circleci/content_release_vars.sh
     - export PATH="${PWD}/node_modules/.bin:${PATH}"
 
-    - echo "=== Creating new clean logs folder ==="
+    - section_start "Creating new clean logs folder" --collapsed
     - rm -rf $ARTIFACTS_FOLDER/logs
     - mkdir -p $ARTIFACTS_FOLDER/logs
+    - section_end "Creating new clean logs folder"
 
-    - echo "=== Granting execute permissions on files ==="
+    - section_start "Granting execute permissions on files" --collapsed
     - chmod +x ./Tests/scripts/*
     - chmod +x ./Tests/Marketplace/*
+    - section_end "Granting execute permissions on files"
 
-    - echo "=== Installing Virtualenv ==="
+    - section_start "Installing Virtualenv" --collapsed
     - |
-     if [ -f "./venv/bin/activate" ]; then
-       echo "found venv"
-     else
-      echo "installing venv"
-      NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-     fi
-     venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
-     source ./venv/bin/activate
+      if [ -f "./venv/bin/activate" ]; then
+        echo "found venv"
+      else
+        echo "installing venv"
+        NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      fi
+    - venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+    - source ./venv/bin/activate
     - |
       if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
         echo "Installing SDK from master branch" | tee --append $ARTIFACTS_FOLDER/logs/installations.log
         pip3 install git+https://github.com/demisto/demisto-sdk@master >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
       fi
-    - echo "========= Installing SSH keys ========"
+    - section_end "Installing Virtualenv"
+
+    - section_start "Installing SSH keys" --collapsed
     - eval $(ssh-agent -s)
     - chmod 400 $OREGON_CI_KEY
     - ssh-add $OREGON_CI_KEY
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
+    - section_end "Installing SSH keys"
 
-    - echo "========== Build Parameters =========="
+    - section_start "Build Parameters"
     - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
     - python --version
     - python3 --version
     - node --version
     - npm --version
     - demisto-sdk --version
+    - section_end "Build Parameters"
 
 
 .default-job-settings:

@@ -193,6 +193,8 @@ def verify_server_paid_packs_by_index(server_paid_packs: list, index_data_packs:
                                                             outer_packs_name="index packs")
 
     logging.info("Verifying all premium index packs are in the server")
+    # Removing HelloWorldPremium since it currently isn't on the page of premium packs, by design
+    index_data_packs = [pack for pack in index_data_packs if pack['id'] not in ['HelloWorldPremium', 'IAM']]
     all_index_packs_in_server = verify_outer_contains_inner(inner_packs=index_data_packs,
                                                             outer_packs=server_paid_packs,
                                                             inner_packs_name="index packs",
