@@ -30,8 +30,8 @@ Follow this [link](https://documentation.solarwinds.com/en/success_center/orionp
     | Maximum number of incidents per fetch | The maximum limit is 1000. | False |
     | First fetch time interval | Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. \( Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
     | Severity levels | Fetches list of alerts as per the severity level.  If not specified, it fetches all the incidents.<br/>Note: Severity level is only available for alerts. | False |
-    | Object Types | To filter the alerts based on the type of property to monitor. If specified none, it will fetch all types of alerts. To list additional object types, use query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in swis-query command. | False |
-    | Event Types | To filter events based on the type. If specified none, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
+    | Object Types | To filter the alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in swis-query command. | False |
+    | Event Types | To filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use query 'SELECT Name FROM Orion.EventTypes' in swis-query command. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incident type |  | False |

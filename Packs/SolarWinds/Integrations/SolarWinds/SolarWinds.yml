@@ -218,8 +218,9 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Specify a page number to retrieve events. By default, per page
-        limit is  50 events and the user can change it by specifying a limit in argument.
+      description: Specify a page number to retrieve events. By default, the per-page
+        limit is 50 events and the user can change it by specifying a limit in the
+        argument.
       isArray: false
       name: page
       required: false
@@ -354,8 +355,9 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: Specify a page number to retrieve alerts. By default, per page
-        limit is  50 alerts and the user can change it by specifying a limit in argument.
+      description: Specify a page number to retrieve alerts. By default, the per-page
+        limit is 50 alerts and the user can change it by specifying a limit in the
+        argument.
       isArray: false
       name: page
       required: false
@@ -533,7 +535,7 @@ script:
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     execution: false
     name: swis-query
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.9.4.19849
   feed: false
   isfetch: true
   longRunning: false
