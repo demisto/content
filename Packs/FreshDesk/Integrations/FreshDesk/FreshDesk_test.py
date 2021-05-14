@@ -1,6 +1,5 @@
 import demistomock as demisto
 import pytest
-# from test_data.response_constants.py import RESPONSE_FETCH_INCIDENT, RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS, RESPONSE_FETCH_INCIDENTS
 from test_data.response_constants import RESPONSE_SECOND_PAGE_INCIDENTS, RESPONSE_FIRST_PAGE_INCIDENTS
 
 MOCK_PARAMS = {
@@ -11,6 +10,7 @@ MOCK_PARAMS = {
     'url': 'https://MOCK_URL',
     'maxFetch': '14',
 }
+
 
 def test_fetch_incidents_no_pagination(mocker, requests_mock):
     """Unit test
