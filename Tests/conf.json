@@ -3398,7 +3398,8 @@
         "Rundeck_test": "Issue 31174",
         "Azure NSG - Test": "Issue 33217",
         "AutoFocus V2 test": "Issue 26464",
-        "VirusTotal (API v3) Detonate Test": "Issue 36004"
+        "VirusTotal (API v3) Detonate Test": "Issue 36004",
+        "FailedInstances - Test": "Issue 33218"
     },
     "skipped_integrations": {
         
