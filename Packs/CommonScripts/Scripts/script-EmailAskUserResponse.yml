@@ -6,7 +6,7 @@ script: >
   var res = executeCommand("getEntry", {"id":args.responseEntryId});
 
 
-  if (res[0].Type==entryTypes.note) {
+  if (res[0].Type==entryTypes.note || res[0].Type==entryTypes.file) {
       text = res[0].Contents;
       text = text.replace(/<br\/?>/gi,'\n')
                   .replace(/\n/g,'__NL__')
