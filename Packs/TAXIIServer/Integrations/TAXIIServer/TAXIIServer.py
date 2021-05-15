@@ -8,6 +8,7 @@ from base64 import b64decode
 from typing import Callable, List, Generator
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
+from werkzeug.datastructures import Headers
 
 from libtaxii.messages_11 import (
     TAXIIMessage,
@@ -79,11 +80,12 @@ class Handler:
 
 
 class TAXIIServer:
-    def __init__(self, host: str, port: int, collections: dict, certificate: str, private_key: str,
+    def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
                  http_server: bool, credentials: dict):
         """
         Class for a TAXII Server configuration.
         Args:
+            url_scheme: The URL scheme (http / https)
             host: The server address.
             port: The server port.
             collections: The JSON string of collections of indicator queries.
@@ -92,6 +94,7 @@ class TAXIIServer:
             http_server: Whether to use HTTP server (not SSL).
             credentials: The user credentials.
         """
+        self.url_scheme = url_scheme
         self.host = host
         self.port = port
         self.collections = collections
@@ -117,11 +120,12 @@ class TAXIIServer:
             }
         ]
 
-    def get_discovery_service(self, taxii_message: DiscoveryRequest) -> DiscoveryResponse:
+    def get_discovery_service(self, taxii_message: DiscoveryRequest, request_headers: Headers) -> DiscoveryResponse:
         """
         Handle discovery request.
         Args:
             taxii_message: The discovery request message.
+            request_headers: The request headers
 
         Returns:
             The discovery response.
@@ -130,8 +134,7 @@ class TAXIIServer:
         if taxii_message.message_type != MSG_DISCOVERY_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
 
-        discovery_service_url = self.get_url()
-
+        discovery_service_url = self.get_url(request_headers)
         discovery_response = DiscoveryResponse(
             generate_message_id(),
             taxii_message.message_id
@@ -152,17 +155,21 @@ class TAXIIServer:
 
         return discovery_response
 
-    def get_collections(self, taxii_message: CollectionInformationRequest) -> CollectionInformationResponse:
+    def get_collections(self,
+                        taxii_message: CollectionInformationRequest,
+                        request_headers: Headers,
+                        ) -> CollectionInformationResponse:
         """
         Handle collection management request.
         Args:
             taxii_message: The collection request message.
+            request_headers: The request headers
 
         Returns:
             The collection management response.
         """
         taxii_feeds = list(self.collections.keys())
-        url = self.get_url()
+        url = self.get_url(request_headers)
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
@@ -281,15 +288,21 @@ class TAXIIServer:
             mimetype='application/xml'
         )
 
-    def get_url(self):
+    def get_url(self, request_headers: Headers) -> str:
         """
+        Args:
+            request_headers: The request headers
+
         Returns:
             The service URL according to the protocol.
         """
-        if self.http_server:
-            return f'{self.host}:{self.port}'
+        base_url = f'{self.url_scheme}://{self.host}'
+        if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
+            # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
+            # and we should use the /instance/execute endpoint in the address
+            return f'{base_url}/instance/execute'
         else:
-            return self.host
+            return f'{base_url}:{self.port}'
 
 
 SERVER: TAXIIServer
@@ -688,6 +701,24 @@ def taxii_check(f: Callable) -> Callable:
     return check
 
 
+def set_url_scheme(f: Callable) -> Callable:
+    """
+    Wrapper function of HTTP requests to set the URL scehme
+    Args:
+        f: The wrapped function.
+
+    Returns:
+        The function result (if the headers are valid).
+    """
+    @functools.wraps(f)
+    def _set(*args, **kwargs):
+        if url_scheme := request.environ.get('wsgi.url_scheme'):
+            SERVER.url_scheme = url_scheme
+        return f(*args, **kwargs)
+
+    return _set
+
+
 def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters.
@@ -796,13 +827,14 @@ def taxii_make_response(taxii_message: TAXIIMessage):
 @APP.route('/taxii-discovery-service', methods=['POST'])
 @taxii_check
 @validate_credentials
+@set_url_scheme
 def taxii_discovery_service() -> Response:
     """
     Route for discovery service.
     """
 
     try:
-        discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data))
+        discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data), request.headers)
     except Exception as e:
         error = f'Could not perform the discovery request: {str(e)}'
         handle_long_running_error(error)
@@ -814,13 +846,14 @@ def taxii_discovery_service() -> Response:
 @APP.route('/taxii-collection-management-service', methods=['POST'])
 @taxii_check
 @validate_credentials
+@set_url_scheme
 def taxii_collection_management_service() -> Response:
     """
     Route for collection management.
     """
 
     try:
-        collection_response = SERVER.get_collections(get_message_from_xml(request.data))
+        collection_response = SERVER.get_collections(get_message_from_xml(request.data), request.headers)
     except Exception as e:
         error = f'Could not perform the collection management request: {str(e)}'
         handle_long_running_error(error)
@@ -935,7 +968,7 @@ def main():
         scheme = 'https'
         host_name = get_https_hostname(host_name)
 
-    SERVER = TAXIIServer(f'{scheme}://{host_name}', port, collections,
+    SERVER = TAXIIServer(scheme, host_name, port, collections,
                          certificate, private_key, http_server, credentials)
 
     demisto.debug(f'Command being called is {command}')
