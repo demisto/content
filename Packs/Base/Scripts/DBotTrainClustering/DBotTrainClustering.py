@@ -162,9 +162,12 @@ class Clustering(object):
         Compute center for each cluster
         :return: None
         """
-        for cluster_ in range(self.number_clusters):  # type: ignore
+        for cluster_ in range(-1, self.number_clusters):  # type: ignore
             center = np.mean(self.data[self.model.labels_ == cluster_], axis=0)  # type: ignore
-            self.centers[cluster_] = center
+            if center.isnull().values.any():  # type: ignore
+                self.centers[cluster_] = center.fillna(0)   # type: ignore
+            else:
+                self.centers[cluster_] = center
 
 
 class PostProcessing(object):
@@ -201,7 +204,7 @@ class PostProcessing(object):
         self.stats['General']['Nb cluster'] = self.clustering.number_clusters
         self.stats['General']['min_samples'] = self.clustering.model.min_samples  # type: ignore
         self.stats['General']['min_cluster_size'] = self.clustering.model.min_cluster_size  # type: ignore
-        for number_cluster in range(0, self.clustering.number_clusters):  # type: ignore
+        for number_cluster in range(-1, self.clustering.number_clusters):  # type: ignore
             self.stats[number_cluster] = {}
             self.stats[number_cluster]['number_samples'] = sum(
                 self.clustering.model.labels_ == number_cluster)  # type: ignore
@@ -219,10 +222,10 @@ class PostProcessing(object):
         """
         dist_total = {}  # type: Dict
         if not self.generic_cluster_name:
-            for cluster_number in range(0, self.clustering.number_clusters):  # type: ignore
+            for cluster_number in range(-1, self.clustering.number_clusters):  # type: ignore
                 chosen = {k: v for k, v in self.stats[cluster_number]['distribution sample'].items() if
                           v >= self.threshold * 100}
-                if not chosen:
+                if not chosen and cluster_number != -1:
                     continue
                 total = sum(dict(chosen).values(), 0.0)
                 dist = {k: v * 100 / total for k, v in chosen.items()}
@@ -234,7 +237,7 @@ class PostProcessing(object):
                 dist_total[cluster_number]['distribution'] = dist
                 dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])[:15]
         else:
-            for cluster_number in range(0, self.clustering.number_clusters):  # type: ignore
+            for cluster_number in range(-1, self.clustering.number_clusters):  # type: ignore
                 chosen = self.stats[cluster_number]['distribution sample']
                 total = sum(dict(chosen).values(), 0.0)
                 dist = {k: v * 100 / total for k, v in chosen.items()}
@@ -548,7 +551,8 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'pivot': "clusterId:" + str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
-             'incidents': incidents_df[clustering.model.labels_ == cluster_number][display_fields].to_json(orient='records'),
+             'incidents': incidents_df[clustering.model.labels_ == cluster_number][display_fields].to_json(  # type: ignore
+                 orient='records'),  # type: ignore
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
@@ -600,7 +604,7 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
     number_of_sample = model_processed.stats["General"]["Nb sample"]
     nb_clusterized_after_selection = model_processed.stats['number_of_clusterized_sample_after_selection']
     nb_clusters = model_processed.stats["General"]["Nb cluster"]
-    number_clusters_selected = len(model_processed.selected_clusters)  # type: ignore
+    number_clusters_selected = len(model_processed.selected_clusters) - 1  # type: ignore
     number_of_clusterized = sum(clustering.model.labels_ != -1)  # type: ignore
     percentage_clusters_selected = round(100 * number_clusters_selected / nb_clusters, 0)
     percentage_selected_samples = round(100 * (nb_clusterized_after_selection / number_of_sample), 0)

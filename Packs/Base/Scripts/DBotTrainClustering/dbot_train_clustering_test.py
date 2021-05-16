@@ -116,8 +116,8 @@ def test_main_regular(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
-    cluster_0 = output_json['data'][0]
-    cluster_1 = output_json['data'][1]
+    cluster_0 = output_json['data'][1]
+    cluster_1 = output_json['data'][2]
     assert MESSAGE_INCORRECT_FIELD % 'wrong_field' in msg
     cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
                                                                                     for item in sub_dict_1.items()))
@@ -166,8 +166,8 @@ def test_empty_cluster_name(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
-    cluster_0 = output_json['data'][0]
-    cluster_1 = output_json['data'][1]
+    cluster_0 = output_json['data'][1]
+    cluster_1 = output_json['data'][2]
     cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
                                                                                     for item in sub_dict_1.items()))
     cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
@@ -261,8 +261,8 @@ def test_model_exist_and_expired(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
-    cluster_0 = output_json['data'][0]
-    cluster_1 = output_json['data'][1]
+    cluster_0 = output_json['data'][1]
+    cluster_1 = output_json['data'][2]
     cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
                                                                                     for item in sub_dict_1.items()))
     cond_2 = (all(item in cluster_0.items() for item in sub_dict_1.items()) and all(item in cluster_1.items()
@@ -284,8 +284,8 @@ def test_main_name_cluster_is_list(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     model, output_clustering_json, msg = main()
     output_json = json.loads(output_clustering_json)
-    cluster_0 = output_json['data'][0]
-    cluster_1 = output_json['data'][1]
+    cluster_0 = output_json['data'][1]
+    cluster_1 = output_json['data'][2]
     assert MESSAGE_INCORRECT_FIELD % 'wrong_field' in msg
     cond_1 = (all(item in cluster_0.items() for item in sub_dict_0.items()) and all(item in cluster_1.items()
                                                                                     for item in sub_dict_1.items()))
