@@ -3,6 +3,9 @@ import json
 import pytest
 import demistomock as demisto
 from netaddr import IPAddress
+from pathlib import Path
+import os
+from pytest_mock import MockerFixture
 
 IOC_RES_LEN = 38
 
@@ -294,3 +297,47 @@ class TestHelperFunctions:
         assert "1.1.1.3" not in ip_range_list
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
+
+
+def test_nginx_conf(tmp_path: Path):
+    from EDL import create_nginx_server_conf
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(conf_file, params={'longRunningPort': '12345'})
+    with open(conf_file, 'rt') as f:
+        conf = f.read()
+        assert 'listen 12345 default_server' in conf
+
+
+@pytest.fixture
+def nginx_conf_cleanup():
+    yield
+    from EDL import NGINX_SERVER_CONF_FILE
+    Path(NGINX_SERVER_CONF_FILE).unlink(missing_ok=True)
+
+
+@pytest.mark.skipif('flask-nginx' not in os.getenv('DOCKER_IMAGE', ''), reason='test should run only within docker')
+def test_nginx_start_fail(mocker: MockerFixture, nginx_conf_cleanup):
+    """Test that nginx fails when config is invalid
+    """
+    def nginx_bad_conf(file_path: str, params: dict):
+        with open(file_path, 'wt') as f:
+            f.write('server {bad_stuff test;}')        
+    import EDL as edl
+    mocker.patch.object(edl, 'create_nginx_server_conf', side_effect=nginx_bad_conf)
+    try:
+        edl.start_nginx_server({'longRunningPort': '12345'})
+        pytest.fail('nginx start should fail')
+    except ValueError as e:
+        assert 'bad_stuff' in str(e)
+
+
+@pytest.mark.skipif('flask-nginx' not in os.getenv('DOCKER_IMAGE', ''), reason='test should run only within docker')
+def test_nginx_start_fail_directive(mocker: MockerFixture, nginx_conf_cleanup):
+    """Test that nginx fails when invalid global directive is passed
+    """
+    import EDL as edl
+    try:
+        edl.start_nginx_server({'longRunningPort': '12345', 'nginx_global_directives': 'bad_directive test'})
+        pytest.fail('nginx start should fail')
+    except ValueError as e:
+        assert 'bad_directive' in str(e)

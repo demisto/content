@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import re
+import subprocess
 from base64 import b64decode
 from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
@@ -11,6 +12,29 @@ from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
+from string import Template
+
+NGINX_SERVER_CONF_FILE = '/etc/nginx/conf.d/default.conf'
+NGINX_SERVER_CONF = '''
+server {
+
+    listen $port default_server $ssl;
+    listen [::]:$port default_server $ssl;
+
+    # Static test file
+    location = /nginx-test {
+        alias /var/lib/nginx/html/index.html;
+        default_type text/html;
+    }
+
+    # Proxy everything to python
+    location / {
+        proxy_pass http://192.168.1.37:6001/;
+    }
+
+}
+
+'''
 
 
 class Handler:
@@ -574,6 +598,38 @@ def test_module(_: Dict, params: Dict):
         parse_date_range(cache_refresh_rate, to_timestamp=True)
     run_long_running(params, is_test=True)
     return 'ok', {}, {}
+
+
+def create_nginx_server_conf(file_path: str, params: Dict):
+    port = get_params_port(params)
+    template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
+    server_conf = Template(template_str).safe_substitute(port=port, ssl='')
+    with open(file_path, mode='wt') as f:
+        f.write(server_conf)
+
+
+def start_nginx_server(params: Dict):
+    create_nginx_server_conf(NGINX_SERVER_CONF_FILE, params)
+    nginx_global_directives = ['daemon off']
+    global_directives_conf = params.get('nginx_global_directives')
+    if global_directives_conf:
+        nginx_global_directives.extend(global_directives_conf.split(';'))
+    directive_args = []
+    for directive in nginx_global_directives:
+        directive_args.append('-g')
+        directive_args.append(directive + ';')
+    # we first do a test that all config is good and log it
+    try:
+        nginx_test_command = ['nginx', '-T']
+        nginx_test_command.extend(directive_args)
+        test_output = subprocess.check_output(nginx_test_command, stderr=subprocess.STDOUT, text=True)
+        demisto.info(f'ngnix test passed. command: [{nginx_test_command}]')
+        demisto.debug(f'nginx test ouput:\n{test_output}')
+    except subprocess.CalledProcessError as err:
+        raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
+    nginx_command = ['nginx']
+    nginx_command.extend(directive_args)
+    # subprocess.Popen
 
 
 def run_long_running(params: Dict, is_test: bool = False):
