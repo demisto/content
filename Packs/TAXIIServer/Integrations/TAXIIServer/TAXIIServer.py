@@ -968,7 +968,7 @@ def main():
         scheme = 'https'
         host_name = get_https_hostname(host_name)
 
-    SERVER = TAXIIServer(scheme, host_name, port, collections,
+    SERVER = TAXIIServer(scheme, str(host_name), port, collections,
                          certificate, private_key, http_server, credentials)
 
     demisto.debug(f'Command being called is {command}')
