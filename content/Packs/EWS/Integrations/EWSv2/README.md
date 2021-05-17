@@ -390,6 +390,7 @@
 <h3 id="h_7bdec9fe-e3d9-4645-8da4-337ee3798a84">3. Get a list of searchable mailboxes</h3>
 <hr>
 <p>Returns a list of searchable mailboxes.</p>
+<p>Note: We recommend that you do not run this command if you have over 1M mailboxes.</p>
 <h5>Required Permissions</h5>
 <p>Requires eDiscovery permissions to the Exchange Server. For more information see the <a href="https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx" target="_blank" rel="nofollow noopener">Microsoft documentation</a>.</p>
 <h5>Base Command</h5>
@@ -476,6 +477,7 @@
 <p>Searches over multiple mailboxes or all Exchange mailboxes. The maximum number of mailboxes that can be searched is 20,000. Use either the mailbox-search-scope command or the email-addresses command to search specific mailboxes.</p>
 <h5>Required Permissions</h5>
 <p>Requires eDiscovery permissions to the Exchange Server. For more information, see the <a href="https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx" target="_blank" rel="nofollow noopener">Microsoft documentation</a>.</p>
+<p>Note: If you have over 1M mailboxes, you should limit the number of mailboxes to search by defining the mailbox-search-scope argument before running this command.</p>
 <h5>Base Command</h5>
 <p><code>ews-search-mailboxes</code></p>
 <h5>Input</h5>
@@ -2797,3 +2799,5 @@
 <p> </p>
 <h4>New-Compliance Search</h4>
 <p>The EWS v2 integration uses remote ps-session to run commands of compliance search as part of Office 365. To check if your account can connect to Office 365 Security &amp; Compliance Center via powershell, check the following<span> </span><a href="https://docs.microsoft.com/en-us/powershell/exchange/office-365-scc/connect-to-scc-powershell/connect-to-scc-powershell?view=exchange-ps" rel="nofollow">steps</a>. New-Compliance search is a long-running task which has no limitation of searched mailboxes and therefore the suggestion is to use<span> </span><code>Office 365 Search and Delete</code>playbook. New-Compliance search returns statistics of matched content search query and doesn't return preview of found emails in contrast to<span> </span><code>ews-search-mailboxes</code><span> </span>command.</p>
+<h2>Troubleshooting</h2>
+For troubleshooting information, see the <a href="https://xsoar.pan.dev/docs/reference/articles/EWS_V2_Troubleshooting" target="_blank" rel="noopener">EWS V2 Troubleshooting</a>.

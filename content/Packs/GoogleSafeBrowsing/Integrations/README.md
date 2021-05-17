@@ -6,22 +6,23 @@ Search Safe Browsing
 2. Search for GoogleSafeBrowsing.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| apiKey | API Key | True |
-| clientId | Client ID | True |
-| clientVer | Client Version | True |
-| url | Base URL | True |
-| proxy | Use system proxy settings | False |
-| insecure | Trust any certificate \(not secure\) | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Key |  | True |
+    | Client ID |  | True |
+    | Client Version |  | True |
+    | Base URL |  | True |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### url
 ***
-Checks the reputation of a URL.
+Check URL Reputation
 
 
 #### Base Command
@@ -31,7 +32,7 @@ Checks the reputation of a URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to check | Required | 
+| url | URL to check. | Required | 
 
 
 #### Context Output
@@ -42,19 +43,21 @@ Checks the reputation of a URL.
 | URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
 | URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 
 | DBotScore.Indicator | string | The indicator we tested | 
-| DBotScore.Type | string | The type of indicator | 
+| DBotScore.Type | string | The type of the indicator | 
 | DBotScore.Vendor | string | Vendor used to calculate the score | 
 | DBotScore.Score | int | The actual score | 
+| DBotScore.Reliability | string | Reliability of the source providing the intelligence data. |
 
 
 #### Command Example
 ```!url url="http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/"```
 
 #### Context Example
-```
+```json
 {
     "DBotScore": {
         "Indicator": "http://testsafebrowsing.appspot.com/apiv4/ANY_PLATFORM/MALWARE/URL/",
+        "Reliability": "C - Fairly reliable",
         "Score": 3,
         "Type": "url",
         "Vendor": "GoogleSafeBrowsing"

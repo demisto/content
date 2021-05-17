@@ -714,7 +714,7 @@ tasks:
     task:
       id: 6e129cba-4df0-4feb-8864-02260bd1e887
       version: -1
-      name: Sleep 1 sec for incident to update
+      name: Sleep 3 sec for incident to update
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -725,7 +725,7 @@ tasks:
       - "22"
     scriptarguments:
       seconds:
-        simple: "1"
+        simple: "3"
     separatecontext: false
     view: |-
       {

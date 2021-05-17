@@ -1,6 +1,12 @@
 ### Using API Token authentication
 To use the integration with an API token, you first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
 
+## Choose your API version
+1. Visit the [QRadar API versions page](https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_getting_started.html) for a full list of available API versions according to the QRadar version.
+2. Choose one of the API versions listed under **Supported REST API versions** column in the line corresponding to your QRadar version.
+
+Note: If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version.
+
 ### Fetch incidents
 To start fetching incidents, enable the parameter `Long running instance` - this will start a long running process that'll fetch incidents periodically.
 Depending on the system load, **the initial fetch might take a long time**.

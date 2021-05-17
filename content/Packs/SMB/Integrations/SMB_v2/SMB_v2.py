@@ -1,3 +1,5 @@
+import uuid
+
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -180,6 +182,13 @@ def main():
     dc = params.get('dc', None)
     verify = params.get('require_secure_negotiate', True)
     client_guid = params.get('client_guid', None)
+    if client_guid:
+        try:
+            client_guid = uuid.UUID(client_guid)
+        except ValueError:
+            demisto.info(f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
+            client_guid = None
+
     smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify, domain_controller=dc,
                            client_guid=client_guid)
 

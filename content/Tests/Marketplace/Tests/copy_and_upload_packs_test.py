@@ -1,7 +1,7 @@
 import pytest
 import os
 
-from Tests.Marketplace.marketplace_services import GCPConfig
+from Tests.Marketplace.marketplace_constants import CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, GCPConfig
 
 
 # disable-secrets-detection-start
@@ -33,7 +33,6 @@ class TestGetPackNames:
            Then:
                - Verify that we got all packs in content repo
        """
-        from Tests.Marketplace.marketplace_services import CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES
         from Tests.Marketplace.copy_and_upload_packs import get_pack_names
         packs_full_path = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
         expected_pack_names = {p for p in os.listdir(packs_full_path) if p not in IGNORED_FILES}
