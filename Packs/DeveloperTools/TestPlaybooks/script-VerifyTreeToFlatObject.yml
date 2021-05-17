@@ -1,0 +1,40 @@
+commonfields:
+  id: VerifyTreeToFlatObject
+  version: -1
+name: VerifyTreeToFlatObject
+script: >+
+  var dataWithNestedObject = {
+      x: {
+          y: 1
+      }
+  }
+
+  var nestedObjectAfterFlat = '{"x.y":1}';
+
+
+  var simpleString = 'abc';
+
+
+  var flat = JSON.stringify(treeToFlattenObject(dataWithNestedObject));
+
+  if(flat !== nestedObjectAfterFlat){
+      throw "Flattened object is incorrect: " + flat;
+  }
+
+
+  var simpleStringFlat = treeToFlattenObject(simpleString);
+
+  if(simpleStringFlat != simpleString){
+      throw "Flattened string is incorrect: " + simpleStringFlat;
+  }
+
+
+  return true;
+
+type: javascript
+tags: []
+enabled: true
+scripttarget: 0
+runonce: false
+comment: ''
+fromversion: 5.0.0

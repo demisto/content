@@ -1,0 +1,55 @@
+{
+ "id": "sixgill-darkfeed-threads-from-the-underground",
+ "version": -1,
+ "modified": "2020-06-14T06:43:54.421176797Z",
+ "name": "Sixgill Darkfeed - Threads from the Underground",
+ "dataType": "indicators",
+ "widgetType": "table",
+ "query": "sourceBrands:Sixgill_Darkfeed",
+ "sort": null,
+ "description": "",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "by": "",
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "params": {
+  "colors": {
+   "isEnabled": false,
+   "items": {
+
+   },
+   "type": "above"
+  },
+  "tableColumns": [
+   {
+    "displayed": true,
+    "key": "Sixgill Post Title",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Source",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "value",
+    "width": 300
+   }
+  ]
+ },
+ "size": 0,
+ "category": "",
+ "fromVersion": "5.0.0"
+}

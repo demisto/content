@@ -1,0 +1,64 @@
+{
+    "name": "Brute Force",
+    "description": "This Content Pack helps you automate the repetitive tasks associated with Brute Force incidents. Custom incident views and layouts aid investigation.",
+    "support": "xsoar",
+    "currentVersion": "1.2.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-05-25T11:48:45Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [
+        "Brute Force"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "Compliance": {
+            "mandatory": true,
+            "display_name": "Compliance"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        }
+    }
+}

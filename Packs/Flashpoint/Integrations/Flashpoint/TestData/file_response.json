@@ -1,0 +1,90 @@
+[
+  {
+    "Attribute": {
+      "Event": {
+        "RelatedEvent": [
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info"
+            }
+          }
+        ],
+        "Tags": [
+          "tags1",
+          "tags2",
+          "tags3",
+          "tags3",
+          "tags4"
+        ],
+        "attack_ids": [],
+        "fpid": "djfndkjfndkfdkffndfdjnda",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/djfndkjfndkfdkffndfdjnda",
+        "info": "info",
+        "reports": [],
+        "timestamp": "1574316193"
+      },
+      "category": "Payload delivery",
+      "fpid": "djfndkjfndkfdkffndfdjnda",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/djfndkjfndkfdkffndfdjnda",
+      "timestamp": "1560826915",
+      "to_ids": false,
+      "type": "sha256",
+      "uuid": "f161c532-26fa-422d-ad71-3781b6619894",
+      "value": {
+        "comment": "",
+        "sha256": "test_scan_dummy_file"
+      }
+    }
+  },
+  {
+    "Attribute": {
+      "Event": {
+        "RelatedEvent": [
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info"
+            }
+          },
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info1"
+            }
+          },
+          {
+            "Event": {
+              "fpid": "djfndkjfndkfdkffndfdjnda",
+              "info": "info2"
+            }
+          }
+        ],
+        "Tags": [
+          "tags1",
+          "tags2",
+          "tags3",
+          "tags3",
+          "tags4"
+        ],
+        "attack_ids": [],
+        "fpid": "djfndkjfndkfdkffndfdjnda",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/djfndkjfndkfdkffndfdjnda",
+        "info": "info2",
+        "reports": [],
+        "timestamp": "1563386535"
+      },
+      "category": "category1",
+      "fpid": "djfndkjfndkfdkffndfdjnda",
+      "href": "http://123-fake-api.com/api/v4/indicators/attribute/djfndkjfndkfdkffndfdjnda",
+      "timestamp": "1560826913",
+      "to_ids": false,
+      "type": "sha256",
+      "uuid": "08f5ac60-45cb-4bc1-be05-591eb51071dc",
+      "value": {
+        "comment": "",
+        "sha256": "test_scan_dummy_file"
+      }
+    }
+  }
+]

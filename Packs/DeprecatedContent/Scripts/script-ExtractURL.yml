@@ -1,0 +1,113 @@
+commonfields:
+  id: ExtractURL
+  version: -1
+name: ExtractURL
+script: >-
+  var checkMatch = function(reg,str) {
+      if (reg === str) {
+          return true;
+      }
+
+      if(reg.indexOf('~') === 0) {
+          reg = reg.substring(1);
+          return str.match(reg);
+      }
+
+      return false;
+  };
+
+
+  var text = args.text;
+
+  if (typeof text !== 'string') {
+      text = JSON.stringify(text).replace(/\\n/g,' '); // need to replace \n
+  }
+
+
+  var matches = {};
+
+  var found;
+
+  var reg;
+
+
+  if (args.urlRegex) {
+      reg = new RegExp(args.urlRegex, "gmi");
+  } else {
+      reg = /(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-A-Z0-9]+\[?\.\]?)+[-A-Z0-9]+(?::[0-9]+)?(?:(?:\/|\?)[-A-Z0-9+&@#\/%=~_$?!:,.\(\);]*[A-Z0-9+&@#\/%=~_$\(\);])?/gmi;
+  }
+
+
+  var whitelist = getCSVListAsArray('Indicators Whitelist');
+
+  while (found = reg.exec(text)) {
+      matches[found[0]] = true;
+      for (var i = 0 ; i < whitelist.length; i++) {
+          if (checkMatch(whitelist[i],found[0])) {
+                delete matches[found[0]];
+                break;
+          }
+      }
+  }
+
+
+  var uniqueMatches = Object.keys(matches);
+
+
+  // check URLs in query params
+
+  uniqueMatches.forEach(function(url) {
+      var parts = url.split('?');
+      if (parts.length > 1) {
+          var params = parts[1].split('&');
+          params.forEach(function(param) {
+              var pair = param.split('=');
+              while (found = reg.exec(pair[1])) {
+                  matches[found[0]] = true;
+                  for (var i = 0 ; i < whitelist.length; i++) {
+                      if (checkMatch(whitelist[i],found[0])) {
+                            delete matches[found[0]];
+                            break;
+                      }
+                  }
+              }
+          });
+      }
+  });
+
+
+  uniqueMatches = Object.keys(matches);
+
+
+  var ec = {};
+
+  ec[outputPaths.url] = [];
+
+
+  var md = '### Extract URL\n';
+
+  for (var i=0; i < uniqueMatches.length; i++) {
+      ec[outputPaths.url].push({Data: uniqueMatches[i]});
+      md += '- ' + uniqueMatches[i] + '\n';
+  }
+
+
+  return { Type: entryTypes.note, Contents: ec[outputPaths.url], ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec };
+type: javascript
+tags:
+- Utility
+comment: Deprecated. We recommend using extractIndicators command instead. Extract URLs from the given text and place them both as output and in the context of a playbook. If given an object, will convert to JSON.
+enabled: true
+args:
+- name: text
+  required: true
+  default: true
+  description: The text to extract URLs from. If object will convert to JSON.
+- name: urlRegex
+  description: Regex to recognize urls
+outputs:
+- contextPath: URL.Data
+  description: Extracted URLs
+scripttarget: 0
+deprecated: true
+fromversion: 5.0.0

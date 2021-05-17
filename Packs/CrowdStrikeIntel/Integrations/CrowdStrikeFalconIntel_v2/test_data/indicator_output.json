@@ -1,0 +1,26 @@
+{
+    "ID": "hash_sha1_id",
+    "Type": "hash_sha1",
+    "Value": "hash_sha1_value",
+    "MaliciousConfidence": "high",
+    "Reports": [
+        "CSIT-18125"
+    ],
+    "MalwareFamilies": [
+        "SendSafe"
+    ],
+    "Relations": ["hash_md5: hash_md5_value",
+                  "ip_address: 8.8.8.8",
+                  "hash_sha1: hash_sha1_value",
+                  "hash_sha256: hash_sha256_value",
+                  "hash_sha256: hash_sha256_value",
+                  "hash_md5: hash_m5_value"
+                  ],
+    "Labels": [
+        "ThreatType/Criminal",
+        "ThreatType/SpamBot",
+        "CSD/CSIT-18125",
+        "MaliciousConfidence/High",
+        "Malware/SendSafe"
+    ]
+}

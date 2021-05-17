@@ -1,0 +1,420 @@
+id: PAN-OS EDL Setup V2 Test
+version: -1
+fromversion: 5.0.0
+name: PAN-OS EDL Setup V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0fd3092-abc1-401e-8b67-d12e10260b81
+    type: start
+    task:
+      id: e0fd3092-abc1-401e-8b67-d12e10260b81
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 28e6570a-1e74-42dd-8714-e563882060bb
+    type: regular
+    task:
+      id: 28e6570a-1e74-42dd-8714-e563882060bb
+      version: -1
+      name: find external file
+      description: Gets metadata for an external file.
+      script: '|||pan-os-edl-get-external-file-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      file_path:
+        complex:
+          root: inputs.list-name
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 0f59d93e-a791-4b81-8ef0-38accfb7c010
+    type: condition
+    task:
+      id: 0f59d93e-a791-4b81-8ef0-38accfb7c010
+      version: -1
+      name: is the external file exists
+      description: checks if the external file exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: PANOSEDL.FileName
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.list-name
+                transformers:
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: .txt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
+    type: title
+    task:
+      id: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
+      version: -1
+      name: Done
+      description: '-'
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: d73bf7a9-df9a-4c6c-8717-b3665339cad3
+    type: regular
+    task:
+      id: d73bf7a9-df9a-4c6c-8717-b3665339cad3
+      version: -1
+      name: Dump internal list content to context
+      description: Dumps (copies) instance context to either the incident context
+      script: '|||pan-os-edl-dump-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      destination:
+        simple: incident_context
+      list_name:
+        simple: ${inputs.list-name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: c43e3754-35c8-4edc-8314-228d9d96883a
+    type: condition
+    task:
+      id: c43e3754-35c8-4edc-8314-228d9d96883a
+      version: -1
+      name: Check if internal list exists
+      description: Checks whether the internal list exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PANOSEDL.ListName
+            iscontext: true
+          right:
+            value:
+              simple: inputs.list-name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: ef65e600-8264-4b02-8c54-f057ee66953d
+    type: regular
+    task:
+      id: ef65e600-8264-4b02-8c54-f057ee66953d
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 5646efaf-932d-47ea-8a5c-42bcad9c14c6
+    type: regular
+    task:
+      id: 5646efaf-932d-47ea-8a5c-42bcad9c14c6
+      version: -1
+      name: Dump internal list content to context
+      description: Dumps (copies) instance context to either the incident context
+        or a file.
+      script: '|||pan-os-edl-dump-internal-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      destination:
+        simple: incident_context
+      list_name:
+        simple: ${inputs.list-name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 0d9c5e19-f678-4bb4-8f79-f1dcca3336e4
+    type: regular
+    task:
+      id: 0d9c5e19-f678-4bb4-8f79-f1dcca3336e4
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 622ea9cc-d6ff-4f93-87e4-179ac8098760
+    type: condition
+    task:
+      id: 622ea9cc-d6ff-4f93-87e4-179ac8098760
+      version: -1
+      name: Check if internal list exists
+      description: Checks whether the internal list exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PANOSEDL.ListName
+            iscontext: true
+          right:
+            value:
+              simple: inputs.list-name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: c45e1edf-4a7f-4f23-87be-95b027ef6366
+    type: playbook
+    task:
+      id: c45e1edf-4a7f-4f23-87be-95b027ef6366
+      version: -1
+      name: PAN-OS EDL Setup v2
+      description: '-'
+      playbookName: PAN-OS EDL Setup v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        simple: "Yes"
+      device-group: {}
+      inbound-or-outbound-rule:
+        simple: outbound
+      ioc-type:
+        simple: IP
+      list-items:
+        simple: 1.1.1.1
+      list-name:
+        simple: ${inputs.list-name}
+      log-forwarding-object-name: {}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-name:
+        simple: edl-test-rule
+      rule-position:
+        simple: bottom
+      web-server-ip:
+        simple: 18.219.190.57
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: list-name
+  value:
+    simple: ip4
+  required: false
+  description: the name of the external file
+outputs: []

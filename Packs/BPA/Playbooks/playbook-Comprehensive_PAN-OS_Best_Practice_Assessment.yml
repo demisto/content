@@ -1,0 +1,299 @@
+id: Comprehensive PAN-OS Best Practice Assessment
+version: -1
+name: Comprehensive PAN-OS Best Practice Assessment
+description: |
+  Comprehensive version for PAN-OS Best Practice Assessment Report which fetches the BPA report zipped file, unzips it, rasterises the PDF, and visualizes the data in the custom Best Practice Assessment incident layout.
+  You have the option to email the report via the playbook inputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f67447f3-34f9-43c8-8169-093e97eaba9a
+    type: start
+    task:
+      id: f67447f3-34f9-43c8-8169-093e97eaba9a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 4970178e-e152-4a3a-827a-38d5da79f3ab
+    type: playbook
+    task:
+      id: 4970178e-e152-4a3a-827a-38d5da79f3ab
+      version: -1
+      name: Run Panorama Best Practice Assessment
+      description: This playbook runs Palo Alto Best Practice Assessment checks for a Panorama instance.
+      playbookName: Run Panorama Best Practice Assessment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: cfcc9ea0-eb0e-4efa-80ad-606909350e2a
+    type: regular
+    task:
+      id: cfcc9ea0-eb0e-4efa-80ad-606909350e2a
+      version: -1
+      name: Unzip report file
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files are loaded to the War Room and names are put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryID:
+        complex:
+          root: InfoFile
+          accessor: EntryID
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: cae1aa66-e105-48e0-8c69-0a45d16ff15e
+    type: regular
+    task:
+      id: cae1aa66-e105-48e0-8c69-0a45d16ff15e
+      version: -1
+      name: 'Rasterize PDF report '
+      description: Converts a PDF file to an image file.
+      tags:
+      - bpa executive repoert
+      script: Rasterize|||rasterize-pdf
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+          accessor: EntryID
+      horizontal: {}
+      maxPages:
+        simple: "20"
+      pdfPassword: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 9636644c-5ea4-4daf-8e3c-3ab2c3e128ed
+    type: condition
+    task:
+      id: 9636644c-5ea4-4daf-8e3c-3ab2c3e128ed
+      version: -1
+      name: Is there an email to send the report to?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Conditional task verifying that a valid email exists to which to  send the report.
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: dd9d8efe-2591-4821-869f-8c8583ef7d78
+    type: regular
+    task:
+      id: dd9d8efe-2591-4821-869f-8c8583ef7d78
+      version: -1
+      name: Send report to email recipient
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
+          accessor: EntryID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: "This Message is sent automatically via Cortex xSOAR following the PAN-OS Best Practice Assessment Playbook.\nThis message includes the following attached files:\n1. Best Practice Assessment - Executive Report \n2. Best Practice Assessment  - Failed Check Report."
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        simple: PAN-OS Best Practice Assessment Report
+      to:
+        complex:
+          root: inputs.email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: f353d914-379e-469a-8340-09340906494e
+    type: title
+    task:
+      id: f353d914-379e-469a-8340-09340906494e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_yes": 0.55,
+      "4_6_#default#": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1065,
+        "width": 650,
+        "x": 180,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email
+  value: {}
+  required: false
+  description: |-
+    Set an email recipient to send the BPA report to.
+    Can be a CSV list.
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,221 @@
+id: CheckpointFW-test
+version: -1
+name: CheckpointFW-test
+description: Check Point FW Test PB
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 60faaaf9-dde5-4102-82be-635d98dbf1b2
+    type: start
+    task:
+      id: 60faaaf9-dde5-4102-82be-635d98dbf1b2
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 63c4a0b5-84b0-42a8-83e5-d48174e49851
+    type: regular
+    task:
+      id: 63c4a0b5-84b0-42a8-83e5-d48174e49851
+      version: -1
+      name: checkpoint-show-access-rule-base
+      description: Show items in an access rulebase configured in Checkpoint FW.
+      script: '|||checkpoint-show-access-rule-base'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      name:
+        simple: Network
+      uid: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 596137cc-b7f2-46d3-81a7-5a681a317a2f
+    type: regular
+    task:
+      id: 596137cc-b7f2-46d3-81a7-5a681a317a2f
+      version: -1
+      name: checkpoint-set-rule
+      description: Set attributes of an access rule object configured in Checkpoint.
+        FW.
+      script: '|||checkpoint-set-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      enabled: {}
+      layer:
+        simple: 8a5e96fb-c793-457f-b78f-c667074223a5
+      name:
+        simple: bar-to-1.2.3.4
+      rule_number: {}
+      uid: {}
+    continueonerror: true
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: dfb5db9b-f877-4023-8c5c-9ac021802006
+    type: regular
+    task:
+      id: dfb5db9b-f877-4023-8c5c-9ac021802006
+      version: -1
+      name: checkpoint-show-hosts
+      description: Show host objects configured in Checkpoint FW.
+      script: '|||checkpoint-show-hosts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      limit: {}
+      offset: {}
+      order: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: 25da3377-b361-4b92-8f6f-bb6cc0fabd5c
+    type: condition
+    task:
+      id: 25da3377-b361-4b92-8f6f-bb6cc0fabd5c
+      version: -1
+      name: check checkpoint-show-access-rule-base
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CheckpointFWRule.UID
+            iscontext: true
+          right:
+            value:
+              simple: 69c71244-6410-49e3-9938-eb0735d07720
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1090\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '17':
+    id: '17'
+    taskid: a2446652-bf21-453c-857f-df804fb2e007
+    type: title
+    task:
+      id: a2446652-bf21-453c-857f-df804fb2e007
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 580e6cff-9882-48d2-8d7b-39dbe1639a5a
+    type: condition
+    task:
+      id: 580e6cff-9882-48d2-8d7b-39dbe1639a5a
+      version: -1
+      name: check checkpoint-show-hosts
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '2'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: Hostname
+            iscontext: true
+          right:
+            value:
+              simple: 10.10.10.10
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: a9e3cbcd-e8d6-455d-88fe-cfa035d8ebae
+    type: regular
+    task:
+      id: a9e3cbcd-e8d6-455d-88fe-cfa035d8ebae
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1260,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0

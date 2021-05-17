@@ -1,0 +1,543 @@
+id: test playbook - Google Cloud Functions
+version: -1
+name: test playbook - Google Cloud Functions
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4758a204-c5aa-46f6-8485-63fecf23361e
+    type: start
+    task:
+      id: 4758a204-c5aa-46f6-8485-63fecf23361e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 130ccb88-6a93-461d-848e-3a5c070f1248
+    type: regular
+    task:
+      id: 130ccb88-6a93-461d-848e-3a5c070f1248
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f0f034fc-5ae9-4932-8390-cdc293f60055
+    type: regular
+    task:
+      id: f0f034fc-5ae9-4932-8390-cdc293f60055
+      version: -1
+      name: List regions
+      description: Lists all regions in project.
+      script: '|||google-cloud-function-regions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      project_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 115ced97-a762-47dc-8b81-98d75379b638
+    type: condition
+    task:
+      id: 115ced97-a762-47dc-8b81-98d75379b638
+      version: -1
+      name: contains us-central
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudFunctions.Region.locationId
+            iscontext: true
+          right:
+            value:
+              simple: us-central1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0d9000f4-6489-40a1-8567-ae40e9605fb2
+    type: regular
+    task:
+      id: 0d9000f4-6489-40a1-8567-ae40e9605fb2
+      version: -1
+      name: List functions
+      description: Lists all google cloud functions
+      script: '|||google-cloud-functions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      project_id: {}
+      region: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 023355a7-52ce-44fc-8bea-6fac982a1a9c
+    type: condition
+    task:
+      id: 023355a7-52ce-44fc-8bea-6fac982a1a9c
+      version: -1
+      name: Check demisto-func
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudFunctions.Function.name
+            iscontext: true
+          right:
+            value:
+              simple: projects/gcp-integrations/locations/us-central1/functions/demisto-func
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudFunctions.Function.status
+            iscontext: true
+          right:
+            value:
+              simple: ACTIVE
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 47e22a74-f8c8-48d9-8627-294703b3cf60
+    type: regular
+    task:
+      id: 47e22a74-f8c8-48d9-8627-294703b3cf60
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 982764de-c04e-4e53-8709-6b7f6d655816
+    type: regular
+    task:
+      id: 982764de-c04e-4e53-8709-6b7f6d655816
+      version: -1
+      name: Get function by name
+      description: Get the details of a specific function.
+      script: '|||google-cloud-function-get-by-name'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      function_name:
+        simple: demisto-func
+      project_id: {}
+      region: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f10e9f4a-dc86-402e-84a4-fd607958a7d0
+    type: condition
+    task:
+      id: f10e9f4a-dc86-402e-84a4-fd607958a7d0
+      version: -1
+      name: Check demisto-func
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudFunctions.Function.name
+            iscontext: true
+          right:
+            value:
+              simple: projects/gcp-integrations/locations/us-central1/functions/demisto-func
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 6b1a6ba6-82c7-4e49-848c-55cb8feb0a20
+    type: regular
+    task:
+      id: 6b1a6ba6-82c7-4e49-848c-55cb8feb0a20
+      version: -1
+      name: Execute func (with spaces)
+      description: Execute a cloud function.
+      script: '|||google-cloud-function-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      function_name:
+        simple: demisto-func
+      parameters:
+        simple: ' message : Success!'
+      region: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 226e302b-a337-4adb-835b-b17c72f029bf
+    type: condition
+    task:
+      id: 226e302b-a337-4adb-835b-b17c72f029bf
+      version: -1
+      name: Check status success
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudFunctions.Execution.result
+            iscontext: true
+          right:
+            value:
+              simple: Success!
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: be763d2b-d820-4b00-8306-d3b6537bb0cc
+    type: regular
+    task:
+      id: be763d2b-d820-4b00-8306-d3b6537bb0cc
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0a38a947-730b-448d-8767-25e4c79b3a04
+    type: regular
+    task:
+      id: 0a38a947-730b-448d-8767-25e4c79b3a04
+      version: -1
+      name: Execute func
+      description: Execute a cloud function.
+      script: '|||google-cloud-function-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      function_name:
+        simple: demisto-func
+      parameters:
+        simple: wrong:keyvalue
+      region: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 5702e519-f358-49ba-865b-6e82449cd2d0
+    type: condition
+    task:
+      id: 5702e519-f358-49ba-865b-6e82449cd2d0
+      version: -1
+      name: Check execution
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudFunctions.Execution.result
+            iscontext: true
+          right:
+            value:
+              simple: Test Failed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 607c8e84-5286-4061-88d6-c6f6895efe13
+    type: title
+    task:
+      id: 607c8e84-5286-4061-88d6-c6f6895efe13
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

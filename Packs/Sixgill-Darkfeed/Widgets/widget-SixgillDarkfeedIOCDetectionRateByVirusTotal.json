@@ -1,0 +1,100 @@
+{
+ "id": "sixgill-darkfeed-ioc-detection-rate-by-virus-total",
+ "version": -1,
+ "modified": "2020-06-14T06:30:33.416826298Z",
+ "name": "Sixgill Darkfeed IOC detection rate by Virus Total",
+ "dataType": "indicators",
+ "widgetType": "pie",
+ "query": "sourceBrands:Sixgill_Darkfeed",
+ "sort": null,
+ "description": "",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "by": "",
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 30,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "params": {
+  "groupBy": [
+   "sixgillvirustotaldetectionrate"
+  ],
+  "tableColumns": [
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "indicator_type",
+    "width": 120
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "value",
+    "width": 300
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "score",
+    "width": 120
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "timestamp",
+    "width": 190
+   },
+   {
+    "displayed": true,
+    "isDefault": true,
+    "key": "sourceBrands",
+    "width": 175
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Actor",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Feed Name",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Post Reference",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Post Title",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Source",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Virus Total Detection Rate",
+    "width": 200
+   },
+   {
+    "displayed": true,
+    "key": "Sixgill Virus Total URL",
+    "width": 200
+   }
+  ]
+ },
+ "size": 0,
+ "category": "",
+ "fromVersion": "5.0.0"
+}

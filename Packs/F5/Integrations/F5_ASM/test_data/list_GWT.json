@@ -1,0 +1,30 @@
+{
+  "_kind": "tm:asm:policies:gwt-profiles:gwt-profilecollectionstate",
+  "selfLink": "https://gwt-profiles",
+  "totalItems": 1,
+  "items": [
+    {
+      "defenseAttributes": {
+        "maximumValueLength": 100,
+        "maximumTotalLengthOfGWTData": 10000,
+        "tolerateGWTParsingWarnings": true
+      },
+      "metacharElementCheck": true,
+      "name": "test-GWT",
+      "lastUpdateMicros": 1596661129000000.0,
+      "description": "Default GWT Profile",
+      "isReferenced": false,
+      "_kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
+      "selfLink": "https://gwt-profiles",
+      "attackSignaturesCheck": true,
+      "isDefault": true,
+      "signatureOverrides": [
+        
+      ],
+      "id": "GWT-md5",
+      "metacharOverrides": [
+        
+      ]
+    }
+  ]
+}

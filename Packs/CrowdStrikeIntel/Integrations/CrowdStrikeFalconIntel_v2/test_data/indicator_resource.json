@@ -1,0 +1,97 @@
+{
+    "_marker": "1600081765f9d74900f63c77b0b570a38c42244b8a",
+    "actors": [],
+    "deleted": false,
+    "domain_types": [],
+    "id": "hash_sha1_id",
+    "indicator": "hash_sha1_value",
+    "ip_address_types": [],
+    "kill_chains": [],
+    "labels": [
+        {
+            "created_on": 1600081757,
+            "last_valid_on": 1600081757,
+            "name": "ThreatType/Criminal"
+        },
+        {
+            "created_on": 1600081757,
+            "last_valid_on": 1600081757,
+            "name": "ThreatType/SpamBot"
+        },
+        {
+            "created_on": 1591207986,
+            "last_valid_on": 1591207986,
+            "name": "CSD/CSIT-18125"
+        },
+        {
+            "created_on": 1600081754,
+            "last_valid_on": 1600081765,
+            "name": "MaliciousConfidence/High"
+        },
+        {
+            "created_on": 1600081757,
+            "last_valid_on": 1600081757,
+            "name": "Malware/SendSafe"
+        }
+    ],
+    "last_updated": 1600081765,
+    "malicious_confidence": "high",
+    "malware_families": [
+        "SendSafe"
+    ],
+    "published_date": 1600081754,
+    "relations": [
+        {
+            "created_date": 1600081757,
+            "id": "hash_md5_id",
+            "indicator": "hash_md5_value",
+            "last_valid_date": 1600081757,
+            "type": "hash_md5"
+        },
+        {
+            "created_date": 1600081757,
+            "id": "ip_address_id",
+            "indicator": "8.8.8.8",
+            "last_valid_date": 1600081757,
+            "type": "ip_address"
+        },
+        {
+            "created_date": 1600081757,
+            "id": "hash_sha1_id",
+            "indicator": "hash_sha1_value",
+            "last_valid_date": 1600081757,
+            "type": "hash_sha1"
+        },
+        {
+            "created_date": 1600081757,
+            "id": "hash_sha256_id",
+            "indicator": "hash_sha256_value",
+            "last_valid_date": 1600081757,
+            "type": "hash_sha256"
+        },
+        {
+            "created_date": 1600081754,
+            "id": "hash_sha256_id",
+            "indicator": "hash_sha256_value",
+            "last_valid_date": 1600081754,
+            "type": "hash_sha256"
+        },
+        {
+            "created_date": 1600081754,
+            "id": "hash_m5_id",
+            "indicator": "hash_m5_value",
+            "last_valid_date": 1600081754,
+            "type": "hash_md5"
+        }
+    ],
+    "reports": [
+        "CSIT-18125"
+    ],
+    "targets": [],
+    "threat_types": [
+        "Criminal",
+        "SpamBot"
+    ],
+    "type": "hash_sha1",
+    "vulnerabilities": []
+}

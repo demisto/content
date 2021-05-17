@@ -1,0 +1,12 @@
+[
+    {
+        "uuid": "BFEBFBFF000806EAL1HF8C4003Z",
+        "hostIdentifier": "DESKTOP-ANTONY",
+        "ipAddress": "192.168.100.120",
+        "agentConfigViewResource": {
+            "isSystemArmed": "free",
+            "isSystemLocked": null,
+            "centralizedConsoleIP": null
+        }
+    }
+]

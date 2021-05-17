@@ -1,0 +1,466 @@
+id: test-Expanse
+version: -1
+name: test-Expanse
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c55fa98d-534d-4859-893a-2c48c574eb9a
+    type: start
+    task:
+      id: c55fa98d-534d-4859-893a-2c48c574eb9a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 675ad61c-dfe5-4fbf-8cca-6973e64f10a1
+    type: regular
+    task:
+      id: 675ad61c-dfe5-4fbf-8cca-6973e64f10a1
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ea981fa9-7255-4b58-867e-d350b97071ce
+    type: regular
+    task:
+      id: ea981fa9-7255-4b58-867e-d350b97071ce
+      version: -1
+      name: ip
+      script: 'Expanse|||ip'
+      type: regular
+      iscommand: true
+      brand: "Expanse"
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ip:
+        simple: ${inputs.ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 76136acf-945b-4767-827a-5eeee6516948
+    type: condition
+    task:
+      id: 76136acf-945b-4767-827a-5eeee6516948
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Expanse.IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Expanse.IP.Version
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ed5450ed-4522-4ffc-8b04-94a0b67b368d
+    type: regular
+    task:
+      id: ed5450ed-4522-4ffc-8b04-94a0b67b368d
+      version: -1
+      name: domain
+      script: 'Expanse|||domain'
+      type: regular
+      iscommand: true
+      brand: "Expanse"
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain:
+        simple: ${inputs.domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1d5f0b1e-2f36-45ec-847a-094582ecb43e
+    type: condition
+    task:
+      id: 1d5f0b1e-2f36-45ec-847a-094582ecb43e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.DomainStatus
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Expanse.Domain.FirstObserved
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Expanse.Domain.ServiceStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d41d8474-170a-448d-864d-54b90868b1b3
+    type: title
+    task:
+      id: d41d8474-170a-448d-864d-54b90868b1b3
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 5dd09221-4c38-459e-806a-f988c8f36212
+    type: regular
+    task:
+      id: 5dd09221-4c38-459e-806a-f988c8f36212
+      version: -1
+      name: expanse-get-domains-for-certificate
+      description: Returns all domains which have been seen with the specified certificate.
+      script: Expanse|||expanse-get-domains-for-certificate
+      type: regular
+      iscommand: true
+      brand: Expanse
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      common_name:
+        simple: ${inputs.common_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: cd773799-3ec9-4468-8416-9f9b390b94d9
+    type: condition
+    task:
+      id: cd773799-3ec9-4468-8416-9f9b390b94d9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse
+                accessor: IPDomains.TotalDomainCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Expanse
+                accessor: IPDomains.DomainList.[0].assetType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 3f044a27-3f81-4727-8199-258814f0a7c3
+    type: condition
+    task:
+      id: 3f044a27-3f81-4727-8199-258814f0a7c3
+      version: -1
+      name: Result Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${Expanse.IP}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 84bf1749-50a8-448e-85dc-24ef52e2d648
+    type: condition
+    task:
+      id: 84bf1749-50a8-448e-85dc-24ef52e2d648
+      version: -1
+      name: Result Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${Expanse.Domain}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 17581ad9-4bb7-4014-8d82-6f9f6ff37f50
+    type: condition
+    task:
+      id: 17581ad9-4bb7-4014-8d82-6f9f6ff37f50
+      version: -1
+      name: Result Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        simple: ${Expanse.IPDomains.TotalDomainCount}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2195,
+        "width": 390,
+        "x": 50,
+        "y": -80
+      }
+    }
+  }
+inputs:
+- key: ip
+  value:
+    simple: 74.142.119.130
+  required: false
+  description: 'IP address '
+  playbookInputQuery: null
+- key: domain
+  value:
+    simple: shack.com
+  required: false
+  description: domain
+  playbookInputQuery: null
+- key: common_name
+  value:
+    simple: shack.com
+  required: false
+  description: A partial certificate common name
+  playbookInputQuery: null
+outputs: []
+description: ""
+fromversion: 5.0.0

@@ -1,0 +1,12 @@
+[
+    {
+        "url": "www.demisto-news.com",
+        "urlClassifications": "NEWS_AND_MEDIA",
+        "urlClassificationsWithSecurityAlert": ""
+    },
+    {
+        "url": "www.demisto-search.com",
+        "urlClassifications": "WEB_SEARCH",
+        "urlClassificationsWithSecurityAlert": ""
+    }
+]

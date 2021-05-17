@@ -1,0 +1,881 @@
+id: process_email_-_generic_-_test
+version: -1
+fromversion: 5.0.0
+name: Process Email - Generic - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 592a2589-554b-46cc-8a5a-c89184bef339
+    type: start
+    task:
+      id: 592a2589-554b-46cc-8a5a-c89184bef339
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d81c5691-745c-4e54-88a1-de4c9cb46629
+    type: regular
+    task:
+      id: d81c5691-745c-4e54-88a1-de4c9cb46629
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 6af01781-4959-406b-8429-5626a2cdbd88
+    type: regular
+    task:
+      id: 6af01781-4959-406b-8429-5626a2cdbd88
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 035320a9-5a25-4273-8baa-34cafdf3bad3
+    type: title
+    task:
+      id: 035320a9-5a25-4273-8baa-34cafdf3bad3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 41343ad4-ecd3-44ee-8615-5831c4ef413e
+    type: regular
+    task:
+      id: 41343ad4-ecd3-44ee-8615-5831c4ef413e
+      version: -1
+      name: Error Verifying Context Output
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed Email verification
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c350f535-8dba-4f96-8e85-2591d19a6bc1
+    type: regular
+    task:
+      id: c350f535-8dba-4f96-8e85-2591d19a6bc1
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 5967c0ca-52be-4f0a-88cf-e298a8b3aa8b
+    type: regular
+    task:
+      id: 5967c0ca-52be-4f0a-88cf-e298a8b3aa8b
+      version: -1
+      name: Download SMTP Email
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test-smtp-email.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/smtp_email_utf_8.test
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 08a0e426-d639-433f-81e5-8b2485e3ec5a
+    type: regular
+    task:
+      id: 08a0e426-d639-433f-81e5-8b2485e3ec5a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: ced957fd-44b5-413a-8411-8be6a6aea1fc
+    type: regular
+    task:
+      id: ced957fd-44b5-413a-8411-8be6a6aea1fc
+      version: -1
+      name: Download DOC file
+      description: |-
+        Checks that a Word file with the extension of DOC, does not trigger the processing of an email file.
+
+        See issue: https://github.com/demisto/etc/issues/15743
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: file.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators.doc
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: d33608c4-ead7-4cb3-85c7-d17cc9d6cc80
+    type: condition
+    task:
+      id: d33608c4-ead7-4cb3-85c7-d17cc9d6cc80
+      version: -1
+      name: Verify email is null
+      description: Verifies the email is "null" when we are downloading a DOC file
+        and not an email.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: Email.From
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: e0ca5ffa-df39-41ee-8f6d-5343a79a9fd0
+    type: playbook
+    task:
+      id: e0ca5ffa-df39-41ee-8f6d-5343a79a9fd0
+      version: -1
+      name: Process Email - Generic
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 850546ae-9e7b-4ee1-82f5-3423561abb6d
+    type: playbook
+    task:
+      id: 850546ae-9e7b-4ee1-82f5-3423561abb6d
+      version: -1
+      name: Process Email - Generic
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      Email:
+        complex:
+          root: incident
+          accessor: labels.Email
+      Email/cc:
+        complex:
+          root: incident
+          accessor: labels.CC
+      Email/format:
+        complex:
+          root: incident
+          accessor: labels.Email/format
+      Email/from:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+      Email/headers:
+        complex:
+          root: incident
+          accessor: labels.Email/headers
+      Email/html:
+        complex:
+          root: incident
+          accessor: labels.Email/html
+      Email/subject:
+        complex:
+          root: incident
+          accessor: labels.Email/subject
+      Email/text:
+        complex:
+          root: incident
+          accessor: labels.Email/text
+      File:
+        complex:
+          root: File
+      GetOriginalEmail:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: dc38c79d-6abc-4abd-8632-160b5995ed98
+    type: playbook
+    task:
+      id: dc38c79d-6abc-4abd-8632-160b5995ed98
+      version: -1
+      name: Process Email - Generic
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 9d520b1c-282a-4e68-81b9-ac0c74ab5880
+    type: condition
+    task:
+      id: 9d520b1c-282a-4e68-81b9-ac0c74ab5880
+      version: -1
+      name: Verify context
+      description: Verifies that the right values in context exist under Email.HeadersMap.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Message-ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Return-Path
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: From
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: To
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: f0962c3e-bfa0-4f48-809e-ddd14a4b0748
+    type: condition
+    task:
+      id: f0962c3e-bfa0-4f48-809e-ddd14a4b0748
+      version: -1
+      name: Verify context
+      description: Verifies that the values we expect ParseEmailFiles to put in context
+        are there.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Message-ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Return-Path
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: From
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: To
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 6ac5b117-5733-404c-8c62-f1efc59c10d7
+    type: regular
+    task:
+      id: 6ac5b117-5733-404c-8c62-f1efc59c10d7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 872b310e-98f3-41fc-8516-7db13d77d80e
+    type: regular
+    task:
+      id: 872b310e-98f3-41fc-8516-7db13d77d80e
+      version: -1
+      name: Download SMIME Wrapped Email
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: test-smtp-email.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/e5541580421db52f78e3ff6071594a2deea50b8e/Scripts/ParseEmailFiles/test_data/smime.p7m
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 33a4b61b-89af-4e7a-89d4-12fd94dc25a3
+    type: playbook
+    task:
+      id: 33a4b61b-89af-4e7a-89d4-12fd94dc25a3
+      version: -1
+      name: Process Email - Generic
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: fdb4ca26-ad61-4cb2-8d23-ae7050763118
+    type: condition
+    task:
+      id: fdb4ca26-ad61-4cb2-8d23-ae7050763118
+      version: -1
+      name: Verify context
+      description: Verifies that the values we expect ParseEmailFiles to put in context
+        are there.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Message-ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Return-Path
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: From
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Subject
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HeadersMap.Date
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: To
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: To
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: db4e781d-28de-4696-8b1b-81f025153595
+    type: regular
+    task:
+      id: db4e781d-28de-4696-8b1b-81f025153595
+      version: -1
+      name: Download DOC file - So we have than just 1 email in the inputs
+      description: |-
+        Checks that a Word file with the extension of DOC, does not trigger the processing of an email file.
+
+        See issue: https://github.com/demisto/etc/issues/15743
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: file.test
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators.doc
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_8_yes": 0.64,
+      "20_7_#default#": 0.28
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3270,
+        "width": 1000,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

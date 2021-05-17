@@ -1,0 +1,29 @@
+{
+ "id": "my-tasks",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "modified": "2018-02-28T14:55:09.423998+02:00",
+ "name": "My Tasks",
+ "dataType": "tasks",
+ "widgetType": "list",
+ "query": "assignee:\"{me}\" and (state:Waiting or state:inprogress or state:error)",
+ "sort": [
+  {
+   "field": "dueDate",
+   "asc": true
+  }
+ ],
+ "isPredefined": true,
+ "dateRange": {
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": null,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "size": 10,
+ "description": ""
+}

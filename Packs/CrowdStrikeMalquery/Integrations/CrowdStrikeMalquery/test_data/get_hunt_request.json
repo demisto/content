@@ -1,0 +1,72 @@
+{
+  "meta": {
+    "query_time": 6360,
+    "powered_by": "malquery-api",
+    "trace_id": "35ed9b4a-774b-4d32-8c60-1b89927b5da5",
+    "reqid": "096f6aa5-f245-4b09-790f-133bc89d4d26",
+    "reqtype": "hunt",
+    "status": "done",
+    "stats": {
+      "clean_count": 0,
+      "malware_count": 4,
+      "pua_count": 0,
+      "total_count": 5,
+      "unknown_count": 1
+    },
+    "yara_rule": "rule CrowdStrike_16142_01 : wiper { strings: $ = { 41 61 43 63 64 44 65 46 66 47 68 69 4B 4C 6C 4D 6D 6E 4E 6F 4F 70 50 72 52 73 53 54 74 55 75 56 76 77 57 78 79 5A 7A 33 32 2E 5C 45 62 67 6A 48 49 20 5F 59 51 42 3A 22 2F 40 } condition: all of them and filesize < 800KB }",
+    "options": {
+      "limit": 5
+    }
+  },
+  "resources": [
+    {
+      "sha256": "d207ccf1eabcc9453288896d963f1a1c558c427abfe9305d7328e3a6fb06f6ee",
+      "sha1": "85be23059c9abb3370586dc49dbd8f1ced05df8e",
+      "md5": "0b189ab69d40e782fe827c63e1cc6f06",
+      "filesize": 151552,
+      "first_seen": "2020/06/09",
+      "filetype": "PE32",
+      "label": "unknown",
+      "samples": []
+    },
+    {
+      "sha256": "41a1d7b98d0ce3259270c9a8f26fe8899cca402cba69ef8e5c70449faea8b714",
+      "sha1": "2ca2622317bc840bf890d1e337d2c547be2cfebf",
+      "md5": "688bdedf1f9dd44d6db51a7f8499939c",
+      "filesize": 245760,
+      "family": "Stonedrill",
+      "first_seen": "2019/03/12",
+      "filetype": "PE32",
+      "label": "malware",
+      "samples": []
+    },
+    {
+      "sha256": "0f191518ab7f24643218bd3384ae4bd1f52ec80419730d87196605a2a69938d7",
+      "sha1": "6ae00484a878201e6150108ca1b234dd1f68930d",
+      "md5": "345ade2a73ee83e4f75447a26c4e78c9",
+      "filesize": 317440,
+      "family": "Stonedrill",
+      "first_seen": "2018/01/24",
+      "filetype": "PE32",
+      "label": "malware",
+      "samples": []
+    },
+    {
+      "sha256": "3fb85b787fa005e591cd2cd7e1e83c79d103b1c26f5da31fdf788764ae0b8bb0",
+      "sha1": "df07d50296914de0ca3116d4ca6d3845d55c7540",
+      "md5": "2b82ce15a632e3ce1485bfc87e586ee5",
+      "filesize": 128512,
+      "family": "Cadlotcorg",
+      "first_seen": "2017/07/20",
+      "filetype": "PE32",
+      "label": "malware",
+      "samples": []
+    },
+    {
+      "sha256": "bf79622491dc5d572b4cfb7feced055120138df94ffd2b48ca629bb0a77514cc",
+      "sha1": "b9fc1ac4a7ccee467402f190391974a181391da3",
+      "md5": "697c515a46484be4f9597cb4f39b2959",
+      "filesize": 130560,
+      "family": "Cadlotcorg",
+      "first_seen": "2016/12/09",
+      "filetype": "PE32", "label": "malware", "samples": []}]}

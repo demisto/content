@@ -1,0 +1,7 @@
+!ip ip=1.1.1.1
+!url url=http://abc.com
+!domain domain=abc.com
+!file file=b5e8793b216cf2e63c47af4ac424ac9a77601405c131c32a2eaa22812306123e
+!cybertotal-ip-whois ip=1.1.1.1
+!cybertotal-url-whois url=http://abc.com
+!cybertotal-domain-whois domain=abc.com

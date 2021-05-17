@@ -1,0 +1,53 @@
+{
+    "result": [
+        {
+            "Rule_ID": "system",
+            "Disposition_Action": "",
+            "Sendmail_Action": "",
+            "Attachment_Names": "",
+            "Recipients": "user@example.com",
+            "SendmailRaw_Log": "",
+            "GUID": "9rLtu31xs8H24NF8KcRw-S6EihtLK-y_",
+            "Date": "2020-05-20 14:13:02 [UTC-0600]",
+            "Raw_Log": "",
+            "Sender_Host": "localhost",
+            "Module_ID": "access",
+            "Sender_IP_Address": "127.0.0.1",
+            "Quarantine_Folder": "",
+            "QID": "u8P6D24m919880",
+            "Quarantine_Rule": "",
+            "Duration": "0.124094999905240",
+            "Spam_Score": "",
+            "country": "**",
+            "TLS": "",
+            "Policy_Routes": "allow_relay,firewallsafe,internalnet",
+            "current_folder": "",
+            "FID": "8lLtu31xs8H24NF8McYw-S6EidtLK-y_",
+            "module_rules": [
+                "access.system"
+            ],
+            "PE_Recipients": "",
+            "Virus_Names": "",
+            "Sendmail_Errorcode": "",
+            "FQIN": "example.com-10000_instance1",
+            "SMIME_Recipients": "",
+            "Agent": "example.com",
+            "Subject": "Cron <pps@user> /opt/proofpoint/pps8.0.1.1446/admin/tools/dbutil.sh -optimize -db msgqueue",
+            "Final_Rule": "access.system",
+            "Suborg": "",
+            "SMIME_Recipients_Signed": "",
+            "Message_Encrypted": "",
+            "Message_Split": "",
+            "Disposition_SmtpProfile": "",
+            "Sendmail_To": "",
+            "Sendmail_Stat": "",
+            "SID": "25nnq08028",
+            "Message_ID":
+                "<551609250613.u8P6D1l3019878@user.example.com>",
+            "Final_Action": "accept",
+            "Sender": "root@user.example.com",
+            "Sendmail_To_Stat": "",
+            "Message_Size": "1142"
+        }
+    ]
+}

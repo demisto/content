@@ -1,0 +1,49 @@
+commonfields:
+  id: SsdeepReputationTest
+  version: -1
+name: SsdeepReputationTest
+script: >
+  import time
+
+
+  def get_indicator_from_value(indicator_value):
+      try:
+          res = demisto.executeCommand("findIndicators", {'value': indicator_value})
+          indicator = res[0]['Contents'][0]
+          return indicator
+      except:
+          pass
+
+  incident = demisto.incidents()[0]
+
+  ssdeep1 = "768:P7XINhXznVJ8CC1rBXdo0zekXUd3CdPJxB7mNmDZkUKMKZQbFTiKKAZTe:yhT8C+fuioHq1KEFoA7"
+
+  ssdeep2 = "768:P7XINhXznVJ8CC1rBXdo0zekXUd3CdPJxB7mNmDZkUKMKZQbFTiKKAZT6:yhT8C+fuioHq1KEFoA8"
+
+  res = demisto.executeCommand("createNewIndicator", {"type": "ssdeep", "value": ssdeep1, "seenNow": True, "merge": True, "reputation": "Good", 'relatedIncidents': incident['id']})
+
+  res = demisto.executeCommand("createNewIndicator", {"type": "ssdeep", "value": ssdeep2, "seenNow": True, "merge": True, "reputation": "Good", 'relatedIncidents': incident['id']})
+
+
+  demisto.setContext('expectBadSsdeepValue', ssdeep2)
+
+  md5 = "be0975d3ae691cf77f4f0952e791a0fb"
+
+  res = demisto.executeCommand("createNewIndicator", {"type": "md5", "value": md5, "seenNow": True, "merge": True, "reputation": "Bad", 'relatedIncidents': incident['id']})
+
+  res = demisto.setContext("File", {
+      "MD5": md5,
+      "SSDeep": ssdeep1
+  })
+type: python
+subtype: python2
+tags: []
+enabled: true
+outputs:
+- contextPath: expectBadSsdeepValue
+  description: ''
+scripttarget: 0
+runonce: false
+comment: ''
+runas: DBotWeakRole
+fromversion: 5.0.0

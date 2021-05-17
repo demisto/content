@@ -1,0 +1,478 @@
+id: Archer-Test-Playbook
+version: -1
+name: Archer-Test-Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 31736f89-ab36-409b-8dbe-0a860a70892f
+    type: start
+    task:
+      id: 31736f89-ab36-409b-8dbe-0a860a70892f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: afdc08a2-903b-4474-8cc2-bbcd91aec5d9
+    type: regular
+    task:
+      id: afdc08a2-903b-4474-8cc2-bbcd91aec5d9
+      version: -1
+      name: archer-create-record
+      description: Creates a new content record in the given application.
+      script: RSA Archer|||archer-create-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      applicationId:
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
+      fieldsToValues:
+        simple: '{"Title":"${incident.name}","Incident Summary":"Something"}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 719
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 26de5d3c-7fb7-49c0-8eb2-1a3ca3dc39a3
+    type: regular
+    task:
+      id: 26de5d3c-7fb7-49c0-8eb2-1a3ca3dc39a3
+      version: -1
+      name: archer-search-applications
+      description: Gets application details or list of all applications.
+      script: RSA Archer|||archer-search-applications
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      findById: {}
+      findByName:
+        simple: Security Incidents
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 368
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f2117f0b-1820-4b40-8b38-12ee9f69bcc4
+    type: regular
+    task:
+      id: f2117f0b-1820-4b40-8b38-12ee9f69bcc4
+      version: -1
+      name: archer-get-record
+      description: Gets information about a content record in the given application.
+      script: RSA Archer|||archer-get-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      applicationId:
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
+      contentId:
+        simple: ${Archer.Record.Id}
+      incidentId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1607dd42-6ee4-42cb-8509-b7c8dd49548c
+    type: regular
+    task:
+      id: 1607dd42-6ee4-42cb-8509-b7c8dd49548c
+      version: -1
+      name: archer-get-application-fields
+      description: Gets all application fields by application ID
+      script: RSA Archer|||archer-get-application-fields
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      applicationId:
+        simple: ${Archer.Applications.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 5d5a7af9-58b0-488f-8c2c-557fda9dd6a9
+    type: regular
+    task:
+      id: 5d5a7af9-58b0-488f-8c2c-557fda9dd6a9
+      version: -1
+      name: archer-update-record
+      description: Updates existing content record in the given application.
+      script: RSA Archer|||archer-update-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      applicationId:
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
+      contentId:
+        simple: ${Archer.Record.Id}
+      fieldsToValues:
+        simple: '{"Title":"Update!!!"}'
+      incidentId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4a5995a3-5d6e-4f90-8f5e-84a22aaee77b
+    type: regular
+    task:
+      id: 4a5995a3-5d6e-4f90-8f5e-84a22aaee77b
+      version: -1
+      name: archer-search-records
+      description: Search for records inside the given application
+      script: RSA Archer|||archer-search-records
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      applicationId:
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
+      dateOperator: {}
+      fieldToSearchOn:
+        simple: Incident ID (KPI)
+      fieldsToDisplay:
+        simple: Incident ID,Title,Date Created
+      fullData: {}
+      getInnerRecords: {}
+      isDescending: {}
+      maxResults:
+        simple: "1"
+      numericOperator: {}
+      searchValue:
+        simple: ${Archer.Record.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1418
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3dca6b24-257b-4318-88eb-b43edb0ed467
+    type: regular
+    task:
+      id: 3dca6b24-257b-4318-88eb-b43edb0ed467
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1e5f91f6-c0c6-4c37-8bfe-cd9217c27ce8
+    type: regular
+    task:
+      id: 1e5f91f6-c0c6-4c37-8bfe-cd9217c27ce8
+      version: -1
+      name: archer-delete-record
+      description: Delete existing content record in the given application.
+      script: RSA Archer|||archer-delete-record
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      applicationId:
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
+      contentId:
+        simple: ${Archer.Record.Id}
+      incidentId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 315598e9-3577-4d2c-8744-13b3ff02d6c5
+    type: regular
+    task:
+      id: 315598e9-3577-4d2c-8744-13b3ff02d6c5
+      version: -1
+      name: archer-search-records
+      description: Search for records inside the given application
+      script: RSA Archer|||archer-search-records
+      type: regular
+      iscommand: true
+      brand: RSA Archer
+    scriptarguments:
+      applicationId:
+        complex:
+          root: Archer
+          accessor: Applications.Id
+          transformers:
+          - operator: FirstArrayElement
+      dateOperator: {}
+      fieldToSearchOn:
+        simple: Incident ID (KPI)
+      fieldsToDisplay:
+        simple: Incident ID,Title,Date Created
+      fullData: {}
+      getInnerRecords: {}
+      isDescending: {}
+      maxResults:
+        simple: "1"
+      numericOperator: {}
+      searchValue:
+        simple: ${Archer.Record.Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1952
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 09e1419f-0875-4b9e-8d80-37e9fa1b83db
+    type: regular
+    task:
+      id: 09e1419f-0875-4b9e-8d80-37e9fa1b83db
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field1:
+        simple: Archer.Record.Id
+      field2:
+        simple: Archer.Record.Fields.Title
+      field3: {}
+      field4: {}
+      value1:
+        simple: ${Archer.Record.Id}
+      value2:
+        simple: Update!!!
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e1ff6fa0-1f0b-46c3-8720-914ee8138e08
+    type: regular
+    task:
+      id: e1ff6fa0-1f0b-46c3-8720-914ee8138e08
+      version: -1
+      name: VerifyContextFields
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      field1:
+        simple: Archer.Record.Id
+      field2:
+        simple: Archer.Record.Fields.Title
+      field3: {}
+      field4: {}
+      value1:
+        simple: ${Archer.Record.Id}
+      value2:
+        simple: ${incident.name}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1997,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

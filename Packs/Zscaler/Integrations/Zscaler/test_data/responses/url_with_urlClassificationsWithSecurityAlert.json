@@ -1,0 +1,9 @@
+[
+  {
+    "url": "www.demisto22.com",
+    "urlClassifications": [
+      "MISCELLANEOUS_OR_UNKNOWN"
+    ],
+    "urlClassificationsWithSecurityAlert": ["MALWARE_SITE"]
+  }
+]

@@ -1,0 +1,32 @@
+{
+    "result_code": 1,
+    "result_description": "Operation successful",
+    "result_content": [
+        {
+            "entity_id": "E9DF20C5-F060-4BC5-8A4B-5452163A1C77",
+            "product": "SLF_PRODUCT_PLS_TMSM",
+            "ad_domain": "",
+            "ip_address_list": "fe80::719d:512b:17fc:f456%2,fe80::24fd:2600:97d4:238a%5,10.0.0.4,2001:0:34f1:8072:24fd:2600:97d4:238a",
+            "host_name": "cu-pro1-8254-2",
+            "capabilities": []
+        },
+        {
+            "entity_id": "B220EB61-6240-44B4-9B94-4AC3F22E6A62",
+            "product": "SLF_PRODUCT_OFFICESCAN_CE",
+            "ad_domain": "",
+            "ip_address_list": "8.8.8.8",
+            "host_name": "CU-PRO1-8254-2",
+            "capabilities": [
+                "cmd_deploy_update_sources"
+            ]
+        },
+        {
+            "entity_id": "DA010000-0000-0004-6B00-FFFFFFFFFFFF",
+            "product": "SLF_PRODUCT_HEADLESS_DSM",
+            "ad_domain": "",
+            "ip_address_list": "",
+            "host_name": "",
+            "capabilities": []
+        }
+    ]
+}

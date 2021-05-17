@@ -1,0 +1,198 @@
+id: Detonate File - BitDam Test
+version: -1
+name: Detonate File - BitDam Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 46601690-0f60-41fb-8480-e51efca58111
+    type: start
+    task:
+      id: 46601690-0f60-41fb-8480-e51efca58111
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: def55e04-3ec5-4160-88d6-edd57d1ddb6b
+    type: playbook
+    timertriggers: []
+    task:
+      id: def55e04-3ec5-4160-88d6-edd57d1ddb6b
+      version: -1
+      name: Scan File - BitDam
+      playbookName: Detonate File - BitDam
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 31f9bdf9-eae9-4a72-83c1-b4bf81ad479a
+    type: regular
+    task:
+      id: 31f9bdf9-eae9-4a72-83c1-b4bf81ad479a
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 9bea4fe0-29b5-4f1a-84e0-c383699b3ce7
+    type: regular
+    task:
+      id: 9bea4fe0-29b5-4f1a-84e0-c383699b3ce7
+      version: -1
+      name: Create File and upload to war room
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      data:
+        simple: "123"
+      entryId: {}
+      filename:
+        simple: test.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 37188a7d-38a9-4934-8b25-341302bf84c9
+    type: condition
+    task:
+      id: 37188a7d-38a9-4934-8b25-341302bf84c9
+      version: -1
+      name: Test BitDam File Scan Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BitDam.Analysis.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Approved
+        - operator: isEqualString
+          left:
+            value:
+              simple: BitDam.Analysis.Verdict
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: isEqualString
+          left:
+            value:
+              simple: BitDam.Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: DONE
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 850
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: e01e0e73-e0da-4c50-870f-527077815a79
+    type: title
+    task:
+      id: e01e0e73-e0da-4c50-870f-527077815a79
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1095,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

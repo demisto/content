@@ -1,0 +1,408 @@
+id: Prisma Cloud Remediation - AWS CloudTrail Trail Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - AWS CloudTrail Trail Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud AWS CloudTrail alerts.
+
+  Prisma Cloud policies remediated:
+
+   - AWS CloudTrail Trail Log Validation Is Not Enabled In All Regions
+   - AWS CloudTrail is not enabled in all regions
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 305bea67-c7fc-4c7b-82e4-2fe016a2dc8d
+    type: start
+    task:
+      id: 305bea67-c7fc-4c7b-82e4-2fe016a2dc8d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: cc4e73f0-012b-4764-8371-d19ac7ec4f12
+    type: regular
+    task:
+      id: cc4e73f0-012b-4764-8371-d19ac7ec4f12
+      version: -1
+      name: Get CloudTrail detail
+      description: Retrieves settings for the trail associated with the current region
+        for your account.
+      script: AWS - CloudTrail|||aws-cloudtrail-describe-trails
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      includeShadowTrails:
+        simple: "False"
+      region:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: regionId
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      trailNameList:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4bbca790-07ae-46d0-875c-fbe36ec0fea1
+    type: title
+    task:
+      id: 4bbca790-07ae-46d0-875c-fbe36ec0fea1
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4345980c-8417-4c1d-8731-b60891f78292
+    type: regular
+    task:
+      id: 4345980c-8417-4c1d-8731-b60891f78292
+      version: -1
+      name: Update CloudTrail LogValidation
+      description: Updates the settings that specify delivery of log files. Changes
+        to a trail do not require stopping the CloudTrail service.
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cloudWatchLogsLogGroupArn: {}
+      cloudWatchLogsRoleArn: {}
+      enableLogFileValidation:
+        simple: "True"
+      includeGlobalServiceEvents: {}
+      isMultiRegionTrail: {}
+      kmsKeyId: {}
+      name:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.Name
+      region:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.HomeRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      s3BucketName: {}
+      s3KeyPrefix: {}
+      snsTopicName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 38769991-b99b-49d9-81f6-08fa7804e258
+    type: title
+    task:
+      id: 38769991-b99b-49d9-81f6-08fa7804e258
+      version: -1
+      name: Log Validation Is Not Enabled In All Regions
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 25ce1127-90a3-4d3d-8534-682c1cbaa338
+    type: condition
+    task:
+      id: 25ce1127-90a3-4d3d-8534-682c1cbaa338
+      version: -1
+      name: Execute remediation
+      description: Remediate the appropriate Prisma Cloud policy based on the policy
+        Id.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      allRegions:
+      - "9"
+      logValid:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: logValid
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 38e3d3cf-b694-46ec-8bd2-8f02194b5040
+    - label: allRegions
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 36a5345a-230d-438e-a04c-a287a513e3dc
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 995dca59-86c9-448b-8e89-9aadebb39be7
+    type: title
+    task:
+      id: 995dca59-86c9-448b-8e89-9aadebb39be7
+      version: -1
+      name: Trail Not Enabled In All Regions
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 3957322d-5aa1-42a0-8f63-22d364fcf373
+    type: regular
+    task:
+      id: 3957322d-5aa1-42a0-8f63-22d364fcf373
+      version: -1
+      name: Update CloudTrail MultiRegion
+      description: Updates the settings that specify delivery of log files. Changes
+        to a trail do not require stopping the CloudTrail service.
+      script: AWS - CloudTrail|||aws-cloudtrail-update-trail
+      type: regular
+      iscommand: true
+      brand: AWS - CloudTrail
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cloudWatchLogsLogGroupArn: {}
+      cloudWatchLogsRoleArn: {}
+      enableLogFileValidation: {}
+      includeGlobalServiceEvents:
+        simple: "True"
+      isMultiRegionTrail:
+        simple: "True"
+      kmsKeyId: {}
+      name:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.Name
+      region:
+        complex:
+          root: AWS
+          accessor: CloudTrail.Trails.HomeRegion
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      s3BucketName: {}
+      s3KeyPrefix: {}
+      snsTopicName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: c3d9c341-1e4b-4025-846d-dd4c45929670
+    type: condition
+    task:
+      id: c3d9c341-1e4b-4025-846d-dd4c45929670
+      version: -1
+      name: Is AWS - CloudTrail integration enabled?
+      description: Is AWS - CloudTrail integration enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - CloudTrail
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_3_#default#": 0.81,
+      "8_3_#default#": 0.26,
+      "8_7_logValid": 0.48,
+      "8_9_allRegions": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 970,
+        "x": 160,
+        "y": -160
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Grab the Prisma Cloud policy Id.
+outputs: []
+tests:
+- No Test

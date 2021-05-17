@@ -1,0 +1,21 @@
+{
+  "remediationData": {
+    "Attack": {
+      "814": {
+        "SHA256": [
+          "109c702578b261d0eda01506625423f5a2b8cc107b0d8dfad84d39fb02bfa5cb"
+        ],
+        "Drop Path": [
+          "%temp%/Llac.exe"
+        ]
+      }
+    }
+  },
+  "mitigationVendors": [
+    {
+      "id": "splunk",
+      "fileExport": false,
+      "searchQuery": "(file_hash IN (1d02e38505684c59f7e72b690c39409c8b7a62c2fffe097febf857d99814470e)"
+    }
+  ]
+}

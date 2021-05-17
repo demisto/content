@@ -1,0 +1,754 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Blueliv ThreatContext
+  version: -1
+configuration:
+- defaultvalue: https://demisto.blueliv.com/api/v2
+  display: Server URL (e.g. https://demisto.blueliv.com/api/v2)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: The Threat Context module provides SOC, Incident Response, and Threat
+  Intelligence teams with continuously updated and intuitive information around threat
+  actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
+display: Blueliv ThreatContext
+name: Blueliv ThreatContext
+script:
+  commands:
+  - deprecated: false
+    description: Authenticates and gets the API token.
+    execution: false
+    name: blueliv-authenticate
+    outputs:
+    - contextPath: BluelivThreatContext.token
+      description: Authentication token.
+      type: String
+  - arguments:
+    - default: false
+      description: Internal Blueliv malware hash ID.
+      isArray: false
+      name: hash_id
+      required: false
+      secret: false
+    - default: false
+      description: Malware file hash to search for.
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about malware, by ID.
+    execution: false
+    name: blueliv-tc-malware
+    outputs:
+    - contextPath: BluelivThreatContext.malware.hash.sha256
+      description: File SHA256 hash.
+      type: String
+    - contextPath: BluelivThreatContext.malware.hash.sha1
+      description: File SHA1 hash.
+      type: String
+    - contextPath: BluelivThreatContext.malware.hash.md5
+      description: File MD5 hash.
+      type: String
+    - contextPath: BluelivThreatContext.malware.type
+      description: Malware type.
+      type: String
+    - contextPath: BluelivThreatContext.malware.hasCandC
+      description: Whether there is an associated C&C.
+      type: Boolean
+    - contextPath: BluelivThreatContext.malware.memory
+      description: Malware memory.
+      type: String
+    - contextPath: BluelivThreatContext.malware.procMemory
+      description: Malware proc memory.
+      type: String
+    - contextPath: BluelivThreatContext.malware.analysisStatus
+      description: Malware analysis status.
+      type: String
+    - contextPath: BluelivThreatContext.malware.dropped
+      description: Malware dropped.
+      type: Boolean
+    - contextPath: BluelivThreatContext.malware.buffers
+      description: Malware buffers.
+      type: Boolean
+    - contextPath: BluelivThreatContext.malware.hasNetwork
+      description: Whether the malware has Network information.
+      type: Boolean
+    - contextPath: BluelivThreatContext.malware.risk
+      description: Malware associated risk.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.campaigns
+      description: Malware related campaigns.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.campaignIds
+      description: Malware related campaigns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.signatures
+      description: Malware signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.sigantureIds
+      description: Malware sigantures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.threatActors
+      description: Malware threat actors.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.threatActorIds
+      description: Malware threat actors' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.sources
+      description: Malware sources.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.sourceIds
+      description: Malware sources' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.tags
+      description: Malware tags.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.tagIds
+      description: Malware tags' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.crimeServers
+      description: Malware related crime servers.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.crimeServerIds
+      description: Malware crime servers' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.fqdns
+      description: Malware FQDNs.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.fqdnIds
+      description: Malware FQDNs internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.types
+      description: Malware types.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.typeIds
+      description: Malware types' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.sparks
+      description: Malware sparks.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.sparkIds
+      description: Malware sparks' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.malware.ips
+      description: Malware IP addresses.
+      type: Number
+    - contextPath: BluelivThreatContext.malware.ipIds
+      description: Malware IP addresses' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Internal Blueliv IP address ID.
+      isArray: false
+      name: IP_id
+      required: false
+      secret: false
+    - default: false
+      description: IP address to get information for.
+      isArray: false
+      name: IP
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about an IP address.
+    execution: false
+    name: blueliv-tc-indicator-ip
+    outputs:
+    - contextPath: BluelivThreatContext.indicator.lastSeen
+      description: Indicator last seen date.
+      type: Date
+    - contextPath: BluelivThreatContext.indicator.risk
+      description: Indicator risk
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.latitude
+      description: Indicator latitude.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.longitude
+      description: Indicator longitude.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.countryId
+      description: Indicator countries' internal IDs.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.campaigns
+      description: Indicator campaigns.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.campaignIds
+      description: Indicator campaigns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.signatures
+      description: Indicator signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.signatureIds
+      description: Indicator signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.threatActors
+      description: Indicator threat actors.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.threatActorIds
+      description: Indicator threat actors' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.tags
+      description: Indicator tags.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.tagIds
+      description: Indicator tags' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.fqdns
+      description: Indicator FQDNs.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.fqdnIds
+      description: Indicator FQDNs' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.sparks
+      description: Indicator sparks.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.sparkIds
+      description: Indicator sparks' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.bots
+      description: Indicator bots.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.botIds
+      description: Indicator bots' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: CVE to get information for.
+      isArray: false
+      name: CVE
+      required: false
+      secret: false
+    - default: false
+      description: Internal Blueliv CVE ID.
+      isArray: false
+      name: CVE_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a CVE.
+    execution: false
+    name: blueliv-tc-cve
+    outputs:
+    - contextPath: BluelivThreatContext.cve.name
+      description: CVE name.
+      type: String
+    - contextPath: BluelivThreatContext.cve.description
+      description: CVE description.
+      type: String
+    - contextPath: BluelivThreatContext.cve.updatedAt
+      description: Date the CVE was last updated.
+      type: Date
+    - contextPath: BluelivThreatContext.cve.score
+      description: CVE score.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.attackPatterns
+      description: CVE attack patterns.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.attackPatternIds
+      description: CVE attack patterns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.cve.signatures
+      description: CVE signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.signatureIds
+      description: CVE signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.cve.tags
+      description: CVE tags.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.tagIds
+      description: CVE tags' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.cve.crimeServers
+      description: CVE crime servers.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.crimeServerIds
+      description: CVE crime servers' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.cve.sparks
+      description: CVE sparks.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.sparkIds
+      description: CVE sparks' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.cve.malware
+      description: CVE malware.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.malwareIds
+      description: CVE malwares' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.cve.exploits
+      description: CVE exploits.
+      type: Number
+    - contextPath: BluelivThreatContext.cve.platforms
+      description: CVE platforms.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Internal Blueliv FQDN ID.
+      isArray: false
+      name: FQDN_id
+      required: false
+      secret: false
+    - default: false
+      description: FQDN to get information for.
+      isArray: false
+      name: FQDN
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about an FQDN.
+    execution: false
+    name: blueliv-tc-indicator-fqdn
+    outputs:
+    - contextPath: BluelivThreatContext.indicator.lastSeen
+      description: Date the indicator was last seen.
+      type: Date
+    - contextPath: BluelivThreatContext.indicator.risk
+      description: Indicator risk.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.campaigns
+      description: Indicator campaigns.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.campaignIds
+      description: Indicator campaigns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.signatures
+      description: Indicator signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.signatureIds
+      description: Indicator signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.threatActors
+      description: Indicator threat actors.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.threatActorIds
+      description: Indicator threat actors' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.tags
+      description: Indicator tags.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.tagIds
+      description: Indicator tags' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.crimeServers
+      description: Indicator crime servers.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.crimeServerIds
+      description: Indicator crime servers' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.sparks
+      description: Indicator sparks.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.sparkIds
+      description: Indicator sparks' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.ips
+      description: Indicator IP addresses.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.ipIds
+      description: Indicator IP addresses' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Internal Blueliv Crime Server ID.
+      isArray: false
+      name: CS_id
+      required: false
+      secret: false
+    - default: false
+      description: The name of the Crime Server to get information for.
+      isArray: false
+      name: CS
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a Crime Server.
+    execution: false
+    name: blueliv-tc-indicator-cs
+    outputs:
+    - contextPath: BluelivThreatContext.indicator.lastSeen
+      description: Date the indicator was last seen.
+      type: Date
+    - contextPath: BluelivThreatContext.indicator.status
+      description: Indicator status.
+      type: String
+    - contextPath: BluelivThreatContext.indicator.risk
+      description: Indicator risk.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.isFalsePositive
+      description: Whether the indicator is a false positive.
+      type: Boolean
+    - contextPath: BluelivThreatContext.indicator.crimeServerUrl
+      description: Indicator Crime Server URL.
+      type: String
+    - contextPath: BluelivThreatContext.indicator.creditCardsCount
+      description: Indicator credit cards count.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.credentialsCount
+      description: Indicator credentials count.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.botsCount
+      description: Indicator bots count.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.fqdnId
+      description: Indicator FQDNs internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.malware
+      description: Indicator malware.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.malwareIds
+      description: Indicator malware internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.tags
+      description: Indicator tags.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.tagIds
+      description: Indicator tags' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.sparks
+      description: Indicator sparks.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.sparkIds
+      description: Indicator sparks' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.indicator.sources
+      description: Indicator sources.
+      type: Number
+    - contextPath: BluelivThreatContext.indicator.sourceIds
+      description: Indicator sources' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Threat actor to get information for.
+      isArray: false
+      name: threatActor
+      required: false
+      secret: false
+    - default: false
+      description: Internal Blueliv Threat Actor ID.
+      isArray: false
+      name: threatActor_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a Threat Actor.
+    execution: false
+    name: blueliv-tc-threat-actor
+    outputs:
+    - contextPath: BluelivThreatContext.threatActor.name
+      description: Threat actor name.
+      type: String
+    - contextPath: BluelivThreatContext.threatActor.description
+      description: Threat actor description.
+      type: String
+    - contextPath: BluelivThreatContext.threatActor.objective
+      description: Threat actor objective.
+      type: String
+    - contextPath: BluelivThreatContext.threatActor.sophistication
+      description: Threat actor sophistication.
+      type: String
+    - contextPath: BluelivThreatContext.threatActor.lastSeen
+      description: Date the threat actor was last seen.
+      type: Date
+    - contextPath: BluelivThreatContext.threatActor.active
+      description: Threat actor active.
+      type: Boolean
+    - contextPath: BluelivThreatContext.threatActor.milestones
+      description: Threat actor milestones.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.milestoneIds
+      description: Threat actor milestones' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.tools
+      description: Threat actor tools.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.toolIds
+      description: Threat actor tools' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.campaigns
+      description: Threat actor campaigns.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.campaignIds
+      description: Threat actor campaigns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.signatures
+      description: Threat actor signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.signatureIds
+      description: Threat actor signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.onlineServices
+      description: Threat actor online services.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.onlineServiceIds
+      description: Threat actor online services' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.malware
+      description: Threat actor malware.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.malwareIds
+      description: Threat actor malware internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.threatTypes
+      description: Threat actor threat types.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.threatTypeIds
+      description: Threat actor threat types' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.fqdns
+      description: Threat actor FQDNs.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.fqdnIds
+      description: Threat actor FQDNs' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.attackPatterns
+      description: Threat actor attack patterns.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.attackPatternIds
+      description: Threat actor attack patterns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.ips
+      description: Threat actor IP addresses.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.ipIds
+      description: Threat actor IP addresses' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.threatActor.targets
+      description: Threat actor targets.
+      type: Number
+    - contextPath: BluelivThreatContext.threatActor.targetIds
+      description: Threat actor targets' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the campaign to get information for.
+      isArray: false
+      name: campaign
+      required: false
+      secret: false
+    - default: false
+      description: Blueliv internal campaign ID.
+      isArray: false
+      name: campaign_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a campaign.
+    execution: false
+    name: blueliv-tc-campaign
+    outputs:
+    - contextPath: BluelivThreatContext.campaign.name
+      description: Campaign name.
+      type: String
+    - contextPath: BluelivThreatContext.campaign.description
+      description: Campaign description.
+      type: String
+    - contextPath: BluelivThreatContext.campaign.lastSeen
+      description: Date the campaign was last seen.
+      type: Date
+    - contextPath: BluelivThreatContext.campaign.botnets
+      description: Campaign botnets.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.botnetIds
+      description: Campaign botnets' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.signatures
+      description: Campaign signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.signatureIds
+      description: Campaign signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.ips
+      description: Campaign IP addresses.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.ipIds
+      description: Campaign IP addresses' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.malware
+      description: Campaign malware.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.malwareIds
+      description: Campaign malware internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.attackPatterns
+      description: Campaign attack patterns.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.attackPatternIds
+      description: Campaign attack patterns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.tools
+      description: Campaign tools.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.toolIds
+      description: Campaign tools' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.fqdns
+      description: Campaign FQDNs.
+      type: Number
+    - contextPath: BluelivThreatContext.campaign.fqdnIds
+      description: Campaign FQDNs' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.campaign.threatActorId
+      description: Campaign threat actors' internal IDs.
+      type: Number
+  - arguments:
+    - default: false
+      description: The name of the Attack Pattern name to get information for.
+      isArray: false
+      name: attackPattern
+      required: false
+      secret: false
+    - default: false
+      description: Interanl Blueliv ID for the Attack Pattern.
+      isArray: false
+      name: attackPattern_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about an Attack Pattern.
+    execution: false
+    name: blueliv-tc-attack-pattern
+    outputs:
+    - contextPath: BluelivThreatContext.attackPattern.name
+      description: Attack pattern name.
+      type: String
+    - contextPath: BluelivThreatContext.attackPattern.description
+      description: Attack pattern description.
+      type: String
+    - contextPath: BluelivThreatContext.attackPattern.updatedAt
+      description: Date the attack pattern was last updated.
+      type: Date
+    - contextPath: BluelivThreatContext.attackPattern.severity
+      description: Attack pattern severity.
+      type: String
+    - contextPath: BluelivThreatContext.attackPattern.signatures
+      description: Attack pattern signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.attackPattern.signatureIds
+      description: Attack pattern signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.attackPattern.campaigns
+      description: Attack pattern campaigns.
+      type: Number
+    - contextPath: BluelivThreatContext.attackPattern.campaignIds
+      description: Attack pattern campaigns'. internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.attackPattern.threatActors
+      description: Attack pattern threat actors.
+      type: Number
+    - contextPath: BluelivThreatContext.attackPattern.threatActorIds
+      description: Attack pattern threat actors'. internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.attackPattern.cves
+      description: Attack pattern CVEs.
+      type: Number
+    - contextPath: BluelivThreatContext.attackPattern.cveIds
+      description: Attack pattern CVEs' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the tool to get information for.
+      isArray: false
+      name: tool
+      required: false
+      secret: false
+    - default: false
+      description: Internal Blueliv ID of the tool.
+      isArray: false
+      name: tool_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a Tool.
+    execution: false
+    name: blueliv-tc-tool
+    outputs:
+    - contextPath: BluelivThreatContext.tool.name
+      description: Tool name.
+      type: String
+    - contextPath: BluelivThreatContext.tool.description
+      description: Tool description.
+      type: String
+    - contextPath: BluelivThreatContext.tool.lastSeen
+      description: Date the tool was last seen.
+      type: Date
+    - contextPath: BluelivThreatContext.tool.campaigns
+      description: Tool campaigns.
+      type: Number
+    - contextPath: BluelivThreatContext.tool.campaignIds
+      description: Tool campaigns' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.tool.signatures
+      description: Tool signatures.
+      type: Number
+    - contextPath: BluelivThreatContext.tool.signatureIds
+      description: Tool signatures' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.tool.threatActors
+      description: Tool threat actors.
+      type: Number
+    - contextPath: BluelivThreatContext.tool.threatActorIds
+      description: Tool threat actors' internal IDs.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the signature to get information for.
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
+      description: Internal Blueliv ID for the signature.
+      isArray: false
+      name: signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets information about a Signature.
+    execution: false
+    name: blueliv-tc-signature
+    outputs:
+    - contextPath: BluelivThreatContext.signature.name
+      description: Signature name.
+      type: String
+    - contextPath: BluelivThreatContext.signature.updatedAt
+      description: Date the signature was last updated.
+      type: Date
+    - contextPath: BluelivThreatContext.signature.ipIds
+      description: Signature IP addresses' internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.signature.malware
+      description: Signature malware.
+      type: Number
+    - contextPath: BluelivThreatContext.signature.malwareIds
+      description: Signature malware internal IDs.
+      type: Unknown
+    - contextPath: BluelivThreatContext.signature.type
+      description: Signature type.
+      type: String
+  dockerimage: demisto/python3:3.8.3.9324
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

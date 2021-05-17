@@ -1,0 +1,44 @@
+{
+  "totalSize": 5,
+  "done": true,
+  "records": [
+    {
+      "attributes": {
+        "type": "User",
+        "url": "url"
+      },
+      "Id": "ID",
+      "Name": "name",
+      "FirstName": "first name",
+      "LastName": "last name",
+      "Username": "username",
+      "Email": "email",
+      "Phone": null,
+      "Account": null,
+      "CompanyName": null,
+      "Division": null,
+      "Department": "department",
+      "Title": null,
+      "BMCServiceDesk__IsStaffUser__c": true
+    },
+    {
+      "attributes": {
+        "type": "User",
+        "url": "url"
+      },
+      "Id": "ID",
+      "Name": "name",
+      "FirstName": "first name",
+      "LastName": "last name",
+      "Username": "username",
+      "Email": "email",
+      "Phone": null,
+      "Account": null,
+      "CompanyName": null,
+      "Division": null,
+      "Department": "department",
+      "Title": null,
+      "BMCServiceDesk__IsStaffUser__c": true
+    }
+  ]
+}

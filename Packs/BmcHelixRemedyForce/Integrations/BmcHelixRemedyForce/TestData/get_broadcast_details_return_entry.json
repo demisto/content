@@ -1,0 +1,61 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": {
+    "totalSize": 2,
+    "done": true,
+    "records": [
+      {
+        "attributes": {
+          "type": "type",
+          "url": "url"
+        },
+        "Id": "id",
+        "Name": "name",
+        "BMCServiceDesk__Priority_ID__c": "1",
+        "BMCServiceDesk__Urgency_ID__c": "HIGH",
+        "BMCServiceDesk__Impact_ID__c": "HIGH",
+        "BMCServiceDesk__broadcastDescription__c": null,
+        "BMCServiceDesk__Category_ID__c": "category",
+        "BMCServiceDesk__Status_ID__c": "status"
+      },
+      {
+        "attributes": {
+          "type": "type",
+          "url": "url"
+        },
+        "Id": "id",
+        "Name": "name",
+        "BMCServiceDesk__Priority_ID__c": "1",
+        "BMCServiceDesk__Urgency_ID__c": "HIGH",
+        "BMCServiceDesk__Impact_ID__c": "HIGH",
+        "BMCServiceDesk__broadcastDescription__c": null,
+        "BMCServiceDesk__Category_ID__c": "category",
+        "BMCServiceDesk__Status_ID__c": "status"
+      }
+    ]
+  },
+  "HumanReadable": "### Total retrieved broadcast(s): 2\n|Id|Name|Priority|Urgency|Impact|Category|Status|\n|---|---|---|---|---|---|---|\n| id | name | 1 | HIGH | HIGH | category | status |\n| id | name | 1 | HIGH | HIGH | category | status |\n",
+  "EntryContext": {
+    "BmcRemedyforce.Broadcast(val.Id == obj.Id)": [
+      {
+        "Id": "id",
+        "Name": "name",
+        "Category": "category",
+        "Status": "status",
+        "Priority": "1",
+        "Urgency": "HIGH",
+        "Impact": "HIGH"
+      },
+      {
+        "Id": "id",
+        "Name": "name",
+        "Category": "category",
+        "Status": "status",
+        "Priority": "1",
+        "Urgency": "HIGH",
+        "Impact": "HIGH"
+      }
+    ]
+  }
+}

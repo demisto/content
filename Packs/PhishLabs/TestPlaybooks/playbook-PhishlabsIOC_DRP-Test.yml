@@ -1,0 +1,641 @@
+id: PhishlabsIOC_DRP-Test
+version: -1
+name: PhishlabsIOC_DRP-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 307bc320-87f0-4a07-8989-a40b3ca44aaf
+    type: start
+    task:
+      id: 307bc320-87f0-4a07-8989-a40b3ca44aaf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: fccbaeb4-f8b7-4e5f-8c31-75d3a77f73d1
+    type: regular
+    task:
+      id: fccbaeb4-f8b7-4e5f-8c31-75d3a77f73d1
+      version: -1
+      name: Delete entry context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: fb3aa3f0-b2cd-4bf8-8a29-8412d701e42c
+    type: regular
+    task:
+      id: fb3aa3f0-b2cd-4bf8-8a29-8412d701e42c
+      version: -1
+      name: Get case by ID command
+      description: Get case by ID of Phishlabs DRP service
+      script: '|||phishlabs-ioc-drp-get-case-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      case_id:
+        simple: daa1e25e-0528-11ea-94e8-0ee0a3f3cb1c
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 987c7d2a-df99-48c1-8760-5958fa281d53
+    type: condition
+    task:
+      id: 987c7d2a-df99-48c1-8760-5958fa281d53
+      version: -1
+      name: 'Check get case by id '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CaseID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 2461030a-0767-4af6-87af-213094bc1b99
+    type: regular
+    task:
+      id: 2461030a-0767-4af6-87af-213094bc1b99
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      outputformat:
+        simple: ${PhishLabsIOC.EIR}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ebcd86f8-4e3d-4060-89be-f2cbea055cfb
+    type: regular
+    task:
+      id: ebcd86f8-4e3d-4060-89be-f2cbea055cfb
+      version: -1
+      name: Get cases command
+      description: Get cases of Phishlabs DRP service by filters
+      script: '|||phishlabs-ioc-drp-get-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      begin_date: {}
+      case_type: {}
+      date_field: {}
+      end_date: {}
+      max_records:
+        simple: "3"
+      offset: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ecedc27e-847c-44ac-835d-04a2e40875e5
+    type: regular
+    task:
+      id: ecedc27e-847c-44ac-835d-04a2e40875e5
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      outputformat:
+        simple: ${PhishLabsIOC.EIR}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 55293704-be08-4ff3-813e-878701084b72
+    type: regular
+    task:
+      id: 55293704-be08-4ff3-813e-878701084b72
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 09abc9c2-8593-48e3-8fef-ef41a4e0198e
+    type: condition
+    task:
+      id: 09abc9c2-8593-48e3-8fef-ef41a4e0198e
+      version: -1
+      name: Check get case command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CaseID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CreatedBy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 88d03f2c-e681-453f-8e4b-ecc8a38cc1e2
+    type: regular
+    task:
+      id: 88d03f2c-e681-453f-8e4b-ecc8a38cc1e2
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message:
+        simple: ${PhishLabsIOC.EIR}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: f6e06d03-afa4-4459-8cbe-93f74564664d
+    type: regular
+    task:
+      id: f6e06d03-afa4-4459-8cbe-93f74564664d
+      version: -1
+      name: Fetch incidents command
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name:
+        simple: PhishLabs IOC DRP
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 0598d738-a6ff-420d-8749-9c7c0a99db17
+    type: regular
+    task:
+      id: 0598d738-a6ff-420d-8749-9c7c0a99db17
+      version: -1
+      name: Get open cases command
+      description: Get open cases of Phishlabs DRP service by filters
+      script: '|||phishlabs-ioc-drp-get-open-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      begin_date: {}
+      case_type: {}
+      date_field: {}
+      end_date: {}
+      max_records:
+        simple: "3"
+      offset: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: a24302fb-4720-4dd6-8041-35b31813e466
+    type: condition
+    task:
+      id: a24302fb-4720-4dd6-8041-35b31813e466
+      version: -1
+      name: Check get open cases command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CaseID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CaseNumber
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: cdac0ad4-9e92-41bb-872c-f70e8e8a4f91
+    type: regular
+    task:
+      id: cdac0ad4-9e92-41bb-872c-f70e8e8a4f91
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      outputformat:
+        simple: ${PhishlabsIOC.DRP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: fbe3b4e7-1dac-4311-874e-70a6f274be63
+    type: regular
+    task:
+      id: fbe3b4e7-1dac-4311-874e-70a6f274be63
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      message: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 912f0a90-769a-4d93-8495-b88784ea6aee
+    type: regular
+    task:
+      id: 912f0a90-769a-4d93-8495-b88784ea6aee
+      version: -1
+      name: Get closed cases command
+      description: Get closed cases of Phishlabs DRP service by filters
+      script: '|||phishlabs-ioc-drp-get-closed-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      Date_field: {}
+      begin_date: {}
+      case_type: {}
+      end_date: {}
+      max_records:
+        simple: "3"
+      offset: {}
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 0c977881-fc19-4449-8516-a2dd902ba801
+    type: condition
+    task:
+      id: 0c977881-fc19-4449-8516-a2dd902ba801
+      version: -1
+      name: Check get closed cases command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CaseID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: PhishLabsIOC.DRP.CreatedBy.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 5ceea343-8cce-4978-8276-cf43f5cfc021
+    type: regular
+    task:
+      id: 5ceea343-8cce-4978-8276-cf43f5cfc021
+      version: -1
+      name: PrintContext
+      description: Pretty-print the contents of the playbook context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      outputformat:
+        simple: ${PhishlabsIOC.DRP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 56ed3d53-08e0-4cd0-8c32-aa5fd73e45f4
+    type: regular
+    task:
+      id: 56ed3d53-08e0-4cd0-8c32-aa5fd73e45f4
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      message: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2515,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: PhishlabsIOC_EIR-Test
+fromversion: 5.0.0

@@ -1,0 +1,56 @@
+{
+  "successAssetType": [
+    {
+      "autoConfirmed": false,
+      "description": "dummy.com",
+      "enterprise": false,
+      "hostExcluded": false,
+      "keystone": false,
+      "measure": "added",
+      "name": "dummy.com",
+      "priority": "NONE",
+      "runDate": "2020-05-27",
+      "state": "CANDIDATE",
+      "type": "DOMAIN"
+    }
+  ],
+  "successAssetDetailType": 
+  [
+    {
+      "autoConfirmed": true,
+      "childUrlFirstSeen": "1590653525225",
+      "childUrlLastSeen": "1590653525225",
+      "confidence": "ABSOLUTE",
+      "contentType": "text/javascript",
+      "createdAt": 1588289600908,
+      "description": "parent_child_hostname",
+      "discoveryRun": 1915892,
+      "dynamicScore": "0.42010650633937974",
+      "enterprise": false,
+      "firstSeenCrawlGuid": "745d7127-7d4e-4934-b9d9-43fa7d45cbf4",
+      "firstSeenPageGuid": "2cfb296d-4343-4d24-b480-a679f3ae4cc2",
+      "firstSeenResourceGuid": "f0211b38-54f6-4ffd-b613-89405f9c1002",
+      "hostExcluded": false,
+      "id": 219488431,
+      "keystone": false,
+      "lastSeenCrawlGuid": "745d7e57-7d42-49b5-b9f9-43fa5d72cbec",
+      "lastSeenPageGuid": "2dfb296f-4443-1f24-b480-a779f34e4cc2",
+      "lastSeenResourceGuid": "f0211bf6-5545-4ffd-b613-45505b9c1202",
+      "md5": "42ca29ec36a2674460ff34f117c69e35",
+      "measure": "added",
+      "microDeltaType": "SELF_HOSTED_RESOURCE",
+      "name": "parent_hostname",
+      "originalUrl": "https://parent_hostname/cdn-abc/bm/cv/1284585714/api.js",
+      "priority": "NONE",
+      "resource": "https://parent_hostname/cdn-abc/bm/cv/1284585714/api.js",
+      "resourceFirstSeen": "1590653525225",
+      "resourceHost": "resource_hostname",
+      "resourceLastSeen": "1590653525225",
+      "responseBodySize": "74900",
+      "runDate": "2020-05-28",
+      "state": "CONFIRMED",
+      "type": "HOST",
+      "updatedAt": 1588289600908
+    }
+  ]
+}

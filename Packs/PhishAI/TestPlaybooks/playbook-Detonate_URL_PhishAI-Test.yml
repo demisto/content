@@ -1,0 +1,143 @@
+id: Test-Detonate URL - Phish.AI
+version: -1
+name: Test-Detonate URL - Phish.AI
+description: Test-Detonate URL - Phish.AI
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 138c609d-c485-4d5b-8d15-5f46586c7873
+    type: start
+    task:
+      id: 138c609d-c485-4d5b-8d15-5f46586c7873
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: b4ed39bf-ede4-4e75-88f0-0440ccf86a66
+    type: playbook
+    task:
+      id: b4ed39bf-ede4-4e75-88f0-0440ccf86a66
+      version: -1
+      name: Detonate URL - Phish.AI
+      description: Detonates a URL using the McAfee Advanced Threat Defense sandbox integration.
+      playbookName: Detonate URL - Phish.AI
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      URL:
+        simple: www.google.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: bd05a14f-b2f6-48e3-8380-b0042105d135
+    type: condition
+    task:
+      id: bd05a14f-b2f6-48e3-8380-b0042105d135
+      version: -1
+      name: 'Check status '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PhishAI
+                accessor: Status
+            iscontext: true
+          right:
+            value:
+              simple: completed
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: ff3002c3-42c6-4971-86e4-ec599efef4ac
+    type: title
+    task:
+      id: ff3002c3-42c6-4971-86e4-ec599efef4ac
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 655,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,222 @@
+id: JoeSecurityTestDetonation
+version: -1
+name: JoeSecurityTestDetonation
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 74f5bd5f-389c-4711-8c19-28816e4268a7
+    type: start
+    task:
+      id: 74f5bd5f-389c-4711-8c19-28816e4268a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: aa10000d-1cda-4d0a-8b96-36d7150f90ea
+    type: regular
+    task:
+      id: aa10000d-1cda-4d0a-8b96-36d7150f90ea
+      version: -1
+      name: Clean Start
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "8"
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 45165634-8ed7-496e-8e6e-0a2fa4849a90
+    type: regular
+    task:
+      id: 45165634-8ed7-496e-8e6e-0a2fa4849a90
+      version: -1
+      name: Create a sample file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      data:
+        simple: this is a regular file
+      entryId: {}
+      filename:
+        simple: Männer.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
+    type: playbook
+    task:
+      id: c7d2db12-7ba9-44d7-8fd1-081a5bc12f8a
+      version: -1
+      name: Detonate File - JoeSecurity
+      playbookName: Detonate File - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Comments:
+        simple: Detonation Testing
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Systems:
+        simple: w10
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: b39a9586-4e31-4ed2-82f6-238bff24bf51
+    type: playbook
+    task:
+      id: b39a9586-4e31-4ed2-82f6-238bff24bf51
+      version: -1
+      name: Detonate File From URL - JoeSecurity
+      playbookName: Detonate File From URL - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      FileURL:
+        simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
+      Comments:
+        simple: Detonation Testing
+      Internet-access:
+        simple: "True"
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Systems:
+        simple: w7_1
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 56f11659-1b0e-40b1-8daa-9dbc64490f91
+    type: playbook
+    task:
+      id: 56f11659-1b0e-40b1-8daa-9dbc64490f91
+      version: -1
+      name: Detonate URL - JoeSecurity
+      playbookName: Detonate URL - JoeSecurity
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      Comments:
+        simple: Detonation Testing
+      InternetAccess:
+        simple: "True"
+      Interval:
+        simple: "1"
+      ReportFileType:
+        simple: html
+      Systems:
+        simple: w7
+      Timeout:
+        simple: "15"
+      URL:
+        simple: https://www.sample-videos.com/img/Sample-jpg-image-500kb.jpg
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

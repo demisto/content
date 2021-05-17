@@ -1,0 +1,467 @@
+id: TestHttpPlaybook
+version: -1
+name: TestHttpPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e8a8223-bd77-47f9-8238-8054cbcde859
+    type: start
+    task:
+      id: 7e8a8223-bd77-47f9-8238-8054cbcde859
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a1f05136-315b-4fa2-8a94-45f62c954e0c
+    type: regular
+    task:
+      id: a1f05136-315b-4fa2-8a94-45f62c954e0c
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 009a4c08-3528-4f58-8037-2bb904d1c31e
+    type: regular
+    task:
+      id: 009a4c08-3528-4f58-8037-2bb904d1c31e
+      version: -1
+      name: Test GET method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      url:
+        simple: https://postman-echo.com/get?foo1=bar1&foo2=bar2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 982c2182-1658-4177-82e6-307ee0e950d5
+    type: regular
+    task:
+      id: 982c2182-1658-4177-82e6-307ee0e950d5
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      field1:
+        simple: HttpRequest.Response.StatusCode
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: "200"
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 546
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 424f8d4c-ed57-431a-8882-77aa4000f4d1
+    type: regular
+    task:
+      id: 424f8d4c-ed57-431a-8882-77aa4000f4d1
+      version: -1
+      name: Test POST method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body:
+        simple: body test
+      headers:
+        simple: 'content-type: text/plain'
+      insecure: {}
+      method:
+        simple: POST
+      password: {}
+      proxy: {}
+      url:
+        simple: https://postman-echo.com/post
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 728
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 908599d6-88e6-46f6-836b-0b836c704b75
+    type: regular
+    task:
+      id: 908599d6-88e6-46f6-836b-0b836c704b75
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      field1:
+        simple: HttpRequest.Response.[1].StatusCode
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: "200"
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: dc6bc3c1-15fc-401b-8d55-8058eb3b633a
+    type: regular
+    task:
+      id: dc6bc3c1-15fc-401b-8d55-8058eb3b633a
+      version: -1
+      name: Test PUT method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body:
+        simple: PUT TEST
+      headers: {}
+      insecure: {}
+      method:
+        simple: PUT
+      password: {}
+      proxy: {}
+      url:
+        simple: https://postman-echo.com/put
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1063
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b9d7c4c0-136c-47d7-8164-882cfc6affb0
+    type: regular
+    task:
+      id: b9d7c4c0-136c-47d7-8164-882cfc6affb0
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      field1:
+        simple: HttpRequest.Response.[2].StatusCode
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: "200"
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1221
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 96b4ed8b-0ea7-4414-808f-aeedff8864c0
+    type: regular
+    task:
+      id: 96b4ed8b-0ea7-4414-808f-aeedff8864c0
+      version: -1
+      name: Test DELETE request method
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      body:
+        simple: TEST DELETE
+      headers: {}
+      insecure: {}
+      method:
+        simple: DELETE
+      password: {}
+      proxy: {}
+      url:
+        simple: https://postman-echo.com/delete
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1394
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8177f9c9-6b66-4d71-8bc1-20325959bac9
+    type: regular
+    task:
+      id: 8177f9c9-6b66-4d71-8bc1-20325959bac9
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      field1:
+        simple: HttpRequest.Response.[3].StatusCode
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: "200"
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1564
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: db56c62d-4055-48fd-890d-ee5b459c1e7c
+    type: regular
+    task:
+      id: db56c62d-4055-48fd-890d-ee5b459c1e7c
+      version: -1
+      name: Test authentication
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      body: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password:
+        simple: password
+      proxy: {}
+      url:
+        simple: https://postman-echo.com/basic-auth
+      username:
+        simple: postman
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1731
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3d495fe6-0246-4c84-8cff-46fbec825cd0
+    type: regular
+    task:
+      id: 3d495fe6-0246-4c84-8cff-46fbec825cd0
+      version: -1
+      name: Verify Status OK
+      scriptName: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      field1:
+        simple: HttpRequest.Response.[4].StatusCode
+      field2: {}
+      field3: {}
+      field4: {}
+      value1:
+        simple: "200"
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1886
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1931,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

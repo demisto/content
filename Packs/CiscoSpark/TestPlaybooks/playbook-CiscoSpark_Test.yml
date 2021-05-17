@@ -1,0 +1,1153 @@
+id: Cisco Spark Test New
+version: -1
+name: Cisco Spark Test New
+starttaskid: "0"
+tasks:
+  '0':
+    id: '0'
+    taskid: 2b1d6aa2-bffb-4068-86db-cae560cacb3d
+    type: start
+    task:
+      id: 2b1d6aa2-bffb-4068-86db-cae560cacb3d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e3af1d1a-52f9-4e67-83f3-dba4612b35ba
+    type: regular
+    task:
+      id: e3af1d1a-52f9-4e67-83f3-dba4612b35ba
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9e731381-632b-4058-8de8-acfcee138f3e
+    type: regular
+    task:
+      id: 9e731381-632b-4058-8de8-acfcee138f3e
+      version: -1
+      name: cisco-spark-create-team (name=The Amazing Four)
+      script: Cisco Spark|||cisco-spark-create-team
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "8"
+      - "10"
+    scriptarguments:
+      name:
+        simple: The Amazing Four
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 31162fd8-999e-447b-8c19-cde0c4d72a0f
+    type: regular
+    task:
+      id: 31162fd8-999e-447b-8c19-cde0c4d72a0f
+      version: -1
+      name: cisco-spark-list-teams
+      script: Cisco Spark|||cisco-spark-list-teams
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      max: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 18497210-7982-468a-86a0-00d9c32488f7
+    type: regular
+    task:
+      id: 18497210-7982-468a-86a0-00d9c32488f7
+      version: -1
+      name: VerifyContext (CiscoSpark.Teams)
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      expectedValue:
+        simple: The Amazing Four
+      fields: {}
+      path:
+        simple: CiscoSpark.Teams.[0].Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 71e3572f-8899-4c9b-859b-415528f1a13e
+    type: regular
+    task:
+      id: 71e3572f-8899-4c9b-859b-415528f1a13e
+      version: -1
+      name: cisco-spark-list-rooms (type=group)
+      script: Cisco Spark|||cisco-spark-list-rooms
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      max: {}
+      teamId: {}
+      type:
+        simple: group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 12f7cbc9-21ce-48d8-8a9c-c010ab0fcb2b
+    type: regular
+    task:
+      id: 12f7cbc9-21ce-48d8-8a9c-c010ab0fcb2b
+      version: -1
+      name: VerifyContext (CiscoSpark.Rooms)
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      expectedValue:
+        simple: The Amazing Four
+      fields: {}
+      path:
+        simple: CiscoSpark.Rooms.[0].Title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 044d6ca1-4762-4393-8620-bff45eb4288a
+    type: title
+    task:
+      id: 044d6ca1-4762-4393-8620-bff45eb4288a
+      version: -1
+      name: Create team (and room)
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: dce7308f-71ef-42a7-841d-0aa2a4d77e48
+    type: title
+    task:
+      id: dce7308f-71ef-42a7-841d-0aa2a4d77e48
+      version: -1
+      name: Send messages to a room
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 75acf407-ef52-4bbc-8145-4ec5be611553
+    type: regular
+    task:
+      id: 75acf407-ef52-4bbc-8145-4ec5be611553
+      version: -1
+      name: cisco-spark-send-message-to-room (by roomId)
+      script: Cisco Spark|||cisco-spark-send-message-to-room
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      files: {}
+      markdown: {}
+      roomId:
+        simple: ${CiscoSpark.Rooms.[0].Id}
+      text:
+        simple: First room message
+      toRoomName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: bc6d7559-bb99-4c9e-8338-bb368e8f9150
+    type: regular
+    task:
+      id: bc6d7559-bb99-4c9e-8338-bb368e8f9150
+      version: -1
+      name: cisco-spark-list-messages (to room)
+      script: Cisco Spark|||cisco-spark-list-messages
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+    scriptarguments:
+      before: {}
+      beforeMessage: {}
+      files: {}
+      markdown: {}
+      max: {}
+      mentionedPeople: {}
+      roomId:
+        simple: ${CiscoSpark.Rooms.[0].Id}
+      text: {}
+      toRoomName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7b201574-ea8f-4944-8312-e6d185418547
+    type: regular
+    task:
+      id: 7b201574-ea8f-4944-8312-e6d185418547
+      version: -1
+      name: VerifyContext (CiscoSpark.Messages.[0])
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue:
+        simple: First room message
+      fields: {}
+      path:
+        simple: CiscoSpark.Messages.[1].Text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: a6dbcf79-0972-4347-8134-1b484c44bd6d
+    type: regular
+    task:
+      id: a6dbcf79-0972-4347-8134-1b484c44bd6d
+      version: -1
+      name: cisco-spark-send-message-to-room (by room name)
+      script: Cisco Spark|||cisco-spark-send-message-to-room
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      files: {}
+      markdown: {}
+      roomId: {}
+      text:
+        simple: Second room message
+      toRoomName:
+        simple: The Amazing Four
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: db34da89-7c2f-4591-838c-dd8b967f1fd6
+    type: regular
+    task:
+      id: db34da89-7c2f-4591-838c-dd8b967f1fd6
+      version: -1
+      name: VerifyContext (CiscoSpark.Messages.[1])
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      expectedValue:
+        simple: First room message
+      extend-context: {}
+      fields: {}
+      path:
+        simple: CiscoSpark.Messages.[1].Text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: a3f21919-3716-42b2-80fa-5c91698ec44e
+    type: title
+    task:
+      id: a3f21919-3716-42b2-80fa-5c91698ec44e
+      version: -1
+      name: Delete everything
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "31"
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0400884e-2cf2-49c6-8999-d7ceed450389
+    type: regular
+    task:
+      id: 0400884e-2cf2-49c6-8999-d7ceed450389
+      version: -1
+      name: cisco-spark-delete-team (The Amazing Four)
+      script: Cisco Spark|||cisco-spark-delete-team
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      teamId:
+        simple: ${CiscoSpark.Teams.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 39d58533-ab51-4104-8e85-831fbd23a8be
+    type: title
+    task:
+      id: 39d58533-ab51-4104-8e85-831fbd23a8be
+      version: -1
+      name: Send messages to a person
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 3d4df208-d8f4-4fe8-82fc-0542357414f1
+    type: regular
+    task:
+      id: 3d4df208-d8f4-4fe8-82fc-0542357414f1
+      version: -1
+      name: cisco-spark-send-message-to-person (by email)
+      script: Cisco Spark|||cisco-spark-send-message-to-person
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      files: {}
+      markdown: {}
+      text:
+        simple: First personal message
+      toPersonEmail:
+        simple: ciscosparktestmail@gmail.com
+      toPersonId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 5a3ded42-0c0a-478c-8e5a-5b2134ed46b2
+    type: regular
+    task:
+      id: 5a3ded42-0c0a-478c-8e5a-5b2134ed46b2
+      version: -1
+      name: cisco-spark-send-message-to-person (by personId)
+      script: Cisco Spark|||cisco-spark-send-message-to-person
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      files: {}
+      markdown: {}
+      text:
+        simple: Second personal message
+      toPersonEmail: {}
+      toPersonId:
+        simple: ${CiscoSpark.People.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 12c8e213-e8f0-4d84-8b5b-ed65e1d99281
+    type: regular
+    task:
+      id: 12c8e213-e8f0-4d84-8b5b-ed65e1d99281
+      version: -1
+      name: cisco-spark-list-people (email=ciscosparktestmail@gmail.com)
+      script: Cisco Spark|||cisco-spark-list-people
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      displayName: {}
+      email:
+        simple: ciscosparktestmail@gmail.com
+      max: {}
+      orgId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 378dcdeb-594d-4cb5-847e-01d4b01654a5
+    type: regular
+    task:
+      id: 378dcdeb-594d-4cb5-847e-01d4b01654a5
+      version: -1
+      name: cisco-spark-list-rooms (type=direct)
+      script: Cisco Spark|||cisco-spark-list-rooms
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      max: {}
+      teamId: {}
+      type:
+        simple: direct
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: fe344f5f-aa0a-4e3c-82ae-28daf152da9b
+    type: regular
+    task:
+      id: fe344f5f-aa0a-4e3c-82ae-28daf152da9b
+      version: -1
+      name: cisco-spark-list-messages (direct)
+      script: Cisco Spark|||cisco-spark-list-messages
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+    scriptarguments:
+      before: {}
+      beforeMessage: {}
+      max: {}
+      mentionedPeople: {}
+      roomId:
+        simple: ${CiscoSpark.Rooms.[1].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 10634d18-20dd-4776-8adb-5f06f113d7c8
+    type: regular
+    task:
+      id: 10634d18-20dd-4776-8adb-5f06f113d7c8
+      version: -1
+      name: VerifyContext (CiscoSpark.People)
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      expectedValue:
+        simple: John Doe
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fields: {}
+      path:
+        simple: CiscoSpark.People.[0].DisplayName
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: a40147ad-4079-4acb-858b-e0e78b2703b4
+    type: regular
+    task:
+      id: a40147ad-4079-4acb-858b-e0e78b2703b4
+      version: -1
+      name: VerifyContext (CiscoSpark.Rooms.[1])
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue:
+        simple: John Doe
+      field1: {}
+      field2: {}
+      field3: {}
+      field4: {}
+      fields: {}
+      path:
+        simple: CiscoSpark.Rooms.[1].Title
+      value1: {}
+      value2: {}
+      value3: {}
+      value4: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: e1bd796f-f101-46ae-8218-d9d46d9c6066
+    type: regular
+    task:
+      id: e1bd796f-f101-46ae-8218-d9d46d9c6066
+      version: -1
+      name: VerifyContext (CiscoSpark.Messages.[2])
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue:
+        simple: Second personal message
+      extend-context: {}
+      fields: {}
+      path:
+        simple: CiscoSpark.Messages.[2].Text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: acc9e22b-61db-45f4-8a07-843e41b2294c
+    type: regular
+    task:
+      id: acc9e22b-61db-45f4-8a07-843e41b2294c
+      version: -1
+      name: VerifyContext (CiscoSpark.Messages.[3])
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue:
+        simple: First personal message
+      extend-context: {}
+      fields: {}
+      path:
+        simple: CiscoSpark.Messages.[3].Text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 435d3db0-a862-4629-8673-c69e99d56846
+    type: regular
+    task:
+      id: 435d3db0-a862-4629-8673-c69e99d56846
+      version: -1
+      name: cisco-spark-delete-message (personal, 1)
+      script: Cisco Spark|||cisco-spark-delete-message
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      messageId:
+        simple: ${CiscoSpark.Messages.[2].Id}
+      teamId:
+        simple: ${CiscoSpark.Messages.[2].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 875403fc-7db2-4e94-8af7-d68157f56e92
+    type: regular
+    task:
+      id: 875403fc-7db2-4e94-8af7-d68157f56e92
+      version: -1
+      name: cisco-spark-delete-message (personal, 2)
+      script: Cisco Spark|||cisco-spark-delete-message
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      messageId:
+        simple: ${CiscoSpark.Messages.[3].Id}
+      teamId:
+        simple: ${CiscoSpark.Messages.[3].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 4d7a0a9d-dcec-4fb3-82e9-55de6f412d75
+    type: regular
+    task:
+      id: 4d7a0a9d-dcec-4fb3-82e9-55de6f412d75
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 05ab21f9-a027-4ffc-8a1f-3bbd4559750e
+    type: regular
+    task:
+      id: 05ab21f9-a027-4ffc-8a1f-3bbd4559750e
+      version: -1
+      name: cisco-spark-list-messages (direct)
+      script: Cisco Spark|||cisco-spark-list-messages
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      before: {}
+      beforeMessage: {}
+      max: {}
+      mentionedPeople: {}
+      roomId:
+        simple: ${CiscoSpark.Rooms.[0].Id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: b379a49d-ee5f-4ec1-80cb-29124eddbd92
+    type: regular
+    task:
+      id: b379a49d-ee5f-4ec1-80cb-29124eddbd92
+      version: -1
+      name: cisco-spark-list-teams
+      script: Cisco Spark|||cisco-spark-list-teams
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      max: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: f41a137a-d452-4d3e-86ef-1b553cadd763
+    type: regular
+    task:
+      id: f41a137a-d452-4d3e-86ef-1b553cadd763
+      version: -1
+      name: cisco-spark-list-rooms (all)
+      script: Cisco Spark|||cisco-spark-list-rooms
+      type: regular
+      iscommand: true
+      brand: Cisco Spark
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      max: {}
+      teamId: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 8e65fdb3-aad4-40e5-8ab1-197105b84ed3
+    type: regular
+    task:
+      id: 8e65fdb3-aad4-40e5-8ab1-197105b84ed3
+      version: -1
+      name: VerifyContext (CiscoSpark.Rooms)
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      expectedValue:
+        simple: John Doe
+      extend-context: {}
+      fields: {}
+      path:
+        simple: CiscoSpark.Rooms.[0].Title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 00fd4b20-b444-4e94-8a5a-9a6d854ed3e0
+    type: title
+    task:
+      id: 00fd4b20-b444-4e94-8a5a-9a6d854ed3e0
+      version: -1
+      name: Done!
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4465,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

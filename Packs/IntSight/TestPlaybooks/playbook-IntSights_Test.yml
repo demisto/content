@@ -1,0 +1,485 @@
+id: IntSights Test
+version: -1
+name: IntSights Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: aa262df3-5110-4c59-82f2-87f515d80604
+    type: start
+    task:
+      id: aa262df3-5110-4c59-82f2-87f515d80604
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 18ee74d9-5cec-4c18-8fbe-d07143109a83
+    type: regular
+    task:
+      id: 18ee74d9-5cec-4c18-8fbe-d07143109a83
+      version: -1
+      name: intsights-get-alerts
+      description: Fetch alerts
+      script: '|||intsights-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alert-type: {}
+      assigned: {}
+      found-date-from: {}
+      found-date-to:
+        simple: "1537426800000"
+      is-closed: {}
+      is-flagged: {}
+      network-type: {}
+      severity: {}
+      source-date-from: {}
+      source-date-to: {}
+      source-type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: fdd2a8d0-924d-43e3-8bc0-278cf5bed493
+    type: regular
+    task:
+      id: fdd2a8d0-924d-43e3-8bc0-278cf5bed493
+      version: -1
+      name: intsights-get-alert-activities
+      description: Get alert activities
+      script: '|||intsights-get-alert-activities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: ceb06f6c-d74a-41f4-848a-a66c9dfd9ab9
+    type: regular
+    task:
+      id: ceb06f6c-d74a-41f4-848a-a66c9dfd9ab9
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: dbcb71c2-7050-4a64-8452-da23407078a2
+    type: regular
+    task:
+      id: dbcb71c2-7050-4a64-8452-da23407078a2
+      version: -1
+      name: intsights-update-alert-severity
+      description: Change the alert's severity
+      script: '|||intsights-update-alert-severity'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+      severity:
+        simple: Low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 922d6cb2-f23d-4b98-8406-cee2ee49fb06
+    type: regular
+    task:
+      id: 922d6cb2-f23d-4b98-8406-cee2ee49fb06
+      version: -1
+      name: intsights-get-iocs
+      description: Get count totals of the available IOCs
+      script: '|||intsights-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      first-seen-from: {}
+      first-seen-to: {}
+      last-seen-from: {}
+      last-seen-to: {}
+      limit: {}
+      severity: {}
+      source-ID: {}
+      type:
+        simple: Domains
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5a09390e-8801-4a80-83bd-6eabd03f5e1d
+    type: regular
+    task:
+      id: 5a09390e-8801-4a80-83bd-6eabd03f5e1d
+      version: -1
+      name: intsights-add-tag-to-alert
+      description: Adds a tag to the alert
+      script: '|||intsights-add-tag-to-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "27"
+    scriptarguments:
+      alert-id:
+        simple: ${IntSights.Alerts.[0].ID}
+      tag-name:
+        simple: test-tag
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 1d70981b-dad5-439d-802a-147e74c2ca07
+    type: regular
+    task:
+      id: 1d70981b-dad5-439d-802a-147e74c2ca07
+      version: -1
+      name: closeInvestigation
+      description: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: a12c01c8-9928-4506-8bf1-7aae9282faa4
+    type: condition
+    task:
+      id: a12c01c8-9928-4506-8bf1-7aae9282faa4
+      version: -1
+      name: Verify got Alerts
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IntSights
+                accessor: Alerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 6f01ed66-bd09-4ff6-8e78-aa790258973f
+    type: condition
+    task:
+      id: 6f01ed66-bd09-4ff6-8e78-aa790258973f
+      version: -1
+      name: Verify alert severity is correct
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "10"
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        simple: ${IntSights.Alerts.[0].Status(val != 'Low')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 185d50f7-321a-448c-82af-b9ad995a6f44
+    type: condition
+    task:
+      id: 185d50f7-321a-448c-82af-b9ad995a6f44
+      version: -1
+      name: Verify got IOCs
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IntSights
+                accessor: Iocs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: d7d3adff-092c-46f0-8d6d-b1a010abba72
+    type: regular
+    task:
+      id: d7d3adff-092c-46f0-8d6d-b1a010abba72
+      version: -1
+      name: Fail
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 3c9b434c-402c-4bed-8f3d-b507afc862bf
+    type: regular
+    task:
+      id: 3c9b434c-402c-4bed-8f3d-b507afc862bf
+      version: -1
+      name: intsights-get-alerts time-delta
+      script: '|||intsights-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alert-type: {}
+      assigned: {}
+      found-date-from: {}
+      found-date-to: {}
+      is-closed: {}
+      is-flagged: {}
+      network-type: {}
+      severity: {}
+      source-date-from: {}
+      source-date-to: {}
+      source-type: {}
+      time-delta:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1115,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: a10ba81c-e1d2-44c2-8fa4-41ee66e44447
+    type: regular
+    task:
+      id: a10ba81c-e1d2-44c2-8fa4-41ee66e44447
+      version: -1
+      name: Failed to get IOCs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed to get IOCs, please log  in the instance and verify that you have IOCs.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 1445,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

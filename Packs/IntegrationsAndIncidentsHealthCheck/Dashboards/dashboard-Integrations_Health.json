@@ -1,0 +1,248 @@
+{
+ "fromDate": "0001-01-01T00:00:00Z",
+ "fromDateLicense": "0001-01-01T00:00:00Z",
+ "id": "Integrations Health",
+ "layout": [
+  {
+   "forceRange": false,
+   "h": 2,
+   "i": "189e13c0-f2a5-11ea-a30e-196202b92d1d",
+   "id": "189e13c0-f2a5-11ea-a30e-196202b92d1d",
+   "w": 6,
+   "widget": {
+    "category": "",
+    "commitMessage": "Widget imported",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A pie widget showing the failed instances category.",
+    "fromServerVersion": "",
+    "id": "Failing-Instances-Category-Pie",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T14:02:27.423018192Z",
+    "name": "Failed Instances Category",
+    "packID": "",
+    "params": null,
+    "prevName": "Failing Instances Category",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IntegrationsCheck-Widget-IntegrationsCategory",
+    "shouldCommit": true,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "pie"
+   },
+   "x": 3,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 2,
+   "i": "1c367cc0-f2a5-11ea-a30e-196202b92d1d",
+   "id": "1c367cc0-f2a5-11ea-a30e-196202b92d1d",
+   "w": 3,
+   "widget": {
+    "category": "",
+    "commitMessage": "Widget imported",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A number widget showing the failed integrations.",
+    "fromServerVersion": "",
+    "id": "Failing-Instances-Number",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T14:02:33.741145611Z",
+    "name": "Number of Failed Instances",
+    "packID": "",
+    "params": null,
+    "prevName": "Number Of Failing Instances",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IntegrationsCheck-Widget-NumberFailingInstances",
+    "shouldCommit": true,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 0,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 2,
+   "i": "22656f20-f2a5-11ea-a30e-196202b92d1d",
+   "id": "22656f20-f2a5-11ea-a30e-196202b92d1d",
+   "w": 3,
+   "widget": {
+    "category": "",
+    "commitMessage": "Widget imported",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A number widget showing the number of checked integrations.",
+    "fromServerVersion": "",
+    "id": "Checked-Integrations-Number",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T14:02:42.884400443Z",
+    "name": "Number of Checked Integrations",
+    "packID": "",
+    "params": null,
+    "prevName": "Number of Checked Integrations",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IntegrationsCheck-Widget-NumberChecked",
+    "shouldCommit": true,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 9,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 5,
+   "i": "3fce4180-f34b-11ea-a3ec-d96342277d9c",
+   "id": "3fce4180-f34b-11ea-a3ec-d96342277d9c",
+   "w": 12,
+   "widget": {
+    "category": "",
+    "commitMessage": "Widget imported",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A table widget showing information about failed instances.",
+    "fromServerVersion": "",
+    "id": "Failing-Instances-Info-Table",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-10T09:51:49.454455658Z",
+    "name": "Failed Instances Information",
+    "packID": "",
+    "params": {
+     "tableColumns": [
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Brand",
+       "width": 160
+      },
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Instance",
+       "width": 110
+      },
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Category",
+       "width": 100
+      },
+      {
+       "displayed": true,
+       "isDefault": true,
+       "key": "Information",
+       "width": 1275
+      }
+     ]
+    },
+    "prevName": "Failing Instances Information",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IntegrationsCheck-Widget-IntegrationsErrorsInfo",
+    "shouldCommit": true,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "table"
+   },
+   "x": 0,
+   "y": 2
+  }
+ ],
+ "name": "Integrations Health",
+ "period": {
+  "by": "",
+  "byFrom": "days",
+  "byTo": "",
+  "field": "",
+  "fromValue": 7,
+  "toValue": null
+ },
+ "toDate": "0001-01-01T00:00:00Z",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": "",
+ "isPredefined": true
+}

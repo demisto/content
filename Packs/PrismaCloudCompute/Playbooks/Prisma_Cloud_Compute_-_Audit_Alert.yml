@@ -1,0 +1,75 @@
+id: Prisma Cloud Compute - Audit Alert
+version: -1
+name: Prisma Cloud Compute - Audit Alert
+description: Default playbook for parsing Prisma Cloud Compute audit alerts
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db3ae054-8893-4760-871f-9e39c7439d6c
+    type: start
+    task:
+      id: db3ae054-8893-4760-871f-9e39c7439d6c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 360f5aa0-896d-4ec2-8678-d4b2d0de15f6
+    type: regular
+    task:
+      id: 360f5aa0-896d-4ec2-8678-d4b2d0de15f6
+      version: -1
+      name: Parse Audit Alert
+      description: Parse raw vulnerabilities JSON data
+      scriptName: PrismaCloudComputeParseAuditAlert
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      alert_raw_json:
+        simple: ${incident.prismacloudcomputerawalertjson}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No Test

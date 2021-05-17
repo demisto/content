@@ -1,0 +1,283 @@
+id: forcepoint test
+version: -1
+name: forcepoint test
+starttaskid: "0"
+tasks:
+  '0':
+    id: '0'
+    taskid: b3e76235-b461-46d2-80aa-c53a64d18b7c
+    type: start
+    task:
+      id: b3e76235-b461-46d2-80aa-c53a64d18b7c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3fee81c5-3b59-4e8e-8ee7-e5e09da65c8a
+    type: regular
+    task:
+      id: 3fee81c5-3b59-4e8e-8ee7-e5e09da65c8a
+      version: -1
+      name: Delete Context
+      description: 'Deletes previous context '
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ac0556df-aba3-4a09-8493-5f689b6c4f70
+    type: regular
+    task:
+      id: ac0556df-aba3-4a09-8493-5f689b6c4f70
+      version: -1
+      name: Add new 'TEST' category
+      description: Will Add new API-managed category.
+      script: Forcepoint|||fp-add-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      categoryDescription: {}
+      categoryName:
+        simple: NEW TEST CATEGORY
+      parent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 87314ac8-4c2b-4265-8424-c6e9eae5a251
+    type: regular
+    task:
+      id: 87314ac8-4c2b-4265-8424-c6e9eae5a251
+      version: -1
+      name: Get new category details
+      description: Query by category name
+      script: Forcepoint|||fp-get-category-detailes
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      categoryId: {}
+      categoryName:
+        simple: ${Forcepoint.AddCategory.CategoryName}
+      extend-context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 405a4d19-0f8e-4c83-80a4-32e558f876ed
+    type: regular
+    task:
+      id: 405a4d19-0f8e-4c83-80a4-32e558f876ed
+      version: -1
+      name: Add URLs to 'TEST' category
+      description: |-
+        Using the ID associated with the new category.
+        Add 'https://test.com', 'http://dem.com' to category URL list.
+      script: Forcepoint|||fp-add-address-to-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      categoryID: {}
+      categoryName:
+        simple: ${Forcepoint.CategoryDetails.CategoryName}
+      ips: {}
+      urls:
+        simple: https://test.com,http://dem.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e9517bb9-565f-4c71-8625-66917e1a2516
+    type: regular
+    task:
+      id: e9517bb9-565f-4c71-8625-66917e1a2516
+      version: -1
+      name: Delete URL from 'TEST' category
+      description: Delete https://test.com from the category URL list
+      script: Forcepoint|||fp-delete-address-from-category
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      categoryID:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryName: {}
+      ips: {}
+      urls:
+        simple: https://test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 67c019d5-a69d-4ea0-8dc8-8095cfd11c13
+    type: regular
+    task:
+      id: 67c019d5-a69d-4ea0-8dc8-8095cfd11c13
+      version: -1
+      name: Get 'TEST' category details after alterations
+      script: Forcepoint|||fp-get-category-detailes
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      categoryId:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryName: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7f927d99-8eb6-428d-8fe0-e4d920d4e046
+    type: regular
+    task:
+      id: 7f927d99-8eb6-428d-8fe0-e4d920d4e046
+      version: -1
+      name: Delete 'TEST' category
+      description: Using the category ID
+      script: Forcepoint|||fp-delete-categories
+      type: regular
+      iscommand: true
+      brand: Forcepoint
+    scriptarguments:
+      categoryIDs:
+        simple: ${Forcepoint.CategoryDetails.CategoryID}
+      categoryNames: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,396 @@
+id: McAfeeNSMTest
+version: -1
+name: McAfeeNSMTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b75c9325-1847-4451-8216-551e33f9b4c7
+    type: start
+    task:
+      id: b75c9325-1847-4451-8216-551e33f9b4c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 40912ef2-6a78-4b92-86a3-bb70f3edb09c
+    type: regular
+    task:
+      id: 40912ef2-6a78-4b92-86a3-bb70f3edb09c
+      version: -1
+      name: get all registered domains of NSM
+      script: McAfee NSM|||nsm-get-domains
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain: {}
+      domainID: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cb374045-048e-4349-857d-fc9b0445a4f4
+    type: regular
+    task:
+      id: cb374045-048e-4349-857d-fc9b0445a4f4
+      version: -1
+      name: Get a specific domain information
+      script: McAfee NSM|||nsm-get-domains
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: ${NSM.Domains.ID}
+      domainID: {}
+      end_time: {}
+      filter: {}
+      search: {}
+      start_time: {}
+      state: {}
+      time_period: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e0b8702d-f4e4-43bd-891f-cfa059798b84
+    type: regular
+    task:
+      id: e0b8702d-f4e4-43bd-891f-cfa059798b84
+      version: -1
+      name: Get IPS Policies
+      script: McAfee NSM|||nsm-get-ips-policies
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain_id:
+        simple: ${NSM.Domains.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 80b80fb8-ab11-4283-85f5-fec4bd4814aa
+    type: regular
+    task:
+      id: 80b80fb8-ab11-4283-85f5-fec4bd4814aa
+      version: -1
+      name: Get a specific IPS Policy information
+      script: McAfee NSM|||nsm-get-ips-policy-details
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      policy_id:
+        simple: "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: dc56df34-5e61-4534-80d3-57e88be41939
+    type: regular
+    task:
+      id: dc56df34-5e61-4534-80d3-57e88be41939
+      version: -1
+      name: Get Alerts from last 5 minutes
+      script: McAfee NSM|||nsm-get-alerts
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      end_time: {}
+      filter: {}
+      search: {}
+      start_time: {}
+      state: {}
+      time_period:
+        simple: LAST_5_MINUTES
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4bf362c9-6cb5-4c46-8622-f6b9eef7e3b0
+    type: regular
+    task:
+      id: 4bf362c9-6cb5-4c46-8622-f6b9eef7e3b0
+      version: -1
+      name: Get Alerts from custom time with filtering
+      script: McAfee NSM|||nsm-get-alerts
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      end_time:
+        simple: 09/09/2017 23:15
+      filter:
+        simple: attackSeverity:High
+      search: {}
+      start_time:
+        simple: 09/09/2017 23:05
+      state: {}
+      time_period:
+        simple: CUSTOM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 80975f60-94d7-4947-8f28-ca4559e86b2c
+    type: regular
+    task:
+      id: 80975f60-94d7-4947-8f28-ca4559e86b2c
+      version: -1
+      name: Set Alerts as Acknowledged
+      script: McAfee NSM|||nsm-update-alerts
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      end_time:
+        simple: 09/09/2017 23:10
+      filter:
+        simple: attackSeverity:Medium
+      new_assignee: {}
+      new_state:
+        simple: Acknowledged
+      search: {}
+      start_time:
+        simple: 09/09/2017 23:10
+      state:
+        simple: Unacknowledged
+      time_period:
+        simple: CUSTOM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 852704c6-0df9-4eda-8163-293d2f19a663
+    type: regular
+    task:
+      id: 852704c6-0df9-4eda-8163-293d2f19a663
+      version: -1
+      name: Set Alerts back as Unacknowledged
+      script: McAfee NSM|||nsm-update-alerts
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      end_time:
+        simple: 09/09/2017 23:10
+      filter:
+        simple: attackSeverity:Medium
+      new_assignee: {}
+      new_state:
+        simple: Unacknowledged
+      search: {}
+      start_time:
+        simple: 09/09/2017 23:10
+      state:
+        simple: Acknowledged
+      time_period:
+        simple: CUSTOM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: d18e53e7-1924-4534-8dbe-4e2ea1366412
+    type: regular
+    task:
+      id: d18e53e7-1924-4534-8dbe-4e2ea1366412
+      version: -1
+      name: Get all sensors info
+      script: McAfee NSM|||nsm-get-sensors
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domainID:
+        simple: ${NSM.Domains.[0].ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 489e64ba-9dd2-4aaf-8a70-7c50905fd966
+    type: regular
+    task:
+      id: 489e64ba-9dd2-4aaf-8a70-7c50905fd966
+      version: -1
+      name: Get sensors info from all domains
+      script: McAfee NSM|||nsm-get-sensors
+      type: regular
+      iscommand: true
+      brand: McAfee NSM
+    scriptarguments:
+      domainID: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

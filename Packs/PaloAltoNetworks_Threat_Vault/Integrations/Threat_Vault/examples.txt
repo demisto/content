@@ -1,0 +1,11 @@
+threatvault-antivirus-signature-get signature_id=93534285
+file file= 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8
+threatvault-dns-signature-get-by-id signature_id=325235352
+threatvault-antispyware-signature-get-by-id signature_id=10001
+threatvault-ip-geo-get ip=8.8.8.8
+ip ip=1.1.1.1
+threatvault-antivirus-signature-search
+threatvault-dns-signature-search domain_name=google.com
+threatvault-antispyware-signature-search cve=CVE-2015-8650
+threatvault-antivirus-signature-search signature_name=Worm/Win32.autorun.crck
+threatvault-signature-search-results search_type=dns search_request_id=8e9e2289-218f-11eb-b876-aba382af19b4

@@ -1,0 +1,27 @@
+{
+    "create_success": {
+        "Success": true,
+        "Result": {
+            "CreatedDate": "2020-07-14 13:39:03",
+            "Number": "SUCCESS_NUMBER",
+            "Id": "SUCCESS_ID"
+        },
+        "ErrorMessage": null,
+        "ErrorCode": null
+    },
+    "create_failure": {
+        "Success": false,
+        "ErrorMessage": "SOME_ERROR_MSG",
+        "ErrorCode": null
+    },
+    "update_success": {
+        "Id": "SOME_ID",
+        "Number": "SOME_NUMBER"
+    },
+    "update_failure_context": {
+        "BmcRemedyforce.Incident(val.Id == obj.Id)": {
+            "Id": "SOME_ID",
+            "Number": "SOME_NUMBER"
+        }
+    }
+}

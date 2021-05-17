@@ -1,0 +1,28 @@
+{
+ "id": "incidents-assigned-by-user",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Active Incidents Assigned by User",
+ "dataType": "incidents",
+ "widgetType": "bar",
+ "query": "-category:job and -status:archived and -status:closed",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "params": {
+  "groupBy": [
+   "owner"
+  ]
+ },
+ "description": ""
+}

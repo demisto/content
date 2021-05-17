@@ -1,0 +1,178 @@
+category: Database
+fromversion: 5.0.0
+commonfields:
+  id: MongoDB Key Value Store
+  version: -1
+configuration:
+- display: MongoDB username
+  name: credentials
+  required: true
+  type: 9
+- display: URI (mongodb://<IP/FQDN>:<Port Number>)
+  name: uri
+  required: true
+  type: 0
+- display: MongoDB database name
+  name: database
+  required: true
+  type: 0
+- defaultvalue: generic
+  display: MongoDB collection name
+  name: collection
+  required: true
+  type: 0
+- display: Use an SSL/TLS secured connection
+  name: use_ssl
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Manipulates key/value pairs according to an incident utilizing the MongoDB collection.
+display: MongoDB Key Value Store
+name: MongoDB Key Value Store
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The Demisto incident number.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name/Key.
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    - default: false
+      description: Assigns a value to the name/key.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a key/value record for the incident. If the key exists, the
+      existing value is overwritten.
+    execution: false
+    name: mongodb-write-key-value
+    outputs:
+    - contextPath: MongoDB.Entry.ID
+      description: Entry ID.
+      type: String
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Key
+      description: Incident key.
+      type: String
+    - contextPath: MongoDB.Entry.Value
+      description: Incident value.
+      type: String
+    - contextPath: MongoDB.Entry.Modified
+      description: Incident modified date.
+      type: Date
+  - arguments:
+    - default: false
+      description: The Demisto incident number.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name/Key.
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the value of the specified name/key of an incident.
+    execution: false
+    name: mongodb-get-key-value
+    outputs:
+    - contextPath: MongoDB.Entry.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Entry.Key
+      description: Incident key.
+      type: String
+    - contextPath: MongoDB.Entry.Value
+      description: The value of the key.
+      type: String
+  - arguments:
+    - default: false
+      description: The Demisto incident number.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists the keys and their values for the specified incident.
+    execution: false
+    name: mongodb-list-key-values
+    outputs:
+    - contextPath: MongoDB.Incident.Incident
+      description: Incident ID.
+      type: String
+    - contextPath: MongoDB.Incident.Key
+      description: Incident key.
+      type: String
+    - contextPath: MongoDB.Incident.Value
+      description: The value of the key.
+      type: String
+  - arguments:
+    - default: false
+      description: The Demisto incident number.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name/Key.
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the key/value record for an incident.
+    execution: false
+    name: mongodb-delete-key
+  - arguments:
+    - default: false
+      description: The Demisto incident number.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Purges all keys/values for an incident. A common use case for this command is when closing
+      an incident. This command clears the entries for the closed incident from the database.
+    execution: false
+    name: mongodb-purge-entries
+  - arguments:
+    - default: false
+      description: The Demisto incident number.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the number of key/value pairs for an incident.
+    execution: false
+    name: mongodb-get-keys-number
+  - deprecated: false
+    description: Lists all incidents in the collection.
+    execution: false
+    name: mongodb-list-incidents
+  dockerimage: demisto/pymongo:1.0.0.8854
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- MongoDB KeyValueStore - Test

@@ -1,0 +1,19 @@
+{
+    "name": "Developer Tools",
+    "description": "Basic tools for content development.",
+    "support": "xsoar",
+    "currentVersion": "1.1.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-06-09T15:04:49Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "tools",
+        "developer"
+    ]
+}

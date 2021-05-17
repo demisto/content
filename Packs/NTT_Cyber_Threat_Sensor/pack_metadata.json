@@ -1,0 +1,43 @@
+{
+    "name": "NTT Cyber Threat Sensor",
+    "description": "NTT Cyber Threat Sensor integration",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "NTT Ltd.",
+    "url": "https://www.global.ntt",
+    "email": "servicedesk@global.ntt",
+    "created": "2020-06-25T07:27:48Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Pcap",
+        "Alerts"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PcapAnalysis": {
+            "mandatory": true,
+            "display_name": "PCAP Analysis"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonPlaybooks",
+        "PcapAnalysis",
+        "CommonTypes",
+        "CommonScripts"
+    ]
+}

@@ -1,0 +1,404 @@
+{
+ "fromDate": "0001-01-01T00:00:00Z",
+ "fromDateLicense": "0001-01-01T00:00:00Z",
+ "id": "Incidents Health",
+ "layout": [
+  {
+   "forceRange": false,
+   "h": 3,
+   "i": "7ee77eb0-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "7ee77eb0-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 12,
+   "widget": {
+    "category": "",
+    "commitMessage": "Widget imported",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A table widget showing information about failed incidents.",
+    "fromServerVersion": "",
+    "id": "Failing-Incidents-Info-Table",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-10T10:01:35.884347069Z",
+    "name": "Failed Incidents Information",
+    "packID": "",
+    "params": null,
+    "prevName": "Failing Incidents Information",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-IncidentsErrorsInfo",
+    "shouldCommit": true,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "table"
+   },
+   "x": 0,
+   "y": 3
+  },
+  {
+   "forceRange": false,
+   "h": 2,
+   "i": "7f90b700-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "7f90b700-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 6,
+   "widget": {
+    "category": "",
+    "commitMessage": "Widget imported",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A line widget showing the creation date of failed incidents.",
+    "fromServerVersion": "",
+    "id": "Line-Incident-Created-Date-Line",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-10T09:57:17.179885569Z",
+    "name": "Creation Date of Failed Incidents",
+    "packID": "",
+    "params": null,
+    "prevName": "Creation Date of Failing Incidents",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-CreationDate",
+    "shouldCommit": true,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "line"
+   },
+   "x": 0,
+   "y": 1
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "819a1b90-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "819a1b90-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A number widget showing the failed incidents.",
+    "fromServerVersion": "",
+    "id": "Number-of-Failing-Incidents-Number",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T10:10:08.834711075Z",
+    "name": "Number of Failed Incidents",
+    "packID": "",
+    "params": null,
+    "prevName": "Number of Failing Incidents",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-NumberFailingIncidents",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 0,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "821a2100-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "821a2100-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A number widget showing the total errors (entries ID).",
+    "fromServerVersion": "",
+    "id": "Number-of-Errors-Number",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T10:16:19.321609482Z",
+    "name": "Number of Errors",
+    "packID": "",
+    "params": null,
+    "prevName": "Number of Errors",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-NumberofErrors",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 2,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 1,
+   "i": "8545be70-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "8545be70-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 2,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A number widget shwoing the total unassigned failed incidents.",
+    "fromServerVersion": "",
+    "id": "Number-of-Failing-Unassigned-Incidents-Number",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T10:16:28.615042606Z",
+    "name": "Number of Failed Unassigned Incidents",
+    "packID": "",
+    "params": null,
+    "prevName": "Number of Failing Unassigned Incidents",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-UnassignedFailingIncidents",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "number"
+   },
+   "x": 4,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 3,
+   "i": "87d7b3f0-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "87d7b3f0-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 3,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "days",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A bar chart showing top failed playbook names.",
+    "fromServerVersion": "",
+    "id": "Failing-Playbook-Names-Bar",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T09:56:57.236436809Z",
+    "name": "Top Failed Playbook Names",
+    "packID": "",
+    "params": {
+     "tableColumns": [
+      {
+       "isDefault": true,
+       "key": "color",
+       "position": 0
+      },
+      {
+       "isDefault": true,
+       "key": "count",
+       "position": 1
+      },
+      {
+       "isDefault": true,
+       "key": "data",
+       "position": 2
+      },
+      {
+       "isDefault": true,
+       "key": "floatData",
+       "position": 3
+      },
+      {
+       "isDefault": true,
+       "key": "groups",
+       "position": 4
+      },
+      {
+       "isDefault": true,
+       "key": "name",
+       "position": 5
+      }
+     ]
+    },
+    "prevName": "Top Failing Playbook Names",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-PlaybookNames",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 2,
+    "widgetType": "bar"
+   },
+   "x": 9,
+   "y": 0
+  },
+  {
+   "forceRange": false,
+   "h": 3,
+   "i": "9898a4b0-f35d-11ea-aad8-6d930b65fbf7",
+   "id": "9898a4b0-f35d-11ea-aad8-6d930b65fbf7",
+   "w": 3,
+   "widget": {
+    "category": "",
+    "commitMessage": "",
+    "dataType": "scripts",
+    "dateRange": {
+     "fromDate": "0001-01-01T00:00:00Z",
+     "fromDateLicense": "0001-01-01T00:00:00Z",
+     "period": {
+      "by": "",
+      "byFrom": "",
+      "byTo": "",
+      "field": "",
+      "fromValue": null,
+      "toValue": null
+     },
+     "toDate": "0001-01-01T00:00:00Z"
+    },
+    "description": "A pie chart showing top failed commands.",
+    "fromServerVersion": "",
+    "id": "Failing-Playbook-Commands-Pie",
+    "isPredefined": false,
+    "itemVersion": "",
+    "modified": "2020-09-09T09:54:24.238334065Z",
+    "name": "Top Failed Commands",
+    "packID": "",
+    "params": null,
+    "prevName": "Top Failing Commands",
+    "propagationLabels": [
+     "all"
+    ],
+    "query": "IncidentsCheck-Widget-CommandsNames",
+    "shouldCommit": false,
+    "size": 0,
+    "sort": null,
+    "sortValues": null,
+    "toServerVersion": "",
+    "vcShouldIgnore": false,
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "version": 1,
+    "widgetType": "pie"
+   },
+   "x": 6,
+   "y": 0
+  }
+ ],
+ "name": "Incidents Health",
+ "period": {
+  "by": "",
+  "byFrom": "days",
+  "byTo": "",
+  "field": "",
+  "fromValue": 7,
+  "toValue": null
+ },
+ "toDate": "0001-01-01T00:00:00Z",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "description": "",
+ "isPredefined": true
+}

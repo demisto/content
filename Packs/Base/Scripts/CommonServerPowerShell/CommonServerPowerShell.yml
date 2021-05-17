@@ -1,0 +1,17 @@
+commonfields:
+  id: CommonServerPowerShell
+  version: -1
+name: CommonServerPowerShell
+script: '-'
+type: powershell
+tags:
+- infra
+- server
+comment: Common code that will be merged into each PowerShell script/integration when it runs
+system: true
+fromversion: 5.5.0
+dockerimage: demisto/powershell:7.1.1.16151
+alt_dockerimages: # used for unit testing
+  - demisto/powershell:6.2.4.6166
+tests:
+  - PowerShellCommon-Test

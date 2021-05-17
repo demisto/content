@@ -1,0 +1,87 @@
+commonfields:
+  id: CreateIncidentsForEvaluateMLModllAtProduction
+  version: -1
+name: CreateIncidentsForEvaluateMLModllAtProduction
+comment: |-
+  Artificially create incident to test model in production
+script: >+
+  import random, base64, pickle
+
+  NUMBER_OF_INCIDENTS = int(demisto.args()['numberOfIncidents'])
+
+  words_tag1 = ["closed", "church", "squeamish", "friction", "moaning", "gratis", "angle", "smash", "kiss", "desk", "icky", "aunt"]
+
+  words_tag2 = ["ntidy","boy","substance","faulty","friction","waves","type","boat","argument","metal","legal","marked"]
+
+
+  incident1_template = {
+      'type': 'Simulation',
+      'name': 'Tag1',
+      'dbotprediction': 'ham',
+      'dbotpredictionprobability': 1.0
+  }
+
+
+  incident2_template = {
+      'type': 'Simulation',
+      'name': 'Tag2',
+      'dbotprediction': 'spam',
+      'dbotpredictionprobability': 1.0,
+  }
+
+
+  created = 0
+
+  for i in range(0, NUMBER_OF_INCIDENTS):
+      incident1_template["details"] = " ".join([words_tag1[i] for i in [random.randint(0, len(words_tag1)-1) for i in range(30)]]),
+      demisto.executeCommand("createNewIncident", incident1_template)
+      created +=1
+  for i in range(0, NUMBER_OF_INCIDENTS):
+      incident2_template["details"] = " ".join([words_tag2[i] for i in [random.randint(0, len(words_tag2)-1) for i in range(30)]]),
+      res = demisto.executeCommand("createNewIncident", incident2_template)
+      created +=1
+
+  demisto.results('Created {} incidents'.format(created))
+
+
+
+
+  demisto.results({
+      'Contents': 'Done crete incidents',
+      'ContentsFormat': formats['text'],
+      'EntryContext': {
+          'EmailSujbectKey': 'name',
+          'EmailBodyKey': 'details',
+          'EmailTagKey': 'name',
+          'IncidentsQuery': 'type:Simulation',
+          'EmailPredictionKey': 'dbotprediction',
+          'EmailPredictionProbabilityKey': 'dbotpredictionprobability'
+      }
+  })
+
+type: python
+tags: []
+enabled: true
+args:
+- name: numberOfIncidents
+  description: Number of incidents to create for each label
+  defaultValue: "20"
+outputs:
+- contextPath: EmailSujbectKey
+  description: EmailSujbectKey
+- contextPath: EmailBodyKey
+  description: EmailBodyKey
+- contextPath: EmailTagKey
+  description: EmailTagKey
+- contextPath: IncidentsQuery
+  description: IncidentsQuery
+- contextPath: EmailPredictionKey
+  description: EmailPredictionKey
+- contextPath: EmailPredictionProbabilityKey
+  description: EmailPredictionProbabilityKey
+scripttarget: 0
+subtype: python2
+runonce: false
+dockerimage: demisto/python:2.7.18.10627
+runas: DBotWeakRole
+fromversion: 5.0.0

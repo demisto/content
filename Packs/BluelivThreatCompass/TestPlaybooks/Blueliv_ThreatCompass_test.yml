@@ -1,0 +1,488 @@
+id: Blueliv_ThreatCompass_test
+version: -1
+name: Blueliv_ThreatCompass_test
+description: Test all commands from Blueliv ThreatContext integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22e35a94-75e3-4089-8e8d-6ac2c69b2989
+    type: start
+    task:
+      id: 22e35a94-75e3-4089-8e8d-6ac2c69b2989
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f72e2020-bc63-49bb-8de8-464a6a2eed61
+    type: regular
+    task:
+      id: f72e2020-bc63-49bb-8de8-464a6a2eed61
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 06e517b5-1c95-45ce-8cda-105e509743ed
+    type: regular
+    task:
+      id: 06e517b5-1c95-45ce-8cda-105e509743ed
+      version: -1
+      name: blueliv-resource-all
+      description: Get one resource from the module.
+      script: '|||blueliv-resource-all'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      finalDate: {}
+      limit:
+        simple: "1"
+      offset: {}
+      page: {}
+      startDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 30144b0b-b7a2-4fca-8ebe-59da0eb7fab3
+    type: regular
+    task:
+      id: 30144b0b-b7a2-4fca-8ebe-59da0eb7fab3
+      version: -1
+      name: blueliv-resource-search-by-id
+      description: 'Get all the information about the given resource. '
+      script: '|||blueliv-resource-search-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b558c043-d5aa-46d7-842e-2775b2bc20ed
+    type: regular
+    task:
+      id: b558c043-d5aa-46d7-842e-2775b2bc20ed
+      version: -1
+      name: blueliv-resource-set-label
+      description: Adds a label to the given resource
+      script: '|||blueliv-resource-set-label'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      labelID:
+        simple: "1321"
+      labelId:
+        complex:
+          root: BluelivThreatCompass
+          accessor: Label.Id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: c4d2a620-9c99-4229-8ad9-e037d6fb2160
+    type: regular
+    task:
+      id: c4d2a620-9c99-4229-8ad9-e037d6fb2160
+      version: -1
+      name: blueliv-resource-set-status
+      description: Changes a resource status.
+      script: '|||blueliv-resource-set-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      status:
+        simple: positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 22efb702-0fd0-4c9b-8d8f-a8fca46c6644
+    type: regular
+    task:
+      id: 22efb702-0fd0-4c9b-8d8f-a8fca46c6644
+      version: -1
+      name: blueliv-resource-assign-rating
+      description: Assign rating to a given result.
+      script: '|||blueliv-resource-assign-rating'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      rating:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 55bd29f0-a021-45d7-82b4-c6011d75446f
+    type: regular
+    task:
+      id: 55bd29f0-a021-45d7-82b4-c6011d75446f
+      version: -1
+      name: blueliv-resource-set-read-status
+      description: Mark the result as read or not.
+      script: '|||blueliv-resource-set-read-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      read:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 1bdc273b-6214-43c8-85b8-c6f33d6eab9a
+    type: regular
+    task:
+      id: 1bdc273b-6214-43c8-85b8-c6f33d6eab9a
+      version: -1
+      name: blueliv-resource-fav
+      description: Changes the favourite status of a resource.
+      script: '|||blueliv-resource-favourite'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      favourite:
+        simple: User
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ce19d587-e0a4-4ee8-8c92-2d86e4414065
+    type: regular
+    task:
+      id: ce19d587-e0a4-4ee8-8c92-2d86e4414065
+      version: -1
+      name: blueliv-resource-set-tlp
+      description: Sets a new TLP status to a given resource.
+      script: '|||blueliv-resource-set-tlp'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      id:
+        complex:
+          root: BluelivThreatCompass
+          accessor: DataLeakage
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      tlp:
+        simple: Amber
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 6e3f0949-079a-42f7-802e-39691b9ee4a9
+    type: regular
+    task:
+      id: 6e3f0949-079a-42f7-802e-39691b9ee4a9
+      version: -1
+      name: Fetch incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: Blueliv ThreatCompass
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name:
+        simple: TCompass_TrustOylo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 49e5519f-956b-48d2-8065-69f8f620b720
+    type: regular
+    task:
+      id: 49e5519f-956b-48d2-8065-69f8f620b720
+      version: -1
+      name: blueliv-module-get-labels
+      description: Gets the label list of the module.
+      script: '|||blueliv-module-get-labels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1990,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 467c5f14-b68f-414e-8cd2-911f7f08e045
+fromversion: 5.0.0

@@ -1,0 +1,183 @@
+id: search_endpoints_by_hash_-_carbon_black_response_-_test
+version: -1
+name: Search Endpoints By Hash - Carbon Black Response - Test
+description: A test playbook for Carbon Black Rapid IOC Hunting
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 466068d5-0dc8-4858-8bfc-ff8f151f034b
+    type: start
+    task:
+      id: 466068d5-0dc8-4858-8bfc-ff8f151f034b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: ca29f522-9854-4491-8b56-df4ad91f0b83
+    type: regular
+    task:
+      id: ca29f522-9854-4491-8b56-df4ad91f0b83
+      version: -1
+      name: Verify hostname
+      description: Verify found hashes
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Endpoint.Hostname
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 8d7106cf-cdd6-4202-8c54-8c246161e911
+    type: title
+    task:
+      id: 8d7106cf-cdd6-4202-8c54-8c246161e911
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 833f2c45-9826-4d3f-82df-6d1d131705e2
+    type: regular
+    task:
+      id: 833f2c45-9826-4d3f-82df-6d1d131705e2
+      version: -1
+      name: Clear Context
+      description: Clear all context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 4b976fdf-747f-40d5-8e83-be22f73215bc
+    type: playbook
+    task:
+      id: 4b976fdf-747f-40d5-8e83-be22f73215bc
+      version: -1
+      name: Search Endpoints By Hash - Carbon Black Response
+      description: Hunt for malicious indicators using Carbon Black
+      playbookName: Search Endpoints By Hash - Carbon Black Response
+      playbookId: search_endpoints_by_hash_-_carbon_black_response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hash:
+        complex:
+          root: MD5Hashes
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 4d064b47-a8a0-47d6-8181-a0f62b6219b8
+    type: regular
+    task:
+      id: 4d064b47-a8a0-47d6-8181-a0f62b6219b8
+      version: -1
+      name: Create MD5 Hashes
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: MD5Hashes
+      value:
+        simple: '["0cc175b9c0f1b6a831c399e269772661", "36bd4be7042f6de7e332c05cef287d05",
+          "df9d0ca7409a2967bb338014b043a062", "05ED91DAA77FF31F7F4E61314C2A3122"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

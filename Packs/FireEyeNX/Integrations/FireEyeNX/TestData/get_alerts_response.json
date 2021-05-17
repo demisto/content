@@ -1,0 +1,403 @@
+{
+   "alert": [
+      {
+         "explanation": {
+            "malwareDetected": {
+               "malware": [
+                  {
+                     "url": "dummy url",
+                     "application": "dummy application",
+                     "content": "text/html",
+                     "name": "dummy name",
+                     "type": "dummy type",
+                     "md5Sum": "dummy md5sum",
+                     "sha256": "dummy sha256",
+                     "httpHeader": "dummy httpHeader",
+                     "original": "dummy original",
+                     "sid": "dummy sid",
+                     "stype": "dummy stype "
+                  }
+               ]
+            },
+            "cncServices": {
+               "cncService": [
+                  {
+                     "address": "address",
+                     "channel": "",
+                     "port": 1,
+                     "protocol": "UDP"
+                  }
+               ]
+            },
+            "osChanges": [
+               {
+                  "file": [
+                     {
+                        "fid": {
+                           "ads": "dummy ads",
+                           "content": 1
+                        },
+                        "processinfo": {
+                           "imagepath": "dummy imagepath",
+                           "tainted": false,
+                           "md5sum": "dummy md5sum",
+                           "pid": 3
+                        },
+                        "src_thread": "dummy src_thread",
+                        "sha256sum": "dummy sha256sum",
+                        "filesize": 2,
+                        "type": "dummy type",
+                        "CreateOptions": "0x0",
+                        "mode": "close",
+                        "sha1sum": "dummy sha1sum",
+                        "PE": {
+                           "InspectionType": "dummy inspection type",
+                           "TimeDateStamp": "dummy 0x0000000",
+                           "DllCharacteristics": {
+                              "names": "dummy name",
+                              "value": "dummy 0x0000"
+                           },
+                           "Dll": "No",
+                           "Characteristics": {
+                              "names": {
+                                 "name": [
+                                    "name1",
+                                    32
+                                 ]
+                              },
+                              "value": "value_test"
+                           },
+                           "Magic": "0x000b",
+                           "Subsystem": "dummy sub system",
+                           "Machine": "dummy machine"
+                        },
+                        "md5sum": "dummy md5sum",
+                        "ntstatus": "dummy 0x0",
+                        "value": "dummy value",
+                        "timestamp": 0
+                     }
+                  ],
+                  "application": {
+                     "app-name": "dummy app name"
+                  },
+                  "QuerySystemTime": {
+                     "processinfo": {
+                        "imagepath": "dummy image path",
+                        "md5sum": "dummy md5sum",
+                        "pid": 0
+                     },
+                     "ntstatus": "0x0000000000000000",
+                     "timestamp": 0,
+                     "SystemTime": {
+                        "Value": "0x000000000",
+                        "Time": "Mon 01/01/1999 00:00:00.00"
+                     }
+                  },
+                  "os": {
+                     "name": "dummy name",
+                     "arch": "x00",
+                     "version": "1.0.000",
+                     "sp": 1
+                  },
+                  "uac": [
+                     {
+                        "mode": "dummy mode",
+                        "value": "dummy value",
+                        "timestamp": 0,
+                        "status": "dummy status"
+                     },
+                     [
+                        {
+                           "mode": "dummy mode",
+                           "value": "dummy value",
+                           "timestamp": 0,
+                           "status": "dummy status"
+                        }
+                     ]
+                  ],
+                  "end-of-report": "",
+                  "os_monitor": {
+                     "date": "Jul 1 1900",
+                     "build": 0,
+                     "time": "00:00:00",
+                     "version": "00R0.00"
+                  },
+                  "malicious-alert": [
+                     {
+                        "classtype": "dummy class type",
+                        "display-msg": "dummy display msg"
+                     }
+                  ],
+                  "analysis": {
+                     "mode": "mode test",
+                     "product": "AAA",
+                     "ftype": "url",
+                     "version": 1
+                  },
+                  "network": [
+                     {
+                        "mode": "mode test",
+                        "protocol_type": "protocol type",
+                        "ipaddress": "1.1.1.1",
+                        "destination_port": 0,
+                        "processinfo": {
+                           "imagepath": "image path",
+                           "tainted": false,
+                           "md5sum": "md5sum test",
+                           "pid": 2
+                        },
+                        "http_request": "GET  test url.com",
+                        "timestamp": 0,
+                        "hostname": "dummy host name",
+                        "qtype": "dummy qtype",
+                        "answer_number": 0,
+                        "dns_response_code": 0
+                     }
+                  ],
+                  "heapspraying": [
+                     {
+                        "totalmemory": 0,
+                        "lastbytesreceived": 0,
+                        "processinfo": {
+                           "imagepath": "image path",
+                           "md5sum": "md5 test",
+                           "pid": 0
+                        },
+                        "incrementCount": 0,
+                        "name": "test.exe",
+                        "bytesreceived": 0,
+                        "lasttotalmemory": 0,
+                        "type": "type test",
+                        "timestamp": 0,
+                        "Rcount": 0,
+                        "TotalSize": "dummy total size",
+                        "RUnit": "dummy RUnit",
+                        "mode": "dummy mode",
+                        "pattern": "dummy pattern",
+                        "BytesList": {
+                           "Entry": {
+                              "Percentage": 100,
+                              "Byte": "dummy bytes",
+                              "Count": 0,
+                              "FirstOffset": "0x00000000",
+                              "IsNOP": "yes"
+                           },
+                           "Distinct": 1,
+                           "Count": 1
+                        },
+                        "javascript": "yes",
+                        "DNA": 0,
+                        "TotalRCount": 0,
+                        "ProcessedRCount": 0,
+                        "Processed": "dummy value"
+                     }
+                  ],
+                  "process": [
+                     {
+                        "fid": {
+                           "ads": "dummy ads",
+                           "content": 10101010110
+                        },
+                        "ParentUserAccount": {
+                           "UserSid": "dummy user sid",
+                           "SessionId": 0,
+                           "UserAccountName": "dummy user account name",
+                           "AuthenticationId": "dummy authentication id",
+                           "SuperPrivilegesPresent": 0
+                        },
+                        "parentname": "dummy parent name",
+                        "sha256sum": "dummy sha256sum",
+                        "pid": 0,
+                        "filesize": 0,
+                        "ppid": 0,
+                        "mode": "dummy mode",
+                        "cmdline": "dummy cmdline",
+                        "sha1sum": "dummy sha1sum",
+                        "md5sum": "dummy md5sum",
+                        "src_thread": "dummy src thread",
+                        "value": "dummy value",
+                        "UserAccount": {
+                           "UserSid": "dummy user sid",
+                           "SessionId": 0,
+                           "UserAccountName": "dummy account name",
+                           "AuthenticationId": "dummy id",
+                           "SuperPrivilegesPresent": 0
+                        },
+                        "timestamp": 45870,
+                        "memory_data": "dummy memory data",
+                        "telemetry_data": {
+                           "local_thread_count": 0,
+                           "file_open_count": 0,
+                           "file_modify_count": 0,
+                           "file_create_count": 0,
+                           "child_process_count": 0,
+                           "file_failed_count": 0,
+                           "http_req_count": 0,
+                           "remote_thread_count": 0,
+                           "mutex_create_count": 0
+                        }
+                     }
+                  ],
+                  "regkey": [
+                     {
+                        "mode": "setval",
+                        "processinfo": {
+                           "imagepath": "dummy image path",
+                           "md5sum": "dummy md5sum",
+                           "pid": 0
+                        },
+                        "ntstatus": "0x00000000",
+                        "suppressed": true,
+                        "value": "dummy value",
+                        "timestamp": 0,
+                        "src_thread": "dummy source thread name",
+                        "randomized": true,
+                        "buffered": true,
+                        "no_extend": true
+                     }
+                  ],
+                  "action_fopen": {
+                     "mode": "dummy mode",
+                     "ext": "dummy ext",
+                     "buffered": true,
+                     "name": "dummy name",
+                     "no_extend": true,
+                     "timestamp": 0
+                  },
+                  "exploitcode": [
+                     {
+                        "dllname": "dummy dll name",
+                        "apiname": "dummy apiname",
+                        "address": "0x0000000",
+                        "processinfo": {
+                           "imagepath": "dummy imagepath",
+                           "md5sum": "dummy md5sum",
+                           "pid": 0
+                        },
+                        "src_thread": "dummy source thread",
+                        "protection": "00000004",
+                        "callstack": {
+                           "callstack-entry": [
+                              {
+                                 "symbol-name": "dummy symbol name",
+                                 "frame-number": 3,
+                                 "module-name": "dummy module name",
+                                 "instruction-address": "0x0000000000000000",
+                                 "symbol-displacement": "0x00000000"
+                              }
+                           ]
+                        },
+                        "params": {
+                           "param": {
+                              "id": 1,
+                              "content": "urlmon"
+                           }
+                        },
+                        "timestamp": 0
+                     }
+                  ],
+                  "folder": [
+                     {
+                        "mode": "dummy mode",
+                        "processinfo": {
+                           "imagepath": "dummy image path",
+                           "md5sum": "dummy md5sum",
+                           "pid": 0
+                        },
+                        "src_thread": "dummy source thread",
+                        "value": "dummy value",
+                        "timestamp": 0
+                     }
+                  ],
+                  "dialog-detected": [
+                     {
+                        "hwnd": "0x00000000",
+                        "processinfo": {
+                           "imagepath": "dummy image path",
+                           "pid": 0
+                        },
+                        "buffered": true,
+                        "no_extend": true,
+                        "timestamp": 0,
+                        "dlg-id": "dummy dlg-id"
+                     }
+                  ],
+                  "dialog-dismissed": [
+                     {
+                        "note": "dummy note",
+                        "hwnd": "0x000C000",
+                        "processinfo": {
+                           "imagepath": "dummy imagepath",
+                           "pid": 0
+                        },
+                        "buffered": true,
+                        "no_extend": true,
+                        "timestamp": 52243,
+                        "dlg-id": "dummy dld-id"
+                     }
+                  ],
+                  "wmiquery": {
+                     "processinfo": {
+                        "imagepath": "dummy image path",
+                        "md5sum": "dummy md5sum",
+                        "pid": 0
+                     },
+                     "wmicontents": {
+                        "wmicontent": {
+                           "query": "dummy query",
+                           "lang": "Wql"
+                        }
+                     },
+                     "timestamp": 0,
+                     "buffered": true,
+                     "no_extend": true
+                  }
+               }
+            ],
+            "staticAnalysis": {
+               "static": [
+                  {
+                     "value": "dummy value"
+                  }
+               ]
+            },
+            "stolenData": {
+               "info": {
+                  "field": [],
+                  "type": "dummy type"
+               },
+               "eventId": 0
+            }
+         },
+         "src": {
+            "ip": "0.0.0.0",
+            "mac": "00:00:00:00:00:00",
+            "port": 0
+         },
+         "alertUrl": "dummy url",
+         "action": "dummy action",
+         "occurred": "1999-00-00 00:00:00 +0000",
+         "attackTime": "1999-00-00 00:00:00 +0000",
+         "dst": {
+            "mac": "00:00:00:00:00:00",
+            "port": 0,
+            "ip": "0.0.0.0"
+         },
+         "applianceId": "dummy appliance id",
+         "id": 0,
+         "name": "dummy name",
+         "severity": "dummy severity",
+         "uuid": "dummy uuid",
+         "ack": "dummy ack",
+         "product": "dummy product",
+         "vlan": 0,
+         "malicious": "yes",
+         "scVersion": "0000.000"
+      }
+   ],
+   "appliance": "wMPS",
+   "version": "wMPS (wMPS) 9.0.0.916432",
+   "msg": "extended",
+   "alertsCount": 1
+}
+

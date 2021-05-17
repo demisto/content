@@ -1,0 +1,238 @@
+{
+  "errors": [],
+  "page": {
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  },
+  "_embedded": {
+    "applications": [
+      {
+        "id": 19391,
+        "group": {
+          "id": 7990,
+          "name": "group name"
+        },
+        "groups": [
+          {
+            "id": 7990,
+            "name": "group name"
+          }
+        ],
+        "network": {
+          "id": 91502,
+          "name": "network name",
+          "type": "network type"
+        },
+        "clientId": 747,
+        "hostId": null,
+        "applicationPortInfo": [],
+        "uri": "uri",
+        "name": "name",
+        "description": null,
+        "notes": [
+          {
+            "user": {
+              "id": 5969,
+              "name": "name"
+            },
+            "note": "note",
+            "date": "2020-01-28T12:21:06"
+          }
+        ],
+        "discoveredOn": "2019-06-12",
+        "lastFoundOn": "2019-06-11",
+        "findingsDistribution": {
+          "total": {
+            "value": 325,
+            "subject": "findings distribution subject",
+            "filter": "filter"
+          },
+          "critical": {
+            "value": 2,
+            "subject": "findings distribution subject",
+            "filter": "filter"
+          },
+          "high": {
+            "value": 20,
+            "subject": "findings distribution subject",
+            "filter": "filter"
+          },
+          "medium": {
+            "value": 281,
+            "subject": "findings distribution subject",
+            "filter": "filter"
+          },
+          "low": {
+            "value": 21,
+            "subject": "findings distribution subject",
+            "filter": "filter"
+          },
+          "info": {
+            "value": 1,
+            "subject": "findings distribution subject",
+            "filter": "filter"
+          }
+        },
+        "tags": [],
+        "tickets": [],
+        "icons": [
+          {
+            "type": "icon type 1",
+            "overlayText": null
+          },
+          {
+            "type": "icon type 2",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 3",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 4",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 5",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 6",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 7",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 8",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 9",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 10",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 11",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 12",
+            "overlayText": "overlay text"
+          },
+          {
+            "type": "icon type 13",
+            "overlayText": "overlay text"
+          }
+        ],
+        "owasps": [
+          {
+            "volume": 22,
+            "label": "label",
+            "customLabel": "custom label",
+            "acronym": "acronym",
+            "title": "title",
+            "description": "description",
+            "solution": "solution",
+            "remediation": "remediation",
+            "cwe": "123",
+            "businessRisk": "Business risk",
+            "dateAdded": "2018-06-07T20:06:45",
+            "urlCount": 16,
+            "findingCount": 22,
+            "filterUrl": "filter url"
+          },
+          {
+            "volume": 1,
+            "label": "label",
+            "customLabel": "custom label",
+            "acronym": "acronym",
+            "title": "title",
+            "description": "description",
+            "solution": "solution",
+            "remediation": "remediation",
+            "cwe": "4545",
+            "businessRisk": "Business risk",
+            "dateAdded": "2018-06-07T20:06:45",
+            "urlCount": 1,
+            "findingCount": 1,
+            "filterUrl": "filter"
+          }
+        ],
+        "wascs": [
+          {
+            "id": "19",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:07:17"
+          },
+          {
+            "id": "25",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:05:28"
+          },
+          {
+            "id": "31",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:07:07"
+          },
+          {
+            "id": "38",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:06:47"
+          },
+          {
+            "id": "24",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:07:21"
+          },
+          {
+            "id": "11",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:06:08"
+          },
+          {
+            "id": "37",
+            "title": "title",
+            "dateAdded": "2015-03-07T06:07:34"
+          }
+        ],
+        "aggregateServices": [],
+        "urlCount": 74,
+        "configurationManagementDB": {
+          "manufacturedBy": null,
+          "model": null,
+          "macAddress": null,
+          "location": null,
+          "managedBy": null,
+          "ownedBy": null,
+          "supportedBy": null,
+          "supportGroup": null,
+          "sysId": null,
+          "operatingSystem": null,
+          "lastScanDate": null,
+          "ferpaComplianceAsset": false,
+          "hipaaComplianceAsset": false,
+          "pciComplianceAsset": false
+        },
+        "sources": [
+          {
+            "name": "source name",
+            "uuid": "uuid",
+            "scannerType": "scanner type"
+          }
+        ]
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "href"
+    }
+  }
+}

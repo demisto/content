@@ -1,0 +1,10 @@
+[
+  {
+    "indicator": "https://demisto.com",
+    "type": "Domain",
+    "stix_title": "testing obs1",
+    "stix_description": "testing",
+    "share_level": "red",
+    "stix_package_title": "Indicatore_Mrch5"
+  }
+]

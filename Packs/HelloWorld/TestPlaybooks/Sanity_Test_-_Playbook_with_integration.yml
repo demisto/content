@@ -1,0 +1,139 @@
+id: Sanity Test - Playbook with integration
+version: -1
+name: Sanity Test - Playbook with integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 46ea29ef-1cc8-4513-80e2-2c4eec319b69
+    type: start
+    task:
+      id: 46ea29ef-1cc8-4513-80e2-2c4eec319b69
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ca0d3e51-2b40-4a3f-818a-f56a6a21676d
+    type: regular
+    task:
+      id: ca0d3e51-2b40-4a3f-818a-f56a6a21676d
+      version: -1
+      name: helloworld-say-hello
+      description: Hello command - prints hello to anyone.
+      script: HelloWorld|||helloworld-say-hello
+      type: regular
+      iscommand: true
+      brand: HelloWorld
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        simple: User
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 87dd378a-cac1-4282-87b6-5cc216969473
+    type: title
+    task:
+      id: 87dd378a-cac1-4282-87b6-5cc216969473
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 75e497c3-3b56-410d-8999-d701caffd74a
+    type: regular
+    task:
+      id: 75e497c3-3b56-410d-8999-d701caffd74a
+      version: -1
+      name: Goals of this test
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: |-
+          * Making sure the build infra can configure an integration with the configuration configuration.
+          * Making sure that the locking mechanism is working.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Tests locking mechanism and configuration.

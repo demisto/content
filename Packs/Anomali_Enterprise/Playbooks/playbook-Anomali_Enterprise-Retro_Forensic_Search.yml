@@ -1,0 +1,308 @@
+id: Anomali Enterprise Forensic Search
+version: -1
+name: Anomali Enterprise Forensic Search
+fromversion: 5.0.0
+description: Initiates a Forensic Search on IOCs in Anomali Match.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8bff5d33-9554-4ab9-833c-cc0c0d5fdfd8
+    type: start
+    task:
+      id: 8bff5d33-9554-4ab9-833c-cc0c0d5fdfd8
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 106b8f2e-5106-4857-82ac-122450af4893
+    type: condition
+    task:
+      id: 106b8f2e-5106-4857-82ac-122450af4893
+      version: -1
+      name: Is Anomali Enterprise enabled?
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Anomali Enterprise
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5c9d2630-a40a-4c00-8bae-8fff9da8b2e6
+    type: regular
+    task:
+      id: 5c9d2630-a40a-4c00-8bae-8fff9da8b2e6
+      version: -1
+      name: Initiate forensic search
+      description: Initiates a forensic search of the indicators.
+      script: '|||anomali-enterprise-retro-forensic-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      from:
+        complex:
+          root: inputs.from
+      indicators:
+        complex:
+          root: inputs.indicators
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 34756736-442e-4e28-85ca-2e643dac38a4
+    type: playbook
+    task:
+      id: 34756736-442e-4e28-85ca-2e643dac38a4
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: AnomaliEnterprise.ForensicSearch
+          accessor: job_id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: anomali-enterprise-retro-forensic-search-results
+      Timeout:
+        simple: "15"
+      dt:
+        simple: AnomaliEnterprise.ForensicSearch(val.status != 'completed').job_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: b9a64f90-518c-463d-8882-219d65e53df0
+    type: title
+    task:
+      id: b9a64f90-518c-463d-8882-219d65e53df0
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f269b32a-3d73-4e46-8303-44dfece3d765
+    type: regular
+    task:
+      id: f269b32a-3d73-4e46-8303-44dfece3d765
+      version: -1
+      name: Get forensic search results
+      description: Retreive the forensic search results.
+      script: '|||anomali-enterprise-retro-forensic-search-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      job_id:
+        complex:
+          root: AnomaliEnterprise.ForensicSearch
+          accessor: job_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: from
+  value: {}
+  required: true
+  description: First appearance time range (<number> <time unit>, e.g., 1 hour, 30
+    minutes).
+  playbookInputQuery: null
+- key: to
+  value: {}
+  required: false
+  description: Last appearance time range (<number> <time unit>, e.g., 1 hour, 30
+    minutes). Default is now.
+  playbookInputQuery: null
+- key: indicators
+  value: {}
+  required: true
+  description: Indicators to search.
+  playbookInputQuery: null
+outputs:
+- contextPath: AnomaliEnterprise.ForensicSearch.job_id
+  description: Job ID of the search.
+  type: string
+- contextPath: AnomaliEnterprise.ForensicSearch.status
+  description: Status of the search.
+  type: string
+- contextPath: AnomaliEnterprise.ForensicSearch.scannedEvents
+  description: Number of scanned events.
+  type: number
+- contextPath: AnomaliEnterprise.ForensicSearch.processedFiles
+  description: Number of processed files.
+  type: number
+- contextPath: AnomaliEnterprise.ForensicSearch.result_file_name
+  description: Matched file name.
+  type: string
+- contextPath: AnomaliEnterprise.ForensicSearch.totalMatches
+  description: Number of total matches.
+  type: number
+- contextPath: AnomaliEnterprise.ForensicSearch.complete
+  description: Whether the search was complete.
+  type: boolean
+- contextPath: AnomaliEnterprise.ForensicSearch.category
+  description: Search category.
+  type: string
+- contextPath: AnomaliEnterprise.ForensicSearch.streamResults
+  description: Stream results for the search.
+  type: unknown
+tests:
+ - Anomali Match Forensic Search - Test

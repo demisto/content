@@ -1,0 +1,690 @@
+id: virusTotalPrivateAPI-test-playbook
+version: -1
+name: playbook-virusTotalPrivateAPI-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bf6ced84-68ce-44a0-8537-cc4d0b0be2fb
+    type: start
+    task:
+      id: bf6ced84-68ce-44a0-8537-cc4d0b0be2fb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d37c3fc5-451f-4d41-8a7f-40e1bc9f1c85
+    type: regular
+    task:
+      id: d37c3fc5-451f-4d41-8a7f-40e1bc9f1c85
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 285a30c1-336a-4abf-8296-7df72a9c0569
+    type: regular
+    task:
+      id: 285a30c1-336a-4abf-8296-7df72a9c0569
+      version: -1
+      name: vt-private-check-file-behaviour
+      script: '|||vt-private-check-file-behaviour'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fullResponse: {}
+      resource:
+        simple: 10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2a2965f8-8ebf-48f6-8b63-5bb4a779797d
+    type: regular
+    task:
+      id: 2a2965f8-8ebf-48f6-8b63-5bb4a779797d
+      version: -1
+      name: vt-private-get-domain-report
+      script: '|||vt-private-get-domain-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d7e33d9a-4b0d-4924-86a7-9de1a47200cf
+    type: condition
+    task:
+      id: d7e33d9a-4b0d-4924-86a7-9de1a47200cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.CommunicatingHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Whois
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Subdomains
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.VirusTotal.Resolutions
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 18bdc683-43bf-41b1-84fe-d0d3344e69db
+    type: regular
+    task:
+      id: 18bdc683-43bf-41b1-84fe-d0d3344e69db
+      version: -1
+      name: vt-private-get-file-report
+      script: '|||vt-private-get-file-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      allInfo: {}
+      resource:
+        simple: 10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f29462be-55fb-4611-8f4f-a58ca8a78089
+    type: condition
+    task:
+      id: f29462be-55fb-4611-8f4f-a58ca8a78089
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.VirusTotal.Scans
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VirusTotal.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VirusTotal.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 35f23dd8-d63b-470c-8d51-692e05fb2b18
+    type: regular
+    task:
+      id: 35f23dd8-d63b-470c-8d51-692e05fb2b18
+      version: -1
+      name: vt-private-get-url-report
+      script: '|||vt-private-get-url-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        simple: www.demisto.com
+      retries: {}
+      retry_time: {}
+      shortFormat: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b3e6bb66-0a59-4a5f-8bc2-855569176d2f
+    type: condition
+    task:
+      id: b3e6bb66-0a59-4a5f-8bc2-855569176d2f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.VirusTotal.Scans
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b1fbbfb6-f89a-4410-86c1-62e2af4108da
+    type: regular
+    task:
+      id: b1fbbfb6-f89a-4410-86c1-62e2af4108da
+      version: -1
+      name: vt-private-get-ip-report
+      script: '|||vt-private-get-ip-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 671d98fc-1e83-4711-8f7c-2c0133d16e95
+    type: condition
+    task:
+      id: 671d98fc-1e83-4711-8f7c-2c0133d16e95
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.DownloadedHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.UnAVDetectedDownloadedHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.DetectedURLs
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.CommunicatingHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.UnAVDetectedCommunicatingHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.Resolutions.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.ReferrerHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.UnAVDetectedReferrerHashes
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.VirusTotal.Resolutions.last_resolved
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7b9dcf89-a09c-44bf-8377-43a01c164903
+    type: regular
+    task:
+      id: 7b9dcf89-a09c-44bf-8377-43a01c164903
+      version: -1
+      name: vt-private-search-file
+      script: '|||vt-private-search-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      fullResponse: {}
+      query:
+        simple: type:peexe size:90kb+ positives:5+ behaviour:'taskkill'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 88b479e1-ffeb-403c-8cca-c76be347c35c
+    type: condition
+    task:
+      id: 88b479e1-ffeb-403c-8cca-c76be347c35c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VirusTotal.SearchFile.SearchResult
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: VirusTotal.SearchFile.Query
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: e850846e-3f40-4a65-8bcb-9f7d1929113f
+    type: regular
+    task:
+      id: e850846e-3f40-4a65-8bcb-9f7d1929113f
+      version: -1
+      name: vt-private-hash-communication
+      script: '|||vt-private-hash-communication'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      fullResponse: {}
+      hash:
+        simple: 10676cf66244cfa91567fbc1a937f4cb19438338b35b69d4bcc2cf0d3a44af5e
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e4a2a001-19b1-4964-8abf-be90f7522245
+    type: title
+    task:
+      id: e4a2a001-19b1-4964-8abf-be90f7522245
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

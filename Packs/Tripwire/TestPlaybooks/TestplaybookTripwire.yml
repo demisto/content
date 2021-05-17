@@ -1,0 +1,531 @@
+id: TestplaybookTripwire
+version: -1
+name: TestplaybookTripwire
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 28dbda75-5173-4654-817c-53370d8dffc3
+    type: start
+    task:
+      id: 28dbda75-5173-4654-817c-53370d8dffc3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: aaf4a185-1389-44f7-882a-54ec58962dfb
+    type: regular
+    task:
+      id: aaf4a185-1389-44f7-882a-54ec58962dfb
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 48032bb6-6941-4a6c-87e1-db4fe94dcf42
+    type: regular
+    task:
+      id: 48032bb6-6941-4a6c-87e1-db4fe94dcf42
+      version: -1
+      name: tripwire-versions-list
+      script: '|||tripwire-versions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      baseline_version_ids: {}
+      element_names: {}
+      element_oids:
+        simple: -1y2p0ij32e8cc:-1y2p0ij323hx0
+      node_names: {}
+      node_oids: {}
+      page_limit: {}
+      page_start: {}
+      rule_names: {}
+      rule_oids: {}
+      time_detetcted_range: {}
+      time_received_range: {}
+      version_hashes: {}
+      version_oids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1bfaec06-e7cf-47f9-8597-422686c12fe4
+    type: condition
+    task:
+      id: 1bfaec06-e7cf-47f9-8597-422686c12fe4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.elementId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.elementName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.nodeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.nodeName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.scanId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Versions.severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4a57a8db-2de5-49ee-819e-359107c88ce4
+    type: regular
+    task:
+      id: 4a57a8db-2de5-49ee-819e-359107c88ce4
+      version: -1
+      name: tripwire-rules-list
+      script: '|||tripwire-rules-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 382dc14f-3bf9-471c-8acf-cd5acfd73674
+    type: condition
+    task:
+      id: 382dc14f-3bf9-471c-8acf-cd5acfd73674
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.command
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.elementName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.importedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.modifiedTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.timeoutMillis
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.trackingId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Rules.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 124bb8d5-f188-41c6-8329-4067f5e9c5bc
+    type: regular
+    task:
+      id: 124bb8d5-f188-41c6-8329-4067f5e9c5bc
+      version: -1
+      name: tripwire-elements-list
+      script: '|||tripwire-elements-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      baseline_version_ids: {}
+      element_names: {}
+      element_oids:
+        simple: -1y2p0ij32e8cc:-1y2p0ij323hx0
+      last_version_id: {}
+      node_oids: {}
+      page_limit: {}
+      page_start: {}
+      rule_oids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 2785b228-c018-4478-8fbb-7e303702c81e
+    type: condition
+    task:
+      id: 2785b228-c018-4478-8fbb-7e303702c81e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.baselineVersionId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.inScope
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.nodeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Elements.ruleId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f6a89523-4f3d-4241-8668-7bfb4793fc6e
+    type: regular
+    task:
+      id: f6a89523-4f3d-4241-8668-7bfb4793fc6e
+      version: -1
+      name: tripwire-nodes-list
+      script: '|||tripwire-nodes-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1c404d81-11da-4de0-8c0b-ac20fb2b4795
+    type: condition
+    task:
+      id: 1c404d81-11da-4de0-8c0b-ac20fb2b4795
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.ipAddresses
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.make
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.maxSeverity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.model
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.rmiHost
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.rmiPort
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Tripwire.Nodes.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a41af28a-ddd7-47c6-8121-574b7fae746b
+    type: title
+    task:
+      id: a41af28a-ddd7-47c6-8121-574b7fae746b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

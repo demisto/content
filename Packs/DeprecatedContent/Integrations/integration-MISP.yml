@@ -1,0 +1,807 @@
+commonfields:
+  id: MISP
+  version: -1
+name: MISP
+display: MISP (Deprecated)
+deprecated: true
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Deprecated. Malware Information Sharing Platform and Threat Sharing (This integration is deprecated, use MISP V2 instead)
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: >+
+    var entitiesDict = {
+        event: [
+                {to: 'ID', from: 'id'},
+                {to: 'Date', from: 'date'},
+                {to: 'ThreatLevelID', from: 'threat_level_id'},
+                {to: 'info', from: 'info'},
+                {to: 'Published', from: 'published'},
+                {to: 'UUID', from: 'uuid'},
+                {to: 'Analysis', from: 'analysis'},
+                {to: 'Timestamp', from: 'timestamp'},
+                {to: 'Distribution', from: 'distribution'},
+                {to: 'ProposalEmailLock', from: 'proposal_email_lock'},
+                {to: 'Locked', from: 'locked'},
+                {to: 'PublishTimestamp', from: 'publish_timestamp'},
+                {to: 'SharingGroupID', from: 'sharing_group_id'},
+                {to: 'DisableCorrelation', from: 'disable_correlation'},
+                {to: 'EventCreatorEmail', from: 'event_creator_email'},
+                {to: 'Organisation.ID', from: 'Org.id'},
+                {to: 'Organisation.Name', from: 'Org.name'},
+                {to: 'Organisation.UUID', from: 'Org.uuid'},
+                {to: 'OwnerOrganisation.ID', from: 'Orgc.id'},
+                {to: 'OwnerOrganisation.Name', from: 'Orgc.name'},
+                {to: 'OwnerOrganisation.UUID', from: 'Orgc.uuid'},
+                {to: 'Attribute', from: 'Attribute'},
+                {to: 'ShadowAttribute', from: 'ShadowAttribute'},
+                {to: 'RelatedEvent', from: 'RelatedEvent'},
+            ],
+            attribute:
+            [
+                {to: 'ID', from: 'id'},
+                {to: 'Type', from: 'type'},
+                {to: 'Category', from: 'category'},
+                {to: 'ToIDs', from: 'to_ids'},
+                {to: 'UUID', from: 'uuid'},
+                {to: 'EventID', from: 'event_id'},
+                {to: 'Distribution', from: 'distribution'},
+                {to: 'Timestamp', from: 'timestamp'},
+                {to: 'Comment', from: 'comment'},
+                {to: 'SharingGroupID', from: 'sharing_group_id'},
+                {to: 'Deleted', from: 'deleted'},
+                {to: 'DisableCorrelation', from: 'disable_correlation'},
+                {to: 'Value', from: 'value'},
+                {to: 'ShadowAttribute', from: 'ShadowAttribute'},
+                ],
+            shadowAttribute: [
+                {to: 'ID', from: 'id'},
+                {to: 'Type', from: 'type'},
+                {to: 'Category', from: 'category'},
+                {to: 'ToIDs', from: 'to_ids'},
+                {to: 'UUID', from: 'uuid'},
+                {to: 'EventUUID', from: 'event_uuid'},
+                {to: 'EventID', from: 'event_id'},
+                {to: 'OldID', from: 'old_id'},
+                {to: 'Distribution', from: 'distribution'},
+                {to: 'Timestamp', from: 'timestamp'},
+                {to: 'Comment', from: 'comment'},
+                {to: 'OrganisationID', from: 'org_id'},
+                {to: 'SharingGroupID', from: 'sharing_group_id'},
+                {to: 'ProposalToDelete', from: 'proposal_to_delete'},
+                {to: 'DisableCorrelation', from: 'disable_correlation'},
+                {to: 'Value', from: 'value'},
+                {to: 'OwnerOrganisation.ID', from: 'Orgc.id'},
+                {to: 'OwnerOrganisation.Name', from: 'Orgc.name'},
+                {to: 'OwnerOrganisation.UUID', from: 'Orgc.uuid'},
+                ],
+            relatedEvent: [
+                {to: 'ID', from: 'id'},
+                ]
+    };
+
+
+    var commands = {
+            'misp-download-sample': {
+                url: '/attributes/downloadSample/',
+                title: '',
+                args: ['hash','allSamples','eventID', 'filename'],
+                contextKey: '',
+            },
+            'internal-misp-upload-sample': {
+                url: '/events/upload_sample/',
+                title: 'MISP upload sample',
+                args: ['distribution','to_ids','category','info','analysis','comment'],
+                contextKey: '',
+            },
+            'internal-misp-create-event': {
+                url: '/events',
+                title: 'MISP create event',
+                args: ['type','category','to_ids','distribution','comment','value'],
+                contextKey: '',
+            },
+            'internal-misp-download-sample': {
+                url: '/attributes/downloadSample',
+                title: '',
+                args: ['hash','eventID','allSamples'],
+                contextKey: '',
+            },
+            'misp-search': {
+                url: '/events/restSearch/download/',
+                title: 'Misp events search result:',
+                args: ['value','type','category','org','tags','from','to','last','eventid','uuid'],
+                ContentPath: 'response.Event',
+                contextKey: 'MISP.Event(val.UUID==obj.UUID)',
+            },
+            'file': '',
+            'url': '',
+            'ip':''
+    };
+
+
+    function mapObjFunction(mapFields) {
+                var transformSingleObj= function(obj) {
+                    var res = {};
+                    var fieldValue = '';
+                    mapFields.forEach(function(f) {
+                        fieldValue = dq(obj, f.from);
+                        if (fieldValue){
+                            var keys = f.to.split('.');
+                            switch (keys.length){
+                                case 1:
+                                    res[keys[0]] = fieldValue;
+                                    break;
+                                case 2:
+                                     if (!res[keys[0]]){
+                                        res[keys[0]] = {};
+                                    }
+                                    res[keys[0]][keys[1]] = fieldValue;
+                                    break;
+                                default:
+                                throw "context target field [" + f.to + "] must have 1-3 levels but have " + keys.length;
+                            }
+                        }
+                    });
+                    return res;
+                };
+                return function(obj) {
+                    if (obj instanceof Array) {
+                        var res = [];
+                        for (var j=0; j < obj.length; j++) {
+                            res.push(transformSingleObj(obj[j]));
+                        }
+                        return res;
+                    }
+                    return transformSingleObj(obj);
+                };
+            }
+
+
+    function translateEvents(rawResponse, contextPath, title){
+        var ec = {};
+        if (rawResponse.response.length === 0) {
+            return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: rawResponse,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: '## ' + title + '\n* No events found',
+                EntryContext: ec
+            };
+        }
+
+        var returnObject = mapObjFunction(entitiesDict.event)(dq(rawResponse,'response.Event'));
+        if (Array.isArray(returnObject)) {
+                events = returnObject;
+            } else {
+                events = [returnObject];
+            }
+            for (var i=0; i<events.length; i++) {
+                if(events[i].Attribute.length > 0) {
+                    events[i].Attribute = mapObjFunction(entitiesDict.attribute)(dq(events[i],'Attribute'));
+                }
+                if(events[i].ShadowAttribute.length > 0) {
+                    events[i].ShadowAttribute = mapObjFunction(entitiesDict.shadowAttribute)(dq(events[i],'ShadowAttribute'));
+                }
+                if(events[i].RelatedEvent.length > 0) {
+                    events[i].RelatedEvent = mapObjFunction(entitiesDict.relatedEvent)(dq(events[i],'RelatedEvent.Event'));
+                }
+            }
+            if (contextPath) {
+                ec[contextPath] = events;
+            }
+            return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: rawResponse,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: tableToMarkdown(title, returnObject),
+                EntryContext: ec
+            };
+    }
+
+
+    function getProvidedArgsForCommand(command, passedArgs) {
+        var currentArgs = {};
+        var allArgs = commands[command].args;
+            for (var j = 0; j < allArgs.length; j++){
+                if (passedArgs[allArgs[j]]){
+                  currentArgs[allArgs[j]] = passedArgs[allArgs[j]];
+                }
+            }
+        return currentArgs;
+    }
+
+
+    function getHashFormat(hash) {
+        switch(hash.length){
+            case 32:
+                return 'md5';
+            case 40:
+                return 'sha1';
+            case 64:
+                return 'sha256';
+            default:
+                throw "invalid hash length, please enter file hash of format md5, sha1 or sha256";
+        }
+    }
+
+
+    function getMISPThreatLevelStr(threat_level_id) {
+        switch(threat_level_id){
+            case '1':
+                return 'HIGH';
+            case '2':
+                return 'MEDIUM';
+            case '3':
+                return 'LOW';
+            case '4':
+                return 'UNDEFINED';
+            default:
+                return 'Invalid MISP Threat Level with threat_level_id: ' + threat_level_id;
+        }
+    }
+
+
+
+    function doJSONPost(requestUrl, body) {
+        var res = http(
+            requestUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    'Authorization': [params.api_key],
+                    'Accept': ['application/json'],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(body)
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+        if (res.Headers && res.Headers['Content-Type'] == 'application/json; charset=UTF-8') {
+            return JSON.parse(res.Body);
+        }
+        throw 'Response content type is not \"application/json; charset=UTF-8\" as expected.\n response: +' + JSON.stringify(res);
+    }
+
+
+    function doGeneralPost(command, passedArgs){
+        var currentArgs = getProvidedArgsForCommand(command, passedArgs);
+        var requestUrl = params.url + commands[command].url;
+        var body = {'request': currentArgs };
+        return doJSONPost(requestUrl, body);
+    }
+
+
+    function doFile(hash) {
+            var hashFormat = getHashFormat(hash);
+            var res = doGeneralPost('misp-search', {'value': hash});
+            if (res.response.length === 0) {
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                    HumanReadable: 'No events found in MISP for hash: ' + hash + '\n'};
+            }
+            var events = dq(res,'response.Event');
+            var r = [];
+            if (Array.isArray(events)) { // Got multiple hashes so need to nicely iterate
+                r = events;
+            } else {
+                r = [events];
+            }
+            var md = '## MISP Reputation for File' + ': ' + hash + '\n';
+            var ec = {};
+            ec.DBotScore = [];
+            ec[outputPaths.file] = [];
+            for (var i=0; i<r.length; i++) {
+                var mispOrganisation = 'MISP.' + r[i].Orgc.name;
+                var dbotScore = 0;
+                if (r[i].threat_level_id <= 3) {
+                    dbotScore = 3;
+                    var malFile = {};
+                    var MaliciousFileObj = {};
+                    MaliciousFileObj[hashFormat.toUpperCase()] = hash;
+                    MaliciousFileObj.Malicious = {Vendor: mispOrganisation, Description: 'file hash found in MISP event with ID ' + r[i].id};
+                    addMalicious(malFile, outputPaths.file, MaliciousFileObj);
+                    ec[outputPaths.file].push(malFile[outputPaths.file]);
+                    ec.DBotScore.push({Indicator: hash, Type: 'hash', Vendor: mispOrganisation , Score: dbotScore });
+                }
+                md += '* Found file hash in MISP event: ' +  r[i].id + ' with MISP Threat Level: '+ getMISPThreatLevelStr(r[i].threat_level_id), + 'from: '+  mispOrganisation + '\n';
+                md += '\n';
+            }
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        }
+
+
+
+    function doURL(url) {
+            var res = doGeneralPost('misp-search', {'type': 'url', 'value': url});
+            if (res.response.length === 0) {
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                    HumanReadable: 'No events found in MISP for url: ' + url + '\n'};
+            }
+            var events = dq(res,'response.Event');
+            var r = [];
+            if (Array.isArray(events)) { // Got multiple hashes so need to nicely iterate
+                r = events;
+            } else {
+                r = [events];
+            }
+
+            var md = '## MISP Reputation for URL' + ': ' + url + '\n';
+            var ec = {};
+            ec.DBotScore = [];
+            for (var i=0; i<r.length; i++) {
+                var dbotScore = 0;
+                if (r[i].threat_level_id <= 3) {
+                    dbotScore = 3;
+                   var mispOrganisation = 'MISP.' + r[i].Orgc.name;
+                    addMalicious(ec, outputPaths.url, {
+                        Data: url,
+                        Malicious: {Vendor: mispOrganisation, Description: 'URL Found in MISP event: ' + r[i].id}
+                    });
+                    ec.DBotScore.push({Indicator: url, Type: 'url', Vendor: mispOrganisation , Score: 3});
+                }
+                md += '* Found URL in MISP event: ' +  r[i].id + ' with MISP Threat Level: '+ getMISPThreatLevelStr(r[i].threat_level_id), + 'from: '+  mispOrganisation + '\n';
+                md += '\n';
+            }
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec}
+        };
+
+    function doIP(ip) {
+            var res = doGeneralPost('misp-search', {'type': 'ip', 'value': ip});
+            if (res.response.length === 0) {
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                    HumanReadable: 'No events found in MISP for IP: ' + ip + '\n'};
+            }
+            var events = dq(res,'response.Event');
+            var r = [];
+            if (Array.isArray(events)) { // Got multiple hashes so need to nicely iterate
+                r = events;
+            } else {
+                r = [events];
+            }
+
+            var md = '## MISP Reputation for IP' + ': ' + ip + '\n';
+            var ec = {};
+            ec.DBotScore = [];
+            for (var i=0; i<r.length; i++) {
+                var dbotScore = 0;
+                if (r[i].threat_level_id <= 3) {
+                    dbotScore = 3;
+                   var mispOrganisation = 'MISP.' + r[i].Orgc.name;
+                    addMalicious(ec, outputPaths.ip, {
+                        Address: ip,
+                        Malicious: {Vendor: mispOrganisation, Description: 'IP Found in MISP event: ' + r[i].id}
+                    });
+                    ec.DBotScore.push({Indicator: ip, Type: 'ip', Vendor: mispOrganisation , Score: 3});
+                }
+                md += '* Found IP in MISP event: ' +  r[i].id + ' with MISP Threat Level: '+ getMISPThreatLevelStr(r[i].threat_level_id), + 'from: '+  mispOrganisation + '\n';
+                md += '\n';
+            }
+            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec}
+        };
+
+    function doUploadSample(command) {
+        var fileContent = args['fileContent'];
+        var filename = args['filename'];
+        if (!fileContent) {
+            throw 'file \"'+ filename + '\" is empty or missing';
+        }
+
+        var currentArgs = getProvidedArgsForCommand(command, args)
+        currentArgs['data'] =  fileContent;
+        currentArgs['filename'] = filename;
+
+
+        var requestUrl = params.url + commands[command].url;
+        requestUrl = (args['event_id'])  ? requestUrl + args['event_id'] : requestUrl;
+
+        var body = { 'request': { 'files': [currentArgs] } };
+        var res = doJSONPost(requestUrl, body)
+        return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: res,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: '## ' + commands[command].title + '\n* message: ' + res.message + '\n* event id: ' + res.id + '\n* file name: ' + filename,
+                EntryContext: {}
+            };
+    }
+
+
+
+    var addMinutes = function(date, minutes) {
+                return new Date(date.getTime() + minutes*60000);
+    };
+
+
+
+    var getNowTime = function() {
+        var time = new Date();
+        time = addMinutes(time,time.getTimezoneOffset());
+        var month = "0" + (time.getMonth()+1);
+        var day = "0" + time.getDate();
+        var dateOld = time.getFullYear()+'-'+month.substr(-2)+'-'+day.substr(-2);
+        return dateOld;
+    };
+
+
+
+    function createEvent(command) {
+        var currentArgs = getProvidedArgsForCommand(command, args);
+        var ec = {};
+
+        if (currentArgs.to_ids === 'true') {
+            currentArgs.to_ids = true;
+        } else {
+            currentArgs.to_ids = false;
+        }
+
+        if (args.published === 'true') {
+            args.published = true;
+        } else {
+            args.published = false;
+        }
+
+        var requestUrl = params.url + commands[command].url;
+
+        var body = { 'Event': {
+            'date': getNowTime(),
+            'threat_level_id': args.threat_level_id,
+            'published': args.published,
+            'info': args.info,
+            'analysis': '0',
+            'distribution': '0',
+            'Attribute': [currentArgs] } };
+
+        var res = doJSONPost(requestUrl, body);
+
+        var md = '## ' + commands[command].title + '\nNew event with id ' + res.Event.id + ' has been successfully created.\n';
+        ec = {'MISP.ID': res.Event.id};
+
+        return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: res,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: md,
+                EntryContext: ec
+            };
+    }
+
+
+
+    function addAtribute(command) {
+        var requestUrl = params.url + '/attributes/add/' + args.id;
+
+        var body = { 'Attribute': {
+            'type': args.type,
+            'category': args.category,
+            'to_ids': args.to_ids,
+            'distribution': args.distribution,
+            'comment': args.comment,
+            'value': args.value} };
+
+        var res = doJSONPost(requestUrl, body);
+
+        var md = '## ' + 'MISP add attribute' + '\nNew attribute: ' + args.value + ' was added to event id ' + res.Attribute.event_id + '.\n';
+
+        return {
+                Type: entryTypes.note,
+                ContentsFormat: formats.json,
+                Contents: res,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: md,
+                EntryContext: {}
+            };
+    }
+
+
+
+
+    // The command input arg holds the command sent from the user.
+
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            doIP('1.3.4.5');
+            return 'ok';
+        case 'internal-misp-upload-sample':
+            return doUploadSample(command);
+        case 'internal-misp-download-sample':
+            return doGeneralPost(command, args);
+        case 'internal-misp-create-event':
+            return createEvent(command);
+        case 'internal-misp-add-attribute':
+            return addAtribute(command)
+        case 'misp-search':
+            return translateEvents(doGeneralPost(command, args), commands[command].contextKey, commands[command].title);
+        case 'file':
+            return doFile(args.file)
+        case 'url':
+            return doURL(args.url)
+        case 'ip':
+            return doIP(args.ip)
+        default:
+    }
+
+  type: javascript
+  commands:
+  - name: internal-misp-upload-sample
+    deprecated: true
+    arguments:
+    - name: filename
+      required: true
+      description: File name
+    - name: fileContent
+      required: true
+      description: File Content in Base64
+    - name: event_id
+      description: The Event's ID is optional. It can be either supplied via the URL or the POSTed object, but the URL has priority if both are provided. Not supplying an event ID will cause MISP to create a single new event for all of the POSTed malware samples. You can define the default settings for the event, otherwise a set of default settings will be used.
+    - name: distribution
+      description: The distribution setting used for the attributes and for the newly created event, if relevant. [0-3]
+    - name: to_ids
+      description: You can flag all attributes created during the transaction to be marked as "to_ids" or not.
+    - name: category
+      description: 'The category that will be assigned to the uploaded samples. Valid options are: Payload delivery, Artifacts dropped, Payload Installation, External Analysis.'
+    - name: info
+      description: Used to populate the event info field if no event ID supplied. Alternatively, if not set, MISP will simply generate a message showing that it's a malware sample collection generated on the given day.
+    - name: analysis
+      description: 'The analysis level of the newly created event, if applicable. [0-2] threat_level_id: The threat level ID of the newly created event, if applicatble. [0-3]'
+    - name: comment
+      description: This will populate the comment field of any attribute created using this API.
+    description: Upload file sample to MISP
+    execution: true
+  - name: misp-search
+    deprecated: true
+    arguments:
+    - name: type
+      description: The attribute type, any valid MISP attribute type is accepted
+    - name: value
+      description: Search for the given value in the attributes' value field.
+    - name: category
+      description: The attribute category, any valid MISP attribute category is accepted.
+    - name: org
+      description: Search by the creator organisation by supplying the organisation identifier.
+    - name: tags
+      description: To include a tag in the results just write its names into this parameter. To exclude a tag prepend it with a '!'. You can also chain several tag commands together with the '&&' operator. Please be aware the colons (:) cannot be used in the tag search. Use semicolons instead (the search will automatically search for colons instead).
+    - name: from
+      description: 'Events with the date set to a date after the one specified in the from field (format: 2015-02-15). This filter will use the date of the event.'
+    - name: to
+      description: 'Events with the date set to a date before the one specified in the to field (format: 2015-02-15). This filter will use the date of the event.'
+    - name: last
+      description: Events published within the last x amount of time, where x can be defined in days, hours, minutes (for example 5d or 12h or 30m). This filter will use the published timestamp of the event.
+    - name: eventid
+      description: The events that should be included / excluded from the search.
+    - name: uuid
+      description: The returned events must include an attribute with the given UUID, or alternatively the event's UUID must match the value(s) passed.
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: Event ID
+    - contextPath: MISP.Event.Date
+      description: Date
+    - contextPath: MISP.Event.ThreatLevelID
+      description: Threat Level ID
+    - contextPath: MISP.Event.info
+      description: info
+    - contextPath: MISP.Event.Published
+      description: Published
+    - contextPath: MISP.Event.UUID
+      description: UUID
+    - contextPath: MISP.Event.Analysis
+      description: Analysis
+    - contextPath: MISP.Event.Timestamp
+      description: Timestamp
+    - contextPath: MISP.Event.Distribution
+      description: Distribution
+    - contextPath: MISP.Event.ProposalEmailLock
+      description: Proposal Email Lock
+    - contextPath: MISP.Event.Locked
+      description: Locked
+    - contextPath: MISP.Event.PublishTimestamp
+      description: Publish Timestamp
+    - contextPath: MISP.Event.SharingGroupID
+      description: Sharing Group ID
+    - contextPath: MISP.Event.DisableCorrelation
+      description: Disable Correlation
+    - contextPath: MISP.Event.EventCreatorEmail
+      description: Event Creator Email
+    - contextPath: MISP.Event.Organisation.ID
+      description: Organisation ID
+    - contextPath: MISP.Event.Organisation.Name
+      description: Organisation Name
+    - contextPath: MISP.Event.Organisation.UUID
+      description: Organisation UUID
+    - contextPath: MISP.Event.OwnerOrganisation.ID
+      description: Owner Organisation ID
+    - contextPath: MISP.Event.OwnerOrganisation.Name
+      description: Owner Organisation Name
+    - contextPath: MISP.Event.OwnerOrganisation.UUID
+      description: Owner Organisation UUID
+    - contextPath: MISP.Event.Attribute
+      description: Attribute
+    - contextPath: MISP.Event.ShadowAttribute
+      description: ShadowAttribute
+    - contextPath: MISP.Event.RelatedEvent
+      description: RelatedEvent
+    description: Search for events in misp
+  - name: file
+    deprecated: true
+    arguments:
+    - name: file
+      required: true
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256. Notice         that you can pass comma-separated multiple values to efficiently retrieve multiple responses.
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash found
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check file reputation of the given hash
+  - name: url
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      description: URL to be checked
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check if url is in MISP events
+  - name: ip
+    deprecated: true
+    arguments:
+    - name: ip
+      required: true
+      description: IP address to check
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+    - contextPath: DBotScore.Score
+      description: The actual score
+    description: Check IP Reputation
+  - name: internal-misp-download-sample
+    deprecated: true
+    arguments:
+    - name: hash
+      required: true
+      description: 'A hash in MD5 format. If allSamples is set, this can be any one of the following: md5, sha1, sha256.'
+    - name: eventID
+      description: If set, it will only fetch data from the given event ID.
+    - name: allSamples
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: If set, it will return all samples from events that have a match for the hash provided above.
+    description: Download malware sample by hash
+  - name: internal-misp-create-event
+    deprecated: true
+    arguments:
+    - name: type
+      description: Type of the event
+    - name: category
+      description: Category of the event
+      defaultValue: External analysis
+    - name: to_ids
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Do it to ids
+      defaultValue: "false"
+    - name: distribution
+      description: To where distribute
+      defaultValue: "0"
+    - name: comment
+      description: Comment
+    - name: value
+      required: true
+      description: Value to add
+    - name: info
+      required: true
+      default: true
+      description: Event name
+    - name: published
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Publish the event
+      defaultValue: "false"
+    - name: threat_level_id
+      description: MISP Threat level id
+      defaultValue: "1"
+    outputs:
+    - contextPath: MISP.ID
+      description: MISP event ID
+    description: Create new MISP event
+  - name: internal-misp-add-attribute
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      description: MISP event id
+    - name: type
+      required: true
+      description: Type of the attribute
+    - name: category
+      required: true
+      description: Category of the attribute
+    - name: to_ids
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "0"
+      description: Add attribute to ids
+      defaultValue: "1"
+    - name: distribution
+      description: ' To where distribute'
+    - name: comment
+      required: true
+      description: Name of the attribute
+    - name: value
+      required: true
+      description: Value of the attribute
+    description: Add attribute to existing MISP event
+tests:
+- No tests
+fromversion: 5.0.0

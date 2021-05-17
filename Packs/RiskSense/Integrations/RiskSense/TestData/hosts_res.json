@@ -1,0 +1,440 @@
+{
+  "errors": [],
+  "page": {
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1,
+    "number": 0
+  },
+  "_embedded": {
+    "hosts": [
+      {
+        "id": 3571259,
+        "clientId": 747,
+        "group": {
+          "id": 7990,
+          "name": "group name"
+        },
+        "groups": [
+          {
+            "id": 7990,
+            "name": "group name"
+          }
+        ],
+        "rs3": 351,
+        "criticality": 5,
+        "tagIds": [
+          215557,
+          229865,
+          232940,
+          215552
+        ],
+        "tags": [
+          {
+            "id": 215552,
+            "name": "tag name 1",
+            "category": "category 1",
+            "description": "",
+            "created": "2019-04-24T21:37:06",
+            "updated": "2019-04-24T21:37:06",
+            "color": "color 1"
+          },
+          {
+            "id": 215557,
+            "name": "tag name 2",
+            "category": "category 2",
+            "description": "",
+            "created": "2019-04-24T21:42:34",
+            "updated": "2019-04-24T21:42:34",
+            "color": "color 2"
+          },
+          {
+            "id": 229865,
+            "name": "tag name 3",
+            "category": "category 3",
+            "description": "",
+            "created": "2019-10-29T20:22:25",
+            "updated": "2019-10-29T20:22:25",
+            "color": "color 3"
+          },
+          {
+            "id": 232940,
+            "name": "tag name 4",
+            "category": "category 4",
+            "description": "",
+            "created": "2019-12-30T11:27:57",
+            "updated": "2019-12-30T11:28:00",
+            "color": "color 4"
+          }
+        ],
+        "network": {
+          "id": 78038,
+          "name": "network name",
+          "type": "network type"
+        },
+        "findingsDistribution": {
+          "total": {
+            "value": 2,
+            "subject": "hostFinding",
+            "filter": "filter total"
+          },
+          "critical": {
+            "value": 2,
+            "subject": "hostFinding",
+            "filter": "filter critical"
+          },
+          "high": {
+            "value": 0,
+            "subject": "hostFinding",
+            "filter": "filter high"
+          },
+          "medium": {
+            "value": 0,
+            "subject": "hostFinding",
+            "filter": "filter medium"
+          },
+          "low": {
+            "value": 0,
+            "subject": "hostFinding",
+            "filter": "filter low"
+          },
+          "info": {
+            "value": 0,
+            "subject": "hostFinding",
+            "filter": "filter info"
+          }
+        },
+        "discoveredOn": "2007-01-23",
+        "lastFoundOn": "2019-11-01",
+        "lastScanTime": "2007-01-23T16:46:50",
+        "hostName": "test hostname",
+        "ipAddress": "test ip",
+        "ports": [
+          {
+            "id": 42856856,
+            "number": 135
+          },
+          {
+            "id": 42856861,
+            "number": 1025
+          },
+          {
+            "id": 42862230,
+            "number": 1494
+          },
+          {
+            "id": 42862244,
+            "number": 80
+          },
+          {
+            "id": 42862249,
+            "number": 139
+          },
+          {
+            "id": 42862240,
+            "number": 3389
+          },
+          {
+            "id": 49622852,
+            "number": 5353
+          },
+          {
+            "id": 42856864,
+            "number": 445
+          }
+        ],
+        "operatingSystemScanner": {
+          "name": "os name",
+          "family": "os family",
+          "class": "os class",
+          "vendor": "os vendor"
+        },
+        "external": true,
+        "configurationManagementDB": [
+          {
+            "order": 1,
+            "key": "busines_criticality",
+            "value": "",
+            "label": "Asset Criticality",
+            "nestedFields": []
+          },
+          {
+            "order": 2,
+            "key": "os",
+            "value": "",
+            "label": "Operating System",
+            "nestedFields": []
+          },
+          {
+            "order": 3,
+            "key": "manufacturer",
+            "value": "",
+            "label": "Manufactured By",
+            "nestedFields": []
+          },
+          {
+            "order": 4,
+            "key": "model_id",
+            "value": "",
+            "label": "Model",
+            "nestedFields": []
+          },
+          {
+            "order": 5,
+            "key": "location",
+            "value": "",
+            "label": "Location",
+            "nestedFields": []
+          },
+          {
+            "order": 6,
+            "key": "managed_by",
+            "value": "",
+            "label": "Managed By",
+            "nestedFields": []
+          },
+          {
+            "order": 7,
+            "key": "owned_by",
+            "value": "",
+            "label": "Owned By",
+            "nestedFields": []
+          },
+          {
+            "order": 8,
+            "key": "supported_by",
+            "value": "",
+            "label": "Supported By",
+            "nestedFields": []
+          },
+          {
+            "order": 9,
+            "key": "support_group",
+            "value": "",
+            "label": "Support Group",
+            "nestedFields": []
+          },
+          {
+            "order": 10,
+            "key": "sys_updated_on",
+            "value": "",
+            "label": "Last Scanned",
+            "nestedFields": []
+          },
+          {
+            "order": 11,
+            "key": "asset_tag",
+            "value": "",
+            "label": "Asset tags",
+            "nestedFields": []
+          },
+          {
+            "order": 12,
+            "key": "mac_address",
+            "value": "",
+            "label": "Mac Address",
+            "nestedFields": []
+          },
+          {
+            "order": 16,
+            "key": "sys_id",
+            "value": "",
+            "label": "Unique Id",
+            "nestedFields": [
+              {
+                "order": 0,
+                "key": "connectorName",
+                "value": "cmdb test",
+                "label": "Connector Name",
+                "nestedFields": [
+                  {
+                    "order": 0,
+                    "key": "uniqueId",
+                    "value": "",
+                    "label": "Unique Id",
+                    "nestedFields": []
+                  },
+                  {
+                    "order": 1,
+                    "key": "status",
+                    "value": "NOT_FOUND",
+                    "label": "Status",
+                    "nestedFields": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "order": 18,
+            "key": "cf_1",
+            "value": "",
+            "label": "Custom Field 1",
+            "nestedFields": []
+          },
+          {
+            "order": 19,
+            "key": "cf_2",
+            "value": "",
+            "label": "Custom Field 2",
+            "nestedFields": []
+          },
+          {
+            "order": 20,
+            "key": "cf_3",
+            "value": "",
+            "label": "Custom Field 3",
+            "nestedFields": []
+          },
+          {
+            "order": 21,
+            "key": "cf_4",
+            "value": "",
+            "label": "Custom Field 4",
+            "nestedFields": []
+          },
+          {
+            "order": 22,
+            "key": "cf_5",
+            "value": "",
+            "label": "Custom Field 5",
+            "nestedFields": []
+          },
+          {
+            "order": 23,
+            "key": "cf_6",
+            "value": "",
+            "label": "Custom Field 6",
+            "nestedFields": []
+          },
+          {
+            "order": 24,
+            "key": "cf_7",
+            "value": "",
+            "label": "Custom Field 7",
+            "nestedFields": []
+          },
+          {
+            "order": 25,
+            "key": "cf_8",
+            "value": "",
+            "label": "Custom Field 8",
+            "nestedFields": []
+          },
+          {
+            "order": 26,
+            "key": "cf_9",
+            "value": "",
+            "label": "Custom Field 9",
+            "nestedFields": [
+              {
+                "order": 2,
+                "key": "lockedBy",
+                "value": "API/UI",
+                "label": "Locked By",
+                "nestedFields": []
+              }
+            ]
+          },
+          {
+            "order": 29,
+            "key": "cf_10",
+            "value": "",
+            "label": "Custom Field 10",
+            "nestedFields": [
+              {
+                "order": 2,
+                "key": "lockedBy",
+                "value": "API/UI",
+                "label": "Locked By",
+                "nestedFields": []
+              }
+            ]
+          },
+          {
+            "order": 13,
+            "key": "Asset Compliance",
+            "value": "",
+            "label": "Asset Compliance",
+            "nestedFields": [
+              {
+                "order": 13,
+                "key": "ferpa",
+                "value": "",
+                "label": "FERPA Compliance Asset",
+                "nestedFields": []
+              },
+              {
+                "order": 14,
+                "key": "hipaa",
+                "value": "",
+                "label": "HIPAA Compliance Asset",
+                "nestedFields": []
+              },
+              {
+                "order": 15,
+                "key": "pci",
+                "value": "",
+                "label": "PCI Compliance Asset",
+                "nestedFields": []
+              }
+            ]
+          }
+        ],
+        "services": [
+          "service1",
+          "service2",
+          "service3",
+          "service4"
+        ],
+        "notes": [
+          {
+            "user": {
+              "id": 5969,
+              "name": "username"
+            },
+            "note": "Testing note\n",
+            "date": "2019-12-30T11:35:41"
+          },
+          {
+            "user": {
+              "id": 5969,
+              "name": "username"
+            },
+            "note": "This is second note for testing",
+            "date": "2019-12-30T11:38:25"
+          }
+        ],
+        "sources": [
+          {
+            "name": "source name",
+            "uuid": "uuid",
+            "scannerType": null
+          }
+        ],
+        "tickets": [
+          {
+            "ticketNumber": "ticket number",
+            "ticketStatus": "To Do",
+            "deepLink": "test deep link",
+            "type": "test type",
+            "connectorName": "Test",
+            "detailedStatus": ""
+          }
+        ],
+        "lastVulnTrendingOn": null,
+        "lastThreatTrendingOn": null,
+        "trending": false,
+        "oldestOpenFindingWithThreatDiscoveredOn": "2014-09-24",
+        "xRS3": null,
+        "xRS3date": null,
+        "discoveredByRS": false
+      }
+    ]
+  },
+  "_links": {
+    "self": {
+      "href": "reference link"
+    }
+  }
+}

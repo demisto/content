@@ -1,0 +1,274 @@
+id: get_file_sample_from_path_-_carbon_black_enterprise_response
+version: -1
+name: Get File Sample From Path - Carbon Black Enterprise Response
+fromversion: "5.0.0"
+description: Returns a file sample to the war-room from a path on an endpoint using Carbon Black Enterprise Response
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
+    type: start
+    task:
+      id: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 48
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 40ec070b-2ab3-432a-86fa-eb02b381398a
+    type: condition
+    task:
+      id: 40ec070b-2ab3-432a-86fa-eb02b381398a
+      version: -1
+      name: Is Carbon Black Enterprise Response enabled?
+      description: Check if  Carbon Black Enterprise Response active in the system.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      extend-context: {}
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: carbonblack
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 196
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 347006fd-60f5-4233-8c40-9b941735dd2a
+    type: title
+    task:
+      id: 347006fd-60f5-4233-8c40-9b941735dd2a
+      version: -1
+      description: ""
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 6361a341-4a5c-4735-8ffe-ce13d9539b91
+    type: regular
+    task:
+      id: 6361a341-4a5c-4735-8ffe-ce13d9539b91
+      version: -1
+      name: Get File
+      description: Use Carbon black Response Live session to retrieve a file from an endpoint. Endpoint needs to have a CbResponse sensor deployed.
+      scriptName: CBLiveGetFile_V2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      endpoint:
+        simple: ${inputs.Hostname}
+      path:
+        simple: ${inputs.Path}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 514,
+          "y": 544
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 69aeb053-04ea-4853-872a-adf410c08c5e
+    type: condition
+    task:
+      id: 69aeb053-04ea-4853-872a-adf410c08c5e
+      version: -1
+      name: Is there a file path and hostname?
+      description: Checks if a file path exists in playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${inputs.Path}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Path
+            iscontext: true
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 301,
+          "y": 367
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_3_#default#": 0.5
+    },
+    "paper": {
+      "dimensions": {
+        "height": 737,
+        "width": 844,
+        "x": 50,
+        "y": 48
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: The host to get file from
+- key: Path
+  value:
+    simple: ${File.Path}
+  required: false
+  description: Path of the file on the endpoint
+outputs:
+- contextPath: CbLiveResponse.Commands.CbCommandID
+  description: Unique command identifier.
+  type: Number
+- contextPath: CbLiveResponse.Commands.CommandName
+  description: The command name.
+  type: String
+- contextPath: CbLiveResponse.Commands.Status
+  description: The command status ('pending', 'in progress', 'complete', 'error',
+    or 'canceled').
+  type: String
+- contextPath: CbLiveResponse.Commands.CommandCompletionTime
+  description: The command completion time (0 if not complete).
+  type: String
+- contextPath: CbLiveResponse.Commands.OperandObject
+  description: The source path of the file.
+  type: String
+- contextPath: CbLiveResponse.Commands.FileID
+  description: Unique file ID.
+  type: Number
+- contextPath: CbLiveResponse.File.Size
+  description: File size.
+  type: String
+- contextPath: CbLiveResponse.File.SHA1
+  description: File SHA1 hash.
+  type: String
+- contextPath: CbLiveResponse.File.SHA256
+  description: File SHA256 hash.
+  type: String
+- contextPath: CbLiveResponse.File.Name
+  description: File name.
+  type: String
+- contextPath: CbLiveResponse.File.SSDeep
+  description: File SSDeep hash.
+  type: String
+- contextPath: CbLiveResponse.File.EntryID
+  description: File EntryID.
+  type: Number
+- contextPath: CbLiveResponse.File.Info
+  description: File info.
+  type: String
+- contextPath: CbLiveResponse.File.Type
+  description: File type.
+  type: String
+- contextPath: CbLiveResponse.File.MD5
+  description: File MD5.
+  type: String
+- contextPath: CbLiveResponse.File.Extension
+  description: File extension.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file (same as displayed in file entries).
+  type: String
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: String
+- contextPath: File.Info
+  description: Information about the file.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.Extension
+  description: The extension of the file.
+  type: String
+tests:
+- no test

@@ -1,0 +1,208 @@
+{
+  "data": {
+    "requests": [
+      {
+        "request": {
+          "requestId": "72681F21205D1F1483083AAC32DBA719",
+          "loaderId": "72681F21205D1F1483083AAC32DBA719",
+          "documentURL": "http://capitalne.com/",
+          "request": {
+            "url": "http://capitalne.com/",
+            "method": "GET",
+            "headers": {
+              "Upgrade-Insecure-Requests": "1",
+              "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5)"
+            },
+            "mixedContentType": "none",
+            "initialPriority": "VeryHigh",
+            "referrerPolicy": "no-referrer-when-downgrade"
+          },
+          "timestamp": 6731750.150596,
+          "wallTime": 1595517675.009059,
+          "initiator": {
+            "type": "other"
+          },
+          "type": "Document",
+          "frameId": "DD6EADE429B73140FAE4117A7D1AC2A4",
+          "hasUserGesture": false
+        },
+        "response": {
+          "encodedDataLength": 0,
+          "dataLength": 0,
+          "failed": {
+            "requestId": "72681F21205D1F1483083AAC32DBA719",
+            "timestamp": 6731766.66642,
+            "type": "Document",
+            "errorText": "net::ERR_EMPTY_RESPONSE",
+            "canceled": false
+          }
+        }
+      },
+      {
+        "request": {},
+        "requests": [],
+        "response": {
+          "encodedDataLength": 0,
+          "dataLength": 0,
+          "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        }
+      }
+    ],
+    "cookies": [],
+    "console": [],
+    "links": [],
+    "timing": {
+      "beginNavigation": "2020-07-23T15:21:15.008Z",
+      "frameStartedLoading": "2020-07-23T15:21:31.534Z",
+      "frameNavigated": "2020-07-23T15:21:31.534Z",
+      "loadEventFired": "2020-07-23T15:21:31.534Z",
+      "frameStoppedLoading": "2020-07-23T15:21:31.535Z",
+      "domContentEventFired": "2020-07-23T15:21:31.535Z"
+    },
+    "globals": []
+  },
+  "stats": {
+    "resourceStats": [],
+    "protocolStats": [],
+    "tlsStats": [],
+    "serverStats": [],
+    "domainStats": [
+      {
+        "count": 0,
+        "ips": [],
+        "domain": "capitalne.com",
+        "size": 0,
+        "encodedSize": 0,
+        "countries": [],
+        "index": 0,
+        "initiators": [
+          null
+        ]
+      }
+    ],
+    "regDomainStats": [
+      {
+        "count": 0,
+        "ips": [],
+        "regDomain": "capitalne.com",
+        "size": 0,
+        "encodedSize": 0,
+        "countries": [],
+        "index": 0,
+        "subDomains": [
+          {
+            "domain": "",
+            "failed": true
+          }
+        ]
+      }
+    ],
+    "secureRequests": 0,
+    "securePercentage": 0,
+    "IPv6Percentage": null,
+    "uniqCountries": 0,
+    "totalLinks": 0,
+    "malicious": 0,
+    "adBlocked": 0,
+    "ipStats": []
+  },
+  "meta": {
+    "processors": {
+      "wappa": {
+        "state": "done",
+        "data": []
+      },
+      "rdns": {
+        "state": "done",
+        "data": []
+      },
+      "asn": {
+        "state": "done",
+        "data": []
+      },
+      "geoip": {
+        "state": "done",
+        "data": []
+      },
+      "done": {
+        "state": "done",
+        "data": {
+          "state": "done"
+        }
+      }
+    }
+  },
+  "task": {
+    "uuid": "8fb2fc51-7653-46b4-bbb0-a4cde38e549d",
+    "time": "2020-07-23T15:21:14.776Z",
+    "url": "http://capitalne.com",
+    "visibility": "public",
+    "options": {
+      "useragent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) "
+    },
+    "method": "api",
+    "source": "0c422ee9",
+    "tags": [],
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5)",
+    "reportURL": "https://urlscan.io/result/8fb2fc51-7653-46b4-bbb0-a4cde38e549d/",
+    "domURL": "https://urlscan.io/dom/8fb2fc51-7653-46b4-bbb0-a4cde38e549d/"
+  },
+  "page": {
+    "url": "http://capitalne.com",
+    "domain": "capitalne.com"
+  },
+  "lists": {
+    "ips": [],
+    "countries": [],
+    "asns": [],
+    "domains": [
+      "capitalne.com"
+    ],
+    "servers": [],
+    "urls": [
+      "http://capitalne.com/"
+    ],
+    "linkDomains": [],
+    "certificates": [],
+    "hashes": [
+      "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    ]
+  },
+  "verdicts": {
+    "overall": {
+      "score": 0,
+      "categories": [],
+      "brands": [],
+      "tags": [],
+      "malicious": false,
+      "hasVerdicts": 0
+    },
+    "urlscan": {
+      "score": 0,
+      "categories": [],
+      "brands": [],
+      "tags": [],
+      "detectionDetails": [],
+      "malicious": false
+    },
+    "engines": {
+      "score": 0,
+      "malicious": [],
+      "benign": [],
+      "maliciousTotal": 0,
+      "benignTotal": 0,
+      "verdicts": [],
+      "enginesTotal": 0
+    },
+    "community": {
+      "score": 0,
+      "votes": [],
+      "votesTotal": 0,
+      "votesMalicious": 0,
+      "votesBenign": 0,
+      "tags": [],
+      "categories": []
+    }
+  }
+}

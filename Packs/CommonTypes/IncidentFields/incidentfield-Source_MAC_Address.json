@@ -1,0 +1,49 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Qradar Generic"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "sourcemacaddress",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "The source MAC address in an event.",
+    "editForm": true,
+    "extractIndicatorTypesIDs": [],
+    "fieldCalcScript": "",
+    "fromServerVersion": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourcemacaddress",
+    "isExtractingSpecificIndicatorTypes": false,
+    "isReadOnly": false,
+    "itemVersion": "",
+    "locked": false,
+    "name": "Source MAC Address",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "",
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "toServerVersion": "",
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

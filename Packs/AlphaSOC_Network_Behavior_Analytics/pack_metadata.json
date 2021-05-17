@@ -1,0 +1,20 @@
+{
+    "name": "AlphaSOC Network Behavior Analytics",
+    "description": "Retrieve alerts from the AlphaSOC Analytics Engine",
+    "support": "partner",
+    "currentVersion": "1.0.2",
+    "author": "AlphaSOC",
+    "url": "",
+    "email": "support@alphasoc.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "ioj"
+    ],
+    "certification": "certified"
+}

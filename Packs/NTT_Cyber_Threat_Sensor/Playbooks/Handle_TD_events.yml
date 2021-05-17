@@ -1,0 +1,378 @@
+id: Handle TD events
+version: -1
+name: Handle TD events
+description: Playbook to enrich TD events
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 63914051-5b27-4452-879a-c1c3945cf3e2
+    type: start
+    task:
+      description: Start handling TD event
+      id: 63914051-5b27-4452-879a-c1c3945cf3e2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9a686168-d95c-4d07-874f-62fdc89e1a86
+    type: regular
+    task:
+      id: 9a686168-d95c-4d07-874f-62fdc89e1a86
+      version: -1
+      name: Fetch PCAP
+      description: Collecting blobs, most commonly pcap from an incident
+      script: '|||ntt-cyber-threat-sensor-fetch-blobs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      event_id:
+        complex:
+          root: incident
+          accessor: labels.sha
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2684ab4b-b770-4e5e-88c6-fe5b11d203d5
+    type: condition
+    task:
+      id: 2684ab4b-b770-4e5e-88c6-fe5b11d203d5
+      version: -1
+      name: Check if the download was successful
+      description: Check if the incident has blobs or not to make decision if we should
+        continue to process the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: CTS.HasBlob
+            iscontext: true
+    - label: "NO"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: CTS.HasBlob
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 39e6347e-f6b2-4968-86e4-a69433f4ebf3
+    type: title
+    task:
+      id: 39e6347e-f6b2-4968-86e4-a69433f4ebf3
+      description: Completed handling TD event
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ec168f7c-a0c1-42dc-8bca-6e274b8162f6
+    type: playbook
+    task:
+      id: ec168f7c-a0c1-42dc-8bca-6e274b8162f6
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: timestamp
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: incident
+          accessor: labels.last_updated
+      Ids:
+        simple: ${CTS.Blobs.ID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: event_id
+      PollingCommandName:
+        simple: ntt-cyber-threat-sensor-poll-blobs
+      Timeout:
+        simple: "5"
+      dt:
+        simple: CTS.Blobs(val.Status!=='release').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 168345ab-fa81-4cc4-8ab7-55671c8fec7a
+    type: playbook
+    task:
+      id: 168345ab-fa81-4cc4-8ab7-55671c8fec7a
+      version: -1
+      name: PCAP Analysis
+      description: Sub playbook to analyse PCAP
+      playbookName: PCAP Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdvancedSearchFilter: {}
+      AutoDetonateFiles:
+        simple: "True"
+      ExtractedFilesLimit:
+        simple: "5"
+      FileExtensionFilter: {}
+      FileTypeFilter: {}
+      FilterType:
+        simple: inclusive
+      IPAddressToSearch: {}
+      InternalEmailDomainName: {}
+      InternalIPRange: {}
+      InternalUrlName: {}
+      PcapFileEntryID:
+        complex:
+          root: ${File}
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapfile.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: cap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcapng
+      ProtocolToSearch: {}
+      QueryOperator:
+        simple: and
+      RegexToSearch: {}
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
+      RunFileCarving:
+        simple: "true"
+      RunParsingAndEnrichment:
+        simple: "true"
+      TCPPortsToSearch: {}
+      UDPPortsToSearch: {}
+      WhichIndicatorTypeToEnrich:
+        simple: ip,url,email
+      WpaPassword: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0915fdfa-9560-472a-884e-6efd2d2f5e5f
+    type: regular
+    task:
+      id: 0915fdfa-9560-472a-884e-6efd2d2f5e5f
+      version: -1
+      name: Enable GenericPolling by polling for blobs
+      description: Check if blobs is available
+      script: NTT Cyber Threat Sensor|||ntt-cyber-threat-sensor-poll-blobs
+      type: regular
+      iscommand: true
+      brand: NTT Cyber Threat Sensor
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      event_id:
+        simple: ${incident.labels.sha}
+      timestamp:
+        simple: ${incident.labels.last_updated}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_11_yes": 0.57,
+      "5_7_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 730,
+        "x": 270,
+        "y": -200
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: CTS.EventID
+  type: string
+  description: CTS EventID aka alert / sha
+- contextPath: CTS.OccuredTime
+  type: date
+  description: Timestamp when incident was registered
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

@@ -1,0 +1,501 @@
+{
+    "result": [
+        {
+            "name": "10.197.163.44",
+            "level": "2",
+            "id": "03a0c54b-f196-4817-8198-66b06fba8739",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.163.44"
+            ],
+            "mac_address": [
+                "00:09:0f:6d:f1:c1"
+            ],
+            "mac_address_level": {
+                "00:09:0f:6d:f1:c1": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Fortinet Inc."
+            ],
+            "os": "",
+            "roles": [
+                "master"
+            ],
+            "vendor": "",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104"
+            ],
+            "nodes": [
+                "10.197.163.44"
+            ],
+            "zones": [
+                "LocalSCADA"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.146",
+            "level": "1",
+            "id": "11b35151-7caa-48f8-a3ff-b11a8ec5e68a",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.146"
+            ],
+            "mac_address": [
+                "00:02:3e:99:fe:1b"
+            ],
+            "mac_address_level": {
+                "00:02:3e:99:fe:1b": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Selta Telematica S.p.a"
+            ],
+            "os": "",
+            "roles": [
+                "slave"
+            ],
+            "vendor": "",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "OT_device",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104"
+            ],
+            "nodes": [
+                "10.197.23.146"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.142",
+            "level": "1",
+            "id": "2bec30cc-def9-4f54-bd89-45c0659b065d",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.142"
+            ],
+            "mac_address": [
+                "00:02:3e:99:f2:89"
+            ],
+            "mac_address_level": {
+                "00:02:3e:99:f2:89": "likely"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Selta Telematica S.p.a"
+            ],
+            "os": "",
+            "roles": [
+                "master"
+            ],
+            "vendor": "Selta Telematica S.p.a",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104"
+            ],
+            "nodes": [
+                "10.197.23.142"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.140",
+            "level": "1",
+            "id": "85bb2d59-78f2-4d6d-acc3-b0cb3d828f53",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.140"
+            ],
+            "mac_address": [
+                "00:02:3e:99:f7:5f"
+            ],
+            "mac_address_level": {
+                "00:02:3e:99:f7:5f": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Selta Telematica S.p.a"
+            ],
+            "os": "",
+            "roles": [
+                "slave"
+            ],
+            "vendor": "",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "OT_device",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104"
+            ],
+            "nodes": [
+                "10.197.23.140"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.141",
+            "level": "1",
+            "id": "8b9d4c17-5155-4124-9b1f-c920e6fe387e",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.141"
+            ],
+            "mac_address": [
+                "00:02:3e:99:f6:bd"
+            ],
+            "mac_address_level": {
+                "00:02:3e:99:f6:bd": "likely"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Selta Telematica S.p.a"
+            ],
+            "os": "",
+            "roles": [
+                "slave"
+            ],
+            "vendor": "Selta Telematica S.p.a",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "OT_device",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104"
+            ],
+            "nodes": [
+                "10.197.23.141"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.180",
+            "level": "1",
+            "id": "c34e6415-b875-408f-b20c-819762daee7d",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.180"
+            ],
+            "mac_address": [
+                "00:02:3e:99:e6:7e"
+            ],
+            "mac_address_level": {
+                "00:02:3e:99:e6:7e": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Selta Telematica S.p.a"
+            ],
+            "os": "",
+            "roles": [
+                "slave"
+            ],
+            "vendor": "",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "OT_device",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "https",
+                "iec104",
+                "other"
+            ],
+            "nodes": [
+                "10.197.23.180"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.182",
+            "level": "1",
+            "id": "f730f58a-6d7e-4067-bc20-c8d6bdb63680",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.182"
+            ],
+            "mac_address": [
+                "00:02:3e:99:f2:89"
+            ],
+            "mac_address_level": {
+                "00:02:3e:99:f2:89": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "Selta Telematica S.p.a"
+            ],
+            "os": "",
+            "roles": [
+                "master"
+            ],
+            "vendor": "",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "-",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104",
+                "other"
+            ],
+            "nodes": [
+                "10.197.23.182"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        },
+        {
+            "name": "10.197.23.139",
+            "level": "1",
+            "id": "fd651b8d-3e05-451a-b612-138415fd92b8",
+            "appliance_hosts": [
+                "nozomi-dev"
+            ],
+            "capture_device": "/vagrant/ids-testapi/fixtures/iec104_mestre_mini.pcap",
+            "ip": [
+                "10.197.23.139"
+            ],
+            "mac_address": [
+                "00:c0:c9:30:04:f1"
+            ],
+            "mac_address_level": {
+                "00:c0:c9:30:04:f1": "unconfirmed"
+            },
+            "vlan_id": [],
+            "mac_vendor": [
+                "ELSAG BAILEY PROCESS"
+            ],
+            "os": "",
+            "roles": [
+                "slave"
+            ],
+            "vendor": "",
+            "_asset_kb_id": "",
+            "vendor:info": {
+                "source": "passive"
+            },
+            "firmware_version": "",
+            "firmware_version:info": {
+                "source": "passive"
+            },
+            "os_or_firmware": "",
+            "serial_number": "",
+            "serial_number:info": {
+                "source": "passive"
+            },
+            "product_name": "",
+            "product_name:info": {
+                "source": "passive"
+            },
+            "type": "OT_device",
+            "type:info": {
+                "source": "passive"
+            },
+            "protocols": [
+                "iec104"
+            ],
+            "nodes": [
+                "10.197.23.139"
+            ],
+            "zones": [
+                "RemoteRTU"
+            ],
+            "custom_fields": {}
+        }
+    ],
+    "header": [
+        "name",
+        "level",
+        "id",
+        "appliance_hosts",
+        "capture_device",
+        "ip",
+        "mac_address",
+        "mac_address_level",
+        "vlan_id",
+        "mac_vendor",
+        "os",
+        "roles",
+        "vendor",
+        "vendor:info",
+        "firmware_version",
+        "firmware_version:info",
+        "os_or_firmware",
+        "serial_number",
+        "serial_number:info",
+        "product_name",
+        "product_name:info",
+        "type",
+        "type:info",
+        "protocols",
+        "nodes",
+        "zones",
+        "custom_fields"
+    ],
+    "total": 8
+}

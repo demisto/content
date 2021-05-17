@@ -1,0 +1,59 @@
+{
+    "name": "Sixgill Darkfeed - Annual Subscription",
+    "description": "This edition of Sixgill Darkfeed is intended for customers who have a direct annual subscription to Sixgill Darkfeed.\n\nGet contextual and actionable insights to proactively block underground threats in real-time with the most comprehensive, automated stream of IOCs \n\nFor organizations who are currently Darkfeed customers.",
+    "support": "partner",
+    "currentVersion": "1.2.4",
+    "author": "Sixgill",
+    "url": "",
+    "email": "sales@cybersixgill.com",
+    "created": "2020-03-10T08:37:18Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence",
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web",
+        "Malware"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Incident Response",
+        "Malware",
+        "Hunting"
+    ],
+    "certification": "certified",
+    "keywords": [
+        "sixgill",
+        "darkfeed",
+        "feed",
+        "IOC",
+        "IOCs",
+        "indicators",
+        "threat intelligence",
+        "dark web",
+        "darkweb",
+        "darknet",
+        "dark net",
+        "deep web",
+        "cti",
+        "cyber threat intelligence",
+        "malware",
+        "compromised",
+        "rdp",
+        "Botnet",
+        "virus total",
+        "virustotal",
+        "emotet",
+        "trickbot",
+        "ursnif",
+        "recorded future",
+        "flashpoint",
+        "intel471",
+        "intsights",
+        "digital shadows",
+        "C2",
+        "command and control",
+        "DDoS"
+    ]
+}

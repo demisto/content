@@ -1,0 +1,498 @@
+id: SNDBOX_Test
+version: -1
+name: SNDBOX_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1f76b2c6-56b4-492b-8f01-fef26d30580b
+    type: start
+    task:
+      id: 1f76b2c6-56b4-492b-8f01-fef26d30580b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bb8a9eaa-b13d-4b92-8844-db60143a19a4
+    type: regular
+    task:
+      id: bb8a9eaa-b13d-4b92-8844-db60143a19a4
+      version: -1
+      name: Start Clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5e8202af-7c64-44da-8e40-6be815c7cfb9
+    type: regular
+    task:
+      id: 5e8202af-7c64-44da-8e40-6be815c7cfb9
+      version: -1
+      name: Is Integration Online
+      script: '|||sndbox-is-online'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 793976c0-cba3-4e2e-80a5-02930f48a358
+    type: regular
+    task:
+      id: 793976c0-cba3-4e2e-80a5-02930f48a358
+      version: -1
+      name: Get Test File
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: file.pdf
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfworking.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9878e6c3-b82d-4bb2-8e3e-cc41cbfdb58e
+    type: regular
+    task:
+      id: 9878e6c3-b82d-4bb2-8e3e-cc41cbfdb58e
+      version: -1
+      name: Submit
+      script: '|||sndbox-analysis-submit-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_id:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e7ce29ea-9cb5-40f1-8296-29048818b7f5
+    type: regular
+    task:
+      id: e7ce29ea-9cb5-40f1-8296-29048818b7f5
+      version: -1
+      name: Get Info
+      script: '|||sndbox-analysis-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      analysis_id:
+        simple: ${SNDBOX.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ef7207bd-274c-4de5-8952-c38c73b0dfa2
+    type: regular
+    task:
+      id: ef7207bd-274c-4de5-8952-c38c73b0dfa2
+      version: -1
+      name: Download Sample
+      script: '|||sndbox-download-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      analysis_id:
+        simple: ${SNDBOX.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 20302088-47c1-4acf-81a3-a7c46d8f4c03
+    type: regular
+    task:
+      id: 20302088-47c1-4acf-81a3-a7c46d8f4c03
+      version: -1
+      name: Download Report
+      script: '|||sndbox-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: SNDBOX
+          accessor: Analysis.ID
+      type: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0985e709-3217-4d93-8353-a6938c435486
+    type: title
+    task:
+      id: 0985e709-3217-4d93-8353-a6938c435486
+      version: -1
+      name: End Test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 7667863b-8a21-4a02-858d-3d78c9ddad50
+    type: playbook
+    task:
+      id: 7667863b-8a21-4a02-858d-3d78c9ddad50
+      version: -1
+      name: GenericPolling - Get Info
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: SNDBOX
+          accessor: Analysis.ID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: analysis_id
+      PollingCommandName:
+        simple: sndbox-analysis-info
+      Timeout:
+        simple: "10"
+      dt:
+        simple: SNDBOX.Analysis(val.Status !== 'finished').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 0e396be1-ad3e-40a8-875b-f8422f36210d
+    type: regular
+    task:
+      id: 0e396be1-ad3e-40a8-875b-f8422f36210d
+      version: -1
+      name: Get Info
+      script: '|||sndbox-analysis-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      analysis_id:
+        simple: ${SNDBOX.Analysis.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 377ef394-7ce1-4396-83db-a614ed322ae7
+    type: condition
+    task:
+      id: 377ef394-7ce1-4396-83db-a614ed322ae7
+      version: -1
+      name: If the analysis is still pending or is a SNDBOX error then don't try and download the report
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      is error:
+      - "18"
+      still pending:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: still pending
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SNDBOX
+                accessor: Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: pending
+    - label: is error
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SNDBOX
+                accessor: Analysis.Status
+            iscontext: true
+          right:
+            value:
+              simple: error
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: d998e639-3821-4e43-833d-75f7ebf9e313
+    type: title
+    task:
+      id: d998e639-3821-4e43-833d-75f7ebf9e313
+      version: -1
+      name: End Test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8a3750c1-b80b-4039-8fc1-a9cd7f637475
+    type: title
+    task:
+      id: 8a3750c1-b80b-4039-8fc1-a9cd7f637475
+      version: -1
+      name: End Test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

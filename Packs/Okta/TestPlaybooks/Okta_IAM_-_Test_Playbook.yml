@@ -1,0 +1,482 @@
+id: Okta IAM - Test Playbook
+version: -1
+name: Okta IAM - Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd930cf3-bf66-4049-84b0-d1ddeff61fbd
+    type: start
+    task:
+      id: fd930cf3-bf66-4049-84b0-d1ddeff61fbd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 88a1543a-28fc-4bdf-85ea-0e643ce2560b
+    type: regular
+    task:
+      id: 88a1543a-28fc-4bdf-85ea-0e643ce2560b
+      version: -1
+      name: Create User
+      description: Creates a user.
+      script: '|||iam-create-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: cca1aaca-2af4-4fe0-87d4-d5a2df10537d
+    type: regular
+    task:
+      id: cca1aaca-2af4-4fe0-87d4-d5a2df10537d
+      version: -1
+      name: Get User
+      description: Retrieves a single user resource.
+      script: '|||iam-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      default_attribute: {}
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 003fdad1-000b-4ac3-86b3-6f5b564954bd
+    type: regular
+    task:
+      id: 003fdad1-000b-4ac3-86b3-6f5b564954bd
+      version: -1
+      name: Update User
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      script: '|||iam-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a881a610-20f8-4921-852e-4b49d5180cf1
+    type: regular
+    task:
+      id: a881a610-20f8-4921-852e-4b49d5180cf1
+      version: -1
+      name: Disable User
+      description: Disable an active user.
+      script: '|||iam-disable-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4fee7564-b221-420e-85ca-f8ffae2b44cd
+    type: regular
+    task:
+      id: 4fee7564-b221-420e-85ca-f8ffae2b44cd
+      version: -1
+      name: Enable User Using Update Command
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      script: '|||iam-update-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      allow-enable:
+        simple: "true"
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3d064faf-2805-405b-8420-4483206ddc33
+    type: condition
+    task:
+      id: 3d064faf-2805-405b-8420-4483206ddc33
+      version: -1
+      name: Was there a failure in any of the actions?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IAM.Vendor.success
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "false"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 790f9e63-2455-4d85-8a8d-bf740dbc0e31
+    type: regular
+    task:
+      id: 790f9e63-2455-4d85-8a8d-bf740dbc0e31
+      version: -1
+      name: Print Errors
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      message:
+        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}
+          \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the
+          following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease
+          work to fix the errors and proceed only once the incident can be closed."
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3a30b81a-2b03-4cd7-8c07-ab25cd228dbf
+    type: title
+    task:
+      id: 3a30b81a-2b03-4cd7-8c07-ab25cd228dbf
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6922bb56-b1ac-4dff-83b1-7513e720d8c5
+    type: condition
+    task:
+      id: 6922bb56-b1ac-4dff-83b1-7513e720d8c5
+      version: -1
+      name: Was the user created in Active Directory?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IAM.Vendor
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.success
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IAM.Vendor.skipped
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "false"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2fcd41c8-87da-461c-8e86-11e9b1a23c4f
+    type: regular
+    task:
+      id: 2fcd41c8-87da-461c-8e86-11e9b1a23c4f
+      version: -1
+      name: Init AD User
+      description: |-
+        Generates password,
+        Set an AD user account with this password.
+        Enable the account.
+        Send mail to the user with tha account information.
+        This script is running `send-mail` command, make sure there is a matching Integration configurated.
+      scriptName: IAMInitADUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      email:
+        simple: test@test.com
+      mapperIn: {}
+      pwdGenerationScript: {}
+      userProfile:
+        complex:
+          root: inputs.userprofile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d4fd7d3d-4ab5-4e34-819c-d8cba1f0e38f
+    type: regular
+    task:
+      id: d4fd7d3d-4ab5-4e34-819c-d8cba1f0e38f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: userprofile
+  value:
+    simple: '{"email": "testdemisto2@paloaltonetworks.com", "givenname": "test", "surname":
+      "demisto", "locationregion": "Americas"}'
+  required: true
+  description: Test user profile data.
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
+fromversion: 6.0.0
+description: 'Test user profile data'

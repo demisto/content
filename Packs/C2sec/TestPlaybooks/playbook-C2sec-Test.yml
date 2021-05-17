@@ -1,0 +1,216 @@
+id: C2sec-Test
+version: -1
+name: C2sec-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a1b1297-48f2-436b-8497-d7076cdae3e0
+    type: start
+    task:
+      id: 1a1b1297-48f2-436b-8497-d7076cdae3e0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 2085bafc-f0de-4ec6-84c8-71139aaa51d6
+    type: regular
+    task:
+      id: 2085bafc-f0de-4ec6-84c8-71139aaa51d6
+      version: -1
+      name: Search Domain
+      script: '|||irisk-add-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      newscan:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: e892d3d9-e6ad-4a4e-8b4b-d9a00d95087d
+    type: regular
+    task:
+      id: e892d3d9-e6ad-4a4e-8b4b-d9a00d95087d
+      version: -1
+      name: Get Scan results
+      script: '|||irisk-get-scan-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      component:
+        simple: credential
+      domain:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: a32fbdcc-d8b1-4bb9-80c7-000bef532332
+    type: regular
+    task:
+      id: a32fbdcc-d8b1-4bb9-80c7-000bef532332
+      version: -1
+      name: Get Domain Issues
+      script: '|||irisk-get-domain-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 3141efc1-8672-41fa-8163-ee730eaffaea
+    type: regular
+    task:
+      id: 3141efc1-8672-41fa-8163-ee730eaffaea
+      version: -1
+      name: Get WorkItem status
+      script: '|||irisk-get-scan-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      id:
+        simple: ${C2sec.Domain.Scan.workitemid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: bd8f6e3d-9151-4622-8648-546366a1fa0b
+    type: regular
+    task:
+      id: bd8f6e3d-9151-4622-8648-546366a1fa0b
+      version: -1
+      name: Rescan Domaun
+      script: '|||irisk-rescan-domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 3f4635c3-ebb1-46d9-83e0-1e7c38bf9f46
+    type: regular
+    task:
+      id: 3f4635c3-ebb1-46d9-83e0-1e7c38bf9f46
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

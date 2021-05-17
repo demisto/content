@@ -1,0 +1,21 @@
+{
+    "value": [
+        {
+            "properties": {
+                "retentionDays": 0,
+                "auditActionsAndGroups": [
+                    "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
+                    "FAILED_DATABASE_AUTHENTICATION_GROUP",
+                    "BATCH_COMPLETED_GROUP"
+                ],
+                "isAzureMonitorTargetEnabled": true,
+                "state": "Enabled",
+                "storageEndpoint": "",
+                "storageAccountSubscriptionId": "000000-0000-0000-0000-00000000"
+            },
+            "id": "/subscriptions/123456789/resourceGroups/integration/providers/Microsoft.Sql/servers/sqlintegration/databases/integration-db/auditingSettings/Default",
+            "name": "Default",
+            "type": "Microsoft.Sql/servers/databases/auditingSettings"
+        }
+    ]
+}

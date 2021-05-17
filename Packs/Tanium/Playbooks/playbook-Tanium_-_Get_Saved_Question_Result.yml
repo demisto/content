@@ -1,0 +1,137 @@
+id: Tanium - Get Saved Question Result
+version: -1
+fromversion: "5.0.0"
+name: Tanium - Get Saved Question Result
+description: 'This playbook used generic polling to gets saved question result.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd08b385-0693-43a8-8523-e4e344e47c7e
+    type: start
+    task:
+      id: fd08b385-0693-43a8-8523-e4e344e47c7e
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c9237b16-f000-4425-8ae8-00c0a2e1349f
+    type: playbook
+    task:
+      id: c9237b16-f000-4425-8ae8-00c0a2e1349f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: inputs.saved-question-id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: question-id
+      PollingCommandName:
+        simple: tn-get-saved-question-result
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Tanium.SavedQuestionResult(val.Status != 'Completed').SavedQuestionID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a664c828-58f9-434e-8298-4d8b27cb7636
+    type: regular
+    task:
+      id: a664c828-58f9-434e-8298-4d8b27cb7636
+      version: -1
+      description: ""
+      name: Get results
+      script: '|||tn-get-saved-question-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      question-id:
+        simple: ${inputs.saved-question-id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: saved-question-id
+  value: {}
+  required: true
+  description: ""
+outputs:
+- contextPath: Tanium.SavedQuestionResult.Results
+  description: The saved question results.
+- contextPath: Tanium.SavedQuestionResult.SavedQuestionID
+  description: The unique ID of the saved question object.
+tests:
+- Tanium v2 - Test

@@ -1,0 +1,252 @@
+{
+  "asset": {
+    "asynchronous": true,
+    "identifier": "3fa02425-f8d8-4f75-a630-4a4b92222153",
+    "added": null
+  },
+  "taskComplete": {
+    "taskClass": "com.riskiq.globalinventory.service.GlobalInventoryUpdateTask",
+    "key": {
+      "workspaceID": 2946,
+      "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153"
+    },
+    "userID": 0,
+    "startedAt": 1592313516086,
+    "completedAt": 1592313516091,
+    "lastPolledAt": null,
+    "state": "COMPLETE",
+    "phase": "COMPLETE",
+    "reason": null,
+    "data": {
+      "targetAssetTypes": [
+        "HOST"
+      ],
+      "estimated": 1,
+      "totalUpdates": 1,
+      "progress": 100,
+      "properties": [
+        {
+          "name": "state",
+          "value": "CANDIDATE",
+          "action": "UPDATE"
+        },
+        {
+          "action": "UPDATE"
+        },
+        {
+          "name": "discoveryRun",
+          "value": 1988400,
+          "action": "ADD"
+        },
+        {
+          "name": "priority",
+          "value": "NONE",
+          "action": "ADD"
+        },
+        {
+          "name": "state",
+          "value": "CONFIRMED",
+          "action": "ADD"
+        }
+      ]
+    },
+    "taskName": "GlobalInventoryUpdateTask",
+    "polling": false
+  },
+  "taskRunning": {
+    "taskClass": "com.riskiq.globalinventory.service.GlobalInventoryUpdateTask",
+    "key": {
+      "workspaceID": 2946,
+      "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153"
+    },
+    "userID": 0,
+    "startedAt": 1592313516086,
+    "completedAt": 1592313516091,
+    "lastPolledAt": null,
+    "state": "RUNNING",
+    "phase": "RUNNING",
+    "reason": null,
+    "data": {
+      "targetAssetTypes": [
+        "HOST"
+      ],
+      "estimated": 1,
+      "totalUpdates": 0,
+      "progress": 20,
+      "properties": [
+        {
+          "name": "state",
+          "value": "CANDIDATE",
+          "action": "UPDATE"
+        },
+        {
+          "action": "UPDATE"
+        },
+        {
+          "name": "discoveryRun",
+          "value": 1988400,
+          "action": "ADD"
+        },
+        {
+          "name": "priority",
+          "value": "NONE",
+          "action": "ADD"
+        },
+        {
+          "name": "state",
+          "value": "CONFIRMED",
+          "action": "ADD"
+        }
+      ]
+    },
+    "taskName": "GlobalInventoryUpdateTask",
+    "polling": false
+  },
+  "taskFailed": {
+    "taskClass": "com.riskiq.globalinventory.service.GlobalInventoryUpdateTask",
+    "key": {
+      "workspaceID": 2946,
+      "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153"
+    },
+    "userID": 0,
+    "startedAt": 1592313516086,
+    "completedAt": 1592313516091,
+    "lastPolledAt": null,
+    "state": "FAILED",
+    "phase": "RUNNING",
+    "reason": "An unexpected error occurred.",
+    "data": {
+      "targetAssetTypes": [
+        "HOST"
+      ],
+      "estimated": 1,
+      "totalUpdates": 0,
+      "progress": 0,
+      "properties": [
+        {
+          "name": "state",
+          "value": "CANDIDATE",
+          "action": "UPDATE"
+        },
+        {
+          "action": "UPDATE"
+        },
+        {
+          "name": "discoveryRun",
+          "value": 1988400,
+          "action": "ADD"
+        },
+        {
+          "name": "priority",
+          "value": "NONE",
+          "action": "ADD"
+        },
+        {
+          "name": "state",
+          "value": "CONFIRMED",
+          "action": "ADD"
+        }
+      ]
+    },
+    "taskName": "GlobalInventoryUpdateTask",
+    "polling": false
+  },
+  "taskIncomplete": {
+    "taskClass": "com.riskiq.globalinventory.service.GlobalInventoryUpdateTask",
+    "key": {
+      "workspaceID": 2946,
+      "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153"
+    },
+    "userID": 0,
+    "startedAt": 1592313516086,
+    "completedAt": 1592313516091,
+    "lastPolledAt": null,
+    "state": "INCOMPLETE",
+    "phase": "RUNNING",
+    "reason": "An unexpected error occurred.",
+    "data": {
+      "targetAssetTypes": [
+        "HOST"
+      ],
+      "estimated": 1,
+      "totalUpdates": 0,
+      "progress": 0,
+      "properties": [
+        {
+          "name": "state",
+          "value": "CANDIDATE",
+          "action": "UPDATE"
+        },
+        {
+          "action": "UPDATE"
+        },
+        {
+          "name": "discoveryRun",
+          "value": 1988400,
+          "action": "ADD"
+        },
+        {
+          "name": "priority",
+          "value": "NONE",
+          "action": "ADD"
+        },
+        {
+          "name": "state",
+          "value": "CONFIRMED",
+          "action": "ADD"
+        }
+      ]
+    },
+    "taskName": "GlobalInventoryUpdateTask",
+    "polling": false
+  },
+  "taskWarning": {
+    "taskClass": "com.riskiq.globalinventory.service.GlobalInventoryUpdateTask",
+    "key": {
+      "workspaceID": 2946,
+      "uuid": "3fa02425-f8d8-4f75-a630-4a4b92222153"
+    },
+    "userID": 0,
+    "startedAt": 1592313516086,
+    "completedAt": 1592313516091,
+    "lastPolledAt": null,
+    "state": "WARNING",
+    "phase": "WARNING",
+    "reason": null,
+    "data": {
+      "targetAssetTypes": [
+        "HOST"
+      ],
+      "estimated": 1,
+      "totalUpdates": 0,
+      "progress": 0,
+      "properties": [
+        {
+          "name": "state",
+          "value": "CANDIDATE",
+          "action": "UPDATE"
+        },
+        {
+          "action": "UPDATE"
+        },
+        {
+          "name": "discoveryRun",
+          "value": 1988400,
+          "action": "ADD"
+        },
+        {
+          "name": "priority",
+          "value": "NONE",
+          "action": "ADD"
+        },
+        {
+          "name": "state",
+          "value": "CONFIRMED",
+          "action": "ADD"
+        }
+      ]
+    },
+    "taskName": "GlobalInventoryUpdateTask",
+    "polling": false
+  }
+}

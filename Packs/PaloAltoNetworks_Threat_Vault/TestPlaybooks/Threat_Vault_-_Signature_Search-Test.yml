@@ -1,0 +1,153 @@
+id: PANW Threat Vault - Signature Search - Test
+version: -1
+name: PANW Threat Vault - Signature Search - Test
+fromversion: 5.0.0
+description: Testing PANW Threat Vault - Signature Search playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3320f4b8-51d7-4570-82dd-78244a9c6cc6
+    type: start
+    task:
+      id: 3320f4b8-51d7-4570-82dd-78244a9c6cc6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8071b3ab-3bea-4698-8864-d0860cc9ddab
+    type: playbook
+    task:
+      id: 8071b3ab-3bea-4698-8864-d0860cc9ddab
+      version: -1
+      name: PANW Threat Vault - Signature Search
+      playbookName: PANW Threat Vault - Signature Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cve:
+        simple: CVE-2015-8650
+      domain_name: {}
+      from:
+        simple: "0"
+      search_type:
+        simple: ips
+      signature_name: {}
+      size:
+        simple: "10"
+      vendor: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8ff2edd9-cf06-4a41-8d09-002200a0bca6
+    type: title
+    task:
+      id: 8ff2edd9-cf06-4a41-8d09-002200a0bca6
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 044d0a0a-6983-434c-87fc-ebae01fd6088
+    type: regular
+    task:
+      id: 044d0a0a-6983-434c-87fc-ebae01fd6088
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

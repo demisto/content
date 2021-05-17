@@ -1,0 +1,16 @@
+comment: Retrieves the roles that are available per shift.
+commonfields:
+  id: GetRolesPerShift
+  version: -1
+enabled: false
+name: GetRolesPerShift
+script: '-'
+tags:
+- Shift Management
+- widget
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+fromversion: 5.5.0

@@ -1,0 +1,248 @@
+id: File Enrichment - Virus Total Private API Test
+version: -1
+name: File Enrichment - Virus Total Private API Test
+description: File Enrichment - Virus Total Private API test playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3afab55-f5d7-4e92-8e0e-e120957b3132
+    type: start
+    task:
+      id: b3afab55-f5d7-4e92-8e0e-e120957b3132
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 9648565b-c711-4355-8aa2-df7a641867ce
+    type: regular
+    task:
+      id: 9648565b-c711-4355-8aa2-df7a641867ce
+      version: -1
+      name: Add File MD5 to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.MD5
+      value:
+        simple: 3f066dd1f1da052248aed5abc4a0c6a1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 7065f015-a151-4f28-8b33-b119da6d3dc7
+    type: regular
+    task:
+      id: 7065f015-a151-4f28-8b33-b119da6d3dc7
+      version: -1
+      name: Add File SHA1 to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.SHA1
+      value:
+        simple: 795b33795f0308fc5e83abc2daff1d7129dfa400
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 37a08a29-a86c-4bb8-8b14-e56f2890f4fa
+    type: regular
+    task:
+      id: 37a08a29-a86c-4bb8-8b14-e56f2890f4fa
+      version: -1
+      name: Add File SHA256 to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.SHA256
+      value:
+        simple: 42dfb222ce97c7517bc0b6333a1881bfa91539f457d261e6626d662995b97df5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 53527db1-b330-4cc3-8cd2-cf6c34ef41fe
+    type: title
+    task:
+      id: 53527db1-b330-4cc3-8cd2-cf6c34ef41fe
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: f530d2b6-3122-4cf9-80c8-2c95807d8f7a
+    type: playbook
+    task:
+      id: f530d2b6-3122-4cf9-80c8-2c95807d8f7a
+      version: -1
+      name: File Enrichment - Virus Total Private API
+      playbookName: File Enrichment - Virus Total Private API
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 7cb7fa42-950b-4413-88fb-3a036d6e4aed
+    type: condition
+    task:
+      id: 7cb7fa42-950b-4413-88fb-3a036d6e4aed
+      version: -1
+      name: DBot Score exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: DBotScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
+    type: regular
+    task:
+      id: f0e70bb8-8e19-40e6-8ef0-224f5f8280d7
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

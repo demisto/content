@@ -1,0 +1,168 @@
+category: Identity and Access Management
+commonfields:
+  id: MicrosoftGraphIdentityandAccess
+  version: -1
+configuration:
+- defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
+  display: Application ID
+  hidden: false
+  name: app_id
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Microsoft Graph Identity and Access integration to manage roles
+  and members.
+display: Microsoft Graph Identity & Access
+name: MicrosoftGraphIdentityandAccess
+script:
+  commands:
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: msgraph-identity-auth-start
+  - deprecated: false
+    description: |-
+      Run this command to complete the authorization process.
+      Should be used after running the msgraph-identity-auth-start command.
+    execution: false
+    name: msgraph-identity-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: msgraph-identity-auth-reset
+  - deprecated: false
+    description: Tests connectivity to Microsoft.
+    execution: false
+    name: msgraph-identity-auth-test
+  - deprecated: false
+    description: Lists the roles in the directory.
+    execution: false
+    name: msgraph-identity-directory-roles-list
+    arguments:
+    - name: limit
+      default: false
+      description: Maximum number of results to fetch.
+      isArray: false
+      required: false
+      defaultValue: 10
+      secret: false
+    outputs:
+    - contextPath: MSGraphIdentity.Role.deletedDateTime
+      description: The time when a role was deleted. Displays only if a role was deleted.
+      type: Date
+    - contextPath: MSGraphIdentity.Role.description
+      description: The description of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.displayName
+      description: The display name of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.id
+      description: The unique identifier of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.roleTemplateId
+      description: The ID of the directory role template on which the role is based.
+      type: String
+  - deprecated: false
+    description: Activates a role by its template ID.
+    execution: false
+    name: msgraph-identity-directory-role-activate
+    arguments:
+    - name: role_template_id
+      default: false
+      description: ID of the role template to activate. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      isArray: false
+      required: true
+      secret: false
+    outputs:
+    - contextPath: MSGraphIdentity.Role.deletedDateTime
+      description: The time when the role was deleted. Displays only if the role was deleted.
+      type: Date
+    - contextPath: MSGraphIdentity.Role.description
+      description: The description of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.displayName
+      description: The display name of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.id
+      description: The unique identifier of the directory role.
+      type: String
+    - contextPath: MSGraphIdentity.Role.roleTemplateId
+      description: The ID of the directory role template on which this role is based.
+      type: String
+  - deprecated: false
+    description: Gets all members in a role ID.
+    execution: false
+    name: msgraph-identity-directory-role-members-list
+    arguments:
+    - name: role_id
+      default: false
+      description: The ID of the application for which to get its role members list. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      isArray: false
+      required: true
+      secret: false
+    - name: limit
+      default: false
+      description: The maximum number of members to fetch.
+      defaultValue: 10
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: MSGraphIdentity.RoleMember.user_id
+      description: The unique identifier of the user in the role.
+      type: String
+    - contextPath: MSGraphIdentity.RoleMember.role_id
+      description: The unique identifier of the role specified in the input.
+      type: String
+  - deprecated: false
+    description: Adds a user to a role.
+    execution: false
+    name: msgraph-identity-directory-role-member-add
+    arguments:
+    - name: role_id
+      default: false
+      description: The ID of the role to add the user to. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      isArray: false
+      required: true
+      secret: false
+    - name: user_id
+      default: false
+      description: The ID of the user to add to the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
+      isArray: false
+      required: true
+      secret: false
+  - deprecated: false
+    description: Removes a user from a role.
+    execution: false
+    name: msgraph-identity-directory-role-member-remove
+    arguments:
+    - name: role_id
+      default: false
+      description: ID of the role from which to remove the user. Can be retrieved using the msgraph-identity-directory-roles-list command.
+      isArray: false
+      required: true
+      secret: false
+    - name: user_id
+      default: false
+      description: ID of the user to remove from the role. Can be retrieved using the msgraph-identity-directory-role-members-list command.
+      isArray: false
+      required: true
+      secret: false
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/crypto:1.0.0.16776
+fromversion: 5.0.0
+tests:
+- Identity & Access test playbook

@@ -1,0 +1,8 @@
+{
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:Error"
+    ],
+    "scimType": "invalidFilter",
+    "detail": "Invalid filter:urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore eq -1",
+    "status": "400"
+}

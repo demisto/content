@@ -1,0 +1,22 @@
+!trustar-get-phishing-submissions from_time="7 days ago"
+!trustar-get-phishing-indicators from_time="7 days ago"
+!trustar-get-reports enclave_ids=6ef1078c-a74a-4b42-9344-56c6adea0bda from_time="1 day ago"
+!trustar-get-enclaves
+!trustar-search-indicators
+!trustar-submit-report title="foo title" report_body="the report body" enclave_ids=080234eb-d818-4507-a676-dae5c5927d94
+!trustar-add-to-whitelist indicators=8.8.8.8
+!trustar-remove-from-whitelist indicator=8.8.8.8 indicator_type=IP
+!trustar-set-triage-status submission_id=6e00a714-379a-4db8-ac0c-812a629c8288 status=CONFIRMED
+!trustar-trending-indicators days_back=1 indicator_type=MALWARE
+!trustar-related-indicators indicators=WANNACRY
+!trustar-indicators-metadata indicators=37.26.41.210
+!trustar-get-whitelisted-indicators
+!trustar-get-indicators-for-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288
+!trustar-report-details report_id=6e00a714-379a-4db8-ac0c-812a629c8288
+!trustar-update-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 title="The new title"
+!trustar-search-reports search_term=WANNACRY
+!trustar-correlated-reports indicators=WANNACRY
+!trustar-indicators-summaries indicators=37.26.41.210
+!trustar-copy-report report_id=6e00a714-379a-4db8-ac0c-812a629c8288 dest_enclave_id=c879f089-ffbd-4a2f-8144-d3e8bdbd6981
+!trustar-move-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db dest-enclave-id=71001c42-2d05-4491-bf35-ee7c678b92da
+!trustar-delete-report report_id=20ce2d7f-4a25-4bed-a74e-ec99bf0b46db

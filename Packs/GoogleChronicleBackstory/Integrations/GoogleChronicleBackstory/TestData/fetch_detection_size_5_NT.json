@@ -1,0 +1,678 @@
+{
+  "detections": [
+    {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_e6abfcb5-1b85-41b0-b64c-695b3250436f&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_e6abfcb5-1b85-41b0-b64c-695b32504361&selectedTimestamp=2020-12-21T03:54:00Z",
+     "ruleId": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f",
+     "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
+     "alertState": "ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "10.0.XX.XX"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.128428Z",
+   "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504361",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:58:06.804Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ],
+          "answers": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1,
+            "ttl": 11111,
+            "data": "10.0.XX.XX"
+           }
+          ],
+          "response": true
+         }
+        }
+       }
+      },
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:56:58.802Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    },
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:58:06.804Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ],
+          "answers": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1,
+            "ttl": 11111,
+            "data": "10.0.XX.XX"
+           }
+          ],
+          "response": true
+         }
+        }
+       }
+      },
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:56:58.802Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "connections"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  },
+    {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_e6abfcb5-1b85-41b0-b64c-695b3250436f&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_e6abfcb5-1b85-41b0-b64c-695b32504362&selectedTimestamp=2020-12-21T03:54:00Z",
+     "ruleId": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f",
+     "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
+     "alertState": "NOT_ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "10.0.XX.XX"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.383774Z",
+   "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504362",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T03:00:11.500Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:44.752710Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  },
+    {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_e6abfcb5-1b85-41b0-b64c-695b3250436f&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_e6abfcb5-1b85-41b0-b64c-695b32504361&selectedTimestamp=2020-12-21T03:54:00Z",
+     "ruleId": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f",
+     "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
+     "alertState": "ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "10.0.XX.XX"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.128428Z",
+   "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504363",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:58:06.804Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ],
+          "answers": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1,
+            "ttl": 11111,
+            "data": "10.0.XX.XX"
+           }
+          ],
+          "response": true
+         }
+        }
+       }
+      },
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:56:58.802Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    },
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:58:06.804Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ],
+          "answers": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1,
+            "ttl": 11111,
+            "data": "10.0.XX.XX"
+           }
+          ],
+          "response": true
+         }
+        }
+       }
+      },
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T02:56:58.802Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:46.559472Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "connections"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  },
+    {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_e6abfcb5-1b85-41b0-b64c-695b3250436f&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_e6abfcb5-1b85-41b0-b64c-695b32504362&selectedTimestamp=2020-12-21T03:54:00Z",
+     "ruleId": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f",
+     "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
+     "alertState": "NOT_ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "10.0.XX.XX"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.383774Z",
+   "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504364",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T03:00:11.500Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:44.752710Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  },
+    {
+   "type": "RULE_DETECTION",
+   "detection": [
+    {
+     "ruleName": "SampleRule",
+     "urlBackToProduct": "https://dummy-chronicle/ruleDetections?ruleId=ru_e6abfcb5-1b85-41b0-b64c-695b3250436f&selectedList=RuleDetectionsViewTimeline&selectedDetectionId=de_e6abfcb5-1b85-41b0-b64c-695b32504362&selectedTimestamp=2020-12-21T03:54:00Z",
+     "ruleId": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f",
+     "ruleVersion": "ru_e6abfcb5-1b85-41b0-b64c-695b3250436f@v_1602631093_146879000",
+     "alertState": "NOT_ALERTING",
+     "ruleType": "MULTI_EVENT",
+     "detectionFields": [
+      {
+       "key": "client_ip",
+       "value": "10.0.XX.XX"
+      }
+     ]
+    }
+   ],
+   "createdTime": "2020-12-21T03:12:50.383774Z",
+   "id": "de_e6abfcb5-1b85-41b0-b64c-695b32504365",
+   "timeWindow": {
+    "startTime": "2020-12-21T02:54:00Z",
+    "endTime": "2020-12-21T03:54:00Z"
+   },
+   "collectionElements": [
+    {
+     "references": [
+      {
+       "event": {
+        "metadata": {
+         "eventTimestamp": "2020-12-21T03:00:11.500Z",
+         "eventType": "NETWORK_DNS",
+         "productName": "ExtraHop",
+         "ingestedTimestamp": "2020-12-21T03:02:44.752710Z"
+        },
+        "principal": {
+         "hostname": "ray-xxx-laptop",
+         "ip": [
+          "10.0.XX.XX"
+         ],
+         "mac": [
+          "88:a6:XX:XX:XX:XX"
+         ]
+        },
+        "target": {
+         "ip": [
+          "10.0.XX.XX"
+         ]
+        },
+        "securityResult": [
+         {
+          "action": [
+           "UNKNOWN_ACTION"
+          ]
+         }
+        ],
+        "network": {
+         "applicationProtocol": "DNS",
+         "dns": {
+          "questions": [
+           {
+            "name": "is5-ssl.mzstatic.com",
+            "type": 1
+           }
+          ]
+         }
+        }
+       }
+      }
+     ],
+     "label": "event"
+    }
+   ],
+   "detectionTime": "2020-12-21T03:54:00Z"
+  }
+  ],
+  "nextPageToken": "fetch_detection_size_5_NT"
+}

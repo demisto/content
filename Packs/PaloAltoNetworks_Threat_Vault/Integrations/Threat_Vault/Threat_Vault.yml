@@ -1,0 +1,384 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Palo Alto Networks Threat Vault
+  version: -1
+configuration:
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
+display: Palo Alto Networks Threat Vault
+name: Palo Alto Networks Threat Vault
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The SHA256 hash of the antivirus signature.
+      isArray: false
+      name: sha256
+      required: false
+      secret: false
+    - default: false
+      description: The signature ID of the antivirus.
+      isArray: false
+      name: signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the antivirus signature.
+    execution: false
+    name: threatvault-antivirus-signature-get
+    outputs:
+      - contextPath: ThreatVault.Antivirus.active
+        description: Whether the antivirus signature is active.
+        type: Bool
+      - contextPath: ThreatVault.Antivirus.category
+        description: The category of the antivirus signature.
+        type: String
+      - contextPath: ThreatVault.Antivirus.createTime
+        description: The time the antivirus signature was created.
+        type: String
+      - contextPath: ThreatVault.Antivirus.release
+        description: The release details of the antivirus signature.
+        type: Unknown
+      - contextPath: ThreatVault.Antivirus.sha256
+        description: The sha256 hash of the antivirus signature.
+        type: String
+      - contextPath: ThreatVault.Antivirus.signatureId
+        description: The ID of the antivirus signature.
+        type: Number
+      - contextPath: ThreatVault.Antivirus.signatureName
+        description: The name of the antivirus signature.
+        type: String
+  - arguments:
+    - default: true
+      description: The SHA256 hash of the antivirus signature.
+      isArray: true
+      name: file
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks the reputation of an antivirus in Threat Vault.
+    execution: false
+    name: file
+    outputs:
+      - contextPath: DBotScore.Vendor
+        description: The vendor used to calculate the score.
+        type: String
+      - contextPath: DBotScore.Score
+        description: The actual score.
+        type: Number
+      - contextPath: DBotScore.Type
+        description: The indicator type.
+        type: String
+      - contextPath: DBotScore.Indicator
+        description: The indicator that was tested.
+        type: String
+      - contextPath: File.MD5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: File.SHA1
+        description: The SHA1 hash of the file.
+        type: String
+      - contextPath: File.SHA256
+        description: The SHA256 hash of the file.
+        type: String
+      - contextPath: File.Malicious.Vendor
+        description: For malicious files, the vendor that made the decision.
+        type: String
+  - arguments:
+    - default: false
+      description: The ID of the DNS signature.
+      isArray: false
+      name: dns_signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the DNS signature. For more details see the integration README.
+    execution: false
+    name: threatvault-dns-signature-get-by-id
+    outputs:
+      - contextPath: ThreatVault.DNS.active
+        description: Whether the DNS signature is active.
+        type: Bool
+      - contextPath: ThreatVault.DNS.category
+        description: The category of the DNS signature.
+        type: String
+      - contextPath: ThreatVault.DNS.createTime
+        description: The time the DNS signature was created.
+        type: String
+      - contextPath: ThreatVault.DNS.domainName
+        description: The domain name of the DNS signature.
+        type: String
+      - contextPath: ThreatVault.DNS.release
+        description: The release details of the DNS signature.
+        type: Unknown
+      - contextPath: ThreatVault.DNS.signatureId
+        description: The ID of the DNS signature.
+        type: Number
+      - contextPath: ThreatVault.DNS.signatureName
+        description: The name of the DNS signature.
+        type: String
+  - arguments:
+    - default: false
+      description: ID of the antispyware signature.
+      isArray: false
+      name: signature_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the antispyware signature. For more details see the integration README.
+    execution: false
+    name: threatvault-antispyware-signature-get-by-id
+    outputs:
+    - contextPath: ThreatVault.AntiSpyware.firstReleaseVersion
+      description: The first released version of the antispyware.
+      type: Number
+    - contextPath: ThreatVault.AntiSpyware.signatureName
+      description: The name of the antispyware signature.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.firstReleaseTime
+      description: The time the antispyware was first released.
+      type: AntiSpyware
+    - contextPath: ThreatVault.AntiSpyware.vendor
+      description: The antispyware vendor.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.latestReleaseTime
+      description: The latest release time of the antispyware.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.metadata
+      description: The metadata of the antispyware.
+      type: Unknown
+    - contextPath: ThreatVault.AntiSpyware.signatureType
+      description: The signature type of the antispyware.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.cve
+      description: The status of the antispyware CVE.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.status
+      description: The status of the antispyware.
+      type: String
+    - contextPath: ThreatVault.AntiSpyware.signatureId
+      description: The antispyware signature ID.
+      type: Number
+    - contextPath: ThreatVault.AntiSpyware.latestReleaseVersion
+      description: The latest released version of the antispyware.
+      type: Number
+  - arguments:
+    - default: false
+      description: The IP address to search.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the IP address geolocation.
+    execution: false
+    name: threatvault-ip-geo-get
+    outputs:
+    - contextPath: ThreatVault.IP.CountryCode
+      description: The country code.
+      type: String
+    - contextPath: ThreatVault.IP.CountryName
+      description: The country name.
+      type: String
+    - contextPath: ThreatVault.IP.ipAddress
+      description: The IP address.
+      type: String
+  - arguments:
+    - default: true
+      name: ip
+      required: false
+      description: IP address to query, e.g., !ip 1.1.1.1
+    deprecated: false
+    description: Check IP location.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country of the IP address.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+  - arguments:
+    - default: false
+      description: The signature name to search.
+      isArray: false
+      name: signature_name
+      required: true
+      secret: false
+    - default: false
+      description: From which signature to return results. Default is 0.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which signature to return results. Default is from plus 10.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates an antivirus signature search.
+    execution: false
+    name: threatvault-antivirus-signature-search
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: The ID that was searched.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: The status of the search.
+      type: String
+  - arguments:
+    - default: false
+      description: The signature name to search.
+      isArray: false
+      name: signature_name
+      required: false
+      secret: false
+    - default: false
+      description: The domain name to search.
+      isArray: false
+      name: domain_name
+      required: false
+      secret: false
+    - default: false
+      description: From which signature to return results. Default is 0.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which signature to return results. Default is from plus 10.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a DNS signature search.
+    execution: false
+    name: threatvault-dns-signature-search
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: The ID to search.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: The status of the search.
+      type: String
+  - arguments:
+    - default: false
+      description: The signature name to search.
+      isArray: false
+      name: signature_name
+      required: false
+      secret: false
+    - default: false
+      description: The vendor name to search.
+      isArray: false
+      name: vendor
+      required: false
+      secret: false
+    - default: false
+      description: The CVE name to search.
+      isArray: false
+      name: cve
+      required: false
+      secret: false
+    - default: false
+      description: From which signature to return results. Default is 0.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: To which signature to return results. Default is from plus 10.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates an antispyware signature search.
+    execution: false
+    name: threatvault-antispyware-signature-search
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: The ID to search.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: The status of the search.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID to search.
+      isArray: false
+      name: search_request_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Search type. "ips" for antispyware, "dns" for DNS, and "panav" for antivirus.
+      isArray: false
+      name: search_type
+      predefined:
+      - ips
+      - dns
+      - panav
+      required: true
+      secret: false
+    deprecated: false
+    description: Initiates an antispyware signature search.
+    execution: false
+    name: threatvault-signature-search-results
+    outputs:
+    - contextPath: ThreatVault.Search.search_request_id
+      description: The ID that was searched.
+      type: String
+    - contextPath: ThreatVault.Search.status
+      description: The status of the search.
+      type: String
+    - contextPath: ThreatVault.Search.page_count
+      description: The number of results returned in this specific search.
+      type: Number
+    - contextPath: ThreatVault.Search.total_count
+      description: The number of results available for this specific search.
+      type: Number
+    - contextPath: ThreatVault.Search.search_type
+      description: The search type. Can be either "ips", "dns". or "panav".
+      type: String
+    - contextPath: ThreatVault.Searchf.signatures
+      description: A list of all the signatures found for this specific search.
+      type: Unknown
+  dockerimage: demisto/python3:3.9.1.14969
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- PANW Threat Vault - Signature Search - Test
+fromversion: 5.0.0

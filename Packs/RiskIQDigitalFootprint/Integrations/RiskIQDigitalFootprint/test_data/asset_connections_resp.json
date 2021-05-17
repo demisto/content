@@ -1,0 +1,294 @@
+{
+    "success": {
+        "CONTACT": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "DOMAIN": {
+            "totalElements": 1,
+            "totalPages": 1,
+            "last": true,
+            "numberOfElements": 1,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [
+                {
+                    "name": "dummydomain.com",
+                    "type": "DOMAIN",
+                    "firstSeen": 1322692530000,
+                    "lastSeen": 1590446111849,
+                    "uuid": "snma3234s-ef3rdwkc",
+                    "label": "dummydomain.com",
+                    "description": "dummydomain.com",
+                    "autoConfirmed": true,
+                    "enterprise": false,
+                    "confidence": "ABSOLUTE",
+                    "hostExcluded": false,
+                    "id": 219478790,
+                    "state": "CONFIRMED",
+                    "priority": "NONE",
+                    "keystone": false,
+                    "updatedAt": 1588289026853,
+                    "tags": [
+                        {
+                            "createdAt": 1591794205000,
+                            "updatedAt": 1591794205000,
+                            "status": "ACTIVE",
+                            "workspaceTagID": 511,
+                            "workspaceID": 2946,
+                            "name": "Dummy",
+                            "id": 511
+                        }
+                    ],
+                    "organization": [
+                        {
+                            "createdAt": 1591794205000,
+                            "updatedAt": 1591794205000,
+                            "status": "ACTIVE",
+                            "workspaceOrganizationID": 51,
+                            "workspaceID": 2946,
+                            "name": "Dummy Org",
+                            "id": 51
+                        },
+                        {
+                            "createdAt": 1591794205000,
+                            "updatedAt": 1591794205000,
+                            "status": "ACTIVE",
+                            "workspaceOrganizationID": 512,
+                            "workspaceID": 2946,
+                            "name": "Org Test",
+                            "id": 512
+                        }
+                    ]
+                }
+            ],
+            "mark": null,
+            "facets": []
+        },
+        "IP_BLOCK": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "IP_ADDRESS": {
+            "totalElements": 1,
+            "totalPages": 1,
+            "last": true,
+            "numberOfElements": 1,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [
+                {
+                    "name": "0.0.0.0",
+                    "type": "IP_ADDRESS",
+                    "firstSeen": 1589759453711,
+                    "lastSeen": 1590446107730,
+                    "uuid": "234jhbjww-2s34efdn",
+                    "label": "0.0.0.0",
+                    "description": "0.0.0.0",
+                    "createdAt": 1589508027551,
+                    "autoConfirmed": true,
+                    "enterprise": false,
+                    "confidence": "ABSOLUTE",
+                    "hostExcluded": false,
+                    "state": "CONFIRMED",
+                    "id": 222198299,
+                    "priority": "NONE",
+                    "keystone": false,
+                    "updatedAt": 1589508027551
+                }
+            ],
+            "mark": null,
+            "facets": []
+        },
+        "SSL_CERT": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "AS": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "PAGE": {
+            "totalElements": 20,
+            "totalPages": 10,
+            "last": true,
+            "numberOfElements": 2,
+            "first": true,
+            "size": 2,
+            "number": 0,
+            "content": [
+                {
+                    "name": "https://dummy.com/",
+                    "type": "PAGE",
+                    "firstSeen": 1589759453711,
+                    "lastSeen": 1590446107730,
+                    "uuid": "234jhbjww-23dn",
+                    "label": "https://dummy.com/",
+                    "description": "https://dummy.com/",
+                    "createdAt": 1589508027551,
+                    "autoConfirmed": true,
+                    "enterprise": false,
+                    "confidence": "ABSOLUTE",
+                    "hostExcluded": false,
+                    "state": "CONFIRMED",
+                    "id": 222198299,
+                    "priority": "NONE",
+                    "keystone": false,
+                    "updatedAt": 1589508027551
+                },
+                {
+                    "name": "http://dummy.dummy.com/",
+                    "type": "PAGE",
+                    "firstSeen": 1589658300552,
+                    "lastSeen": 1590446151938,
+                    "uuid": "sdds3345vs",
+                    "label": "http://dummy.dummy.com/",
+                    "description": "http://dummy.dummy.com/",
+                    "createdAt": 1589507929368,
+                    "autoConfirmed": true,
+                    "enterprise": false,
+                    "confidence": "ABSOLUTE",
+                    "hostExcluded": false,
+                    "id": 222197543,
+                    "state": "CONFIRMED",
+                    "priority": "NONE",
+                    "keystone": false,
+                    "updatedAt": 1589507929368,
+                    "brands": [
+                        {
+                            "createdAt": 1591794205000,
+                            "updatedAt": 1591794205000,
+                            "status": "ACTIVE",
+                            "workspaceBrandID": 5117,
+                            "workspaceID": 2946,
+                            "name": "DummyBrand",
+                            "id": 5117
+                        }
+                    ]
+                }
+            ],
+            "mark": null,
+            "facets": []
+        }
+    },
+    "zeroRecords": {
+        "CONTACT": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "DOMAIN": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "IP_BLOCK": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "IP_ADDRESS": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "SSL_CERT": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "AS": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        },
+        "PAGE": {
+            "totalElements": 0,
+            "totalPages": 0,
+            "last": true,
+            "numberOfElements": 0,
+            "first": true,
+            "size": 20,
+            "number": 0,
+            "content": [],
+            "mark": null,
+            "facets": []
+        }
+    }
+}

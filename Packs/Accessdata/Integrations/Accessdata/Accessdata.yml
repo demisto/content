@@ -1,0 +1,180 @@
+commonfields:
+  id: Accessdata
+  version: -1
+name: Accessdata
+display: Accessdata
+category: Forensics & Malware Analysis
+description: Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+configuration:
+- display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
+  name: server_name
+  defaultvalue: server_url
+  type: 0
+  required: true
+- display: The token is required to connect to Quinc.
+  name: Token
+  defaultvalue: 1861a70a-3287-4289-938b-bbab1446e2d2
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  commands:
+  - name: accessdata-legacyagent-get-processlist
+    arguments:
+    - name: caseid
+      description: The ID of the case.
+    - name: target_ip
+      required: true
+      description: The IP address of the agent.
+      defaultValue: locallhost
+    outputs:
+    - contextPath: Accessdata.Job.ID
+      description: The ID of the job.
+      type: string
+    - contextPath: Accessdata.Job.CaseID
+      description: The Case ID.
+      type: string
+    - contextPath: Accessdata.Job.CaseJobID
+      description: The concatenated CaseID and JobID (such as "1_800").
+      type: string
+    - contextPath: Accessdata.Job.Type
+      description: The job type.
+      type: string
+    - contextPath: Accessdata.Job.State
+      description: The execution state of the job.
+      type: string
+    description: Returns a list of processes from the legacy agent.
+  - name: accessdata-legacyagent-get-memorydump
+    arguments:
+    - name: caseid
+      description: The ID of the case.
+    - name: target_ip
+      required: true
+      description: The IP address of the agent.
+      defaultValue: locallhost
+    outputs:
+    - contextPath: Accessdata.Job.ID
+      description: The ID of the job.
+      type: string
+    - contextPath: Accessdata.Job.CaseID
+      description: The ID of the case.
+      type: string
+    - contextPath: Accessdata.Job.CaseJobID
+      description: The concatenated CaseID and JobID (such as "1_800").
+      type: string
+    - contextPath: Accessdata.Job.Type
+      description: The job type.
+      type: string
+    - contextPath: Accessdata.Job.State
+      description: The execution state of the job.
+      type: string
+    description: Creates a legacy agent memory dump.
+  - name: accessdata-read-casefile
+    arguments:
+    - name: filepath
+      required: true
+      description: The path of the case file.
+      defaultValue: localhost
+    outputs:
+    - contextPath: Accessdata.File.Contents
+      description: The contents of the file.
+      type: string
+    description: Reads the file from a case folder and returns the contents to the current context.
+  - name: accessdata-jobstatus-scan
+    arguments:
+    - name: caseJobID
+      required: true
+      description: The concatenated CaseID and JobID (such as "1_800").
+      isArray: true
+    outputs:
+    - contextPath: Accessdata.Job.CaseID
+      description: The case ID.
+      type: string
+    - contextPath: Accessdata.Job.ID
+      description: The job ID.
+      type: string
+    - contextPath: Accessdata.Job.CaseJobID
+      description: The concatenated CaseID and JobID (such as "1_800").
+      type: string
+    - contextPath: Accessdata.Job.State
+      description: The state of the job's execution.
+      type: string
+    description: Checks status of the job.
+  - name: accessdata-get-jobstatus-processlist
+    arguments:
+    - name: caseID
+      required: true
+      description: The ID of the case.
+      defaultValue: "1"
+    - name: jobID
+      required: true
+      description: The ID of the job.
+      defaultValue: "1"
+    outputs:
+    - contextPath: Accessdata.Job.State
+      description: The state of the job.
+      type: string
+    - contextPath: Accessdata.Job.Result
+      description: The path to the snapshot with the processes list.
+      type: string
+    - contextPath: Accessdata.Job.ID
+      description: The ID of the job.
+      type: number
+    - contextPath: Accessdata.Job.CaseID
+      description: The case ID of the job.
+      type: number
+    - contextPath: Accessdata.Job.CaseJobID
+      description: The concatenated CaseID and JobID (such as "1_800").
+      type: string
+    description: Returns a snapshot path from the results of the process list job.
+  - name: accessdata-get-jobstatus-memorydump
+    arguments:
+    - name: caseID
+      required: true
+      description: The ID of the case.
+      defaultValue: "1"
+    - name: jobID
+      required: true
+      description: The ID of the job.
+      defaultValue: "1"
+    outputs:
+    - contextPath: Accessdata.Job.State
+      description: The state of the job.
+      type: string
+    - contextPath: Accessdata.Job.Result
+      description: The path to the memory dump.
+      type: string
+    - contextPath: Accessdata.Job.ID
+      description: The ID of the job.
+      type: number
+    - contextPath: Accessdata.Job.CaseID
+      description: The case ID of the job.
+      type: number
+    - contextPath: Accessdata.Job.CaseJobID
+      description: The concatenated CaseID and JobID (such as "1_800").
+      type: string
+    description: Returns the memory dump path from the result of the memory dump job.
+  - name: accessdata-get-processing-case-id
+    arguments: []
+    outputs:
+    - contextPath: Accessdata.ProcessingCaseId
+      description: The ID of Quin-C processing case.
+      type: string
+    description: Returns the ID of the Quin-C processing case.
+  dockerimage: demisto/python3:3.7.4.977
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- No test
+fromversion: 5.0.0

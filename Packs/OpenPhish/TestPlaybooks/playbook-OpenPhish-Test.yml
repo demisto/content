@@ -1,0 +1,270 @@
+id: OpenPhish Test Playbook
+version: -1
+name: OpenPhish Test Playbook
+description: Checking OpenPhish integration by running it on both known phishing and a safe URL and checking the results
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d7a31bf3-42c5-4ef4-8979-805d69aad515
+    type: start
+    task:
+      id: d7a31bf3-42c5-4ef4-8979-805d69aad515
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 80d1e291-1978-43b2-8917-9813d01cd792
+    type: regular
+    task:
+      id: 80d1e291-1978-43b2-8917-9813d01cd792
+      version: -1
+      name: Check non-malicious URL
+      script: OpenPhish|||url
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${inputs.Non malicious URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5b37df0e-683b-4b73-8645-4125dafc6766
+    type: condition
+    task:
+      id: 5b37df0e-683b-4b73-8645-4125dafc6766
+      version: -1
+      name: Check if found malicious
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${URL.Data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7db53265-2562-49c3-8a7c-39f873426169
+    type: regular
+    task:
+      id: 7db53265-2562-49c3-8a7c-39f873426169
+      version: -1
+      name: Check malicious URL
+      script: OpenPhish|||url
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url:
+        simple: ${inputs.Malicious URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c5b88e7a-9e3b-4431-8c64-8b5f6ea27c5c
+    type: regular
+    task:
+      id: c5b88e7a-9e3b-4431-8c64-8b5f6ea27c5c
+      version: -1
+      name: False Positive
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: False Positive - found non-malicious URL as malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6576b7f6-bf3b-488b-83c5-b318db6cdbcb
+    type: condition
+    task:
+      id: 6576b7f6-bf3b-488b-83c5-b318db6cdbcb
+      version: -1
+      name: Check if found malicious
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${URL.Data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0ec8f008-7c74-42b6-89ff-34cb555840cb
+    type: regular
+    task:
+      id: 0ec8f008-7c74-42b6-89ff-34cb555840cb
+      version: -1
+      name: False Negative
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Did not find malicious URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3c42ee0e-5dcd-49c2-8469-27225beacefc
+    type: regular
+    task:
+      id: 3c42ee0e-5dcd-49c2-8469-27225beacefc
+      version: -1
+      name: Check OpenPhish status
+      description: Show OpenPhish database status
+      script: OpenPhish|||openphish-status
+      type: regular
+      iscommand: true
+      brand: OpenPhish
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1145,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Malicious URL
+  value:
+    simple: http://www.santoguia.net/sew/html/
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: Non malicious URL
+  value:
+    simple: http://google.com
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0

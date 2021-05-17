@@ -1,0 +1,803 @@
+id: playbook2
+version: -1
+system: true
+fromversion: 5.0.0
+name: Phishing Playbook - Manual
+description: Master playbook for phishing incidents. This playbook is a manual playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 42767ebd-7fcd-4525-859f-be9d16a8517c
+    type: start
+    task:
+      id: 42767ebd-7fcd-4525-859f-be9d16a8517c
+      version: -1
+      description: ""
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: f61f3880-e5f6-4a41-8af8-3349e3ebffff
+    type: title
+    task:
+      id: f61f3880-e5f6-4a41-8af8-3349e3ebffff
+      version: -1
+      description: ""
+      name: Engage
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: d69a6289-b692-404c-8f90-d37d72aa265c
+    type: regular
+    task:
+      id: d69a6289-b692-404c-8f90-d37d72aa265c
+      version: -1
+      name: Notify management chain
+      description: 'Notify appropriate people inside the organization. '
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 21cb9178-78a0-4610-801f-3bc5f808e4a2
+    type: regular
+    task:
+      id: 21cb9178-78a0-4610-801f-3bc5f808e4a2
+      version: -1
+      name: Initial triage
+      description: 1. Make sure that there is relevant information in the incident - system name, end user name and initial severity as reported.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+  "5":
+    id: "5"
+    taskid: b7f2e51f-a39f-4cba-881d-e7efbef2553e
+    type: title
+    task:
+      id: b7f2e51f-a39f-4cba-881d-e7efbef2553e
+      version: -1
+      description: ""
+      name: 'Investigation Step 1: Initial Inspection'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 30e833d0-8336-4ecd-8a36-a997ac1bb100
+    type: regular
+    task:
+      id: 30e833d0-8336-4ecd-8a36-a997ac1bb100
+      version: -1
+      name: Inspect the email body for malicious URLs
+      description: Check the email body attached to the incident and see if it has malicious URLs in it using threat feeds
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 835
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 0aba5f0e-c71f-4a1f-8f7a-993f727e3825
+    type: regular
+    task:
+      id: 0aba5f0e-c71f-4a1f-8f7a-993f727e3825
+      version: -1
+      name: Inspect the email attachments
+      description: Check the attachments with threat services to see if any of them is known bad
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1010
+        }
+      }
+  "8":
+    id: "8"
+    taskid: fa90abdd-2ec1-490b-8a9e-2acc6f2f721d
+    type: regular
+    task:
+      id: fa90abdd-2ec1-490b-8a9e-2acc6f2f721d
+      version: -1
+      name: Is the sender name or email address identified as bad by threat feeds?
+      description: Check the sender email and name against threat feed sources.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+  "9":
+    id: "9"
+    taskid: d9fad845-7f5b-4c79-8835-2e8358c84e04
+    type: regular
+    task:
+      id: d9fad845-7f5b-4c79-8835-2e8358c84e04
+      version: -1
+      name: Check if the hostname is being misrepresented?
+      description: |-
+        Check if domain of sender or any hostname in the URLs inside the email body are misrepresented. See if the URL text versus the hostname shown are different by comparing the link with the text. Also carefully inspected the URLs for spelling spoofing which
+         is typically a sign of phishing email.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 5d36d65b-d63f-40b7-8167-2a341e9bed62
+    type: condition
+    task:
+      id: 5d36d65b-d63f-40b7-8167-2a341e9bed62
+      version: -1
+      name: Is this a real phishing email?
+      description: Based on the steps above, is this really a phishing email?
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "12"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1535
+        }
+      }
+  "11":
+    id: "11"
+    taskid: b37377be-5c13-41f5-8635-69ea34571af7
+    type: regular
+    task:
+      id: b37377be-5c13-41f5-8635-69ea34571af7
+      version: -1
+      name: Close the investigation as false positive
+      description: Close the investigation as false positive and reply to the user sending the email that it is not malicious.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    view: |-
+      {
+        "position": {
+          "x": 278,
+          "y": 1909
+        }
+      }
+  "12":
+    id: "12"
+    taskid: e76cfd73-35f3-4065-8e59-c37e365cd06c
+    type: regular
+    task:
+      id: e76cfd73-35f3-4065-8e59-c37e365cd06c
+      version: -1
+      name: Assess severity
+      description: 'Based on the end user affected, and other information assess and change the severity if needed. '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1710
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 5445acdd-df36-403e-8635-a0cbc3bd3f04
+    type: regular
+    task:
+      id: 5445acdd-df36-403e-8635-a0cbc3bd3f04
+      version: -1
+      name: Assign and involve appropriate personnel
+      description: 'Invite the relevant users for investigation - malware expert and network experts if needed. '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1909
+        }
+      }
+  "14":
+    id: "14"
+    taskid: eb2b0d5a-cc72-4640-8116-85750701ae1d
+    type: title
+    task:
+      id: eb2b0d5a-cc72-4640-8116-85750701ae1d
+      version: -1
+      description: ""
+      name: 'Investigation Step 2: Deeper Analysis'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2070
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 92ae3779-12c5-4a24-827e-56e413088b80
+    type: regular
+    task:
+      id: 92ae3779-12c5-4a24-827e-56e413088b80
+      version: -1
+      description: ""
+      name: Get all the URLs from the email
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2205
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 13e0228e-ad6a-4148-8aa6-55e8143a4620
+    type: regular
+    task:
+      id: 13e0228e-ad6a-4148-8aa6-55e8143a4620
+      version: -1
+      description: ""
+      name: Get all the hostnames inside the email
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2380
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 05855c19-9221-478d-8c83-4145aa2cff16
+    type: regular
+    task:
+      id: 05855c19-9221-478d-8c83-4145aa2cff16
+      version: -1
+      name: Fetch all the files from the URL
+      description: 'Use curl or similar tool to download all the files from the URLs in the email. '
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2555
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 010895a1-9f86-4106-8e56-8f6889d5e228
+    type: condition
+    task:
+      id: 010895a1-9f86-4106-8e56-8f6889d5e228
+      version: -1
+      name: Are the files download malicious - hash inspection?
+      description: Check the files MD5 and SHA1 against the threat feed databases.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "19"
+      "yes":
+      - "23"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2730
+        }
+      }
+  "19":
+    id: "19"
+    taskid: 2580b31a-6c04-45b1-8752-959f66084ae3
+    type: condition
+    task:
+      id: 2580b31a-6c04-45b1-8752-959f66084ae3
+      version: -1
+      name: Are the files download malicious - static and dynamic analysis?
+      description: Check the files in a sandbox solution to see if they are malicious.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "22"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2905
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 24063b39-4c30-4ef2-8e7c-36081b45faaa
+    type: condition
+    task:
+      id: 24063b39-4c30-4ef2-8e7c-36081b45faaa
+      version: -1
+      name: Is any URL malicious based on sandbox inspection?
+      description: 'Use Cuckoo or similar sandbox solutions for fetching the content of the URL for deeper analysis. '
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "21"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+  "21":
+    id: "21"
+    taskid: 9c572188-54b5-4d56-8e62-95ee93e3a157
+    type: regular
+    task:
+      id: 9c572188-54b5-4d56-8e62-95ee93e3a157
+      version: -1
+      description: ""
+      name: Consider this email as phishing and move to "Response Section"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    view: |-
+      {
+        "position": {
+          "x": 215,
+          "y": 3255
+        }
+      }
+  "22":
+    id: "22"
+    taskid: 1f4bba74-3847-4c9f-b515-03ceb965ab32
+    type: regular
+    task:
+      id: 1f4bba74-3847-4c9f-b515-03ceb965ab32
+      version: -1
+      description: ""
+      name: Consider this email as phishing and move to "Response Section"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    view: |-
+      {
+        "position": {
+          "x": 631,
+          "y": 3080
+        }
+      }
+  "23":
+    id: "23"
+    taskid: ff551c65-6d74-460d-8e4d-4a5a84517e9b
+    type: regular
+    task:
+      id: ff551c65-6d74-460d-8e4d-4a5a84517e9b
+      version: -1
+      description: ""
+      name: Consider this email as phishing and move to "Response Section"
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    view: |-
+      {
+        "position": {
+          "x": 1024.5,
+          "y": 2905
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 3b29ac0a-190d-46bf-80cf-dbc1197d2f80
+    type: title
+    task:
+      id: 3b29ac0a-190d-46bf-80cf-dbc1197d2f80
+      version: -1
+      description: ""
+      name: 'Investigation Step 3: Is it a Campaign?'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3527
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 78cc334d-fe36-4cb0-8e63-dbb571077edc
+    type: condition
+    task:
+      id: 78cc334d-fe36-4cb0-8e63-dbb571077edc
+      version: -1
+      name: Did we have a similar phishing email earlier?
+      description: Search past phishing investigations for subject sender, email content and URLs.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "26"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3676
+        }
+      }
+  "26":
+    id: "26"
+    taskid: ec15c113-29a0-4ab5-85fc-3fc1fbe85a70
+    type: regular
+    task:
+      id: ec15c113-29a0-4ab5-85fc-3fc1fbe85a70
+      version: -1
+      description: ""
+      name: Mark this as a campaign rather than isolated incident.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    view: |-
+      {
+        "position": {
+          "x": 278,
+          "y": 3841
+        }
+      }
+  "27":
+    id: "27"
+    taskid: e3710c0f-861d-4a9a-8e89-3488f572d74e
+    type: regular
+    task:
+      id: e3710c0f-861d-4a9a-8e89-3488f572d74e
+      version: -1
+      name: Link old and new incidents to this master incident.
+      description: Future emails with similar subject should be associated with this incident
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    view: |-
+      {
+        "position": {
+          "x": 575,
+          "y": 4005
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 0386fa2c-a246-4dd9-8592-976b630148fc
+    type: title
+    task:
+      id: 0386fa2c-a246-4dd9-8592-976b630148fc
+      version: -1
+      description: ""
+      name: Respond
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4180
+        }
+      }
+  "29":
+    id: "29"
+    taskid: faf506e6-c1bd-49ee-8348-bdb258984785
+    type: regular
+    task:
+      id: faf506e6-c1bd-49ee-8348-bdb258984785
+      version: -1
+      name: Notify internal PR team if this is a campaign
+      description: 'If we identified multiple emails with similar content, subject and identified this as a campaign, we need to notify our users. Send an email to internal communications team with the details - like sender, content etc. '
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4365
+        }
+      }
+  "30":
+    id: "30"
+    taskid: a0b42339-fa44-4215-8fdd-8dc900011dd8
+    type: regular
+    task:
+      id: a0b42339-fa44-4215-8fdd-8dc900011dd8
+      version: -1
+      name: Block email on the server
+      description: |-
+        Identify the appropriate headers from the initial email beyond subject
+         and sender email to make sure we can effectively block this on server. This
+         task needs analysis of header to make sure we do not block other emails and
+         still be effective in blocking.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4568
+        }
+      }
+  "31":
+    id: "31"
+    taskid: e93a15aa-1c5d-46ff-813c-b1f6eed114f3
+    type: regular
+    task:
+      id: e93a15aa-1c5d-46ff-813c-b1f6eed114f3
+      version: -1
+      name: Notify IT to update SPAM filters
+      description: 'Give IT the phishing email so that they can train the SPAM filter with this email to avoid future attacks. '
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4770
+        }
+      }
+  "32":
+    id: "32"
+    taskid: f487ba1c-d67b-40f2-8cf8-85f646b0d768
+    type: regular
+    task:
+      id: f487ba1c-d67b-40f2-8cf8-85f646b0d768
+      version: -1
+      name: Notify email security vendor
+      description: |-
+        Forward all the details to your security vendor for email security
+         solution. This will help them with the future updates.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4986
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 1b6d8f94-452c-43b2-8606-da89d3f738c8
+    type: regular
+    task:
+      id: 1b6d8f94-452c-43b2-8606-da89d3f738c8
+      version: -1
+      name: Remove email from inboxes
+      description: 'Work with IT to completely delete similar emails from all user inboxes. Search through the SMTP logs to find all the recipients and delete the emails. '
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5215
+        }
+      }
+  "34":
+    id: "34"
+    taskid: c47f9b5a-cba2-4b2c-89ca-0c1003e9c295
+    type: regular
+    task:
+      id: c47f9b5a-cba2-4b2c-89ca-0c1003e9c295
+      version: -1
+      name: Blackholing phishing domain on Domain Controller
+      description: |-
+        Work with IT to black hole the phishing domains (this particular
+         and related ones from other emails and incidents that were marked duplicate).
+         This should be blocked on the domain controller by resolving to 127.0.0.1
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5440
+        }
+      }
+  "35":
+    id: "35"
+    taskid: b3e805e2-2566-4f28-884d-dcc8a8fe3573
+    type: regular
+    task:
+      id: b3e805e2-2566-4f28-884d-dcc8a8fe3573
+      version: -1
+      name: Blocking download URL
+      description: |2-
+         1. Try to identify a pattern in the URL. For example if the URL is: http://hackedwebsite.com/dl.php?campaign=ra&id=12731342834923919
+         2. Create a reasonable regex like: ^.+/dl.php?.*campaign=ra.$
+         3. Contact the proxy team to block URLs based on the pattern
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5628
+        }
+      }
+  "36":
+    id: "36"
+    taskid: ffa62d59-1b44-4305-8324-3cc29f4585ff
+    type: regular
+    task:
+      id: ffa62d59-1b44-4305-8324-3cc29f4585ff
+      version: -1
+      name: Report malware sample to AV vendors
+      description: Report all the files that were downloaded from URL to AV vendor and virustotal like services.
+      iscommand: false
+      brand: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5842
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5887,
+        "width": 1354.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests

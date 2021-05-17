@@ -1,0 +1,17 @@
+{
+ "id": "ha-group-disk-bar",
+ "version": -1,
+ "fromVersion": "6.1.0",
+ "name": "Average Disk Usage per HA Group",
+ "description": "The average percentage of disk usage per HA group.",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.disk",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "haGroup"
+  ]
+ },
+ "size": 61
+}

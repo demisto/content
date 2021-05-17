@@ -1,0 +1,274 @@
+id: HelloWorld Scan
+version: -1
+name: HelloWorld Scan
+description: "This Playbook simulates a vulnerability scan using the \"HelloWorld\"\
+  \ sample integration. It's used to demonstrate how to use the GenericPolling mechanism\
+  \ to run jobs that take several seconds or minutes to complete. It is designed to\
+  \ be used as a subplaybook, but you can also use it as a standalone playbook, by\
+  \ providing the ${Endpoint.Hostname} input in the Context.\n\nOther inputs include\
+  \ the report output format (JSON context or File attached), and the Interval/Timeouts\
+  \ to use for polling the scan status until it's complete."
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: dafe8c51-8798-4472-8b0d-b9cfc1b1b613
+    type: start
+    task:
+      id: dafe8c51-8798-4472-8b0d-b9cfc1b1b613
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 6b00143b-8523-4436-8950-adfd73869e64
+    type: regular
+    task:
+      id: 6b00143b-8523-4436-8950-adfd73869e64
+      version: -1
+      name: Start a Hello World Scan
+      description: Start a HelloWorld scan on an asset, identified from by ${input.Hostname}
+        key.
+      script: '|||helloworld-scan-start'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 658053d1-8d16-45b8-8241-f0e0f1f9d982
+    type: playbook
+    task:
+      id: 658053d1-8d16-45b8-8241-f0e0f1f9d982
+      version: -1
+      name: GenericPolling
+      description: "Use this playbook as a sub-playbook to block execution of the\
+        \ master playbook until a remote action is complete.\nThis playbook implements\
+        \ polling by continuously running the command in Step \\#2 until the operation\
+        \ completes.\nThe remote action should have the following structure:\n\n1.\
+        \ Initiate the operation.\n2. Poll to check if the operation completed.\n\
+        3. (optional) Get the results of the operation."
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${HelloWorld.Scan.scan_id}
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: scan_id
+      PollingCommandName:
+        simple: helloworld-scan-status
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: HelloWorld.Scan(val.status !== 'COMPLETE').scan_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 48a7dfde-e420-48b7-8a04-59f423ee4e52
+    type: regular
+    task:
+      id: 48a7dfde-e420-48b7-8a04-59f423ee4e52
+      version: -1
+      name: Retrieve HelloWorld Scan Results
+      description: Retrieve scan status in Context or as a File (default) for a Scan.
+      script: '|||helloworld-scan-results'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      format:
+        simple: ${inputs.Report Format}
+      scan_id:
+        simple: ${HelloWorld.Scan.scan_id}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 480e9af4-1e53-4351-8a6e-3e0d9a369cc0
+    type: title
+    task:
+      id: 480e9af4-1e53-4351-8a6e-3e0d9a369cc0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 0449752f-d12c-45e8-8bb9-1465da7e57f7
+    type: condition
+    task:
+      id: 0449752f-d12c-45e8-8bb9-1465da7e57f7
+      version: -1
+      name: Is Hostname set?
+      description: Check if the input Hostname is valid (i.e. is not Empty), do not
+        run the scan otherwise.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      "true":
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: 77b84196-1f07-4013-8f31-863e7315d3b4
+    type: regular
+    task:
+      id: 77b84196-1f07-4013-8f31-863e7315d3b4
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      message:
+        simple: Hostname is not set, cannot run the playbook!
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 910,\n      \"width\": 810,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs:
+- key: Hostname
+  value:
+    complex:
+      root: ${Endpoint
+      accessor: Hostname}
+  required: true
+  description: Hostname to run the scan against. By default takes ${Endpoint.Hostname}
+    from the context as the input.
+  playbookInputQuery:
+- key: Report Format
+  value:
+    simple: json
+  required: true
+  description: 'Output report format: can be "json" (output parsed and written in
+    the Context) or "file" (saved as an attachment). By default is "json".'
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: '1'
+  required: true
+  description: How often to check for the scan to be completed (minutes)
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: '15'
+  required: true
+  description: How long to wait for the scan to be completed before timing out (minutes)
+  playbookInputQuery:
+outputs:
+- contextPath: HelloWorld.Scan.entity.entity-id
+  description: Scanned entity ID.
+- contextPath: HelloWorld.Scan.entity.ip_address
+  description: Scanned entity IP address.
+- contextPath: HelloWorld.Scan.entity.type
+  description: Scanned entity type.
+- contextPath: HelloWorld.Scan.entity.vulnerability_status
+  description: Scanned entity vulnerability status.
+- contextPath: HelloWorld.Scan.entity.vulns
+  description: Scanned entity CVE.
+- contextPath: CVE.ID
+  description: The ID of the CVE.
+- contextPath: InfoFile.EntryID
+  description: The EntryID of the report file.
+- contextPath: InfoFile.Extension
+  description: The extension of the report file.
+- contextPath: InfoFile.Name
+  description: The name of the report file.
+- contextPath: InfoFile.Info
+  description: The info of the report file.
+- contextPath: InfoFile.Size
+  description: The size of the report file.
+- contextPath: InfoFile.Type
+  description: The type of the report file.
+fromversion: 5.0.0
+tests:
+ -  No tests

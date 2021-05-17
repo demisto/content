@@ -1,0 +1,25 @@
+commonfields:
+  id: CuckooGetReport
+  version: -1
+name: CuckooGetReport
+script: >-
+  demisto.results( demisto.executeCommand("cuckoo-get-task-report", { "id": demisto.args()["taskID"] }) )
+type: python
+subtype: python2
+tags:
+- cuckoo
+comment: Get the report for a completed analysis.
+system: true
+args:
+- name: taskID
+  required: true
+  default: true
+  description: ID of the task in Cuckoo.
+scripttarget: 0
+dependson:
+  must:
+  - cuckoo-get-task-report
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0

@@ -1,0 +1,20 @@
+{
+    "name": "Uptycs",
+    "description": "Fetches data from the Uptycs database.",
+    "support": "partner",
+    "currentVersion": "1.0.4",
+    "author": "Uptycs Inc.",
+    "url": "https://www.uptycs.com",
+    "email": "support@uptycs.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "bkschmoll-uptycs"
+    ],
+    "certification": "certified"
+}

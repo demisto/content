@@ -1,0 +1,48 @@
+{
+    "name": "Crisis Management",
+    "description": "This Content Pack helps you automate data collection and crisis event communications such as monitoring remote employee health and safety well being.",
+    "support": "xsoar",
+    "currentVersion": "1.2.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [
+        "Pandemic",
+        "Crisis",
+        "COVID-19"
+    ],
+    "created": "2020-05-06T08:54:47Z",
+    "useCases": [
+        "Crisis Management"
+    ],
+    "keywords": [],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "NIST": {
+            "mandatory": false,
+            "display_name": "NIST"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "SANS": {
+            "mandatory": false,
+            "display_name": "SANS"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph User"
+        }
+    }
+}

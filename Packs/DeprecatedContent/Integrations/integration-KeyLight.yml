@@ -1,0 +1,448 @@
+commonfields:
+  id: Lockpath KeyLight
+  version: -1
+name: Lockpath KeyLight
+display: Lockpath KeyLight (Deprecated)
+category: Case Management
+system: true
+image: data:image/png;base64,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
+description: Deprecated. Use LockPath KeyLight v2.
+deprecated: true
+detaileddescription: For more information regarding thee integrations specific fields, please advise the Cylance API Guide for version 1.7.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "4443"
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: >
+    var server = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/';
+
+
+    var filtersFields = ['fieldPath', 'filterType', 'value'];
+
+
+    var urlDictionary = {
+        'login' : 'SecurityService/Login',
+        'logout': 'SecurityService/Logout',
+        'kl-get-component-list': 'ComponentService/GetComponentList',
+        'kl-get-component': 'ComponentService/GetComponent',
+        'kl-get-component-by-alias': 'ComponentService/GetComponentByAlias',
+        'kl-get-field-list': 'ComponentService/GetFieldList',
+        'kl-get-field': 'ComponentService/GetFieldList',
+        'kl-get-record-count': 'ComponentService/GetRecordCount',
+        'kl-get-record': 'ComponentService/GetRecord',
+        'kl-get-records': 'ComponentService/GetRecords',
+        'kl-delete-record': 'ComponentService/DeleteRecord',
+        'kl-create-record': 'ComponentService/CreateRecord',
+        'kl-update-record': 'ComponentService/UpdateRecord',
+        'kl-get-detail-record': 'ComponentService/GetDetailRecord',
+        'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
+        'kl-get-detail-records': 'ComponentService/GetDetailRecords',
+        'kl-get-record-attachment': 'ComponentService/GetRecordAttachment',
+        'kl-get-record-attachments': 'ComponentService/GetRecordAttachments',
+        'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments'
+    };
+
+
+    var methodDictionary = {
+        'login': 'POST',
+        'logout': 'GET',
+        'kl-get-component-list': 'GET',
+        'kl-get-component': 'GET',
+        'kl-get-component-by-alias': 'GET',
+        'kl-get-field-list': 'GET',
+        'kl-get-field': 'GET',
+        'kl-get-record-count': 'POST',
+        'kl-get-record': 'GET',
+        'kl-get-records': 'POST',
+        'kl-delete-record': 'DELETE',
+        'kl-create-record': 'POST',
+        'kl-update-record': 'POST',
+        'kl-get-detail-record': 'GET',
+        'kl-get-lookup-report-column-fields': 'GET',
+        'kl-get-detail-records': 'GET',
+        'kl-get-record-attachment': 'GET',
+        'kl-get-record-attachments': 'GET',
+        'kl-delete-record-attachments': 'POST'
+    };
+
+
+    var bodyDictionary = {
+        'login': '<Login><username>%username%</username><password>%password%</password></Login>',
+        'kl-get-record-count': '<GetRecordCount><componentId>%componentID%</componentId>%filters%</GetRecordCount>',
+        'kl-get-records': '<GetRecords><componentId>%componentID%</componentId><pageIndex>%pageIndex%</pageIndex><pageSize>%pageSize%</pageSize>%filters%</GetRecords>',
+        'kl-delete-record': '<DeleteRecord><componentId>%componentID%</componentId><recordId>%recordId%</recordId></DeleteRecord>',
+        'kl-create-record': '<CreateRecord><componentId>%componentID%</componentId>%values%</CreateRecord>',
+        'kl-update-record': '<UpdateRecord><componentId>%componentID%</componentId>%values%</UpdateRecord>',
+        'kl-delete-record-attachments': '<DeleteRecordAttachments><componentId>%componentID%</componentId>%values%</DeleteRecordAttachments>'
+    };
+
+
+    var filterFields = ['field-path', 'filter-type', 'value'];
+
+
+    var sendRequest = function(method, url, body, authCookies, recursive) {
+        var httpParams = {
+                Method: method,
+                Headers: {
+                    'Content-Type': ['application/xml;charset=utf-8']
+                }
+            };
+        if (authCookies) {
+            httpParams.Cookies = authCookies;
+        }
+        if (method !== 'GET' && body) {
+            httpParams.Body = body;
+        }
+        var res = http(server + url, httpParams, params.insecure, params.proxy, undefined, true);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            if (authCookies && !recursive) {
+                sendRequest(
+                    methodDictionary['logout'],
+                    getUrl('logout'),
+                    undefined,
+                    authCookies,
+                    true);
+            }
+            throw 'Request to KeyLight URL ' + url + ' Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + res.Body + '.';
+        }
+        return res;
+    };
+
+
+    var createFiltersFromArgs = function(args) {
+        var res = replaceInTemplates(!!args.value ?
+                '<filters><SearchCriteriaItem><FieldPath><int>%field-path%</int>/FieldPath><FilterType>%filter-type%</FilterType></SearchCriteriaItem></filters>' :
+                '<filters><SearchCriteriaItem><FieldPath><int>%field-path%</int>/FieldPath><FilterType>%filter-type%</FilterType><Value>%value%</Value></SearchCriteriaItem></filters>',
+            args)
+        for (var i = 0; i < filtersFields.length; i++) {
+            delete(args[filtersFields[i]]);
+        }
+        return res;
+    }
+
+
+    var createValuesFromArgs = function(values, id) {
+        var res = '';
+        for (var i = 0; i < values.length; i++) {
+            res += replaceInTemplates(values[i].value === 'nil' ?
+                    '<KeyValuePair><key>%key%</key><value i:nil="true"/></KeyValuePair>' :
+                    '<KeyValuePair><key>%key%</key><value i:type="a:%type%">%value%</value></KeyValuePair>',
+                args)
+        }
+        return '<dynamicRecord xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns:a="http://www.w3.org/2001/XMLSchema">'+
+                    '<FieldValues>'+
+                        (id ? '<Id>' + id + '</Id>' : '')+
+                        res +
+                    '</FieldValues>'+
+                '</dynamicRecord>';
+    }
+
+
+    var includeRecord = ['kl-create-record', 'kl-update-record', 'kl-delete-record-attachments'];
+
+
+    var buildBodyForCommand = function(command, args) {
+        if (methodDictionary[command] === 'GET') {
+            return undefined;
+        }
+        var keys = Object.keys(args);
+        var filters;
+        for (var j = 0; j < keys.length; j++) {
+            args[keys[j]] = escapeXMLChars(args[keys[j]]);
+        }
+        for (var i = 0; i < filtersFields.length && !filters; i++) {
+            if (keys.indexOf(filtersFields[i]) !== -1) {
+                filters = createFiltersFromArgs(args);
+                args.filters = filters;
+            }
+        }
+        if (!args.filters) {
+            args.filters = '';
+        }
+
+        if (includeRecord.indexOf(command) !== -1) {
+            var values = args.values && JSON.parse(args.values);
+            if (command === 'kl-delete-record-attachments') {
+                values = [{type: 'DynamicRecordList', key: args.fieldId, value: '<Record><Id>' + args.attachmentId + '</Id></Record>'}];
+            }
+            args.values = createValuesFromArgs(values, args.id);
+        }
+        return replaceInTemplates(bodyDictionary[command], args);
+    }
+
+
+    var getUrl = function(command, args) {
+        return urlDictionary[command] + (methodDictionary[command] === 'GET' ? encodeToURLQuery(args) : '');
+    }
+
+
+    var sendRequestAndParse = function(method, url, body, cookies) {
+        var res = sendRequest(method, url, body, cookies).Body;
+        return JSON.parse(x2j(res));
+    }
+
+
+    var loginCookies = sendRequest(
+        methodDictionary['login'],
+        getUrl('login'),
+        buildBodyForCommand('login', {username: params.credentials.identifier, password: params.credentials.password})
+        ).Cookies;
+    var result;
+
+    switch (command) {
+        case 'test-module':
+            result = 'something is wrong';
+            if (loginCookies) {
+                result = 'ok';
+            }
+            break;
+        case 'kl-get-record-attachment':
+            result = saveFile(sendRequest(
+                    methodDictionary[command],
+                    getUrl(command, args),
+                    buildBodyForCommand(command, args),
+                    loginCookies).
+                Bytes);
+            break;
+        default:
+            result = sendRequestAndParse(
+                methodDictionary[command],
+                getUrl(command, args),
+                buildBodyForCommand(command, args),
+                loginCookies);
+    }
+
+    if (loginCookies) {
+        // if we managed to log in, log out
+        sendRequest(
+            methodDictionary['logout'],
+            getUrl('logout'),
+            undefined,
+            loginCookies);
+    }
+
+    return result;
+  type: javascript
+  commands:
+  - name: kl-get-component-list
+    deprecated: true
+    arguments: []
+    description: Returns a complete list of all Keylight components available to the user based on account permissions
+  - name: kl-get-component
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The ID of the desired component
+    description: Retrieves a component specified by its ID
+  - name: kl-get-component-by-alias
+    deprecated: true
+    arguments:
+    - name: alias
+      required: true
+      default: true
+      description: The Alias of the desired component
+    description: Retrieves a component specified by its Alias
+  - name: kl-get-field-list
+    deprecated: true
+    arguments:
+    - name: componentId
+      required: true
+      default: true
+      description: The ID of the desired component
+    description: Retrieves detail field listing for a component specified by its ID
+  - name: kl-get-field
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The field ID for the individual field within the component
+    description: Retrieves details for a field specified by its ID
+  - name: kl-get-record-count
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      default: true
+      description: The ID of the desired component
+    - name: fieldPath
+      required: true
+      description: Describes the field ID for the column that the records will be filtered on
+    - name: filterType
+      required: true
+      description: Describes the ID for the filter being implemented
+    - name: value
+      description: Matches value (if applicable)
+    description: ' Return the number of records in a given component'
+  - name: kl-get-record
+    deprecated: true
+    arguments:
+    - name: componentId
+      required: true
+      default: true
+      description: ID of the desired component
+    - name: recordId
+      description: ID for the individual record within the component
+    description: Returns the complete set of fields for a given record within a component
+  - name: kl-get-records
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      description: The ID of the desired component
+    - name: pageIndex
+      description: The index of the page of result to return. Must be > 0
+    - name: pageSize
+      description: The size of the page results to return. Must be >= 1
+    - name: fieldPath
+      required: true
+      description: Describes the field ID for the column that the records will be filtered on
+    - name: filterType
+      required: true
+      description: Describes the ID for the filter being implemented
+    - name: value
+      description: Matches value (if applicable)
+    description: Return the title/default field for a set of records within a chosen component
+  - name: kl-delete-record
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      description: ID of the desired component
+    - name: recordId
+      required: true
+      description: ID for the individual record within the component
+    description: Delete a selected record from within a chosen component
+  - name: kl-create-record
+    deprecated: true
+    arguments:
+    - name: componentId
+      required: true
+      default: true
+      description: The ID of the desired component
+    - name: values
+      required: true
+      description: A list of key-value-type triplets in a JSON format. Type will be used only if value is not nil
+    description: Create a new record within the specified component of the Keylight application
+  - name: kl-update-record
+    deprecated: true
+    arguments:
+    - name: componentId
+      required: true
+      default: true
+      description: The ID of the desired component
+    - name: values
+      required: true
+      description: A list of key-value-type triplets in a JSON format. Type will be used only if value is not nil
+    - name: id
+      required: true
+      description: Record id
+    description: Update an existing record within the specified component of the Keylight application
+  - name: kl-get-detail-record
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      default: true
+      description: ID of the desired component
+    - name: recordId
+      required: true
+      description: ID for the individual record within the component
+    description: Retrieves record information based on the provided component ID and record ID, with lookup field report details
+  - name: kl-get-lookup-report-column-fields
+    deprecated: true
+    arguments:
+    - name: lookupFieldId
+      required: true
+      default: true
+      description: ID of the desired lookup field
+    - name: fieldPathId
+      required: true
+      description: ID for the desired lookup field path
+    description: Gets the field information of each field in a field path that corresponds to a lookup report column
+  - name: kl-get-detail-records
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      description: ID of the desired component
+    - name: pageIndex
+      description: The index of the page of result to return. Must be > 0
+    - name: pageSize
+      description: The size of the page results to return. Must be >= 1
+    description: GetDetailRecords provides the ability to run a search with filters and paging (GetRecords) while returning a high level of detail for each record (GetRecord)
+  - name: kl-get-record-attachments
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      description: ID of the desired component
+    - name: recordId
+      required: true
+      description: ID for the individual record within the component
+    - name: fieldId
+      required: true
+      description: ' ID for the individual field within the component'
+    description: Gets information for all attachments associated with the provided component ID, record ID, and Documents field id. No file data is returned, only file name, field ID, and document ID information
+  - name: kl-get-record-attachment
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      default: true
+      description: ID of the desired component
+    - name: recordId
+      required: true
+      description: ID for the individual record within the component
+    - name: fieldId
+      required: true
+      description: ID for the individual field within the component
+    - name: documentId
+      required: true
+      description: ID for the individual document within the component
+    description: Gets a single attachment associated with the provided component ID, record ID, documents field ID, and document ID
+  - name: kl-delete-record-attachments
+    deprecated: true
+    arguments:
+    - name: componentID
+      required: true
+      default: true
+      description: ID of the desired component
+    - name: id
+      required: true
+      description: ID for the individual record within the component
+    - name: fieldId
+      required: true
+      description: ID for the individual field within the component
+    - name: attachmentId
+      required: true
+      description: ID for the individual attachment within the component
+    description: Deletes the specified attachments from the provided document fields on a specific record
+fromversion: 5.0.0
+tests:
+- No test - Deprecated. Use Lockpath Keylight v2

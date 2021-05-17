@@ -1,0 +1,432 @@
+id: GoogleCloudTranslate-Test
+version: -1
+name: GoogleCloudTranslate-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5cd74c7e-7ae8-4cbe-87f9-eef08c98d8a9
+    type: start
+    task:
+      id: 5cd74c7e-7ae8-4cbe-87f9-eef08c98d8a9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: b169e475-ef05-415e-86b3-839bcd84fa49
+    type: regular
+    task:
+      id: b169e475-ef05-415e-86b3-839bcd84fa49
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "6"
+      - "8"
+      - "10"
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: GoogleCloudTranslate
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 639c2d41-c27c-4588-8083-1feea052af6a
+    type: title
+    task:
+      id: 639c2d41-c27c-4588-8083-1feea052af6a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 86f3ee5e-cddc-4fed-8668-0b5e73d357d6
+    type: regular
+    task:
+      id: 86f3ee5e-cddc-4fed-8668-0b5e73d357d6
+      version: -1
+      name: Retrieve Google Cloud Translate Supported Languages
+      description: Supported Languages - list supported languages
+      script: '|||gct-supported-languages'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 5a5d9761-5d9b-4ced-8832-e546d79609ef
+    type: condition
+    task:
+      id: 5a5d9761-5d9b-4ced-8832-e546d79609ef
+      version: -1
+      name: Check Supported Languages
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudTranslate.SupportedLanguages(val.language_code=="en")
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudTranslate.SupportedLanguages(val.language_code=="it")
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleCloudTranslate.SupportedLanguages(val.language_code=="iw")
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 79f43dc3-ce90-4224-8d70-f156970eae51
+    type: regular
+    task:
+      id: 79f43dc3-ce90-4224-8d70-f156970eae51
+      version: -1
+      name: Auto Detect Language
+      description: Translate Text - translate text
+      script: GoogleCloudTranslate|||gct-translate-text
+      type: regular
+      iscommand: true
+      brand: GoogleCloudTranslate
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      source: {}
+      target:
+        simple: it
+      text:
+        simple: שלום עולם
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d4f59fb5-e2c1-408c-83f2-bb5af970b648
+    type: condition
+    task:
+      id: d4f59fb5-e2c1-408c-83f2-bb5af970b648
+      version: -1
+      name: Auto Detect Language - Check Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleCloudTranslate
+                accessor: TranslateText(val.text=="שלום עולם").translated_text
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: ciao mondo
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleCloudTranslate.TranslateText(val.text=="שלום עולם").detected_language_code
+            iscontext: true
+          right:
+            value:
+              simple: iw
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 7d19a10d-a225-4712-8363-818943be1ff0
+    type: regular
+    task:
+      id: 7d19a10d-a225-4712-8363-818943be1ff0
+      version: -1
+      name: Force Source Language
+      description: Translate Text - translate text
+      script: '|||gct-translate-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      source:
+        simple: en
+      target:
+        simple: it
+      text:
+        simple: confetti
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: f7fcecb7-3b52-48d1-8007-7209fb1fafa5
+    type: condition
+    task:
+      id: f7fcecb7-3b52-48d1-8007-7209fb1fafa5
+      version: -1
+      name: Force Source - Check Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleCloudTranslate
+                accessor: TranslateText(val.text=="confetti").translated_text
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: coriandoli
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 58d9f355-a086-4d41-81eb-7148f7499eb8
+    type: regular
+    task:
+      id: 58d9f355-a086-4d41-81eb-7148f7499eb8
+      version: -1
+      name: Translate 1
+      description: Translate Text - translate text
+      script: '|||gct-translate-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      source: {}
+      target:
+        simple: it
+      text:
+        simple: there is no justice, there is just me
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 17392e66-b207-4d8d-8c97-0cb1a1aceda5
+    type: regular
+    task:
+      id: 17392e66-b207-4d8d-8c97-0cb1a1aceda5
+      version: -1
+      name: Translate 2
+      description: Translate Text - translate text
+      script: '|||gct-translate-text'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      source: {}
+      target:
+        simple: it
+      text:
+        simple: there is no justice, there is just me
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 016bf934-d98b-42e5-8e73-c9fafaf4343a
+    type: condition
+    task:
+      id: 016bf934-d98b-42e5-8e73-c9fafaf4343a
+      version: -1
+      name: Check Duplicates
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: GoogleCloudTranslate
+                accessor: TranslateText(val.text=="there is no justice, there is just me")
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 1890,
+        "x": -70,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

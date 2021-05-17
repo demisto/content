@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Qradar Generic"
+ ],
+ "caseInsensitive": true,
+ "cliName": "linktooffense",
+ "closeForm": false,
+ "content": true,
+ "description": "The link to the QRadar offense.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_linktooffense",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Link To Offense",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "url",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

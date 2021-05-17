@@ -1,0 +1,103 @@
+{
+  "qradar-searches": {
+    "QRadar.Search(val.ID === obj.ID)": {
+      "Status": "EXECUTE",
+      "ID": "a135f4cb-c22a-4b3a-aa7d-83058c219d33"
+    }
+  },
+  "qradar-get-search": {
+    "QRadar.Search(val.ID === \"6212b614-074e-41c1-8fcf-1492834576b8\")": {
+      "Status": "COMPLETED",
+      "ID": "6212b614-074e-41c1-8fcf-1492834576b8"
+    }
+  },
+  "qradar-get-search-results": {
+    "QRadar.Search(val.ID === \"6212b614-074e-41c1-8fcf-1492834576b8\").Result.events": [
+      {
+        "MY Source IPs": "8.8.8.8"
+      }
+    ]
+  },
+  "qradar-get-assets": {
+    "QRadar.Asset(val.ID === \"1914\")": {
+      "ID": 1914,
+      "Name": {
+        "Value": "ec2-54-245-171-52.us-west-2.compute.amazonaws.com",
+        "LastUser": "IDENTITY:0",
+        "Property Name": "Name"
+      }
+    },
+    "QRadar.Asset(val.ID === \"1928\")": {
+      "ID": 1928,
+      "Name": {
+        "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com",
+        "LastUser": "IDENTITY:0",
+        "Property Name": "Name"
+      }
+    },
+    "Endpoint": {
+      "IPAddress": [
+        "8.8.8.8",
+        "8.8.8.8"
+      ]
+    }
+  },
+  "qradar-get-asset-by-id": {
+    "QRadar.Asset(val.ID === \"1928\")": {
+      "ID": 1928,
+      "Name": {
+        "Value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com",
+        "LastUser": "IDENTITY:0",
+        "Property Name": "Name"
+      }
+    },
+    "Endpoint": {
+      "IPAddress": [
+        "8.8.8.8"
+      ],
+      "MACAddress": [
+        "Unknown NIC"
+      ]
+    }
+  },
+  "qradar-get-closing-reasons": {
+    "QRadar.Offense.ClosingReasons": [
+      {
+        "IsDeleted": false,
+        "IsReserved": false,
+        "Name": "False-Positive, Tuned",
+        "ID": 2
+      },
+      {
+        "IsDeleted": false,
+        "IsReserved": false,
+        "Name": "Non-Issue",
+        "ID": 1
+      },
+      {
+        "IsDeleted": false,
+        "IsReserved": false,
+        "Name": "Policy Violation",
+        "ID": 3
+      }
+    ]
+  },
+  "qradar-create-note": {
+    "QRadar.Note": {
+      "Text": "XSOAR has the best documentation!",
+      "CreateTime": "2020-09-02T09:52:01.314000Z",
+      "ID": 1243,
+      "CreatedBy": "API_user: admin"
+    }
+  },
+  "qradar-get-note": {
+    "QRadar.Note(val.ID === \"1232\")": [
+      {
+        "Text": "XSOAR has the best documentation!",
+        "CreateTime": "2020-09-02T06:39:24.601000Z",
+        "ID": 1232,
+        "CreatedBy": "API_user: admin"
+      }
+    ]
+  }
+}

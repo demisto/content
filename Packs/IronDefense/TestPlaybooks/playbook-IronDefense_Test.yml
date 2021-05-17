@@ -1,0 +1,447 @@
+id: IronDefense Test
+version: -1
+name: IronDefense Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cd6785dd-d724-404f-844d-f2e8a4a5be93
+    type: start
+    task:
+      id: cd6785dd-d724-404f-844d-f2e8a4a5be93
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 20d23925-c83f-4cd2-866a-1abe986ff48f
+    type: regular
+    task:
+      id: 20d23925-c83f-4cd2-866a-1abe986ff48f
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ffe3db01-8a41-44e3-8acd-5373b0c21647
+    type: regular
+    task:
+      id: ffe3db01-8a41-44e3-8acd-5373b0c21647
+      version: -1
+      name: irondefense-get-event
+      description: Retrieves an IronDefense event.
+      script: IronDefenseDev|||irondefense-get-event
+      type: regular
+      iscommand: true
+      brand: IronDefenseDev
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      event_id:
+        simple: ${IronDefense.Event.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0388f09e-bcbf-401f-8a25-443e061d0352
+    type: condition
+    task:
+      id: 0388f09e-bcbf-401f-8a25-443e061d0352
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Event
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Event.Context.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Event.Context.columns
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 43b01fb8-c08f-42ac-8fa5-4939196a0771
+    type: regular
+    task:
+      id: 43b01fb8-c08f-42ac-8fa5-4939196a0771
+      version: -1
+      name: irondefense-get-alerts
+      description: Pulls Alerts from IronDefense.
+      script: IronDefenseDev|||irondefense-get-alerts
+      type: regular
+      iscommand: true
+      brand: IronDefenseDev
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      alert_id: {}
+      analyst_expectation: {}
+      analyst_severity: {}
+      analytic_version: {}
+      category: {}
+      limit:
+        simple: "1"
+      max_created: {}
+      max_first_event_created: {}
+      max_first_event_start_time: {}
+      max_last_event_created: {}
+      max_last_event_end_time: {}
+      max_severity: {}
+      max_updated: {}
+      min_created: {}
+      min_first_event_created: {}
+      min_first_event_start_time: {}
+      min_last_event_created: {}
+      min_last_event_end_time: {}
+      min_severity: {}
+      min_updated: {}
+      offset: {}
+      sort: {}
+      status:
+        simple: Awaiting Review
+      sub_category: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c7920c22-9e7f-4cbe-81d8-d61167c9a9cd
+    type: condition
+    task:
+      id: c7920c22-9e7f-4cbe-81d8-d61167c9a9cd
+      version: -1
+      name: Verify Outputs
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Alert
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IronDefense.Alert.status
+            iscontext: true
+          right:
+            value:
+              simple: STATUS_AWAITING_REVIEW
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Query.GetAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e1903d7f-9296-4703-8e51-98f668d97861
+    type: regular
+    task:
+      id: e1903d7f-9296-4703-8e51-98f668d97861
+      version: -1
+      name: irondefense-get-alert-irondome-information
+      description: Retrieves IronDome information for an IronDefense alert.
+      script: IronDefenseDev|||irondefense-get-alert-irondome-information
+      type: regular
+      iscommand: true
+      brand: IronDefenseDev
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alert_id:
+        simple: ${IronDefense.Alert.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1a85e1a9-aa33-475c-8059-cd37daf59c5f
+    type: condition
+    task:
+      id: 1a85e1a9-aa33-475c-8059-cd37daf59c5f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDome.Correlations.alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDome.Correlations
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDome.CorrelationParticipation
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDome.CognitiveSystemScore
+            iscontext: true
+    - label: No IronDome Data
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: IronDome.Correlations
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e968a7ee-4070-49ed-89af-3f01f7dd95e8
+    type: regular
+    task:
+      id: e968a7ee-4070-49ed-89af-3f01f7dd95e8
+      version: -1
+      name: irondefense-get-events-from-alert
+      description: Retrieves IronDefense Events for a given Alert ID.
+      script: IronDefenseDev|||irondefense-get-events-from-alert
+      type: regular
+      iscommand: true
+      brand: IronDefenseDev
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      alert_id:
+        simple: ${IronDefense.Alert.id}
+      limit:
+        simple: "1"
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 2213cf23-ddb9-41d9-8c24-35eb43bf57d2
+    type: condition
+    task:
+      id: 2213cf23-ddb9-41d9-8c24-35eb43bf57d2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Event
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IronDefense.Query.GetEvents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5e446c8f-acfa-42d8-8c3b-c7ec80b558d4
+    type: title
+    task:
+      id: 5e446c8f-acfa-42d8-8c3b-c7ec80b558d4
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

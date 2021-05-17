@@ -1,0 +1,31 @@
+{
+  "ResponseMetadata": {
+    "RequestId": "662E1B40E16E1947",
+    "HostId": "4hku8+ZK6eKUFDykQPDkOqhS0o6DK/EjfphbiyaqIAaZ8/nWjR/XfyWQ98aQCyr/3yfCaziSZZ0=",
+    "HTTPStatusCode": 206,
+    "HTTPHeaders": {
+      "x-amz-id-2": "4hku8+ZK6eKUFDykQPDkOqhS0o6DK/EjfphbiyaqIAaZ8/nWjR/XfyWQ98aQCyr/3yfCaziSZZ0=",
+      "x-amz-request-id": "662E1B40E16E1947",
+      "date": "Fri, 05 Jun 2020 11:09:55 GMT",
+      "last-modified": "Sat, 30 May 2020 23:38:13 GMT",
+      "etag": "4e6412ed74c08b2ab811852fc34c6744",
+      "x-amz-meta-md5-hash": "4e6412ed74c08b2ab811852fc34c6744",
+      "accept-ranges": "bytes",
+      "content-range": "bytes 0-52746/52747",
+      "content-type": "binary/octet-stream",
+      "content-length": "52747",
+      "server": "AmazonS3"
+    },
+    "RetryAttempts": 0
+  },
+  "AcceptRanges": "bytes",
+  "LastModified": "datetime.datetime(2020, 5, 30, 23, 38, 13, tzinfo=tzutc())",
+  "ContentLength": 52747,
+  "ETag": "4e6412ed74c08b2ab811852fc34c6744",
+  "ContentRange": "bytes 0-52746/52747",
+  "ContentType": "binary/octet-stream",
+  "Metadata": {
+    "md5-hash": "4e6412ed74c08b2ab811852fc34c6744"
+  },
+  "Body": "StreamingBody"
+}

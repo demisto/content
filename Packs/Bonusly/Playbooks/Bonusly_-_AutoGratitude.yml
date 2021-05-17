@@ -1,0 +1,294 @@
+id: Bonusly - AutoGratitude
+version: -1
+name: Bonusly - AutoGratitude
+description: AutoGratitude is a playbook to give back a positive gratitude to security
+  engineers and developers when they successfully complete an SLA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 84151b03-0828-43e2-8838-bd8fc13f7af3
+    type: start
+    task:
+      id: 84151b03-0828-43e2-8838-bd8fc13f7af3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 39037e26-3452-4fac-88e2-034037ea47b0
+    type: condition
+    task:
+      id: 39037e26-3452-4fac-88e2-034037ea47b0
+      version: -1
+      name: Check SLA
+      type: condition
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CheckSLA
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1ba35c08-1089-4c27-8f6e-68d0801c7168
+    type: condition
+    task:
+      id: 1ba35c08-1089-4c27-8f6e-68d0801c7168
+      version: -1
+      name: Did they meet the SLA Times?
+      type: condition
+      description: ''
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.detectionsla.breachTriggered
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.remediationsla.breachTriggered
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 91f3d416-125b-4a76-888f-7669433b3874
+    type: regular
+    task:
+      id: 91f3d416-125b-4a76-888f-7669433b3874
+      version: -1
+      name: Pause & Review Why SLA Was Breached
+      description: '* Add Tasks For Review'
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: timetoassignment
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3811d137-a7c0-4564-8e65-635b2c0f3009
+    type: title
+    task:
+      id: 3811d137-a7c0-4564-8e65-635b2c0f3009
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5b2ba623-f2be-4473-819a-2666eef274bf
+    type: regular
+    task:
+      id: 5b2ba623-f2be-4473-819a-2666eef274bf
+      version: -1
+      name: Convert Owner Email To Bonusly User
+      description: 'This script will get the owner of the incidents email address
+        and then return the Bonusly username '
+      scriptName: IncOwnerToBonuslyUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      json:
+        simple: ${lists.Bonusly - Email To User Lookup}
+      owner:
+        simple: ${incident.owner}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: cdd91c30-4f40-4fea-8041-5830c39472db
+    type: regular
+    task:
+      id: cdd91c30-4f40-4fea-8041-5830c39472db
+      version: -1
+      name: Bonusly - Create Bonus
+      description: Creates a bonusly bonus
+      script: '|||bonusly-create-bonus'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      giver-email:
+        simple: ${inputs.GiverEmail}
+      parent-bonus-id: {}
+      reason:
+        simple: ${inputs.GiverReason} ${BonuslyUser.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: BonuslyLookupList
+  value:
+    simple: ${lists.Bonusly - Email To User Lookup}
+  required: true
+  description: "Create a Lookup JSON List In The Lists Section Containing XSOAR Email\
+    \ To Bonusly User\n\n{\n\"xsoar_user1@your_company.com\":\"@bonusly_user1\", \n\
+    \"xsoar_user2@paloaltonetworks.com\":\"@bonusly_user2\"\n}"
+  playbookInputQuery:
+- key: GiverEmail
+  value:
+    simple: bonusly_bot@companyname.com
+  required: true
+  description: 'Add a giver email or set this before hand. '
+  playbookInputQuery:
+- key: GiverReason
+  value:
+    simple: 'Great job completing the incident on time +10 #collaboration '
+  required: true
+  description: "Add a Bonusly reason like \nGreat job completing the incident on time\
+    \ +10 #hashtag "
+  playbookInputQuery:
+- key: CheckSLA
+  value:
+    simple: "false"
+  required: false
+  description: 'If Check SLA is set to true then it will first see if the owner has
+    met the SLA agreement. '
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

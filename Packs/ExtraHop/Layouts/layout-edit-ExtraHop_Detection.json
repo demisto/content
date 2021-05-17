@@ -1,0 +1,179 @@
+{
+ "typeId": "ExtraHop Detection",
+ "kind": "edit",
+ "layout": {
+  "id": "ExtraHop Detection",
+  "version": -1,
+  "modified": "2019-06-21T10:21:39.764830083-07:00",
+  "name": "",
+  "kind": "edit",
+  "typeId": "ExtraHop Detection",
+  "system": false,
+  "sections": [
+   {
+    "id": "",
+    "version": 0,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "type": "",
+    "isVisible": true,
+    "readOnly": false,
+    "fields": [
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_name",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_occurred",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_reminder",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_owner",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_roles",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_type",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_severity",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_playbookid",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_labels",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_phase",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_attachment",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_details",
+      "isVisible": true
+     }
+    ],
+    "description": "",
+    "query": null,
+    "queryType": ""
+   },
+   {
+    "id": "",
+    "version": 0,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Detection Details",
+    "type": "",
+    "isVisible": true,
+    "readOnly": false,
+    "fields": [
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_extrahophostname",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_detectionurl",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_detectionid",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_riskscore",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_participants",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_detectionupdatetime",
+      "isVisible": true
+     },
+     {
+      "id": "",
+      "version": 0,
+      "modified": "0001-01-01T00:00:00Z",
+      "fieldId": "incident_detectionendtime",
+      "isVisible": true
+     }
+    ],
+    "description": "",
+    "query": null,
+    "queryType": ""
+   }
+  ]
+ },
+ "toVersion": "5.9.9",
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

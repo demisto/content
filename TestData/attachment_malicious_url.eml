@@ -1,0 +1,81 @@
+User-Agent: Microsoft-MacOutlook/10.20.0.191208
+Date: Mon, 23 Dec 2019 16:09:27 +0200
+Subject: Test email
+From: Example <example@example.com>
+To: <example1@example.com>
+CC: <example2@example.com>
+Message-ID: <D8E264DE-95F6-44B1-A39A-36E611575836@demistodev.onmicrosoft.com>
+Thread-Topic: Test email
+Mime-version: 1.0
+Content-type: multipart/mixed;
+	boundary="B_3659962201_1947450797"
+
+> This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+--B_3659962201_1947450797
+Content-type: multipart/alternative;
+	boundary="B_3659962201_1537767760"
+
+
+--B_3659962201_1537767760
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: 7bit
+
+Body of the text
+
+
+--B_3659962201_1537767760
+Content-type: text/html;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+<html xmlns:o=3D"urn:schemas-microsoft-com:office:office" xmlns:w=3D"urn:schema=
+s-microsoft-com:office:word" xmlns:m=3D"http://schemas.microsoft.com/office/20=
+04/12/omml" xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta http-equiv=3DC=
+ontent-Type content=3D"text/html; charset=3Dutf-8"><meta name=3DGenerator content=3D=
+"Microsoft Word 15 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Calibri",sans-serif;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri",sans-serif;
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-family:"Calibri",sans-serif;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style></head><body lang=3DEN-US link=3D"#0563C1" vlink=3D"#954F72"><div clas=
+s=3DWordSection1><p class=3DMsoNormal><span style=3D'font-size:11.0pt'>Body of the=
+ text<o:p></o:p></span></p></div></body></html>
+
+--B_3659962201_1537767760--
+
+
+--B_3659962201_1947450797
+Content-type: text/plain; name="malicious_present_url.txt";
+ x-mac-creator="4F50494D";
+ x-mac-type="54455854"
+Content-disposition: attachment;
+	filename="malicious_present_url.txt"
+Content-transfer-encoding: base64
+
+
+aHR0cDovL3d3dy5kZXNrdG9wLXN0eWxlLmRl
+--B_3659962201_1947450797--

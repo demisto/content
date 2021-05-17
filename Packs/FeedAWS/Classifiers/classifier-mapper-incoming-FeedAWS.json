@@ -1,0 +1,25 @@
+{
+    "id": "AWS Feed Mapper",
+    "name": "AWS Feed - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming AWS indicator fields.",
+	"defaultIncidentType": "",
+	"feed": true,
+	"mapping": {
+		"CIDR": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Region": {
+					"complex": null,
+					"simple": "region"
+				},
+				"Tags": {
+					"complex": null,
+					"simple": "service"
+				}
+			}
+		}
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

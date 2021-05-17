@@ -1,0 +1,366 @@
+id: Symantec Deepsight Test
+version: -1
+name: Symantec Deepsight Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d753fba0-99ac-42dc-8fcc-1e922be96d4b
+    type: start
+    task:
+      id: d753fba0-99ac-42dc-8fcc-1e922be96d4b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: fb56cff2-cfce-4410-81c9-d64ae26c4676
+    type: regular
+    task:
+      id: fb56cff2-cfce-4410-81c9-d64ae26c4676
+      version: -1
+      name: Get file data
+      script: Symantec Deepsight Intelligence|||file
+      type: regular
+      iscommand: true
+      brand: Symantec Deepsight Intelligence
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      file:
+        simple: 84c82835a5d21bbcf75a61706d8ab549
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 20ac5322-6498-4ced-885f-5574c726434f
+    type: condition
+    task:
+      id: 20ac5322-6498-4ced-885f-5574c726434f
+      version: -1
+      name: Verify file data has been found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 84c82835a5d21bbcf75a61706d8ab549
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+  "3":
+    id: "3"
+    taskid: 66974f76-e2e3-4224-85ec-07b3c583769f
+    type: regular
+    task:
+      id: 66974f76-e2e3-4224-85ec-07b3c583769f
+      version: -1
+      name: Get url data
+      script: Symantec Deepsight Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Symantec Deepsight Intelligence
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: http://bangkoktailor.biz/p37BtCcsWXG8NSn6I/BIZ/PrivateBanking
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: 02d5d9fb-4a4b-4167-8495-6a7c004a7bb0
+    type: condition
+    task:
+      id: 02d5d9fb-4a4b-4167-8495-6a7c004a7bb0
+      version: -1
+      name: Verify url data was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Deepsight.URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: http://bangkoktailor.biz/p37BtCcsWXG8NSn6I/BIZ/PrivateBanking
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 4cea8d6b-0390-4d5a-8992-48dd08ecc843
+    type: regular
+    task:
+      id: 4cea8d6b-0390-4d5a-8992-48dd08ecc843
+      version: -1
+      name: Get IP data
+      script: Symantec Deepsight Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Symantec Deepsight Intelligence
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 5.79.86.16
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 824fc6f7-e8b7-4e4a-8158-88cb4160c815
+    type: condition
+    task:
+      id: 824fc6f7-e8b7-4e4a-8158-88cb4160c815
+      version: -1
+      name: Verify IP was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: IP.ASN
+            iscontext: true
+          right:
+            value:
+              simple: "60781"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: d2805118-7ecd-45e8-8f42-25a4f4e1f0de
+    type: regular
+    task:
+      id: d2805118-7ecd-45e8-8f42-25a4f4e1f0de
+      version: -1
+      name: Get domain data
+      script: Symantec Deepsight Intelligence|||domain
+      type: regular
+      iscommand: true
+      brand: Symantec Deepsight Intelligence
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: pagaldaily.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 84836876-f271-460b-8620-ff0c41e64480
+    type: condition
+    task:
+      id: 84836876-f271-460b-8620-ff0c41e64480
+      version: -1
+      name: Verify domain was found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Deepsight.Domain.WHOIS.Registrant.Name
+            iscontext: true
+          right:
+            value:
+              simple: Whoisprotectservice.Net
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+  "9":
+    id: "9"
+    taskid: 3007f53c-1c7f-4dcf-8166-4923f1563848
+    type: title
+    task:
+      id: 3007f53c-1c7f-4dcf-8166-4923f1563848
+      version: -1
+      name: Succsess
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 79f694df-9e6c-4cf8-8659-9ec6285319ce
+    type: regular
+    task:
+      id: 79f694df-9e6c-4cf8-8659-9ec6285319ce
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 450,
+        "y": -50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

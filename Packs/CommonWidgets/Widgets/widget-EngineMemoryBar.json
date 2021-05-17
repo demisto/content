@@ -1,0 +1,18 @@
+{
+ "id": "engine-memory-bar",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "modified": "2018-03-14T17:42:44.919467+02:00",
+ "name": "Memory Usage % per Engine",
+ "description": "Current memory usage percentage per engine",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "engine.memory",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "engine"
+  ]
+ },
+ "size": 61
+}

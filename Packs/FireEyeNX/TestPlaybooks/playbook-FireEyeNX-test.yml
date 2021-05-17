@@ -1,0 +1,712 @@
+id: FireEyeNX-Test
+version: -1
+name: FireEyeNX-Test
+description: This playbook uses the FireEye NX integration and tests the scenarios
+  of the various commands like fireeye-nx-get-artifacts-metadata-by-alert, fireeye-nx-get-alert-details,
+  fireeye-nx-get-reports, fireeye-nx-get-alerts, fireeye-nx-get-artifacts-by-alert
+  and fireeye-nx-get-events.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ea115f8-fe75-421b-8f75-149455b18efa
+    type: start
+    task:
+      id: 2ea115f8-fe75-421b-8f75-149455b18efa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 190983e0-83ff-4aaa-89b0-1ea850c4b1f8
+    type: regular
+    task:
+      id: 190983e0-83ff-4aaa-89b0-1ea850c4b1f8
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 71f73e0c-634c-4137-8ebf-cb08bf6a53d0
+    type: regular
+    task:
+      id: 71f73e0c-634c-4137-8ebf-cb08bf6a53d0
+      version: -1
+      name: fireeye-nx-get-artifacts-metadata-by-alert
+      script: '|||fireeye-nx-get-artifacts-metadata-by-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      uuid:
+        simple: ${FireEyeNX.Alert.Uuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: fc582dc3-f816-4856-8811-bdd47b93a2c3
+    type: condition
+    task:
+      id: fc582dc3-f816-4856-8811-bdd47b93a2c3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.ArtifactsMetadata.ArtifactType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.ArtifactsMetadata.ArtifactName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.ArtifactsMetadata.ArtifactSize
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 25b8b3b2-5875-462c-84f0-564d5811d990
+    type: regular
+    task:
+      id: 25b8b3b2-5875-462c-84f0-564d5811d990
+      version: -1
+      name: fireeye-nx-get-reports
+      script: '|||fireeye-nx-get-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      end_time:
+        simple: 2020-02-29T23:59:59
+      infection_id: {}
+      infection_type: {}
+      interface: {}
+      limit: {}
+      report_type:
+        simple: IPS Executive Summary Report
+      start_time:
+        simple: 2020-01-29T23:59:59
+      time_frame:
+        simple: between
+      type:
+        simple: csv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4076b1ed-51a9-441c-8fed-a1e2090365c2
+    type: condition
+    task:
+      id: 4076b1ed-51a9-441c-8fed-a1e2090365c2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Info
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: eb346c07-aa59-4a8d-873f-cd69268e38de
+    type: title
+    task:
+      id: eb346c07-aa59-4a8d-873f-cd69268e38de
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 890e53ba-1625-4329-8782-761edbc45943
+    type: regular
+    task:
+      id: 890e53ba-1625-4329-8782-761edbc45943
+      version: -1
+      name: fireeye-nx-get-artifacts-by-alert
+      description: Downloads malware artifacts data for the specified UUID as a zip
+        file.
+      script: '|||fireeye-nx-get-artifacts-by-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      uuid:
+        simple: ${FireEyeNX.Alert.Uuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 9759379b-1d7d-4453-80ae-cb5756a4e46d
+    type: condition
+    task:
+      id: 9759379b-1d7d-4453-80ae-cb5756a4e46d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 744d5b62-167c-42a6-8cd9-16d6b6d169fb
+    type: regular
+    task:
+      id: 744d5b62-167c-42a6-8cd9-16d6b6d169fb
+      version: -1
+      name: fireeye-nx-get-events
+      description: Search and Retrieve FireEye events based on several filters.
+      script: '|||fireeye-nx-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      duration:
+        simple: 48_hours
+      end_time: {}
+      mvx_correlated_only: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 8dfaa087-6028-4314-877b-e477244e570b
+    type: regular
+    task:
+      id: 8dfaa087-6028-4314-877b-e477244e570b
+      version: -1
+      name: fireeye-nx-get-alerts
+      description: Search and Retrieve FireEye alerts based on several filters.
+      script: '|||fireeye-nx-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alert_id: {}
+      callback_domain: {}
+      dst_ip: {}
+      duration: {}
+      end_time: {}
+      file_name: {}
+      file_type: {}
+      info_level: {}
+      malware_name: {}
+      malware_type: {}
+      md5: {}
+      recipient_email: {}
+      sender_email: {}
+      src_ip: {}
+      start_time: {}
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 1652b2d0-6184-4059-81b7-fd26d72ac045
+    type: condition
+    task:
+      id: 1652b2d0-6184-4059-81b7-fd26d72ac045
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Src.Ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Src.Port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.AlertUrl
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Occurred
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.AttackTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.ApplianceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Ack
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Product
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Vlan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.Malicious
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Alert.ScVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: dafe7db0-4ee7-47b0-8626-bd6b54a1e075
+    type: condition
+    task:
+      id: dafe7db0-4ee7-47b0-8626-bd6b54a1e075
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.EventId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Occurred
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SrcIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.DstIp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.DstPort
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SignatureRev
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SignatureIden
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SignatureMatchCnt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Vlan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SrcMac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.DstMac
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.RuleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.SensorId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.ActionTaken
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.AttackMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.InterfaceId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FireEyeNX.Event.Protocol
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2170,
+        "width": 390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+

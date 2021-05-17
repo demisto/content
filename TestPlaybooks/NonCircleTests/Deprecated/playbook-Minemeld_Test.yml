@@ -1,0 +1,950 @@
+id: minemeld_test
+version: -1
+name: Palo Alto MineMeld Test
+description: This is a playbook test for Palo Alto minemeld Node's indicators integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 90526940-4aea-45c8-8da3-0a20aec6772f
+    type: start
+    task:
+      id: 90526940-4aea-45c8-8da3-0a20aec6772f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 327dbe71-4358-4537-8886-5387ea8a573f
+    type: regular
+    task:
+      description: ""
+      id: 327dbe71-4358-4537-8886-5387ea8a573f
+      version: -1
+      name: Add indicator to miner
+      script: '|||minemeld-add-to-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      comment:
+        simple: test comment
+      indicator:
+        simple: 5.5.5.5
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 49fe2a9e-56c1-493a-8a35-43f0592e09b4
+    type: regular
+    task:
+      id: 49fe2a9e-56c1-493a-8a35-43f0592e09b4
+      version: -1
+      name: Delete Context
+      description: Clear context before process starts
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d0fc8601-4837-4643-880f-bb162c700012
+    type: regular
+    task:
+      description: ""
+      id: d0fc8601-4837-4643-880f-bb162c700012
+      version: -1
+      name: Retrieve indicator from miner's list
+      script: '|||minemeld-get-indicator-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      indicator:
+        simple: 5.5.5.5
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 8913bd00-a0ca-441a-8299-567967c292cd
+    type: condition
+    task:
+      description: ""
+      id: 8913bd00-a0ca-441a-8299-567967c292cd
+      version: -1
+      name: Test if indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: Minemeld
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Minemeld.indicator
+                iscontext: true
+              right:
+                value:
+                  simple: asdas
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MineMeld
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MineMeld.Indicators.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 5.5.5.5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 94a9d11a-348d-40f4-8c65-f1e11f0df8bd
+    type: regular
+    task:
+      description: ""
+      id: 94a9d11a-348d-40f4-8c65-f1e11f0df8bd
+      version: -1
+      name: Remove indicator from miner
+      script: '|||minemeld-remove-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      indicator:
+        simple: 5.5.5.5
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6a78600e-5eee-4788-8fef-fc674e4a6f45
+    type: condition
+    task:
+      description: ""
+      id: 6a78600e-5eee-4788-8fef-fc674e4a6f45
+      version: -1
+      name: Test if indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: Minemeld
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Minemeld.indicator
+                iscontext: true
+              right:
+                value:
+                  simple: asdas
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MineMeld
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MineMeld.Indicators.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 5.5.5.5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: ea914bc7-d916-44a1-89ba-87e18f86b1c3
+    type: title
+    task:
+      description: ""
+      id: ea914bc7-d916-44a1-89ba-87e18f86b1c3
+      version: -1
+      name: Test finished successfuly
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b3277152-1d15-42b6-8dc9-124fa028d4b4
+    type: regular
+    task:
+      description: ""
+      id: b3277152-1d15-42b6-8dc9-124fa028d4b4
+      version: -1
+      name: Retrieve miner's indicators list
+      script: '|||minemeld-retrieve-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 9ca6306b-aded-4c2e-89d6-74de7fb341ed
+    type: regular
+    task:
+      id: 9ca6306b-aded-4c2e-89d6-74de7fb341ed
+      version: -1
+      name: Delete Context
+      description: Clear context before process starts
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 8ba1c822-63ec-4d63-87ad-64d2e4b1c2d9
+    type: regular
+    task:
+      id: 8ba1c822-63ec-4d63-87ad-64d2e4b1c2d9
+      version: -1
+      name: Delete Context
+      description: Clear context before process starts
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 6d398f72-da10-4c01-8649-6d9e562154d3
+    type: regular
+    task:
+      description: ""
+      id: 6d398f72-da10-4c01-8649-6d9e562154d3
+      version: -1
+      name: Check IP
+      script: Palo Alto Minemeld|||ip
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 25.25.25.25
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b4e69877-d0c5-4c00-8ed7-40fda5c77b00
+    type: regular
+    task:
+      description: ""
+      id: b4e69877-d0c5-4c00-8ed7-40fda5c77b00
+      version: -1
+      name: Add IP indicator to miner
+      script: '|||minemeld-add-to-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      comment:
+        simple: test ip 7777
+      indicator:
+        simple: 25.25.25.25
+      miner:
+        simple: Malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: f726c9a4-d16c-4d8e-87fd-9ebd799ec860
+    type: condition
+    task:
+      description: ""
+      id: f726c9a4-d16c-4d8e-87fd-9ebd799ec860
+      version: -1
+      name: Test if IP indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    scriptarguments:
+      value:
+        complex:
+          root: Minemeld
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Minemeld.indicator
+                iscontext: true
+              right:
+                value:
+                  simple: asdas
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.MineMeld.Indicators.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 25.25.25.25
+                accessor: MineMeld.Indicators
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: f35d7413-1dd6-4649-85c9-f14c46d148b5
+    type: regular
+    task:
+      description: ""
+      id: f35d7413-1dd6-4649-85c9-f14c46d148b5
+      version: -1
+      name: Remove indicator from miner
+      script: '|||minemeld-remove-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      indicator:
+        simple: 25.25.25.25
+      miner:
+        simple: Malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 8ab50a08-5bef-4e65-8809-85fad50cf4b7
+    type: regular
+    task:
+      id: 8ab50a08-5bef-4e65-8809-85fad50cf4b7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 57b1f4c6-e0ca-4698-81da-516dbe2c7278
+    type: regular
+    task:
+      id: 57b1f4c6-e0ca-4698-81da-516dbe2c7278
+      version: -1
+      name: Add indicators to miner
+      description: Add indicator to a miner.
+      script: '|||minemeld-add-to-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      comment: {}
+      indicator:
+        simple: '["koko.com","bobo.com"]'
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 183f2121-a59f-4ee9-8169-53322343e421
+    type: regular
+    task:
+      id: 183f2121-a59f-4ee9-8169-53322343e421
+      version: -1
+      name: Retrieve indicator from miner's list
+      description: Get indicator from a miner's list
+      script: '|||minemeld-get-indicator-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      indicator:
+        simple: koko.com
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 4feb6d0c-ff62-46e0-871a-878c7dc3534a
+    type: condition
+    task:
+      description: ""
+      id: 4feb6d0c-ff62-46e0-871a-878c7dc3534a
+      version: -1
+      name: Test if indicator Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MineMeld
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: MineMeld.Indicators.indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: koko.com
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 76f170a3-06f5-4271-88c5-96e5bef8e9e0
+    type: regular
+    task:
+      id: 76f170a3-06f5-4271-88c5-96e5bef8e9e0
+      version: -1
+      name: Remove indicator from miner
+      description: Remove an indicator from a miner.
+      script: '|||minemeld-remove-from-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      indicator:
+        simple: '["koko.com","bobo.com"]'
+      miner:
+        simple: Unmalicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 9768ea63-7713-40a5-8ba7-ea4f416aa62b
+    type: regular
+    task:
+      id: 9768ea63-7713-40a5-8ba7-ea4f416aa62b
+      version: -1
+      name: Check File (SHA256)
+      description: Search for file on lists
+      script: Palo Alto Minemeld|||file
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      file:
+        simple: 699a66ca8fb97246d9701b50068a309ae8e1b021ecffa7fdb8918e5688dfe9a4
+      md5: {}
+      sha256: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 541e6287-ea77-4c73-8b1a-71259424f2f2
+    type: condition
+    task:
+      description: ""
+      id: 541e6287-ea77-4c73-8b1a-71259424f2f2
+      version: -1
+      name: Test if SHA256 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          right:
+            value:
+              simple: 699a66ca8fb97246d9701b50068a309ae8e1b021ecffa7fdb8918e5688dfe9a4
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 633ee109-02ee-4514-839e-148cf74acbe6
+    type: regular
+    task:
+      id: 633ee109-02ee-4514-839e-148cf74acbe6
+      version: -1
+      name: Check File (MD5)
+      description: Search for file on lists
+      script: Palo Alto Minemeld|||file
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      file:
+        simple: d35fc4383b8b89cf29d3d688e1b9cf3d
+      long: {}
+      md5: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: ed829bc7-d559-499b-85ef-6656af77bffe
+    type: condition
+    task:
+      description: ""
+      id: ed829bc7-d559-499b-85ef-6656af77bffe
+      version: -1
+      name: Test if MD5 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: d35fc4383b8b89cf29d3d688e1b9cf3d
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 8629e502-81b8-4d0d-8854-efa23482967f
+    type: regular
+    task:
+      id: 8629e502-81b8-4d0d-8854-efa23482967f
+      version: -1
+      name: Check File (SHA1)
+      description: Search for file on lists
+      script: Palo Alto Minemeld|||file
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      file:
+        simple: a790cf8ad94bdd47f4232d87fe7b25bdabaf66af
+      long: {}
+      md5: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 721f3efa-3ce8-4c13-8814-652d34df7ee0
+    type: condition
+    task:
+      description: ""
+      id: 721f3efa-3ce8-4c13-8814-652d34df7ee0
+      version: -1
+      name: Test if SHA1 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MineMeld
+                accessor: Indicators
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4410,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

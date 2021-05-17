@@ -1,0 +1,79 @@
+id: McAfee ESM Watchlists - Test v11.3
+version: -1
+name: McAfee ESM Watchlists - Test v11.3
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0eb7b2f9-b429-4e5e-84e5-6c82553f84ca
+    type: start
+    task:
+      id: 0eb7b2f9-b429-4e5e-84e5-6c82553f84ca
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 365253e3-d529-425c-850d-08f577cb41f3
+    type: regular
+    task:
+      id: 365253e3-d529-425c-850d-08f577cb41f3
+      version: -1
+      name: set playbook to McAfee ESM Watchlists - Test
+      description: set playbook for current incident to McAfee ESM Watchlists - Test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: McAfee ESM Watchlists - Test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,1 @@
+For more information about the API, parameters, authentication and more, you can check the official documentation of the API at https://www.zabbix.com/documentation/current/manual/api

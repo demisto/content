@@ -1,0 +1,1027 @@
+{
+  "assetAsnNumbers": [
+    {
+      "current": true,
+      "firstSeen": 1539038510372,
+      "lastSeen": 1592740648305,
+      "recent": true,
+      "value": 3257
+    }
+  ],
+  "assetAsns": [
+    {
+      "asnID": 3257,
+      "countryCode": "germany",
+      "description": "GTT-BACKBONE, germany",
+      "fullName": "AS3257 - germany - GTT-BACKBONE, germany",
+      "id": 3257,
+      "name": "AS3257",
+      "registry": "RIPE"
+    }
+  ],
+  "assetAttributes": [
+    {
+      "attributeType": "FacebookId",
+      "attributeValue": "skysportde",
+      "current": true,
+      "firstSeen": 1589736926925,
+      "lastSeen": 1592436483802,
+      "recent": true
+    },
+    {
+      "attributeType": "InstagramId",
+      "attributeValue": "skysportde",
+      "current": true,
+      "firstSeen": 1589736926925,
+      "lastSeen": 1592436483802,
+      "recent": true
+    },
+    {
+      "attributeType": "TwitterId",
+      "attributeValue": "skysportnewshd",
+      "current": true,
+      "firstSeen": 1589736926925,
+      "lastSeen": 1592436483802,
+      "recent": true
+    },
+    {
+      "attributeType": "YouTubeId",
+      "attributeValue": "skysporthd",
+      "current": true,
+      "firstSeen": 1589736926925,
+      "lastSeen": 1592436483802,
+      "recent": true
+    },
+    {
+      "attributeType": "TwitterId",
+      "attributeValue": "lfc",
+      "current": true,
+      "firstSeen": 1591902754763,
+      "lastSeen": 1591943968016,
+      "recent": true
+    },
+    {
+      "attributeType": "InstagramId",
+      "attributeValue": "embed.js",
+      "current": true,
+      "firstSeen": 1591938673838,
+      "lastSeen": 1591938683954,
+      "recent": true
+    },
+    {
+      "attributeType": "InstagramId",
+      "attributeValue": "hngata92",
+      "current": true,
+      "firstSeen": 1591938673838,
+      "lastSeen": 1591938683954,
+      "recent": true
+    },
+    {
+      "attributeType": "FacebookId",
+      "attributeValue": "metrolyrics",
+      "current": true,
+      "firstSeen": 1590126459682,
+      "lastSeen": 1590126535908,
+      "recent": true
+    },
+    {
+      "attributeType": "GooglePlusId",
+      "attributeValue": "metrolyrics",
+      "current": true,
+      "firstSeen": 1590126459682,
+      "lastSeen": 1590126535908,
+      "recent": true
+    },
+    {
+      "attributeType": "GoogleTagManagerId",
+      "attributeValue": "gtm-6qp2",
+      "current": true,
+      "firstSeen": 1590126458783,
+      "lastSeen": 1590126535908,
+      "recent": true
+    }
+  ],
+  "assetCookies": [
+    {
+      "cookieDomain": ".scorecardresearch.com",
+      "cookieName": "UID",
+      "current": true,
+      "firstSeen": 1589693236505,
+      "lastSeen": 1592716864103,
+      "recent": true
+    },
+    {
+      "cookieDomain": ".scorecardresearch.com",
+      "cookieName": "UIDR",
+      "current": true,
+      "firstSeen": 1589693236505,
+      "lastSeen": 1592716864103,
+      "recent": true
+    },
+    {
+      "cookieDomain": "${n}",
+      "cookieName": "${t}",
+      "current": true,
+      "firstSeen": 1592437459573,
+      "lastSeen": 1592450573609,
+      "recent": true
+    },
+    {
+      "cookieDomain": ".connextra.com",
+      "cookieName": "Bet9ja",
+      "current": true,
+      "firstSeen": 1592437459573,
+      "lastSeen": 1592450573609,
+      "recent": true
+    }
+  ],
+  "assetCount": 477582,
+  "assetFirstSeen": 1481125480000,
+  "assetHeaders": [
+    {
+      "current": true,
+      "firstSeen": 1589693236505,
+      "headerName": "Pragma",
+      "headerValue": "no-cache",
+      "lastSeen": 1592716906037,
+      "recent": true
+    },
+    {
+      "current": true,
+      "firstSeen": 1589693238855,
+      "headerName": "X-Cache-Lookup",
+      "headerValue": "MISS from localhost:60000",
+      "lastSeen": 1592716906037,
+      "recent": true
+    },
+    {
+      "current": true,
+      "firstSeen": 1589693236505,
+      "headerName": "X-Cache-Lookup",
+      "headerValue": "MISS from localhost:65432",
+      "lastSeen": 1592716864184,
+      "recent": true
+    },
+    {
+      "current": true,
+      "firstSeen": 1592716864103,
+      "headerName": "Location",
+      "headerValue": "http://b.scorecardresearch.com/b2?c1=8&c2=6820648&rn=0.716441575322672&c7=http%3A%2F%2Faax.amazon-adsystem.com%2Fe%2Fdtb%2Fadmi%3Fb%3DhcbTqbbUTTkdgf_1uhNNobhJFzKJs_cjMcSS2csPJZQIZ4v%26rnd%3D7103773500306571999546823%26pp%3DG4YNFK%26p%3DZDcMIKQ&c3=1&c4=&c5=&c6=&c10=&c15=&c16=&c8=&c9=http%3A%2F%2Faax.amazon-adsystem.com%2Fe%2Fdtb%2Fadmi%3Fb%3DhcbTqbbUTTkdgf_1uhNNobhJFzKJs_cjMcSS2csPJZQIZ4v%26rnd%3D7103773500306571999546823%26pp%3DG4YNFK%26p%3DZDcMIKQ&cv=1.8&cs_ak_ss=1",
+      "lastSeen": 1592716864103,
+      "recent": true
+    },
+    {
+      "current": true,
+      "firstSeen": 1589693022759,
+      "headerName": "Content-Encoding",
+      "headerValue": "gzip",
+      "lastSeen": 1592716825786,
+      "recent": true
+    }
+  ],
+  "assetHosts": [
+    {
+      "current": true,
+      "firstSeen": 1591404900000,
+      "lastSeen": 1592696402000,
+      "recent": true,
+      "value": "a1294.w20.akamai.net"
+    },
+    {
+      "current": true,
+      "firstSeen": 1592689973000,
+      "lastSeen": 1592689973000,
+      "recent": true,
+      "value": "a756.g.akamai.net.0.1.cn.akamaitech.net"
+    }
+  ],
+  "assetIpAddress": "69.22.137.99",
+  "assetIpBlocks": [
+    {
+      "current": true,
+      "firstSeen": 1539038510372,
+      "ipBlock": "69.22.137.0/24",
+      "lastSeen": 1592740648305,
+      "recent": true
+    }
+  ],
+  "assetLastSeen": 1592716906037,
+  "assetLocation": [
+    {
+      "firstSeen": 1590681618000,
+      "lastSeen": 1592716906037,
+      "value": {
+        "countrycode": "US",
+        "countryname": "United States",
+        "latitude": 37.750999450683594,
+        "longitude": -97.8219985961914
+      }
+    }
+  ],
+  "assetMxRecord": [
+    {
+      "current": true,
+      "firstSeen": 1481125480000,
+      "lastSeen": 1592716906037,
+      "recent": true,
+      "value": false
+    }
+  ],
+  "assetNetRanges": [
+    {
+      "current": true,
+      "firstSeen": 1539038510372,
+      "lastSeen": 1581177447163,
+      "recent": true,
+      "value": "69.22.137.0 - 69.22.137.255"
+    }
+  ],
+  "assetNsRecord": [
+    {
+      "current": true,
+      "firstSeen": 1481125480000,
+      "lastSeen": 1592716906037,
+      "recent": true,
+      "value": false
+    }
+  ],
+  "assetReputations": [
+    {
+      "cidr": "69.22.128.0/18",
+      "current": true,
+      "firstSeen": 1481125480000,
+      "lastSeen": 1592566222000,
+      "listName": "dummy_webserver",
+      "listUpdatedAt": 1486072465000,
+      "recent": true,
+      "threatType": "Aggregate/Ignore",
+      "trusted": false
+    }
+  ],
+  "assetServices": [
+    {
+      "banners": [
+        {
+          "bannerMetadata": "gas",
+          "count": 47,
+          "firstSeen": 1589556983000,
+          "lastSeen": 1592620686000,
+          "port": 443,
+          "recent": true,
+          "scanType": "http"
+        },
+        {
+          "bannerMetadata": "--i",
+          "count": 6,
+          "firstSeen": 1589906554000,
+          "lastSeen": 1592336542000,
+          "port": 443,
+          "recent": true,
+          "scanType": "http"
+        }
+      ],
+      "current": true,
+      "firstSeen": 1589556983000,
+      "lastSeen": 1592679399000,
+      "port": 443,
+      "recent": true,
+      "scanMetadata": [
+        {
+          "bannerMetadata": "--i",
+          "endScan": 1592336567000,
+          "port": 443,
+          "startScan": 1592335971000
+        },
+        {
+          "bannerMetadata": "gai",
+          "endScan": 1592251690000,
+          "port": 443,
+          "startScan": 1592251096000
+        },
+        {
+          "bannerMetadata": "gas",
+          "endScan": 1592679630000,
+          "port": 443,
+          "startScan": 1592678990000
+        }
+      ],
+      "scheme": "unknown"
+    },
+    {
+      "banners": [
+        {
+          "bannerMetadata": "gai",
+          "count": 75,
+          "firstSeen": 1589582625000,
+          "lastSeen": 1592651602000,
+          "port": 80,
+          "recent": true,
+          "scanType": "http"
+        }
+      ],
+      "current": true,
+      "firstSeen": 1589582625000,
+      "lastSeen": 1592651602000,
+      "port": 80,
+      "recent": true,
+      "scanMetadata": [
+        {
+          "bannerMetadata": "gai",
+          "endScan": 1592652166000,
+          "port": 80,
+          "startScan": 1592651236000
+        }
+      ],
+      "scheme": "unknown"
+    }
+  ],
+  "assetSslCerts": [
+    {
+      "certificateAuthority": true,
+      "current": true,
+      "firstSeen": 1589556983000,
+      "id": "9370c73f6c67904310c912bae29694418d120825",
+      "issuer": {
+        "common name": "DigiCert Global Root CA",
+        "country": "US",
+        "organization": "DigiCert Inc",
+        "unit": "www.digicert.com"
+      },
+      "keySize": 256,
+      "lastSeen": 1592620686000,
+      "notAfter": 1865853924000,
+      "notBefore": 1550234724000,
+      "publicKeyAlgorithm": "EC",
+      "recent": true,
+      "selfSigned": false,
+      "serialNumber": "b5bf65b6ba7fbd08b290d904537dee0",
+      "sha1": "9370c73f6c67904310c912bae29694418d120825",
+      "signatureAlgorithm": "SHA256withRSA",
+      "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+      "subject": {
+        "common name": "DigiCert Secure Site ECC CA-1",
+        "country": "US",
+        "organization": "DigiCert Inc",
+        "unit": "www.digicert.com"
+      },
+      "version": 3
+    },
+    {
+      "certificateAuthority": false,
+      "current": true,
+      "firstSeen": 1589556983000,
+      "id": "aa7758c9df781bf5444b6f6a4a869082971a0f39",
+      "issuer": {
+        "common name": "DigiCert Secure Site ECC CA-1",
+        "country": "US",
+        "organization": "DigiCert Inc",
+        "unit": "www.digicert.com"
+      },
+      "keySize": 256,
+      "lastSeen": 1592620686000,
+      "notAfter": 1597233600000,
+      "notBefore": 1565654400000,
+      "publicKeyAlgorithm": "EC",
+      "recent": true,
+      "selfSigned": false,
+      "serialNumber": "12d15bf564a8628509d92a233dd6a2b",
+      "sha1": "aa7758c9df781bf5444b6f6a4a869082971a0f39",
+      "signatureAlgorithm": "SHA256withECDSA",
+      "signatureAlgorithmOid": "1.2.840.10045.4.3.2",
+      "subject": {
+        "common name": "a248.e.akamai.net",
+        "country": "US",
+        "locale": "Cambridge",
+        "organization": "Akamai Technologies, Inc.",
+        "state": "Massachusetts"
+      },
+      "subjectAlternativeNames": [
+        "a248.e.akamai.net",
+        "*.akamaized-staging.net",
+        "*.akamaized.net",
+        "*.akamaihd-staging.net",
+        "*.akamaihd.net"
+      ],
+      "version": 3
+    }
+  ],
+  "assetWebComponents": [
+    {
+      "current": true,
+      "firstSeen": 1589693022759,
+      "lastSeen": 1592689964050,
+      "ports": [
+        {
+          "count": 3797,
+          "firstSeen": 1589693022759,
+          "lastSeen": 1592689964050,
+          "port": 443
+        },
+        {
+          "count": 82,
+          "firstSeen": 1589702761129,
+          "lastSeen": 1591142002041,
+          "port": 80
+        }
+      ],
+      "recent": true,
+      "webComponentCategory": "Server",
+      "webComponentName": "AkamaiNetStorage"
+    },
+    {
+      "count": 232,
+      "current": true,
+      "firstSeen": 1589556983000,
+      "lastSeen": 1592651602000,
+      "ports": [
+        {
+          "count": 347,
+          "firstSeen": 1589582625000,
+          "lastSeen": 1592651602000,
+          "port": 80
+        },
+        {
+          "count": 303,
+          "firstSeen": 1589556983000,
+          "lastSeen": 1592620686000,
+          "port": 443
+        }
+      ],
+      "recent": true,
+      "webComponentCategory": "Server",
+      "webComponentName": "AkamaiGHost"
+    },
+    {
+      "current": true,
+      "firstSeen": 1589693810125,
+      "lastSeen": 1592464452547,
+      "ports": [
+        {
+          "count": 3977,
+          "firstSeen": 1589693810125,
+          "lastSeen": 1592464452547,
+          "port": 443
+        },
+        {
+          "count": 631,
+          "firstSeen": 1589698657592,
+          "lastSeen": 1592434581385,
+          "port": 80
+        }
+      ],
+      "recent": true,
+      "webComponentCategory": "Server",
+      "webComponentName": "Microsoft IIS httpd",
+      "webComponentVersion": "10.0"
+    },
+    {
+      "current": true,
+      "firstSeen": 1589693810125,
+      "lastSeen": 1592464452547,
+      "ports": [
+        {
+          "count": 4219,
+          "firstSeen": 1589693810125,
+          "lastSeen": 1592464452547,
+          "port": 443
+        },
+        {
+          "count": 632,
+          "firstSeen": 1589698657592,
+          "lastSeen": 1592434581385,
+          "port": 80
+        }
+      ],
+      "recent": true,
+      "webComponentCategory": "Server",
+      "webComponentName": "Microsoft-IIS",
+      "webComponentVersion": "10.0"
+    }
+  ],
+  "data": {
+    "attributes": [
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "InstagramId",
+        "attributeValue": "skysportde",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 217,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$InstagramId$skysportde",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "YouTubeId",
+        "attributeValue": "skysporthd",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 217,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$YouTubeId$skysporthd",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "TwitterId",
+        "attributeValue": "skysportnewshd",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 219,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$TwitterId$skysportnewshd",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "FacebookId",
+        "attributeValue": "skysportde",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 219,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$FacebookId$skysportde",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "TwitterId",
+        "attributeValue": "lfc",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 6,
+        "firstSeen": 1591902754763,
+        "id": "69.22.137.99$TwitterId$lfc",
+        "lastSeen": 1591943968016
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "InstagramId",
+        "attributeValue": "embed.js",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 2,
+        "firstSeen": 1591938673838,
+        "id": "69.22.137.99$InstagramId$embed.js",
+        "lastSeen": 1591938683954
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "InstagramId",
+        "attributeValue": "hngata92",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 2,
+        "firstSeen": 1591938673838,
+        "id": "69.22.137.99$InstagramId$hngata92",
+        "lastSeen": 1591938683954
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "FacebookId",
+        "attributeValue": "metrolyrics",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 5,
+        "firstSeen": 1590126459682,
+        "id": "69.22.137.99$FacebookId$metrolyrics",
+        "lastSeen": 1590126535908
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "GoogleTagManagerId",
+        "attributeValue": "gtm-6qp2",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 5,
+        "firstSeen": 1590126458783,
+        "id": "69.22.137.99$GoogleTagManagerId$gtm-6qp2",
+        "lastSeen": 1590126535908
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "attributeType": "GooglePlusId",
+        "attributeValue": "metrolyrics",
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 5,
+        "firstSeen": 1590126459682,
+        "id": "69.22.137.99$GooglePlusId$metrolyrics",
+        "lastSeen": 1590126535908
+      }
+    ],
+    "cookies": [
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": "videos.sport.sky.de",
+        "cookieName": "_chartbeat4",
+        "count": 252,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$videos.sport.sky.de$365ad9067caad705c85652fef6adafaf",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": "videos.sport.sky.de",
+        "cookieName": "_cb",
+        "count": 269,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$videos.sport.sky.de$9dc626f2f97dd9a72e358258845a91fa",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": "videos.sport.sky.de",
+        "cookieName": "_chartbeat5",
+        "count": 219,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$videos.sport.sky.de$42575137d4ee224d360d1c014238fd1e",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": "videos.sport.sky.de",
+        "cookieName": "_chartbeat2",
+        "count": 269,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$videos.sport.sky.de$c3123115f91d0e12a4647bf1093c4c16",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": "videos.sport.sky.de",
+        "cookieName": "_cb_svref",
+        "count": 269,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$videos.sport.sky.de$ff50ccc8091fa4b1480578088e853baf",
+        "lastSeen": 1592932626129
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": ".scorecardresearch.com",
+        "cookieName": "UID",
+        "count": 1235,
+        "firstSeen": 1589693236505,
+        "id": "69.22.137.99$.scorecardresearch.com$e7d22294bdcb7133967c3548ece982e5",
+        "lastSeen": 1592922144125
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": ".scorecardresearch.com",
+        "cookieName": "UIDR",
+        "count": 1213,
+        "firstSeen": 1589693236505,
+        "id": "69.22.137.99$.scorecardresearch.com$4f10e225cad338c4cd3be3de926fa9da",
+        "lastSeen": 1592922144125
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": ".mathtag.com",
+        "cookieName": "nil",
+        "count": 1,
+        "firstSeen": 1592450573609,
+        "id": "69.22.137.99$.mathtag.com$852438d026c018c4307b916406f98c62",
+        "lastSeen": 1592450573609
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": ".mathtag.com",
+        "cookieName": "forterToken",
+        "count": 1,
+        "firstSeen": 1592450573609,
+        "id": "69.22.137.99$.mathtag.com$1b6402f5c89e88550d6d7c28398d8f8b",
+        "lastSeen": 1592450573609
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "cookieDomain": ".mathtag.com",
+        "cookieName": "__cq_seg",
+        "count": 1,
+        "firstSeen": 1592450573609,
+        "id": "69.22.137.99$.mathtag.com$6753a24e1bd7c02baa8e45de55a19867",
+        "lastSeen": 1592450573609
+      }
+    ],
+    "sslCerts": [
+      {
+        "certificateAuthority": false,
+        "count": 127510685,
+        "firstSeen": 1568293294858,
+        "id": "aa7758c9df781bf5444b6f6a4a869082971a0f39",
+        "issuer": {
+          "common name": "DigiCert Secure Site ECC CA-1",
+          "country": "US",
+          "organization": "DigiCert Inc",
+          "unit": "www.digicert.com"
+        },
+        "lastSeen": 1592810014406,
+        "notAfter": 1597233600000,
+        "notBefore": 1565654400000,
+        "publicKeyAlgorithm": "EC",
+        "selfSigned": false,
+        "serialNumber": "12d15bf564a8628509d92a233dd6a2b",
+        "sha1": "aa7758c9df781bf5444b6f6a4a869082971a0f39",
+        "signatureAlgorithm": "SHA256withECDSA",
+        "signatureAlgorithmOid": "1.2.840.10045.4.3.2",
+        "subject": {
+          "common name": "a248.e.akamai.net",
+          "country": "US",
+          "locale": "Cambridge",
+          "organization": "Akamai Technologies, Inc.",
+          "state": "Massachusetts"
+        },
+        "subjectAlternativeNames": "a248.e.akamai.net, *.akamaized-staging.net, *.akamaized.net, *.akamaihd-staging.net, *.akamaihd.net",
+        "version": 3
+      },
+      {
+        "certificateAuthority": true,
+        "count": 290708359,
+        "firstSeen": 1550899615000,
+        "id": "9370c73f6c67904310c912bae29694418d120825",
+        "issuer": {
+          "common name": "DigiCert Global Root CA",
+          "country": "US",
+          "organization": "DigiCert Inc",
+          "unit": "www.digicert.com"
+        },
+        "lastSeen": 1592810135722,
+        "notAfter": 1865853924000,
+        "notBefore": 1550234724000,
+        "publicKeyAlgorithm": "EC",
+        "selfSigned": false,
+        "serialNumber": "b5bf65b6ba7fbd08b290d904537dee0",
+        "sha1": "9370c73f6c67904310c912bae29694418d120825",
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "subject": {
+          "common name": "DigiCert Secure Site ECC CA-1",
+          "country": "US",
+          "organization": "DigiCert Inc",
+          "unit": "www.digicert.com"
+        },
+        "version": 3
+      }
+    ],
+    "webComponents": [
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 433,
+        "firstSeen": 1589556983000,
+        "id": "69.22.137.99$AkamaiGHost$Server$",
+        "lastSeen": 1593023621000,
+        "ports": [
+          {
+            "count": 216,
+            "firstSeen": 1589582625000,
+            "lastSeen": 1593023621000,
+            "portNumber": 80
+          },
+          {
+            "count": 217,
+            "firstSeen": 1589556983000,
+            "lastSeen": 1593004329000,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "Server",
+        "webComponentName": "AkamaiGHost"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 270,
+        "firstSeen": 1589735411674,
+        "id": "69.22.137.99$ping.chartbeat.net$Tracking Pixel$",
+        "lastSeen": 1592932626129,
+        "ports": [
+          {
+            "count": 268,
+            "firstSeen": 1589736926925,
+            "lastSeen": 1592932626129,
+            "portNumber": 443
+          },
+          {
+            "count": 2,
+            "firstSeen": 1589735411674,
+            "lastSeen": 1589735429341,
+            "portNumber": 80
+          }
+        ],
+        "webComponentCategory": "Tracking Pixel",
+        "webComponentName": "ping.chartbeat.net"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 263,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$Sharethrough$Ad Exchange$",
+        "lastSeen": 1592932626129,
+        "ports": [
+          {
+            "count": 263,
+            "firstSeen": 1589736926925,
+            "lastSeen": 1592932626129,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "Ad Exchange",
+        "webComponentName": "Sharethrough"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 200,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$backbone.marionette$JavaScript Library$2.0.1",
+        "lastSeen": 1592932626129,
+        "ports": [
+          {
+            "count": 200,
+            "firstSeen": 1589736926925,
+            "lastSeen": 1592932626129,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "JavaScript Library",
+        "webComponentName": "backbone.marionette",
+        "webComponentVersion": "2.0.1"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 265,
+        "firstSeen": 1589736926925,
+        "id": "69.22.137.99$Adobe Dynamic Tag Management$Marketing Automation$",
+        "lastSeen": 1592932626129,
+        "ports": [
+          {
+            "count": 265,
+            "firstSeen": 1589736926925,
+            "lastSeen": 1592932626129,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "Marketing Automation",
+        "webComponentName": "Adobe Dynamic Tag Management"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 3880,
+        "firstSeen": 1589693022759,
+        "id": "69.22.137.99$AkamaiNetStorage$Server$",
+        "lastSeen": 1592908302314,
+        "ports": [
+          {
+            "count": 83,
+            "firstSeen": 1589702761129,
+            "lastSeen": 1592908302314,
+            "portNumber": 80
+          },
+          {
+            "count": 3797,
+            "firstSeen": 1589693022759,
+            "lastSeen": 1592689964050,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "Server",
+        "webComponentName": "AkamaiNetStorage"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 1,
+        "firstSeen": 1592906530408,
+        "id": "69.22.137.99$jQuery$JavaScript Library$3.2.1",
+        "lastSeen": 1592906530408,
+        "ports": [
+          {
+            "count": 1,
+            "firstSeen": 1592906530408,
+            "lastSeen": 1592906530408,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "JavaScript Library",
+        "webComponentName": "jQuery",
+        "webComponentVersion": "3.2.1"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 121,
+        "firstSeen": 1589696620012,
+        "id": "69.22.137.99$Google Ajax CDN$CDN$",
+        "lastSeen": 1592906530408,
+        "ports": [
+          {
+            "count": 65,
+            "firstSeen": 1589712815166,
+            "lastSeen": 1592906530408,
+            "portNumber": 443
+          },
+          {
+            "count": 56,
+            "firstSeen": 1589696620012,
+            "lastSeen": 1589996462753,
+            "portNumber": 80
+          }
+        ],
+        "webComponentCategory": "CDN",
+        "webComponentName": "Google Ajax CDN"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 3,
+        "firstSeen": 1589780959637,
+        "id": "69.22.137.99$cloudinary$Server$",
+        "lastSeen": 1592813112846,
+        "ports": [
+          {
+            "count": 3,
+            "firstSeen": 1589780959637,
+            "lastSeen": 1592813112846,
+            "portNumber": 443
+          }
+        ],
+        "webComponentCategory": "Server",
+        "webComponentName": "cloudinary"
+      },
+      {
+        "address": "69.22.137.99",
+        "asn": 3257,
+        "bgpPrefix": "69.22.137.0/24",
+        "count": 4851,
+        "firstSeen": 1589693810125,
+        "id": "69.22.137.99$Microsoft-IIS$Server$10.0",
+        "lastSeen": 1592464452547,
+        "ports": [
+          {
+            "count": 4219,
+            "firstSeen": 1589693810125,
+            "lastSeen": 1592464452547,
+            "portNumber": 443
+          },
+          {
+            "count": 632,
+            "firstSeen": 1589698657592,
+            "lastSeen": 1592434581385,
+            "portNumber": 80
+          }
+        ],
+        "webComponentCategory": "Server",
+        "webComponentName": "Microsoft-IIS",
+        "webComponentVersion": "10.0"
+      }
+    ]
+  },
+  "description": "69.22.137.99",
+  "firstSeen": 1481125480000,
+  "history": [
+    {
+      "added": "RiskIQ",
+      "changedBy": "Brandon Dixon",
+      "property": "organizations",
+      "updatedAt": 1591794389990
+    }
+  ],
+  "label": "69.22.137.99",
+  "lastSeen": 1592837172726,
+  "name": "69.22.137.99",
+  "type": "IP_ADDRESS",
+  "uuid": "3833a43f-567e-4941-865b-aeec9754e78e"
+}

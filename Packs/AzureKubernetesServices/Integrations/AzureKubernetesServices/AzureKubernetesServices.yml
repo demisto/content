@@ -1,0 +1,268 @@
+category: IT Services
+commonfields:
+  id: Azure Kubernetes Services
+  version: -1
+configuration:
+- defaultvalue: ab217a43-e09b-4f80-ae93-482fc7a3d1a3
+  display: Application ID
+  hidden: false
+  name: app_id
+  required: true
+  type: 0
+- display: Subscription ID
+  hidden: false
+  name: subscription_id
+  required: true
+  type: 0
+- display: Resource Group Name
+  hidden: false
+  name: resource_group_name
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Deploy and manage containerized applications with a fully managed Kubernetes
+  service.
+display: Azure Kubernetes Services (Beta)
+name: Azure Kubernetes Services
+beta: true
+script:
+  commands:
+  - deprecated: false
+    description: Tests the connectivity to Azure.
+    execution: false
+    name: azure-ks-auth-test
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: azure-ks-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the azure-ks-auth-start command.
+    execution: false
+    name: azure-ks-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: azure-ks-auth-reset
+  - deprecated: false
+    description: Gets a list of managed clusters in the specified subscription.
+    execution: false
+    name: azure-ks-clusters-list
+    outputs:
+    - contextPath: AzureKS.ManagedCluster.id
+      description: Resource ID.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.location
+      description: Resource location.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.name
+      description: Resource name.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.tags
+      description: Resource tags.
+      type: Unknown
+    - contextPath: AzureKS.ManagedCluster.type
+      description: Resource type.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.provisioningState
+      description: The current deployment or provisioning state, which only appears
+        in the response.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.kubernetesVersion
+      description: Version of Kubernetes specified when creating the managed cluster.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.maxAgentPools
+      description: The maximum number of agent pools for the managed cluster.
+      type: Number
+    - contextPath: AzureKS.ManagedCluster.properties.dnsPrefix
+      description: DNS prefix specified when creating the managed cluster.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.fqdn
+      description: FQDN for the master pool.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.name
+      description: Unique name of the agent pool profile in the context of the subscription
+        and resource group.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.count
+      description: Number of agents (VMs) to host Docker containers. Allowed values
+        must be in the range of 0 to 100 (inclusive) for user pools and in the range
+        of 1 to 100 (inclusive) for system pools.
+      type: Number
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.vmSize
+      description: Size of agent VMs.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.maxPods
+      description: Maximum number of pods that can run on a node.
+      type: Number
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.osType
+      description: The operating system type, either Linux or Windows.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.provisioningState
+      description: The current deployment or provisioning state.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion
+      description: Version of the orchestrator specified when creating the managed cluster.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.linuxProfile.adminUsername
+      description: The name of the administrator account.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.linuxProfile.ssh.publicKeys.keyData
+      description: Certificate public key used to authenticate with VMs through SSH.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.servicePrincipalProfile.clientId
+      description: The ID for the service principal.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.nodeResourceGroup
+      description: Name of the resource group containing agent pool nodes.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.enableRBAC
+      description: Whether to enable Kubernetes Role-Based Access Control (RBAC).
+      type: Boolean
+    - contextPath: AzureKS.ManagedCluster.properties.diskEncryptionSetID
+      description: Resource ID of the disk encryption set to use for enabling encryption
+        at rest.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.networkProfile.networkPlugin
+      description: Network plugin used for building Kubernetes network.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.networkProfile.podCidr
+      description: A CIDR notation IP range from which to assign pod IPs when kubenet
+        is used.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.networkProfile.serviceCidr
+      description: A CIDR notation IP range from which to assign service cluster IPs.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.networkProfile.dnsServiceIP
+      description: An IP address assigned to the Kubernetes DNS service.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.networkProfile.dockerBridgeCidr
+      description: A CIDR notation IP range assigned to the Docker bridge network.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.omsagent.enabled
+      description: Whether the Operations Management Suite Agent is enabled.
+      type: Boolean
+    - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.omsagent.config.logAnalyticsWorkspaceResourceID
+      description: The resource ID of an existing Log Analytics Workspace to use for
+        storing monitoring data.
+      type: String
+    - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled
+      description: Whether the ingress is configured with automatic public DNS name
+        creation.
+      type: Boolean
+    - contextPath: AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName
+      description: The subscription DNS zone name.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the managed cluster resource. Can be retrieved using
+        the azure-ks-clusters-list command.
+      isArray: false
+      name: resource_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Resource location.
+      isArray: false
+      name: location
+      predefined:
+      - australiacentral
+      - australiacentral2
+      - australiaeast
+      - australiasoutheast
+      - brazilse
+      - brazilsouth
+      - canadacentral
+      - canadaeast
+      - centralfrance
+      - centralindia
+      - centralus
+      - centraluseuap
+      - eastasia
+      - eastus
+      - eastus2
+      - eastus2euap
+      - germanyn
+      - germanywc
+      - japaneast
+      - japanwest
+      - koreacentral
+      - koreasouth
+      - northcentralus
+      - northeurope
+      - norwaye
+      - norwayw
+      - southafricanorth
+      - southafricawest
+      - southcentralus
+      - southeastasia
+      - southfrance
+      - southindia
+      - switzerlandn
+      - switzerlandw
+      - uaecentral
+      - uaenorth
+      - uknorth
+      - uksouth
+      - uksouth2
+      - ukwest
+      - westcentralus
+      - westeurope
+      - westindia
+      - westus
+      - westus2
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
+      isArray: false
+      name: http_application_routing_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id
+        is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
+      isArray: false
+      name: monitoring_agent_enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: The name of an existing Log Analytics workspace to use for storing
+        monitoring data. Can be retrieved in the Log Analytics workspace from the Azure
+        portal.
+      isArray: false
+      name: monitoring_resource_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a managed cluster with the specified configuration.
+    execution: false
+    name: azure-ks-cluster-addon-update
+  dockerimage: demisto/crypto:1.0.0.14297
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

@@ -1,0 +1,19 @@
+{
+    "assets": [
+        {
+            "name": "df.net",
+            "type": "DOMAIN"
+        }
+    ],
+    "properties": [
+        {
+            "name": "brand",
+            "value":["11083"],
+            "action":"ADD"
+        }
+    ],
+    "confirm": false,
+    "targetAssetTypes": [
+        "IP_ADDRESS"
+    ]
+}

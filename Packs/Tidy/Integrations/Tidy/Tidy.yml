@@ -1,0 +1,3017 @@
+category: IT Services
+commonfields:
+  id: Tidy
+  version: -1
+configuration:
+- additionalinfo: Endpoint IP/URL to be installed. (Can overide in command)
+  display: Hostname
+  name: hostname
+  required: true
+  type: 0
+- additionalinfo: Endpoint user to be installed. (Can overide in command)
+  display: User
+  name: user
+  required: true
+  type: 0
+- additionalinfo: User login password. (Can overide in command)
+  display: Password
+  name: password
+  required: true
+  type: 4
+description: Tidy integration handle endpoints enviorment installation.
+display: Tidy
+name: Tidy
+script:
+  commands:
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - auto: PREDEFINED
+      defaultValue: 2.7.18,3.8.5
+      description: Python versions to be installed.
+      isArray: true
+      name: versions
+      predefined:
+      - 2.1.3
+      - 2.2.3
+      - 2.3.7
+      - 2.4.0
+      - 2.4.1
+      - 2.4.2
+      - 2.4.3
+      - 2.4.4
+      - 2.4.5
+      - 2.4.6
+      - 2.5.0
+      - 2.5.1
+      - 2.5.2
+      - 2.5.3
+      - 2.5.4
+      - 2.5.5
+      - 2.5.6
+      - 2.6.6
+      - 2.6.7
+      - 2.6.8
+      - 2.6.9
+      - 2.7.0
+      - 2.7-dev
+      - 2.7.1
+      - 2.7.2
+      - 2.7.3
+      - 2.7.4
+      - 2.7.5
+      - 2.7.6
+      - 2.7.7
+      - 2.7.8
+      - 2.7.9
+      - 2.7.10
+      - 2.7.11
+      - 2.7.12
+      - 2.7.13
+      - 2.7.14
+      - 2.7.15
+      - 2.7.16
+      - 2.7.17
+      - 2.7.18
+      - 3.0.1
+      - 3.1.0
+      - 3.1.1
+      - 3.1.2
+      - 3.1.3
+      - 3.1.4
+      - 3.1.5
+      - 3.2.0
+      - 3.2.1
+      - 3.2.2
+      - 3.2.3
+      - 3.2.4
+      - 3.2.5
+      - 3.2.6
+      - 3.3.0
+      - 3.3.1
+      - 3.3.2
+      - 3.3.3
+      - 3.3.4
+      - 3.3.5
+      - 3.3.6
+      - 3.3.7
+      - 3.4.0
+      - 3.4-dev
+      - 3.4.1
+      - 3.4.2
+      - 3.4.3
+      - 3.4.4
+      - 3.4.5
+      - 3.4.6
+      - 3.4.7
+      - 3.4.8
+      - 3.4.9
+      - 3.4.10
+      - 3.5.0
+      - 3.5-dev
+      - 3.5.1
+      - 3.5.2
+      - 3.5.3
+      - 3.5.4
+      - 3.5.5
+      - 3.5.6
+      - 3.5.7
+      - 3.5.8
+      - 3.5.9
+      - 3.5.10
+      - 3.6.0
+      - 3.6-dev
+      - 3.6.1
+      - 3.6.2
+      - 3.6.3
+      - 3.6.4
+      - 3.6.5
+      - 3.6.6
+      - 3.6.7
+      - 3.6.8
+      - 3.6.9
+      - 3.6.10
+      - 3.6.11
+      - 3.6.12
+      - 3.7.0
+      - 3.7-dev
+      - 3.7.1
+      - 3.7.2
+      - 3.7.3
+      - 3.7.4
+      - 3.7.5
+      - 3.7.6
+      - 3.7.7
+      - 3.7.8
+      - 3.7.9
+      - 3.8.0
+      - 3.8-dev
+      - 3.8.1
+      - 3.8.2
+      - 3.8.3
+      - 3.8.4
+      - 3.8.5
+      - 3.8.6
+      - 3.9.0rc1
+      - 3.9-dev
+      - 3.10-dev
+      - activepython-2.7.14
+      - activepython-3.5.4
+      - activepython-3.6.0
+      - anaconda-1.4.0
+      - anaconda-1.5.0
+      - anaconda-1.5.1
+      - anaconda-1.6.0
+      - anaconda-1.6.1
+      - anaconda-1.7.0
+      - anaconda-1.8.0
+      - anaconda-1.9.0
+      - anaconda-1.9.1
+      - anaconda-1.9.2
+      - anaconda-2.0.0
+      - anaconda-2.0.1
+      - anaconda-2.1.0
+      - anaconda-2.2.0
+      - anaconda-2.3.0
+      - anaconda-2.4.0
+      - anaconda-4.0.0
+      - anaconda2-2.4.0
+      - anaconda2-2.4.1
+      - anaconda2-2.5.0
+      - anaconda2-4.0.0
+      - anaconda2-4.1.0
+      - anaconda2-4.1.1
+      - anaconda2-4.2.0
+      - anaconda2-4.3.0
+      - anaconda2-4.3.1
+      - anaconda2-4.4.0
+      - anaconda2-5.0.0
+      - anaconda2-5.0.1
+      - anaconda2-5.1.0
+      - anaconda2-5.2.0
+      - anaconda2-5.3.0
+      - anaconda2-5.3.1
+      - anaconda2-2018.12
+      - anaconda2-2019.03
+      - anaconda2-2019.07
+      - anaconda3-2.0.0
+      - anaconda3-2.0.1
+      - anaconda3-2.1.0
+      - anaconda3-2.2.0
+      - anaconda3-2.3.0
+      - anaconda3-2.4.0
+      - anaconda3-2.4.1
+      - anaconda3-2.5.0
+      - anaconda3-4.0.0
+      - anaconda3-4.1.0
+      - anaconda3-4.1.1
+      - anaconda3-4.2.0
+      - anaconda3-4.3.0
+      - anaconda3-4.3.1
+      - anaconda3-4.4.0
+      - anaconda3-5.0.0
+      - anaconda3-5.0.1
+      - anaconda3-5.1.0
+      - anaconda3-5.2.0
+      - anaconda3-5.3.0
+      - anaconda3-5.3.1
+      - anaconda3-2018.12
+      - anaconda3-2019.03
+      - anaconda3-2019.07
+      - anaconda3-2019.10
+      - anaconda3-2020.02
+      - ironpython-dev
+      - ironpython-2.7.4
+      - ironpython-2.7.5
+      - ironpython-2.7.6.3
+      - ironpython-2.7.7
+      - jython-dev
+      - jython-2.5.0
+      - jython-2.5-dev
+      - jython-2.5.1
+      - jython-2.5.2
+      - jython-2.5.3
+      - jython-2.5.4-rc1
+      - jython-2.7.0
+      - jython-2.7.1
+      - micropython-dev
+      - micropython-1.9.3
+      - micropython-1.9.4
+      - micropython-1.10
+      - micropython-1.11
+      - micropython-1.12
+      - miniconda-latest
+      - miniconda-2.2.2
+      - miniconda-3.0.0
+      - miniconda-3.0.4
+      - miniconda-3.0.5
+      - miniconda-3.3.0
+      - miniconda-3.4.2
+      - miniconda-3.7.0
+      - miniconda-3.8.3
+      - miniconda-3.9.1
+      - miniconda-3.10.1
+      - miniconda-3.16.0
+      - miniconda-3.18.3
+      - miniconda2-latest
+      - miniconda2-3.18.3
+      - miniconda2-3.19.0
+      - miniconda2-4.0.5
+      - miniconda2-4.1.11
+      - miniconda2-4.3.14
+      - miniconda2-4.3.21
+      - miniconda2-4.3.27
+      - miniconda2-4.3.30
+      - miniconda2-4.3.31
+      - miniconda2-4.4.10
+      - miniconda2-4.5.1
+      - miniconda2-4.5.4
+      - miniconda2-4.5.11
+      - miniconda2-4.5.12
+      - miniconda2-4.6.14
+      - miniconda2-4.7.10
+      - miniconda2-4.7.12
+      - miniconda3-latest
+      - miniconda3-2.2.2
+      - miniconda3-3.0.0
+      - miniconda3-3.0.4
+      - miniconda3-3.0.5
+      - miniconda3-3.3.0
+      - miniconda3-3.4.2
+      - miniconda3-3.7.0
+      - miniconda3-3.8.3
+      - miniconda3-3.9.1
+      - miniconda3-3.10.1
+      - miniconda3-3.16.0
+      - miniconda3-3.18.3
+      - miniconda3-3.19.0
+      - miniconda3-4.0.5
+      - miniconda3-4.1.11
+      - miniconda3-4.2.12
+      - miniconda3-4.3.11
+      - miniconda3-4.3.14
+      - miniconda3-4.3.21
+      - miniconda3-4.3.27
+      - miniconda3-4.3.30
+      - miniconda3-4.3.31
+      - miniconda3-4.4.10
+      - miniconda3-4.5.1
+      - miniconda3-4.5.4
+      - miniconda3-4.5.11
+      - miniconda3-4.5.12
+      - miniconda3-4.6.14
+      - miniconda3-4.7.10
+      - miniconda3-4.7.12
+      - pypy-c-jit-latest
+      - pypy-c-nojit-latest
+      - pypy-dev
+      - pypy-stm-2.3
+      - pypy-stm-2.5.1
+      - pypy-1.5-src
+      - pypy-1.5
+      - pypy-1.6
+      - pypy-1.7
+      - pypy-1.8
+      - pypy-1.9
+      - pypy-2.0-src
+      - pypy-2.0
+      - pypy-2.0.1-src
+      - pypy-2.0.1
+      - pypy-2.0.2-src
+      - pypy-2.0.2
+      - pypy-2.1-src
+      - pypy-2.1
+      - pypy-2.2-src
+      - pypy-2.2
+      - pypy-2.2.1-src
+      - pypy-2.2.1
+      - pypy-2.3-src
+      - pypy-2.3
+      - pypy-2.3.1-src
+      - pypy-2.3.1
+      - pypy-2.4.0-src
+      - pypy-2.4.0
+      - pypy-2.5.0-src
+      - pypy-2.5.0
+      - pypy-2.5.1-src
+      - pypy-2.5.1
+      - pypy-2.6.0-src
+      - pypy-2.6.0
+      - pypy-2.6.1-src
+      - pypy-2.6.1
+      - pypy-4.0.0-src
+      - pypy-4.0.0
+      - pypy-4.0.1-src
+      - pypy-4.0.1
+      - pypy-5.0.0-src
+      - pypy-5.0.0
+      - pypy-5.0.1-src
+      - pypy-5.0.1
+      - pypy-5.1-src
+      - pypy-5.1
+      - pypy-5.1.1-src
+      - pypy-5.1.1
+      - pypy-5.3-src
+      - pypy-5.3
+      - pypy-5.3.1-src
+      - pypy-5.3.1
+      - pypy-5.4-src
+      - pypy-5.4
+      - pypy-5.4.1-src
+      - pypy-5.4.1
+      - pypy-5.6.0-src
+      - pypy-5.6.0
+      - pypy-5.7.0-src
+      - pypy-5.7.0
+      - pypy-5.7.1-src
+      - pypy-5.7.1
+      - pypy2-5.3-src
+      - pypy2-5.3
+      - pypy2-5.3.1-src
+      - pypy2-5.3.1
+      - pypy2-5.4-src
+      - pypy2-5.4
+      - pypy2-5.4.1-src
+      - pypy2-5.4.1
+      - pypy2-5.6.0-src
+      - pypy2-5.6.0
+      - pypy2-5.7.0-src
+      - pypy2-5.7.0
+      - pypy2-5.7.1-src
+      - pypy2-5.7.1
+      - pypy2.7-5.8.0-src
+      - pypy2.7-5.8.0
+      - pypy2.7-5.9.0-src
+      - pypy2.7-5.9.0
+      - pypy2.7-5.10.0-src
+      - pypy2.7-5.10.0
+      - pypy2.7-6.0.0-src
+      - pypy2.7-6.0.0
+      - pypy2.7-7.0.0-src
+      - pypy2.7-7.0.0
+      - pypy2.7-7.1.0-src
+      - pypy2.7-7.1.0
+      - pypy2.7-7.1.1-src
+      - pypy2.7-7.1.1
+      - pypy2.7-7.2.0-src
+      - pypy2.7-7.2.0
+      - pypy2.7-7.3.0-src
+      - pypy2.7-7.3.0
+      - pypy2.7-7.3.1-src
+      - pypy2.7-7.3.1
+      - pypy3-dev
+      - pypy3-2.3.1-src
+      - pypy3-2.3.1
+      - pypy3-2.4.0-src
+      - pypy3-2.4.0
+      - pypy3.3-5.2-alpha1-src
+      - pypy3.3-5.2-alpha1
+      - pypy3.3-5.5-alpha-src
+      - pypy3.3-5.5-alpha
+      - pypy3.5-c-jit-latest
+      - pypy3.5-5.7-beta-src
+      - pypy3.5-5.7-beta
+      - pypy3.5-5.7.1-beta-src
+      - pypy3.5-5.7.1-beta
+      - pypy3.5-5.8.0-src
+      - pypy3.5-5.8.0
+      - pypy3.5-5.9.0-src
+      - pypy3.5-5.9.0
+      - pypy3.5-5.10.0-src
+      - pypy3.5-5.10.0
+      - pypy3.5-5.10.1-src
+      - pypy3.5-5.10.1
+      - pypy3.5-6.0.0-src
+      - pypy3.5-6.0.0
+      - pypy3.5-7.0.0-src
+      - pypy3.5-7.0.0
+      - pypy3.6-7.0.0-src
+      - pypy3.6-7.0.0
+      - pypy3.6-7.1.0-src
+      - pypy3.6-7.1.0
+      - pypy3.6-7.1.1-src
+      - pypy3.6-7.1.1
+      - pypy3.6-7.2.0-src
+      - pypy3.6-7.2.0
+      - pypy3.6-7.3.0-src
+      - pypy3.6-7.3.0
+      - pypy3.6-7.3.1-src
+      - pypy3.6-7.3.1
+      - pyston-0.5.1
+      - pyston-0.6.0
+      - pyston-0.6.1
+      - stackless-dev
+      - stackless-2.7-dev
+      - stackless-2.7.2
+      - stackless-2.7.3
+      - stackless-2.7.4
+      - stackless-2.7.5
+      - stackless-2.7.6
+      - stackless-2.7.7
+      - stackless-2.7.8
+      - stackless-2.7.9
+      - stackless-2.7.10
+      - stackless-2.7.11
+      - stackless-2.7.12
+      - stackless-2.7.14
+      - stackless-3.2.2
+      - stackless-3.2.5
+      - stackless-3.3.5
+      - stackless-3.3.7
+      - stackless-3.4-dev
+      - stackless-3.4.1
+      - stackless-3.4.2
+      - stackless-3.4.7
+      - stackless-3.5.4
+      - stackless-3.7.5
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 3.8.5
+      description: Python versions to define as globals in enviorment.
+      isArray: true
+      name: globals
+      predefined:
+      - system
+      - 2.1.3
+      - 2.2.3
+      - 2.3.7
+      - 2.4.0
+      - 2.4.1
+      - 2.4.2
+      - 2.4.3
+      - 2.4.4
+      - 2.4.5
+      - 2.4.6
+      - 2.5.0
+      - 2.5.1
+      - 2.5.2
+      - 2.5.3
+      - 2.5.4
+      - 2.5.5
+      - 2.5.6
+      - 2.6.6
+      - 2.6.7
+      - 2.6.8
+      - 2.6.9
+      - 2.7.0
+      - 2.7-dev
+      - 2.7.1
+      - 2.7.2
+      - 2.7.3
+      - 2.7.4
+      - 2.7.5
+      - 2.7.6
+      - 2.7.7
+      - 2.7.8
+      - 2.7.9
+      - 2.7.10
+      - 2.7.11
+      - 2.7.12
+      - 2.7.13
+      - 2.7.14
+      - 2.7.15
+      - 2.7.16
+      - 2.7.17
+      - 2.7.18
+      - 3.0.1
+      - 3.1.0
+      - 3.1.1
+      - 3.1.2
+      - 3.1.3
+      - 3.1.4
+      - 3.1.5
+      - 3.2.0
+      - 3.2.1
+      - 3.2.2
+      - 3.2.3
+      - 3.2.4
+      - 3.2.5
+      - 3.2.6
+      - 3.3.0
+      - 3.3.1
+      - 3.3.2
+      - 3.3.3
+      - 3.3.4
+      - 3.3.5
+      - 3.3.6
+      - 3.3.7
+      - 3.4.0
+      - 3.4-dev
+      - 3.4.1
+      - 3.4.2
+      - 3.4.3
+      - 3.4.4
+      - 3.4.5
+      - 3.4.6
+      - 3.4.7
+      - 3.4.8
+      - 3.4.9
+      - 3.4.10
+      - 3.5.0
+      - 3.5-dev
+      - 3.5.1
+      - 3.5.2
+      - 3.5.3
+      - 3.5.4
+      - 3.5.5
+      - 3.5.6
+      - 3.5.7
+      - 3.5.8
+      - 3.5.9
+      - 3.5.10
+      - 3.6.0
+      - 3.6-dev
+      - 3.6.1
+      - 3.6.2
+      - 3.6.3
+      - 3.6.4
+      - 3.6.5
+      - 3.6.6
+      - 3.6.7
+      - 3.6.8
+      - 3.6.9
+      - 3.6.10
+      - 3.6.11
+      - 3.6.12
+      - 3.7.0
+      - 3.7-dev
+      - 3.7.1
+      - 3.7.2
+      - 3.7.3
+      - 3.7.4
+      - 3.7.5
+      - 3.7.6
+      - 3.7.7
+      - 3.7.8
+      - 3.7.9
+      - 3.8.0
+      - 3.8-dev
+      - 3.8.1
+      - 3.8.2
+      - 3.8.3
+      - 3.8.4
+      - 3.8.5
+      - 3.8.6
+      - 3.9.0rc1
+      - 3.9-dev
+      - 3.10-dev
+      - activepython-2.7.14
+      - activepython-3.5.4
+      - activepython-3.6.0
+      - anaconda-1.4.0
+      - anaconda-1.5.0
+      - anaconda-1.5.1
+      - anaconda-1.6.0
+      - anaconda-1.6.1
+      - anaconda-1.7.0
+      - anaconda-1.8.0
+      - anaconda-1.9.0
+      - anaconda-1.9.1
+      - anaconda-1.9.2
+      - anaconda-2.0.0
+      - anaconda-2.0.1
+      - anaconda-2.1.0
+      - anaconda-2.2.0
+      - anaconda-2.3.0
+      - anaconda-2.4.0
+      - anaconda-4.0.0
+      - anaconda2-2.4.0
+      - anaconda2-2.4.1
+      - anaconda2-2.5.0
+      - anaconda2-4.0.0
+      - anaconda2-4.1.0
+      - anaconda2-4.1.1
+      - anaconda2-4.2.0
+      - anaconda2-4.3.0
+      - anaconda2-4.3.1
+      - anaconda2-4.4.0
+      - anaconda2-5.0.0
+      - anaconda2-5.0.1
+      - anaconda2-5.1.0
+      - anaconda2-5.2.0
+      - anaconda2-5.3.0
+      - anaconda2-5.3.1
+      - anaconda2-2018.12
+      - anaconda2-2019.03
+      - anaconda2-2019.07
+      - anaconda3-2.0.0
+      - anaconda3-2.0.1
+      - anaconda3-2.1.0
+      - anaconda3-2.2.0
+      - anaconda3-2.3.0
+      - anaconda3-2.4.0
+      - anaconda3-2.4.1
+      - anaconda3-2.5.0
+      - anaconda3-4.0.0
+      - anaconda3-4.1.0
+      - anaconda3-4.1.1
+      - anaconda3-4.2.0
+      - anaconda3-4.3.0
+      - anaconda3-4.3.1
+      - anaconda3-4.4.0
+      - anaconda3-5.0.0
+      - anaconda3-5.0.1
+      - anaconda3-5.1.0
+      - anaconda3-5.2.0
+      - anaconda3-5.3.0
+      - anaconda3-5.3.1
+      - anaconda3-2018.12
+      - anaconda3-2019.03
+      - anaconda3-2019.07
+      - anaconda3-2019.10
+      - anaconda3-2020.02
+      - ironpython-dev
+      - ironpython-2.7.4
+      - ironpython-2.7.5
+      - ironpython-2.7.6.3
+      - ironpython-2.7.7
+      - jython-dev
+      - jython-2.5.0
+      - jython-2.5-dev
+      - jython-2.5.1
+      - jython-2.5.2
+      - jython-2.5.3
+      - jython-2.5.4-rc1
+      - jython-2.7.0
+      - jython-2.7.1
+      - micropython-dev
+      - micropython-1.9.3
+      - micropython-1.9.4
+      - micropython-1.10
+      - micropython-1.11
+      - micropython-1.12
+      - miniconda-latest
+      - miniconda-2.2.2
+      - miniconda-3.0.0
+      - miniconda-3.0.4
+      - miniconda-3.0.5
+      - miniconda-3.3.0
+      - miniconda-3.4.2
+      - miniconda-3.7.0
+      - miniconda-3.8.3
+      - miniconda-3.9.1
+      - miniconda-3.10.1
+      - miniconda-3.16.0
+      - miniconda-3.18.3
+      - miniconda2-latest
+      - miniconda2-3.18.3
+      - miniconda2-3.19.0
+      - miniconda2-4.0.5
+      - miniconda2-4.1.11
+      - miniconda2-4.3.14
+      - miniconda2-4.3.21
+      - miniconda2-4.3.27
+      - miniconda2-4.3.30
+      - miniconda2-4.3.31
+      - miniconda2-4.4.10
+      - miniconda2-4.5.1
+      - miniconda2-4.5.4
+      - miniconda2-4.5.11
+      - miniconda2-4.5.12
+      - miniconda2-4.6.14
+      - miniconda2-4.7.10
+      - miniconda2-4.7.12
+      - miniconda3-latest
+      - miniconda3-2.2.2
+      - miniconda3-3.0.0
+      - miniconda3-3.0.4
+      - miniconda3-3.0.5
+      - miniconda3-3.3.0
+      - miniconda3-3.4.2
+      - miniconda3-3.7.0
+      - miniconda3-3.8.3
+      - miniconda3-3.9.1
+      - miniconda3-3.10.1
+      - miniconda3-3.16.0
+      - miniconda3-3.18.3
+      - miniconda3-3.19.0
+      - miniconda3-4.0.5
+      - miniconda3-4.1.11
+      - miniconda3-4.2.12
+      - miniconda3-4.3.11
+      - miniconda3-4.3.14
+      - miniconda3-4.3.21
+      - miniconda3-4.3.27
+      - miniconda3-4.3.30
+      - miniconda3-4.3.31
+      - miniconda3-4.4.10
+      - miniconda3-4.5.1
+      - miniconda3-4.5.4
+      - miniconda3-4.5.11
+      - miniconda3-4.5.12
+      - miniconda3-4.6.14
+      - miniconda3-4.7.10
+      - miniconda3-4.7.12
+      - pypy-c-jit-latest
+      - pypy-c-nojit-latest
+      - pypy-dev
+      - pypy-stm-2.3
+      - pypy-stm-2.5.1
+      - pypy-1.5-src
+      - pypy-1.5
+      - pypy-1.6
+      - pypy-1.7
+      - pypy-1.8
+      - pypy-1.9
+      - pypy-2.0-src
+      - pypy-2.0
+      - pypy-2.0.1-src
+      - pypy-2.0.1
+      - pypy-2.0.2-src
+      - pypy-2.0.2
+      - pypy-2.1-src
+      - pypy-2.1
+      - pypy-2.2-src
+      - pypy-2.2
+      - pypy-2.2.1-src
+      - pypy-2.2.1
+      - pypy-2.3-src
+      - pypy-2.3
+      - pypy-2.3.1-src
+      - pypy-2.3.1
+      - pypy-2.4.0-src
+      - pypy-2.4.0
+      - pypy-2.5.0-src
+      - pypy-2.5.0
+      - pypy-2.5.1-src
+      - pypy-2.5.1
+      - pypy-2.6.0-src
+      - pypy-2.6.0
+      - pypy-2.6.1-src
+      - pypy-2.6.1
+      - pypy-4.0.0-src
+      - pypy-4.0.0
+      - pypy-4.0.1-src
+      - pypy-4.0.1
+      - pypy-5.0.0-src
+      - pypy-5.0.0
+      - pypy-5.0.1-src
+      - pypy-5.0.1
+      - pypy-5.1-src
+      - pypy-5.1
+      - pypy-5.1.1-src
+      - pypy-5.1.1
+      - pypy-5.3-src
+      - pypy-5.3
+      - pypy-5.3.1-src
+      - pypy-5.3.1
+      - pypy-5.4-src
+      - pypy-5.4
+      - pypy-5.4.1-src
+      - pypy-5.4.1
+      - pypy-5.6.0-src
+      - pypy-5.6.0
+      - pypy-5.7.0-src
+      - pypy-5.7.0
+      - pypy-5.7.1-src
+      - pypy-5.7.1
+      - pypy2-5.3-src
+      - pypy2-5.3
+      - pypy2-5.3.1-src
+      - pypy2-5.3.1
+      - pypy2-5.4-src
+      - pypy2-5.4
+      - pypy2-5.4.1-src
+      - pypy2-5.4.1
+      - pypy2-5.6.0-src
+      - pypy2-5.6.0
+      - pypy2-5.7.0-src
+      - pypy2-5.7.0
+      - pypy2-5.7.1-src
+      - pypy2-5.7.1
+      - pypy2.7-5.8.0-src
+      - pypy2.7-5.8.0
+      - pypy2.7-5.9.0-src
+      - pypy2.7-5.9.0
+      - pypy2.7-5.10.0-src
+      - pypy2.7-5.10.0
+      - pypy2.7-6.0.0-src
+      - pypy2.7-6.0.0
+      - pypy2.7-7.0.0-src
+      - pypy2.7-7.0.0
+      - pypy2.7-7.1.0-src
+      - pypy2.7-7.1.0
+      - pypy2.7-7.1.1-src
+      - pypy2.7-7.1.1
+      - pypy2.7-7.2.0-src
+      - pypy2.7-7.2.0
+      - pypy2.7-7.3.0-src
+      - pypy2.7-7.3.0
+      - pypy2.7-7.3.1-src
+      - pypy2.7-7.3.1
+      - pypy3-dev
+      - pypy3-2.3.1-src
+      - pypy3-2.3.1
+      - pypy3-2.4.0-src
+      - pypy3-2.4.0
+      - pypy3.3-5.2-alpha1-src
+      - pypy3.3-5.2-alpha1
+      - pypy3.3-5.5-alpha-src
+      - pypy3.3-5.5-alpha
+      - pypy3.5-c-jit-latest
+      - pypy3.5-5.7-beta-src
+      - pypy3.5-5.7-beta
+      - pypy3.5-5.7.1-beta-src
+      - pypy3.5-5.7.1-beta
+      - pypy3.5-5.8.0-src
+      - pypy3.5-5.8.0
+      - pypy3.5-5.9.0-src
+      - pypy3.5-5.9.0
+      - pypy3.5-5.10.0-src
+      - pypy3.5-5.10.0
+      - pypy3.5-5.10.1-src
+      - pypy3.5-5.10.1
+      - pypy3.5-6.0.0-src
+      - pypy3.5-6.0.0
+      - pypy3.5-7.0.0-src
+      - pypy3.5-7.0.0
+      - pypy3.6-7.0.0-src
+      - pypy3.6-7.0.0
+      - pypy3.6-7.1.0-src
+      - pypy3.6-7.1.0
+      - pypy3.6-7.1.1-src
+      - pypy3.6-7.1.1
+      - pypy3.6-7.2.0-src
+      - pypy3.6-7.2.0
+      - pypy3.6-7.3.0-src
+      - pypy3.6-7.3.0
+      - pypy3.6-7.3.1-src
+      - pypy3.6-7.3.1
+      - pyston-0.5.1
+      - pyston-0.6.0
+      - pyston-0.6.1
+      - stackless-dev
+      - stackless-2.7-dev
+      - stackless-2.7.2
+      - stackless-2.7.3
+      - stackless-2.7.4
+      - stackless-2.7.5
+      - stackless-2.7.6
+      - stackless-2.7.7
+      - stackless-2.7.8
+      - stackless-2.7.9
+      - stackless-2.7.10
+      - stackless-2.7.11
+      - stackless-2.7.12
+      - stackless-2.7.14
+      - stackless-3.2.2
+      - stackless-3.2.5
+      - stackless-3.3.5
+      - stackless-3.3.7
+      - stackless-3.4-dev
+      - stackless-3.4.1
+      - stackless-3.4.2
+      - stackless-3.4.7
+      - stackless-3.5.4
+      - stackless-3.7.5
+      required: true
+    description: Install Python versions, Using Pyenv.
+    name: tidy-pyenv
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - auto: PREDEFINED
+      defaultValue: 1.15.0
+      description: GoLang versions to be installed.
+      isArray: true
+      name: versions
+      predefined:
+      - 1.2.2
+      - 1.3.0
+      - 1.3.1
+      - 1.3.2
+      - 1.3.3
+      - 1.4.0
+      - 1.4.1
+      - 1.4.2
+      - 1.4.3
+      - 1.5.0
+      - 1.5.1
+      - 1.5.2
+      - 1.5.3
+      - 1.5.4
+      - 1.6.0
+      - 1.6.1
+      - 1.6.2
+      - 1.6.3
+      - 1.6.4
+      - 1.7.0
+      - 1.7.1
+      - 1.7.3
+      - 1.7.4
+      - 1.7.5
+      - 1.8.0
+      - 1.8.1
+      - 1.8.3
+      - 1.8.4
+      - 1.8.5
+      - 1.8.7
+      - 1.9.0
+      - 1.9.1
+      - 1.9.2
+      - 1.9.3
+      - 1.9.4
+      - 1.9.5
+      - 1.9.6
+      - 1.9.7
+      - 1.10.0
+      - 1.10beta2
+      - 1.10rc1
+      - 1.10rc2
+      - 1.10.1
+      - 1.10.2
+      - 1.10.3
+      - 1.10.4
+      - 1.10.5
+      - 1.10.6
+      - 1.10.7
+      - 1.10.8
+      - 1.11.0
+      - 1.11beta2
+      - 1.11beta3
+      - 1.11rc1
+      - 1.11rc2
+      - 1.11.1
+      - 1.11.2
+      - 1.11.3
+      - 1.11.4
+      - 1.11.5
+      - 1.11.6
+      - 1.11.7
+      - 1.11.8
+      - 1.11.9
+      - 1.11.10
+      - 1.11.11
+      - 1.11.12
+      - 1.11.13
+      - 1.12.0
+      - 1.12beta1
+      - 1.12beta2
+      - 1.12rc1
+      - 1.12.1
+      - 1.12.2
+      - 1.12.3
+      - 1.12.4
+      - 1.12.5
+      - 1.12.6
+      - 1.12.7
+      - 1.12.8
+      - 1.12.9
+      - 1.12.10
+      - 1.12.11
+      - 1.12.12
+      - 1.12.13
+      - 1.12.14
+      - 1.12.15
+      - 1.12.16
+      - 1.12.17
+      - 1.13.0
+      - 1.13beta1
+      - 1.13rc1
+      - 1.13rc2
+      - 1.13.1
+      - 1.13.2
+      - 1.13.3
+      - 1.13.4
+      - 1.13.5
+      - 1.13.6
+      - 1.13.7
+      - 1.13.8
+      - 1.13.9
+      - 1.13.10
+      - 1.13.11
+      - 1.13.12
+      - 1.13.13
+      - 1.13.14
+      - 1.13.15
+      - 1.14.0
+      - 1.14beta1
+      - 1.14rc1
+      - 1.14.1
+      - 1.14.2
+      - 1.14.3
+      - 1.14.4
+      - 1.14.5
+      - 1.14.6
+      - 1.14.7
+      - 1.14.8
+      - 1.14.9
+      - 1.15.0
+      - 1.15beta1
+      - 1.15rc2
+      - 1.15.1
+      - 1.15.2
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 1.15.0
+      description: GoLang versions to define as globals in enviorment.
+      isArray: true
+      name: globals
+      predefined:
+      - system.1.2.2
+      - 1.3.0
+      - 1.3.1
+      - 1.3.2
+      - 1.3.3
+      - 1.4.0
+      - 1.4.1
+      - 1.4.2
+      - 1.4.3
+      - 1.5.0
+      - 1.5.1
+      - 1.5.2
+      - 1.5.3
+      - 1.5.4
+      - 1.6.0
+      - 1.6.1
+      - 1.6.2
+      - 1.6.3
+      - 1.6.4
+      - 1.7.0
+      - 1.7.1
+      - 1.7.3
+      - 1.7.4
+      - 1.7.5
+      - 1.8.0
+      - 1.8.1
+      - 1.8.3
+      - 1.8.4
+      - 1.8.5
+      - 1.8.7
+      - 1.9.0
+      - 1.9.1
+      - 1.9.2
+      - 1.9.3
+      - 1.9.4
+      - 1.9.5
+      - 1.9.6
+      - 1.9.7
+      - 1.10.0
+      - 1.10beta2
+      - 1.10rc1
+      - 1.10rc2
+      - 1.10.1
+      - 1.10.2
+      - 1.10.3
+      - 1.10.4
+      - 1.10.5
+      - 1.10.6
+      - 1.10.7
+      - 1.10.8
+      - 1.11.0
+      - 1.11beta2
+      - 1.11beta3
+      - 1.11rc1
+      - 1.11rc2
+      - 1.11.1
+      - 1.11.2
+      - 1.11.3
+      - 1.11.4
+      - 1.11.5
+      - 1.11.6
+      - 1.11.7
+      - 1.11.8
+      - 1.11.9
+      - 1.11.10
+      - 1.11.11
+      - 1.11.12
+      - 1.11.13
+      - 1.12.0
+      - 1.12beta1
+      - 1.12beta2
+      - 1.12rc1
+      - 1.12.1
+      - 1.12.2
+      - 1.12.3
+      - 1.12.4
+      - 1.12.5
+      - 1.12.6
+      - 1.12.7
+      - 1.12.8
+      - 1.12.9
+      - 1.12.10
+      - 1.12.11
+      - 1.12.12
+      - 1.12.13
+      - 1.12.14
+      - 1.12.15
+      - 1.12.16
+      - 1.12.17
+      - 1.13.0
+      - 1.13beta1
+      - 1.13rc1
+      - 1.13rc2
+      - 1.13.1
+      - 1.13.2
+      - 1.13.3
+      - 1.13.4
+      - 1.13.5
+      - 1.13.6
+      - 1.13.7
+      - 1.13.8
+      - 1.13.9
+      - 1.13.10
+      - 1.13.11
+      - 1.13.12
+      - 1.13.13
+      - 1.13.14
+      - 1.13.15
+      - 1.14.0
+      - 1.14beta1
+      - 1.14rc1
+      - 1.14.1
+      - 1.14.2
+      - 1.14.3
+      - 1.14.4
+      - 1.14.5
+      - 1.14.6
+      - 1.14.7
+      - 1.14.8
+      - 1.14.9
+      - 1.15.0
+      - 1.15beta1
+      - 1.15rc2
+      - 1.15.1
+      - 1.15.2
+      required: true
+    description: Install GoLang versions, Using Goenv.
+    name: tidy-goenv
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - auto: PREDEFINED
+      defaultValue: 13.0.0
+      description: Node.js versions to be installed.
+      isArray: true
+      name: versions
+      predefined:
+      - 0.1.15
+      - 0.1.16
+      - 0.1.17
+      - 0.1.18
+      - 0.1.19
+      - 0.1.20
+      - 0.1.21
+      - 0.1.22
+      - 0.1.23
+      - 0.1.24
+      - 0.1.25
+      - 0.1.26
+      - 0.1.27
+      - 0.1.28
+      - 0.1.29
+      - 0.1.30
+      - 0.1.31
+      - 0.1.32
+      - 0.1.33
+      - 0.1.90
+      - 0.1.91
+      - 0.1.92
+      - 0.1.93
+      - 0.1.94
+      - 0.1.95
+      - 0.1.96
+      - 0.1.97
+      - 0.1.98
+      - 0.1.99
+      - 0.1.100
+      - 0.1.101
+      - 0.1.102
+      - 0.1.103
+      - 0.1.104
+      - 0.2.0
+      - 0.2.1
+      - 0.2.2
+      - 0.2.3
+      - 0.2.4
+      - 0.2.5
+      - 0.2.6
+      - 0.3.0
+      - 0.3.1
+      - 0.3.2
+      - 0.3.3
+      - 0.3.4
+      - 0.3.5
+      - 0.3.6
+      - 0.3.7
+      - 0.3.8
+      - 0.4.0
+      - 0.4.1
+      - 0.4.2
+      - 0.4.3
+      - 0.4.4
+      - 0.4.5
+      - 0.4.6
+      - 0.4.7
+      - 0.4.8
+      - 0.4.9
+      - 0.4.10
+      - 0.4.11
+      - 0.4.12
+      - 0.5.0
+      - 0.5.1
+      - 0.5.2
+      - 0.5.3
+      - 0.5.4
+      - 0.5.5
+      - 0.5.6
+      - 0.5.7
+      - 0.5.8
+      - 0.5.9
+      - 0.5.10
+      - 0.6.0
+      - 0.6.1
+      - 0.6.2
+      - 0.6.3
+      - 0.6.4
+      - 0.6.5
+      - 0.6.6
+      - 0.6.7
+      - 0.6.8
+      - 0.6.9
+      - 0.6.10
+      - 0.6.11
+      - 0.6.12
+      - 0.6.13
+      - 0.6.14
+      - 0.6.15
+      - 0.6.16
+      - 0.6.17
+      - 0.6.18
+      - 0.6.19
+      - 0.6.20
+      - 0.6.21
+      - 0.7.0
+      - 0.7.1
+      - 0.7.2
+      - 0.7.3
+      - 0.7.4
+      - 0.7.5
+      - 0.7.6
+      - 0.7.7
+      - 0.7.8
+      - 0.7.9
+      - 0.7.10
+      - 0.7.11
+      - 0.7.12
+      - 0.8.0
+      - 0.8.1
+      - 0.8.2
+      - 0.8.3
+      - 0.8.4
+      - 0.8.5
+      - 0.8.6
+      - 0.8.7
+      - 0.8.8
+      - 0.8.9
+      - 0.8.10
+      - 0.8.11
+      - 0.8.12
+      - 0.8.13
+      - 0.8.14
+      - 0.8.15
+      - 0.8.16
+      - 0.8.17
+      - 0.8.18
+      - 0.8.19
+      - 0.8.20
+      - 0.8.21
+      - 0.8.22
+      - 0.8.23
+      - 0.8.24
+      - 0.8.25
+      - 0.8.26
+      - 0.8.27
+      - 0.8.28
+      - 0.9.0
+      - 0.9.1
+      - 0.9.2
+      - 0.9.3
+      - 0.9.4
+      - 0.9.5
+      - 0.9.6
+      - 0.9.7
+      - 0.9.8
+      - 0.9.9
+      - 0.9.10
+      - 0.9.11
+      - 0.9.12
+      - 0.10.0
+      - 0.10-dev
+      - 0.10-next
+      - 0.10.1
+      - 0.10.2
+      - 0.10.3
+      - 0.10.4
+      - 0.10.5
+      - 0.10.6
+      - 0.10.7
+      - 0.10.8
+      - 0.10.9
+      - 0.10.10
+      - 0.10.11
+      - 0.10.12
+      - 0.10.13
+      - 0.10.14
+      - 0.10.15
+      - 0.10.16
+      - 0.10.17
+      - 0.10.18
+      - 0.10.19
+      - 0.10.20
+      - 0.10.21
+      - 0.10.22
+      - 0.10.23
+      - 0.10.24
+      - 0.10.25
+      - 0.10.26
+      - 0.10.27
+      - 0.10.28
+      - 0.10.29
+      - 0.10.30
+      - 0.10.31
+      - 0.10.32
+      - 0.10.33
+      - 0.10.34
+      - 0.10.35
+      - 0.10.36
+      - 0.10.37
+      - 0.10.38
+      - 0.10.39
+      - 0.10.40
+      - 0.10.41
+      - 0.10.42
+      - 0.10.43
+      - 0.10.44
+      - 0.10.45
+      - 0.10.46
+      - 0.10.47
+      - 0.10.48
+      - 0.11.0
+      - 0.11.1
+      - 0.11.2
+      - 0.11.3
+      - 0.11.4
+      - 0.11.5
+      - 0.11.6
+      - 0.11.7
+      - 0.11.8
+      - 0.11.9
+      - 0.11.10
+      - 0.11.11
+      - 0.11.12
+      - 0.11.13
+      - 0.11.14
+      - 0.11.15
+      - 0.11.16
+      - 0.12.0
+      - 0.12-dev
+      - 0.12-next
+      - 0.12.1
+      - 0.12.2
+      - 0.12.3
+      - 0.12.4
+      - 0.12.5
+      - 0.12.6
+      - 0.12.7
+      - 0.12.8
+      - 0.12.9
+      - 0.12.10
+      - 0.12.11
+      - 0.12.12
+      - 0.12.13
+      - 0.12.14
+      - 0.12.15
+      - 0.12.16
+      - 0.12.17
+      - 0.12.18
+      - 4.0.0
+      - 4.x-dev
+      - 4.x-next
+      - 4.1.0
+      - 4.1.1
+      - 4.1.2
+      - 4.2.0
+      - 4.2.1
+      - 4.2.2
+      - 4.2.3
+      - 4.2.4
+      - 4.2.5
+      - 4.2.6
+      - 4.3.0
+      - 4.3.1
+      - 4.3.2
+      - 4.4.0
+      - 4.4.1
+      - 4.4.2
+      - 4.4.3
+      - 4.4.4
+      - 4.4.5
+      - 4.4.6
+      - 4.4.7
+      - 4.5.0
+      - 4.6.0
+      - 4.6.1
+      - 4.6.2
+      - 4.7.0
+      - 4.7.1
+      - 4.7.2
+      - 4.7.3
+      - 4.8.0
+      - 4.8.1
+      - 4.8.2
+      - 4.8.3
+      - 4.8.4
+      - 4.8.5
+      - 4.8.6
+      - 4.8.7
+      - 4.9.0
+      - 4.9.1
+      - 5.0.0
+      - 5.x-next
+      - 5.1.0
+      - 5.1.1
+      - 5.2.0
+      - 5.3.0
+      - 5.4.0
+      - 5.4.1
+      - 5.5.0
+      - 5.6.0
+      - 5.7.0
+      - 5.7.1
+      - 5.8.0
+      - 5.9.0
+      - 5.9.1
+      - 5.10.0
+      - 5.10.1
+      - 5.11.0
+      - 5.11.1
+      - 5.12.0
+      - 6.0.0
+      - 6.x-dev
+      - 6.x-next
+      - 6.1.0
+      - 6.2.0
+      - 6.2.1
+      - 6.2.2
+      - 6.3.0
+      - 6.3.1
+      - 6.4.0
+      - 6.5.0
+      - 6.6.0
+      - 6.7.0
+      - 6.8.0
+      - 6.8.1
+      - 6.9.0
+      - 6.9.1
+      - 6.9.2
+      - 6.9.3
+      - 6.9.4
+      - 6.9.5
+      - 6.10.0
+      - 6.10.1
+      - 6.10.2
+      - 6.10.3
+      - 6.11.0
+      - 6.11.1
+      - 6.11.2
+      - 6.11.3
+      - 6.11.4
+      - 6.11.5
+      - 6.12.0
+      - 6.12.1
+      - 6.12.2
+      - 6.12.3
+      - 6.13.0
+      - 6.13.1
+      - 6.14.0
+      - 6.14.1
+      - 6.14.2
+      - 6.14.3
+      - 6.14.4
+      - 6.15.0
+      - 6.15.1
+      - 6.16.0
+      - 6.17.0
+      - 6.17.1
+      - 7.0.0
+      - 7.x-dev
+      - 7.x-next
+      - 7.1.0
+      - 7.2.0
+      - 7.2.1
+      - 7.3.0
+      - 7.4.0
+      - 7.5.0
+      - 7.6.0
+      - 7.7.0
+      - 7.7.1
+      - 7.7.2
+      - 7.7.3
+      - 7.7.4
+      - 7.8.0
+      - 7.9.0
+      - 7.10.0
+      - 7.10.1
+      - 8.0.0
+      - 8.x-dev
+      - 8.x-next
+      - 8.1.0
+      - 8.1.1
+      - 8.1.2
+      - 8.1.3
+      - 8.1.4
+      - 8.2.0
+      - 8.2.1
+      - 8.3.0
+      - 8.4.0
+      - 8.5.0
+      - 8.6.0
+      - 8.7.0
+      - 8.8.0
+      - 8.8.1
+      - 8.9.0
+      - 8.9.1
+      - 8.9.2
+      - 8.9.3
+      - 8.9.4
+      - 8.10.0
+      - 8.11.0
+      - 8.11.1
+      - 8.11.2
+      - 8.11.3
+      - 8.11.4
+      - 8.12.0
+      - 8.13.0
+      - 8.14.0
+      - 8.14.1
+      - 8.15.0
+      - 8.15.1
+      - 8.16.0
+      - 8.16.1
+      - 8.16.2
+      - 8.17.0
+      - 9.0.0
+      - 9.x-dev
+      - 9.x-next
+      - 9.1.0
+      - 9.2.0
+      - 9.2.1
+      - 9.3.0
+      - 9.4.0
+      - 9.5.0
+      - 9.6.0
+      - 9.6.1
+      - 9.7.0
+      - 9.7.1
+      - 9.8.0
+      - 9.9.0
+      - 9.10.0
+      - 9.10.1
+      - 9.11.0
+      - 9.11.1
+      - 9.11.2
+      - 10.0.0
+      - 10.x-dev
+      - 10.x-next
+      - 10.1.0
+      - 10.2.0
+      - 10.2.1
+      - 10.3.0
+      - 10.4.0
+      - 10.4.1
+      - 10.5.0
+      - 10.6.0
+      - 10.7.0
+      - 10.8.0
+      - 10.9.0
+      - 10.10.0
+      - 10.11.0
+      - 10.12.0
+      - 10.13.0
+      - 10.14.0
+      - 10.14.1
+      - 10.14.2
+      - 10.15.0
+      - 10.15.1
+      - 10.15.2
+      - 10.15.3
+      - 10.16.0
+      - 10.16.1
+      - 10.16.2
+      - 10.16.3
+      - 10.17.0
+      - 10.18.0
+      - 10.18.1
+      - 10.19.0
+      - 10.20.0
+      - 10.20.1
+      - 10.21.0
+      - 10.22.0
+      - 10.22.1
+      - 11.0.0
+      - 11.x-dev
+      - 11.x-next
+      - 11.1.0
+      - 11.2.0
+      - 11.3.0
+      - 11.4.0
+      - 11.5.0
+      - 11.6.0
+      - 11.7.0
+      - 11.8.0
+      - 11.9.0
+      - 11.10.0
+      - 11.10.1
+      - 11.11.0
+      - 11.12.0
+      - 11.13.0
+      - 11.14.0
+      - 11.15.0
+      - 12.0.0
+      - 12.x-dev
+      - 12.x-next
+      - 12.1.0
+      - 12.2.0
+      - 12.3.0
+      - 12.3.1
+      - 12.4.0
+      - 12.5.0
+      - 12.6.0
+      - 12.7.0
+      - 12.8.0
+      - 12.8.1
+      - 12.9.0
+      - 12.9.1
+      - 12.10.0
+      - 12.11.0
+      - 12.11.1
+      - 12.12.0
+      - 12.13.0
+      - 12.13.1
+      - 12.14.0
+      - 12.14.1
+      - 12.15.0
+      - 12.16.0
+      - 12.16.1
+      - 12.16.2
+      - 12.16.3
+      - 12.17.0
+      - 12.18.0
+      - 12.18.1
+      - 12.18.2
+      - 12.18.3
+      - 12.18.4
+      - 13.0.0
+      - 13.x-dev
+      - 13.x-next
+      - 13.0.1
+      - 13.1.0
+      - 13.2.0
+      - 13.3.0
+      - 13.4.0
+      - 13.5.0
+      - 13.6.0
+      - 13.7.0
+      - 13.8.0
+      - 13.9.0
+      - 13.10.0
+      - 13.10.1
+      - 13.11.0
+      - 13.12.0
+      - 13.13.0
+      - 13.14.0
+      - 14.0.0
+      - 14.x-dev
+      - 14.x-next
+      - 14.1.0
+      - 14.2.0
+      - 14.3.0
+      - 14.4.0
+      - 14.5.0
+      - 14.6.0
+      - 14.7.0
+      - 14.8.0
+      - 14.9.0
+      - 14.10.0
+      - 14.10.1
+      - 14.11.0
+      - 14.12.0
+      - chakracore-dev
+      - chakracore-nightly
+      - chakracore-8.1.2
+      - chakracore-8.1.4
+      - chakracore-8.2.1
+      - chakracore-8.3.0
+      - chakracore-8.4.0
+      - chakracore-8.6.0
+      - chakracore-8.9.4
+      - chakracore-8.10.0
+      - chakracore-8.11.1
+      - chakracore-10.0.0
+      - chakracore-10.1.0
+      - chakracore-10.6.0
+      - chakracore-10.13.0
+      - graal+ce-1.0.0-rc1
+      - graal+ce-1.0.0-rc10
+      - graal+ce-1.0.0-rc11
+      - graal+ce-1.0.0-rc12
+      - graal+ce-1.0.0-rc13
+      - graal+ce-1.0.0-rc14
+      - graal+ce-1.0.0-rc15
+      - graal+ce-1.0.0-rc16
+      - graal+ce-1.0.0-rc2
+      - graal+ce-1.0.0-rc3
+      - graal+ce-1.0.0-rc4
+      - graal+ce-1.0.0-rc5
+      - graal+ce-1.0.0-rc6
+      - graal+ce-1.0.0-rc7
+      - graal+ce-1.0.0-rc8
+      - graal+ce-1.0.0-rc9
+      - graal+ce-19.0.0
+      - graal+ce-19.0.2
+      - graal+ce-19.1.0
+      - graal+ce-19.1.1
+      - graal+ce-19.2.0
+      - graal+ce-19.2.0.1
+      - graal+ce-19.2.0-dev-b01
+      - graal+ce-19.2.1
+      - graal+ce_java11-19.3.0
+      - graal+ce_java11-19.3.0.2
+      - graal+ce_java8-19.3.0
+      - graal+ce_java8-19.3.0.2
+      - graal+ce_java11-19.3.1
+      - graal+ce_java8-19.3.1
+      - graal+ce_java11-20.0.0
+      - graal+ce_java8-20.0.0
+      - iojs-0.12.0-dev
+      - iojs-1.0.0
+      - iojs-1.x-dev
+      - iojs-1.0.1
+      - iojs-1.0.2
+      - iojs-1.0.3
+      - iojs-1.0.4
+      - iojs-1.1.0
+      - iojs-1.2.0
+      - iojs-1.3.0
+      - iojs-1.4.1
+      - iojs-1.4.2
+      - iojs-1.4.3
+      - iojs-1.5.0
+      - iojs-1.5.1
+      - iojs-1.6.0
+      - iojs-1.6.1
+      - iojs-1.6.2
+      - iojs-1.6.3
+      - iojs-1.6.4
+      - iojs-1.7.1
+      - iojs-1.8.1
+      - iojs-1.8.2
+      - iojs-1.8.3
+      - iojs-1.8.4
+      - iojs-2.0.0
+      - iojs-2.0.1
+      - iojs-2.0.2
+      - iojs-2.1.0
+      - iojs-2.2.0
+      - iojs-2.2.1
+      - iojs-2.3.0
+      - iojs-2.3.1
+      - iojs-2.3.2
+      - iojs-2.3.3
+      - iojs-2.3.4
+      - iojs-2.4.0
+      - iojs-2.5.0
+      - iojs-3.0.0
+      - iojs-3.1.0
+      - iojs-3.2.0
+      - iojs-3.3.0
+      - iojs-3.3.1
+      - nightly
+      - node-dev
+      - rc
+      - v8-canary
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 13.0.0
+      description: Node.js versions to define as globals in enviorment.
+      isArray: true
+      name: globals
+      predefined:
+      - system
+      - 0.1.15
+      - 0.1.16
+      - 0.1.17
+      - 0.1.18
+      - 0.1.19
+      - 0.1.20
+      - 0.1.21
+      - 0.1.22
+      - 0.1.23
+      - 0.1.24
+      - 0.1.25
+      - 0.1.26
+      - 0.1.27
+      - 0.1.28
+      - 0.1.29
+      - 0.1.30
+      - 0.1.31
+      - 0.1.32
+      - 0.1.33
+      - 0.1.90
+      - 0.1.91
+      - 0.1.92
+      - 0.1.93
+      - 0.1.94
+      - 0.1.95
+      - 0.1.96
+      - 0.1.97
+      - 0.1.98
+      - 0.1.99
+      - 0.1.100
+      - 0.1.101
+      - 0.1.102
+      - 0.1.103
+      - 0.1.104
+      - 0.2.0
+      - 0.2.1
+      - 0.2.2
+      - 0.2.3
+      - 0.2.4
+      - 0.2.5
+      - 0.2.6
+      - 0.3.0
+      - 0.3.1
+      - 0.3.2
+      - 0.3.3
+      - 0.3.4
+      - 0.3.5
+      - 0.3.6
+      - 0.3.7
+      - 0.3.8
+      - 0.4.0
+      - 0.4.1
+      - 0.4.2
+      - 0.4.3
+      - 0.4.4
+      - 0.4.5
+      - 0.4.6
+      - 0.4.7
+      - 0.4.8
+      - 0.4.9
+      - 0.4.10
+      - 0.4.11
+      - 0.4.12
+      - 0.5.0
+      - 0.5.1
+      - 0.5.2
+      - 0.5.3
+      - 0.5.4
+      - 0.5.5
+      - 0.5.6
+      - 0.5.7
+      - 0.5.8
+      - 0.5.9
+      - 0.5.10
+      - 0.6.0
+      - 0.6.1
+      - 0.6.2
+      - 0.6.3
+      - 0.6.4
+      - 0.6.5
+      - 0.6.6
+      - 0.6.7
+      - 0.6.8
+      - 0.6.9
+      - 0.6.10
+      - 0.6.11
+      - 0.6.12
+      - 0.6.13
+      - 0.6.14
+      - 0.6.15
+      - 0.6.16
+      - 0.6.17
+      - 0.6.18
+      - 0.6.19
+      - 0.6.20
+      - 0.6.21
+      - 0.7.0
+      - 0.7.1
+      - 0.7.2
+      - 0.7.3
+      - 0.7.4
+      - 0.7.5
+      - 0.7.6
+      - 0.7.7
+      - 0.7.8
+      - 0.7.9
+      - 0.7.10
+      - 0.7.11
+      - 0.7.12
+      - 0.8.0
+      - 0.8.1
+      - 0.8.2
+      - 0.8.3
+      - 0.8.4
+      - 0.8.5
+      - 0.8.6
+      - 0.8.7
+      - 0.8.8
+      - 0.8.9
+      - 0.8.10
+      - 0.8.11
+      - 0.8.12
+      - 0.8.13
+      - 0.8.14
+      - 0.8.15
+      - 0.8.16
+      - 0.8.17
+      - 0.8.18
+      - 0.8.19
+      - 0.8.20
+      - 0.8.21
+      - 0.8.22
+      - 0.8.23
+      - 0.8.24
+      - 0.8.25
+      - 0.8.26
+      - 0.8.27
+      - 0.8.28
+      - 0.9.0
+      - 0.9.1
+      - 0.9.2
+      - 0.9.3
+      - 0.9.4
+      - 0.9.5
+      - 0.9.6
+      - 0.9.7
+      - 0.9.8
+      - 0.9.9
+      - 0.9.10
+      - 0.9.11
+      - 0.9.12
+      - 0.10.0
+      - 0.10-dev
+      - 0.10-next
+      - 0.10.1
+      - 0.10.2
+      - 0.10.3
+      - 0.10.4
+      - 0.10.5
+      - 0.10.6
+      - 0.10.7
+      - 0.10.8
+      - 0.10.9
+      - 0.10.10
+      - 0.10.11
+      - 0.10.12
+      - 0.10.13
+      - 0.10.14
+      - 0.10.15
+      - 0.10.16
+      - 0.10.17
+      - 0.10.18
+      - 0.10.19
+      - 0.10.20
+      - 0.10.21
+      - 0.10.22
+      - 0.10.23
+      - 0.10.24
+      - 0.10.25
+      - 0.10.26
+      - 0.10.27
+      - 0.10.28
+      - 0.10.29
+      - 0.10.30
+      - 0.10.31
+      - 0.10.32
+      - 0.10.33
+      - 0.10.34
+      - 0.10.35
+      - 0.10.36
+      - 0.10.37
+      - 0.10.38
+      - 0.10.39
+      - 0.10.40
+      - 0.10.41
+      - 0.10.42
+      - 0.10.43
+      - 0.10.44
+      - 0.10.45
+      - 0.10.46
+      - 0.10.47
+      - 0.10.48
+      - 0.11.0
+      - 0.11.1
+      - 0.11.2
+      - 0.11.3
+      - 0.11.4
+      - 0.11.5
+      - 0.11.6
+      - 0.11.7
+      - 0.11.8
+      - 0.11.9
+      - 0.11.10
+      - 0.11.11
+      - 0.11.12
+      - 0.11.13
+      - 0.11.14
+      - 0.11.15
+      - 0.11.16
+      - 0.12.0
+      - 0.12-dev
+      - 0.12-next
+      - 0.12.1
+      - 0.12.2
+      - 0.12.3
+      - 0.12.4
+      - 0.12.5
+      - 0.12.6
+      - 0.12.7
+      - 0.12.8
+      - 0.12.9
+      - 0.12.10
+      - 0.12.11
+      - 0.12.12
+      - 0.12.13
+      - 0.12.14
+      - 0.12.15
+      - 0.12.16
+      - 0.12.17
+      - 0.12.18
+      - 4.0.0
+      - 4.x-dev
+      - 4.x-next
+      - 4.1.0
+      - 4.1.1
+      - 4.1.2
+      - 4.2.0
+      - 4.2.1
+      - 4.2.2
+      - 4.2.3
+      - 4.2.4
+      - 4.2.5
+      - 4.2.6
+      - 4.3.0
+      - 4.3.1
+      - 4.3.2
+      - 4.4.0
+      - 4.4.1
+      - 4.4.2
+      - 4.4.3
+      - 4.4.4
+      - 4.4.5
+      - 4.4.6
+      - 4.4.7
+      - 4.5.0
+      - 4.6.0
+      - 4.6.1
+      - 4.6.2
+      - 4.7.0
+      - 4.7.1
+      - 4.7.2
+      - 4.7.3
+      - 4.8.0
+      - 4.8.1
+      - 4.8.2
+      - 4.8.3
+      - 4.8.4
+      - 4.8.5
+      - 4.8.6
+      - 4.8.7
+      - 4.9.0
+      - 4.9.1
+      - 5.0.0
+      - 5.x-next
+      - 5.1.0
+      - 5.1.1
+      - 5.2.0
+      - 5.3.0
+      - 5.4.0
+      - 5.4.1
+      - 5.5.0
+      - 5.6.0
+      - 5.7.0
+      - 5.7.1
+      - 5.8.0
+      - 5.9.0
+      - 5.9.1
+      - 5.10.0
+      - 5.10.1
+      - 5.11.0
+      - 5.11.1
+      - 5.12.0
+      - 6.0.0
+      - 6.x-dev
+      - 6.x-next
+      - 6.1.0
+      - 6.2.0
+      - 6.2.1
+      - 6.2.2
+      - 6.3.0
+      - 6.3.1
+      - 6.4.0
+      - 6.5.0
+      - 6.6.0
+      - 6.7.0
+      - 6.8.0
+      - 6.8.1
+      - 6.9.0
+      - 6.9.1
+      - 6.9.2
+      - 6.9.3
+      - 6.9.4
+      - 6.9.5
+      - 6.10.0
+      - 6.10.1
+      - 6.10.2
+      - 6.10.3
+      - 6.11.0
+      - 6.11.1
+      - 6.11.2
+      - 6.11.3
+      - 6.11.4
+      - 6.11.5
+      - 6.12.0
+      - 6.12.1
+      - 6.12.2
+      - 6.12.3
+      - 6.13.0
+      - 6.13.1
+      - 6.14.0
+      - 6.14.1
+      - 6.14.2
+      - 6.14.3
+      - 6.14.4
+      - 6.15.0
+      - 6.15.1
+      - 6.16.0
+      - 6.17.0
+      - 6.17.1
+      - 7.0.0
+      - 7.x-dev
+      - 7.x-next
+      - 7.1.0
+      - 7.2.0
+      - 7.2.1
+      - 7.3.0
+      - 7.4.0
+      - 7.5.0
+      - 7.6.0
+      - 7.7.0
+      - 7.7.1
+      - 7.7.2
+      - 7.7.3
+      - 7.7.4
+      - 7.8.0
+      - 7.9.0
+      - 7.10.0
+      - 7.10.1
+      - 8.0.0
+      - 8.x-dev
+      - 8.x-next
+      - 8.1.0
+      - 8.1.1
+      - 8.1.2
+      - 8.1.3
+      - 8.1.4
+      - 8.2.0
+      - 8.2.1
+      - 8.3.0
+      - 8.4.0
+      - 8.5.0
+      - 8.6.0
+      - 8.7.0
+      - 8.8.0
+      - 8.8.1
+      - 8.9.0
+      - 8.9.1
+      - 8.9.2
+      - 8.9.3
+      - 8.9.4
+      - 8.10.0
+      - 8.11.0
+      - 8.11.1
+      - 8.11.2
+      - 8.11.3
+      - 8.11.4
+      - 8.12.0
+      - 8.13.0
+      - 8.14.0
+      - 8.14.1
+      - 8.15.0
+      - 8.15.1
+      - 8.16.0
+      - 8.16.1
+      - 8.16.2
+      - 8.17.0
+      - 9.0.0
+      - 9.x-dev
+      - 9.x-next
+      - 9.1.0
+      - 9.2.0
+      - 9.2.1
+      - 9.3.0
+      - 9.4.0
+      - 9.5.0
+      - 9.6.0
+      - 9.6.1
+      - 9.7.0
+      - 9.7.1
+      - 9.8.0
+      - 9.9.0
+      - 9.10.0
+      - 9.10.1
+      - 9.11.0
+      - 9.11.1
+      - 9.11.2
+      - 10.0.0
+      - 10.x-dev
+      - 10.x-next
+      - 10.1.0
+      - 10.2.0
+      - 10.2.1
+      - 10.3.0
+      - 10.4.0
+      - 10.4.1
+      - 10.5.0
+      - 10.6.0
+      - 10.7.0
+      - 10.8.0
+      - 10.9.0
+      - 10.10.0
+      - 10.11.0
+      - 10.12.0
+      - 10.13.0
+      - 10.14.0
+      - 10.14.1
+      - 10.14.2
+      - 10.15.0
+      - 10.15.1
+      - 10.15.2
+      - 10.15.3
+      - 10.16.0
+      - 10.16.1
+      - 10.16.2
+      - 10.16.3
+      - 10.17.0
+      - 10.18.0
+      - 10.18.1
+      - 10.19.0
+      - 10.20.0
+      - 10.20.1
+      - 10.21.0
+      - 10.22.0
+      - 10.22.1
+      - 11.0.0
+      - 11.x-dev
+      - 11.x-next
+      - 11.1.0
+      - 11.2.0
+      - 11.3.0
+      - 11.4.0
+      - 11.5.0
+      - 11.6.0
+      - 11.7.0
+      - 11.8.0
+      - 11.9.0
+      - 11.10.0
+      - 11.10.1
+      - 11.11.0
+      - 11.12.0
+      - 11.13.0
+      - 11.14.0
+      - 11.15.0
+      - 12.0.0
+      - 12.x-dev
+      - 12.x-next
+      - 12.1.0
+      - 12.2.0
+      - 12.3.0
+      - 12.3.1
+      - 12.4.0
+      - 12.5.0
+      - 12.6.0
+      - 12.7.0
+      - 12.8.0
+      - 12.8.1
+      - 12.9.0
+      - 12.9.1
+      - 12.10.0
+      - 12.11.0
+      - 12.11.1
+      - 12.12.0
+      - 12.13.0
+      - 12.13.1
+      - 12.14.0
+      - 12.14.1
+      - 12.15.0
+      - 12.16.0
+      - 12.16.1
+      - 12.16.2
+      - 12.16.3
+      - 12.17.0
+      - 12.18.0
+      - 12.18.1
+      - 12.18.2
+      - 12.18.3
+      - 12.18.4
+      - 13.0.0
+      - 13.x-dev
+      - 13.x-next
+      - 13.0.1
+      - 13.1.0
+      - 13.2.0
+      - 13.3.0
+      - 13.4.0
+      - 13.5.0
+      - 13.6.0
+      - 13.7.0
+      - 13.8.0
+      - 13.9.0
+      - 13.10.0
+      - 13.10.1
+      - 13.11.0
+      - 13.12.0
+      - 13.13.0
+      - 13.14.0
+      - 14.0.0
+      - 14.x-dev
+      - 14.x-next
+      - 14.1.0
+      - 14.2.0
+      - 14.3.0
+      - 14.4.0
+      - 14.5.0
+      - 14.6.0
+      - 14.7.0
+      - 14.8.0
+      - 14.9.0
+      - 14.10.0
+      - 14.10.1
+      - 14.11.0
+      - 14.12.0
+      - chakracore-dev
+      - chakracore-nightly
+      - chakracore-8.1.2
+      - chakracore-8.1.4
+      - chakracore-8.2.1
+      - chakracore-8.3.0
+      - chakracore-8.4.0
+      - chakracore-8.6.0
+      - chakracore-8.9.4
+      - chakracore-8.10.0
+      - chakracore-8.11.1
+      - chakracore-10.0.0
+      - chakracore-10.1.0
+      - chakracore-10.6.0
+      - chakracore-10.13.0
+      - graal+ce-1.0.0-rc1
+      - graal+ce-1.0.0-rc10
+      - graal+ce-1.0.0-rc11
+      - graal+ce-1.0.0-rc12
+      - graal+ce-1.0.0-rc13
+      - graal+ce-1.0.0-rc14
+      - graal+ce-1.0.0-rc15
+      - graal+ce-1.0.0-rc16
+      - graal+ce-1.0.0-rc2
+      - graal+ce-1.0.0-rc3
+      - graal+ce-1.0.0-rc4
+      - graal+ce-1.0.0-rc5
+      - graal+ce-1.0.0-rc6
+      - graal+ce-1.0.0-rc7
+      - graal+ce-1.0.0-rc8
+      - graal+ce-1.0.0-rc9
+      - graal+ce-19.0.0
+      - graal+ce-19.0.2
+      - graal+ce-19.1.0
+      - graal+ce-19.1.1
+      - graal+ce-19.2.0
+      - graal+ce-19.2.0.1
+      - graal+ce-19.2.0-dev-b01
+      - graal+ce-19.2.1
+      - graal+ce_java11-19.3.0
+      - graal+ce_java11-19.3.0.2
+      - graal+ce_java8-19.3.0
+      - graal+ce_java8-19.3.0.2
+      - graal+ce_java11-19.3.1
+      - graal+ce_java8-19.3.1
+      - graal+ce_java11-20.0.0
+      - graal+ce_java8-20.0.0
+      - iojs-0.12.0-dev
+      - iojs-1.0.0
+      - iojs-1.x-dev
+      - iojs-1.0.1
+      - iojs-1.0.2
+      - iojs-1.0.3
+      - iojs-1.0.4
+      - iojs-1.1.0
+      - iojs-1.2.0
+      - iojs-1.3.0
+      - iojs-1.4.1
+      - iojs-1.4.2
+      - iojs-1.4.3
+      - iojs-1.5.0
+      - iojs-1.5.1
+      - iojs-1.6.0
+      - iojs-1.6.1
+      - iojs-1.6.2
+      - iojs-1.6.3
+      - iojs-1.6.4
+      - iojs-1.7.1
+      - iojs-1.8.1
+      - iojs-1.8.2
+      - iojs-1.8.3
+      - iojs-1.8.4
+      - iojs-2.0.0
+      - iojs-2.0.1
+      - iojs-2.0.2
+      - iojs-2.1.0
+      - iojs-2.2.0
+      - iojs-2.2.1
+      - iojs-2.3.0
+      - iojs-2.3.1
+      - iojs-2.3.2
+      - iojs-2.3.3
+      - iojs-2.3.4
+      - iojs-2.4.0
+      - iojs-2.5.0
+      - iojs-3.0.0
+      - iojs-3.1.0
+      - iojs-3.2.0
+      - iojs-3.3.0
+      - iojs-3.3.1
+      - nightly
+      - node-dev
+      - rc
+      - v8-canary
+      required: true
+    description: Install Node.js versions, Using nodenv.
+    name: tidy-nodenv
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - description: Comma seprated list of homebrew packages (https://formulae.brew.sh/)
+      isArray: true
+      name: apps
+    - description: Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/)
+      isArray: true
+      name: cask_apps
+    description: Install and configure homebrew, Install additional homebrew/-cask
+      packages.
+    name: tidy-homebrew
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - description: GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token)
+      name: access_token
+      required: true
+      secret: true
+    description: Generate private/public key, Configure ssh client, and deploy keys
+      to your GitHub account.
+    name: tidy-github-ssh-key
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - description: Repository to be cloned (SSH/HTTPS).
+      name: repo
+      required: true
+    - description: The path of where the repository should be checked out.
+      name: dest
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "no"
+      description: If yes, any modified files in the working repository will be discarded
+      name: force
+      predefined:
+      - "yes"
+      - "no"
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "yes"
+      description: If no, do not retrieve new revisions from the origin repository.
+      name: update
+      predefined:
+      - "yes"
+      - "no"
+    description: Clone git repository to destination.
+    name: tidy-git-clone
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - auto: PREDEFINED
+      description: 'The name of the setting. '
+      name: key
+      predefined:
+      - user.name
+      - user.email
+      - core.editor
+      required: true
+    - description: 'Git key: value to set.'
+      name: value
+      required: true
+    - auto: PREDEFINED
+      defaultValue: global
+      description: 'Specify which scope to read/set values from. '
+      name: scope
+      predefined:
+      - local
+      - global
+      - system
+      required: true
+    description: Configure git cli.
+    name: tidy-git-config
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    description: Install zsh, oh-my-zsh, p10k.
+    name: tidy-zsh
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - description: The file to modify.
+      name: path
+      required: true
+    - description: Text block to be added
+      name: block
+      required: true
+    - defaultValue: '" "'
+      description: Marker to manage block if needed to change in the future.
+      name: marker
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "yes"
+      description: Create a new file if it does not exist.
+      name: create
+      predefined:
+      - "yes"
+      - "no"
+      required: true
+    description: Insert/update/remove a block of multi-line text surrounded by customizable
+      marker lines.
+    name: tidy-block-in-file
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    - description: Bash command to execute.
+      name: command
+      required: true
+    - defaultValue: $HOME
+      description: Change directory before executing command.
+      name: chdir
+      required: true
+    description: Run command in host.
+    name: tidy-exec
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    description: Install OSx command line tools.
+    name: tidy-osx-command-line-tools
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    description: Set demisto developement server.
+    name: tidy-demisto-server
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  - arguments:
+    - description: Endpoint IP/URL to be installed.
+      name: hostname
+    - description: Endpoint user to be installed.
+      name: user
+    - description: User login password.
+      name: password
+      secret: true
+    description: Set demisto developement web-client.
+    name: tidy-demisto-web-client
+    outputs:
+    - contextPath: Tidy.Install.Status
+      description: The status of the installation
+      type: String
+    - contextPath: Tidy.Install.ReturnCode
+      description: The return code of the ansible execution
+      type: Number
+    - contextPath: Tidy.Install.Canceled
+      description: Whether the execution was canceled
+      type: Boolean
+    - contextPath: Tidy.Install.Errored
+      description: Whether the execution has encountered an error
+      type: Boolean
+    - contextPath: Tidy.Install.TimedOut
+      description: Whether the execution has timed out
+      type: Boolean
+    - contextPath: Tidy.Install.Stats
+      description: Aditional stats about the ansible execution
+      type: String
+    - contextPath: Tidy.Install.InstalledSoftware
+      description: The name of the installed software
+      type: String
+    - contextPath: Tidy.Install.AdditionalInfo
+      description: Additinal information about the installed software
+      type: String
+  dockerimage: demisto/tidy:1.0.0.16979
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

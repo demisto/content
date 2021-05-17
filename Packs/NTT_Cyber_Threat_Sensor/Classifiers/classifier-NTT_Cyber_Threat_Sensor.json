@@ -1,0 +1,17 @@
+{
+    "id": "NTT Cyber Threat Sensor - Classifier",
+    "name": "NTT Cyber Threat Sensor - Classifier",
+    "type": "classification",
+    "description": "Classifies NTT Cyber Threat Sensor incidents",
+    "defaultIncidentType": "TD Incident",
+    "keyTypeMap": {
+        "TD": "TD Incident"
+    },
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": "event_type"
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,271 @@
+id: SecurityAdvisor-Test
+version: -1
+name: SecurityAdvisor-Test
+fromversion: 5.0.0
+description: Test Playbook for SecurityAdvisor integration. Tests coach-end-user command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 21807cc4-6965-4623-8d94-4a2f7d905b44
+    type: start
+    task:
+      description: ""
+      id: 21807cc4-6965-4623-8d94-4a2f7d905b44
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 061d5490-638c-43b8-8dd2-5cbedfe0355b
+    type: regular
+    task:
+      id: 061d5490-638c-43b8-8dd2-5cbedfe0355b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c5973149-7deb-4711-8f1a-655154698fa8
+    type: regular
+    task:
+      id: c5973149-7deb-4711-8f1a-655154698fa8
+      version: -1
+      name: coach-end-user
+      description: sends contextual message to single user
+      script: SecurityAdvisor|||coach-end-user
+      type: regular
+      iscommand: true
+      brand: SecurityAdvisor
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      context: {}
+      user:
+        simple: track@securityadvisor.io
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4b99a082-5f2f-41cf-8d7d-e7045e4d5316
+    type: regular
+    task:
+      id: 4b99a082-5f2f-41cf-8d7d-e7045e4d5316
+      version: -1
+      name: PrintSuccess
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      value:
+        simple: SecurityAdvisor test playbook executed successfully with response=${SecurityAdvisor.CoachUser.message}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 1c36fb8f-ad02-43f9-84fa-a83f5dbda5fe
+    type: regular
+    task:
+      id: 1c36fb8f-ad02-43f9-84fa-a83f5dbda5fe
+      version: -1
+      name: PrintError
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      value:
+        simple: Error response from SecurityAdvisor Backend ${SecurityAdvisor.CoachUser.message}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b22be98c-8f77-4f3b-874b-f78b99419659
+    type: condition
+    task:
+      description: ""
+      id: b22be98c-8f77-4f3b-874b-f78b99419659
+      version: -1
+      name: isCoachingSent
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      CheckResponse:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: CheckResponse
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${SecurityAdvisor.CoachUser.message}
+            iscontext: true
+          right:
+            value:
+              simple: Coaching Sent
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: ae1508de-58bd-428c-8549-a372f232c3d2
+    type: regular
+    task:
+      id: ae1508de-58bd-428c-8549-a372f232c3d2
+      version: -1
+      name: Print response from SecurityAdvisor
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      value:
+        simple: ${SecurityAdvisor.CoachUser.message}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 46d99620-efb0-4777-8b01-0fe3f3b0cb8e
+    type: regular
+    task:
+      id: 46d99620-efb0-4777-8b01-0fe3f3b0cb8e
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_5_CheckResponse": 0.89
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

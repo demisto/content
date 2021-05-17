@@ -1,0 +1,57 @@
+args:
+- default: false
+  description: The list of roles from which to assign analysts to the shift handover incident. Can be an array or a comma-separated list. Leave empty to assign all analysts.
+  isArray: true
+  name: roles
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: 'Whether to randomly assign analysts who are on call for the shift handover.  Possible values: "true" and "false". Requires Cortex XSOAR v5.5 or later.'
+  isArray: false
+  name: oncall
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: OOO List
+  description: The name of the out-of-office list. Default is "OOO List".
+  isArray: false
+  name: listname
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to assign all on call analysts to the shift handover incident. Set to "true" to assign all on call analysts.
+  isArray: false
+  name: assignAll
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: |-
+  Assigns analysts who are not out of the office to the shift handover incident. Use the ManageOOOusers automation to add or remove analysts from the out-of-office list.
+commonfields:
+  id: AssignAnalystToIncidentOOO
+  version: -1
+enabled: true
+name: AssignAnalystToIncidentOOO
+script: '-'
+subtype: python3
+system: false
+tags:
+- Shift Management
+- ooo
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

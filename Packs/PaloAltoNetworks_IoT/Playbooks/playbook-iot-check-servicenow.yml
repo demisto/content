@@ -1,0 +1,203 @@
+id: PANW IoT ServiceNow Tickets Check
+version: -1
+name: PANW IoT ServiceNow Tickets Check
+description: This playbook should be used in a recurring Job to check the
+  ServiceNow ticket status for the Palo Alto Networks IoT (previously Zingbox) alerts or vulnerabilties.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b2784e0e-12c4-4468-863a-210bf630a2fc
+    type: start
+    task:
+      id: b2784e0e-12c4-4468-863a-210bf630a2fc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1db6684d-1ed6-40b8-8ec3-6ad24fc9520c
+    type: regular
+    task:
+      id: 1db6684d-1ed6-40b8-8ec3-6ad24fc9520c
+      version: -1
+      name: iot-security-check-servicenow
+      description: Closes the XSOAR incident if the IoT ServiceNow ticket was closed.
+        This command should be run in a Job.
+      scriptName: iot-security-check-servicenow
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a22d3115-8190-4665-8573-a30860676e83
+    type: regular
+    task:
+      id: a22d3115-8190-4665-8573-a30860676e83
+      version: -1
+      name: Close incident
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Job finished
+      close_reason:
+        simple: Other
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0497f4af-ffe3-4d87-86cf-6f8646dcbd96
+    type: title
+    task:
+      id: 0497f4af-ffe3-4d87-86cf-6f8646dcbd96
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 42671f8d-5426-4da0-8943-b0706a66b08f
+    type: condition
+    task:
+      id: 42671f8d-5426-4da0-8943-b0706a66b08f
+      version: -1
+      name: Is ServiceNow v2 enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

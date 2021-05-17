@@ -1,0 +1,318 @@
+id: EmailReputationTest
+version: -1
+name: EmailReputationTest
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a97453d5-a2fa-4c41-8f83-4db5187a62df
+    type: start
+    task:
+      id: a97453d5-a2fa-4c41-8f83-4db5187a62df
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ec4ed45c-5fd2-430d-8146-719484f85a11
+    type: regular
+    task:
+      id: ec4ed45c-5fd2-430d-8146-719484f85a11
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 03e7248e-8a2b-4f91-809a-770820f49174
+    type: regular
+    task:
+      id: 03e7248e-8a2b-4f91-809a-770820f49174
+      version: -1
+      name: Extract Indicator
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: 'Email which pwned should mark as malicious: salkunkel@twc.com'
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 94739de8-ce55-416d-81b4-c8807c5dacf5
+    type: regular
+    task:
+      id: 94739de8-ce55-416d-81b4-c8807c5dacf5
+      version: -1
+      name: Get Indicator Score
+      description: Add into the incident's context the system internal DBot score for the input indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: res_score=.
+      indicator:
+        simple: salkunkel@twc.com
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3e99b273-02af-4be5-88eb-78674e237d42
+    type: regular
+    task:
+      id: 3e99b273-02af-4be5-88eb-78674e237d42
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ee9d34f7-ffc7-4964-8e29-b451bf5aa29d
+    type: regular
+    task:
+      id: ee9d34f7-ffc7-4964-8e29-b451bf5aa29d
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds, Needed to make sure that indicator is returned in next step.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: e6d25456-80a8-4bdd-8a01-d54158c03a5c
+    type: condition
+    task:
+      id: e6d25456-80a8-4bdd-8a01-d54158c03a5c
+      version: -1
+      name: Verify Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: res_score.DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a56772e5-791e-436e-8ffe-c18ee2673e07
+    type: regular
+    task:
+      id: a56772e5-791e-436e-8ffe-c18ee2673e07
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: 'Did not get proper score for indicator. Expected: 2, Got: ${res_score.DBotScore.Score}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 45084026-1258-44e7-86f7-4f1941a4d4c5
+    type: regular
+    task:
+      id: 45084026-1258-44e7-86f7-4f1941a4d4c5
+      version: -1
+      name: Success
+      description: Prints text to war room (Markdown supprted)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Success
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1515,
+        "width": 840,
+        "x": 200,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

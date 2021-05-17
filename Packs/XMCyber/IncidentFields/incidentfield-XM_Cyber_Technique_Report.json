@@ -1,0 +1,30 @@
+{
+ "id": "incident_techniquereport",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-25T16:25:14.951273619Z",
+ "name": "XM Cyber Technique Report",
+ "ownerOnly": false,
+ "cliName": "techniquereport",
+ "type": "url",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Technique"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

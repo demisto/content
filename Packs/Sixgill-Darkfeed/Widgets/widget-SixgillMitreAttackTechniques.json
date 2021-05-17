@@ -1,0 +1,101 @@
+{
+ "id": "sixgill-mitre-attack-techniques",
+ "version": -1,
+ "modified": "2020-06-14T06:18:25.004781666Z",
+ "name": "Sixgill Mitre ATT\u0026CK Techniques",
+ "dataType": "indicators",
+ "widgetType": "pie",
+ "query": "sourceBrands:Sixgill_Darkfeed",
+ "sort": null,
+ "description": "",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "by": "",
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 30,
+   "field": ""
+  },
+  "fromDateLicense": "0001-01-01T00:00:00Z"
+ },
+ "params": {
+  "groupBy": [
+   "sixgillmitreattcktechnique"
+  ],
+  "tableColumns": [
+   {
+    "isDefault": true,
+    "key": "indicator_type",
+    "position": 1,
+    "width": 120
+   },
+   {
+    "isDefault": true,
+    "key": "value",
+    "position": 2,
+    "width": 300
+   },
+   {
+    "isDefault": true,
+    "key": "score",
+    "position": 4,
+    "width": 120
+   },
+   {
+    "isDefault": true,
+    "key": "firstSeen",
+    "position": 5,
+    "width": 275
+   },
+   {
+    "isDefault": true,
+    "key": "lastSeen",
+    "position": 6,
+    "width": 275
+   },
+   {
+    "isDefault": true,
+    "key": "timestamp",
+    "position": 8,
+    "width": 190
+   },
+   {
+    "isDefault": true,
+    "key": "investigationIDs",
+    "position": 9,
+    "width": 150
+   },
+   {
+    "isDefault": true,
+    "key": "sourceBrands",
+    "position": 12,
+    "width": 175
+   },
+   {
+    "isDefault": true,
+    "key": "sourceInstances",
+    "position": 13,
+    "width": 175
+   },
+   {
+    "isDefault": true,
+    "key": "expirationStatus",
+    "position": 14,
+    "width": 175
+   },
+   {
+    "isDefault": true,
+    "key": "expiration",
+    "position": 15,
+    "width": 190
+   }
+  ]
+ },
+ "size": 0,
+ "category": "",
+ "fromVersion": "5.0.0"
+}

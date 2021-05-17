@@ -1,0 +1,352 @@
+id: Test - Cofense Intelligence
+version: -1
+name: Test - Cofense Intelligence
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: b062869b-f43b-4fdc-81ce-9ede86b1b87b
+    type: start
+    task:
+      id: b062869b-f43b-4fdc-81ce-9ede86b1b87b
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: beb6b840-348a-42b8-8171-4d6d17b43283
+    type: regular
+    task:
+      id: beb6b840-348a-42b8-8171-4d6d17b43283
+      version: -1
+      name: Check IP
+      description: Check the reputation of an IP address.
+      script: Cofense Intelligence|||ip
+      type: regular
+      iscommand: true
+      brand: Cofense Intelligence
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      ip:
+        simple: 51.254.240.48
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 32185455-d129-45cd-824c-2dae3c44c82d
+    type: condition
+    task:
+      id: 32185455-d129-45cd-824c-2dae3c44c82d
+      version: -1
+      name: Check DBotScore
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '22'
+    scriptarguments:
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: '3'
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 6fca4ebf-bc46-419a-8a52-7c5c4c26174e
+    type: regular
+    task:
+      id: 6fca4ebf-bc46-419a-8a52-7c5c4c26174e
+      version: -1
+      name: Check url
+      description: Checks the reputation of a URL.
+      script: Cofense Intelligence|||url
+      type: regular
+      iscommand: true
+      brand: Cofense Intelligence
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      url:
+        simple: zsn5qtrgfpu4tmpg.onion.gq
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: df96684f-ac80-49f5-845c-9637956ca12e
+    type: regular
+    task:
+      id: df96684f-ac80-49f5-845c-9637956ca12e
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 4a848dd9-5347-4c49-8cfc-12ca3cdc0010
+    type: regular
+    task:
+      id: 4a848dd9-5347-4c49-8cfc-12ca3cdc0010
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 2629890c-168a-411d-85d8-82dc73113354
+    type: regular
+    task:
+      id: 2629890c-168a-411d-85d8-82dc73113354
+      version: -1
+      name: Check file hash
+      description: Checks the reputation of a file hash.
+      script: Cofense Intelligence|||file
+      type: regular
+      iscommand: true
+      brand: Cofense Intelligence
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      file:
+        simple: 6be4f92e2ae9a2a9d411f7be9ecd06495f847009
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: c02790a6-06f3-4b00-8c67-22477beba083
+    type: regular
+    task:
+      id: c02790a6-06f3-4b00-8c67-22477beba083
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: cd6f98a4-ec7d-4e63-8043-d0fa9cf902f9
+    type: regular
+    task:
+      id: cd6f98a4-ec7d-4e63-8043-d0fa9cf902f9
+      version: -1
+      name: Check email
+      description: Check the reputation of an email address.
+      script: Cofense Intelligence|||email
+      type: regular
+      iscommand: true
+      brand: Cofense Intelligence
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      email:
+        simple: earner@zoho.com
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 0c9b2644-d74b-4111-8156-98c3d794f3ca
+    type: regular
+    task:
+      id: 0c9b2644-d74b-4111-8156-98c3d794f3ca
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: f440a6e5-3e83-481a-89aa-d91e7adc2f29
+    type: regular
+    task:
+      id: f440a6e5-3e83-481a-89aa-d91e7adc2f29
+      version: -1
+      name: Check PhishMe string
+      description: Search for extracted strings identified within malware campaigns.
+      script: '|||cofense-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      limit: {}
+      str:
+        simple: sex
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 5bcf192d-703d-4675-80b8-236e34acca23
+    type: condition
+    task:
+      id: 5bcf192d-703d-4675-80b8-236e34acca23
+      version: -1
+      name: Check number of PhishMe threats
+      scriptName: IsGreaterThan
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '16'
+    scriptarguments:
+      first:
+        simple: ${Cofense.NumOfThreats}
+      key: {}
+      left:
+        simple: ${DBotScore.Score}
+      right:
+        simple: '0'
+      second:
+        simple: '9'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: d4eb3bbf-70d3-43e5-8e94-f1fbfbc3e9b3
+    type: title
+    task:
+      id: d4eb3bbf-70d3-43e5-8e94-f1fbfbc3e9b3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '22':
+    id: '22'
+    taskid: 47ff9da6-51bc-4ab4-8d52-2c40ad3a9bb6
+    type: regular
+    task:
+      id: 47ff9da6-51bc-4ab4-8d52-2c40ad3a9bb6
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2310,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+description: ''
+fromversion: 5.0.0

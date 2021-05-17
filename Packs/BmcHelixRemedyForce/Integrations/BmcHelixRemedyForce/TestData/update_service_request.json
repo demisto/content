@@ -1,0 +1,19 @@
+{
+    "correct_args": {
+        "service_request_number": "345",
+        "category_id": "sgs",
+        "queue_id": "drg",
+        "staff_id": "afs",
+        "status_id": "drfg",
+        "urgency_id": "drgf"
+    },
+    "incorrect_args": {
+        "service_request_number": "345",
+        "category_id": null,
+        "queue_id": "drg",
+        "staff_id": "afs",
+        "status_id": "drfg",
+        "urgency_id": "drgf",
+        "additional_fields": "broadcast_id= ;service_id="
+    }
+}

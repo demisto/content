@@ -1,0 +1,780 @@
+id: TIM - Indicator Auto Processing
+version: -1
+fromversion: 5.5.0
+name: TIM - Indicator Auto Processing
+description: This playbook uses several sub playbooks to process and tag indicators,
+  which is used to identify indicators that shouldn't be blacklisted. For example
+  IP indicators that belong to business partners or important hashes we wish to not
+  process. Additional sub playbooks can be added for improving the business logic
+  and tagging according to the user's needs. This playbook doesn't have its own indicator
+  query as it processes indicators provided by the parent playbook query. To enable
+  the playbook, provide the relevant list names in the sub playbook indicators, such
+  as the ApprovedHashList, OrganizationsExternalIPListName, BusinessPartnersIPListName,
+  etc. Also be sure to append the results of additional sub playbooks to Set indicators
+  to Process Indicators for the additional playbooks results to be in the outputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7617feb8-2a04-47ff-8b2b-7169a852b058
+    type: start
+    task:
+      id: 7617feb8-2a04-47ff-8b2b-7169a852b058
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "15"
+      - "17"
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8a048986-d4da-4ccf-8c4f-f9c79e5a222f
+    type: condition
+    task:
+      id: 8a048986-d4da-4ccf-8c4f-f9c79e5a222f
+      version: -1
+      name: Are there IP results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "23"
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 99ee2da8-20fb-41e2-8465-024ecc06c106
+    type: condition
+    task:
+      id: 99ee2da8-20fb-41e2-8465-024ecc06c106
+      version: -1
+      name: Are there Hash results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "7"
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: File
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 80bac8f9-7dcf-4063-8279-9a71f56eeccd
+    type: playbook
+    task:
+      id: 80bac8f9-7dcf-4063-8279-9a71f56eeccd
+      version: -1
+      name: TIM - Process File Indicators With File Hash Type
+      description: This playbook processes file indicator by tagging them with the
+        relevant file hash type tag, such as Sha256, Sha1, and Md5.
+      playbookName: TIM - Process File Indicators With File Hash Type
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1170,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: cd2550c2-8cbf-40f8-84be-b6413d141b8f
+    type: title
+    task:
+      id: cd2550c2-8cbf-40f8-84be-b6413d141b8f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 42b30d7c-78dd-4e29-8f21-446bfce62529
+    type: regular
+    task:
+      id: 42b30d7c-78dd-4e29-8f21-446bfce62529
+      version: -1
+      name: Set indicators to Processed Indicators
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ProcessedIndicators
+      stringify: {}
+      value:
+        complex:
+          root: HashesNotInApprovedList
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NotBusinessPartnerDomain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NotBusinessPartnerUrl
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DomainsNotApproved
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DomainsNotResolvedByWhois
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DomainsNotProcessed
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NewDomains
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: NotNewDomains
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 19658e25-4f82-4db3-8b5f-66289d8b97de
+    type: condition
+    task:
+      id: 19658e25-4f82-4db3-8b5f-66289d8b97de
+      version: -1
+      name: Are there domain results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "25"
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f34fe6be-28be-4633-8e02-eefb47963a50
+    type: condition
+    task:
+      id: f34fe6be-28be-4633-8e02-eefb47963a50
+      version: -1
+      name: Are there url results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 53d0e3bc-f850-46a9-8abf-1ce5fbe43d36
+    type: condition
+    task:
+      id: 53d0e3bc-f850-46a9-8abf-1ce5fbe43d36
+      version: -1
+      name: Are there CIDR results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: CIDR
+        - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: IPv6CIDR
+    view: |-
+      {
+        "position": {
+          "x": 1890,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: ea3117c5-b2c3-4183-895e-298b29f36e1a
+    type: playbook
+    task:
+      id: ea3117c5-b2c3-4183-895e-298b29f36e1a
+      version: -1
+      name: TIM - Process CIDR Indicators By Size
+      description: This playbook processes CIDR indicators of both IPV4 and IPV6.
+        By specifying in the inputs the maximum number of hosts allowed per CIDR,
+        the playbook tags any CIDR that exceeds the number as pending_review. If the
+        maximum CIDR size is not specified in the inputs, the playbook does not run.
+      playbookName: TIM - Process CIDR Indicators By Size
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      MaximumCIDRSizeToApprovce: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 96a8c7a9-e2e7-4e97-8555-39d842269c8a
+    type: playbook
+    task:
+      id: 96a8c7a9-e2e7-4e97-8555-39d842269c8a
+      version: -1
+      name: TIM - Process Indicators Against Business Partners URL List
+      description: This playbook processes indicators to check if they exist in a
+        Cortex XSOAR list containing business partner urls, and tags the indicators
+        accordingly. To enable the playbook, provide a Cortex XSOAR list name containing
+        business partner urls.
+      playbookName: TIM - Process Indicators Against Business Partners URL List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      BusinessPartnersUrlListName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1780,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: ce07cf89-c81f-4c99-853c-c66551949f27
+    type: playbook
+    task:
+      id: ce07cf89-c81f-4c99-853c-c66551949f27
+      version: -1
+      name: TIM - Process Indicators Against Approved Hash List
+      description: This playbook checks if file hash indicators exist in a Cortex
+        XSOAR list. If the indicators exist in the list, they are tagged as approved_hash.
+      playbookName: TIM - Process Indicators Against Approved Hash List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: d6985b52-6b88-45ad-8be4-4d581bae290e
+    type: playbook
+    task:
+      id: d6985b52-6b88-45ad-8be4-4d581bae290e
+      version: -1
+      name: TIM - Process Indicators Against Organizations External IP List
+      description: This playbook processes indicators to check if they exist in a
+        Cortex XSOAR list containing the organizational External IP addresses, and
+        tags the indicators accordingly.
+      playbookName: TIM - Process Indicators Against Organizations External IP List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      OrganizationsExternalIPListName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 504ccb2f-3423-4738-8f29-677c632137b6
+    type: playbook
+    task:
+      id: 504ccb2f-3423-4738-8f29-677c632137b6
+      version: -1
+      name: TIM - Process Indicators Against Business Partners IP List
+      description: This playbook processes indicators to check if they exist in a
+        Cortex XSOAR list containing business partner IP addresses, and tags the indicators
+        accordingly.
+      playbookName: TIM - Process Indicators Against Business Partners IP List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      BusinessPartnersIPListName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: e929cc6d-64f2-4a38-8f35-9aca71c62e21
+    type: playbook
+    task:
+      id: e929cc6d-64f2-4a38-8f35-9aca71c62e21
+      version: -1
+      name: TIM - Process Indicators Against Business Partners Domains List
+      description: This playbook processes indicators to check if they exist in a
+        Cortex XSOAR list containing the business partner domains, and tags the indicators
+        accordingly.
+      playbookName: TIM - Process Indicators Against Business Partners Domains List
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      BusinessPartnersDomainsListName: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2210,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 43d47eeb-86d3-4409-8a9b-cfab6bf8b47c
+    type: regular
+    task:
+      id: 43d47eeb-86d3-4409-8a9b-cfab6bf8b47c
+      version: -1
+      name: Set indicators to Processed Indicators
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ProcessedIndicators
+      stringify: {}
+      value:
+        complex:
+          root: NotOrganizationExternalIP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NotOrganizationExternalIP
+                iscontext: true
+              right:
+                value:
+                  simple: BusinessPartnerIP
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 6f122ad1-ded4-4cf2-8f98-ebb450fe3fc0
+    type: regular
+    task:
+      id: 6f122ad1-ded4-4cf2-8f98-ebb450fe3fc0
+      version: -1
+      name: Set indicators to Processed Indicators
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ProcessedIndicators
+      stringify: {}
+      value:
+        complex:
+          root: NotBusinessPartnerIP
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: NotBusinessPartnerIP
+                iscontext: true
+              right:
+                value:
+                  simple: OrganizationExternalIP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 3d8f8743-3487-475f-8c37-3efb34fca990
+    type: playbook
+    task:
+      id: 3d8f8743-3487-475f-8c37-3efb34fca990
+      version: -1
+      name: TIM - Process Domains With Whois
+      description: This playbook uses several sub playbooks to process and tag indicators
+        based on the results of the Whois tool.
+      playbookName: TIM - Process Domains With Whois
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      CheckForWhoisDomainAgeCreation:
+        simple: "True"
+      CheckForWhoisRegistrant:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 955,
+        "width": 5010,
+        "x": -2740,
+        "y": -20
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: ProcessedIndicators
+  description: The outputs of this playbook are tagged for manual review in the parent
+    playbook or tagged using approved black, approved white etc.
+  type: string
+quiet: true
+tests:
+- No test

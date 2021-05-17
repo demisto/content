@@ -1,0 +1,188 @@
+id: Run Panorama Best Practice Assessment
+version: -1
+name: Run Panorama Best Practice Assessment
+description: This playbook runs the Palo Alto Best Practice Assessment checks for a PAN-OS instance.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5515df32-fe99-44e2-89ae-11a2ef02fc6b
+    type: start
+    task:
+      id: 5515df32-fe99-44e2-89ae-11a2ef02fc6b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1fbbaa79-ed15-4123-8918-668c2e1a170b
+    type: regular
+    task:
+      id: 1fbbaa79-ed15-4123-8918-668c2e1a170b
+      version: -1
+      name: Submit BPA job
+      description: Submits a best practice assessment job.
+      script: BPA|||pan-os-bpa-submit-job
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      generate_zip_bundle:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: e3e8cd8b-0a04-4edb-8a07-ddf0c6c7c290
+    type: playbook
+    task:
+      id: e3e8cd8b-0a04-4edb-8a07-ddf0c6c7c290
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: pan-os-bpa-get-job-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: PAN-OS-BPA.JobResults(val.Status!=='complete').JobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 5b0dfb5d-50c6-4613-87d7-676e62af22e5
+    type: regular
+    task:
+      id: 5b0dfb5d-50c6-4613-87d7-676e62af22e5
+      version: -1
+      name: Get BPA Results
+      description: Returns results of the best practice assessment job.
+      tags:
+      - bpa results
+      script: BPA|||pan-os-bpa-get-job-results
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      exclude_passed_checks:
+        simple: "true"
+      task_id:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 72648d4a-941d-48d9-8d3a-09414532a259
+    type: title
+    task:
+      id: 72648d4a-941d-48d9-8d3a-09414532a259
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 380,
+        "x": 450,
+        "y": 280
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- Test-BPA_Integration

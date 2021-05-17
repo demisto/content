@@ -1,0 +1,391 @@
+{
+  "qradar-searches": {
+    "cursor_id": "a135f4cb-c22a-4b3a-aa7d-83058c219d33",
+    "status": "EXECUTE",
+    "compressed_data_file_count": 0,
+    "compressed_data_total_size": 0,
+    "data_file_count": 0,
+    "data_total_size": 0,
+    "index_file_count": 0,
+    "index_total_size": 0,
+    "processed_record_count": 0,
+    "desired_retention_time_msec": 86400000,
+    "progress": 0,
+    "progress_details": [],
+    "query_execution_time": 0,
+    "query_string": "SELECT sourceip AS 'MY Source IPs' FROM events",
+    "record_count": 0,
+    "save_results": false,
+    "completed": false,
+    "subsearch_ids": [],
+    "snapshot": null,
+    "search_id": "a135f4cb-c22a-4b3a-aa7d-83058c219d33"
+  },
+  "qradar-get-search": {
+    "cursor_id": "6212b614-074e-41c1-8fcf-1492834576b8",
+    "status": "COMPLETED",
+    "compressed_data_file_count": 0,
+    "compressed_data_total_size": 0,
+    "data_file_count": 2,
+    "data_total_size": 244051,
+    "index_file_count": 0,
+    "index_total_size": 0,
+    "processed_record_count": 6570,
+    "desired_retention_time_msec": 86400000,
+    "progress": 100,
+    "progress_details": [],
+    "query_execution_time": 15,
+    "query_string": "SELECT sourceip AS 'MY Source IPs' FROM events",
+    "record_count": 6570,
+    "save_results": false,
+    "completed": true,
+    "subsearch_ids": [],
+    "snapshot": null,
+    "search_id": "6212b614-074e-41c1-8fcf-1492834576b8"
+  },
+  "qradar-get-search-results": {
+    "events": [
+      {
+        "MY Source IPs": "8.8.8.8"
+      }
+    ]
+  },
+  "qradar-update-offense": {
+    "username_count": 0,
+    "description": "Outbound port scan\n",
+    "rules": [
+      {
+        "id": 100452,
+        "type": "CRE_RULE"
+      }
+    ],
+    "event_count": 5,
+    "flow_count": 0,
+    "assigned_to": null,
+    "security_category_count": 2,
+    "follow_up": false,
+    "source_address_ids": [
+      254
+    ],
+    "source_count": 1,
+    "inactive": true,
+    "protected": false,
+    "closing_user": null,
+    "destination_networks": [
+      "Net-10-172-192.Net_10_0_0_0"
+    ],
+    "source_network": "other",
+    "category_count": 2,
+    "close_time": null,
+    "remote_destination_count": 0,
+    "start_time": 1595428843870,
+    "magnitude": 2,
+    "last_updated_time": 1595429139082,
+    "credibility": 3,
+    "id": 450,
+    "categories": [
+      "Firewall Session Closed",
+      "Host Port Scan"
+    ],
+    "severity": 5,
+    "policy_category_count": 0,
+    "closing_reason_id": null,
+    "device_count": 2,
+    "offense_type": 0,
+    "relevance": 0,
+    "domain_id": 0,
+    "offense_source": "8.8.8.8",
+    "local_destination_address_ids": [
+      4
+    ],
+    "local_destination_count": 1,
+    "status": "OPEN"
+  },
+  "fetch-incidents": {
+    "username_count": 0,
+    "description": "Outbound port scan\n",
+    "rules": [
+      {
+        "id": 100452,
+        "type": "CRE_RULE"
+      }
+    ],
+    "event_count": 5,
+    "flow_count": 0,
+    "assigned_to": null,
+    "security_category_count": 2,
+    "follow_up": false,
+    "source_address_ids": [
+      254
+    ],
+    "source_count": 1,
+    "inactive": true,
+    "protected": false,
+    "closing_user": null,
+    "destination_networks": [
+      "Net-10-172-192.Net_10_0_0_0"
+    ],
+    "source_network": "other",
+    "category_count": 2,
+    "close_time": null,
+    "remote_destination_count": 0,
+    "start_time": 1595428843870,
+    "magnitude": 2,
+    "last_updated_time": 1595429139082,
+    "credibility": 3,
+    "id": 450,
+    "categories": [
+      "Firewall Session Closed",
+      "Host Port Scan"
+    ],
+    "severity": 5,
+    "policy_category_count": 0,
+    "closing_reason_id": null,
+    "device_count": 2,
+    "offense_type": 0,
+    "relevance": 0,
+    "domain_id": 0,
+    "offense_source": "8.8.8.8",
+    "local_destination_address_ids": [
+      4
+    ],
+    "local_destination_count": 1,
+    "status": "OPEN"
+  },
+  "qradar-get-assets": [
+    {
+      "interfaces": [
+        {
+          "mac_address": "Unknown NIC",
+          "last_seen_profiler": 1596424475791,
+          "created": 1596424475791,
+          "last_seen_scanner": 0,
+          "first_seen_scanner": 0,
+          "ip_addresses": [
+            {
+              "last_seen_profiler": 1596424475265,
+              "created": 1596424475265,
+              "last_seen_scanner": 0,
+              "first_seen_scanner": 0,
+              "network_id": 2,
+              "id": 1901,
+              "type": "IPV4",
+              "first_seen_profiler": 1596424475265,
+              "value": "8.8.8.8"
+            }
+          ],
+          "id": 1901,
+          "first_seen_profiler": 1596424475791
+        }
+      ],
+      "id": 1914,
+      "properties": [
+        {
+          "last_reported": 1596424475804,
+          "name": "Unified Name",
+          "type_id": 1002,
+          "id": 1925,
+          "last_reported_by": "IDENTITY:0",
+          "value": "ec2-54-245-171-52.us-west-2.compute.amazonaws.com"
+        }
+      ],
+      "domain_id": 0
+    },
+    {
+      "interfaces": [
+        {
+          "mac_address": "Unknown NIC",
+          "last_seen_profiler": 1597116401958,
+          "created": 1597116401958,
+          "last_seen_scanner": 0,
+          "first_seen_scanner": 0,
+          "ip_addresses": [
+            {
+              "last_seen_profiler": 1597116401451,
+              "created": 1597116401451,
+              "last_seen_scanner": 0,
+              "first_seen_scanner": 0,
+              "network_id": 2,
+              "id": 1915,
+              "type": "IPV4",
+              "first_seen_profiler": 1597116401451,
+              "value": "8.8.8.8"
+            }
+          ],
+          "id": 1915,
+          "first_seen_profiler": 1597116401958
+        }
+      ],
+      "id": 1928,
+      "properties": [
+        {
+          "last_reported": 1597116401966,
+          "name": "Unified Name",
+          "type_id": 1002,
+          "id": 1939,
+          "last_reported_by": "IDENTITY:0",
+          "value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+        }
+      ],
+      "domain_id": 0
+    }
+  ],
+  "qradar-get-asset-by-id": [
+    {
+      "interfaces": [
+        {
+          "mac_address": "Unknown NIC",
+          "last_seen_profiler": 1597116401958,
+          "created": 1597116401958,
+          "last_seen_scanner": 0,
+          "first_seen_scanner": 0,
+          "ip_addresses": [
+            {
+              "last_seen_profiler": 1597116401451,
+              "created": 1597116401451,
+              "last_seen_scanner": 0,
+              "first_seen_scanner": 0,
+              "network_id": 2,
+              "id": 1915,
+              "type": "IPV4",
+              "first_seen_profiler": 1597116401451,
+              "value": "8.8.8.8"
+            }
+          ],
+          "id": 1915,
+          "first_seen_profiler": 1597116401958
+        }
+      ],
+      "id": 1928,
+      "properties": [
+        {
+          "last_reported": 1597116401966,
+          "name": "Unified Name",
+          "type_id": 1002,
+          "id": 1939,
+          "last_reported_by": "IDENTITY:0",
+          "value": "ec2-44-234-115-112.us-west-2.compute.amazonaws.com"
+        }
+      ],
+      "domain_id": 0
+    }
+  ],
+  "qradar-get-closing-reasons": [
+    {
+      "is_deleted": false,
+      "is_reserved": false,
+      "text": "False-Positive, Tuned",
+      "id": 2
+    },
+    {
+      "is_deleted": false,
+      "is_reserved": false,
+      "text": "Non-Issue",
+      "id": 1
+    },
+    {
+      "is_deleted": false,
+      "is_reserved": false,
+      "text": "Policy Violation",
+      "id": 3
+    }
+  ],
+  "qradar-create-note": {
+    "note_text": "XSOAR has the best documentation!",
+    "create_time": 1599040321314,
+    "id": 1243,
+    "username": "API_user: admin"
+  },
+  "qradar-get-note": {
+    "note_text": "XSOAR has the best documentation!",
+    "create_time": 1599028764601,
+    "id": 1232,
+    "username": "API_user: admin"
+  },
+  "qradar-create-reference-set": {
+    "TimeoutType": "UNKNOWN",
+    "NumberOfElements": 0,
+    "CreationTime": "2020-09-02T09:53:52.974000Z",
+    "Name": "Date",
+    "ElementType": "DATE"
+  },
+  "qradar-get-reference-by-name": {
+    "TimeoutType": "UNKNOWN",
+    "NumberOfElements": 0,
+    "CreationTime": "2020-09-02T09:53:52.974000Z",
+    "Name": "Date",
+    "ElementType": "DATE"
+  },
+  "qradar-create-reference-set-value": {
+    "TimeoutType": "UNKNOWN",
+    "NumberOfElements": 1,
+    "CreationTime": "2020-09-02T09:53:52.974000Z",
+    "Name": "Date",
+    "ElementType": "DATE"
+  },
+  "qradar-delete-reference-set": {
+    "created_by": "admin",
+    "created": 1599041286648,
+    "name": "Reference Data Deletion Task",
+    "modified": 1599041286697,
+    "started": null,
+    "completed": null,
+    "id": 7152,
+    "message": "Searching for items that depend on the Reference Data.",
+    "status": "QUEUED"
+  },
+  "qradar-update-reference-set-value": {
+    "TimeoutType": "UNKNOWN",
+    "NumberOfElements": 1,
+    "CreationTime": "2020-09-02T06:45:52.294000Z",
+    "Name": "Documentation Reference",
+    "ElementType": "ALNIC"
+  },
+  "qradar-get-domains": [
+    {
+      "CustomProperties": [],
+      "QVMScannerIDs": [],
+      "AssetScannerIDs": [],
+      "FlowCollectorIDs": [],
+      "Description": "",
+      "FlowSourceIDs": [],
+      "Deleted": false,
+      "EventCollectorIDs": [],
+      "LogSourceIDs": [],
+      "Name": "",
+      "TenantID": 0,
+      "ID": 0,
+      "LogSourceGroupIDs": []
+    },
+    {
+      "CustomProperties": [],
+      "QVMScannerIDs": [],
+      "AssetScannerIDs": [],
+      "FlowCollectorIDs": [],
+      "Description": "",
+      "FlowSourceIDs": [],
+      "Deleted": true,
+      "EventCollectorIDs": [],
+      "LogSourceIDs": [],
+      "Name": "QRadarWhiteListIP",
+      "TenantID": 0,
+      "ID": 1,
+      "LogSourceGroupIDs": []
+    }
+  ],
+  "qradar-get-domain-by-id": {
+    "custom_properties": [],
+    "qvm_scanner_ids": [],
+    "asset_scanner_ids": [],
+    "flow_collector_ids": [],
+    "description": "",
+    "flow_source_ids": [],
+    "deleted": false,
+    "event_collector_ids": [],
+    "log_source_ids": [],
+    "name": "",
+    "tenant_id": 0,
+    "id": 0,
+    "log_source_group_ids": []
+  }
+}

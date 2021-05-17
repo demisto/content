@@ -1,0 +1,168 @@
+{
+    "id": "Employee",
+    "group": "indicator",
+    "name": "Employee Indicator",
+    "description": "",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-relatedIncidents",
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-indicatorTimeline",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 24,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 24,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "source",
+                                "height": 22,
+                                "id": "indicator-source",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "comment",
+                                "height": 22,
+                                "id": "indicator-comment",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "firstname",
+                                "height": 22,
+                                "id": "e65be740-8326-11ea-9140-75aeae421f45",
+                                "index": 2,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastname",
+                                "height": 22,
+                                "id": "e9ac98e0-8326-11ea-9140-75aeae421f45",
+                                "index": 3,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "jobtitle",
+                                "height": 22,
+                                "id": "2dff1280-8ed9-11ea-a1b6-352636767c64",
+                                "index": 4,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "employeeresponsestatus",
+                                "height": 22,
+                                "id": "ee9883f0-8326-11ea-9140-75aeae421f45",
+                                "index": 5,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeehealthstatus",
+                                "height": 22,
+                                "id": "ed5cf6b0-8326-11ea-9140-75aeae421f45",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "moved": false,
+                        "name": "Basic Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-71a3d790-8f75-11ea-9f07-35c4912a8498",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    }
+}

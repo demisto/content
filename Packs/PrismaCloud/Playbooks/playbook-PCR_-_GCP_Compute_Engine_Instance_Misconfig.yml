@@ -1,0 +1,507 @@
+id: Prisma Cloud Remediation - GCP Compute Engine Instance Misconfiguration
+version: -1
+fromversion: 5.0.0
+name: Prisma Cloud Remediation - GCP Compute Engine Instance Misconfiguration
+description: |-
+  This playbook remediates the following Prisma Cloud GCP Compute Engine VM Instance alerts.
+
+  Prisma Cloud policies remediated:
+
+   - GCP VM instances have serial port access enabled
+   - GCP VM instances have block project-wide SSH keys feature disabled
+   - GCP VM instances without any custom metadata information
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61bee172-14d4-4a48-815c-913b49bef800
+    type: start
+    task:
+      id: 61bee172-14d4-4a48-815c-913b49bef800
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6bba7b71-f758-459b-8f30-ed324bd0e5bb
+    type: regular
+    task:
+      id: 6bba7b71-f758-459b-8f30-ed324bd0e5bb
+      version: -1
+      name: Disable VM instance serial port access
+      description: Sets metadata for the specified instance to the data included in
+        the request.
+      script: Google Cloud Compute|||gcp-compute-set-instance-metadata
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      instance:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.name
+      metadataFingerprint:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.metadata.fingerprint
+      metadataItems:
+        simple: key=serial-port-enable,value=false
+      zone:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.zone
+          transformers:
+          - operator: RegexGroups
+            args:
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: /([^/]*)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+    type: title
+    task:
+      id: 1abd9220-e39e-4206-8aa3-dba2695c7f4e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 485101a7-fbb8-40d9-867f-a755d6d8bd93
+    type: regular
+    task:
+      id: 485101a7-fbb8-40d9-867f-a755d6d8bd93
+      version: -1
+      name: Get VM instance details
+      description: Returns the specified instance resource. Gets a list of available
+        instances by making a list() request.
+      script: Google Cloud Compute|||gcp-compute-get-instance
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      instance:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: name
+      zone:
+        complex:
+          root: incident
+          accessor: labels.resource
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: data
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: zone
+          - operator: RegexGroups
+            args:
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: /([^/]*)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: d7b45d30-e581-4e21-8e50-d7cfe4ab3c2f
+    type: condition
+    task:
+      id: d7b45d30-e581-4e21-8e50-d7cfe4ab3c2f
+      version: -1
+      name: Execute remediation
+      description: |
+        Execute the appropriate remediation sub-playbook based on the Prisma Cloud policy ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      noMetaData:
+      - "9"
+      serialPort:
+      - "7"
+      sshKeys:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: sshKeys
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 72b422c8-bef1-4842-a6c6-7230bf0b3492
+    - label: serialPort
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: a7e6ca7c-8b47-4556-9a34-d2ab88347b4b
+    - label: noMetaData
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.policyId
+            iscontext: true
+          right:
+            value:
+              simple: 10bc76ee-6f29-4c04-98bb-b9f8bafb0964
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e15e3153-b016-4949-80a2-52a2a3930eb6
+    type: title
+    task:
+      id: e15e3153-b016-4949-80a2-52a2a3930eb6
+      version: -1
+      name: Block Project Wide SSH Keys Disabled
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: a9ac8370-bf0b-4b87-8da8-e2847bac72f0
+    type: title
+    task:
+      id: a9ac8370-bf0b-4b87-8da8-e2847bac72f0
+      version: -1
+      name: Serial Port Access Enabled
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b4fa01a0-fa10-4536-80dc-615a024331d7
+    type: regular
+    task:
+      id: b4fa01a0-fa10-4536-80dc-615a024331d7
+      version: -1
+      name: Block project wide ssh-key access
+      description: Sets metadata for the specified instance to the data included in
+        the request.
+      script: Google Cloud Compute|||gcp-compute-set-instance-metadata
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      instance:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.name
+      metadataFingerprint:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.metadata.fingerprint
+      metadataItems:
+        simple: key=block-project-ssh-keys,value=true
+      zone:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.zone
+          transformers:
+          - operator: RegexGroups
+            args:
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: /([^/]*)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 5520bf68-cdaf-4256-810f-d4bceed0eb58
+    type: title
+    task:
+      id: 5520bf68-cdaf-4256-810f-d4bceed0eb58
+      version: -1
+      name: No Metadata
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: da424dcd-472b-403e-88cb-724e14f0ba16
+    type: regular
+    task:
+      id: da424dcd-472b-403e-88cb-724e14f0ba16
+      version: -1
+      name: Add VM instance metadata
+      description: Sets metadata for the specified instance to the data included in
+        the request.
+      script: Google Cloud Compute|||gcp-compute-set-instance-metadata
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      instance:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.name
+      metadataFingerprint:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.metadata.fingerprint
+      metadataItems:
+        simple: key=serial-port-enable,value=false;key=block-project-ssh-keys,value=true
+      zone:
+        complex:
+          root: GoogleCloudCompute
+          accessor: Instances.zone
+          transformers:
+          - operator: RegexGroups
+            args:
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: /([^/]*)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e014ab1e-ad60-4fd4-8929-53bd40be41a5
+    type: condition
+    task:
+      id: e014ab1e-ad60-4fd4-8929-53bd40be41a5
+      version: -1
+      name: Is Google Cloud Compute integration enabled?
+      description: "Is Google Cloud Compute integration enabled?"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_3_#default#": 0.29,
+      "5_6_sshKeys": 0.51,
+      "5_7_serialPort": 0.54,
+      "5_9_noMetaData": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1125,
+        "width": 1640,
+        "x": -250,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: policyId
+  value: {}
+  required: true
+  description: Prisma Cloud policy Id.
+outputs: []
+tests:
+- No Test

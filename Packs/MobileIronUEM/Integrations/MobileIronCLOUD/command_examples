@@ -1,0 +1,5 @@
+!mobileiron-cloud-get-devices-data
+!mobileiron-cloud-get-device-by-id device_id=1100646
+!mobileiron-cloud-get-device-by-mac device_mac=ac:37:43:a1:a7:cd
+!mobileiron-cloud-get-device-by-serial device_serial=FK2V9A5FHFLR
+!mobileiron-cloud-unlock-device device_id=1100646

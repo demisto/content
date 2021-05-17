@@ -1,0 +1,1 @@
+!FetchIndicatorsFromFile auto_detect=True entry_id=8531@99f96547-c492-48d1-84bc-070759449a5d

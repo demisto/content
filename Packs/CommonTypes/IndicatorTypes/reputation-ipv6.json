@@ -1,0 +1,236 @@
+{
+    "id": "IPv6",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2019-07-18T07:17:53.843554502Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "(?:[a-fA-F0-9]{1,4}:{1,2}){3,7}[a-fA-F0-9]{1,4}",
+    "details": "IPv6",
+    "prevDetails": "IPv6",
+    "reputationScriptName": "",
+    "reputationCommand": "ipv6",
+    "enhancementScriptNames": [],
+    "system": true,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "VerifyIPv6Indicator",
+    "contextPath": "IPv6(val.Address \u0026\u0026 val.Address === obj.Address)",
+    "contextValue": "Address",
+    "excludedBrands": [],
+    "expiration": 10080,
+    "defaultMapping": {
+        "asn": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "ASN",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "blocked": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Blocked",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "detectionengines": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "DetectionEngines",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geocountry": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Geo.Country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geolocation": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Geo.Location",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "hostname": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Hostname",
+                "transformers": []
+            }
+        },
+        "internal": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Internal",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "positivedetections": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "port": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Port",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "region": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Region",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": null
+}

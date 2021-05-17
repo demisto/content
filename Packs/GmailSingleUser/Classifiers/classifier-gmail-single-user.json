@@ -1,0 +1,16 @@
+{
+    "id": "Gmail Single User",
+    "name": "Gmail Single User - Classifier",
+    "type": "classification",
+    "description": "Classifies Gmail phishing email messages.",
+	"version": -1,
+	"defaultIncidentType": "Phishing",
+	"transformer": {
+		"simple": "Type",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"Gmail Single User": "Phishing"
+	},
+	"fromVersion": "6.0.0"
+}

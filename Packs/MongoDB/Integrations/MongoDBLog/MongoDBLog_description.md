@@ -1,0 +1,1 @@
+MongoDB Log writes Log data out to MongoDB collection.

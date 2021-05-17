@@ -1,0 +1,154 @@
+id: Request Debugging - Test
+version: -1
+name: Request Debugging - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 272a0128-95e1-4c57-8f16-7aa0dcfaac4d
+    type: start
+    task:
+      id: 272a0128-95e1-4c57-8f16-7aa0dcfaac4d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f8c6f74f-05b9-48b4-882c-571cf60d96d5
+    type: regular
+    task:
+      id: f8c6f74f-05b9-48b4-882c-571cf60d96d5
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 97bdaf8c-a684-4e70-84fd-0a95444d0182
+    type: regular
+    task:
+      id: 97bdaf8c-a684-4e70-84fd-0a95444d0182
+      version: -1
+      name: SimpleRequestExecutor
+      description: Executes the SimpleRequest automation with `debug-mode=True`.
+      scriptName: SimpleRequestExecutor
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9dbe44f8-f26b-4a87-89e3-f15f905419e5
+    type: regular
+    task:
+      id: 9dbe44f8-f26b-4a87-89e3-f15f905419e5
+      version: -1
+      name: SimpleRequestGetter
+      description: Read the contents of the debugging file and check that request debugging information is included in the file.
+      scriptName: SimpleRequestGetter
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 893cc623-a73d-47d1-853d-fbc45b2c45ec
+    type: title
+    task:
+      id: 893cc623-a73d-47d1-853d-fbc45b2c45ec
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

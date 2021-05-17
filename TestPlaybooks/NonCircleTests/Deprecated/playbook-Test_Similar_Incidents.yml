@@ -1,0 +1,162 @@
+id: test_similar_incidents
+version: -1
+name: Test Similar Incidents
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
+    type: start
+    task:
+      id: c131c77d-b227-4ed0-85e7-4a6171fd0b3a
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 577034dd-1556-4f9d-8e4b-f9fd1179c166
+    type: regular
+    task:
+      id: 577034dd-1556-4f9d-8e4b-f9fd1179c166
+      version: -1
+      description: ""
+      name: Create dup incident
+      scriptName: TestCreateDuplicates
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      hoursDiff:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    taskid: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
+    type: regular
+    task:
+      id: c4ada7c3-c006-4fca-8f03-5f37e4d450ea
+      version: -1
+      description: ""
+      name: find similar incidents
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      ignoreMissingKeys: {}
+      maxNumberOfIncidents: {}
+      minimumContextKeysToCompare: {}
+      minimumCustomFieldsToCompare: {}
+      minimumLabelsKeysToCompare: {}
+      minimumNumberOfKeysToCompare: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentKeys: {}
+      similarLabelsKeys:
+        simple: Brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: b672e4f4-61d0-49d3-837d-f86650c2f3c6
+    type: regular
+    task:
+      id: b672e4f4-61d0-49d3-837d-f86650c2f3c6
+      version: -1
+      description: ""
+      name: verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: isSimilarIncidentFound
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
+    type: regular
+    task:
+      id: 6a0c2c1a-893e-4d7d-8327-bab54b166b6d
+      version: -1
+      description: ""
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

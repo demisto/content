@@ -1,0 +1,223 @@
+id: PAN-OS Query Logs For Indicators Test
+version: -1
+fromversion: 5.0.0
+name: PAN-OS Query Logs For Indicators Test
+description: This is a test playbook for PAN-OS Query Logs For Indicators
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 841bb934-7a06-4551-8b87-1a6d8240f3de
+    type: start
+    task:
+      id: 841bb934-7a06-4551-8b87-1a6d8240f3de
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 27dc2a17-4f4c-4112-841d-d91d6cfc9070
+    type: title
+    task:
+      id: 27dc2a17-4f4c-4112-841d-d91d6cfc9070
+      version: -1
+      name: Done
+      description: Header
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a15bf512-b3e5-49f8-81a0-38a4ed4c6e4e
+    type: regular
+    task:
+      id: a15bf512-b3e5-49f8-81a0-38a4ed4c6e4e
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e9bbb8bc-382d-4ad0-85b3-a2dc2ab16ec5
+    type: playbook
+    task:
+      id: e9bbb8bc-382d-4ad0-85b3-a2dc2ab16ec5
+      version: -1
+      name: PAN-OS Query Logs For Indicators - URLs
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      filedigest: {}
+      ip: {}
+      url:
+        simple: microsoft.com,windowsupdate.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: b0948adb-3972-418f-83dc-2880419ec1f9
+    type: playbook
+    task:
+      id: b0948adb-3972-418f-83dc-2880419ec1f9
+      version: -1
+      name: PAN-OS Query Logs For Indicators - Hashes
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      filedigest:
+        simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0,78745bbe69460b92369c1536408ff52a07465cd1300b648b27a991011cf576db
+      ip: {}
+      url: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ab22ee73-c021-4695-89a4-09bcc295b637
+    type: playbook
+    task:
+      id: ab22ee73-c021-4695-89a4-09bcc295b637
+      version: -1
+      name: PAN-OS Query Logs For Indicators - IPs
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      filedigest: {}
+      ip:
+        simple: 8.8.8.8,192.168.1.12
+      url: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

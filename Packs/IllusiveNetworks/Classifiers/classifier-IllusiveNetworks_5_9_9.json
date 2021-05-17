@@ -1,0 +1,85 @@
+{
+    "brandName": "IllusiveNetworks",
+    "custom": true,
+    "defaultIncidentType": "",
+    "id": "4369e69a-35a4-4ec4-8fa2-8e9482e0c74d",
+    "keyTypeMap": {
+        "DECEPTION": "Illusive Networks Incident",
+        "DECOY_SUSPICIOUS_ACTIVITY": "Illusive Networks Incident",
+        "EXTERNAL": "Illusive Networks Incident",
+        "FAILED_UI_LOGIN": "Illusive Networks Incident",
+        "MALICIOUS_DNS": "Illusive Networks Incident",
+        "MALICIOUS_PROCESS": "Illusive Networks Incident",
+        "TRAP_FAILED_LOGIN": "Illusive Networks Incident"
+    },
+    "mapping": {
+        "Illusive Networks Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Illusive Networks Deception Families": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "deceptionFamilies",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Illusive Networks Events Number": {
+                    "complex": {
+                        "accessor": "Incident.eventsNumber",
+                        "filters": [],
+                        "root": "Illusive",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "Illusive Networks Has Forensics": {
+                    "complex": null,
+                    "simple": "hasForensics"
+                },
+                "Illusive Networks Host Name": {
+                    "complex": null,
+                    "simple": "sourceHostname"
+                },
+                "Illusive Networks Id": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "Illusive Networks Last Seen User": {
+                    "complex": null,
+                    "simple": "lastSeenUser"
+                },
+                "Illusive Networks Source Operating System": {
+                    "complex": null,
+                    "simple": "sourceOperatingSystem"
+                },
+                "Illusive Networks Steps To Crown Jewel": {
+                    "complex": null,
+                    "simple": "riskInsights.stepsToCrownJewel"
+                },
+                "Illusive Networks Steps To Domain Admin": {
+                    "complex": null,
+                    "simple": "riskInsights.stepsToDomainAdmin"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "sourceIp"
+                }
+            }
+        }
+    },
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "incidentTypes",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "unclassifiedCases": {},
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.9.9"
+}

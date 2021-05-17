@@ -1,0 +1,25 @@
+commonfields:
+  id: PrettyPrint
+  version: -1
+name: PrettyPrint
+script: ''
+type: python
+tags: []
+comment: |-
+  Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
+
+  !PrettyPrint value=${incident}
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: The value to pretty-print.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.5.4583
+runas: DBotWeakRole
+tests:
+- No test - unit test
+fromversion: 5.0.0

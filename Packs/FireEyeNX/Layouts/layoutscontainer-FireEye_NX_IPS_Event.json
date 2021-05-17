@@ -1,0 +1,1620 @@
+{
+ "id": "FireEye NX IPS Event",
+ "group": "incident",
+ "name": "FireEye NX IPS Event",
+ "description": "FireEye NX IPS Event Layout",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "detailsV2": {
+  "tabs": [
+   {
+    "id": "summary",
+    "name": "Legacy Summary",
+    "type": "summary"
+   },
+   {
+    "id": "caseinfoid",
+    "name": "Incident Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "type",
+        "height": 22,
+        "id": "incident-type-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "severity",
+        "height": 22,
+        "id": "incident-severity-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "owner",
+        "height": 22,
+        "id": "incident-owner-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotsource",
+        "height": 22,
+        "id": "incident-source-field",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcebrand",
+        "height": 22,
+        "id": "incident-sourceBrand-field",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceinstance",
+        "height": 22,
+        "id": "incident-sourceInstance-field",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "playbookid",
+        "height": 22,
+        "id": "incident-playbookId-field",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Case Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "moved": false,
+      "name": "Linked Incidents",
+      "static": false,
+      "type": "linkedIncidents",
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+      "moved": false,
+      "name": "Indicators",
+      "query": "",
+      "queryType": "input",
+      "static": false,
+      "type": "indicators",
+      "w": 2,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+      "items": [
+       {
+        "endCol": 1,
+        "fieldId": "occurred",
+        "height": 53,
+        "id": "incident-occurred-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 1,
+        "fieldId": "dbotmodified",
+        "height": 53,
+        "id": "incident-modified-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotduedate",
+        "height": 53,
+        "id": "incident-dueDate-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotcreated",
+        "height": 53,
+        "id": "incident-created-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 1
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 53,
+        "id": "incident-closed-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 1
+       }
+      ],
+      "moved": false,
+      "name": "Timeline Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 22,
+        "id": "incident-dbotClosed-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closereason",
+        "height": 22,
+        "id": "incident-closeReason-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closenotes",
+        "height": 22,
+        "id": "incident-closeNotes-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Closing Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 8
+     },
+     {
+      "displayType": "CARD",
+      "h": 3,
+      "hideItemTitleOnlyOne": false,
+      "hideName": false,
+      "i": "caseinfoid-83989a00-015b-11eb-9325-c1ed518cfb6a",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxeventvictimip",
+        "height": 53,
+        "id": "afad1620-015b-11eb-9325-c1ed518cfb6a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxeventcveid",
+        "height": 53,
+        "id": "e1cb9780-015b-11eb-9325-c1ed518cfb6a",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxeventdestinationmacaddress",
+        "height": 53,
+        "id": "64c652b0-015c-11eb-9325-c1ed518cfb6a",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxeventsourcemacaddress",
+        "height": 53,
+        "id": "6e2ec530-015c-11eb-9325-c1ed518cfb6a",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "fireeyenxeventrule",
+        "height": 53,
+        "id": "5135ee40-015c-11eb-9325-c1ed518cfb6a",
+        "index": 4,
+        "listId": "caseinfoid-83989a00-015b-11eb-9325-c1ed518cfb6a",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxeventattackerip",
+        "height": 53,
+        "id": "ddc04870-015b-11eb-9325-c1ed518cfb6a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxeventid",
+        "height": 53,
+        "id": "571253d0-015c-11eb-9325-c1ed518cfb6a",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxeventdestinationport",
+        "height": 53,
+        "id": "6b163a90-015c-11eb-9325-c1ed518cfb6a",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxeventvictimport",
+        "height": 53,
+        "id": "b30e7420-015c-11eb-9325-c1ed518cfb6a",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 2
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Event Details",
+      "static": false,
+      "w": 2,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "i": "caseinfoid-d68743a0-015c-11eb-9325-c1ed518cfb6a",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Child Incidents",
+      "static": false,
+      "type": "childInv",
+      "w": 1,
+      "x": 1,
+      "y": 3
+     },
+     {
+      "h": 1,
+      "i": "caseinfoid-df42ad40-015c-11eb-9325-c1ed518cfb6a",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Team Members",
+      "static": false,
+      "type": "team",
+      "w": 1,
+      "x": 2,
+      "y": 3
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-ed0ca520-015c-11eb-9325-c1ed518cfb6a",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-ffa0f650-015c-11eb-9325-c1ed518cfb6a",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
+      "w": 1,
+      "x": 1,
+      "y": 4
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-10930930-015d-11eb-9325-c1ed518cfb6a",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Evidence",
+      "static": false,
+      "type": "evidence",
+      "w": 1,
+      "x": 2,
+      "y": 4
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   },
+   {
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
+   }
+  ]
+ },
+ "quickView": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_fireeyenxeventattackerip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventcveid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventdestinationmacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventdestinationport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventrule",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventsourcemacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventvictimip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventvictimport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Event Details",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_severity",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_owner",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcebrand",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceinstance",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phase",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_roles",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotcreated",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_occurred",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_assignmentgroup",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_caller",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleassetsupportcontact",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleautoblockentities",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleskipentityisolation",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotprediction",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotpredictionprobability",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationhostname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationnetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_detectionsla",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_devicehash",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_escalation",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventtype",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_firstname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_investigationstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_lastname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_logsource",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_mobiledevicemodel",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_niststage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_os",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_osversion",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phonenumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_protocol",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_remediationsla",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sansstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_servicenowrecordid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_servicenowtablename",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcenetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceusername",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_state",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_subcategory",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_tenantname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketcloseddate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketnumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketopeneddate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_timetoassignment",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_urlsslverification",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Custom Fields",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "sortValues": null,
+    "type": "labels",
+    "version": 0
+   }
+  ]
+ },
+ "mobile": {
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_type",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_severity",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_owner",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotstatus",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcebrand",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceinstance",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_playbookid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phase",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_roles",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_dbotcreated",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_occurred",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotduedate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotmodified",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbottotaltime",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Timeline Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_fireeyenxeventattackerip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventcveid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventdestinationmacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventdestinationport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventrule",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventsourcemacaddress",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventvictimip",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_fireeyenxeventvictimport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Event Details",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_assignmentgroup",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_caller",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleassetsupportcontact",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleautoblockentities",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_chronicleskipentityisolation",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotprediction",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_dbotpredictionprobability",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationhostname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationnetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_destinationport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_detectionsla",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_devicehash",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_escalation",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_eventtype",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_firstname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_investigationstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_lastname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_logsource",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_mobiledevicemodel",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_niststage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_os",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_osversion",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_phonenumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_protocol",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_remediationsla",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sansstage",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_servicenowrecordid",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_servicenowtablename",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourcenetwork",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceport",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_sourceusername",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_state",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_subcategory",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_tenantname",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketcloseddate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketnumber",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_ticketopeneddate",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_timetoassignment",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     },
+     {
+      "fieldId": "incident_urlsslverification",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Custom Fields",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "sortValues": null,
+    "type": "",
+    "version": 0
+   },
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_labels",
+      "id": "",
+      "isVisible": true,
+      "modified": "0001-01-01T00:00:00Z",
+      "sortValues": null,
+      "version": 0
+     }
+    ],
+    "id": "",
+    "isVisible": true,
+    "modified": "0001-01-01T00:00:00Z",
+    "name": "Labels",
+    "query": null,
+    "queryType": "",
+    "readOnly": true,
+    "sortValues": null,
+    "type": "labels",
+    "version": 0
+   }
+  ]
+ }
+}

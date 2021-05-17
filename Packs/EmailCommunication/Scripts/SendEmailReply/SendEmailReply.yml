@@ -1,0 +1,37 @@
+args:
+- default: false
+  defaultValue: ${File}
+  description: Files
+  isArray: true
+  name: files
+  required: false
+  secret: false
+- default: false
+  defaultValue: ${incident.attachment}
+  description: Attachment
+  isArray: true
+  name: attachment
+  required: false
+  secret: false
+- default: false
+  defaultValue:
+  description: The mailbox from which emails are sent from the 3rd party integration.
+  isArray: false
+  name: service_mail
+  required: false
+  secret: false
+comment: Send email reply
+commonfields:
+  id: SendEmailReply
+  version: -1
+enabled: false
+name: SendEmailReply
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.9.1.14969
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,15 @@
+commonfields:
+  id: RepopulateFiles
+  version: -1
+name: RepopulateFiles
+script: ''
+tags:
+- Utility
+comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
+enabled: true
+scripttarget: 0
+type: python
+subtype: python2
+runonce: false
+runas: DBotWeakRole
+fromversion: 5.0.0

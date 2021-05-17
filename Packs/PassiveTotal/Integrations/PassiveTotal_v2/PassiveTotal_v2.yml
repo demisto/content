@@ -1,0 +1,948 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PassiveTotal v2
+  version: -1
+configuration:
+- defaultvalue: https://api.passivetotal.org
+  display: API URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: username
+  required: true
+  type: 0
+- display: API Secret
+  name: secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: All the PassiveTotal API calls would timeout if the response is
+    not returned within the configured time interval. Default is 20.
+  defaultvalue: '20'
+  display: HTTP(S) Request Timeout (in seconds)
+  hidden: false
+  name: request_timeout
+  required: false
+  type: 0
+description: Analyze and understand threat infrastructure from a variety of sources-passive
+  DNS, active DNS, WHOIS, SSL certificates and more-without devoting resources to
+  time-intensive manual threat research and analysis.
+display: PassiveTotal v2
+name: PassiveTotal v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Query value to use in your request.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'WHOIS field to execute the search on: domain, email, name, organization,
+        address, phone, nameserver.'
+      isArray: false
+      name: field
+      predefined:
+      - domain
+      - email
+      - name
+      - organization
+      - address
+      - phone
+      - nameserver
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets WHOIS information records based on field matching queries.
+    execution: false
+    name: pt-whois-search
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: ''GoDaddy''.'
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.domain
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrar
+      description: The name of the registrar of the domain
+      type: String
+    - contextPath: PassiveTotal.WHOIS.whoisServer
+      description: WHOIS server name where the details of domain registrations belong
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registered
+      description: The date that the domain was registered.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.expiresAt
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.registryUpdatedAt
+      description: The date when registry was last updated.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.lastLoadedAt
+      description: Last loaded date of WHOIS database.
+      type: Date
+    - contextPath: PassiveTotal.WHOIS.nameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.name
+      description: Name of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.telephone
+      description: Telephone number fetched from whois details of the domain.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.contactEmail
+      description: Contact Email address of the domain owner
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantEmail
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantFax
+      description: The fax number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantName
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantOrganization
+      description: The organizations of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantStreet
+      description: The street of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantCity
+      description: The city of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantState
+      description: The state of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantPostalCode
+      description: The postal code of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantCountry
+      description: The country of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.registrantTelephone
+      description: The telephone number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminEmail
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminFax
+      description: The fax number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminName
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminOrganization
+      description: The organizations of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminStreet
+      description: The street of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminCity
+      description: The city of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminState
+      description: The state of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminPostalCode
+      description: The postal code of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminCountry
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.adminTelephone
+      description: The telephone number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingEmail
+      description: The email address of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingFax
+      description: The fax number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingName
+      description: The name of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingOrganization
+      description: The organizations of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingStreet
+      description: The street of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingCity
+      description: The city of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingState
+      description: The state of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingPostalCode
+      description: The postal code of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingCountry
+      description: The country of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.billingTelephone
+      description: The telephone number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techEmail
+      description: The email address of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techFax
+      description: The fax number of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techName
+      description: The name of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techOrganization
+      description: The organizations of domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techStreet
+      description: The street of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techCity
+      description: The city of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techState
+      description: The state of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techPostalCode
+      description: The postal code of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techCountry
+      description: The country of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.WHOIS.techTelephone
+      description: The telephone number of the domain tech.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain or IP address you want to search components for.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Filter for records whose last seen is after this datetime. It accepts
+        "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: Filter for records whose first seen is before this datetime. It
+        accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the host attribute components for a domain or IP address.
+      Maximum 2000 records are fetched.
+    execution: false
+    name: pt-get-components
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: IP.Address
+      description: The IP Address of the component.
+      type: String
+    - contextPath: PassiveTotal.Component.firstSeen
+      description: The date and time when the component was first observed.
+      type: Date
+    - contextPath: PassiveTotal.Component.lastSeen
+      description: The date and time when the component was most recently observed.
+      type: Date
+    - contextPath: PassiveTotal.Component.version
+      description: The current version of component.
+      type: String
+    - contextPath: PassiveTotal.Component.category
+      description: The category under which the component falls.
+      type: String
+    - contextPath: PassiveTotal.Component.label
+      description: The value of the component.
+      type: String
+    - contextPath: PassiveTotal.Component.hostname
+      description: The hostname of the component.
+      type: String
+    - contextPath: PassiveTotal.Component.address
+      description: The IP address of the component.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain or IP address you want to search trackers for.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Filter for records whose last seen is after this datetime. It accepts
+        "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: Filter for records whose first seen is before this datetime. It
+        accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the host attribute trackers for a domain or IP address.
+      Maximum 2000 records are fetched.
+    execution: false
+    name: pt-get-trackers
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: IP.Address
+      description: The IP Address of the component.
+      type: String
+    - contextPath: PassiveTotal.Tracker.firstSeen
+      description: The date and time when the tracker was first observed.
+      type: Date
+    - contextPath: PassiveTotal.Tracker.lastSeen
+      description: The date and time when the tracker was most recently observed.
+      type: Date
+    - contextPath: PassiveTotal.Tracker.attributeValue
+      description: The value of the tracker.
+      type: String
+    - contextPath: PassiveTotal.Tracker.attributeType
+      description: The type under which the tracker falls.
+      type: String
+    - contextPath: PassiveTotal.Tracker.hostname
+      description: The hostname of the tracker.
+      type: String
+    - contextPath: PassiveTotal.Tracker.address
+      description: The IP address of the tracker.
+      type: String
+  - arguments:
+    - default: true
+      description: The domain or IP being queried.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Filter for records whose last seen is after this datetime. It accepts
+        "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: Filter for records whose first seen is before this datetime. It
+        accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the passive DNS results from active account sources.
+    execution: false
+    name: pt-get-pdns-details
+    outputs:
+    - contextPath: PassiveTotal.PDNS.resolve
+      description: The host or ip address that indicates resolve in Passive DNS record.
+      type: String
+    - contextPath: PassiveTotal.PDNS.resolveType
+      description: The type of the resolve. I.e domain, ip, host, etc.
+      type: String
+    - contextPath: PassiveTotal.PDNS.value
+      description: The value of the Passive DNS record.
+      type: String
+    - contextPath: PassiveTotal.PDNS.source
+      description: Source of the passive DNS records.
+      type: String
+    - contextPath: PassiveTotal.PDNS.firstSeen
+      description: First seen timestamp of the passive DNS record.
+      type: String
+    - contextPath: PassiveTotal.PDNS.lastSeen
+      description: Last seen timestamp of the passive DNS record.
+      type: String
+    - contextPath: PassiveTotal.PDNS.collected
+      description: The date when a passive DNS record is collected.
+      type: String
+    - contextPath: PassiveTotal.PDNS.recordType
+      description: The type of the passive DNS record. I.e CNAME, SOA, A, etc
+      type: String
+    - contextPath: PassiveTotal.PDNS.recordHash
+      description: The hash value of the passive DNS record.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: IP.Address
+      description: The IP Address of the component.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: "Field by which to search. \n\nAllowed values: issuerSurname, subjectOrganizationName,\
+        \ issuerCountry, issuerOrganizationUnitName, fingerprint, subjectOrganizationUnitName,\
+        \ serialNumber, subjectEmailAddress, subjectCountry, issuerGivenName, subjectCommonName,\
+        \ issuerCommonName, issuerStateOrProvinceName, issuerProvince, subjectStateOrProvinceName,\
+        \ sha1, subjectStreetAddress, subjectSerialNumber, issuerOrganizationName,\
+        \ subjectSurname, subjectLocalityName, issuerStreetAddress, issuerLocalityName,\
+        \ subjectGivenName, subjectProvince, issuerSerialNumber, issuerEmailAddress"
+      isArray: false
+      name: field
+      predefined:
+      - issuerSurname
+      - subjectOrganizationName
+      - issuerCountry
+      - issuerOrganizationUnitName
+      - fingerprint
+      - subjectOrganizationUnitName
+      - serialNumber
+      - subjectEmailAddress
+      - subjectCountry
+      - issuerGivenName
+      - subjectCommonName
+      - issuerCommonName
+      - issuerStateOrProvinceName
+      - issuerProvince
+      - subjectStateOrProvinceName
+      - sha1
+      - subjectStreetAddress
+      - subjectSerialNumber
+      - issuerOrganizationName
+      - subjectSurname
+      - subjectLocalityName
+      - issuerStreetAddress
+      - issuerLocalityName
+      - subjectGivenName
+      - subjectProvince
+      - issuerSerialNumber
+      - issuerEmailAddress
+      required: true
+      secret: false
+    - default: false
+      description: Field value for which to search.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves SSL certificates for a given field value.
+    execution: false
+    name: pt-ssl-cert-search
+    outputs:
+    - contextPath: PassiveTotal.SSL.firstSeen
+      description: Epoch timestamp when SSL certificate identified by the system.
+      type: Number
+    - contextPath: PassiveTotal.SSL.lastSeen
+      description: The last seen epoch timestamp of the SSL certificates.
+      type: Number
+    - contextPath: PassiveTotal.SSL.fingerprint
+      description: 'A fingerprint detail from the SSL certificates. '
+      type: String
+    - contextPath: PassiveTotal.SSL.sslVersion
+      description: A version of the certificate.
+      type: Number
+    - contextPath: PassiveTotal.SSL.expirationDate
+      description: The expiry date of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.issueDate
+      description: Issue date of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.sha1
+      description: Sha1 of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.serialNumber
+      description: A serial number of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerCountry
+      description: The country name of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerStateOrProvinceName
+      description: The state or province name of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerCommonName
+      description: The common name of the issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerEmailAddress
+      description: A contact email address of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerProvince
+      description: A province of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerOrganizationUnitName
+      description: An organization unit name of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerSurname
+      description: The surname of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerStreetAddress
+      description: Street address of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerLocalityName
+      description: The locality of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerSerialNumber
+      description: The serial number of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerOrganizationName
+      description: An organization name of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.issuerGivenName
+      description: A given name of the certificate issuer.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectCommonName
+      description: The common name of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectOrganizationName
+      description: An organization name of the subject of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectOrganizationUnitName
+      description: An organization unit name of the subject of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectGivenName
+      description: The given name of the subject of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectSurname
+      description: The surname of the subject of the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectLocalityName
+      description: The locality of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectEmailAddress
+      description: A contact email address of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectProvince
+      description: The province of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectStateOrProvinceName
+      description: The state or province name of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectSerialNumber
+      description: A serial number of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectStreetAddress
+      description: The street address of the subject.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectCountry
+      description: The country name of the subject from the certificate.
+      type: String
+    - contextPath: PassiveTotal.SSL.subjectAlternativeNames
+      description: Alternative names of the subject from the certificate details.
+      type: String
+  - arguments:
+    - default: false
+      description: Domain or IP address you want to search host-pairs for.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The direction of searching pair records for a given domain. Valid
+        values: children, parents.'
+      isArray: false
+      name: direction
+      predefined:
+      - children
+      - parents
+      required: true
+      secret: false
+    - default: false
+      description: Filter for records whose last seen is after this datetime. It accepts
+        "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: Filter for records whose first seen is before this datetime. It
+        accepts "yyyy-mm-dd hh:mm:ss" or "yyyy-mm-dd" format.
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the host attribute pairs related to a domain or IP address.
+      Maximum 2000 records are fetched.
+    execution: false
+    name: pt-get-host-pairs
+    outputs:
+    - contextPath: PassiveTotal.HostPair.firstSeen
+      description: The date and time when the host pair was first observed.
+      type: Date
+    - contextPath: PassiveTotal.HostPair.lastSeen
+      description: The date and time when the host pair was most recently observed.
+      type: Date
+    - contextPath: PassiveTotal.HostPair.cause
+      description: The cause of relation between parent and child.
+      type: String
+    - contextPath: PassiveTotal.HostPair.parent
+      description: The hostname of the parent of the host pair.
+      type: String
+    - contextPath: PassiveTotal.HostPair.child
+      description: The hostname of the child of the host pair.
+      type: String
+  - arguments:
+    - default: true
+      description: The domain to enrich.
+      isArray: true
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides data enrichment for domains.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: Domain.WHOIS.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.WHOIS.UpdatedDate
+      description: The date that the domain was last updated.
+      type: Date
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.Organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: ''GoDaddy''.'
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Phone
+      description: The phone number for receiving abuse reports.
+      type: String
+    - contextPath: Domain.WHOIS.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.domain
+      description: 'The domain name, for example: ''google.com''.'
+      type: String
+    - contextPath: PassiveTotal.Domain.registrar
+      description: The name of the registrar of the domain
+      type: String
+    - contextPath: PassiveTotal.Domain.whoisServer
+      description: WHOIS server name where the details of domain registrations belong
+      type: String
+    - contextPath: PassiveTotal.Domain.registered
+      description: The date that the domain was registered.
+      type: Date
+    - contextPath: PassiveTotal.Domain.expiresAt
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: PassiveTotal.Domain.registryUpdatedAt
+      description: The date when registry was last updated.
+      type: Date
+    - contextPath: PassiveTotal.Domain.lastLoadedAt
+      description: Last loaded date of WHOIS database.
+      type: Date
+    - contextPath: PassiveTotal.Domain.nameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.organization
+      description: The organization of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.name
+      description: Name of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.telephone
+      description: Telephone number fetched from whois details of the domain.
+      type: String
+    - contextPath: PassiveTotal.Domain.contactEmail
+      description: Contact Email address of the domain owner
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantEmail
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantFax
+      description: The fax number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantName
+      description: The name of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantOrganization
+      description: The organizations of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantStreet
+      description: The street of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantCity
+      description: The city of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantState
+      description: The state of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantPostalCode
+      description: The postal code of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantCountry
+      description: The country of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.registrantTelephone
+      description: The telephone number of the domain registrant.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminEmail
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminFax
+      description: The fax number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminName
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminOrganization
+      description: The organizations of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminStreet
+      description: The street of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminCity
+      description: The city of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminState
+      description: The state of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminPostalCode
+      description: The postal code of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminCountry
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.adminTelephone
+      description: The telephone number of the domain administrator.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingEmail
+      description: The email address of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingFax
+      description: The fax number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingName
+      description: The name of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingOrganization
+      description: The organizations of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingStreet
+      description: The street of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingCity
+      description: The city of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingState
+      description: The state of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingPostalCode
+      description: The postal code of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingCountry
+      description: The country of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.billingTelephone
+      description: The telephone number of the domain billing.
+      type: String
+    - contextPath: PassiveTotal.Domain.techEmail
+      description: The email address of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techFax
+      description: The fax number of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techName
+      description: The name of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techOrganization
+      description: The organizations of domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techStreet
+      description: The street of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techCity
+      description: The city of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techState
+      description: The state of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techPostalCode
+      description: The postal code of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techCountry
+      description: The country of the domain tech.
+      type: String
+    - contextPath: PassiveTotal.Domain.techTelephone
+      description: The telephone number of the domain tech.
+      type: String
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No Tests- non-certified partner, test was moved to non circle folder.
+fromversion: 5.0.0

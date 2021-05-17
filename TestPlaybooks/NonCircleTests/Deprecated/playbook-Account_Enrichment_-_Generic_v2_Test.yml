@@ -1,0 +1,252 @@
+id: Account Enrichment - Generic v2 - Test
+version: -1
+fromversion: 4.1.0
+name: Account Enrichment - Generic v2 - Test
+description: A test for the Account Enrichment - Generic v2 playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e730f65f-dac8-4988-8603-1f0d4d66dad6
+    type: start
+    task:
+      id: e730f65f-dac8-4988-8603-1f0d4d66dad6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: b13d4e0f-214d-4a6e-8130-51aa93b7116a
+    type: regular
+    task:
+      id: b13d4e0f-214d-4a6e-8130-51aa93b7116a
+      version: -1
+      name: Delete Context
+      description: Clear the context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 0df4f192-b17c-4338-8329-1b0b79a03774
+    type: condition
+    task:
+      id: 0df4f192-b17c-4338-8329-1b0b79a03774
+      version: -1
+      name: Were the accounts enriched?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Account
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Account.Samaccountname
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Guest
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 03439110-2230-4879-86e4-971f43a896b6
+    type: regular
+    task:
+      id: 03439110-2230-4879-86e4-971f43a896b6
+      version: -1
+      name: Set account usernames in context
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Account.Username
+      value:
+        simple: '["Guest", "user1551547345"]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e317c164-089b-493b-8bf8-a4c7f790cf6a
+    type: title
+    task:
+      id: e317c164-089b-493b-8bf8-a4c7f790cf6a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 47411382-86d3-4401-8dd0-d698b5c39032
+    type: regular
+    task:
+      id: 47411382-86d3-4401-8dd0-d698b5c39032
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      message:
+        simple: The accounts were not enriched as expected (did not get the outputs
+          that we expected from the Account Enrichment - Generic playbook). Check
+          if the users still exist in the integrations used by that playbook (Active
+          Directory, for example). Also checks that the outputs are there and that
+          they are the outputs we are checking for.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 5b9ee1a1-609b-4b18-8840-27926712c229
+    type: playbook
+    task:
+      id: 5b9ee1a1-609b-4b18-8840-27926712c229
+      version: -1
+      name: Account Enrichment - Generic v2
+      playbookName: Account Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 700,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

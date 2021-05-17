@@ -1,0 +1,191 @@
+id: account_enrichment_-_generic_test
+version: -1
+name: Account Enrichment - Generic Test
+description: ""
+fromversion: "3.5.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f25242cf-a32c-4bab-887e-0e60ef1df2cc
+    type: start
+    task:
+      id: f25242cf-a32c-4bab-887e-0e60ef1df2cc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 04fad9d5-8b71-408a-8268-d999637113f9
+    type: regular
+    task:
+      id: 04fad9d5-8b71-408a-8268-d999637113f9
+      version: -1
+      name: Verify account fields
+      description: '-'
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Type,ID
+      path:
+        simple: Account
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 60331414-cfec-4bfb-8b92-f5ecace8c187
+    type: regular
+    task:
+      id: 60331414-cfec-4bfb-8b92-f5ecace8c187
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 61172af1-2c47-407e-84f7-2b9e6aa9e4de
+    type: regular
+    task:
+      id: 61172af1-2c47-407e-84f7-2b9e6aa9e4de
+      version: -1
+      name: 'add username #1'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExampleAccount.Username
+      value:
+        simple: admin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 0496f253-92ec-474f-872b-ef3901241fd0
+    type: regular
+    task:
+      id: 0496f253-92ec-474f-872b-ef3901241fd0
+      version: -1
+      name: 'add username #2'
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExampleAccount.Username
+      value:
+        simple: administrator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 9f90f181-6c3f-4917-8943-1a329005daef
+    type: playbook
+    task:
+      id: 9f90f181-6c3f-4917-8943-1a329005daef
+      version: -1
+      name: Account Enrichment - Generic
+      playbookName: Account Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Username:
+        simple: ${ExampleAccount.Username}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

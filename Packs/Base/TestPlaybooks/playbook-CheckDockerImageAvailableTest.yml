@@ -1,0 +1,370 @@
+id: CheckDockerImageAvailableTest
+inputs: []
+name: CheckDockerImageAvailableTest
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 48f586e1-3d97-4730-85b6-d9f309d247bc
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 48f586e1-3d97-4730-85b6-d9f309d247bc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "8"
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 8224a469-748a-4db6-8eb6-8becb521d89e
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8224a469-748a-4db6-8eb6-8becb521d89e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: CheckDockerValid=.
+      input:
+        simple: xsoar-registry.pan.dev/demisto/python:2.7.15.155
+      trust_any_certificate:
+        simple: "yes"
+      use_system_proxy:
+        simple: "no"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a docker image is available for performing docker pull.
+        Script simulates the docker pull flow but doesn't actually pull the image.
+        Returns an entry with 'ok' if all is good otherwise will return an error.
+      id: f3a80147-0400-4041-85ae-ec859f682a2a
+      iscommand: false
+      name: Check docker valid image (docker hub)
+      script: CheckDockerImageAvailable
+      type: regular
+      version: -1
+    taskid: f3a80147-0400-4041-85ae-ec859f682a2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: CheckDockerBad=.
+      input:
+        simple: xsoar-registry.pan.dev/demisto/notgoodimage:1.0
+      trust_any_certificate:
+        simple: "yes"
+      use_system_proxy:
+        simple: "no"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a docker image is available for performing docker pull.
+        Script simulates the docker pull flow but doesn't actually pull the image.
+        Returns an entry with 'ok' if all is good otherwise will return an error.
+      id: 52a13f7d-5721-4fa6-8f5d-b8e5159cf717
+      iscommand: false
+      name: Check docker in-valid image
+      script: CheckDockerImageAvailable
+      type: regular
+      version: -1
+    taskid: 52a13f7d-5721-4fa6-8f5d-b8e5159cf717
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 360
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: CheckDockerValid
+          operator: isEqualString
+          right:
+            value:
+              simple: ok
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: CheckDockerBad
+          operator: isNotEqualString
+          right:
+            value:
+              simple: ok
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: CheckGcrValid
+          operator: isEqualString
+          right:
+            value:
+              simple: ok
+      - - left:
+            iscontext: true
+            value:
+              simple: CheckXSOARValid
+          operator: isEqualString
+          right:
+            value:
+              simple: ok
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 45e28868-69fc-4ab8-89ad-0004a5db560f
+      iscommand: false
+      name: Verify outputs
+      type: condition
+      version: -1
+    taskid: 45e28868-69fc-4ab8-89ad-0004a5db560f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: 'Failed output verification: Check the context for the outputs'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: e0b9c4dc-feae-4b57-8982-7ca9d7044951
+      iscommand: false
+      name: Error
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: e0b9c4dc-feae-4b57-8982-7ca9d7044951
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 1020
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      outputformat: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Pretty-print the contents of the playbook context
+      id: 28410d8b-7990-4d1f-8b58-2c290fd91946
+      iscommand: false
+      name: All is good
+      script: PrintContext
+      type: regular
+      version: -1
+    taskid: 28410d8b-7990-4d1f-8b58-2c290fd91946
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 1030
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: CheckGcrValid=.
+      input:
+        simple: gcr.io/google-containers/busybox:1.27
+      trust_any_certificate:
+        simple: "yes"
+      use_system_proxy:
+        simple: "no"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a docker image is available for performing docker pull.
+        Script simulates the docker pull flow but doesn't actually pull the image.
+        Returns an entry with 'ok' if all is good otherwise will return an error.
+      id: d5885717-6643-4275-8d08-9184a9d6a274
+      iscommand: false
+      name: Check docker valid image (gcr.io)
+      script: CheckDockerImageAvailable
+      type: regular
+      version: -1
+    taskid: d5885717-6643-4275-8d08-9184a9d6a274
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 360
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: CheckXSOARValid=.
+      input:
+        simple: xsoar-registry.pan.dev/demisto/python3:3.9.1.14969
+      trust_any_certificate:
+        simple: "no"
+      use_system_proxy:
+        simple: "no"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if a docker image is available for performing docker pull.
+        Script simulates the docker pull flow but doesn't actually pull the image.
+        Returns an entry with 'ok' if all is good otherwise will return an error.
+      id: dba55464-1f1d-4e37-8e17-dcea2fd58200
+      iscommand: false
+      name: Check docker valid image (gcr.io)
+      script: CheckDockerImageAvailable
+      type: regular
+      version: -1
+    taskid: dba55464-1f1d-4e37-8e17-dcea2fd58200
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 1690,
+        "x": 20,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0

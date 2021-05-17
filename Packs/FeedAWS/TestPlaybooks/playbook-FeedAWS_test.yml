@@ -1,0 +1,180 @@
+id: AWS Feed Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: AWS Feed Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db605e5e-22c7-4510-807c-5498bc676486
+    type: start
+    task:
+      id: db605e5e-22c7-4510-807c-5498bc676486
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: d917ba08-5a1a-4fdc-8764-bff21002631f
+    type: regular
+    task:
+      id: d917ba08-5a1a-4fdc-8764-bff21002631f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: cae48bae-be17-48fe-8dcf-ecf5eebe8949
+    type: regular
+    task:
+      id: cae48bae-be17-48fe-8dcf-ecf5eebe8949
+      version: -1
+      name: get-indicators-ip
+      description: Fetches indicators from the feed.
+      script: AWS Feed|||aws-get-indicators
+      type: regular
+      iscommand: true
+      brand: AWS Feed
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: Type=type
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "6":
+    id: "6"
+    taskid: eaab7819-ebdc-4acc-8cbb-6ac9552bc5e7
+    type: condition
+    task:
+      id: eaab7819-ebdc-4acc-8cbb-6ac9552bc5e7
+      version: -1
+      name: verify get indicators
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Type
+            iscontext: true
+          right:
+            value:
+              simple: CIDR
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "14":
+    id: "14"
+    taskid: 89544cf6-bf4e-4bd2-84ce-c50b39c2825c
+    type: title
+    task:
+      id: 89544cf6-bf4e-4bd2-84ce-c50b39c2825c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

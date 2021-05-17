@@ -1,0 +1,28 @@
+{
+  "ContentsFormat": "json",
+  "HumanReadable": "### nullbytes.csv\n|CSV list|\n|---|\n| name |\n|  age\\ndave |\n|  31\\nzach |\n|  \\0\\nReggie |\n|  40\\nMol\\0ly |\n|  twenty-one\\n\\0 |\n| 12\\nCatherine |\n| \\0 |\n",
+  "EntryContext": {
+    "ParseCSV.ParsedCSV": [
+      "name",
+      " age\\ndave",
+      " 31\\nzach",
+      " \\0\\nReggie",
+      " 40\\nMol\\0ly",
+      " twenty-one\\n\\0",
+      "12\\nCatherine",
+      "\\0"
+    ]
+  },
+  "ReadableContentsFormat": "markdown",
+  "Type": 1,
+  "Contents": [
+    "name",
+    " age\\ndave",
+    " 31\\nzach",
+    " \\0\\nReggie",
+    " 40\\nMol\\0ly",
+    " twenty-one\\n\\0",
+    "12\\nCatherine",
+    "\\0"
+  ]
+}

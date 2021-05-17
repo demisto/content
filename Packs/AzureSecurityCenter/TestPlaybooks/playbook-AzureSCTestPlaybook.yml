@@ -1,0 +1,342 @@
+id: Azure SecurityCenter - Test
+version: -1
+name: Azure SecurityCenter - Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: e630883d-4ae6-4d1e-8fe7-bf6459fcecec
+    type: start
+    task:
+      id: e630883d-4ae6-4d1e-8fe7-bf6459fcecec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 79f474fc-42dc-488b-8f73-089d45917629
+    type: regular
+    task:
+      id: 79f474fc-42dc-488b-8f73-089d45917629
+      version: -1
+      name: azure-sc-list-aps
+      description: Lists auto provisioning settings in the subscription.
+      script: '|||azure-sc-list-aps'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: caabcb2b-08b2-49f5-8270-32bfafe56845
+    type: regular
+    task:
+      id: caabcb2b-08b2-49f5-8270-32bfafe56845
+      version: -1
+      name: azure-sc-get-aps
+      description: Returns details of a specific auto provisioning setting.
+      script: '|||azure-sc-get-aps'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      setting_name:
+        simple: ${AzureSecurityCenter.AutoProvisioningSetting.Name}
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d47639d4-387e-4f63-8399-a40516e0e5c3
+    type: regular
+    task:
+      id: d47639d4-387e-4f63-8399-a40516e0e5c3
+      version: -1
+      name: azure-sc-list-alert
+      description: Lists alerts for the subscription according to the specified filters.
+      script: '|||azure-sc-list-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asc_location: {}
+      expand: {}
+      filter: {}
+      resource_group_name: {}
+      select: {}
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0e9b6296-cb3d-4959-8335-36461e1ea79e
+    type: regular
+    task:
+      id: 0e9b6296-cb3d-4959-8335-36461e1ea79e
+      version: -1
+      name: azure-sc-list-jit
+      description: Lists all policies for protecting resources using Just-in-Time access control.
+      script: '|||azure-sc-list-jit'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asc_location: {}
+      resource_group_name: {}
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 19021d00-c31b-47e1-8a30-4da8a27c2912
+    type: regular
+    task:
+      id: 19021d00-c31b-47e1-8a30-4da8a27c2912
+      version: -1
+      name: azure-sc-list-location
+      description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
+      script: '|||azure-sc-list-location'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ec04a461-930d-44b3-8fa8-89e26286ebf8
+    type: regular
+    task:
+      id: ec04a461-930d-44b3-8fa8-89e26286ebf8
+      version: -1
+      name: azure-sc-list-storage
+      description: Lists all the storage accounts available under the subscription.
+      script: '|||azure-sc-list-storage'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6ca8e140-b9c9-4d6f-8f20-630e7d02e9c1
+    type: regular
+    task:
+      id: 6ca8e140-b9c9-4d6f-8f20-630e7d02e9c1
+      version: -1
+      name: azure-sc-update-aps
+      description: Updates a specific auto provisioning setting.
+      script: '|||azure-sc-update-aps'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      auto_provision:
+        simple: "Off"
+      setting_name:
+        simple: default
+      subscription_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 232d4c8c-a18a-467e-852e-7ce4202a85d0
+    type: regular
+    task:
+      id: 232d4c8c-a18a-467e-852e-7ce4202a85d0
+      version: -1
+      name: azure-list-subscriptions
+      description: Lists available subscriptions for this application.
+      script: '|||azure-list-subscriptions'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 68245350-d24e-47d9-8d3e-8de18fbf3d0b
+    type: regular
+    task:
+      id: 68245350-d24e-47d9-8d3e-8de18fbf3d0b
+      version: -1
+      name: azure-sc-get-alert
+      description: Get an alert that is associated a resource group or a subscription.
+      script: '|||azure-sc-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: AzureSecurityCenter.Alert
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      asc_location:
+        simple: westeurope
+      resource_group_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

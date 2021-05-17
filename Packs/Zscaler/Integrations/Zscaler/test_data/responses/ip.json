@@ -1,0 +1,16 @@
+[
+  {
+    "url": "1.22.33.4",
+    "urlClassifications": [
+      "MISCELLANEOUS_OR_UNKNOWN"
+    ],
+    "urlClassificationsWithSecurityAlert": []
+  },
+  {
+    "url": "111.222.33.44",
+    "urlClassifications": [
+      "MISCELLANEOUS_OR_UNKNOWN"
+    ],
+    "urlClassificationsWithSecurityAlert": []
+  }
+]

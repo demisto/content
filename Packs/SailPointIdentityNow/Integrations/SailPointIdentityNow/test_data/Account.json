@@ -1,0 +1,25 @@
+{
+    "sourceId": "2c918084737cf3fe01740875ebac75cd",
+    "identityId": null,
+    "attributes": {
+        "externalId": "null",
+        "IIQDisabled": true,
+        "id": "41263",
+        "userName": "Testy.Testerson",
+        "idNowDescription": "f74806c7011b760457c914ef5ea254b8752496a441a92475b910ded9eb5ec487"
+    },
+    "authoritative": false,
+    "description": null,
+    "disabled": true,
+    "locked": false,
+    "nativeIdentity": "41263",
+    "systemAccount": false,
+    "uncorrelated": true,
+    "uuid": null,
+    "manuallyCorrelated": false,
+    "hasEntitlements": false,
+    "id": "2c918084740346d30174088afa6d625e",
+    "name": "Testy.Testerson",
+    "created": "2020-08-19T21:05:59.917Z",
+    "modified": "2020-08-19T21:06:01.269Z"
+}

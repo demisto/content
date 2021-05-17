@@ -1,0 +1,563 @@
+id: Google Chronicle Backstory Asset - Test
+version: -1
+name: Google Chronicle Backstory Asset - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests
+  the various scenarios of the "gcb-assets" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c8582924-648c-4ac4-869b-855cad0e60eb
+    type: start
+    task:
+      id: c8582924-648c-4ac4-869b-855cad0e60eb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 804530f9-b81b-4724-81f6-fad27f0fe244
+    type: regular
+    task:
+      id: 804530f9-b81b-4724-81f6-fad27f0fe244
+      version: -1
+      name: Get Assets list
+      description: Returns a list of the assets that accessed the input artifact (IP,
+        domain, MD5, SHA1 and SHA256) during the specified time.
+      script: '|||gcb-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      start_time: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9ccac02b-7241-456d-897f-986b274e92f2
+    type: condition
+    task:
+      id: 9ccac02b-7241-456d-897f-986b274e92f2
+      version: -1
+      name: Verify
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.AccessedDomain
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.FirstAccessedTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.LastAccessedTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.HostName
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.IpAddress
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.MacAddress
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Asset.ProductId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6045c26c-6e7d-4059-870d-1d140d182704
+    type: title
+    task:
+      id: 6045c26c-6e7d-4059-870d-1d140d182704
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bca7051d-fa02-4a21-8aec-ffab7d939856
+    type: regular
+    task:
+      id: bca7051d-fa02-4a21-8aec-ffab7d939856
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "7"
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d10f56da-234f-4934-8b70-54ce576ab376
+    type: regular
+    task:
+      id: d10f56da-234f-4934-8b70-54ce576ab376
+      version: -1
+      name: Invalid page size argument
+      description: Returns a list of the assets that accessed the input artifact (IP,
+        domain, MD5, SHA1 and SHA256) during the specified time.
+      script: '|||gcb-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time: {}
+      page_size:
+        simple: "0"
+      preset_time_range: {}
+      start_time: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 095f3495-9ca8-4640-800e-668eae580ef9
+    type: condition
+    task:
+      id: 095f3495-9ca8-4640-800e-668eae580ef9
+      version: -1
+      name: Is error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: c964c0fb-484a-4a67-8e31-b6e34cafb89e
+    type: regular
+    task:
+      id: c964c0fb-484a-4a67-8e31-b6e34cafb89e
+      version: -1
+      name: Invalid start date argument
+      description: Returns a list of the assets that accessed the input artifact (IP,
+        domain, MD5, SHA1 and SHA256) during the specified time.
+      script: '|||gcb-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time: {}
+      page_size: {}
+      preset_time_range: {}
+      start_time:
+        simple: "2020"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: bf8239a9-3a37-4093-8c1e-0b274fc5526d
+    type: condition
+    task:
+      id: bf8239a9-3a37-4093-8c1e-0b274fc5526d
+      version: -1
+      name: Is error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: fbfe2611-65f7-49e5-835d-db2a0db28a56
+    type: regular
+    task:
+      id: fbfe2611-65f7-49e5-835d-db2a0db28a56
+      version: -1
+      name: Invalid end date argument
+      description: Returns a list of the assets that accessed the input artifact (IP,
+        domain, MD5, SHA1 and SHA256) during the specified time.
+      script: '|||gcb-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      artifact_value:
+        simple: www.google.com
+      end_time:
+        simple: "2020"
+      page_size: {}
+      preset_time_range: {}
+      start_time: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 50270a31-806e-4f1c-8bf6-bca33c15c0c0
+    type: condition
+    task:
+      id: 50270a31-806e-4f1c-8bf6-bca33c15c0c0
+      version: -1
+      name: Is error?
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e0974908-f2e3-4ddb-81be-7bb250cf1c41
+    type: regular
+    task:
+      id: e0974908-f2e3-4ddb-81be-7bb250cf1c41
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a09fa3bb-87f9-40bf-81b1-06878c39122d
+    type: regular
+    task:
+      id: a09fa3bb-87f9-40bf-81b1-06878c39122d
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ebcbab59-7ac5-4ab3-88a9-23d25d62bc15
+    type: condition
+    task:
+      id: ebcbab59-7ac5-4ab3-88a9-23d25d62bc15
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Asset
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1792.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

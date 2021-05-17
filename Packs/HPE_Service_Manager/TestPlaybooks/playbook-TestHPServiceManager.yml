@@ -1,0 +1,553 @@
+id: TestHPServiceManager
+version: -1
+name: TestHPServiceManager test
+starttaskid: "0"
+tasks:
+  '0':
+    id: '0'
+    taskid: e0666c9c-106f-4da4-8f2f-0ca63991c23f
+    type: start
+    task:
+      id: e0666c9c-106f-4da4-8f2f-0ca63991c23f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0078ae49-bd9b-406d-875a-3c5b44e275ed
+    type: regular
+    task:
+      id: 0078ae49-bd9b-406d-875a-3c5b44e275ed
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 059a422b-ddc9-41be-84b7-40fe71efd907
+    type: regular
+    task:
+      id: 059a422b-ddc9-41be-84b7-40fe71efd907
+      version: -1
+      name: VerifyContext HPSM.Incidents
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: IncidentID,Description,Title,Assignee,OpenedBy
+      path:
+        simple: HPSM.Incidents
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 915d0b30-749a-46af-819e-0527589c0928
+    type: regular
+    task:
+      id: 915d0b30-749a-46af-819e-0527589c0928
+      version: -1
+      name: VerifyContext HPSM.Ticket
+      description: Verify that get-incident-by-id exports and converts ticket in Demisto general format
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,Creator,Assignee,State
+      path:
+        simple: Ticket
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6eb21ea1-34ea-4eda-84e1-f20c5ed677b9
+    type: regular
+    task:
+      id: 6eb21ea1-34ea-4eda-84e1-f20c5ed677b9
+      version: -1
+      name: hpsm-create-incident
+      description: 'Creating new incident '
+      script: Service Manager|||hpsm-create-incident
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      affectedCI: {}
+      alertStatus: {}
+      area: {}
+      assignmentGroup: {}
+      category:
+        simple: incident
+      company: {}
+      description:
+        simple: This is description
+      impact: {}
+      phase: {}
+      service:
+        simple: CI1001030
+      status: {}
+      subarea: {}
+      title:
+        simple: TestPlaybookTitleCreated
+      urgency: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0ffb1072-3851-47eb-886c-26d56e59b461
+    type: regular
+    task:
+      id: 0ffb1072-3851-47eb-886c-26d56e59b461
+      version: -1
+      name: hpsm-list-incidents
+      description: Returns all incidents
+      script: Service Manager|||hpsm-list-incidents
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      query:
+        simple: Title=TestPlaybookListIncidents
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 0951a22e-5cfd-42c0-8599-d11bb83237b9
+    type: regular
+    task:
+      id: 0951a22e-5cfd-42c0-8599-d11bb83237b9
+      version: -1
+      name: hpsm-get-incident-by-id
+      script: Service Manager|||hpsm-get-incident-by-id
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      incidentId:
+        simple: IM10258
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: acbea6dd-4bfa-4d12-8185-873c582f6f1a
+    type: regular
+    task:
+      id: acbea6dd-4bfa-4d12-8185-873c582f6f1a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3b074203-ccca-47f9-856b-4617c9acd131
+    type: regular
+    task:
+      id: 3b074203-ccca-47f9-856b-4617c9acd131
+      version: -1
+      name: VerifyContext Ticket
+      description: Verify that get-incident-by-id exports and converts ticket in Demisto general format
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ID,Creator,Assignee,State
+      path:
+        simple: Ticket
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 5326d459-3e65-49b5-8221-64c54344d314
+    type: regular
+    task:
+      id: 5326d459-3e65-49b5-8221-64c54344d314
+      version: -1
+      name: VerifyContext HPSM.Incidents
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: IncidentID,Description,Title,Assignee,OpenedBy
+      path:
+        simple: HPSM.Incidents
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9f52ca06-1fb7-4fc0-8516-3ff366edbc6b
+    type: regular
+    task:
+      id: 9f52ca06-1fb7-4fc0-8516-3ff366edbc6b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 85baa12e-1ec3-4f0e-8d64-6c6e4d8019ee
+    type: regular
+    task:
+      id: 85baa12e-1ec3-4f0e-8d64-6c6e4d8019ee
+      version: -1
+      name: VerifyContext HPSM.IncidentIDs
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      expectedValue:
+        simple: '["IM10259"]'
+      fields: {}
+      path:
+        simple: HPSM.IncidentIDs
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: a8ee6ef8-874d-44c8-86c0-83d3f7366ea9
+    type: regular
+    task:
+      id: a8ee6ef8-874d-44c8-86c0-83d3f7366ea9
+      version: -1
+      name: VerifyContextFields Tickets fields correct
+      script: VerifyContextFields
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      field1:
+        simple: Ticket.ID
+      field2:
+        simple: Ticket.Creator
+      field3:
+        simple: Ticket.Assignee
+      field4:
+        simple: Ticket.State
+      value1:
+        simple: IM10258
+      value2:
+        simple: System.Admin
+      value3:
+        simple: Incident.Manager
+      value4:
+        simple: Categorize
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1596
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ae10e437-0242-411d-82ba-6ce313e306ed
+    type: regular
+    task:
+      id: ae10e437-0242-411d-82ba-6ce313e306ed
+      version: -1
+      name: hpsm-get-device
+      script: Service Manager|||hpsm-get-device
+      type: regular
+      iscommand: true
+      brand: Service Manager
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      configurationItem:
+        simple: CI1000001
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2326
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: f4eded68-7ef1-4009-8cee-bdac8ac12e07
+    type: regular
+    task:
+      id: f4eded68-7ef1-4009-8cee-bdac8ac12e07
+      version: -1
+      name: Verify Context Fields HPSM.Devices
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: ConfigurationItem,DisplayName,Status
+      path:
+        simple: HPSM.Devices
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2541
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2586,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,378 @@
+id: MxToolbox-test
+version: -1
+name: MxToolbox-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c0877588-82bc-413c-8799-cdeeb1d69974
+    type: start
+    task:
+      id: c0877588-82bc-413c-8799-cdeeb1d69974
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e3656ffe-6ea6-4744-8cd8-2851dd627d5c
+    type: regular
+    task:
+      id: e3656ffe-6ea6-4744-8cd8-2851dd627d5c
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: a
+      data:
+        simple: example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 818a35f4-461e-4cfd-8bc3-34463ea80a9d
+    type: regular
+    task:
+      id: 818a35f4-461e-4cfd-8bc3-34463ea80a9d
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: dns
+      data:
+        simple: example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: bbcfe90c-56ba-44be-813f-a41d4cf12116
+    type: regular
+    task:
+      id: bbcfe90c-56ba-44be-813f-a41d4cf12116
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: mx
+      data:
+        simple: example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b174436d-2fb4-4fe0-8689-63f7757f2058
+    type: regular
+    task:
+      id: b174436d-2fb4-4fe0-8689-63f7757f2058
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: spf
+      data:
+        simple: example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e457361e-d247-4fcb-8592-d79d00241c81
+    type: regular
+    task:
+      id: e457361e-d247-4fcb-8592-d79d00241c81
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: txt
+      data:
+        simple: example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5e210e1d-c8fc-4242-87ed-9c28302c709e
+    type: regular
+    task:
+      id: 5e210e1d-c8fc-4242-87ed-9c28302c709e
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: soa
+      data:
+        simple: example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 351ec25e-bd50-4557-8026-703fa844f020
+    type: regular
+    task:
+      id: 351ec25e-bd50-4557-8026-703fa844f020
+      version: -1
+      name: mxtoolbox
+      description: Run any supported command on the mxtoolbox API
+      script: MxToolBox|||mxtoolbox
+      type: regular
+      iscommand: true
+      brand: MxToolBox
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      additionalParams: {}
+      command:
+        simple: ptr
+      data:
+        simple: 93.184.216.34
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 7c03d173-6235-48fb-839b-e99ecaf11b38
+    type: condition
+    task:
+      id: 7c03d173-6235-48fb-839b-e99ecaf11b38
+      version: -1
+      name: Exists errors?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        simple: ${MXToolbox.Errors}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 9c00dae7-f9e8-486e-828d-5c700623055b
+    type: regular
+    task:
+      id: 9c00dae7-f9e8-486e-828d-5c700623055b
+      version: -1
+      name: Print failures
+      scriptName: ToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      columns: {}
+      data:
+        simple: ${MXToolbox.Errors}
+      title: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2f4d8e5f-9569-4491-8068-882f7931dc17
+    type: title
+    task:
+      id: 2f4d8e5f-9569-4491-8068-882f7931dc17
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,35 @@
+args:
+- default: false
+  description: A comma-separated list of active incident IDs to assign to the next shift, for example, 1,2,3,4.
+  isArray: false
+  name: incidentIds
+  required: true
+  secret: false
+- default: false
+  defaultValue: OOO List
+  description: The name of the out-of-office list. Default is "OOO List".
+  isArray: false
+  name: listname
+  required: false
+  secret: false
+comment: |-
+  Randomly assigns the active incidents to on call analysts (requires shift management). This automation works with the other out-of-office automations to ensure only available analysts are assigned to the active incidents. 
+commonfields:
+  id: AssignToNextShiftOOO
+  version: -1
+enabled: true
+name: AssignToNextShiftOOO
+script: '-'
+subtype: python3
+system: false
+tags:
+- Shift Management
+- ooo
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotRole
+runonce: false
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

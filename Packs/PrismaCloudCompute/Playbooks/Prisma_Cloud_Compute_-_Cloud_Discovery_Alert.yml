@@ -1,0 +1,75 @@
+id: Prisma Cloud Compute - Cloud Discovery Alert
+version: -1
+name: Prisma Cloud Compute - Cloud Discovery Alert
+description: Default playbook for parsing Prisma Cloud Compute Cloud Discovery alerts
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db3ae054-8893-4760-871f-9e39c7439d6c
+    type: start
+    task:
+      id: db3ae054-8893-4760-871f-9e39c7439d6c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d0bf15fa-3cd5-45f2-8d05-a78d90b710d9
+    type: regular
+    task:
+      id: d0bf15fa-3cd5-45f2-8d05-a78d90b710d9
+      version: -1
+      name: Parse Cloud Discovery Alert
+      description: Parse raw vulnerabilities JSON data
+      scriptName: PrismaCloudComputeParseCloudDiscoveryAlert
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      alert_raw_json:
+        simple: ${incident.prismacloudcomputerawalertjson}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No Test

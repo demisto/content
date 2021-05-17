@@ -1,0 +1,37 @@
+{
+  "_kind": "tm:asm:policies:whitelist-ips:whitelist-ipcollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/whitelist-ips?ver=15.1.0",
+  "totalItems": 2,
+  "items": [
+    {
+      "ignoreIpReputation": false,
+      "blockRequests": "policy-default",
+      "ignoreAnomalies": false,
+      "neverLogRequests": false,
+      "ipAddress": "100.100.100.100",
+      "lastUpdateMicros": 1596661989000000.0,
+      "description": "",
+      "_kind": "tm:asm:policies:whitelist-ips:whitelist-ipstate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/whitelist-ips/whitelist-md5-1?ver=15.1.0",
+      "neverLearnRequests": false,
+      "ipMask": "255.255.255.255",
+      "id": "whitelist-md5-1",
+      "trustedByPolicyBuilder": false
+    },
+    {
+      "ignoreIpReputation": false,
+      "blockRequests": "policy-default",
+      "ignoreAnomalies": false,
+      "neverLogRequests": false,
+      "ipAddress": "20.20.20.20",
+      "lastUpdateMicros": 1596662018000000.0,
+      "description": "",
+      "_kind": "tm:asm:policies:whitelist-ips:whitelist-ipstate",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/whitelist-ips/whitelist-md5-2?ver=15.1.0",
+      "neverLearnRequests": false,
+      "ipMask": "255.255.255.255",
+      "id": "whitelist-md5-2",
+      "trustedByPolicyBuilder": false
+    }
+  ]
+}

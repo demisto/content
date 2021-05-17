@@ -1,0 +1,62 @@
+{
+ "id": "b7132142-60d2-4a7b-8b15-16a381543d79",
+ "version": -1,
+ "modified": "2018-04-25T16:42:48.045019833Z",
+ "defaultIncidentType": "",
+ "mapping": {
+  "Access": {
+   "internalMapping": {
+    "App": {
+     "simple": "app",
+     "complex": null
+    },
+    "Dest": {
+     "simple": "dest",
+     "complex": null
+    },
+    "Dest NT Domain": {
+     "simple": "dest_pci_domain",
+     "complex": null
+    },
+    "Src": {
+     "simple": "src",
+     "complex": null
+    },
+    "Src NT Domain": {
+     "simple": "src_pci_domain",
+     "complex": null
+    }
+   },
+   "dontMapEventToLabels": false
+  },
+  "Malware": {
+   "internalMapping": {
+    "Dest": {
+     "simple": "dest",
+     "complex": null
+    },
+    "Signature": {
+     "simple": "signature",
+     "complex": null
+    }
+   },
+   "dontMapEventToLabels": false
+  }
+ },
+ "custom": true,
+ "transformer": {
+  "simple": "source",
+  "complex": null
+ },
+ "keyTypeMap": {
+  "Access - Brute Force Access Behavior Detected - Rule": "Access",
+  "Access - Brute Force Access Behavior Detected Over 1d - Rule": "Access",
+  "Access - Concurrent App Accesses - Rule": "Access",
+  "Access - Excessive Failed Logins - Rule": "Access",
+  "Access - High or Critical Priority Individual Logging into Infected Machine - Rule": "Access",
+  "Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware"
+ },
+ "brandName": "SplunkPy",
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,322 @@
+id: DeleteContext-auto-test
+version: -1
+name: DeleteContext-auto-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4881063d-a82a-4db6-8ab9-8f3beb46d64e
+    type: start
+    task:
+      id: 4881063d-a82a-4db6-8ab9-8f3beb46d64e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 375a3f32-7b75-4abb-8e72-cfab2789810b
+    type: playbook
+    task:
+      id: 375a3f32-7b75-4abb-8e72-cfab2789810b
+      version: -1
+      name: playbook-test-delete-key
+      playbookName: DeleteContext-auto-subplaybook-test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9ef1312b-37cb-4285-848c-64b900fdacc1
+    type: regular
+    task:
+      id: 9ef1312b-37cb-4285-848c-64b900fdacc1
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 4724c05f-4ddd-413c-8040-203e4fb39574
+    type: regular
+    task:
+      id: 4724c05f-4ddd-413c-8040-203e4fb39574
+      version: -1
+      name: Set a key which is also used in sub playbook
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: test1
+      value:
+        simple: parent
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: bb8a870d-95be-40dc-8acd-3fa7019a17cb
+    type: condition
+    task:
+      id: bb8a870d-95be-40dc-8acd-3fa7019a17cb
+      version: -1
+      name: Check test1 key was not deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: test1
+            iscontext: true
+          right:
+            value:
+              simple: parent
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 6e251bb0-1d40-4cdc-8b02-464359d7163f
+    type: regular
+    task:
+      id: 6e251bb0-1d40-4cdc-8b02-464359d7163f
+      version: -1
+      name: Test Delete from parent with auto
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: test1
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 2a682986-4292-4f0c-8446-39674fec164e
+    type: regular
+    task:
+      id: 2a682986-4292-4f0c-8446-39674fec164e
+      version: -1
+      name: Test1 key deleted - Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: test1 key was deleted - shouldn't happen
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: a415736c-5e04-4e65-81f0-0f7795346c75
+    type: condition
+    task:
+      id: a415736c-5e04-4e65-81f0-0f7795346c75
+      version: -1
+      name: Check test1 key was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: test1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 31f73e13-c399-484b-80bc-c134c329bfdf
+    type: regular
+    task:
+      id: 31f73e13-c399-484b-80bc-c134c329bfdf
+      version: -1
+      name: test1 key still exists
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: 'test1: ${test1} still exists'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 91a3ada5-564f-4b1a-8129-8e1bf2125e7b
+    type: title
+    task:
+      id: 91a3ada5-564f-4b1a-8129-8e1bf2125e7b
+      version: -1
+      name: all good
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1365,
+        "width": 870,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

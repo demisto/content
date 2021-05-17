@@ -1,0 +1,430 @@
+id: Test-BPA
+version: 8
+name: Test-BPA
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 06afda6f-3011-4b7d-81cd-d7d68376ef74
+    type: start
+    task:
+      id: 06afda6f-3011-4b7d-81cd-d7d68376ef74
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7c822901-b728-43ea-87a5-20d0a5712cec
+    type: regular
+    task:
+      id: 7c822901-b728-43ea-87a5-20d0a5712cec
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1523fbb5-8f28-49f0-8562-ec01e9e8a2c4
+    type: regular
+    task:
+      id: 1523fbb5-8f28-49f0-8562-ec01e9e8a2c4
+      version: -1
+      name: pan-os-bpa-submit-job
+      description: Submits a BPA job.
+      script: BPA|||pan-os-bpa-submit-job
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      generate_zip_bundle:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 25a4742a-99e5-457d-87fb-9c3bd103cc36
+    type: playbook
+    task:
+      id: 25a4742a-99e5-457d-87fb-9c3bd103cc36
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: pan-os-bpa-get-job-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: PAN-OS-BPA.JobResults(val.Status!='complete').JobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9bc78e2e-5722-4e96-8a5a-1f503d1dd7a2
+    type: condition
+    task:
+      id: 9bc78e2e-5722-4e96-8a5a-1f503d1dd7a2
+      version: -1
+      name: Test BPA Checks Are Returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${PAN-OS-BPA.JobResults(val.Status==='complete').Checks}
+            iscontext: true
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: InfoFile
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: InfoFile
+                      iscontext: true
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: report
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 86268dac-3b75-4713-8a92-13672c5a90d0
+    type: regular
+    task:
+      id: 86268dac-3b75-4713-8a92-13672c5a90d0
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0642547e-3930-45ed-8c6c-04f10290e6b1
+    type: regular
+    task:
+      id: 0642547e-3930-45ed-8c6c-04f10290e6b1
+      version: -1
+      name: pan-os-get-documentation
+      description: Get documentaion
+      script: BPA|||pan-os-get-documentation
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9da2cd68-133e-4adc-8526-e5b7cb3ef2ef
+    type: regular
+    task:
+      id: 9da2cd68-133e-4adc-8526-e5b7cb3ef2ef
+      version: -1
+      name: pan-os-bpa-get-job-results
+      description: Returns results of BPA job.
+      script: BPA|||pan-os-bpa-get-job-results
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      task_id:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9f72939b-1058-45b6-88b1-6cc21b0bfa04
+    type: regular
+    task:
+      id: 9f72939b-1058-45b6-88b1-6cc21b0bfa04
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: PAN-OS-BPA.SubmittedJob.JobID
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: ec9101b0-65a8-49be-8794-304ab19e17f0
+    type: regular
+    task:
+      id: ec9101b0-65a8-49be-8794-304ab19e17f0
+      version: -1
+      name: pan-os-bpa-get-job-results
+      description: Returns results of BPA job.
+      script: BPA|||pan-os-bpa-get-job-results
+      type: regular
+      iscommand: true
+      brand: BPA
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      exclude_passed_checks:
+        simple: "true"
+      task_id:
+        simple: ${PAN-OS-BPA.SubmittedJob.JobID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1a12b604-293a-4fdf-8b0b-1cf8e7b0d2a7
+    type: condition
+    task:
+      id: 1a12b604-293a-4fdf-8b0b-1cf8e7b0d2a7
+      version: -1
+      name: Test BPA Checks Are Returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: PAN-OS-BPA
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: PAN-OS-BPA.JobResults.Checks.check_passed
+                      iscontext: true
+                accessor: JobResults.Checks
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

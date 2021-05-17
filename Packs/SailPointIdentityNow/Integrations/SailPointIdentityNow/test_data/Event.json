@@ -1,0 +1,28 @@
+{
+    "stack": "sweep",
+    "synced": "2020-02-24T22:07:03.831Z",
+    "pod": "stg-uswest",
+    "org": "sailpoint-idn",
+    "created": "2020-02-24T22:07:03.793Z",
+    "objects": [
+        "TASK",
+        "RESULT"
+    ],
+    "type": "SYSTEM_CONFIG",
+    "technicalName": "TASK_RESULT_DELETE_PASSED",
+    "target": {},
+    "actor": {
+        "name": "unknown"
+    },
+    "name": "Delete Task Result Passed",
+    "action": "taskResultsPruned",
+    "attributes": {
+        "hostName": "24",
+        "sourceName": "null"
+    },
+    "id": "2bd61299-d986-4c27-bd37-408b9c9ba118",
+    "trackingNumber": "93e9ae1d85f845bc8f3254e3a8bb616b",
+    "operation": "DELETE",
+    "status": "PASSED",
+    "_type": "event"
+}

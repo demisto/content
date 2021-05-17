@@ -1,0 +1,8 @@
+{
+  "_kind": "tm:asm:policies:methods:methodstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/methods/K-lp18VyngU_x_XF4FHK3w?ver=15.1.0",
+  "name": "posty",
+  "id": "md5-1234",
+  "lastUpdateMicros": 1599573415000000.0,
+  "actAsMethod": "GET"
+}

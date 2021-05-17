@@ -1,0 +1,931 @@
+id: PolySwarm-Test
+version: -1
+name: PolySwarm-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d10bea22-663c-4598-8fe0-a1ef2be558ce
+    type: start
+    task:
+      id: d10bea22-663c-4598-8fe0-a1ef2be558ce
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: b3d2492f-2fe1-46c5-8a4a-9629c18c456b
+    type: regular
+    task:
+      id: b3d2492f-2fe1-46c5-8a4a-9629c18c456b
+      version: -1
+      name: PolySwarm `ip`
+      description: Queries Polyswarm for IP reputation info
+      script: PolySwarm|||ip
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c9f93017-e7c8-4115-89df-aef65fd527eb
+    type: condition
+    task:
+      id: c9f93017-e7c8-4115-89df-aef65fd527eb
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 72695860-9274-4847-8e14-979590741a45
+    type: regular
+    task:
+      id: 72695860-9274-4847-8e14-979590741a45
+      version: -1
+      name: PolySwarm `polyswarm-get-report`
+      description: Lookup results from UUID
+      script: PolySwarm|||polyswarm-get-report
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      scan_uuid:
+        simple: ${PolySwarm.Scan_UUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: e5483828-abda-4986-8df8-da77c32efd67
+    type: condition
+    task:
+      id: e5483828-abda-4986-8df8-da77c32efd67
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: dd4710e2-89c8-4732-8f2d-b0e8e7698784
+    type: condition
+    task:
+      id: dd4710e2-89c8-4732-8f2d-b0e8e7698784
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 85a84803-26eb-4d42-8ace-14bcd428358f
+    type: regular
+    task:
+      id: 85a84803-26eb-4d42-8ace-14bcd428358f
+      version: -1
+      name: PolySwarm `domain`
+      description: Queries Polyswarm for Domain reputation info
+      script: PolySwarm|||domain
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      domain:
+        simple: google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 50a057dc-ba6d-45ea-8db8-53b7886cc9db
+    type: condition
+    task:
+      id: 50a057dc-ba6d-45ea-8db8-53b7886cc9db
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 0fb862f0-b228-4911-828f-52e2dba728fe
+    type: regular
+    task:
+      id: 0fb862f0-b228-4911-828f-52e2dba728fe
+      version: -1
+      name: url-scan
+      description: Load a URL to Polyswarm and retrieve analysis results
+      script: PolySwarm|||url-scan
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      url:
+        simple: https://google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e5c9b9c3-2823-46c1-8d23-642bda0594bd
+    type: condition
+    task:
+      id: e5c9b9c3-2823-46c1-8d23-642bda0594bd
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 0bc5354a-2ad4-47bc-82b3-b3d3176379f9
+    type: regular
+    task:
+      id: 0bc5354a-2ad4-47bc-82b3-b3d3176379f9
+      version: -1
+      name: file-rescan
+      description: Run a rescan in uploaded artifact by hash
+      script: PolySwarm|||file-rescan
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      hash:
+        simple: ${File.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 68aa8f6b-4c31-4e39-89a9-70445b4791c5
+    type: condition
+    task:
+      id: 68aa8f6b-4c31-4e39-89a9-70445b4791c5
+      version: -1
+      name: Test Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 08177524-e863-4fd1-8555-19637b89cf18
+    type: regular
+    task:
+      id: 08177524-e863-4fd1-8555-19637b89cf18
+      version: -1
+      name: get-file
+      description: Downloads a file from Polyswarm
+      script: PolySwarm|||get-file
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      hash:
+        simple: 7e6a5ea394e04d3ad5c3c456773b146bd8064cd81fd92e1bfa0655580a4b3d90
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 33d17b74-e20c-4b7b-8ae9-1fbe55ac4f8b
+    type: regular
+    task:
+      id: 33d17b74-e20c-4b7b-8ae9-1fbe55ac4f8b
+      version: -1
+      name: file-scan
+      description: Upload a file to Polyswarm and retrieve analysis results
+      script: PolySwarm|||file-scan
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 767c6f5f-6fd8-4e84-80d8-388041163978
+    type: condition
+    task:
+      id: 767c6f5f-6fd8-4e84-80d8-388041163978
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: 7e6a5ea394e04d3ad5c3c456773b146bd8064cd81fd92e1bfa0655580a4b3d90
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b01a69fb-6aee-4a92-8340-f2d60ebc4358
+    type: condition
+    task:
+      id: b01a69fb-6aee-4a92-8340-f2d60ebc4358
+      version: -1
+      name: Task Test
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 16b4a1fc-fbe7-4041-8eac-1adcb848a13f
+    type: regular
+    task:
+      id: 16b4a1fc-fbe7-4041-8eac-1adcb848a13f
+      version: -1
+      name: file
+      description: Queries Polyswarm for file reputation info
+      script: PolySwarm|||file
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      hash:
+        simple: ${File.SHA256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: ee5cc511-c690-4bb8-883d-8fe6ac7391fd
+    type: condition
+    task:
+      id: ee5cc511-c690-4bb8-883d-8fe6ac7391fd
+      version: -1
+      name: Test Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PolySwarm.Positives
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: f03f9821-d09a-4546-8b58-b653f726cf5f
+    type: title
+    task:
+      id: f03f9821-d09a-4546-8b58-b653f726cf5f
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      type: title
+      iscommand: false
+      brand: builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 3580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 3200d4c1-974d-4569-8864-8ebf368ba8b1
+    type: regular
+    task:
+      id: 3200d4c1-974d-4569-8864-8ebf368ba8b1
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: aee596ca-03d9-4026-8f35-47ba8147dc2f
+    type: regular
+    task:
+      id: aee596ca-03d9-4026-8f35-47ba8147dc2f
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 3bd1651d-9d85-410a-8db1-5bf5758daee5
+    type: regular
+    task:
+      id: 3bd1651d-9d85-410a-8db1-5bf5758daee5
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 29005849-2d00-44ed-8376-a528dde00567
+    type: regular
+    task:
+      id: 29005849-2d00-44ed-8376-a528dde00567
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 61aa3fdb-c820-448c-80d0-90d8aea9faec
+    type: regular
+    task:
+      id: 61aa3fdb-c820-448c-80d0-90d8aea9faec
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: fa7f756e-4b2e-4789-84ee-c1b7d0cf3f1c
+    type: regular
+    task:
+      id: fa7f756e-4b2e-4789-84ee-c1b7d0cf3f1c
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 1dfce526-698b-4926-808f-1d552a05e9ca
+    type: regular
+    task:
+      id: 1dfce526-698b-4926-808f-1d552a05e9ca
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: e4792f0f-5e38-4f2e-8836-36af3de022b0
+    type: regular
+    task:
+      id: e4792f0f-5e38-4f2e-8836-36af3de022b0
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 4a59cc17-d1e1-4ddf-8f31-5f790dbaf1de
+    type: regular
+    task:
+      id: 4a59cc17-d1e1-4ddf-8f31-5f790dbaf1de
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Error with Endpoint.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 3565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 593c1ec0-7fb2-42aa-8de5-46412f600ec5
+    type: regular
+    task:
+      id: 593c1ec0-7fb2-42aa-8de5-46412f600ec5
+      version: -1
+      name: url
+      description: Queries Polyswarm for url reputation info
+      script: PolySwarm|||url
+      type: regular
+      iscommand: true
+      brand: PolySwarm
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      url:
+        simple: https://google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "9_10_yes": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3530,
+        "width": 930,
+        "x": 440,
+        "y": 130
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

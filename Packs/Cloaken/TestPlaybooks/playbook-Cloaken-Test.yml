@@ -1,0 +1,271 @@
+id: Cloaken-Test
+version: -1
+name: Cloaken-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 76ab4744-bfdf-425f-8a1c-bdf4631e8cad
+    type: start
+    task:
+      id: 76ab4744-bfdf-425f-8a1c-bdf4631e8cad
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 83568df7-7077-404d-8689-2d5771647068
+    type: regular
+    task:
+      id: 83568df7-7077-404d-8689-2d5771647068
+      version: -1
+      name: cloaken
+      description: unshorten a url
+      script: '|||cloaken-unshorten-url'
+      type: regular
+
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: https://bit.ly/1Gtg3vp
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5fd529cf-76a1-4143-803c-db9a7aa59df9
+    type: condition
+    task:
+      id: 5fd529cf-76a1-4143-803c-db9a7aa59df9
+      version: -1
+      name: Verify Context
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cloaken.OriginalURL
+            iscontext: true
+          right:
+            value:
+              simple: https://bit.ly/1Gtg3vp
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Cloaken.UnshortenedURL
+            iscontext: true
+          right:
+            value:
+              simple: https://www.paloaltonetworks.com/
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://www.paloaltonetworks.com/
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1be612d3-319a-4702-8151-7eaf4e6e4051
+    type: regular
+    task:
+      id: 1be612d3-319a-4702-8151-7eaf4e6e4051
+      version: -1
+      name: malformed cloaken
+      description: unshorten a url
+      script: '|||cloaken-unshorten-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: htt://test.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 64fe3784-9e5e-422a-896c-933efdb363f9
+    type: regular
+    task:
+      id: 64fe3784-9e5e-422a-896c-933efdb363f9
+      version: -1
+      name: unavailable cloaken
+      description: unshorten a url
+      script: '|||cloaken-unshorten-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        simple: htt://tesfsadfasgjoixzcocivzxlcvzxcvzxccvzxcxvasdgqerhrjh.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: bc7be21f-8a82-4142-88ce-e445ede3bbeb
+    type: regular
+    task:
+      id: bc7be21f-8a82-4142-88ce-e445ede3bbeb
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Did not satisfy context checks
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: aa5d0e25-641a-4710-8275-d842804f8f72
+    type: regular
+    task:
+      id: aa5d0e25-641a-4710-8275-d842804f8f72
+      version: -1
+      name: screenshot url
+      description: create a screenshot from a url
+      script: '|||cloaken-screenshot-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      url:
+        simple: https://google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 23193a7a-0698-451d-8b99-f918cdc98f19
+    type: title
+    task:
+      id: 23193a7a-0698-451d-8b99-f918cdc98f19
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

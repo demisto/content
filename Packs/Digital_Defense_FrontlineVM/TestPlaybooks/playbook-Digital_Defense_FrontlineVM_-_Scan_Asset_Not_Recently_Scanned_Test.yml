@@ -1,0 +1,139 @@
+id: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
+version: -1
+fromversion: 5.0.0
+name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test
+description: Test playbook for "Digital Defense FrontlineVM - Scan Asset Not Recently Scanned"
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 1a52d07f-7dac-48ff-8ca4-3cfe3b9492d8
+    type: start
+    task:
+      id: 1a52d07f-7dac-48ff-8ca4-3cfe3b9492d8
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: fd0c9d4d-2499-4b75-8e52-74b79a1c7e4d
+    type: regular
+    task:
+      id: fd0c9d4d-2499-4b75-8e52-74b79a1c7e4d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: a94bfb16-5648-4e0f-8244-425973df8546
+    type: playbook
+    task:
+      id: a94bfb16-5648-4e0f-8244-425973df8546
+      version: -1
+      name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+      playbookName: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 702a374b-7856-4183-81ff-489d1edaad42
+    type: regular
+    task:
+      id: 702a374b-7856-4183-81ff-489d1edaad42
+      version: -1
+      name: Close Investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 845,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

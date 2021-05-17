@@ -1,0 +1,216 @@
+[
+  {
+    "runDate": "2020-05-26",
+    "deltas": [
+      {
+        "type": "DOMAIN",
+        "aggregations": [
+          {
+            "removed": 2,
+            "added": 0,
+            "changed": 1,
+            "count": 7,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 4,
+            "count": 0,
+            "range": 7,
+            "difference": 4
+          },
+          {
+            "removed": 0,
+            "added": 7,
+            "count": 0,
+            "range": 30,
+            "difference": 7
+          }
+        ]
+      },
+      {
+        "type": "HOST",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 15917,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 15917,
+            "count": 0,
+            "range": 30,
+            "difference": 15917
+          }
+        ]
+      },
+      {
+        "type": "PAGE",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 30280,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 30280,
+            "count": 0,
+            "range": 30,
+            "difference": 30280
+          }
+        ]
+      },
+      {
+        "type": "SSL_CERT",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 30,
+            "difference": 0
+          }
+        ]
+      },
+      {
+        "type": "AS",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 30,
+            "difference": 0
+          }
+        ]
+      },
+      {
+        "type": "IP_BLOCK",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 1,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 1,
+            "count": 0,
+            "range": 30,
+            "difference": 1
+          }
+        ]
+      },
+      {
+        "type": "IP_ADDRESS",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 30,
+            "difference": 0
+          }
+        ]
+      },
+      {
+        "type": "CONTACT",
+        "aggregations": [
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 2,
+            "range": 1,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 0,
+            "count": 0,
+            "range": 7,
+            "difference": 0
+          },
+          {
+            "removed": 0,
+            "added": 2,
+            "count": 0,
+            "range": 30,
+            "difference": 2
+          }
+        ]
+      }
+    ]
+  }
+]

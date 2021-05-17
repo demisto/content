@@ -1,0 +1,81 @@
+{
+    "header": {
+        "id": "51029ec9-1445-11ea-8f4c-0efb1918365c",
+        "queryParams": {
+            "format": "json",
+            "maxRecords": 2
+        },
+        "requestDate": "2019-12-01T14:17:33.264669831Z",
+        "returnResult": 2,
+        "totalResult": 2,
+        "user": "api.ioc.demisto"
+    },
+    "data": [
+        {
+            "caseId": "90cd78d5-1250-11ea-94e8-0ee0a3f3cb1c",
+            "title": "=?= =?=",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: =?= =?=\n\n\r\n________________________________\r\nFrom: 阿里云信息安全\r\nSent: Thursday, November 28, 2019 9:32:14 PM (UTC-05:00) Eastern Time (US & Canada)\r\nTo: PhishLabs Security Operations\r\nSubject: 回复：[PL-1383454] Phishing attack(s) hosted on: maidenform.top\r\n\r\n-- External email--\r\n\r\nwe have notified the owner of the website and asked them to clean up the fraud information as soon as possible.\r\n------------------------------------------------------------------\r\n发件人：PhishLabs Security Operations <not@domain.com>\r\n发送时间：2019年11月28日(星期四) 22:58\r\n收件人：[无]\r\n抄　送：larry.xiaol <not@domain.com>; infosec <not@domain.com>; Alibaba-Digest <not@domain.com>\r\n主　题：[PL-1383454] Phishing attack(s) hosted on: maidenform.top\r\n\r\nDuring an investigation of fraud, we discovered a compromised website (maidenform.top) that is being used to attack our client and their customers.\r\n\r\nIn addition to the website owner, we have addressed this report to the responsible authoritative providers who have the ability to disable the malicious content in question. Based on your relationship to the content in question, please see our specific request below.\r\n\r\nThis threat has been active for at least 467.0 hours.\r\n\r\nhXXp://maidenform.top/ax3klgrtn/indexmob.php\r\nhXXp://maidenform.top/ax3klgrtn/confirmnew.php\r\nhXXp://maidenform.top/ax3klgrtn/cb-pc-ver.php\r\nhXXp://maidenform.top/ax3klgrtn/confirm.php\r\nhXXp://maidenform.top/ax3klgrtn/index.php\r\nhXXp://maidenform.top/ax3klgrtn/cb-on-mob.php\r\n\r\nFirst detection of malicious activity: 11-09-2019 03:56:20 UTC\r\nMost recent observation of malicious activity: 11-28-2019 14:53:56 UTC\r\nAssociated IP Addresses:\r\n47.88.151.176\r\n\r\n===   HOSTING  PROVIDER   ===\r\nIf you agree that this is malicious, we kindly request that you take steps to have the content removed as soon as possible.  It is highly likely that the intruder who set up this phishing content has also left additional fraudulent material on this server such as illegitimate access points.\r\n\r\n===     WEBSITE OWNER     ===\r\nWe recommend taking the following actions to secure the web site and prevent the attackers from returning:\r\n    - Update your web applications including CMS, blog, ecommerce, and other applications (and all add-on modules/components/plugins).\r\n    - Search all of your web directories for suspicious files as attackers commonly leave backdoors.\r\n    - Scan the computer from which you login to your web hosting control panel or ftp server with anti-virus software.\r\n    - Change your web hosting provider if this is an ongoing issue.\r\n\r\nIf your provider has disabled your account because of this incident, you must coordinate a resolution with them directly as PhishLabs has no control over this aspect.\r\n\r\nIf we have contacted you in error, or if there is a better way for us to report this incident, please let us know so that we may continue our investigation.\r\n\r\nWe are grateful for your assistance.\r\n\r\n\r\nKind regards,\r\nJadon Hiott\r\nPhishLabs Security Operations\r\n12023866001\r\nAvailable 24/7\r\n\r\n\r\n[PL-1383454]\r\n\r\n ",
+            "caseNumber": 1403931,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-29T02:33:02Z",
+            "dateClosed": "2019-11-29T02:34:00Z",
+            "dateModified": "2019-11-29T02:34:00Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "90d69777-1250-11ea-9004-0eb92493f786",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-29T02:33:02Z",
+                    "fileName": "msg.sFAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/90d69777-1250-11ea-9004-0eb92493f786"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        },
+        {
+            "caseId": "04ea42a5-0361-11ea-94e8-0ee0a3f3cb1c",
+            "title": "FW: [PL-XXXXXX] RespOrg Information",
+            "description": "From: PhishLabs Security Operations <not@domain.com>\nSubject: FW: [PL-XXXXXX] RespOrg Information\n\n\n\n\n________________________________________\nFrom: Apache\nSent: Saturday, November 9, 2019 9:22:04 PM (UTC-05:00) Eastern Time (US & Canada)\nTo: PhishLabs Security Operations\nSubject: [PL-XXXXXX] RespOrg Information\n\n-- External email--\n\n\n------------------------------\nFonefinder Results\n------------------------------\nNumber: 8889090104\nCity/Switch Name:\nState:\nTelephone Company: N/A\nTelco Type: N/A\n\n ",
+            "caseNumber": 1374701,
+            "createdBy": {
+                "id": "30c2e916-c72d-11e3-860e-002590387e36",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Accidental creation",
+            "caseStatus": "Rejected",
+            "dateCreated": "2019-11-10T02:23:01Z",
+            "dateClosed": "2019-11-10T02:30:37Z",
+            "dateModified": "2019-11-10T02:30:37Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "04fced89-0361-11ea-9b11-0ad24386a0d6",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-10T02:23:01Z",
+                    "fileName": "msg.kKAH.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/04fced89-0361-11ea-9b11-0ad24386a0d6"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        }
+    ]
+}

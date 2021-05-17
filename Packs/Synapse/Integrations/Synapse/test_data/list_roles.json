@@ -1,0 +1,31 @@
+{
+    "status": "ok",
+    "result": [
+        {
+            "type": "role",
+            "iden": "ff7afe8c4df42771d09d9b4d14fc5068",
+            "name": "all",
+            "rules": [],
+            "authgates": {
+                "82371e87b67fc8d56c5724d2034f20c4": {
+                    "rules": [
+                        [
+                            true,
+                            [
+                                "view",
+                                "read"
+                            ]
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "type": "role",
+            "iden": "f45bacf3583360ce3d92cd52f6369da8",
+            "name": "mynewrole",
+            "rules": [],
+            "authgates": {}
+        }
+    ]
+}

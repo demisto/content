@@ -1,0 +1,131 @@
+{
+    "typeId": "registryKey",
+    "kind": "indicatorsDetails",
+    "layout": {
+        "typeId": "registryKey",
+        "kind": "indicatorsDetails",
+        "name": "",
+        "tabs": [
+            {
+                "type": "custom",
+                "sections": [
+                    {
+                        "name": "Reputation",
+                        "i": "reputationSources",
+                        "h": 2,
+                        "moved": false,
+                        "static": false,
+                        "w": 2,
+                        "y": 0,
+                        "x": 1,
+                        "type": "reputationSources"
+                    },
+                    {
+                        "name": "Related Incidents",
+                        "i": "relatedIncidents",
+                        "h": 3,
+                        "moved": false,
+                        "static": false,
+                        "w": 2,
+                        "y": 2,
+                        "x": 1,
+                        "type": "relatedIncidents"
+                    },
+                    {
+                        "name": "Timeline",
+                        "i": "indicatorTimeline",
+                        "items": [
+                            {
+                                "index": 0,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "firstseen",
+                                "id": "indicator-first-seen"
+                            },
+                            {
+                                "index": 1,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "lastseen",
+                                "id": "indicator-last-seen"
+                            }
+                        ],
+                        "moved": false,
+                        "displayType": "ROW",
+                        "static": false,
+                        "w": 1,
+                        "h": 2,
+                        "y": 3,
+                        "x": 0,
+                        "type": "indicatorTimeline"
+                    },
+                    {
+                        "name": "Registry Key Info",
+                        "i": "e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "index": 0,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "indicatortype",
+                                "id": "indicator-type"
+                            },
+                            {
+                                "index": 1,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "source",
+                                "id": "indicator-source"
+                            },
+                            {
+                                "index": 2,
+                                "endCol": 2,
+                                "height": 48,
+                                "startCol": 0,
+                                "fieldId": "comment",
+                                "id": "indicator-comment"
+                            },
+                            {
+                                "index": 3,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "name",
+                                "id": "51f3e5c0-b1e0-11e9-b8c7-15ca72216f6a"
+                            },
+                            {
+                                "index": 4,
+                                "endCol": 2,
+                                "height": 24,
+                                "startCol": 0,
+                                "fieldId": "path",
+                                "id": "54a83050-b1e0-11e9-b8c7-15ca72216f6a"
+                            }
+                        ],
+                        "moved": false,
+                        "displayType": "ROW",
+                        "static": false,
+                        "w": 1,
+                        "h": 3,
+                        "y": 0,
+                        "x": 0
+                    }
+                ],
+                "id": "default-main",
+                "name": "Info"
+            }
+        ],
+        "modified": "2019-07-29T09:07:55.263984705Z",
+        "TypeName": "",
+        "version": -1,
+        "id": "registryKey"
+    },
+    "TypeName": "registryKey",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "toVersion": "5.4.9"
+}

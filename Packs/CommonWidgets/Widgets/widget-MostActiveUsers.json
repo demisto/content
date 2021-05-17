@@ -1,0 +1,29 @@
+{
+ "id": "most-active-users",
+ "version": -1,
+ "name": "Most Active Users",
+ "dataType": "entries",
+ "category": "others",
+ "widgetType": "bar",
+ "size": 5,
+ "query": "category:chat and (format:text or format:markdown)",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "user"
+  ]
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

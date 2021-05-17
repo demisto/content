@@ -1,0 +1,353 @@
+id: Uptycs - Bad IP Incident
+version: -1
+name: Uptycs - Bad IP Incident
+description: Get information about processes which open connections to known Bad IP's
+starttaskid: "0"
+fromversion: "5.0.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
+    type: start
+    task:
+      id: ccc08aa3-60b9-4fc3-8dcc-a7a55918137d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 09383c8c-e929-4edf-86e9-d33a0d292fc1
+    type: regular
+    task:
+      id: 09383c8c-e929-4edf-86e9-d33a0d292fc1
+      version: -1
+      name: Get Bad IP alert
+      description: Retrieve more information about the alert.
+      script: '|||uptycs-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+      - "7"
+      - "3"
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.alert_id}
+      asset_id: {}
+      code: {}
+      end_window: {}
+      host_name:
+        simple: '"kyle-mbp-work"'
+      host_name_is: {}
+      host_name_like: {}
+      hostname:
+        simple: kyle-mbp-work
+      id:
+        simple: ${inputs.alert_id}
+      limit: {}
+      start_window: {}
+      time_ago: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 34b656c0-7eef-4ae0-8393-c5051ccd1b06
+    type: regular
+    task:
+      id: 34b656c0-7eef-4ae0-8393-c5051ccd1b06
+      version: -1
+      name: Get process Info
+      description: Get information about the process which opened the connection.
+      script: '|||uptycs-get-process-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Alerts.upt_asset_id}
+      host_name_is: {}
+      pid:
+        simple: ${Uptycs.Alerts.pid}
+      time:
+        simple: ${Uptycs.Alerts.alert_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: d7d24260-1542-4d2a-83e3-63eab8da4efe
+    type: regular
+    task:
+      id: d7d24260-1542-4d2a-83e3-63eab8da4efe
+      version: -1
+      name: Get child processes
+      description: Get information about the child processes which were spawned from the parent process of the process which opened the connection.
+      script: '|||uptycs-get-process-child-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Parent.upt_asset_id}
+      host_name_is: {}
+      limit: {}
+      parent:
+        simple: ${Uptycs.Parent.pid}
+      parent_end_time:
+        simple: ${Uptycs.Parent.upt_remove_time}
+      parent_start_time:
+        simple: ${Uptycs.Parent.upt_add_time}
+      pid:
+        simple: ${Uptycs.Proc.parent}
+      time:
+        simple: ${Uptycs.Proc.upt_time}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 6268c9fb-32ff-459e-8e8f-abeca2250646
+    type: regular
+    task:
+      id: 6268c9fb-32ff-459e-8e8f-abeca2250646
+      version: -1
+      name: Get information about the connection that was opened
+      description: Get information about the connection which was opened.
+      script: '|||uptycs-get-process-open-sockets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Alerts.upt_asset_id}
+      end_window: {}
+      host_name_is: {}
+      host_name_like: {}
+      ip:
+        simple: ${Uptycs.Alerts.value}
+      limit: {}
+      start_window: {}
+      time:
+        simple: ${Uptycs.Alerts.alert_time}
+      time_ago: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: cf635963-d89e-4c75-87e6-e53f74ac80ee
+    type: regular
+    task:
+      id: cf635963-d89e-4c75-87e6-e53f74ac80ee
+      version: -1
+      name: Get parent info
+      description: Get information about the parent process of the process which opened the connection.
+      script: '|||uptycs-get-parent-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Proc.upt_asset_id}
+      child_add_time:
+        simple: ${Uptycs.Proc.upt_add_time}
+      host_name_is: {}
+      parent:
+        simple: ${Uptycs.Proc.parent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 9b99e315-8a5d-4153-8923-2ec5ccb7265e
+    type: regular
+    task:
+      id: 9b99e315-8a5d-4153-8923-2ec5ccb7265e
+      version: -1
+      name: Get threat indicator info
+      description: Get information about the threat indicator which caused the alert to be fired.
+      script: '|||uptycs-get-threat-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      indicator_id:
+        simple: ${Uptycs.Alerts.threat_indicator_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: df3199e9-f3c5-4689-8ed7-0822dc32a9c6
+    type: regular
+    task:
+      id: df3199e9-f3c5-4689-8ed7-0822dc32a9c6
+      version: -1
+      name: Get threat source info
+      description: Get information about the source of the threat indicator which fired the alert.
+      script: '|||uptycs-get-threat-source'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      threat_source_id:
+        simple: ${Uptycs.ThreatIndicator.threat_source_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: e63fdf7e-85f3-4252-83cf-3768574d9b2d
+    type: title
+    task:
+      id: e63fdf7e-85f3-4252-83cf-3768574d9b2d
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 970
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 985,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: alert_id
+  value:
+    simple: ${incident.alertid}
+  required: true
+  description: Unique Uptycs ID for a particular alert
+outputs:
+- contextPath: Uptycs.Proc.pid
+  description: pid for the process
+  type: number
+- contextPath: Uptycs.Proc.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Proc.upt_remove_time
+  description: time that the process was removed
+  type: date
+- contextPath: Uptycs.Parent.pid
+  description: pid of the parent process
+  type: number
+- contextPath: Uptycs.Parent.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Parent.upt_remove_time
+  description: time that the process was removed
+  type: date
+- contextPath: Uptycs.Sockets.local_address
+  description: local IP for specified connection
+  type: string
+- contextPath: Uptycs.Sockets.local_port
+  description: local port for specified connection
+  type: number
+- contextPath: Uptycs.Sockets.remote_port
+  description: remote port for specified connection
+  type: number
+- contextPath: Uptycs.Children.pid
+  description: pid of a child process
+  type: number
+- contextPath: Uptycs.Children.upt_add_time
+  description: time that the process was spawned
+  type: date
+- contextPath: Uptycs.Children.upt_remove_time
+  description: time that the process was removed
+  type: date
+tests:
+- No test

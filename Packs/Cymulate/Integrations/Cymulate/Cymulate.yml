@@ -1,0 +1,111 @@
+category: Vulnerability Management
+commonfields:
+  id: Cymulate
+  version: -1
+configuration:
+- display: X-token
+  name: x-token
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: true
+  display: Show only 'penatrated' incidents
+  hidden: false
+  name: onlyPenatrated
+  required: false
+  type: 8
+- display: Use server proxy
+  hidden: false
+  name: useProxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes) - Proofpoint supports maximum 1 hour fetch back
+  name: fetch_time
+  required: false
+  type: 0
+description: Multi-Vector Cyber Attack, Breach and Attack Simulation
+display: Cymulate
+name: Cymulate
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The attack unique identifier
+      isArray: false
+      name: attack_id
+      required: true
+      secret: false
+    - default: false
+      description: The Cymulate module_type
+      isArray: false
+      name: module_type
+      required: true
+      secret: false
+    - default: false
+      description: The incident unique identifier
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    deprecated: false
+    description: This commands return full cymulate's incidents information
+    execution: false
+    name: cymulate-get-incident-info
+    outputs:
+    - contextPath: Cymulate.Incident.Payload
+      description: The Cymulate payload that generated this incident
+      type: String
+    - contextPath: Cymulate.Incident.Name
+      description: The name of the incident
+      type: String
+    - contextPath: Cymulate.Incident.Status
+      description: The attack status (Enum Values- Penetrated, Blocked, Dead)
+      type: String
+    - contextPath: Cymulate.Incident.ID
+      description: The incident ID
+      type: String
+    - contextPath: Cymulate.Incident.Md5
+      description: The Md5
+      type: String
+    - contextPath: Cymulate.Incident.Attack_Vector
+      description: The Attack Vector
+      type: String
+    - contextPath: Cymulate.Incident.Sha256
+      description: 'The Sha256 '
+      type: String
+    - contextPath: Cymulate.Incident.Sha1
+      description: The Sha1
+      type: String
+    - contextPath: Cymulate.Incident.Cymulate_ID
+      description: The cymulate's ID of the incident
+      type: String
+    - contextPath: Cymulate.Incident.Attack_ID
+      description: The cymulate's Attack ID of the incident
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+defaultclassifier: Cymulate
+defaultmapperin: Cymulate-mapper
+fromversion: 5.0.0

@@ -1,0 +1,44 @@
+{
+  "id": "Infinipoint-mapper",
+  "name": "Infinipoint - Incoming Mapper",
+  "type": "mapping-incoming",
+  "description": "Maps Infinipoint incident fields.",
+  "mapping": {
+    "Infinipoint Compliant": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Infinipoint hostname": {
+          "complex": null,
+          "simple": "hostname"
+        },
+        "Infinipoint policyID": {
+          "complex": null,
+          "simple": "policyID"
+        },
+        "Infinipoint policyName": {
+          "complex": null,
+          "simple": "policyName"
+        }
+      }
+    },
+    "Infinipoint NotCompliant": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Infinipoint hostname": {
+          "complex": null,
+          "simple": "hostname"
+        },
+        "Infinipoint policyID": {
+          "complex": null,
+          "simple": "policyID"
+        },
+        "Infinipoint policyName": {
+          "complex": null,
+          "simple": "policyName"
+        }
+      }
+    }
+  },
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

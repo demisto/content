@@ -1,0 +1,6 @@
+!bonusly-list-bonuses limit="20"
+!bonusly-get-bonus id="5ec263bb0e519c009a1ec0db"
+!bonusly-create-bonus giver-email="someone@somewhere.com" reason="@person +10 for #collaboration for pointing out missing readme"
+!bonusly-update-bonus id="5ec279591160850099b1ae3c" reason="Removing old archive"
+!bonusly-delete-bonus id="5ec279591160850099b1ae3c"
+

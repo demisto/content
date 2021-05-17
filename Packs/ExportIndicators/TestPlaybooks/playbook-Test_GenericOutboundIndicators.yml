@@ -1,0 +1,83 @@
+id: Test_export_indicators_service
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: Test_export_indicators_service
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
+    type: start
+    task:
+      id: 31ac12b2-8c93-4cac-8c78-2d8bc2a4c60c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: c745ef83-8485-4838-8916-adf896fc6829
+    type: regular
+    task:
+      id: c745ef83-8485-4838-8916-adf896fc6829
+      version: -1
+      name: Update Export Indicators Service List
+      description: Updates values stored in the export indicators list (only avaialable On-Demand).
+      script: '|||eis-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      edl_size:
+        simple: "2"
+      format:
+        simple: text
+      print_indicators:
+        simple: "true"
+      query:
+        simple: Tags:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 265,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

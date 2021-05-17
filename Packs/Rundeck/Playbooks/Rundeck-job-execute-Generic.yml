@@ -1,0 +1,174 @@
+id: Rundeck-job-execute-Generic
+version: -1
+name: Rundeck-job-execute-Generic
+description: This playbook executes a job and exits when it successfully finishes.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 496f3428-8605-4390-870c-d0b11130895d
+    type: start
+    task:
+      description: "execute job"
+      id: 496f3428-8605-4390-870c-d0b11130895d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 393babee-1119-4f86-8076-78cc879d134f
+    type: regular
+    task:
+      id: 393babee-1119-4f86-8076-78cc879d134f
+      version: -1
+      name: execute job
+      description: "Executes a new job"
+      script: '|||rundeck-job-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      arg_string: {}
+      as_user: {}
+      job_id:
+        simple: ${inputs.job_id}
+      log_level: {}
+      node_filter: {}
+      options: {}
+      run_at_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5ea47db9-0887-4f38-89ed-a5cdec073973
+    type: playbook
+    task:
+      id: 5ea47db9-0887-4f38-89ed-a5cdec073973
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Rundeck.ExecutedJobs.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: execution_id
+      PollingCommandName:
+        simple: rundeck-job-execution-output
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Rundeck.ExecutionsOutput(val.execState==='running').id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8a20356a-aec0-4af4-8748-9d94849bdd77
+    type: title
+    task:
+      id: 8a20356a-aec0-4af4-8748-9d94849bdd77
+      description: "finish playbook"
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 390,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: job_id
+  value: {}
+  required: true
+  description: Id of the job you want to execute.
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.5.0
+tests:
+ -  No tests

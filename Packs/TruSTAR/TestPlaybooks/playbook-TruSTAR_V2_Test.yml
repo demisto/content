@@ -1,0 +1,674 @@
+id: TruSTAR v2-Test
+version: -1
+name: TruSTAR v2-Test
+starttaskid: "0"
+description: ""
+tasks:
+  "0":
+    id: "0"
+    taskid: 0fcdaf5e-5178-49ce-80ce-0c121e9b9663
+    type: start
+    task:
+      id: 0fcdaf5e-5178-49ce-80ce-0c121e9b9663
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 3f0c19aa-6aed-48cb-8bc9-c1f66b7754d8
+    type: regular
+    task:
+      id: 3f0c19aa-6aed-48cb-8bc9-c1f66b7754d8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "7"
+      - "9"
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 0837ca55-8bbe-4087-84b0-2c121099f049
+    type: regular
+    task:
+      id: 0837ca55-8bbe-4087-84b0-2c121099f049
+      version: -1
+      name: trustar-indicators-metadata
+      description: Provide metadata associated with a list of indicators, including
+        value, indicatorType, noteCount, sightings, lastSeen, enclaveIds, and tags.
+        The metadata is determined based on the enclaves the user making the request
+        has READ access to.
+      script: TruSTAR v2|||trustar-indicators-metadata
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      enclave-ids: {}
+      indicators:
+        simple: 162.209.205.41
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: cb5489cb-d45a-4a86-8da7-8a3f801c1615
+    type: condition
+    task:
+      id: cb5489cb-d45a-4a86-8da7-8a3f801c1615
+      version: -1
+      name: Check Type
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        complex:
+          root: TruSTAR
+          accessor: IndicatorsMetadata.indicatorType
+      right:
+        simple: IP
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 869e623c-e09c-4cc9-87f7-b25453912791
+    type: regular
+    task:
+      id: 869e623c-e09c-4cc9-87f7-b25453912791
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 8ca3eb52-258f-4d12-81b6-203a12261ece
+    type: regular
+    task:
+      id: 8ca3eb52-258f-4d12-81b6-203a12261ece
+      version: -1
+      name: trustar-report-details
+      description: Finds a report by its ID and returns the report details.
+      script: TruSTAR v2|||trustar-report-details
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id-type: {}
+      id_type: {}
+      report-id: {}
+      report_id:
+        simple: ${TruSTAR.Report.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 52c84076-3656-4c92-8f1d-04a3b6d9fcfb
+    type: condition
+    task:
+      id: 52c84076-3656-4c92-8f1d-04a3b6d9fcfb
+      version: -1
+      name: AreValuesEqual
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        complex:
+          root: TruSTAR
+          accessor: Report.reportBody
+      right:
+        simple: 104.28.58.252
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 4b365946-2795-439e-82f4-1fdfa9a0687a
+    type: regular
+    task:
+      id: 4b365946-2795-439e-82f4-1fdfa9a0687a
+      version: -1
+      name: trustar-trending-indicators
+      description: Find indicators that are trending in the community.
+      script: TruSTAR v2|||trustar-trending-indicators
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      days-back: {}
+      indicator-type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 8aad1911-0574-4f23-8201-b5c9ea406ff2
+    type: condition
+    task:
+      id: 8aad1911-0574-4f23-8201-b5c9ea406ff2
+      version: -1
+      name: UtilAnyResults
+      description: Utility script to use in playbooks - returns "yes" if the input
+        is non-empty.
+      scriptName: UtilAnyResults
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TruSTAR.Indicators}${TruSTAR.Indicators.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: fe45cb91-a425-4506-8cb5-b69c05593f82
+    type: regular
+    task:
+      id: fe45cb91-a425-4506-8cb5-b69c05593f82
+      version: -1
+      name: trustar-search-indicators
+      description: Searches for all indicators that contain the given search term.
+      script: TruSTAR v2|||trustar-search-indicators
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      enclave-ids: {}
+      enclave_ids: {}
+      limit:
+        simple: "1"
+      page-number: {}
+      page-size: {}
+      search-term: {}
+      search_term: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 874d50b7-8f3e-4dea-8837-8afb3d13ba9f
+    type: regular
+    task:
+      id: 874d50b7-8f3e-4dea-8837-8afb3d13ba9f
+      version: -1
+      name: trustar-related-indicators
+      description: Finds all reports that contain any of the given indicators and
+        returns correlated indicators from those reports.
+      script: TruSTAR v2|||trustar-related-indicators
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      enclave-ids: {}
+      indicators:
+        simple: ${TruSTAR.Indicators.value}
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: ffa1579b-923e-45ca-845c-4fe00387636a
+    type: condition
+    task:
+      id: ffa1579b-923e-45ca-845c-4fe00387636a
+      version: -1
+      name: UtilAnyResults
+      description: Utility script to use in playbooks - returns "yes" if the input
+        is non-empty.
+      scriptName: UtilAnyResults
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      data:
+        complex:
+          root: TruSTAR
+          accessor: Indicators.value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 4e8ba86c-e2a4-4840-84f7-68097ba8ab71
+    type: regular
+    task:
+      id: 4e8ba86c-e2a4-4840-84f7-68097ba8ab71
+      version: -1
+      name: trustar-get-enclaves
+      description: Returns the list of all enclaves that the user has access to, as
+        well as whether they can read, create, and update reports in that enclave.
+      script: TruSTAR v2|||trustar-get-enclaves
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 2fc8572d-2f8a-4778-8a9d-4c0d49253560
+    type: regular
+    task:
+      id: 2fc8572d-2f8a-4778-8a9d-4c0d49253560
+      version: -1
+      name: trustar-submit-report
+      description: Submit a new incident report, and receive the ID it has been assigned
+        in TruSTAR’s system.
+      script: TruSTAR v2|||trustar-submit-report
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      distribution-type: {}
+      distribution_type: {}
+      enclave-ids: {}
+      enclave_ids:
+        simple: 28177710-9cb8-aa2f-29e8-135c14365e80
+      external-url: {}
+      external_url: {}
+      report-body: {}
+      report_body:
+        simple: 104.28.58.252
+      time-began: {}
+      time_began: {}
+      title:
+        simple: Demisto Test Playbook report
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 478a59f4-9420-4bb3-88b6-b719c5348ec0
+    type: regular
+    task:
+      id: 478a59f4-9420-4bb3-88b6-b719c5348ec0
+      version: -1
+      name: trustar-get-reports
+      description: 'Returns incident reports matching the specified filters. All parameters
+        are optional: if nothing is specified, the latest 25 reports accessible by
+        the user will be returned (matching the view the user would have by logging
+        into Station).'
+      script: TruSTAR v2|||trustar-get-reports
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "15"
+      - "5"
+    scriptarguments:
+      distribution-type: {}
+      distribution_type:
+        simple: COMMUNITY
+      enclave-ids: {}
+      enclave_ids:
+        simple: 28177710-9cb8-aa2f-29e8-135c14365e80
+      excluded-tags: {}
+      excluded_tags: {}
+      from: {}
+      from_time:
+        simple: 1 minutes ago
+      tags: {}
+      to: {}
+      to_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 03cc8623-68ee-41b6-803a-7d5e69d907be
+    type: regular
+    task:
+      id: 03cc8623-68ee-41b6-803a-7d5e69d907be
+      version: -1
+      name: trustar-update-report
+      description: Update the report with the specified ID. Either the internal TruSTAR
+        report ID or an external tracking ID can be used. Only the fields passed will
+        be updated. All others will be left unchanged.
+      script: TruSTAR v2|||trustar-update-report
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "16"
+      - "6"
+    scriptarguments:
+      distribution-type: {}
+      distribution_type: {}
+      enclave-ids: {}
+      enclave_ids: {}
+      external-url: {}
+      external_url: {}
+      report-body: {}
+      report-id: {}
+      report_id:
+        complex:
+          root: TruSTAR
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TruSTAR.Report.title
+                iscontext: true
+              right:
+                value:
+                  simple: Demisto Test Playbook report
+          accessor: Report.id
+      time-began: {}
+      time_began: {}
+      title:
+        simple: New title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 31c62053-5f2c-4203-8cdd-0ab5d848968b
+    type: regular
+    task:
+      id: 31c62053-5f2c-4203-8cdd-0ab5d848968b
+      version: -1
+      name: trustar-delete-report
+      description: Deletes a report as specified by given id (id can be TruSTAR report
+        id or external id).
+      script: TruSTAR v2|||trustar-delete-report
+      type: regular
+      iscommand: true
+      brand: TruSTAR v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id-type: {}
+      id_type: {}
+      report-id: {}
+      report_id:
+        complex:
+          root: TruSTAR
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: TruSTAR.Report.title
+                iscontext: true
+              right:
+                value:
+                  simple: New title
+          accessor: Report.id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: bacc2e2c-edf4-44cc-8bfb-65683eb7c1f3
+    type: regular
+    task:
+      id: bacc2e2c-edf4-44cc-8bfb-65683eb7c1f3
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_4_yes": 0.61,
+      "8_4_yes": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 2780,
+        "x": -700,
+        "y": -320
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

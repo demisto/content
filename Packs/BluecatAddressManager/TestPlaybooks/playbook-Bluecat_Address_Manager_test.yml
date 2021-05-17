@@ -1,0 +1,260 @@
+id: Bluecat Address Manager test
+version: -1
+name: Bluecat Address Manager test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 14341b8f-3cbb-431e-82d5-ab4b4af571ab
+    type: start
+    task:
+      id: 14341b8f-3cbb-431e-82d5-ab4b4af571ab
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1ebaca65-88bc-46c9-8779-09a1ca929c94
+    type: regular
+    task:
+      id: 1ebaca65-88bc-46c9-8779-09a1ca929c94
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 52577353-f1eb-4a40-84b6-a8d909a6e109
+    type: regular
+    task:
+      id: 52577353-f1eb-4a40-84b6-a8d909a6e109
+      version: -1
+      name: Get response policies
+      description: Gets all response policies
+      script: '|||bluecat-am-get-response-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      count: {}
+      start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4d4180c4-c856-4266-8fe7-dbf75a9020f3
+    type: condition
+    task:
+      id: 4d4180c4-c856-4266-8fe7-dbf75a9020f3
+      version: -1
+      name: Assert response policies
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BlueCat
+                accessor: AddressManager.ResponsePolicies.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100916"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: BlueCat
+                accessor: AddressManager.ResponsePolicies.ResponsePolicyType
+            iscontext: true
+          right:
+            value:
+              simple: WHITELIST
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f00aaf68-e888-4377-816b-1ebda7153f57
+    type: title
+    task:
+      id: f00aaf68-e888-4377-816b-1ebda7153f57
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 49717d19-9964-4901-8570-d0a00672180a
+    type: regular
+    task:
+      id: 49717d19-9964-4901-8570-d0a00672180a
+      version: -1
+      name: bluecat-am-get-range-by-ip ipv6
+      description: Returns the IPv4 Block containing the specified IPv4 address.
+      script: '|||bluecat-am-get-range-by-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ip:
+        simple: "2000:0:0:0:0:0:0:0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 860c6f03-db18-4802-8529-7b673bc6d20c
+    type: condition
+    task:
+      id: 860c6f03-db18-4802-8529-7b673bc6d20c
+      version: -1
+      name: Assert ipv6 range results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: BlueCat
+                accessor: AddressManager.Range.ID
+            iscontext: true
+          right:
+            value:
+              simple: "100884"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

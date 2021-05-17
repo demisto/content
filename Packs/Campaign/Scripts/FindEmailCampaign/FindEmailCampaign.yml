@@ -1,0 +1,173 @@
+args:
+- default: false
+  defaultValue: type
+  description: The name of the incident field in which the incident type is stored.
+    Default is "type". Change this arguement only if you're using a custom field for
+    specifying the incident type.
+  isArray: false
+  name: incidentTypeFieldName
+  required: false
+  secret: false
+- default: false
+  defaultValue: Phishing
+  description: A comma-separatetd list of incident types by which to filter. Specify
+    "None" to search through all incident types.
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  defaultValue: 14 days ago
+  description: 'The date from which to search for similar incidents. Date format is
+    the same as in the incidents query page. For example: "3 days ago", "2019-01-01T00:00:00
+    +0200".'
+  isArray: false
+  name: existingIncidentsLookback
+  required: false
+  secret: false
+- default: false
+  description: Additional text by which to query incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  defaultValue: '1000'
+  description: The maximum number of incidents to fetch.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: emailsubject
+  description: The name of the field that contains the email subject.
+  isArray: false
+  name: emailSubject
+  predefined:
+  - Subject of the email.
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbody
+  description: The name of the field that contains the email body.
+  isArray: false
+  name: emailBody
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: The name of the field that contains the HTML version of the email body.
+  isArray: false
+  name: emailBodyHTML
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailfrom
+  description: 'The name of the field that contains the email sender.'
+  isArray: false
+  name: emailFrom
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: All
+  description: Whether to compare the new incident to closed incidents, non closed
+    incidents or all incidents.
+  isArray: false
+  name: statusScope
+  predefined:
+  - All
+  - ClosedOnly
+  - NonClosedOnly
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.8'
+  description: Threshold to consider incident as similar. The range of values is 0-1.
+  isArray: false
+  name: threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '30'
+  description: The maximum number of incidents to display as part of a campaign. If
+    a campaign includes a higher number of incidents, the results will contain only
+    this amount of incidents.
+  isArray: false
+  name: maxIncidentsToReturn
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3'
+  description: Minimum number of incidents to consider as a campaign.
+  isArray: false
+  name: minIncidentsForCampaign
+  required: false
+  secret: false
+- default: false
+  defaultValue: '2'
+  description: Minimum number of unique recipients of similar email incidents to consider
+    as a campaign.
+  isArray: false
+  name: minUniqueRecipients
+  required: false
+  secret: false
+- default: false
+  description: A comma-seperated list of fields to display. An example is "emailclassification,closereason".
+    If a list of fields is provided, and a campaign is detected, these incidents fields
+    will be displayed.
+  isArray: false
+  name: fieldsToDisplay
+  predefined:
+  - ''
+  required: false
+  secret: false
+comment: Find a campaign of emails based on their textual similarity.
+commonfields:
+  id: FindEmailCampaign
+  version: -1
+enabled: false
+name: FindEmailCampaign
+outputs:
+- contextPath: EmailCampaign.isCampaignFound
+  description: Whether a campaign was found.
+  type: Boolean
+- contextPath: EmailCampaign.involvedIncidentsCount
+  description: The number of incidents involved in the campaign.
+  type: Number
+- contextPath: EmailCampaign.incidents.id
+  description: The IDs of the incidents involved in the campaign.
+  type: Unknown
+- contextPath: EmailCampaign.incidents.similarity
+  description: The textual similarity of the related emails to the current incident.
+  type: Unknown
+- contextPath: EmailCampaign.incidents.emailfrom
+  description: The senders of the emails involved in the campaign.
+  type: Unknown
+- contextPath: EmailCampaign.incidents.emailfromdomain
+  description: The domains of the email senders involved in the campaign.
+  type: Unknown
+- contextPath: EmailCampaign.indicators.id
+  description: The IDs of the mututal indicators of the incidents invovled in the
+    campaign.
+  type: Unknown
+- contextPath: EmailCampaign.indicators.value
+  description: The values of the mututal indicators of the incidents invovled in the
+    campaign.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- ml
+- phishing
+timeout: '0'
+type: python
+dockerimage: demisto/sklearn:1.0.0.17163
+tests:
+- No tests (auto formatted)
+runonce: true
+fromversion: 5.0.0

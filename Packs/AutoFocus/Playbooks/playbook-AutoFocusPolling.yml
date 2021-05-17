@@ -1,0 +1,267 @@
+id: AutoFocusPolling
+version: -1
+name: AutoFocusPolling
+fromversion: 5.0.0
+description: |-
+  Use this playbook as a sub-playbook to  query PANW Autofocus Threat intelligence system. This sub-playbook is the same as the generic polling sub-playbook besides that it provides outputs in the playbook. The reason for that is that in Autofocus its impossible to query the results of the same query more than once so the outputs have to be in the polling context.
+
+  This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation.
+  2. Poll to check if the operation completed.
+  3. (optional) Get the results of the operation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e203c607-e32d-4ff5-8fba-5e5b375341d2
+    type: start
+    task:
+      id: e203c607-e32d-4ff5-8fba-5e5b375341d2
+      version: -1
+      name: ""
+      description: '-'
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 91d8437f-2d28-4743-8f17-53439ff84b94
+    type: regular
+    task:
+      id: 91d8437f-2d28-4743-8f17-53439ff84b94
+      version: -1
+      name: Schedule Polling Task
+      description: Schedule Polling Task
+      scriptName: ScheduleGenericPolling
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      dt:
+        simple: ${inputs.dt}
+      ids:
+        simple: ${inputs.Ids}
+      interval:
+        simple: ${inputs.Interval}
+      playbookId:
+        simple: ${currentPlaybookID}
+      pollingCommand:
+        simple: ${inputs.PollingCommandName}
+      pollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+      tag: {}
+      timeout:
+        simple: ${inputs.Timeout}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 04ae43a8-abfd-44b9-8111-dcbb934e085c
+    type: condition
+    task:
+      id: 04ae43a8-abfd-44b9-8111-dcbb934e085c
+      version: -1
+      name: Waiting for polling to complete (Automated Task)
+      description: This task will complete automatically when polling is complete.
+      tags:
+      - polling
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "YES":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c6a3af0a-cc78-4323-80c1-93d686010d86
+    type: regular
+    task:
+      id: c6a3af0a-cc78-4323-80c1-93d686010d86
+      version: -1
+      name: RunPollingCommand
+      description: RunPollingCommand
+      scriptName: RunPollingCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      additionalPollingCommandArgNames:
+        simple: ${inputs.AdditionalPollingCommandArgNames}
+      additionalPollingCommandArgValues:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      ids:
+        simple: ${inputs.Ids}
+      pollingCommand:
+        simple: ${inputs.PollingCommandName}
+      pollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: be61d922-edcf-424e-8fee-84f3f7609884
+    type: title
+    task:
+      id: be61d922-edcf-424e-8fee-84f3f7609884
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: c97d906b-7ecc-409b-819b-acdeaada8900
+    type: regular
+    task:
+      id: c97d906b-7ecc-409b-819b-acdeaada8900
+      version: -1
+      name: Scheduled Task Failed
+      description: Scheduled Task Failed
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: GenericPollingScheduledTask encountered an error.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_5_YES": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 770,
+        "width": 830,
+        "x": -170,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Ids
+  value: {}
+  required: true
+  description: List of IDs to poll
+- key: PollingCommandName
+  value: {}
+  required: true
+  description: Name of the polling command to run
+- key: PollingCommandArgName
+  value:
+    simple: ids
+  required: true
+  description: Argument name of the polling command.
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: Frequency that the polling command will run (minutes).
+- key: Timeout
+  value:
+    simple: "10"
+  required: true
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+- key: dt
+  value: {}
+  required: true
+  description: DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, e.g WildFire.Report(val.Status!==''Success'').SHA256.
+- key: AdditionalPollingCommandArgNames
+  value: {}
+  required: false
+  description: Names of additional arguments for the polling command, e.g (arg1,arg2,...).'
+- key: AdditionalPollingCommandArgValues
+  value: {}
+  required: false
+  description: Values of the additional arguments for the polling command, e.g (value1,value2,...).
+outputs:
+- contextPath: AutoFocus.SessionsResults
+  type: string
+  description: Results of Autofocus sessions search.
+- contextPath: AutoFocus.SamplesResults
+  type: string
+  description: Results of Autofocus sample search.
+- contextPath: AutoFocus.TopTagResults
+  type: string
+  description: Results of Autofocus tags search
+tests:
+- Autofocus Query Samples, Sessions and Tags Test Playbook

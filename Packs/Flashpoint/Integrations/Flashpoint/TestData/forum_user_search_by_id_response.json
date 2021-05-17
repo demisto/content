@@ -1,0 +1,32 @@
+{
+  "legacy_id": "fake legacy id",
+  "name": "fake name",
+  "id": "test_scan_forum_user_id",
+  "embed": {
+    "forum": {
+      "legacy_id": "fake legacy id",
+      "name": "fake forum name",
+      "id": "test_scan_forum_user_id",
+      "tags": [
+        {
+          "name": "fake tag name",
+          "id": 6,
+          "parent_tag": null,
+          "uuid": "09fb6a4a-e072-495d-97bf-d80f059828fd"
+        }
+      ],
+      "hostname": "fake host name",
+      "platform_url": "http://123-fake-api.com/home/search/forums?forum_ids=test_scan_forum_user_id",
+      "description": "fake description",
+      "stats": {
+        "posts": 987018,
+        "threads": 116115,
+        "users": 50902,
+        "rooms": 132
+      }
+    }
+  },
+  "url": "fake url",
+  "native_id": "50678",
+  "platform_url": "http://123-fake-api.com/home/search/forums?author_id=test_scan_forum_user_id"
+}

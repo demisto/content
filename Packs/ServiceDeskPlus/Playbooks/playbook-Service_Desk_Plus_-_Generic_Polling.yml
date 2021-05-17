@@ -1,0 +1,229 @@
+id: Service Desk Plus - Generic Polling
+version: -1
+name: Service Desk Plus - Generic Polling
+starttaskid: "0"
+description: 'This playbook uses generic polling to wait until a request is closed.'
+tasks:
+  "0":
+    id: "0"
+    taskid: 6ca85d2e-e3c6-44db-8f9e-5e9bd882741d
+    type: start
+    task:
+      id: 6ca85d2e-e3c6-44db-8f9e-5e9bd882741d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e2044667-4290-4fc3-86a1-7d58d05a7b28
+    type: playbook
+    task:
+      id: e2044667-4290-4fc3-86a1-7d58d05a7b28
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${inputs.RequestId}
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: request_id
+      PollingCommandName:
+        simple: service-desk-plus-requests-list
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: ServiceDeskPlus.Request(val.Status !== 'Closed').Id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9f900310-4434-49d1-8fd0-61900f39172b
+    type: regular
+    task:
+      id: 9f900310-4434-49d1-8fd0-61900f39172b
+      version: -1
+      name: Refresh Request Status
+      description: View the details of requests. If no parameters are given the details
+        of all requests will be shown.
+      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      type: regular
+      iscommand: true
+      brand: ServiceDeskPlus
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      filter_by: {}
+      page_size: {}
+      request_id:
+        simple: ${inputs.RequestId}
+      search_fields: {}
+      start_index: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8e0d6b9e-9dcc-4442-8266-fad3d042f692
+    type: condition
+    task:
+      id: 8e0d6b9e-9dcc-4442-8266-fad3d042f692
+      version: -1
+      name: Validate Request is Closed
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      left:
+        simple: ${ServiceDeskPlus.Request.Status}
+      right:
+        simple: Closed
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a8ee09dd-692a-4e27-8145-73198cb12267
+    type: title
+    task:
+      id: a8ee09dd-692a-4e27-8145-73198cb12267
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: RequestId
+  value: {}
+  required: true
+  description: The id of the Service Desk Plus request
+  playbookInputQuery:
+- key: Timeout
+  value: {}
+  required: true
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (minutes).
+  playbookInputQuery:
+- key: Interval
+  value: {}
+  required: true
+  description: Frequency that the polling command will run (minutes).
+  playbookInputQuery:
+outputs:
+- contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_comments}
+  description: The closure comments added to the request.
+  type: unknown
+- contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_code}
+  description: The closure code added to the request
+  type: unknown
+fromversion: 5.0.0
+tests:
+- Service Desk Plus - Generic Polling Test

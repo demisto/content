@@ -1,0 +1,879 @@
+{
+ "id": "MITRE ATT&CK",
+ "group": "indicator",
+ "name": "MITRE ATT&CK Indicator",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "indicatorsDetails": {
+  "tabs": [
+   {
+    "id": "default-main",
+    "name": "Summary",
+    "sections": [
+     {
+      "h": 5,
+      "i": "default-main-comments",
+      "moved": false,
+      "name": "Comments",
+      "static": false,
+      "type": "comments",
+      "w": 1,
+      "x": 2,
+      "y": 9
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "indicatortype",
+        "height": 22,
+        "id": "indicator-type",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "timestamp",
+        "height": 22,
+        "id": "indicator-timestamp",
+        "index": 1,
+        "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitrecreated",
+        "height": 22,
+        "id": "9b4c6a20-f5ba-11ea-b151-27886a76505e",
+        "index": 2,
+        "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mitremodified",
+        "height": 22,
+        "id": "a0092ee0-f5ba-11ea-b151-27886a76505e",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "expiration",
+        "height": 22,
+        "id": "indicator-expiration",
+        "index": 4,
+        "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Basic Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 1
+     },
+     {
+      "displayType": "ROW",
+      "h": 3,
+      "i": "default-main-indicatorTimeline",
+      "moved": false,
+      "name": "Timeline",
+      "static": false,
+      "type": "indicatorTimeline",
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "displayType": "CARD",
+      "h": 4,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "default-main-3367e550-6dd5-11ea-baf6-df533b8aa556",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "mitredescription",
+        "height": 106,
+        "id": "710c7c20-74f3-11ea-b1da-d1bd2f4ff78f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Description",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 1
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideName": false,
+      "i": "default-main-0d271ad0-d1af-11ea-a7f6-69bb41e2a387",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "tags",
+        "height": 53,
+        "id": "18d844d0-d1af-11ea-a7f6-69bb41e2a387",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "args": {
+         "field": {
+          "simple": "tags"
+         }
+        },
+        "endCol": 1,
+        "fieldId": "",
+        "height": 53,
+        "id": "1ed4dc90-d1af-11ea-a7f6-69bb41e2a387",
+        "index": 2,
+        "name": "Add tags",
+        "scriptId": "Builtin|||appendIndicatorField",
+        "sectionItemType": "button",
+        "startCol": 0
+       },
+       {
+        "args": {
+         "field": {
+          "simple": "tags"
+         }
+        },
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "",
+        "height": 53,
+        "id": "20461fd0-d1af-11ea-a7f6-69bb41e2a387",
+        "index": 2,
+        "listId": "default-main-0d271ad0-d1af-11ea-a7f6-69bb41e2a387",
+        "name": "Remove tags",
+        "scriptId": "Builtin|||removeIndicatorField",
+        "sectionItemType": "button",
+        "startCol": 1
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Tags",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 1
+     },
+     {
+      "columns": [
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "sources-field",
+        "width": 150
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "score",
+        "width": 100
+       },
+       {
+        "displayed": true,
+        "isDefault": true,
+        "key": "reliability",
+        "width": 150
+       },
+       {
+        "displayed": true,
+        "key": "Tags",
+        "width": 200
+       }
+      ],
+      "h": 2,
+      "i": "default-main-5a837cb0-d1af-11ea-a7f6-69bb41e2a387",
+      "items": null,
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Sources Data",
+      "static": false,
+      "type": "sources",
+      "w": 1,
+      "x": 2,
+      "y": 4
+     },
+     {
+      "h": 3,
+      "i": "default-main-43dbbec0-d1b2-11ea-a7f6-69bb41e2a387",
+      "items": null,
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "type": "relatedIncidents",
+      "w": 2,
+      "x": 0,
+      "y": 9
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "default-main-c2146890-d1b3-11ea-a7f6-69bb41e2a387",
+      "items": [
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitreid",
+        "height": 22,
+        "id": "2a150300-d1b4-11ea-a7f6-69bb41e2a387",
+        "index": 0,
+        "listId": "default-main-c2146890-d1b3-11ea-a7f6-69bb41e2a387",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitretype",
+        "height": 22,
+        "id": "49022fe0-d1b4-11ea-a7f6-69bb41e2a387",
+        "index": 1,
+        "listId": "default-main-c2146890-d1b3-11ea-a7f6-69bb41e2a387",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "associations",
+        "height": 22,
+        "id": "3d0779c0-d1b4-11ea-a7f6-69bb41e2a387",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mitrealiases",
+        "height": 22,
+        "id": "1b9b7d10-d26b-11ea-b0b8-619aa241df03",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mitreplatforms",
+        "height": 22,
+        "id": "594a5a00-d26b-11ea-b0b8-619aa241df03",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Attack Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "default-main-61443580-d1b4-11ea-a7f6-69bb41e2a387",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "mitrekillchainphases",
+        "height": 106,
+        "id": "7556c240-d1b4-11ea-a7f6-69bb41e2a387",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Kill Chain Phases",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 5
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "default-main-87c14ee0-d1b5-11ea-a7f6-69bb41e2a387",
+      "items": null,
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "MITRE References",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 7
+     },
+     {
+      "displayType": "ROW",
+      "h": 4,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "default-main-c6a21c20-d1b5-11ea-a7f6-69bb41e2a387",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "mitredetection",
+        "height": 22,
+        "id": "daf24e20-d1b5-11ea-a7f6-69bb41e2a387",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "MITRE detection",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 5
+     },
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "default-main-75ff1fe0-d267-11ea-b0b8-619aa241df03",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "aggregatedreliability",
+        "height": 53,
+        "id": "892047c0-d267-11ea-b0b8-619aa241df03",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Highest Reliability",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 3
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideName": false,
+      "i": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+      "items": [
+       {
+        "dropEffect": "move",
+        "endCol": 1,
+        "fieldId": "mitreextendedaliases",
+        "height": 53,
+        "id": "2fb96a90-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 0,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 1,
+        "fieldId": "mitrecontributors",
+        "height": 53,
+        "id": "56493e10-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 1,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitreimpacttype",
+        "height": 53,
+        "id": "3603fb40-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 0,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 1
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitreversion",
+        "height": 53,
+        "id": "672dbc60-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 1,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 1
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 3,
+        "fieldId": "mitredefensebypassed",
+        "height": 53,
+        "id": "3c28db80-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 0,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 3,
+        "fieldId": "mitresystemrequirements",
+        "height": 53,
+        "id": "509e96e0-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 1,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 4,
+        "fieldId": "mitrepermissionsrequired",
+        "height": 53,
+        "id": "45ba32c0-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 0,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 3
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 4,
+        "fieldId": "mitredatasources",
+        "height": 53,
+        "id": "5e14c970-d4d3-11ea-b1c1-cd612cfcc541",
+        "index": 1,
+        "listId": "default-main-02c0a8f0-d4d3-11ea-b1c1-cd612cfcc541",
+        "sectionItemType": "field",
+        "startCol": 3
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Extended Information",
+      "static": false,
+      "w": 2,
+      "x": 0,
+      "y": 12
+     },
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "hideName": false,
+      "i": "default-main-96be9660-d736-11ea-aa3e-b5c7d875fe29",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Actions",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "i": "default-main-193e4d10-f663-11ea-97d2-617e6670a136",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "MITRE ID",
+      "query": "MitreIDLayoutDynamicSection",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "i": "default-main-8675f310-f668-11ea-a483-bf2edded6aaa",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "MITRE Name",
+      "query": "MitreNameLayoutDynamicSection",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 1,
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   },
+    {
+      "hidden": false,
+      "id": "neyse5txkx",
+      "name": "Additional Details",
+      "sections": [
+          {
+              "displayType": "ROW",
+              "h": 5,
+              "hideItemTitleOnlyOne": true,
+              "hideName": false,
+              "i": "neyse5txkx-4cf747c0-755b-11eb-ba8c-334a57af273a",
+              "items": [
+                  {
+                      "endCol": 6,
+                      "fieldId": "mitrecourseofaction",
+                      "height": 106,
+                      "id": "628550f0-755b-11eb-ba8c-334a57af273a",
+                      "index": 0,
+                      "sectionItemType": "field",
+                      "startCol": 0
+                  }
+              ],
+              "maxW": 3,
+              "minH": 1,
+              "minW": 1,
+              "moved": false,
+              "name": "Courses of action",
+              "static": false,
+              "w": 3,
+              "x": 0,
+              "y": 0
+          }
+      ],
+      "type": "custom"
+  }
+  ]
+ },
+ "indicatorsQuickView": {
+  "tabs": [
+   {
+    "id": "indicator-quick-view-info",
+    "name": "Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "hideItemTitleOnlyOne": true,
+      "i": "indicator-quick-view-info-tags-section",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "tags",
+        "height": 22,
+        "id": "indicator-quick-view-info-tags-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Tags",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "h": 2,
+      "i": "indicator-quick-view-info-relatedIncidents",
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "type": "relatedIncidents",
+      "w": 1,
+      "x": 0,
+      "y": 11
+     },
+     {
+      "h": 2,
+      "i": "indicator-quick-view-info-comments",
+      "moved": false,
+      "name": "Comments",
+      "static": false,
+      "type": "comments",
+      "w": 1,
+      "x": 0,
+      "y": 13
+     },
+     {
+      "description": "[placeholder for display script]",
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "indicator-quick-view-info-ae0d2f80-da50-11ea-807d-615880d30aa8",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "mitrename",
+        "height": 22,
+        "id": "d14106c0-da50-11ea-807d-615880d30aa8",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "New Section",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "indicator-quick-view-info-deaed4e0-da50-11ea-807d-615880d30aa8",
+      "items": [
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitreid",
+        "height": 22,
+        "id": "156a9930-da5e-11ea-ba29-5160886b6a32",
+        "index": 0,
+        "listId": "indicator-quick-view-info-deaed4e0-da50-11ea-807d-615880d30aa8",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "mitretype",
+        "height": 22,
+        "id": "07cc9350-da5e-11ea-ba29-5160886b6a32",
+        "index": 1,
+        "listId": "indicator-quick-view-info-deaed4e0-da50-11ea-807d-615880d30aa8",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "associations",
+        "height": 22,
+        "id": "0d9570e0-da5e-11ea-ba29-5160886b6a32",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mitrealiases",
+        "height": 22,
+        "id": "1bb59f10-da5e-11ea-ba29-5160886b6a32",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mitreplatforms",
+        "height": 22,
+        "id": "21c63400-da5e-11ea-ba29-5160886b6a32",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Attack Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 5
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "indicator-quick-view-info-e08dce10-da50-11ea-807d-615880d30aa8",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "indicatortype",
+        "height": 22,
+        "id": "c952ec50-da5d-11ea-ba29-5160886b6a32",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "creationdate",
+        "height": 22,
+        "id": "ed082890-da5d-11ea-ba29-5160886b6a32",
+        "index": 1,
+        "listId": "indicator-quick-view-info-e08dce10-da50-11ea-807d-615880d30aa8",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "timestamp",
+        "height": 22,
+        "id": "dd11b3c0-da5d-11ea-ba29-5160886b6a32",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "modified",
+        "height": 22,
+        "id": "e204f1d0-da5d-11ea-ba29-5160886b6a32",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "expiration",
+        "height": 22,
+        "id": "e7709430-da5d-11ea-ba29-5160886b6a32",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Basic Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "indicator-quick-view-info-e1ae8050-da50-11ea-807d-615880d30aa8",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "mitredescription",
+        "height": 22,
+        "id": "ef9f8830-da50-11ea-807d-615880d30aa8",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Description",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 7
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "indicator-quick-view-info-504fced0-da5e-11ea-ba29-5160886b6a32",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "mitrekillchainphases",
+        "height": 22,
+        "id": "7110aa40-da5e-11ea-ba29-5160886b6a32",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Kill Chain Phases",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 9
+     }
+    ],
+    "type": "custom"
+   }
+  ]
+ },
+ "description": ""
+}

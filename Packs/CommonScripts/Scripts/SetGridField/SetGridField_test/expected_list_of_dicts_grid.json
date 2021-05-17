@@ -1,0 +1,17 @@
+[
+  {
+    "Fname": "fname1",
+    "Lname": "lname1",
+    "Email": "email1"
+  },
+  {
+    "Fname": "fname2",
+    "Lname": "lname2",
+    "Email": "email2"
+  },
+  {
+    "Fname": "fname3",
+    "Lname": "lname3",
+    "Email": "email3"
+  }
+]

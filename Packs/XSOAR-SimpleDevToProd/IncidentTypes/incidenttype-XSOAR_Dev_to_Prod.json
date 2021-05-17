@@ -1,0 +1,30 @@
+{
+ "autorun": true,
+ "color": "#F06292",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "detached": false,
+ "disabled": false,
+ "extractSettings": {
+  "fieldCliNameToExtractSettings": {
+
+  },
+  "mode": "All"
+ },
+ "hours": 0,
+ "hoursR": 0,
+ "id": "XSOAR Dev to Prod",
+ "layout": "XSOAR Dev to Prod",
+ "locked": false,
+ "name": "XSOAR Dev to Prod",
+ "onChangeRepAlg": 1,
+ "playbookId": "JOB - XSOAR - Export Selected Custom Content",
+ "readonly": false,
+ "reputationCalc": 1,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "6.0.0"
+}

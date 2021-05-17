@@ -1,0 +1,49 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": {
+    "displayName": "n2",
+    "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/AwZOnmx5HJKRiNtqbdELuYHtyMo\"",
+    "fields": [
+      {
+        "displayName": "f2",
+        "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/hukq0Ju98TLGY27QpNZguw1jLRU\"",
+        "fieldId": "nEnjNkZiS1KrngWHeMfBhg==",
+        "fieldName": "new1",
+        "fieldType": "INT64",
+        "kind": "admin#directory#schema#fieldspec",
+        "readAccessType": "ALL_DOMAIN_USERS",
+        "numericIndexingSpec": {
+          "minValue": 5,
+          "maxValue": 100
+        }
+      }
+    ],
+    "kind": "admin#directory#schema",
+    "schemaId": "jXSIPF7aQQa09_EcVRb0SA==",
+    "schemaName": "new1"
+  },
+  "HumanReadable": "### Custom User Schema Details\nSchema Id: jXSIPF7aQQa09_EcVRb0SA==\nSchema Name: new1\nSchema Display Name: n2\n### Field Details\n|Field Id|Field Name|Display Name|Field Type|Read Access Type|Numeric Indexing Spec|\n|---|---|---|---|---|---|\n| nEnjNkZiS1KrngWHeMfBhg== | new1 | f2 | INT64 | ALL_DOMAIN_USERS | Min Value: 5<br>Max Value: 100 |\n",
+  "EntryContext": {
+    "GSuite.UserSchema(val.schemaId == obj.schemaId)": {
+      "displayName": "n2",
+      "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/AwZOnmx5HJKRiNtqbdELuYHtyMo\"",
+      "fields": [
+        {
+          "displayName": "f2",
+          "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/hukq0Ju98TLGY27QpNZguw1jLRU\"",
+          "fieldId": "nEnjNkZiS1KrngWHeMfBhg==",
+          "fieldName": "new1",
+          "fieldType": "INT64",
+          "kind": "admin#directory#schema#fieldspec",
+          "readAccessType": "ALL_DOMAIN_USERS",
+          "numericIndexingSpecMinValue": 5,
+          "numericIndexingSpecMaxValue": 100
+        }
+      ],
+      "kind": "admin#directory#schema",
+      "schemaId": "jXSIPF7aQQa09_EcVRb0SA==",
+      "schemaName": "new1"
+    }
+  }
+}

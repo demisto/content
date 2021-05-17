@@ -1,0 +1,28 @@
+{
+ "id": "engine-busy-workers-line",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "modified": "2018-03-14T17:42:44.919467+02:00",
+ "name": "Busy Workers per Engine (last 24h)",
+ "description": "Number of busy workers per engine in the previous 24 hours",
+ "dataType": "system",
+ "widgetType": "line",
+ "query": "engine.workers.busy-workers",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "engine"
+  ],
+  "timeFrame": "minutes"
+ },
+ "size": 1440,
+ "dateRange": {
+  "period": {
+   "byTo": "",
+   "byFrom": "minutes",
+   "toValue": null,
+   "fromValue": 60,
+   "field": ""
+  }
+ }
+}

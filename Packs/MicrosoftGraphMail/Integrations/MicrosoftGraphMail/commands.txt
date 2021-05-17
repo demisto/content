@@ -1,0 +1,16 @@
+msgraph-mail-create-folder user_id=dev@demistodev.onmicrosoft.com new_folder_name="Test_folder"
+msgraph-mail-delete-email user_id=dev@demistodev.onmicrosoft.com message_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6AAAAA==
+msgraph-mail-delete-folder user_id=dev@demistodev.onmicrosoft.com folder_id=Test_folder
+msgraph-mail-get-attachment attachment_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6QAAAAESABAARmHS0ZRrfE2rGy1-02TDIQ== message_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6QAAAA== user_id=dev@demistodev.onmicrosoft.com
+msgraph-mail-get-email message_AAAA== user_id=dev@demistodev.onmicrosoft.com
+msgraph-mail-get-email-as-eml message_AAAA== user_id=dev@demistodev.onmicrosoft.com
+msgraph-mail-list-attachments message_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6QAAAA== user_id=dev@demistodev.onmicrosoft.com
+msgraph-mail-list-child-folders user_id=dev@demistodev.onmicrosoft.com parent_folder_id=inbox
+msgraph-mail-list-emails user_id=dev@demistodev.onmicrosoft.com search="Demo" folder_id=inbox
+msgraph-mail-list-folders user_id=dev@demistodev.onmicrosoft.com limit=2
+msgraph-mail-move-email user_id=dev@demistodev.onmicrosoft.com message_id=AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEMAAAAdQ8OJfUvxEa-MxMBZHrT7QAB3Wln6AAAAA== destination_folder_id=inbox
+msgraph-mail-update-folder user_id=dev@demistodev.onmicrosoft.com folder_id=AAMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwAuAAAAAABtNAiM1FO7Q5wMnDvE_mt5AQB1Dw4l9S-ERr8zEwFketPtAACf6EquAAA= new_display_name="new_test"
+msgraph-mail-create-draft from=dev@demistodev.onmicrosoft.com subject="This is a draft" body="This is a body" to=dev@demistodev.onmicrosoft.com
+msgraph-mail-reply-to AAAA== body="reply_body" from=dev@demistodev.onmicrosoft.com to=dev@demistodev.onmicrosoft.com
+msgraph-mail-send-draft draft_id=AAA= from=dev@demistodev.onmicrosoft.com
+send-mail subject="Demo test send mail" from=dev@demistodev.onmicrosoft.com attachIDs=7613@f6e9c46f-e2e9-446f-8cd9-909bd5f72dbf to=dev@demistodev.onmicrosoft.com attachNames="test_attachment"

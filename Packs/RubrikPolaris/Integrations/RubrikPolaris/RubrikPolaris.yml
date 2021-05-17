@@ -1,0 +1,91 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: RubrikPolaris
+  version: -1
+configuration:
+- display: Polaris Account (e.g. ${polarisAccount}.my.rubrik.com)
+  name: polaris_account
+  required: true
+  type: 0
+- display: Email
+  name: email
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 4
+- defaultvalue: true
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 1 hour
+  display: First fetch time
+  additionalinfo: The time interval for the first fetch (retroactive). Examples
+    of supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-date.
+  name: first_fetch
+  required: false
+  type: 0
+- defaultvalue: "200"
+  display: Fetch Limit (Maximum of 200)
+  name: max_fetch
+  required: false
+  type: 0
+
+defaultclassifier: Rubrik Polaris Radar - Classification
+defaultmapperin: Rubrik Polaris Radar - Mapping
+description: Create a new incident when a Polaris Radar anomaly event is detected
+  and determine if any Sonar data classification hits were found on that object.
+display: Rubrik Polaris
+name: RubrikPolaris
+script:
+  commands:
+  - arguments:
+    - description: The ID of the Polaris Event Series. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
+      name: activitySeriesId
+    description: Check the Radar Event for updates.
+    name: rubrik-radar-analysis-status
+    outputs:
+    - contextPath: Rubrik.Radar.EventComplete
+      description: Flag that indicates whether Radar has finished analysing the object.
+      type: Boolean
+    - contextPath: Rubrik.Radar.Message
+      description: The text, ID, and timestamp of each message in the Activity Series.
+      type: Unknown
+    - contextPath: Rubrik.Radar.ActivitySeriesId
+      description: The ID of the Rubrik Polaris Activity Series.
+      type: String
+  - arguments:
+    - description: |
+        The name of the Rubrik object to check for sensitive hits.  When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
+      name: objectName
+    - description: |
+        The number of days in the past to look for sensitive hits.  If no value is provided, the command will default to 7 days.
+      name: searchTimePeriod
+    description: Find data classification hits on an object.
+    name: rubrik-sonar-sensitive-hits
+    outputs:
+    - contextPath: Rubrik.Sonar.TotalHits
+      description: The total number of data classification hits found on the provided
+        object.
+      type: String
+    - contextPath: Rubrik.Radar.Message
+      description: The text, ID, and timestamp of each message in the Activity Series.
+      type: Unknown
+    - contextPath: Rubrik.Radar.ActivitySeriesId
+      description: The ID of the Rubrik Polaris Activity Series.
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

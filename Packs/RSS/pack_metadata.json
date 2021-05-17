@@ -1,0 +1,14 @@
+{
+    "name": "RSS",
+    "description": "Simple RSS reader, imports new posts as Incidents.  All rss fields (e.g. author, published, tags) are available.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Andrew Shepherd",
+    "url": "",
+    "email": "",
+    "created": "2020-10-21T11:42:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

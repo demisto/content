@@ -1,0 +1,18 @@
+{
+    "name": "XSOAR Mirroring",
+    "description": "Allows mirroring of XSOAR incidents between different instances.",
+    "support": "xsoar",
+    "currentVersion": "2.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-05-25T15:26:58Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [
+        "Incident Mirroring"
+    ],
+    "useCases": [],
+    "keywords": []
+}

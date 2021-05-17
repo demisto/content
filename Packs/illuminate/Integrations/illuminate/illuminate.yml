@@ -1,0 +1,578 @@
+commonfields:
+  id: illuminate
+  version: -1
+name: illuminate
+display: illuminate (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use Analyst1 integration instead.
+deprecated: true
+tests:
+  - No Tests - Deprecated
+configuration:
+- display: illuminate API Credentials (username/password)
+  name: credentials
+  defaultvalue: ''
+  type: 9
+  required: true
+- display: Domain of illuminate server to use (format - server.that_you_use.com - No http/https)
+  name: server
+  defaultvalue: illuminate.analystplatform.com
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name, for example, "google.com".
+      type: string
+    - contextPath: Illuminate.Domain.ID
+      description: The indicator's unique ID in illuminate.
+      type: number
+    - contextPath: Illuminate.Domain.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Domain.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Domain.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Domain.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Domain.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Domain.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Domain.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Domain.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Domain.Malwares.ID
+      description: Each matched malware unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Domain.Malwares.Name
+      description: Each matched malware name in illuminate.
+      type: string
+    - contextPath: Illuminate.Domain.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Domain.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Domain.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    - contextPath: Illuminate.Domain.IpResolution
+      description: The resolved IP address for this domain.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the illuminate REST API and enriches the given domain with illuminate Indicator data
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      description: The email for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: string
+    - contextPath: Illuminate.Email.ID
+      description: The unique identifier of the given Indicator in illuminate
+      type: number
+    - contextPath: Illuminate.Email.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Email.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Email.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Email.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Email.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Email.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Email.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Email.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Email.Malwares.ID
+      description: Each matched malware unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Email.Malwares.Name
+      description: Each matched malware name in illuminate.
+      type: string
+    - contextPath: Illuminate.Email.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Email.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Email.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the illuminate REST API and enriches the given email with illuminate indicator data.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+      type: string
+    - contextPath: Illuminate.Ip.ID
+      description: The indicator's unique ID in illuminate.
+      type: number
+    - contextPath: Illuminate.Ip.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Ip.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Ip.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Ip.FirstHit
+      description: The first date this this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Ip.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Ip.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Ip.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Ip.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Ip.Malwares.ID
+      description: Each matched malware unique identifier in illuminate
+      type: number
+    - contextPath: Illuminate.Ip.Malwares.Name
+      description: Each matched malware name in illuminate
+      type: string
+    - contextPath: Illuminate.Ip.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Ip.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Ip.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the illuminate REST API and enriches the given IP address with illuminate indicator data.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: The file for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Illuminate.File.ID
+      description: The indicator's unique ID in illuminate.
+      type: number
+    - contextPath: Illuminate.File.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.File.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.File.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.File.FirstHit
+      description: The first date this this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.File.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.File.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.File.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.File.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.File.Malwares.ID
+      description: Each matched malware unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.File.Malwares.Name
+      description: Each matched malware name in illuminate
+      type: string
+    - contextPath: Illuminate.File.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.File.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.File.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the illuminate REST API and enriches the given file with illuminate indicator data.
+  - name: illuminate-enrich-string
+    arguments:
+    - name: string
+      required: true
+      description: The string for which to return information.
+      isArray: true
+    outputs:
+    - contextPath: Illuminate.String.ID
+      description: The unique identifier of the given Indicator in illuminate
+      type: number
+    - contextPath: Illuminate.String.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.String.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.String.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.String.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.String.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.String.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.String.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.String.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.String.Malwares.ID
+      description: Each matched malware unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.String.Malwares.Name
+      description: Each matched malware name in illuminate
+      type: string
+    - contextPath: Illuminate.String.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.String.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.String.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    description: Queries the illuminate REST API and enriches the given string with illuminate indicator data
+  - name: illuminate-enrich-ipv6
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address for which to return information.
+      isArray: true
+    outputs:
+    - contextPath: Illuminate.Ipv6.ID
+      description: The unique identifier of the given Indicator in illuminate
+      type: number
+    - contextPath: Illuminate.Ipv6.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Ipv6.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Ipv6.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Ipv6.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Ipv6.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Ipv6.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Ipv6.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Ipv6.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Ipv6.Malwares.ID
+      description: Each matched malware unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Ipv6.Malwares.Name
+      description: Each matched malware name in illuminate
+      type: string
+    - contextPath: Illuminate.Ipv6.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Ipv6.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Ipv6.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    description: Queries the illuminate REST API and enriches the given IP address with illuminate indicator data.
+  - name: illuminate-enrich-mutex
+    arguments:
+    - name: mutex
+      required: true
+      description: The mutex to query information for
+      isArray: true
+    outputs:
+    - contextPath: Illuminate.Mutex.ID
+      description: The unique identifier of the given Indicator in illuminate
+      type: number
+    - contextPath: Illuminate.Mutex.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Mutex.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Mutex.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Mutex.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Mutex.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Mutex.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Mutex.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Mutex.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Mutex.Malwares.ID
+      description: Each matched malware unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Mutex.Malwares.Name
+      description: Each matched malware name in illuminate
+      type: string
+    - contextPath: Illuminate.Mutex.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Mutex.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Mutex.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    description: Queries the illuminate REST API and enriches the given mutex with illuminate indicator data.
+  - name: illuminate-enrich-http-request
+    arguments:
+    - name: http-request
+      required: true
+      description: The HTTP request for which to return information.
+      isArray: true
+    outputs:
+    - contextPath: Illuminate.Httprequest.ID
+      description: The unique identifier of the given Indicator in illuminate
+      type: number
+    - contextPath: Illuminate.Httprequest.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Httprequest.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Httprequest.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Httprequest.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Httprequest.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Httprequest.HitCount
+      description: The total number of times this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Httprequest.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Httprequest.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Httprequest.Malwares.ID
+      description: Each matched malware unique identifier in illuminate
+      type: number
+    - contextPath: Illuminate.Httprequest.Malwares.Name
+      description: Each matched malware name in illuminate.
+      type: string
+    - contextPath: Illuminate.Httprequest.Actors.ID
+      description: Each matched actor unique identifier in illuminate.
+      type: number
+    - contextPath: Illuminate.Httprequest.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Httprequest.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    description: Queries the illuminate REST API and enriches the given HTTP request with illuminate indicator data.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: The URL for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Illuminate.Url.ID
+      description: The unique identifier of the given Indicator in illuminate
+      type: number
+    - contextPath: Illuminate.Url.EvidenceCount
+      description: The number of evidence reports of the given indicator in illuminate.
+      type: number
+    - contextPath: Illuminate.Url.Active
+      description: Whether the given indicator is noted as active in illuminate.
+      type: boolean
+    - contextPath: Illuminate.Url.ConfidenceLevel
+      description: The confidence level of the data in illuminate.
+      type: string
+    - contextPath: Illuminate.Url.FirstHit
+      description: The first date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Url.LastHit
+      description: The most recent date this indicator was seen in a source scanned by illuminate.
+      type: date
+    - contextPath: Illuminate.Url.HitCount
+      description: The total number of this indicator was seen in a source scanned by illuminate.
+      type: number
+    - contextPath: Illuminate.Url.ReportedDates
+      description: The dates this indicator was reported on in illuminate.
+      type: date
+    - contextPath: Illuminate.Url.ActivityDates
+      description: The dates this indicator had reported activity in illuminate.
+      type: date
+    - contextPath: Illuminate.Url.Malwares.ID
+      description: Each matched malware unique identifier in illuminate
+      type: number
+    - contextPath: Illuminate.Url.Malwares.Name
+      description: Each matched malware name in illuminate.
+      type: string
+    - contextPath: Illuminate.Url.Actors.ID
+      description: Each matched actor unique identifier in illuminate
+      type: number
+    - contextPath: Illuminate.Url.Actors.Name
+      description: Each matched actor name in illuminate.
+      type: string
+    - contextPath: Illuminate.Url.IlluminateLink
+      description: The URL of the matched indicator in illuminate.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Numbe
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the illuminate REST API and enriches the given URL with illuminate indicator data.
+  dockerimage: demisto/python3:3.7.5.5420
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0

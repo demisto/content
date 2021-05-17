@@ -1,0 +1,274 @@
+id: Detonate URL - WildFire v2.1 - Test
+version: -1
+name: Detonate URL - WildFire v2.1 - Test
+fromversion: 5.0.0
+description: |-
+  test pb of:
+  Detonate URL - WildFire-v2.1
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 928bddf2-67de-41b6-8d4d-19d9a610e3dd
+    type: start
+    task:
+      id: 928bddf2-67de-41b6-8d4d-19d9a610e3dd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 67bc43e8-4ea8-4607-8004-a98114f0eb8f
+    type: regular
+    task:
+      id: 67bc43e8-4ea8-4607-8004-a98114f0eb8f
+      version: -1
+      name: set remote file url and URLs
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      stringify: {}
+      value:
+        simple: http://www.software995.net/bin/pdf995s.exe, https://www.demisto.com,
+          https://www.paloaltonetworks.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9e02dc83-f218-4063-8a29-7a5058a64d3d
+    type: condition
+    task:
+      id: 9e02dc83-f218-4063-8a29-7a5058a64d3d
+      version: -1
+      name: Check that the amount of reports == amount of inputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: WildFire.Report.Status
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: WildFire.Report.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Success
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+                transformers:
+                - operator: count
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5ec054b7-bf04-4a2a-8a2c-7ce327318cf5
+    type: title
+    task:
+      id: 5ec054b7-bf04-4a2a-8a2c-7ce327318cf5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3a09a2e0-6167-4109-89da-59a9f57a8071
+    type: regular
+    task:
+      id: 3a09a2e0-6167-4109-89da-59a9f57a8071
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Missing WF Report for URLs/Remote Files.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
+    type: playbook
+    task:
+      id: 6f6730d3-a5a0-457f-8cfc-d16b5c4e3cf6
+      version: -1
+      name: Detonate URL - WildFire v2.1
+      playbookName: Detonate URL - WildFire v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 4039ef04-960e-4817-8c81-f6438098c800
+    type: regular
+    task:
+      id: 4039ef04-960e-4817-8c81-f6438098c800
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

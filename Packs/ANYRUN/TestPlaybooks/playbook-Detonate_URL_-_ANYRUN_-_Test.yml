@@ -1,0 +1,159 @@
+id: Detonate URL - ANYRUN - Test
+version: -1
+name: Detonate URL - ANYRUN - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 248bd6ce-5cc0-4382-8989-cf6ac3feb46c
+    type: start
+    task:
+      id: 248bd6ce-5cc0-4382-8989-cf6ac3feb46c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 0b881e68-330b-4f99-8f33-5fc9279317fb
+    type: regular
+    task:
+      id: 0b881e68-330b-4f99-8f33-5fc9279317fb
+      version: -1
+      name: Set
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8b84aacf-859e-40e6-8a32-aba6235fb93a
+    type: playbook
+    task:
+      id: 8b84aacf-859e-40e6-8a32-aba6235fb93a
+      version: -1
+      name: Detonate URL - ANYRUN
+      playbookName: Detonate URL - ANYRUN
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: cb75cebc-5bf4-4f2f-8d2e-4530cc730701
+    type: title
+    task:
+      id: cb75cebc-5bf4-4f2f-8d2e-4530cc730701
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: e110d4c9-2b47-4ec8-8f6e-3632b039742c
+    type: regular
+    task:
+      id: e110d4c9-2b47-4ec8-8f6e-3632b039742c
+      version: -1
+      name: Start Fresh
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

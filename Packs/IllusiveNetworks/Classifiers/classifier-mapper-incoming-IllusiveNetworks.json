@@ -1,0 +1,48 @@
+{
+    "defaultIncidentType": "Illusive Networks Incident",
+    "id": "Illusive Networks-mapper",
+    "name": "Illusive Networks - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming Illusive Networks incident fields.",
+    "mapping": {
+        "Illusive Networks Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Illusive Networks Has Forensics": {
+                    "complex": null,
+                    "simple": "hasForensics"
+                },
+                "Illusive Networks Host Name": {
+                    "complex": null,
+                    "simple": "sourceHostname"
+                },
+                "Illusive Networks Id": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "Illusive Networks Steps To Crown Jewel": {
+                    "complex": null,
+                    "simple": "riskInsights.stepsToCrownJewel"
+                },
+                "Illusive Networks Steps To Domain Admin": {
+                    "complex": null,
+                    "simple": "riskInsights.stepsToDomainAdmin"
+                },
+                "Illusive Networks Last Seen User": {
+                    "complex": null,
+                    "simple": "lastSeenUser"
+                },
+                "Illusive Networks Source Operating System": {
+                    "complex": null,
+                    "simple": "sourceOperatingSystem"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "sourceIp"
+                }
+            }
+        }
+    },
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

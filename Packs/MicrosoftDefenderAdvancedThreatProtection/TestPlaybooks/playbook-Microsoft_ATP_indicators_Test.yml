@@ -1,0 +1,885 @@
+id: Microsoft Defender - ATP - Indicators Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Microsoft Defender - ATP - Indicators Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d3072c7c-2a5c-4acf-8784-f7b108888738
+    type: start
+    task:
+      id: d3072c7c-2a5c-4acf-8784-f7b108888738
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0fd3332d-ca9d-406f-818c-6451ed55d065
+    type: regular
+    task:
+      id: 0fd3332d-ca9d-406f-818c-6451ed55d065
+      version: -1
+      name: microsoft-atp-indicator-create-file
+      description: Creates a file indicator
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-create-file
+      type: regular
+      iscommand: true
+      brand: Microsoft Defender Advanced Threat Protection
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      action:
+        simple: allow
+      confidence:
+        simple: "50"
+      description:
+        simple: Test file indicator
+      expiration_time:
+        simple: 10 minutes
+      file_compile_date_time:
+        simple: "2014-01-01T00:00:00Z"
+      file_created_date_time:
+        simple: "2014-01-01T00:00:00Z"
+      file_hash_type:
+        simple: sha256
+      file_hash_value:
+        simple: d3274c7277e5818e864082f2164f9e25e630e949cf33c35d7bf7fe39d34894b5
+      file_mutex_name: {}
+      file_name:
+        simple: test.zip
+      file_packer: {}
+      file_path:
+        simple: c:/win32/
+      file_size:
+        simple: "1024"
+      file_type:
+        simple: zip
+      severity:
+        simple: High
+      tags:
+        simple: tag1
+      threat_type:
+        simple: C2
+      tlp_level:
+        simple: green
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 43c9141f-84ca-4749-88f7-4b0f42a8564b
+    type: regular
+    task:
+      id: 43c9141f-84ca-4749-88f7-4b0f42a8564b
+      version: -1
+      name: Get indicators by ID
+      description: Gets an indicator by its ID.
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-get-by-id
+      type: regular
+      iscommand: true
+      brand: Microsoft Defender Advanced Threat Protection
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      indicator_id:
+        complex:
+          root: MicrosoftATP.Indicators
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2180dd46-63a3-4e90-80de-2f687c5001e7
+    type: regular
+    task:
+      id: 2180dd46-63a3-4e90-80de-2f687c5001e7
+      version: -1
+      name: microsoft-atp-indicator-create-network
+      description: Creates a file indicator
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-create-network
+      type: regular
+      iscommand: true
+      brand: Microsoft Defender Advanced Threat Protection
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      action:
+        simple: allow
+      confidence:
+        simple: "50"
+      description:
+        simple: Test URL
+      domain_name: {}
+      expiration_time:
+        simple: 10 minutes
+      network_cidr_block: {}
+      network_destination_asn: {}
+      network_destination_cidr_block: {}
+      network_destination_ipv4: {}
+      network_destination_ipv6: {}
+      network_destination_port: {}
+      network_ipv4: {}
+      network_ipv6: {}
+      network_port: {}
+      network_protocol: {}
+      network_source_asn: {}
+      network_source_cidr_block: {}
+      network_source_ipv4: {}
+      network_source_ipv6: {}
+      network_source_port: {}
+      severity:
+        simple: Informational
+      tags:
+        simple: tag1
+      threat_type:
+        simple: Darknet
+      tlp_level:
+        simple: white
+      url:
+        simple: https://test.example.com
+      user_agent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 25e167e9-144a-4cdd-823e-4f3e06b2295d
+    type: regular
+    task:
+      id: 25e167e9-144a-4cdd-823e-4f3e06b2295d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: fda82f9f-74a8-486f-827e-31f5ecf8bc9f
+    type: regular
+    task:
+      id: fda82f9f-74a8-486f-827e-31f5ecf8bc9f
+      version: -1
+      name: Get all indicators
+      description: Lists all indicators
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-indicator-list
+      type: regular
+      iscommand: true
+      brand: Microsoft Defender Advanced Threat Protection
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 360a3718-c1df-4ad9-8825-334ee1427b45
+    type: condition
+    task:
+      id: 360a3718-c1df-4ad9-8825-334ee1427b45
+      version: -1
+      name: Check if something exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Indicators
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: d073914c-9962-4bc4-8632-9d788d9f5d8c
+    type: regular
+    task:
+      id: d073914c-9962-4bc4-8632-9d788d9f5d8c
+      version: -1
+      name: Delete indicators
+      description: Deletes and indicator
+      script: '|||microsoft-atp-indicator-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      indicator_id:
+        complex:
+          root: MicrosoftATP.Indicators
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 4364f4a9-fa89-461e-853a-196b90b12e1a
+    type: title
+    task:
+      id: 4364f4a9-fa89-461e-853a-196b90b12e1a
+      version: -1
+      name: Start the test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c66d276e-8eaa-4426-8cbc-9f972f1c3e97
+    type: regular
+    task:
+      id: c66d276e-8eaa-4426-8cbc-9f972f1c3e97
+      version: -1
+      name: Update indicators description and severity
+      description: Updates a given indicator
+      script: '|||microsoft-atp-indicator-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      description:
+        simple: Test desc!
+      expiration_time:
+        simple: 10 minutes
+      indicator_id:
+        complex:
+          root: MicrosoftATP.Indicators
+          accessor: id
+      severity:
+        simple: Low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d36dca5e-64f5-4b8a-8cc3-8c2cc1e76bfa
+    type: regular
+    task:
+      id: d36dca5e-64f5-4b8a-8cc3-8c2cc1e76bfa
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3524e28e-6f5d-4830-83dc-4156c54bb4db
+    type: regular
+    task:
+      id: 3524e28e-6f5d-4830-83dc-4156c54bb4db
+      version: -1
+      name: List indicators
+      description: Lists all indicators
+      script: '|||microsoft-atp-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 2e4acd00-55c6-40e9-8b31-a9f8f388eb8b
+    type: condition
+    task:
+      id: 2e4acd00-55c6-40e9-8b31-a9f8f388eb8b
+      version: -1
+      name: Check the indicators returned with the new description and severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Indicators
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: MicrosoftATP.Indicators.description
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Test
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Indicators
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: MicrosoftATP.Indicators.severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Low
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 5968d5b1-c284-4876-8cf1-52881bb02321
+    type: title
+    task:
+      id: 5968d5b1-c284-4876-8cf1-52881bb02321
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5226d512-5400-4e72-8078-879e07e6e24e
+    type: regular
+    task:
+      id: 5226d512-5400-4e72-8078-879e07e6e24e
+      version: -1
+      name: Print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Got back no entries. Shouldn't happen.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 5c106223-1c97-47a3-8442-3c102b966f7a
+    type: regular
+    task:
+      id: 5c106223-1c97-47a3-8442-3c102b966f7a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a105b395-34d5-4764-8550-08baf413732f
+    type: title
+    task:
+      id: a105b395-34d5-4764-8550-08baf413732f
+      version: -1
+      name: Setup
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 12be0d3b-afaf-4103-83a3-e7f3ed439860
+    type: regular
+    task:
+      id: 12be0d3b-afaf-4103-83a3-e7f3ed439860
+      version: -1
+      name: Clean instance from indicators
+      description: Deletes and indicator
+      script: '|||microsoft-atp-indicator-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      indicator_id:
+        complex:
+          root: MicrosoftATP.Indicators
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 0a5e31ec-77cb-453a-8c48-ec1309bdff3b
+    type: condition
+    task:
+      id: 0a5e31ec-77cb-453a-8c48-ec1309bdff3b
+      version: -1
+      name: Check the indicators returned with the High severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Indicators
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: MicrosoftATP.Indicators.severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: High
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: bc25e18a-9165-4378-8c0b-925131e387d8
+    type: regular
+    task:
+      id: bc25e18a-9165-4378-8c0b-925131e387d8
+      version: -1
+      name: Error - Severity not as expected
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        complex:
+          root: MicrosoftATP.Indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MicrosoftATP.Indicators.threatType
+                iscontext: true
+              right:
+                value:
+                  simple: C2
+          accessor: severity
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Wrong Severity Value. Expected: High, Got: '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5dfc6d74-bb7f-4eb8-8e31-dda3e6a4ea6a
+    type: condition
+    task:
+      id: 5dfc6d74-bb7f-4eb8-8e31-dda3e6a4ea6a
+      version: -1
+      name: Check the indicators returned with the Informational severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Indicators
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: MicrosoftATP.Indicators.severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Informational
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: f7e75074-afb7-44db-80f3-4bab872bf6a5
+    type: regular
+    task:
+      id: f7e75074-afb7-44db-80f3-4bab872bf6a5
+      version: -1
+      name: Error - Severity not as expected
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        complex:
+          root: MicrosoftATP.Indicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MicrosoftATP.Indicators.threatType
+                iscontext: true
+              right:
+                value:
+                  simple: Darknet
+          accessor: severity
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Wrong Severity Value. Expected: Informational, Got: '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 707.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2790,
+        "width": 1257.5,
+        "x": -170,
+        "y": 65
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

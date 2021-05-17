@@ -1,0 +1,43 @@
+{
+  "name": "enterprise_ips",
+  "columns": [
+    {
+      "name": "ip",
+      "values": [
+        {
+          "data": [
+            {
+              "ip_value": "1.1.1.1"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "ip_value": "2.2.2.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "classification",
+      "values": [
+        {
+          "data": [
+            {
+              "string_value": "CLASSIFICATION_ENTERPRISE"
+            }
+          ]
+        },
+        {
+          "data": [
+            {
+              "string_value": "CLASSIFICATION_ENTERPRISE_2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

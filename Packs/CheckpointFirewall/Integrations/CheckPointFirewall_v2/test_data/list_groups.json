@@ -1,0 +1,27 @@
+{
+  "objects": [
+    {
+      "uid": "123",
+      "name": "group1",
+      "type": "group",
+      "domain": {
+        "uid": "9876",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    },
+    {
+      "uid": "456",
+      "name": "group_test",
+      "type": "group",
+      "domain": {
+        "uid": "9876",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    }
+  ],
+  "from": 1,
+  "to": 2,
+  "total": 6
+}

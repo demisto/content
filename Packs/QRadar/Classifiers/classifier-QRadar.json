@@ -1,0 +1,17 @@
+{
+    "id": "QRadar",
+    "name": "QRadar - Classifier",
+    "type": "classification",
+    "description": "Classifies QRadar events.",
+	"version": -1,
+	"defaultIncidentType": "",
+	"transformer": {
+		"simple": "categories.[0]",
+		"complex": null
+	},
+	"keyTypeMap": {
+		"SIM User Authentication": "Access",
+		"User Login Failure": "Access"
+	},
+	"fromVersion": "6.0.0"
+}
