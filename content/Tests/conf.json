@@ -3,9 +3,18 @@
     "testInterval": 20,
     "tests": [
         {
+            "fromversion": "5.0.0",
+            "integrations": [
+                "WildFire-v2"
+            ],
+            "playbookID": "Detonate File - WildFire - Test",
+            "is_mockable": false
+        },
+        {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 700
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -80,6 +89,13 @@
             "timeout": 700
         },
         {
+            "integrations": "SecurityAndCompliance",
+            "playbookID": "O365-SecurityAndCompliance-ContextResults-Test",
+            "instance_names": "ewv2_regular",
+            "fromversion": "5.5.0",
+            "timeout": 700
+        },
+        {
             "integrations": "SecurityIntelligenceServicesFeed",
             "playbookID": "SecurityIntelligenceServicesFeed - Test",
             "fromversion": "5.5.0"
@@ -87,7 +103,9 @@
         {
             "integrations": "EwsExtension",
             "playbookID": "O365 - EWS - Extension - Test",
-            "fromversion": "5.5.0"
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 500
         },
         {
             "integrations": "Majestic Million",
@@ -125,7 +143,8 @@
         },
         {
             "integrations": "AWS - Security Hub",
-            "playbookID": "AWS-securityhub Test"
+            "playbookID": "AWS-securityhub Test",
+            "timeout": 800
         },
         {
             "integrations": "Microsoft Advanced Threat Analytics",
@@ -405,17 +424,17 @@
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_dev",
             "instance_names": "ms_graph_mail_dev"
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_dev_no_oproxy",
             "instance_names": "ms_graph_mail_dev_no_oproxy"
         },
         {
             "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
+            "playbookID": "MicrosoftGraphMail-Test_prod",
             "instance_names": "ms_graph_mail_prod"
         },
         {
@@ -785,10 +804,6 @@
             "timeout": 2400
         },
         {
-            "playbookID": "WordTokenizeTest",
-            "toversion": "4.5.9"
-        },
-        {
             "integrations": "QRadar",
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 2000,
@@ -799,7 +814,7 @@
         {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
-            "timeout": 2000,
+            "timeout": 2600,
             "fromversion": "6.0.0",
             "is_mockable": false
         },
@@ -844,6 +859,12 @@
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL instance",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Generic SQL",
+            "playbookID": "generic-sql",
+            "instance_names": "Microsoft SQL Server - MS ODBC Driver",
             "fromversion": "5.0.0"
         },
         {
@@ -1348,13 +1369,13 @@
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM v2 - Test",
+            "playbookID": "McAfee ESM v2 - Test v10.2.0",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM v2 - Test",
+            "playbookID": "McAfee ESM v2 - Test v10.3.0",
             "fromversion": "5.0.0"
         },
         {
@@ -1367,19 +1388,19 @@
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.2.0",
-            "playbookID": "McAfee ESM Watchlists - Test",
+            "playbookID": "McAfee ESM Watchlists - Test v10.2.0",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v10.3.0",
-            "playbookID": "McAfee ESM Watchlists - Test",
+            "playbookID": "McAfee ESM Watchlists - Test v10.3.0",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "McAfee ESM v2",
             "instance_names": "v11.3",
-            "playbookID": "McAfee ESM Watchlists - Test",
+            "playbookID": "McAfee ESM Watchlists - Test v11.3",
             "fromversion": "5.0.0"
         },
         {
@@ -1413,19 +1434,6 @@
             "fromversion": "6.0.0",
             "integrations": "Rasterize",
             "timeout": 240
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "search_endpoints_by_hash_-_crowdstrike_-_test",
-            "timeout": 500
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "CrowdStrike Endpoint Enrichment - Test"
-        },
-        {
-            "integrations": "FalconHost",
-            "playbookID": "FalconHost Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -1701,33 +1709,36 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender Advanced Threat Protection - Test",
+            "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_prod"
+            "instance_names": "microsoft_defender_atp_prod",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "is_mockable": false
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "is_mockable": false
         },
         {
             "integrations": "Tanium",
@@ -1743,12 +1754,12 @@
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test",
+            "playbookID": "Microsoft Graph Security Test dev",
             "instance_names": "ms_graph_security_dev"
         },
         {
             "integrations": "Microsoft Graph",
-            "playbookID": "Microsoft Graph Security Test",
+            "playbookID": "Microsoft Graph Security Test prod",
             "instance_names": "ms_graph_security_prod"
         },
         {
@@ -1763,51 +1774,51 @@
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test dev",
             "instance_names": "ms_graph_groups_dev"
         },
         {
             "integrations": "Microsoft Graph Groups",
-            "playbookID": "Microsoft Graph Groups - Test",
+            "playbookID": "Microsoft Graph Groups - Test prod",
             "instance_names": "ms_graph_groups_prod"
         },
         {
             "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
+            "playbookID": "test_MsGraphFiles dev",
             "instance_names": "ms_graph_files_dev",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft_Graph_Files",
-            "playbookID": "test_MsGraphFiles",
+            "playbookID": "test_MsGraphFiles prod",
             "instance_names": "ms_graph_files_prod",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Calendar",
-            "playbookID": "Microsoft Graph Calendar - Test",
+            "playbookID": "Microsoft Graph Calendar - Test dev",
             "instance_names": "ms_graph_calendar_dev"
         },
         {
             "integrations": "Microsoft Graph Calendar",
-            "playbookID": "Microsoft Graph Calendar - Test",
+            "playbookID": "Microsoft Graph Calendar - Test prod",
             "instance_names": "ms_graph_calendar_prod"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_dev",
             "instance_names": "ms_graph_device_management_oproxy_dev",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_prod",
             "instance_names": "ms_graph_device_management_oproxy_prod",
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Microsoft Graph Device Management",
-            "playbookID": "MSGraph_DeviceManagement_Test",
+            "playbookID": "MSGraph_DeviceManagement_Test_self_deployed_prod",
             "instance_names": "ms_graph_device_management_self_deployed_prod",
             "fromversion": "5.0.0"
         },
@@ -1835,10 +1846,6 @@
             "integrations": "Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
             "timeout": 240
-        },
-        {
-            "integrations": "Cylance Protect",
-            "playbookID": "endpoint_enrichment_-_generic_test"
         },
         {
             "integrations": "QRadar",
@@ -2039,10 +2046,6 @@
             "nightly": true
         },
         {
-            "playbookID": "detonate_file_-_generic_test",
-            "toversion": "3.6.0"
-        },
-        {
             "playbookID": "STIXParserTest"
         },
         {
@@ -2062,17 +2065,6 @@
                 "VxStream",
                 "Lastline v2"
             ]
-        },
-        {
-            "integrations": [
-                "FalconHost",
-                "McAfee Threat Intelligence Exchange",
-                "carbonblackprotection",
-                "carbonblack"
-            ],
-            "playbookID": "search_endpoints_by_hash_-_generic_-_test",
-            "timeout": 500,
-            "toversion": "4.4.9"
         },
         {
             "integrations": [
@@ -2312,7 +2304,7 @@
         {
             "integrations": "iDefense Feed",
             "playbookID": "Feed iDefense Test",
-            "memory_threshold": 100,
+            "memory_threshold": 200,
             "fromversion": "5.5.0"
         },
         {
@@ -2344,20 +2336,12 @@
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
-            "timeout": 300,
-            "fromversion": "4.1.0",
-            "toversion": "4.4.9"
-        },
-        {
-            "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR",
             "timeout": 350,
             "fromversion": "4.5.0"
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
-                "FalconHost",
                 "Cylance Protect v2",
                 "carbonblack-v2",
                 "epo",
@@ -2379,10 +2363,6 @@
         {
             "playbookID": "Wait Until Datetime - Test",
             "fromversion": "4.5.0"
-        },
-        {
-            "playbookID": "PAN OS EDL Management - Test",
-            "integrations": "palo_alto_networks_pan_os_edl_management"
         },
         {
             "playbookID": "PAN-OS DAG Configuration Test",
@@ -2540,14 +2520,6 @@
             ],
             "playbookID": "Rasterize Test",
             "fromversion": "5.0.0"
-        },
-        {
-            "integrations": [
-                "Rasterize",
-                "Image OCR"
-            ],
-            "playbookID": "Rasterize 4.5 Test",
-            "toversion": "4.5.9"
         },
         {
             "integrations": "Rasterize",
@@ -3210,12 +3182,44 @@
             "fromversion": "6.0.0"
         },
         {
+            "integrations": "MicrosoftGraphIdentityandAccess",
+            "playbookID": "Identity & Access test playbook"
+        },
+        {
             "integrations": "MicrosoftPolicyAndComplianceAuditLog",
             "playbookID": "Audit Log - Test"
         },
         {
             "integrations": "Nutanix Hypervisor",
             "playbookID": "Nutanix-test"
+        },
+        {
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test"
+        },
+        {
+            "integrations": "EWS Extension Online Powershell v2",
+            "playbookID": "EWS Extension: Powershell Online V2 Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
+        },
+        {
+            "playbookID": "CreateCertificate-Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 1"
+        },
+        {
+            "integrations": "LogPoint SIEM Integration",
+            "playbookID": "LogPoint SIEM Integration - Test Playbook 2"
+        },
+        {
+            "integrations": "Cisco Stealthwatch",
+            "fromversion": "5.5.0",
+            "playbookID": "Cisco Stealthwatch Test"
         }
     ],
     "skipped_tests": {
@@ -3248,7 +3252,6 @@
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
-        "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "ThreatConnect v2 - Test": "Issue 26782",
@@ -3261,18 +3264,14 @@
         "Cherwell - test": "Issue 26780",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
-        "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
-        "AWS-securityhub Test": "Issue 29796",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
-        "Generic Webhook - Test": "Issue 30797",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "CuckooTest": "Issue 25601",
-        "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Carbon Black Live Response Test": "Issue 28237",
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
@@ -3283,26 +3282,32 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
-        "PAN-OS DAG Configuration Test": "Issue 19205",
         "Cortex Data Lake Test": "Issue 24346",
         "O365-SecurityAndCompliance-Test": "Issue 32364",
-        "pyEWS_Test": "Issue 27942",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Test Playbook McAfee ATD": "Issue 33409",
         "Detonate Remote File From URL -McAfee-ATD - Test": "Issue 33407",
         "Test Playbook McAfee ATD Upload File": "Issue 33408",
         "Extract Indicators From File - Generic v2 - Test": "Issue 30071",
         "Kenna Test": "Missing data",
-        "Trend Micro Apex - Test": "Issue 27280"
+        "Trend Micro Apex - Test": "Issue 27280",
+        "Azure SecurityCenter - Test": "Issue 27391",
+        "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
+        "Field polling test": "Issue 33951",
+        "palo_alto_panorama_test_pb": "Issue 34371",
+        "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
+        "Active Directory - Get User Manager Details - Test": "Issue 25604",
+        "GSuiteAdmin-Test": "Issue 34784",
+        "Slack Test Playbook": "Issue 33448",
+        "O365-SecurityAndCompliance-ContextResults-Test": "Issue 34482"
     },
     "skipped_integrations": {
         
         "_comment1": "~~~ NO INSTANCE ~~~",
+        "ServiceDeskPlus (On-Premise)": "No instance",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
         "Symantec Management Center": "Issue 23960",
-        "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
@@ -3372,6 +3377,8 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
+        "FraudWatch": "Issue 34299",
+        "Cisco Stealthwatch": "No instance - developed by Qmasters",
         
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3395,8 +3402,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "TAXIIFeed": "Until next SDK release, fix for build will be issued there."
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3404,13 +3410,13 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "EwsExtension": "Powershell does not support proxy",
+        "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
-        "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
-        "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
@@ -3421,11 +3427,8 @@
         "XsoarPowershellTesting": "Integration which not use network.",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
-        "AWS - Security Hub": "Issue 24926",
         "SecurityAndCompliance": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked",
-        "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
-        "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
         "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
@@ -3434,7 +3437,6 @@
         "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "SplunkPy": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
-        "McAfee ESM v2": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
@@ -3469,21 +3471,13 @@
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
-        "Microsoft Graph": "Test direct access to oproxy",
-        "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Microsoft_Graph_Files": "Test direct access to oproxy",
-        "Microsoft Graph Groups": "Test direct access to oproxy",
-        "Microsoft Defender Advanced Threat Protection": "Test direct access to oproxy",
         "Azure Security Center v2": "Test direct access to oproxy",
-        "Microsoft Graph Calendar": "Test direct access to oproxy",
-        "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
         "AWS - CloudWatchLogs": "Issue 20958",
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
-        "AWS - S3": "uploads and downloads files",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
@@ -3506,8 +3500,7 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected.",
-        "Rapid7 Nexpose": "Test playbook (nexpose_test) downloads a file"
+        "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
         "AWS - EC2",
@@ -3556,7 +3549,6 @@
         "McAfee DXL",
         "GCP Whitelist Feed",
         "Cortex Data Lake",
-        "AWS - Security Hub",
         "Mail Listener v2"
     ],
     "docker_thresholds": {
@@ -3583,6 +3575,22 @@
             },
             "demisto/taxii2": {
                 "pid_threshold": 11
+            },
+            "demisto/pwsh-infocyte": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
+            },
+            "demisto/pwsh-exchange": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
+            },
+            "demisto/powershell": {
+                "pid_threshold": 24,
+                "memory_threshold": 140
+            },
+            "demisto/powershell-ubuntu": {
+                "pid_threshold": 30,
+                "memory_threshold": 155
             }
         }
     }

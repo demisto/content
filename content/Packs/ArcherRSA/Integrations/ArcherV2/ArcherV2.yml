@@ -506,6 +506,12 @@ script:
       - 'False'
       required: true
       secret: false
+    - name: isDescending
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to order by descending order.
     deprecated: false
     description: Searches for records in the given application.
     execution: false
@@ -542,7 +548,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false

@@ -773,6 +773,7 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
         else:
             user_dn = generate_dn_and_remove_from_user_profile(ad_user)
             object_classes = ["top", "person", "organizationalPerson", "user"]
+            ad_user.pop('ou')
 
             success = conn.add(user_dn, object_classes, ad_user)
             if success:

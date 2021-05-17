@@ -34,6 +34,7 @@ class QueryHandler:
     """
     Class which handles the search query parameters for the box-search-content command.
     """
+
     def __init__(self, args):
         self.content_types = []
         self.type = args.get('type')
@@ -162,6 +163,7 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
+
     def __init__(self, base_url, verify, proxy, auth_params, as_user=None):
         try:
             self.credentials_dict = json.loads(auth_params.get('credentials_json', '{}'))
@@ -715,7 +717,7 @@ class Client(BaseClient):
                 upload_url_suffix = '/files/content'
                 attributes = {
                     'name': file_name,
-                    'parent': {'id': '0'}
+                    'parent': {'id': folder_id}
                 }
                 data = {'attributes': json.dumps(attributes)}
                 files = {'file': ('unused', file)}

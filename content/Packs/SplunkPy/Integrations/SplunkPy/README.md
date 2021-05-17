@@ -17,7 +17,7 @@ This integration was integrated and tested with Splunk v7.2.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | host | The host name to the server, including the scheme (x.x.x.x). | True |
-| authentication | The username used for authentication. | True |
+| authentication | The username used for authentication. To use Splunk token authentication, enter the text: `_token` to the **Username** field and your token value to the **Password** field. To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens). | True |
 | port | The port affiliated with the server. | True |
 | fetchQuery | The notable events ES query to be fetched. | False |
 | fetch_limit | The limit of incidents to fetch. The maximum is 200 (It is recommended to fetch less than 50). | False |

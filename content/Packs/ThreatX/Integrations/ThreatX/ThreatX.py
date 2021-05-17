@@ -12,16 +12,11 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-CUSTOMER_NAME = demisto.params().get('customer_name', None)
-API_KEY = demisto.params().get('api_key', None)
-URL = demisto.params().get('url', None)
-
-if URL[-1] != '/':
-    URL += '/'
-
-BASE_URL = URL + 'tx_api/v1'
-DBOT_THRESHOLD = int(demisto.params().get('dbot_threshold', 70))
-USE_SSL = not demisto.params().get('insecure')
+CUSTOMER_NAME = ''
+API_KEY = ''
+BASE_URL = ''
+DBOT_THRESHOLD = 70
+USE_SSL = True
 
 ''' HELPER FUNCTIONS '''
 
@@ -32,13 +27,13 @@ def http_request(url_suffix, commands=None):
     session_token = state.get('session_token')
 
     if url_suffix != '/login':
-        demisto.info('running request with url=%s with commands=%s' % (BASE_URL + url_suffix, commands))
+        demisto.info('running request with url={} with commands={}'.format(BASE_URL + url_suffix, commands))
         data = {
             'token': session_token,
             'customer_name': CUSTOMER_NAME
         }
     else:
-        demisto.info('running request with url=%s' % (BASE_URL + url_suffix))
+        demisto.info('running request with url={}'.format(BASE_URL + url_suffix))
         data = {}
 
     if commands is not None:
@@ -55,24 +50,22 @@ def http_request(url_suffix, commands=None):
             demisto.setIntegrationContext({'session_token': None,
                                            'token_expires': None
                                            })
-            demisto.info(str(res.status_code) + ' from server during login. Clearing session token cache.')
+            demisto.info('{} from server during login. Clearing session token cache.'.format(res.status_code))
 
-        return_error('HTTP %d Error in API call to ThreatX service - %s' % (res.status_code, res.text))
+        return_error('HTTP {} Error in API call to ThreatX service - {}'.format(res.status_code, res.text))
 
-    if not res.text:
-        resp_json = {}  # type:dict
-
+    resp_json = {}  # type:dict
     try:
         resp_json = res.json()
     except ValueError:
-        return_error('Could not parse the response from ThreatX: %s' % (res.text))
+        return_error('Could not parse the response from ThreatX: {}'.format(res.text))
 
     if 'Ok' not in resp_json:
         if url_suffix == '/login':
             demisto.setIntegrationContext({'session_token': None,
                                            'token_expires': None
                                            })
-            return_error('Login response error - %s.' % (res.text))
+            return_error('Login response error - {}.'.format(res.text))
 
         return_error(res.text)
 
@@ -147,12 +140,12 @@ def set_dbot_score(threatx_score):
 
 
 @logger
-def block_ip(ip):
+def block_ip(ip, description):
     commands = {
         'command': 'new_blocklist',
         'entry': {
             'ip': ip,
-            'description': 'Added by ThreatX Demisto Integration',
+            'description': description,
             'created': int(time.time())
         }
     }
@@ -161,9 +154,10 @@ def block_ip(ip):
 
 
 @logger
-def block_ip_command():
-    ip = demisto.args().get('ip', None)
-    results = block_ip(ip)
+def block_ip_command(args):
+    ip = args.get('ip', None)
+    description = args.get('description', 'Added by ThreatX Demisto Integration')
+    results = block_ip(ip, description)
 
     md = tableToMarkdown('Block IP',
                          results,
@@ -190,8 +184,8 @@ def unblock_ip(ip):
 
 
 @logger
-def unblock_ip_command():
-    ip = demisto.args().get('ip', None)
+def unblock_ip_command(args):
+    ip = args.get('ip', None)
     results = unblock_ip(ip)
 
     md = tableToMarkdown('Unblock IP',
@@ -209,12 +203,12 @@ def unblock_ip_command():
 
 
 @logger
-def blacklist_ip(ip):
+def blacklist_ip(ip, description):
     commands = {
         'command': 'new_blacklist',
         'entry': {
             'ip': ip,
-            'description': 'Added by ThreatX Demisto Integration',
+            'description': description,
             'created': int(time.time())
         }
     }
@@ -223,9 +217,10 @@ def blacklist_ip(ip):
 
 
 @logger
-def blacklist_ip_command():
-    ip = demisto.args().get('ip', None)
-    results = blacklist_ip(ip)
+def blacklist_ip_command(args):
+    ip = args.get('ip', None)
+    description = args.get('description', 'Added by ThreatX Demisto Integration')
+    results = blacklist_ip(ip, description)
 
     md = tableToMarkdown('Blacklist IP',
                          results,
@@ -252,8 +247,8 @@ def unblacklist_ip(ip):
 
 
 @logger
-def unblacklist_ip_command():
-    ip = demisto.args().get('ip', None)
+def unblacklist_ip_command(args):
+    ip = args.get('ip', None)
     results = unblacklist_ip(ip)
 
     md = tableToMarkdown('Unblacklist IP',
@@ -271,12 +266,12 @@ def unblacklist_ip_command():
 
 
 @logger
-def whitelist_ip(ip):
+def whitelist_ip(ip, description):
     commands = {
         'command': 'new_whitelist',
         'entry': {
             'ip': ip,
-            'description': 'Added by ThreatX Demisto Integration',
+            'description': description,
             'created': int(time.time())
         }
     }
@@ -285,9 +280,10 @@ def whitelist_ip(ip):
 
 
 @logger
-def whitelist_ip_command():
-    ip = demisto.args().get('ip', None)
-    results = whitelist_ip(ip)
+def whitelist_ip_command(args):
+    ip = args.get('ip', None)
+    description = args.get('description', 'Added by ThreatX Demisto Integration')
+    results = whitelist_ip(ip, description)
 
     md = tableToMarkdown('Whitelist IP',
                          results,
@@ -314,8 +310,8 @@ def unwhitelist_ip(ip):
 
 
 @logger
-def unwhitelist_ip_command():
-    ip = demisto.args().get('ip', None)
+def unwhitelist_ip_command(args):
+    ip = args.get('ip', None)
     results = unwhitelist_ip(ip)
 
     md = tableToMarkdown('Unwhitelist IP',
@@ -384,12 +380,13 @@ def get_entity_risk(entity_id):
 
 
 @logger
-def get_entities_command():
-    entity_name = demisto.args().get('entity_name', None)
-    entity_id = demisto.args().get('entity_id', None)
-    entity_ip = demisto.args().get('entity_ip', None)
-    timeframe = demisto.args().get('timeframe', None)
+def get_entities_command(args):
+    entity_name = args.get('entity_name', None)
+    entity_id = args.get('entity_id', None)
+    entity_ip = args.get('entity_ip', None)
+    timeframe = args.get('timeframe', None)
     results = get_entities(entity_name, entity_id, entity_ip, timeframe)
+
     dbot_scores = []
     ip_enrich = []
     human_readable = []
@@ -482,8 +479,8 @@ def get_entity_notes(entity_id):
 
 
 @logger
-def get_entity_notes_command():
-    entity_id = demisto.args().get('entity_id', None)
+def get_entity_notes_command(args):
+    entity_id = args.get('entity_id', None)
     results = get_entity_notes(entity_id)
 
     # Reverse sort the list by timestamp
@@ -522,9 +519,9 @@ def add_entity_note(entity_id, message):
 
 
 @logger
-def add_entity_note_command():
-    entity_id = demisto.args().get('entity_id', None)
-    message = demisto.args().get('message', None)
+def add_entity_note_command(args):
+    entity_id = args.get('entity_id', None)
+    message = args.get('message', None)
     results = add_entity_note(entity_id, message)
 
     md = tableToMarkdown('New Entity Note',
@@ -532,7 +529,7 @@ def add_entity_note_command():
                          ['Result'],
                          removeNull=True)
 
-    return_outputs(md, None, results)
+    return_outputs(md, {}, results)
 
 
 @logger
@@ -548,45 +545,63 @@ def test_module():
 def test_module_command():
     results = test_module()
 
-    if isinstance(results, list):
-        if results:
-            if 'username' in results[0]:
-                demisto.results('ok')
-            else:
-                return_error('Unexpected response from ThreatX.')
-        else:
-            return_error('Empty response from ThreatX.')
-    else:
-        return_error('Unrecognized response from ThreatX.')
+    if not isinstance(results, list):
+        raise DemistoException('Unrecognized response from ThreatX.')
+
+    if not results:
+        raise DemistoException('Empty response from ThreatX.')
+
+    if 'username' not in results[0]:
+        raise DemistoException('Unexpected response from ThreatX.')
+
+    demisto.results('ok')
 
 
 ''' EXECUTION CODE '''
 
 
-demisto.info('command is %s' % (demisto.command(),))
-try:
-    handle_proxy()
-    initialize()
-    if demisto.command() == 'test-module':
-        test_module_command()
-    elif demisto.command() == 'threatx-block-ip':
-        block_ip_command()
-    elif demisto.command() == 'threatx-unblock-ip':
-        unblock_ip_command()
-    elif demisto.command() == 'threatx-blacklist-ip':
-        blacklist_ip_command()
-    elif demisto.command() == 'threatx-unblacklist-ip':
-        unblacklist_ip_command()
-    elif demisto.command() == 'threatx-whitelist-ip':
-        whitelist_ip_command()
-    elif demisto.command() == 'threatx-unwhitelist-ip':
-        unwhitelist_ip_command()
-    elif demisto.command() == 'threatx-get-entities':
-        get_entities_command()
-    elif demisto.command() == 'threatx-get-entity-notes':
-        get_entity_notes_command()
-    elif demisto.command() == 'threatx-add-entity-note':
-        add_entity_note_command()
+def main():
+    global CUSTOMER_NAME, API_KEY, BASE_URL, DBOT_THRESHOLD, USE_SSL
+    params = demisto.params()
 
-except Exception as e:
-    return_error(str(e))
+    url = params.get('url', '').strip('/')
+    BASE_URL = url + '/tx_api/v1'
+
+    CUSTOMER_NAME = params.get('customer_name', None)
+    API_KEY = params.get('api_key', None)
+    DBOT_THRESHOLD = int(params.get('dbot_threshold', 70))
+    USE_SSL = not params.get('insecure')
+
+    command = demisto.command()
+    demisto.info('command is {}'.format(command))
+    args = demisto.args()
+    try:
+        handle_proxy()
+        initialize()
+        if command == 'test-module':
+            test_module_command()
+        elif command == 'threatx-block-ip':
+            block_ip_command(args)
+        elif command == 'threatx-unblock-ip':
+            unblock_ip_command(args)
+        elif command == 'threatx-blacklist-ip':
+            blacklist_ip_command(args)
+        elif command == 'threatx-unblacklist-ip':
+            unblacklist_ip_command(args)
+        elif command == 'threatx-whitelist-ip':
+            whitelist_ip_command(args)
+        elif command == 'threatx-unwhitelist-ip':
+            unwhitelist_ip_command(args)
+        elif command == 'threatx-get-entities':
+            get_entities_command(args)
+        elif command == 'threatx-get-entity-notes':
+            get_entity_notes_command(args)
+        elif command == 'threatx-add-entity-note':
+            add_entity_note_command(args)
+
+    except Exception as e:
+        return_error(str(e), error=traceback.format_exc())
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()

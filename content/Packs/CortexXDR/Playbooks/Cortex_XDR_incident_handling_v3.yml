@@ -1,7 +1,5 @@
 id: Cortex XDR incident handling v3
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex XDR incident handling v3
 description: |-
   This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
@@ -13,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29a07149-9289-4966-8898-af2eb8911f17
+    taskid: 2dd4904d-513e-4071-8b3e-25aeba751b52
     type: start
     task:
-      id: 29a07149-9289-4966-8898-af2eb8911f17
+      id: 2dd4904d-513e-4071-8b3e-25aeba751b52
       version: -1
       name: ""
       iscommand: false
@@ -40,10 +38,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 59f99636-5884-42ea-81dd-dc0a4c2fae6d
+    taskid: 3baa1f30-456d-4443-8736-6823f84883d6
     type: title
     task:
-      id: 59f99636-5884-42ea-81dd-dc0a4c2fae6d
+      id: 3baa1f30-456d-4443-8736-6823f84883d6
       version: -1
       name: Loop on alert id - Alert enrichment
       type: title
@@ -52,7 +50,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
+      - "67"
     separatecontext: false
     view: |-
       {
@@ -68,10 +66,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 30265a93-3fbe-4632-824f-f154b1079bbb
+    taskid: 9874d520-0f8d-472a-808b-097b78689707
     type: title
     task:
-      id: 30265a93-3fbe-4632-824f-f154b1079bbb
+      id: 9874d520-0f8d-472a-808b-097b78689707
       version: -1
       name: Remediation
       type: title
@@ -86,7 +84,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2275
+          "y": 2495
         }
       }
     note: false
@@ -96,10 +94,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: d5a4c63f-ef6d-4168-8aa1-a14bd9467bef
+    taskid: f3d6a4fc-a5d4-477f-8409-94b4b9bf1aa1
     type: condition
     task:
-      id: d5a4c63f-ef6d-4168-8aa1-a14bd9467bef
+      id: f3d6a4fc-a5d4-477f-8409-94b4b9bf1aa1
       version: -1
       name: Are there new un-handled alerts?
       description: Check if there are new un-handled alerts.
@@ -132,55 +130,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3290
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 8764e9ac-4b02-42e1-8c01-d65dd5d8657e
-    type: playbook
-    task:
-      id: 8764e9ac-4b02-42e1-8c01-d65dd5d8657e
-      version: -1
-      name: Cortex XDR Alerts Handling
-      description: "This playbook is used to loop over every alert in a Cortex XDR\
-        \ incident. \nSupported alert categories:\n- Malware\n- Port Scan"
-      playbookName: Cortex XDR Alerts Handling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      alert_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Incident.alerts.alert_id
-      incident_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Incident.incident_id
-      internalRanges:
-        complex:
-          root: inputs.InternalRange
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 5
-      max: 100
-      forEach: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 535
+          "y": 3610
         }
       }
     note: false
@@ -190,10 +140,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 590a15f7-ea21-4b06-8352-f34f3793a660
+    taskid: b425ff10-7bf0-40d0-80c6-407e5d96801a
     type: title
     task:
-      id: 590a15f7-ea21-4b06-8352-f34f3793a660
+      id: b425ff10-7bf0-40d0-80c6-407e5d96801a
       version: -1
       name: Done
       type: title
@@ -205,7 +155,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4340
+          "y": 4510
         }
       }
     note: false
@@ -215,10 +165,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: d11912a8-74ee-4245-8d23-125d2487c422
+    taskid: 1b923143-5244-4ef4-8c87-590515cf879d
     type: regular
     task:
-      id: d11912a8-74ee-4245-8d23-125d2487c422
+      id: 1b923143-5244-4ef4-8c87-590515cf879d
       version: -1
       name: Cortex XDR - close incident
       description: Updates one or more fields of a specified incident. Missing fields
@@ -248,7 +198,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3980
+          "y": 4160
         }
       }
     note: false
@@ -258,10 +208,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 5bfdd0f6-c3aa-4f03-8690-6dceaf771046
+    taskid: 24d79967-83c9-42c9-8177-83006a99a4f8
     type: regular
     task:
-      id: 5bfdd0f6-c3aa-4f03-8690-6dceaf771046
+      id: 24d79967-83c9-42c9-8177-83006a99a4f8
       version: -1
       name: Close investigation
       description: Closes the incident.
@@ -288,7 +238,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4165
+          "y": 4335
         }
       }
     note: false
@@ -298,10 +248,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: 2a061181-13dc-46de-89f5-b16f1a9d7fcc
+    taskid: 0675441f-146a-4754-881e-ec0f72f281fe
     type: title
     task:
-      id: 2a061181-13dc-46de-89f5-b16f1a9d7fcc
+      id: 0675441f-146a-4754-881e-ec0f72f281fe
       version: -1
       name: Investigation
       type: title
@@ -326,10 +276,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: aa02ed9d-5c68-460e-8c06-313d2f961c78
+    taskid: 155d9739-d0ff-4227-8f17-cd1083bb5c24
     type: playbook
     task:
-      id: aa02ed9d-5c68-460e-8c06-313d2f961c78
+      id: 155d9739-d0ff-4227-8f17-cd1083bb5c24
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -385,7 +335,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1900
+          "y": 2120
         }
       }
     note: false
@@ -395,10 +345,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: ee301a91-0391-4b5e-890c-0488494c9275
+    taskid: cc3e0a20-beab-429c-8fb3-47fb3d7ef9d7
     type: regular
     task:
-      id: ee301a91-0391-4b5e-890c-0488494c9275
+      id: cc3e0a20-beab-429c-8fb3-47fb3d7ef9d7
       version: -1
       name: Manual malware analysis and forensics
       description: Manual malware analysis and forensics by the analyst.
@@ -423,10 +373,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 6a74c970-e8e5-45c7-8926-4aa490c376de
+    taskid: e02ba151-e148-4c30-8133-7e3db00b3dfc
     type: condition
     task:
-      id: 6a74c970-e8e5-45c7-8926-4aa490c376de
+      id: e02ba151-e148-4c30-8133-7e3db00b3dfc
       version: -1
       name: Auto remediation?
       description: Should the playbook perform auto remediation or manual remediation?
@@ -445,16 +395,18 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: aa
+              complex:
+                root: inputs.AutoRemediation
             iscontext: true
           right:
             value:
-              simple: a
+              simple: "True"
+          ignorecase: true
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2440
+          "y": 2650
         }
       }
     note: false
@@ -464,10 +416,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 5cc3c0c3-389e-4381-8c99-4b27e0d4720a
+    taskid: 40aed7d7-2797-4c70-865d-50e9e9146fa3
     type: regular
     task:
-      id: 5cc3c0c3-389e-4381-8c99-4b27e0d4720a
+      id: 40aed7d7-2797-4c70-865d-50e9e9146fa3
       version: -1
       name: Manual remediation
       description: Manual remediation by the analyst.
@@ -482,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 2610
+          "y": 2830
         }
       }
     note: false
@@ -492,10 +444,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 67436aaa-e13c-402c-8d98-b7cec813216f
+    taskid: 08fd2b7a-0c45-4869-8ad8-0f4f4018173c
     type: condition
     task:
-      id: 67436aaa-e13c-402c-8d98-b7cec813216f
+      id: 08fd2b7a-0c45-4869-8ad8-0f4f4018173c
       version: -1
       name: Continue investigation?
       description: Continue investigation?
@@ -512,7 +464,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 3460
+          "y": 3780
         }
       }
     note: false
@@ -522,10 +474,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 27f0840d-6786-4b67-88d8-1245163d56ae
+    taskid: 458652c1-56f5-4cd2-84e1-6876778fc123
     type: regular
     task:
-      id: 27f0840d-6786-4b67-88d8-1245163d56ae
+      id: 458652c1-56f5-4cd2-84e1-6876778fc123
       version: -1
       name: Manual - continue investigation for new alerts
       description: Manual - continue investigation for new alerts.
@@ -539,8 +491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
-          "y": 3630
+          "x": 700,
+          "y": 3960
         }
       }
     note: false
@@ -550,10 +502,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 168681ab-873d-425d-8a1f-4c14703812bf
+    taskid: 6e11850f-5437-467c-823e-ece02c3ad501
     type: playbook
     task:
-      id: 168681ab-873d-425d-8a1f-4c14703812bf
+      id: 6e11850f-5437-467c-823e-ece02c3ad501
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -708,7 +660,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 2610
+          "y": 2830
         }
       }
     note: false
@@ -718,10 +670,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 368cbfdc-c9c0-41e4-8af9-b37972d8b1a3
+    taskid: 0cf00296-1466-4112-8c30-587f1edaa836
     type: condition
     task:
-      id: 368cbfdc-c9c0-41e4-8af9-b37972d8b1a3
+      id: 0cf00296-1466-4112-8c30-587f1edaa836
       version: -1
       name: Hunt for related IOCs?
       description: Run hunting playbook to find related IOCs?
@@ -732,7 +684,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "55"
+      - "76"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -762,10 +714,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 4cc0c7d1-1f1b-42be-8ebc-03ee672403a1
+    taskid: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
     type: playbook
     task:
-      id: 4cc0c7d1-1f1b-42be-8ebc-03ee672403a1
+      id: 727e5f68-a09c-45b0-8fd3-29d276bbf5e5
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -855,10 +807,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: c7a5e65b-d89d-4118-811d-074228d66ee0
+    taskid: 29397716-1271-45d5-8029-91b655d566ae
     type: regular
     task:
-      id: c7a5e65b-d89d-4118-811d-074228d66ee0
+      id: 29397716-1271-45d5-8029-91b655d566ae
       version: -1
       name: Count XDR alerts
       description: Sets a value in context with the given context key.
@@ -893,10 +845,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 2cbfefaa-28d8-4454-8789-dbba2266e7fa
+    taskid: 12b6dc30-e5d8-4567-8853-464e03e1870d
     type: condition
     task:
-      id: 2cbfefaa-28d8-4454-8789-dbba2266e7fa
+      id: 12b6dc30-e5d8-4567-8853-464e03e1870d
       version: -1
       name: Continue to remediation or close as false positive?
       description: Continue to remediation or close the investigation as false positive?
@@ -913,7 +865,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2070
+          "y": 2290
         }
       }
     note: false
@@ -923,10 +875,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 455a9fae-3bd2-460c-894d-220833e10e87
+    taskid: ba17ac69-f567-488b-843c-297ec73362cb
     type: regular
     task:
-      id: 455a9fae-3bd2-460c-894d-220833e10e87
+      id: ba17ac69-f567-488b-843c-297ec73362cb
       version: -1
       name: Close XDR incident as false positive
       description: Updates one or more fields of a specified incident. Missing fields
@@ -942,7 +894,10 @@ tasks:
     scriptarguments:
       assigned_user_mail: {}
       assigned_user_pretty_name: {}
-      incident_id: {}
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR.Incident
+          accessor: incident_id
       manual_severity: {}
       resolve_comment: {}
       status:
@@ -953,7 +908,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 3990
+          "y": 4160
         }
       }
     note: false
@@ -963,10 +918,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: ac2adbd8-c546-44dc-87b0-6d77167d52d6
+    taskid: db2563e5-3d7c-4b5e-8d4b-61a89018b6d3
     type: regular
     task:
-      id: ac2adbd8-c546-44dc-87b0-6d77167d52d6
+      id: db2563e5-3d7c-4b5e-8d4b-61a89018b6d3
       version: -1
       name: Find similar incidents
       description: |-
@@ -1010,10 +965,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: a5e9a294-6e71-4c28-8795-9acdce69cf1f
+    taskid: d0f123a6-2241-48a8-81ed-ebbb2e6e7512
     type: condition
     task:
-      id: a5e9a294-6e71-4c28-8795-9acdce69cf1f
+      id: d0f123a6-2241-48a8-81ed-ebbb2e6e7512
       version: -1
       name: Link similar incidents?
       description: Link similar incidents?
@@ -1054,10 +1009,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 10fc9a0a-2ffc-4ac8-86b5-e8476ecca92b
+    taskid: f072d598-4100-4ce7-8930-5c355e8b312b
     type: condition
     task:
-      id: 10fc9a0a-2ffc-4ac8-86b5-e8476ecca92b
+      id: f072d598-4100-4ce7-8930-5c355e8b312b
       version: -1
       name: Similar incidents found?
       description: Were any similar incidents found?
@@ -1098,10 +1053,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 3820a737-827b-4c1c-8349-07bc6c94f4e7
+    taskid: 7b5ef23f-53ef-4b22-89e2-a21721836981
     type: condition
     task:
-      id: 3820a737-827b-4c1c-8349-07bc6c94f4e7
+      id: 7b5ef23f-53ef-4b22-89e2-a21721836981
       version: -1
       name: Close as duplicate?
       description: Close the incident as a duplicate?
@@ -1128,10 +1083,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 7f6c7e4f-fa14-4e90-8119-88f3da7c17f1
+    taskid: 439c00da-4585-47b3-8a4b-c8108a07c9ea
     type: regular
     task:
-      id: 7f6c7e4f-fa14-4e90-8119-88f3da7c17f1
+      id: 439c00da-4585-47b3-8a4b-c8108a07c9ea
       version: -1
       name: Resolve XDR incident as duplicate
       description: Updates one or more fields of a specified incident. Missing fields
@@ -1149,8 +1104,8 @@ tasks:
       assigned_user_pretty_name: {}
       incident_id:
         complex:
-          root: incident
-          accessor: xdrincidentid
+          root: PaloAltoNetworksXDR.Incident
+          accessor: incident_id
       manual_severity: {}
       resolve_comment: {}
       status:
@@ -1161,7 +1116,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": 3980
+          "y": 4160
         }
       }
     note: false
@@ -1171,10 +1126,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 6aec53c9-ae46-4724-88ca-2a2b5d8d802c
+    taskid: 02effbbc-3655-4b6c-8201-e4ae9df592b5
     type: title
     task:
-      id: 6aec53c9-ae46-4724-88ca-2a2b5d8d802c
+      id: 02effbbc-3655-4b6c-8201-e4ae9df592b5
       version: -1
       name: Close as duplicate
       type: title
@@ -1199,10 +1154,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: b826a6b1-44b1-4112-8e6d-3b5ffeb62e8a
+    taskid: 0851326d-ff23-4700-84b5-bed51e0b0903
     type: title
     task:
-      id: b826a6b1-44b1-4112-8e6d-3b5ffeb62e8a
+      id: 0851326d-ff23-4700-84b5-bed51e0b0903
       version: -1
       name: False Positive
       type: title
@@ -1217,7 +1172,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 2275
+          "y": 2495
         }
       }
     note: false
@@ -1227,10 +1182,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 163ea9b1-f46f-48b4-840b-f237435e21f0
+    taskid: aaafae13-8eb8-4731-8764-814783e8de1c
     type: regular
     task:
-      id: 163ea9b1-f46f-48b4-840b-f237435e21f0
+      id: aaafae13-8eb8-4731-8764-814783e8de1c
       version: -1
       name: Close investigation - false positive
       description: Closes the incident.
@@ -1257,7 +1212,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 4165
+          "y": 4335
         }
       }
     note: false
@@ -1267,10 +1222,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: c596cad2-63bc-40a7-81d9-a433c6e61c7f
+    taskid: 28b88c41-885d-480b-8845-a9bdd66fdb0a
     type: regular
     task:
-      id: c596cad2-63bc-40a7-81d9-a433c6e61c7f
+      id: 28b88c41-885d-480b-8845-a9bdd66fdb0a
       version: -1
       name: Close investigation- duplicate
       description: Closes the incident.
@@ -1297,7 +1252,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": 4165
+          "y": 4335
         }
       }
     note: false
@@ -1307,10 +1262,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: ffeb4a77-e22f-41d5-832b-be3517a2030e
+    taskid: de3bc26e-6e15-4e05-895a-d0d5579f36d7
     type: regular
     task:
-      id: ffeb4a77-e22f-41d5-832b-be3517a2030e
+      id: de3bc26e-6e15-4e05-895a-d0d5579f36d7
       version: -1
       name: Manually block ports used for exploitation on the scanned host.
       description: Manually block ports used for exploitation on the scanned host.
@@ -1324,8 +1279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 3120
+          "x": 700,
+          "y": 3390
         }
       }
     note: false
@@ -1335,10 +1290,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 9d233d09-dcc2-482e-818a-fa793cd2812e
+    taskid: fcbc26e0-1ef3-4cc8-8fbd-7349829031fb
     type: condition
     task:
-      id: 9d233d09-dcc2-482e-818a-fa793cd2812e
+      id: fcbc26e0-1ef3-4cc8-8fbd-7349829031fb
       version: -1
       name: Was there a port scan alert investigated?
       description: Was there a port scan alert investigated as a part of the incident?
@@ -1364,7 +1319,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2780
+          "y": 3020
         }
       }
     note: false
@@ -1374,10 +1329,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: bf25090c-f375-406a-8749-2cedbb910376
+    taskid: f0c1b9e3-637e-4014-84ee-6cba772837f8
     type: condition
     task:
-      id: bf25090c-f375-406a-8749-2cedbb910376
+      id: f0c1b9e3-637e-4014-84ee-6cba772837f8
       version: -1
       name: Block ports?
       description: Is port blocking required?
@@ -1406,8 +1361,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 530,
-          "y": 2950
+          "x": 520,
+          "y": 3200
         }
       }
     note: false
@@ -1417,10 +1372,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: f4b305cc-0181-4181-8c19-6b88598ebb57
+    taskid: 89c274fe-c102-41ea-86b9-066ae7c72f6d
     type: regular
     task:
-      id: f4b305cc-0181-4181-8c19-6b88598ebb57
+      id: 89c274fe-c102-41ea-86b9-066ae7c72f6d
       version: -1
       name: Cortex XDR - get incident extra data
       description: Returns additional data for the specified incident, for example,
@@ -1452,20 +1407,20 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: fe2efb11-73e5-4367-8bfc-99c3d5d338d9
+    taskid: 14f75080-70ea-4330-8d5f-01566f1d861b
     type: playbook
     task:
-      id: fe2efb11-73e5-4367-8bfc-99c3d5d338d9
+      id: 14f75080-70ea-4330-8d5f-01566f1d861b
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: This is a multipurpose playbook used for hunting and threat detection.\
+      description: "This is a multipurpose playbook used for hunting and threat detection.\
         \ The playbook receives inputs based on hashes, IP addresses, or domain names\
         \ provided manually or from outputs by other playbooks. \nWith the received\
         \ indicators, the playbook leverages data received by PANW products including,\
-        \ Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host\
-        \ names, and users related to the provided indicators.\nThe output provided\
+        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
+        \ names and users related to the provided indicators.\nThe output provided\
         \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
-        \ or users.
+        \ or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
@@ -1490,6 +1445,7 @@ tasks:
               item:
                 value:
                   simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+                iscontext: true
           - operator: uniq
       InternalDomainName:
         complex:
@@ -1536,6 +1492,7 @@ tasks:
               item:
                 value:
                   simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+                iscontext: true
           - operator: uniq
       URLDomain:
         complex:
@@ -1553,6 +1510,7 @@ tasks:
               item:
                 value:
                   simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+                iscontext: true
           - operator: uniq
     separatecontext: true
     loop:
@@ -1563,21 +1521,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1720
+          "x": 625,
+          "y": 1920
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "56":
     id: "56"
-    taskid: 3c3c04d3-b7d0-4b6f-8364-09058f833723
+    taskid: eae7782e-48b0-4544-8e51-25135daa9780
     type: playbook
     task:
-      id: 3c3c04d3-b7d0-4b6f-8364-09058f833723
+      id: eae7782e-48b0-4544-8e51-25135daa9780
       version: -1
       name: Cortex XDR device control violations
       description: "Queries Cortex XDR for device control violations for the specified\
@@ -1633,10 +1591,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: eb23aec7-0bf3-4b59-884c-6c8b6a90b5bf
+    taskid: 9de78be7-6c41-4826-87e1-3a3183e2fc10
     type: regular
     task:
-      id: eb23aec7-0bf3-4b59-884c-6c8b6a90b5bf
+      id: 9de78be7-6c41-4826-87e1-3a3183e2fc10
       version: -1
       name: Link similar incidents
       description: commands.local.cmd.linkIncidents
@@ -1670,27 +1628,102 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "67":
+    id: "67"
+    taskid: ba5988c1-811e-46ed-8f45-738f525697e5
+    type: playbook
+    task:
+      id: ba5988c1-811e-46ed-8f45-738f525697e5
+      version: -1
+      name: Cortex XDR Alerts Handling
+      description: "This playbook is used to loop over every alert in a Cortex XDR\
+        \ incident. \nSupported alert categories:\n- Malware\n- Port Scan"
+      playbookName: Cortex XDR Alerts Handling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.alerts.alert_id
+      incident_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Incident.incident_id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 3
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 2dd761c8-74ce-4a7a-8a0f-89b7e7039618
+    type: title
+    task:
+      id: 2dd761c8-74ce-4a7a-8a0f-89b7e7039618
+      version: -1
+      name: Continue With or Without Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 625,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
       "11_17_#default#": 0.43,
-      "30_17_No": 0.39,
-      "33_23_#default#": 0.53,
-      "33_55_yes": 0.39,
+      "30_17_No": 0.41,
+      "30_31_yes": 0.6,
+      "33_23_#default#": 0.19,
+      "33_76_yes": 0.35,
+      "37_48_False Positive": 0.79,
       "37_7_CONTINUE": 0.77,
       "41_44_#default#": 0.49,
       "41_57_yes": 0.4,
       "43_2_#default#": 0.32,
-      "44_2_no": 0.31,
-      "44_46_yes": 0.35,
-      "52_11_#default#": 0.46,
-      "52_53_yes": 0.53,
-      "53_11_#default#": 0.29
+      "44_2_no": 0.47,
+      "44_46_yes": 0.41,
+      "52_11_#default#": 0.43,
+      "52_53_yes": 0.63,
+      "53_11_#default#": 0.31
     },
     "paper": {
       "dimensions": {
-        "height": 5230,
+        "height": 5400,
         "width": 1650,
         "x": -240,
         "y": -825
@@ -1778,7 +1811,15 @@ inputs:
   description: Timestamp in relative date format for query device control events from
     Cortex XDR.
   playbookInputQuery:
+- key: AutoRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether remediation will be run automatically or manually. If set to
+    "True" - remediation will be automatic.
+  playbookInputQuery:
 outputs: []
 tests:
-- No tests (auto formatted)
+- Test XDR Playbook
+- Cortex XDR - IOC - Test
 fromversion: 6.0.0

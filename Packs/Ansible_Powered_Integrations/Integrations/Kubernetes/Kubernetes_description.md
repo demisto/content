@@ -1,1 +1,0 @@
-Only basic auth is supported

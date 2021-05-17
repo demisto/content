@@ -1,5 +1,0 @@
-[file:IAM_-_Test_Playbook.yml]
-ignore=auto-test
-
-[file:Okta_IAM.yml]
-ignore=IN135

@@ -5,7 +5,7 @@ import pytest
 
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
-    fetch_incidents, get_fetch_time, parser
+    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT
 
 BASE_URL = 'https://test.com/'
 
@@ -142,6 +142,36 @@ INCIDENT_RECORD = {
                 "@type": "3",
                 "@xmlConvertedValue": "2018-03-26T10:03:32.243Z",
                 "#text": "26/03/2018 06:03:32"
+            }
+        ]
+    }
+}
+
+INCIDENT_RECORD_US_TZ = {
+    "record": {
+        "Id": "227603",
+        "Title": "Test",
+        "created date": "2/25/2021 8:45:55 AM"
+    },
+    "raw": {
+        "@contentId": "227603",
+        "@levelId": "67",
+        "@levelGuid": "b0c2d9a1-167c-4fee-ad91-4b4e7b098b4b",
+        "@moduleId": "75",
+        "@parentId": "0",
+        "Field": [
+            {
+                "@id": "35339",
+                "@guid": "9c5e3de1-299b-430f-998a-185ad86e2e79",
+                "@type": "1",
+                "#text": "Test"
+            },
+            {
+                "@id": "53075",
+                "@guid": "9c5e3de1-299b-430f-998a-185ad86e2e80",
+                "@type": "21",
+                "@xmlConvertedValue": "2021-02-25T08:45:55.977Z",
+                "#text": "2/25/2021 8:45:55 AM"
             }
         ]
     }
@@ -529,3 +559,37 @@ class TestArcherV2:
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch == next_fetch
         assert not incidents, 'Should not get new incidents.'
+
+    def test_same_record_returned_in_two_fetches(self, mocker):
+        """
+        Given:
+            - Same record returned in 2 fetch queries
+        When:
+            - Fetching incidents (2 iterations)
+        Then:
+            Check that the new next fetch is greater than last_fetch on both calls.
+            Check the wanted next_fetch is equals to the date in the incident in both calls.
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        mocker.patch.object(
+            client, 'search_records', side_effect=[
+                ([INCIDENT_RECORD_US_TZ], {}),
+                ([INCIDENT_RECORD_US_TZ], {})
+            ]
+        )
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'created date'
+        }
+        field_time_id = '53075'
+        first_fetch = parser('2021-02-24T08:45:55Z')
+        incidents, first_next_fetch = fetch_incidents(client, params, first_fetch, field_time_id)
+        assert first_fetch < first_next_fetch
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2021-02-25T08:45:55.977Z'
+        # first_next_fetch_dt simulates the set to last_run done in fetch-incidents
+        first_next_fetch_dt = parser(first_next_fetch.strftime(OCCURRED_FORMAT))
+        incidents, second_next_fetch = fetch_incidents(client, params, first_next_fetch_dt, field_time_id)
+        assert first_next_fetch == datetime(2021, 2, 25, 8, 45, 55, 977000, tzinfo=timezone.utc)
+        assert not incidents

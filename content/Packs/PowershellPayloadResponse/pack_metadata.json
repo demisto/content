@@ -1,6 +1,6 @@
 {
-    "name": "Powershell Payload Response",
-    "description": "PowerShell is an automated task framework with a command line shell and a scripting language integrated into the .NET framework. Cyber threat actors often leverage PowerShell once they gain access to a system. It provides them access to the command line, stored data, local and remote systems. This in turn provides them the ability to hide malicious commands and scripts and run locally or over a target network as if the system administrator was performing a legitimate task.",
+    "name": "Malware Lateral Movement Assessment and Response",
+    "description": "This playbook identifies and remediates malware's lateral movement impact due to a phishing campaign in an organization.\n\nThis playbook takes the hosts and attachments with the phishing email and then 1. It scans at the endpoint on which the phishing link was clicked and takes action to resolve any C&C activity and 2. It retroactively scans the logging history to identify lateral movement and quartines or resolve the traffic communication from those hosts",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Accenture",

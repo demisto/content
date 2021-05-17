@@ -211,6 +211,7 @@ class DBotScoreType(object):
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
     DBotScoreType.CRYPTOCURRENCY
+    DBotScoreType.EMAIL
     :return: None
     :rtype: ``None``
     """
@@ -224,6 +225,7 @@ class DBotScoreType(object):
     DOMAINGLOB = 'domainglob'
     CERTIFICATE = 'certificate'
     CRYPTOCURRENCY = 'cryptocurrency'
+    EMAIL = 'email'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -244,6 +246,7 @@ class DBotScoreType(object):
             DBotScoreType.DOMAINGLOB,
             DBotScoreType.CERTIFICATE,
             DBotScoreType.CRYPTOCURRENCY,
+            DBotScoreType.EMAIL,
         )
 
 
@@ -281,6 +284,24 @@ class DBotScoreReliability(object):
             DBotScoreReliability.E,
             DBotScoreReliability.F,
         )
+
+    @staticmethod
+    def get_dbot_score_reliability_from_str(reliability_str):
+        if reliability_str == DBotScoreReliability.A_PLUS:
+            return DBotScoreReliability.A_PLUS
+        elif reliability_str == DBotScoreReliability.A:
+            return DBotScoreReliability.A
+        elif reliability_str == DBotScoreReliability.B:
+            return DBotScoreReliability.B
+        elif reliability_str == DBotScoreReliability.C:
+            return DBotScoreReliability.C
+        elif reliability_str == DBotScoreReliability.D:
+            return DBotScoreReliability.D
+        elif reliability_str == DBotScoreReliability.E:
+            return DBotScoreReliability.E
+        elif reliability_str == DBotScoreReliability.F:
+            return DBotScoreReliability.F
+        raise Exception("Please use supported reliability only.")
 
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
@@ -1590,9 +1611,10 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
 
     if removeNull:
         headers_aux = headers[:]
-        for header in headers_aux:
+        for header in headers:
             if all(obj.get(header) in ('', None, [], {}) for obj in t):
-                headers.remove(header)
+                headers_aux.remove(header)
+        headers = headers_aux
 
     if t and len(headers) > 0:
         newHeaders = []
@@ -2572,6 +2594,42 @@ class Common(object):
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
 
+            return ret_value
+
+    class EMAIL(Indicator):
+        """
+        EMAIL indicator class
+        :type address ``str``
+        :param address: The email's address.
+        :type domain: ``str``
+        :param domain: The domain of the Email.
+        :type blocked: ``bool``
+        :param blocked: Whether the email address is blocked.
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, dbot_score, domain=None, blocked=None):
+            # type (str, str, bool) -> None
+            self.address = address
+            self.domain = domain
+            self.blocked = blocked
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            email_context = {
+                'Address': self.address
+            }
+            if self.domain:
+                email_context['Domain'] = self.domain
+            if self.blocked:
+                email_context['Blocked'] = self.blocked
+            ret_value = {
+                Common.EMAIL.CONTEXT_PATH: email_context
+            }
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
             return ret_value
 
     class URL(Indicator):
@@ -4235,7 +4293,8 @@ class CommandResults:
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
         if raw_response is None:
             raw_response = outputs
-
+        if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
+            raise ValueError('outputs_prefix is missing')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
@@ -4313,7 +4372,7 @@ class CommandResults:
                 outputs_key = '{}'.format(self.outputs_prefix)
                 outputs[outputs_key] = self.outputs
             else:
-                outputs = self.outputs  # type: ignore[assignment]
+                outputs.update(self.outputs)  # type: ignore[call-overload]
 
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
@@ -4329,7 +4388,6 @@ class CommandResults:
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note
         }
-
         return return_entry
 
 
@@ -4451,6 +4509,7 @@ def return_error(message, error='', outputs=None):
         :rtype: ``dict``
     """
     is_server_handled = hasattr(demisto, 'command') and demisto.command() in ('fetch-incidents',
+                                                                              'fetch-credentials',
                                                                               'long-running-execution',
                                                                               'fetch-indicators')
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred

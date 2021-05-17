@@ -94,7 +94,8 @@ SEARCH_DEVICE_KEY_MAP = {
     'os_version': 'OS',
     'mac_address': 'MacAddress',
     'first_seen': 'FirstSeen',
-    'last_seen': 'LastSeen'
+    'last_seen': 'LastSeen',
+    'status': 'Status',
 }
 
 ''' SPLIT KEY DICTIONARY '''
@@ -1544,7 +1545,7 @@ def search_device_command():
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
     entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
-    headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
+    headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
     hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
     ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
     return create_entry_object(contents=raw_res, ec=ec, hr=hr)

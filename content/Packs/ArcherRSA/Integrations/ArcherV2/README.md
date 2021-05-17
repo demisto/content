@@ -954,7 +954,8 @@ Search for records inside the given application
 | numericOperator | Numeric search operator | Optional | 
 | dateOperator | Date search operator | Optional | 
 | fieldsToGet | Fields to fetch from the the application | Optional | 
-| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required | 
+| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required |
+| isDescending | Whether to order by descending order. Possible values are: "true", "false". | Optional |
 
 
 #### Context Output

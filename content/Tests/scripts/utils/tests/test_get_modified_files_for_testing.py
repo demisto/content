@@ -36,92 +36,64 @@ class TestGetModifiedFilesForTesting:
             return_value=[yml_file],
         )
         mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == [yml_file]
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == [yml_file]
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_yaml_file(self, mocker):
         diff_line = "M      Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml"
         mock_get_dict_from_yaml(mocker, {"category": "c"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == [
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == [
             "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml"
         ]
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_non_relevant_file(self):
         diff_line = "A       Packs/HelloWorld/Integrations/HelloWorld/cert.pem"
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_test_file(self):
         diff_line = (
             "M       Packs/HelloWorld/Integrations/HelloWorld/connection_test.py"
         )
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_renamed_file(self, mocker):
         diff_line = (
@@ -129,91 +101,65 @@ class TestGetModifiedFilesForTesting:
             "Packs/NewHelloWorld/Integrations/HelloWorld/NewHelloWorld.yml"
         )
         mock_get_dict_from_yaml(mocker, {"category": "c"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == [
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == [
             "Packs/NewHelloWorld/Integrations/HelloWorld/NewHelloWorld.yml"
         ]
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_test_playbook(self, mocker):
         diff_line = "M Packs/HelloWorld/TestPlaybooks/HelloWorld.yml"
         mock_get_dict_from_yaml(mocker, {"tasks": "c"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == ["Packs/HelloWorld/TestPlaybooks/HelloWorld.yml"]
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == ["Packs/HelloWorld/TestPlaybooks/HelloWorld.yml"]
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_no_file_path(self):
         diff_line = ""
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_common_yml_file(self, mocker):
         diff_line = "M    scripts/script-CommonIntegration.yml"
         mock_get_dict_from_yaml(mocker, {"script": "cat"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == ["scripts/script-CommonIntegration.yml"]
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == ["scripts/script-CommonIntegration.yml"]
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_common_py_file(self, mocker):
         diff_line = "M    Packs/Base/Scripts/CommonServerPython/CommonServerPython.py"
@@ -224,26 +170,20 @@ class TestGetModifiedFilesForTesting:
             ],
         )
         mock_get_dict_from_yaml(mocker, {"script": "cat"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == [
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == [
             "Packs/Base/Scripts/CommonServerPython/CommonServerPython.yml"
         ]
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     @pytest.mark.parametrize(
         "path",
@@ -255,133 +195,96 @@ class TestGetModifiedFilesForTesting:
     def test_reputations_list(self, path: str, mocker):
         diff_line = f"M {path}"
         mock_get_dict_from_yaml(mocker, {"regex": "bla"}, "json")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is True
-        assert is_indicator_json is False
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is True
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_conf(self, mocker):
         diff_line = "M Tests/conf.json"
         mock_get_dict_from_yaml(mocker, {}, "json")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is True
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is True
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_docs(self):
         diff_line = "A Packs/HelloWorld/README.md"
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_metadata(self, mocker):
         diff_line = "M Packs/HelloWorld/pack_metadata.json"
         mock_get_dict_from_yaml(mocker, {}, "json")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == {"HelloWorld"}
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == {"HelloWorld"}
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_indicator_fields(self, mocker):
         diff_line = "M Packs/HelloWorld/IndicatorFields/sample-field.json"
         mock_get_dict_from_yaml(mocker, {"id": "indicator-sample-field"}, "json")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is True
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is True
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_secrets_whitelist(self, mocker):
         mock_get_dict_from_yaml(mocker, {"files": []}, "json")
         diff_line = "M Tests/secrets_white_list.json"
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     @pytest.mark.parametrize(
         "file_path",
@@ -400,24 +303,18 @@ class TestGetModifiedFilesForTesting:
         """
         diff_line = "M Tests/Util/Scripts/new_script.py"
         py_file = "Tests/Util/Scripts/new_script.py"
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == []
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == [py_file]
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == []
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == [py_file]
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False
 
     def test_name_not_same_as_folder(self, mocker):
         """
@@ -438,21 +335,14 @@ class TestGetModifiedFilesForTesting:
             return_value=[yml_file],
         )
         mock_get_dict_from_yaml(mocker, {"category": "cat"}, "yml")
-        (
-            modified_files_list,
-            modified_tests_list,
-            changed_common,
-            is_conf_json,
-            sample_tests,
-            modified_metadata_list,
-            is_reputations_json,
-            is_indicator_json,
-        ) = get_modified_files_for_testing(diff_line)
-        assert modified_files_list == [yml_file]
-        assert modified_tests_list == []
-        assert changed_common == []
-        assert is_conf_json is False
-        assert sample_tests == []
-        assert modified_metadata_list == set()
-        assert is_reputations_json is False
-        assert is_indicator_json is False
+        modified_files_instance = get_modified_files_for_testing(diff_line)
+
+        assert modified_files_instance.modified_files == [yml_file]
+        assert modified_files_instance.modified_tests == []
+        assert modified_files_instance.changed_common_files == []
+        assert modified_files_instance.is_conf_json is False
+        assert modified_files_instance.sample_tests == []
+        assert modified_files_instance.modified_metadata == set()
+        assert modified_files_instance.is_reputations_json is False
+        assert modified_files_instance.is_indicator_json is False
+        assert modified_files_instance.is_landing_page_sections_json is False

@@ -153,6 +153,9 @@ script:
     - contextPath: CrowdStrike.Device.PolicyType
       description: The policy type of the device.
       type: String
+    - contextPath: CrowdStrike.Device.Status
+      description: The device status.
+      type: String
   - arguments:
     - default: false
       description: The ID of the behavior.
@@ -2061,7 +2064,7 @@ script:
     - contextPath: CrowdStrike.Incidents.fine_score
       description: The incident score.
       type: Number
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.2.17246
   feed: false
   isfetch: true
   longRunning: false

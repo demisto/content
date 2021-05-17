@@ -57,6 +57,7 @@ Searches for devices that match the query.
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
+| CrowdStrike.Device.Status | String | The device status. | 
  
 
 #### Command Example
@@ -75,7 +76,8 @@ Searches for devices that match the query.
                 "LastSeen": "2019-03-28T02:36:41Z", 
                 "OS": "Mojave (10.14)", 
                 "ID": "336474ea6a524e7c68575f6508d84781", 
-                "FirstSeen": "2017-12-28T22:38:11Z"
+                "FirstSeen": "2017-12-28T22:38:11Z",
+                "Status": "contained"
             }, 
             {
                 "ExternalIP": "94.188.164.68", 
@@ -85,7 +87,8 @@ Searches for devices that match the query.
                 "LastSeen": "2019-03-17T10:03:17Z", 
                 "OS": "Mojave (10.14)", 
                 "ID": "459146dbe524472e73751a43c63324f3", 
-                "FirstSeen": "2017-12-10T11:01:20Z"
+                "FirstSeen": "2017-12-10T11:01:20Z",
+                "Status": "contained"
             }
         ]
     }
@@ -94,11 +97,10 @@ Searches for devices that match the query.
 
 ### Devices
 
-| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z |
-| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z |
-
+| ID | Hostname | OS | Mac Address | Local IP | External IP | First Seen | Last Seen | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 336474ea6a524e7c68575f6508d84781 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
+| 459146dbe524472e73751a43c63324f3 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
  
 
 ### 2. Get a behavior

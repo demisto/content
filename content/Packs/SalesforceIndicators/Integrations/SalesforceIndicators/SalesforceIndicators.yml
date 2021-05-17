@@ -29,10 +29,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
   defaultvalue: None
@@ -44,7 +40,7 @@ configuration:
   - Suspicious
   - Bad
   required: false
-  type: 15
+  type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
@@ -118,17 +114,6 @@ configuration:
   name: feed
   type: 8
   required: false
-- display: Indicator Reputation
-  name: feedReputation
-  type: 18
-  required: false
-  options:
-  - None
-  - Good
-  - Suspicious
-  - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
@@ -153,7 +138,7 @@ script:
   - arguments: []
     name: salesforce-get-indicators
     description: 'Executes the fetch-indicators command'
-  dockerimage: demisto/python3:3.9.1.15759
+  dockerimage: demisto/python3:3.9.2.17246
   feed: true
   runonce: false
   script: ''

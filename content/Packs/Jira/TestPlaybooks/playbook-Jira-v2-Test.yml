@@ -864,7 +864,7 @@ tasks:
       - "32"
     scriptarguments:
       attribute:
-        simple: admin@demistodev.com
+        simple: Meir Wahnon
       maxResults: {}
     separatecontext: false
     view: |-

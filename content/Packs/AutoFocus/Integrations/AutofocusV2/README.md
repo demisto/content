@@ -33,7 +33,8 @@ For more information on activating the license see [Activating AutoFocus License
    | **Parameter** | **Description** | **Example** |
    | ---------             | -----------           | -------            |
    | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
-   |  API Key | Account's private token. | N/A  |
+   | API Key | Account's private token. | N/A  |
+   | Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
    | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/www.markdownguide.org |
    | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |

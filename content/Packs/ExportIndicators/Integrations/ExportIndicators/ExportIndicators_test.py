@@ -4,7 +4,6 @@ import pytest
 import demistomock as demisto
 from netaddr import IPAddress
 
-
 IOC_RES_LEN = 38
 
 '''Tests'''
@@ -572,3 +571,46 @@ class TestHelperFunctions:
         mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
         mimtype = get_outbound_mimetype()
         assert mimtype == 'text/plain'
+
+    @pytest.mark.parametrize('sort_field, sort_order, expected_first_result', [
+        ('lastSeen', 'asc', '200.77.186.170'),
+        ('lastSeen', 'desc', '188.166.23.215'),
+    ])
+    def test_sort_iocs(self, mocker, sort_field, sort_order, expected_first_result):
+        """Test IoCs sorting"""
+        import ExportIndicators as ei
+        from ExportIndicators import refresh_outbound_context, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            request_args = RequestArguments(query='', out_format='text', sort_field=sort_field, sort_order=sort_order)
+            ei_vals = refresh_outbound_context(request_args)
+
+            assert ei_vals.split('\n', 1)[0] == expected_first_result
+
+    def test_sort_iocs_with_invalid_order(self, mocker):
+        """Test IoCs sorting with invalid order"""
+        import ExportIndicators as ei
+        from ExportIndicators import refresh_outbound_context, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            request_args = RequestArguments(query='', out_format='text', sort_field='lastSeen', sort_order='invalid_sort_order')
+            ei_vals = refresh_outbound_context(request_args)
+
+            assert ei_vals.split('\n', 1)[0] == '213.182.138.224'
+
+    def test_sort_iocs_invalid_field(self, mocker):
+        """Test IoCs sorting wit invalid field"""
+        import ExportIndicators as ei
+        from ExportIndicators import refresh_outbound_context, RequestArguments
+        with open('ExportIndicators_test/TestHelperFunctions/demisto_iocs.json', 'r') as iocs_json_f:
+            iocs_json = json.loads(iocs_json_f.read())
+            mocker.patch.object(ei, 'find_indicators_with_limit', return_value=iocs_json)
+            request_args = RequestArguments(query='', out_format='text', sort_field='invalid_field_name', sort_order='asc')
+            mocker.patch.object(demisto, 'debug')
+            refresh_outbound_context(request_args)
+
+            debug_list = [call[0][0] for call in demisto.debug.call_args_list]
+            assert 'ExportIndicators - Could not sort IoCs, please verify that you entered the correct field name.\n' \
+                   'Field used: invalid_field_name' in debug_list

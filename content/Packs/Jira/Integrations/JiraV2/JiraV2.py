@@ -1,3 +1,5 @@
+from typing import Union
+
 from requests_oauthlib import OAuth1
 from dateparser import parse
 import pytz
@@ -197,7 +199,7 @@ def search_user(query: str, max_results: str = '50'):
     Returns:
         List of users.
     """
-    url = f"rest/api/latest/users/search?query={query}&maxResults={max_results}"
+    url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
     res = jira_req('GET', url, resp_type='json')
     return res
 
@@ -529,7 +531,7 @@ def create_issue_command():
     j_res = jira_req('POST', url, json.dumps(issue), resp_type='json')
 
     md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
-                                                      project_name=demisto.getArg('issueTypeName'))
+                                                      project_name=demisto.getArg('projectName'))
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], "")
     contents = j_res
     outputs = md_and_context['context']

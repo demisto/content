@@ -24,14 +24,14 @@ This integration was integrated and tested with cyberint
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### cyberint-list-alerts
+### cyberint-alerts-fetch
 ***
 List alerts according to parameters
 
 
 #### Base Command
 
-`cyberint-list-alerts`
+`cyberint-alerts-fetch`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -91,6 +91,15 @@ List alerts according to parameters
 | Cyberint.Alert.alert_data.repository_name | String | Repository name related to an event. | 
 | Cyberint.Alert.alert_data.mail_server | String | Mail server related to an event. | 
 | Cyberint.Alert.alert_data.blacklist_repository | String | Blacklist repository name related to an event. | 
+| Cyberint.Alert.alert_data.screenshot | String | Screenshot related to an event. | 
+| Cyberint.Alert.alert_data.csv.username | String | Username related to an event. |
+| Cyberint.Alert.alert_data.csv.password | String | Password related to an event. |
+| Cyberint.Alert.alert_data.storage_link | String | Storage link related to an event. |
+| Cyberint.Alert.alert_data.spf_records | String | Spf records related to an event. |
+| Cyberint.Alert.alert_data.interface_type | String | Interface type related to an event. |
+| Cyberint.Alert.alert_data.dmarc_record | String | Dmarc record related to an event. |
+| Cyberint.Alert.alert_data.vulnerable_cname_record | String | Vulnerable cname record related to an event. |
+| Cyberint.Alert.attachments | String | Attachments related to the alert. | 
 | Cyberint.Alert.ioc.type | String | Type of IOC related to the alert. | 
 | Cyberint.Alert.ioc.value | String | Value of the IOC related to the alert. | 
 | Cyberint.Alert.ticket_id | String | Ticket ID of the alert. | 
@@ -105,7 +114,7 @@ List alerts according to parameters
 
 
 #### Command Example
-```!cyberint-list-alerts created_date_from="2020-01-07T00:00:00Z" page_size=100```
+```!cyberint-alerts-fetch created_date_from="2020-01-07T00:00:00Z" page_size=100```
 
 #### Context Example
 ```json
@@ -1815,14 +1824,14 @@ List alerts according to parameters
 >Total alerts: 30
 >Current page: 1
 
-### cyberint-update-alerts
+### cyberint-alerts-status-update
 ***
 Update the status of one or more alerts.
 
 
 #### Base Command
 
-`cyberint-update-alerts`
+`cyberint-alerts-status-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1842,7 +1851,7 @@ Update the status of one or more alerts.
 
 
 #### Command Example
-```!cyberint-update-alerts alert_ref_ids=ADS10-3 status=acknowledged```
+```!cyberint-alerts-status-update alert_ref_ids=ADS10-3 status=acknowledged```
 
 #### Context Example
 ```json

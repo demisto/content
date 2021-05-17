@@ -2,7 +2,7 @@
 
 ---
 
-Threat InDepth's timely, correlated, and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats and actionable insights to make meaningful response decisions. By correlating insights gathered across email content, web traffic, and suspicious files; Cyren provides security teams with a multi-dimensional presentation of critical threat characteristics.
+Threat InDepth's correlated and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats and actionable insights to make meaningful response decisions. By correlating insights gathered across email content, web traffic, and suspicious files; Cyren provides security teams with a multi-dimensional presentation of critical threat characteristics.
 
 ## Benefits include
 
@@ -27,11 +27,11 @@ Threat InDepth's timely, correlated, and contextualized intelligence helps enter
 
 ![Cyren GlobalView Cloud](https://raw.githubusercontent.com/demisto/content/master/Packs/FeedCyrenThreatInDepth/doc_files/Cyren_GlobalViewCloud_V2.png)
 
-## Feeds included in Cyren Threat InDepth content pack
+If you don't have an API key already, you should subscribe to one or more of these Content Packs:
 
-The [Cyren Threat InDepth content pack](#/market/browse/FeedCyrenThreatInDepth) includes access to these streams of indicators:
-
-- IP Reputation Intelligence
-- Phishing & Fraud URL Intelligence
-- Malware URL Intelligence
-- Malware File Intelligence
+- [Bundle: Threat Intelligence Feeds](#/market/browse/CyrenThreatInDepthFullBundle)
+- [Bundle: Malware Intelligence Feeds](#/market/browse/CyrenThreatInDepthMalwareBundle)
+- [IP Reputation Intelligence](#/market/browse/CyrenThreatInDepthIPReputationFeed)
+- [Phishing & Fraud URL Intelligence](#/market/browse/CyrenThreatInDepthPhishingURLFeed)
+- [Malware URL Intelligence](#/market/browse/CyrenThreatInDepthMalwareURLFeed)
+- [Malware File Intelligence](#/market/browse/CyrenThreatInDepthMalwareFileFeed)

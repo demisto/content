@@ -1,51 +1,44 @@
 id: Exabeam - Test
-version: -1
+inputs: []
 name: Exabeam - Test
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 24712de6-8daf-48b4-8384-766ce55a91c1
-    type: start
-    task:
-      id: 24712de6-8daf-48b4-8384-766ce55a91c1
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 483693b3-8af3-40d1-806f-e6e8c0742658
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 483693b3-8af3-40d1-806f-e6e8c0742658
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 50,
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "1":
     id: "1"
-    taskid: f84330a2-ef17-4831-848e-d2475fe246e9
-    type: regular
-    task:
-      id: f84330a2-ef17-4831-848e-d2475fe246e9
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "2"
       - "3"
-      - "8"
-      - "17"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
@@ -54,303 +47,453 @@ tasks:
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "2":
-    id: "2"
-    taskid: d8019d7d-931e-4ee5-8bf0-d8b321021225
-    type: title
+    skipunavailable: false
     task:
-      id: d8019d7d-931e-4ee5-8bf0-d8b321021225
-      version: -1
-      name: Watchlists
-      type: title
-      iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-      - "19"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 705
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 1062d081-c2dc-4cf7-8db2-84988f220385
-    type: title
-    task:
-      id: 1062d081-c2dc-4cf7-8db2-84988f220385
-      version: -1
-      name: Users
-      type: title
+      description: Delete field from context
+      id: ee893a22-9502-4c05-8e19-38ff3ab54648
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-      - "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 4bf87f11-8d3a-4fc9-8461-68936a55bb94
-    type: regular
-    task:
-      id: 4bf87f11-8d3a-4fc9-8461-68936a55bb94
-      version: -1
-      name: Get Watchlists
-      description: Returns all watchlist IDs and titles.
-      script: '|||exabeam-get-watchlists'
+      name: Delete Context
+      script: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: false
+      version: -1
+    taskid: ee893a22-9502-4c05-8e19-38ff3ab54648
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 195
         }
       }
-    note: false
-    timertriggers: []
+  "2":
+    id: "2"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1af57f1b-0b1d-4e35-813e-38dd6ef44e7d
+      iscommand: false
+      name: Watchlists
+      type: title
+      version: -1
+      description: ''
+    taskid: 1af57f1b-0b1d-4e35-813e-38dd6ef44e7d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3925
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b75d62de-1d51-4d47-81fd-922e0f1b5e65
+      iscommand: false
+      name: Users
+      type: title
+      version: -1
+      description: ''
+    taskid: b75d62de-1d51-4d47-81fd-922e0f1b5e65
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns all watchlist IDs and titles.
+      id: d51b0313-de0b-4c3c-8da7-d088a78297e8
+      iscommand: true
+      name: Get Watchlists
+      script: '|||exabeam-get-watchlists'
+      type: regular
+      version: -1
+    taskid: d51b0313-de0b-4c3c-8da7-d088a78297e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4070
+        }
+      }
   "5":
     id: "5"
-    taskid: a0651fe6-c99d-41d2-8b27-a6ff5e2e2eaf
-    type: regular
-    task:
-      id: a0651fe6-c99d-41d2-8b27-a6ff5e2e2eaf
-      version: -1
-      name: Get Notable Users
-      description: Returns notable users in a period of time.
-      script: '|||exabeam-get-notable-users'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       limit:
         simple: "5"
       time_period:
         simple: 3 days
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns notable users in a period of time.
+      id: 1bd0c682-6426-4ff6-888a-8170b04bbd03
+      iscommand: true
+      name: Get Notable Users
+      script: '|||exabeam-get-notable-users'
+      type: regular
+      version: -1
+    taskid: 1bd0c682-6426-4ff6-888a-8170b04bbd03
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 515
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "6":
     id: "6"
-    taskid: be8028ed-e75c-443d-8c33-f36f46b871ad
-    type: regular
-    task:
-      id: be8028ed-e75c-443d-8c33-f36f46b871ad
-      version: -1
-      name: Get User Info
-      description: Returns user information data for the username.
-      script: '|||exabeam-get-user-info'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "7"
+    note: false
+    quietmode: 0
     scriptarguments:
       username:
-        simple: jmontoya
+        simple: jdonaldson
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns user information data for the username.
+      id: 071762e0-099e-47a2-805d-32cf152c5c46
+      iscommand: true
+      name: Get User Info
+      script: '|||exabeam-get-user-info'
+      type: regular
+      version: -1
+    taskid: 071762e0-099e-47a2-805d-32cf152c5c46
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 690
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
-    taskid: fdf45308-91fb-4280-8cf4-f1e86a571ed7
-    type: regular
-    task:
-      id: fdf45308-91fb-4280-8cf4-f1e86a571ed7
-      version: -1
-      name: Get User Sessions
-      description: Returns sessions for the given username and time range.
-      script: '|||exabeam-get-user-sessions'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "16"
+    note: false
+    quietmode: 0
     scriptarguments:
       end_time:
-        simple: 2018-08-03T11:50:16
+        simple: 2020-06-02T04:16:01
       start_time:
-        simple: 2018-08-01T11:50:16
+        simple: 2020-06-01T14:31:00
       username:
         simple: ${Exabeam.User.Username}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns sessions for the given username and time range.
+      id: dc229134-e339-4e53-82a4-d9a21c468bfa
+      iscommand: true
+      name: Get User Sessions
+      script: '|||exabeam-get-user-sessions'
+      type: regular
+      version: -1
+    taskid: dc229134-e339-4e53-82a4-d9a21c468bfa
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 50,
           "y": 865
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "8":
     id: "8"
-    taskid: a3c36822-675c-4f4d-8b84-27a5d046c94d
-    type: title
-    task:
-      id: a3c36822-675c-4f4d-8b84-27a5d046c94d
-      version: -1
-      name: PeerGroups
-      type: title
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b53deee3-bcbb-49d8-8258-6c2fe83e3d2e
+      iscommand: false
+      name: PeerGroups
+      type: title
+      version: -1
+      description: ''
+    taskid: b53deee3-bcbb-49d8-8258-6c2fe83e3d2e
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 705
+          "x": 50,
+          "y": 2760
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "9":
     id: "9"
-    taskid: 2775ef26-5e51-41d6-8e39-f426ce531ef5
-    type: regular
-    task:
-      id: 2775ef26-5e51-41d6-8e39-f426ce531ef5
-      version: -1
-      name: Get Peer Groups
-      description: Returns all peer groups.
-      script: '|||exabeam-get-peer-groups'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "14"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns all peer groups.
+      id: 4b9c53d3-ad44-4dcc-8e00-8fc56ea593cc
+      iscommand: true
+      name: Get Peer Groups
+      script: '|||exabeam-get-peer-groups'
+      type: regular
+      version: -1
+    taskid: 4b9c53d3-ad44-4dcc-8e00-8fc56ea593cc
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 1770,
-          "y": 865
+          "x": 50,
+          "y": 2905
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "10":
     id: "10"
-    taskid: c762b259-893a-4848-821f-e47a886b07e5
-    type: regular
-    task:
-      id: c762b259-893a-4848-821f-e47a886b07e5
-      version: -1
-      name: Get User Labels
-      description: Returns all labels of the user.
-      script: '|||exabeam-get-user-labels'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "13"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns all labels of the user.
+      id: 0ea4fa6b-a444-4d6a-8523-5f6b1345f48f
+      iscommand: true
+      name: Get User Labels
+      script: '|||exabeam-get-user-labels'
+      type: regular
+      version: -1
+    taskid: 0ea4fa6b-a444-4d6a-8523-5f6b1345f48f
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 865
+          "x": 50,
+          "y": 1740
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "11":
-    id: "11"
-    taskid: d890a0eb-e982-4942-8f16-e027af612cfd
-    type: condition
-    task:
-      id: d890a0eb-e982-4942-8f16-e027af612cfd
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Exabeam.Watchlist.WatchlistID
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: Exabeam.Watchlist.Title
+          operator: isExists
+      - - left:
             iscontext: true
-      - - operator: isExists
-          left:
             value:
               simple: Exabeam.Watchlist.Category
+          operator: isExists
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "33"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 135dfb5d-0c71-4d88-8510-36565fb216d2
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 135dfb5d-0c71-4d88-8510-36565fb216d2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4245
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
             iscontext: true
+            value:
+              simple: Exabeam.UserLabel.Label
+          operator: isEqualString
+          right:
+            value:
+              simple: privileged_user
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 42ff77c2-f6a4-4e5a-80f2-6d7a51898d02
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 42ff77c2-f6a4-4e5a-80f2-6d7a51898d02
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.PeerGroup.Name
+          operator: isExists
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6018a296-0014-4994-83b0-1bc53fee9280
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 6018a296-0014-4994-83b0-1bc53fee9280
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.User.Username
+          operator: isEqualString
+          right:
+            value:
+              simple: jdonaldson
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.User.Session.SessionID
+          operator: isExists
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9d700c53-7121-4306-80a8-e42797a128e5
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 9d700c53-7121-4306-80a8-e42797a128e5
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -358,276 +501,865 @@ tasks:
           "y": 1040
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "12":
-    id: "12"
-    taskid: 75b591fb-91c0-4d31-82b8-ac6b828ab4bd
-    type: title
-    task:
-      id: 75b591fb-91c0-4d31-82b8-ac6b828ab4bd
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1125,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 68b8d33a-8a1d-4cde-8cad-9e2f539f175a
-    type: condition
-    task:
-      id: 68b8d33a-8a1d-4cde-8cad-9e2f539f175a
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Exabeam.UserLabel.Label
-            iscontext: true
-          right:
-            value:
-              simple: privileged_user
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 81d7977a-acd0-4dcd-846a-650f043ac568
-    type: condition
-    task:
-      id: 81d7977a-acd0-4dcd-846a-650f043ac568
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: Exabeam.PeerGroup.Name
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1770,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: e235d8cd-0161-48fe-8de2-6802ce7aeba0
-    type: condition
-    task:
-      id: e235d8cd-0161-48fe-8de2-6802ce7aeba0
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Exabeam.User.Username
-            iscontext: true
-          right:
-            value:
-              simple: jmontoya
-      - - operator: isExists
-          left:
-            value:
-              simple: Exabeam.User.Session.SessionID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "17":
     id: "17"
-    taskid: f31070ed-df9e-4bdb-8899-bcf736d36a72
-    type: title
-    task:
-      id: f31070ed-df9e-4bdb-8899-bcf736d36a72
-      version: -1
-      name: Assets
-      type: title
-      iscommand: false
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "18"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bb60a169-c6ad-4ed2-8627-e6e9410143b3
+      iscommand: false
+      name: Assets
+      type: title
+      version: -1
+      description: ''
+    taskid: bb60a169-c6ad-4ed2-8627-e6e9410143b3
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 880
+          "x": 50,
+          "y": 3255
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "18":
     id: "18"
-    taskid: c45bd566-51bb-48b4-8dd0-f2931087b138
-    type: regular
-    task:
-      id: c45bd566-51bb-48b4-8dd0-f2931087b138
-      version: -1
-      name: Get asset data
-      description: Get asset data.
-      script: '|||exabeam-get-asset-data'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - "23"
+    note: false
+    quietmode: 0
     scriptarguments:
-      asset_name:
-        simple: 10.77.184.232
+      asset_id:
+        simple: wks_56e_kt
+      max_users_number: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns asset information for given asset ID (hostname or IP address).
+      id: 8587359a-e065-44e2-8e59-d341af47825d
+      iscommand: true
+      name: Get asset info
+      script: '|||exabeam-get-asset-info'
+      type: regular
+      version: -1
+    taskid: 8587359a-e065-44e2-8e59-d341af47825d
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 2200,
-          "y": 1040
+          "x": 50,
+          "y": 3400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "19":
     id: "19"
-    taskid: 08ca42db-5ba7-4eca-872c-e727dbe9a11c
-    type: regular
-    task:
-      id: 08ca42db-5ba7-4eca-872c-e727dbe9a11c
-      version: -1
-      name: Create watchlist
-      description: Create a watchlist.
-      script: '|||exabeam-create-watchlist'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
     nexttasks:
       '#none#':
       - "20"
+    note: false
+    quietmode: 0
     scriptarguments:
-      category:
-        simple: Users
-      description:
-        simple: dummy sesc
-      items:
-        simple: bsalazar
-      title:
-        simple: my_tpb_watchlist
+      is_exclusive: {}
+      keyword:
+        simple: lt-fweber-888
+      limit: {}
+      search_by_ip: {}
+      watchlist_id:
+        simple: 60249dfb130b3800075b8e36
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets the assets of a specified watchlist according to a keyword.
+      id: e8afc88a-7919-433d-8d5e-beeb2e36c4e2
+      iscommand: true
+      name: Search Assets in Watchlist
+      script: '|||exabeam-watchlist-asset-search'
+      type: regular
+      version: -1
+    taskid: e8afc88a-7919-433d-8d5e-beeb2e36c4e2
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 865
+          "x": 50,
+          "y": 4595
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.AssetInfo.hostName
+          operator: containsGeneral
+          right:
+            value:
+              simple: lt-fweber-888
+      label: "yes"
     id: "20"
-    taskid: 2dba052e-c21f-45d1-8469-f6e853c3b956
-    type: regular
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 2dba052e-c21f-45d1-8469-f6e853c3b956
-      version: -1
-      name: Delete watchlist
-      description: Delete a watchlist.
-      script: '|||exabeam-delete-watchlist'
-      type: regular
-      iscommand: true
       brand: ""
+      id: 722a5a97-1baf-4239-87ac-af5eafdb5de2
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 722a5a97-1baf-4239-87ac-af5eafdb5de2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4770
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
     nexttasks:
       '#none#':
-      - "12"
+      - "35"
+    note: false
+    quietmode: 0
     scriptarguments:
-      watchlist_id:
-        complex:
-          root: Exabeam
-          accessor: Watchlist.WatchlistID
+      session_id:
+        simple: ${Exabeam.User.Session.SessionID}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns session info data for the given ID.
+      id: c10f9546-59fc-481d-856a-c77cc4c14739
+      iscommand: true
+      name: Get Session Info
+      script: '|||exabeam-get-session-info-by-id'
+      type: regular
+      version: -1
+    taskid: c10f9546-59fc-481d-856a-c77cc4c14739
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1040
+          "x": 50,
+          "y": 1215
         }
       }
-    note: false
-    timertriggers: []
+  "22":
+    id: "22"
     ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sequence_id:
+        simple: ${Exabeam.User.Session.SessionID}
+      sequence_type:
+        simple: session
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all the triggered rules of a sequence.
+      id: fb2f04ca-33cb-49f8-8f28-3086a22e465a
+      iscommand: true
+      name: List Triggered Rules
+      script: '|||exabeam-list-triggered-rules'
+      type: regular
+      version: -1
+    taskid: fb2f04ca-33cb-49f8-8f28-3086a22e465a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      anomaly_only: {}
+      asset_id:
+        simple: ${Exabeam.AssetInfo.assetId}
+      event_categories: {}
+      event_time:
+        simple: ${Exabeam.AssetInfo.firstSeen}
+      event_types: {}
+      event_types_operator: {}
+      number_of_events: {}
+      sequence_types:
+        simple: session
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets next events for a given asset.
+      id: ab56e7a0-7be2-4894-8475-06a97a765d40
+      iscommand: true
+      name: List Asset Next Events
+      script: '|||exabeam-list-asset-timeline-next-events'
+      type: regular
+      version: -1
+    taskid: ab56e7a0-7be2-4894-8475-06a97a765d40
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3575
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        simple: ${Exabeam.AssetInfo.assetId}
+      limit: {}
+      sort_by: {}
+      sort_order: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets security alerts for a given asset.
+      id: c3a6cb6a-4a3d-42e2-88c0-293756bc4abf
+      iscommand: true
+      name: List Asset Security Alerts
+      script: '|||exabeam-list-security-alerts-by-asset'
+      type: regular
+      version: -1
+    taskid: c3a6cb6a-4a3d-42e2-88c0-293756bc4abf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3750
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6b06d6c-2e3e-4052-86bd-e7bcde3cc954
+      iscommand: false
+      name: Rules & Models
+      type: title
+      version: -1
+      description: ''
+    taskid: c6b06d6c-2e3e-4052-86bd-e7bcde3cc954
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      filter_by: {}
+      limit: {}
+      page: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all rules.
+      id: 8066c683-57b0-4422-8eb3-044dae8ec10c
+      iscommand: true
+      name: Get Rules
+      script: '|||exabeam-fetch-rules'
+      type: regular
+      version: -1
+    taskid: 8066c683-57b0-4422-8eb3-044dae8ec10c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      rule_id:
+        simple: ${Exabeam.Rule.[0].ruleId}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a rule's information as a string.
+      id: 4f841a97-2cdf-4822-80ef-aa60b237092c
+      iscommand: true
+      name: Get Rule String
+      script: '|||exabeam-get-rule-string'
+      type: regular
+      version: -1
+    taskid: 4f841a97-2cdf-4822-80ef-aa60b237092c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7779d5ce-414b-42ed-8148-44bba3c405d0
+      iscommand: false
+      name: Context Tables
+      type: title
+      version: -1
+      description: ''
+    taskid: 7779d5ce-414b-42ed-8148-44bba3c405d0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5120
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      limit: {}
+      offset: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of a context table records.
+      id: b8e3c20b-8ff1-4f89-8750-a76ea15f447a
+      iscommand: true
+      name: List Context Table Records
+      script: '|||exabeam-list-context-table-records'
+      type: regular
+      version: -1
+    taskid: b8e3c20b-8ff1-4f89-8750-a76ea15f447a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5265
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Export a context table to CSV.
+      id: 35596f86-af27-4c39-85a4-d1a72f67dd7a
+      iscommand: true
+      name: Get Context Table in CSV
+      script: '|||exabeam-get-context-table-in-csv'
+      type: regular
+      version: -1
+    taskid: 35596f86-af27-4c39-85a4-d1a72f67dd7a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5615
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTable.Name
+          operator: isEqualString
+          right:
+            value:
+              simple: test_do_not_remove
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTable.Record.key
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: key_test_playbook1
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTable.Record.key
+          operator: hasLength
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8e5f967f-9649-4277-88fa-b16b423efc56
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 8e5f967f-9649-4277-88fa-b16b423efc56
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5440
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 253a647a-ed6e-4ef6-8576-03d1016b7c6b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 253a647a-ed6e-4ef6-8576-03d1016b7c6b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6490
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: Assets
+      csv_entry_id: {}
+      items:
+        simple: lt-fweber-888
+      watch_until_days: {}
+      watchlist_id:
+        simple: 60249dfb130b3800075b8e36
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add watchlist items by their names or from a CSV file.
+      id: 69037610-a7e8-4809-8f2a-69906bb7dcdf
+      iscommand: true
+      name: Add an Asset to Watchlist
+      script: '|||exabeam-watchlist-add-items'
+      type: regular
+      version: -1
+    taskid: 69037610-a7e8-4809-8f2a-69906bb7dcdf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4420
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: Assets
+      items:
+        simple: wks_56e_kt
+      watchlist_id:
+        simple: 60249dfb130b3800075b8e36
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Removes items from a watchlist.
+      id: bd574ee4-0e35-457e-8318-ff92b09485b8
+      iscommand: true
+      name: Remove an Asset from Watchlist
+      script: '|||exabeam-watchlist-remove-items'
+      type: regular
+      version: -1
+    taskid: bd574ee4-0e35-457e-8318-ff92b09485b8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4945
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      sequence_id:
+        simple: ${Exabeam.User.Session.SessionID}
+      sequence_type:
+        simple: session
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: List top domains of a sequence.
+      id: beb0e907-e1aa-41d4-8e30-35aaf5bb159f
+      iscommand: true
+      name: List top domains
+      script: '|||exabeam-list-top-domains'
+      type: regular
+      version: -1
+    taskid: beb0e907-e1aa-41d4-8e30-35aaf5bb159f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      model_name:
+        simple: AM-GOU
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a rule model definition by name.
+      id: 9c19b3df-07ef-488a-893a-b5435422e4bd
+      iscommand: true
+      name: Get Rule Model Definition
+      script: '|||exabeam-get-rules-model-definition'
+      type: regular
+      version: -1
+    taskid: 9c19b3df-07ef-488a-893a-b5435422e4bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      context_table_type:
+        simple: key_value
+      records:
+        simple: 'key_test_playbook1:v1;v2,key_test_playbook2:v3,key_test_playbook3:'
+      session_id: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add records to the context table.
+      id: 55099f61-98b9-4834-8d8e-bfac1c3b610f
+      iscommand: true
+      name: Add records to Context Table
+      script: '|||exabeam-add-context-table-records'
+      type: regular
+      version: -1
+    taskid: 55099f61-98b9-4834-8d8e-bfac1c3b610f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5790
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      context_table_type:
+        simple: key_value
+      records:
+        simple: 0-1:key_test_playbook4:v1
+      session_id: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates records of a context table.
+      id: 94fb013b-265b-438f-8d78-f63741e708dd
+      iscommand: true
+      name: Update records in Context Table
+      script: '|||exabeam-update-context-table-records'
+      type: regular
+      version: -1
+    taskid: 94fb013b-265b-438f-8d78-f63741e708dd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5965
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "41"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_table_name:
+        simple: test_do_not_remove
+      records:
+        simple: 0-1,0-2,0-3
+      session_id: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete records from a context table.
+      id: 2e424cc7-55ab-4d8e-8c08-e47f026e1e1a
+      iscommand: true
+      name: Delete records from Context Table
+      script: '|||exabeam-delete-context-table-records'
+      type: regular
+      version: -1
+    taskid: 2e424cc7-55ab-4d8e-8c08-e47f026e1e1a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6140
+        }
+      }
+  "41":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTableUpdate.changeType
+          operator: containsGeneral
+          right:
+            value:
+              simple: removed
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTableUpdate.changeType
+          operator: containsGeneral
+          right:
+            value:
+              simple: updated
+      - - left:
+            iscontext: true
+            value:
+              simple: Exabeam.ContextTableUpdate.changeType
+          operator: containsGeneral
+          right:
+            value:
+              simple: created
+      label: "yes"
+    id: "41"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0b4616fc-4cba-4cca-8488-3e5ad6d98389
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 0b4616fc-4cba-4cca-8488-3e5ad6d98389
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6315
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1230,
-        "width": 2530,
+        "height": 6505,
+        "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: 5.0.0
+description: Test Playbook for Exabeam

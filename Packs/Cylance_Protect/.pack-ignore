@@ -1,8 +1,0 @@
-[file:playbook-Get_File_Sample_By_Hash_-_Cylance_Protect.yml]
-ignore=BA101
-
-[file:Cylance_Protect]
-ignore=PA116
-
-[file:Cylance_Protect_v2.yml]
-ignore=IN126

@@ -107,6 +107,8 @@ class MicrosoftClient(BaseClient):
         Returns:
             Response from api according to resp_type. The default is `json` (dict or list).
         """
+        if 'ok_codes' not in kwargs:
+            kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
         token = self.get_access_token(resource=resource, scope=scope)
         default_headers = {
             'Authorization': f'Bearer {token}',
@@ -116,7 +118,7 @@ class MicrosoftClient(BaseClient):
 
         if headers:
             default_headers.update(headers)
-        response = super()._http_request(   # type: ignore[misc]
+        response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
         # 206 indicates Partial Content, reason will be in the warning header.
@@ -126,6 +128,14 @@ class MicrosoftClient(BaseClient):
         is_response_empty_and_successful = (response.status_code == 204)
         if is_response_empty_and_successful and return_empty_response:
             return response
+
+        # Handle 404 errors instead of raising them as exceptions:
+        if response.status_code == 404:
+            try:
+                error_message = response.json()
+            except Exception:
+                error_message = 'Not Found - 404 Response'
+            raise NotFoundError(error_message)
 
         try:
             if resp_type == 'json':
@@ -531,3 +541,14 @@ class MicrosoftClient(BaseClient):
             return_error(f'Error in Microsoft authorization: {str(e)}')
         set_integration_context({'device_code': response_json.get('device_code')})
         return response_json.get('user_code', '')
+
+
+class NotFoundError(Exception):
+    """Exception raised for 404 - Not Found errors.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message

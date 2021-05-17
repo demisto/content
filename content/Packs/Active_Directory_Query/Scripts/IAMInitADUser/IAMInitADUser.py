@@ -54,12 +54,11 @@ def main():
             flow_worked = False
             return_results(update_outputs)
 
-        send_email(display_name, username, user_email, password, to_email)
-
         if flow_worked:
-            return return_results("User was enabled and a password was set.")
+            send_email(display_name, username, user_email, password, to_email)
+            return_results("User was enabled and a password was set.")
         else:
-            return return_results("Some commands failed, please check the errors.")
+            return_results("Some commands failed, please check the errors.")
 
     except Exception as e:
         demisto.log(traceback.format_exc())

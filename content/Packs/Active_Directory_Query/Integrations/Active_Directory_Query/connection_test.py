@@ -6,6 +6,8 @@ from threading import Thread
 import time
 import os
 import pytest
+import json
+from IAMApiModule import *
 
 BASE_TEST_PARAMS = {
     'server_ip': '127.0.0.1',
@@ -152,3 +154,139 @@ def test_endpoint_entry():
     from Active_Directory_Query import endpoint_entry
     custom_attributes_with_asterisk = endpoint_entry({'dn': 'dn', 'name': 'name', 'memberOf': 'memberOf'}, ['*'])
     assert custom_attributes_with_asterisk == {'Groups': 'memberOf', 'Hostname': 'name', 'ID': 'dn', 'Type': 'AD'}
+
+
+def get_outputs_from_user_profile(user_profile):
+    entry_context = user_profile.to_entry()
+    outputs = entry_context.get('Contents')
+
+    return outputs
+
+
+def test_create_user_iam(mocker):
+    """
+    Given:
+         A valid user profile with valid mapping
+    When:
+        Running the `create_user_iam` command
+    Then:
+        The user was created successfully in AD.
+
+    """
+    import Active_Directory_Query
+    add_args, add_kwargs = [], {}
+
+    class ConnectionMocker:
+        entries = []
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            return
+
+        def add(self, *args, **kwargs):
+            nonlocal add_args, add_kwargs
+            add_args, add_kwargs = args, kwargs
+            return True
+
+    Active_Directory_Query.conn = ConnectionMocker()
+    args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
+                                        "locationregion": "Americas"})}
+
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
+                                                                    'samaccountname': 'test',
+                                                                    'userPrincipalName': 'test',
+                                                                    "ou": "OU=Americas,OU=Demisto"})
+
+    user_profile = Active_Directory_Query.create_user_iam('', args, 'mapper_out', '')
+    outputs = get_outputs_from_user_profile(user_profile)
+    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('success') is True
+    assert outputs.get('active') is True
+    assert outputs.get('email') == 'test@paloaltonetworks.com'
+
+
+def test_unseccsseful_create_user_iam_missing_ou(mocker):
+    """
+    Given:
+         A valid user profile with missing ou in the mapping
+    When:
+        Running the `create_user_iam` command
+    Then:
+        - The user was not created in AD.
+        - An error message was returned.
+
+    """
+    import Active_Directory_Query
+    add_args, add_kwargs = [], {}
+
+    class ConnectionMocker:
+        entries = []
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            return
+
+        def add(self, *args, **kwargs):
+            nonlocal add_args, add_kwargs
+            add_args, add_kwargs = args, kwargs
+            return True
+
+    Active_Directory_Query.conn = ConnectionMocker()
+    args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
+                                        "locationregion": "Americas"})}
+
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
+                                                                    'samaccountname': 'test',
+                                                                    'userPrincipalName': 'test'})
+
+    user_profile = Active_Directory_Query.create_user_iam('', args, 'mapper_out', '')
+    outputs = get_outputs_from_user_profile(user_profile)
+    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('success') is False
+    assert outputs.get('email') == 'test@paloaltonetworks.com'
+    assert outputs.get('errorMessage') == 'User must have ou, please provide a valid value'
+
+
+def test_unseccsseful_create_user_iam_missing_samaccountname(mocker):
+    """
+    Given:
+         A valid user profile with missing samaccountname in the mapping
+    When:
+        Running the `create_user_iam` command
+    Then:
+        - The user was not created in AD.
+        - An error message was returned.
+
+    """
+    import Active_Directory_Query
+    add_args, add_kwargs = [], {}
+
+    class ConnectionMocker:
+        entries = []
+        result = {'controls': {'1.2.840.113556.1.4.319': {'value': {'cookie': '<cookie>'}}}}
+
+        def search(self, *args, **kwargs):
+            return
+
+        def add(self, *args, **kwargs):
+            nonlocal add_args, add_kwargs
+            add_args, add_kwargs = args, kwargs
+            return True
+
+    Active_Directory_Query.conn = ConnectionMocker()
+    args = {"user-profile": json.dumps({"email": "test@paloaltonetworks.com", "username": "test",
+                                        "locationregion": "Americas"})}
+
+    mocker.patch('Active_Directory_Query.check_if_user_exists_by_samaccountname', return_value=False)
+    mocker.patch.object(IAMUserProfile, 'map_object', return_value={'cn': 'test', 'mail': 'test@paloaltonetworks.com',
+                                                                    "ou": "OU=Americas,OU=Demisto",
+                                                                    'userPrincipalName': 'test'})
+
+    user_profile = Active_Directory_Query.create_user_iam('', args, 'mapper_out', '')
+    outputs = get_outputs_from_user_profile(user_profile)
+    assert outputs.get('action') == IAMActions.CREATE_USER
+    assert outputs.get('success') is False
+    assert outputs.get('email') == 'test@paloaltonetworks.com'
+    assert outputs.get('errorMessage') == 'User must have SAMAccountName'

@@ -1,3 +1,0 @@
-!google-docs-get-document document_id=1MjtBlFLwFNsjVwCF0mZLxpRoblVHjLcR3VmZcUuNvzo
-!google-docs-update-document document_id=1MjtBlFLwFNsjVwCF0mZLxpRoblVHjLcR3VmZcUuNvzo actions=insertText{1,hey};insertText{3,hello}
-!google-docs-create-document title="testing"

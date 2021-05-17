@@ -1,7 +1,8 @@
 import pytest
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command
+    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment
+from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
 
@@ -122,7 +123,8 @@ def test_list_mails_command(mocker, client):
         mocker.patch.object(demisto, 'results')
         list_mails_command(client, args)
         hr = demisto.results.call_args[0][0].get('HumanReadable')
-        assert '### Total of 2 mails received' in hr
+        assert '2 mails received \nPay attention there are more results than shown. For more data please ' \
+               'increase "pages_to_pull" argument' in hr
 
     # call list mails with no emails
     with open('test_data/no_mails') as mail_json:
@@ -132,6 +134,31 @@ def test_list_mails_command(mocker, client):
         list_mails_command(client, args)
         hr = demisto.results.call_args[0][0].get('HumanReadable')
         assert '### No mails were found' in hr
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_list_mails_with_page_limit(mocker, client):
+    """Unit test
+    Given
+    - list_mails command with page_size set to 1
+    - one mail returned on the response
+    When
+    - mock the MicrosoftClient.http_request function
+    Then
+    - run the list_mails_command using the Client
+    Validate that the http_request called properly with endpoint top=1
+    """
+    args = {'user_id': 'test id', 'page_size': 1, 'pages_to_pull': 1}
+    with open('test_data/response_with_one_mail') as mail_json:
+        mail = json.load(mail_json)
+        mock_request = mocker.patch.object(MicrosoftClient, 'http_request', return_value=mail)
+        mocker.patch.object(demisto, 'results')
+        mocker.patch.object(demisto, 'args', return_value=args)
+        list_mails_command(client, args)
+        hr = demisto.results.call_args[0][0].get('HumanReadable')
+        assert '1 mails received \nPay attention there are more results than shown. For more data please ' \
+               'increase "pages_to_pull" argument' in hr
+        assert "top=1" in mock_request.call_args_list[0].args[1]
 
 
 @pytest.fixture()
@@ -277,3 +304,72 @@ def test_build_message(client):
     result_message = client.build_message(**message_input)
 
     assert result_message == expected_message
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment(client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment and 'item_result_creator' is called
+
+    Then:
+        - Validate that the message object created successfully
+
+    """
+    output_prefix = 'MSGraphMail(val.ID == obj.ID)'
+    with open('test_data/mail_with_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        raw_response = json.load(mail_json)
+        res = item_result_creator(raw_response, user_id)
+        assert isinstance(res, CommandResults)
+        output = res.to_context().get('EntryContext', {})
+        assert output.get(output_prefix).get('ID') == 'exampleID'
+        assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment_unsupported_type(client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment with attachment that is not supported
+
+    Then:
+        - Validate the human readable which explain we do not support the type
+
+    """
+    with open('test_data/mail_with_unsupported_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        raw_response = json.load(mail_json)
+        res = item_result_creator(raw_response, user_id)
+        assert isinstance(res, CommandResults)
+        output = res.to_context().get('HumanReadable', '')
+        assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
+
+
+@pytest.mark.parametrize('function_name, attachment_type', [('file_result_creator', 'fileAttachment'),
+                                                            ('item_result_creator', 'itemAttachment')])
+def test_create_attachment(mocker, function_name, attachment_type):
+    """
+    Given:
+        - raw response returned from api:
+            1. @odata.type is fileAttachment
+            2. @odata.type is itemAttachment
+
+    When:
+        - create_attachment checks the attachment type and decide which function will handle the response
+
+    Then:
+        - item_result_creator and file_result_creator called respectively to the type
+
+    """
+    mocked_function = mocker.patch(f'MicrosoftGraphMail.{function_name}', return_value={})
+    raw_response = {'@odata.type': f'#microsoft.graph.{attachment_type}'}
+    user_id = 'ex@example.com'
+    create_attachment(raw_response, user_id)
+    assert mocked_function.called

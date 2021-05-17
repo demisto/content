@@ -75,7 +75,7 @@ tasks:
       version: -1
       name: ip
       description: Retrieves reputation of the IP.
-      script: '|||ip'
+      script: 'GreyNoise|||ip'
       type: regular
       iscommand: true
       brand: ""

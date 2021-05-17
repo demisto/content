@@ -125,7 +125,7 @@ class Client(BaseClient):
         self.get_incidents(lte_creation_time=last_one_day, limit=1)
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, sort_by_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
                       sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
         """
         Filters and returns incidents
@@ -135,6 +135,7 @@ class Client(BaseClient):
         :param gte_modification_time: string of time format "2019-12-31T23:59:00"
         :param lte_creation_time: string of time format "2019-12-31T23:59:00"
         :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param status: string of status
         :param sort_by_modification_time: optional - enum (asc,desc)
         :param sort_by_creation_time: optional - enum (asc,desc)
         :param page_number: page number
@@ -205,6 +206,13 @@ class Client(BaseClient):
                 'field': 'creation_time',
                 'operator': 'gte',
                 'value': gte_creation_time_milliseconds
+            })
+
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
             })
 
         if len(filters) > 0:
@@ -973,17 +981,31 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list) -> Dict[str, Any]:
+    def generate_files_dict_with_specific_os(self, windows: list, linux: list, macos: list) -> Dict[str, list]:
+        if not windows and not linux and not macos:
+            raise ValueError('You should enter at least one path.')
+
         files = {}
         if windows:
             files['windows'] = windows
         if linux:
             files['linux'] = linux
         if macos:
-            files['linux'] = macos
+            files['macos'] = macos
 
-        if not windows and not linux and not macos:
-            raise ValueError('You should enter at least one path.')
+        return files
+
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list)\
+            -> Dict[str, Any]:
+        # there are 2 options, either the paths are given with separation to a specific os or without
+        # it using generic_file_path
+        if file_path_list:
+            files = self.generate_files_dict(
+                endpoint_id_list=endpoint_id_list,
+                file_path_list=file_path_list
+            )
+        else:
+            files = self.generate_files_dict_with_specific_os(windows=windows, linux=linux, macos=macos)
 
         request_data: Dict[str, Any] = {
             'filters': [
@@ -1003,6 +1025,33 @@ class Client(BaseClient):
             timeout=self.timeout
         )
         return reply.get('reply')
+
+    def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
+        files: dict = {"windows": [], "linux": [], "macos": []}
+
+        if len(endpoint_id_list) != len(file_path_list):
+            raise ValueError("The endpoint_ids list must be in the same length as the generic_file_path")
+
+        for endpoint_id, file_path in zip(endpoint_id_list, file_path_list):
+            endpoints = self.get_endpoints(endpoint_id_list=[endpoint_id])
+
+            if len(endpoints) == 0 or not isinstance(endpoints, list):
+                raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
+
+            endpoint = endpoints[0]
+            endpoint_os_type = endpoint.get('os_type')
+
+            if 'windows' in endpoint_os_type.lower():
+                files['windows'].append(file_path)
+            elif 'linux' in endpoint_os_type.lower():
+                files['linux'].append(file_path)
+            elif 'macos' in endpoint_os_type.lower():
+                files['macos'].append(file_path)
+
+        # remove keys with no value
+        files = {k: v for k, v in files.items() if v}
+
+        return files
 
     def retrieve_file_details(self, action_id: int) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
@@ -1077,7 +1126,10 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def run_script(self, script_uid, endpoint_ids: list, timeout: int, parameters: Dict[str, Any]) -> Dict[str, Any]:
+    @logger
+    def run_script(self,
+                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int
+                   ) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
             'operator': 'in',
@@ -1086,28 +1138,76 @@ class Client(BaseClient):
         request_data: Dict[str, Any] = {'script_uid': script_uid, 'timeout': timeout, 'filters': filters,
                                         'parameters_values': parameters}
 
-        reply = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/scripts/run_script/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
-        return reply.get('reply')
+    @logger
+    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/scripts/run_snippet_code_script',
+            json_data={
+                'request_data': {
+                    'filters': [{
+                        'field': 'endpoint_id_list',
+                        'operator': 'in',
+                        'value': endpoint_ids
+                    }],
+                    'snippet_code': snippet_code
+                }
+            },
+            timeout=self.timeout,
+        )
 
-    def get_script_execution_status(self, action_id) -> Dict[str, Any]:
+    @logger
+    def get_script_execution_status(self, action_id: str) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
             'action_id': action_id
         }
 
-        reply = self._http_request(
+        return self._http_request(
             method='POST',
             url_suffix='/scripts/get_script_execution_status/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
 
-        return reply.get('reply')
+    @logger
+    def get_script_execution_results(self, action_id: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_results',
+            json_data={
+                'request_data': {
+                    'action_id': action_id
+                }
+            },
+            timeout=self.timeout,
+        )
+
+    @logger
+    def get_script_execution_result_files(self, action_id: str, endpoint_id: str) -> Dict[str, Any]:
+        response = self._http_request(
+            method='POST',
+            url_suffix='/scripts/get_script_execution_results_files',
+            json_data={
+                'request_data': {
+                    'action_id': action_id,
+                    'endpoint_id': endpoint_id,
+                }
+            },
+            timeout=self.timeout,
+        )
+        link = response.get('reply', {}).get('DATA')
+        return self._http_request(
+            method='GET',
+            full_url=link,
+            resp_type='response',
+        )
 
     def action_status_get(self, action_id) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
@@ -1175,6 +1275,8 @@ def get_incidents_command(client, args):
     if since_creation_time:
         gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
 
+    statuses = argToList(args.get('status', ''))
+
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
 
@@ -1183,21 +1285,42 @@ def get_incidents_command(client, args):
 
     # If no filters were given, return a meaningful error message
     if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
-                                 and not lte_creation_time and not gte_creation_time and not since_creation_time):
+                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
+                                 and not statuses):
         raise ValueError("Specify a query for the incidents.\nFor example:"
                          " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
 
-    raw_incidents = client.get_incidents(
-        incident_id_list=incident_id_list,
-        lte_modification_time=lte_modification_time,
-        gte_modification_time=gte_modification_time,
-        lte_creation_time=lte_creation_time,
-        gte_creation_time=gte_creation_time,
-        sort_by_creation_time=sort_by_creation_time,
-        sort_by_modification_time=sort_by_modification_time,
-        page_number=page,
-        limit=limit
-    )
+    if statuses:
+        raw_incidents = []
+
+        for status in statuses:
+            raw_incidents += client.get_incidents(
+                incident_id_list=incident_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status
+            )
+
+        if len(raw_incidents) > limit:
+            raw_incidents[:limit]
+    else:
+        raw_incidents = client.get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+        )
 
     return (
         tableToMarkdown('Incidents', raw_incidents),
@@ -2268,7 +2391,8 @@ def get_modified_remote_data_command(client, args):
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
-    last_update_without_ms = last_update_utc.isoformat().split('.')[0]
+    if last_update_utc:
+        last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 
     raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
 
@@ -2422,11 +2546,13 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10):
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
+                    statuses: List = []):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
+
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -2435,8 +2561,15 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
     else:
-        raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                             limit=max_fetch, sort_by_creation_time='asc')
+        if statuses:
+            raw_incidents = []
+            for status in statuses:
+                raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
+                                                      limit=max_fetch, sort_by_creation_time='asc')
+            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
+        else:
+            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
+                                                 sort_by_creation_time='asc')
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -2445,6 +2578,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     non_created_incidents: list = raw_incidents.copy()
     next_run = dict()
     try:
+        # The count of incidents, so as not to pass the limit
+        count_incidents = 0
+
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
 
@@ -2476,11 +2612,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
+            count_incidents += 1
+            if count_incidents == max_fetch:
+                break
+
     except Exception as e:
         if "Rate limit exceeded" in str(e):
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
                          f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
-
         else:
             raise
 
@@ -2579,13 +2718,16 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     windows: list = argToList(args.get('windows_file_paths'))
     linux: list = argToList(args.get('linux_file_paths'))
     macos: list = argToList(args.get('mac_file_paths'))
+    file_path_list: list = argToList(args.get('generic_file_path'))
 
     reply = client.retrieve_file(
         endpoint_id_list=endpoint_id_list,
         windows=windows,
         linux=linux,
-        macos=macos
+        macos=macos,
+        file_path_list=file_path_list
     )
+
     result = {'action_id': reply.get('action_id')}
     return (
         tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
@@ -2736,6 +2878,143 @@ def action_status_get_command(client: Client, args) -> Tuple[str, Any, Any]:
     )
 
 
+def run_script_command(client: Client, args: Dict) -> CommandResults:
+    script_uid = args.get('script_uid')
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    if parameters := args.get('parameters'):
+        try:
+            parameters = json.loads(parameters)
+        except json.decoder.JSONDecodeError as e:
+            raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_snippet_code_script_command(client: Client, args: Dict) -> CommandResults:
+    snippet_code = args.get('snippet_code')
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    response = client.run_snippet_code_script(snippet_code, endpoint_ids)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Snippet Code Script', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def get_script_execution_status_command(client: Client, args: Dict) -> CommandResults:
+    action_id = args.get('action_id', '')
+    response = client.get_script_execution_status(action_id)
+    reply = response.get('reply')
+    reply['action_id'] = int(action_id)
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Status - {action_id}', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptStatus',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def get_script_execution_results_command(client: Client, args: Dict) -> CommandResults:
+    action_id = args.get('action_id', '')
+    response = client.get_script_execution_results(action_id)
+    results = response.get('reply', {}).get('results')
+    context = {
+        'action_id': int(action_id),
+        'results': results,
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Script Execution Results - {action_id}', results),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptResult',
+        outputs_key_field='action_id',
+        outputs=context,
+        raw_response=response,
+    )
+
+
+def get_script_execution_result_files_command(client: Client, args: Dict) -> Dict:
+    action_id = args.get('action_id', '')
+    endpoint_id = args.get('endpoint_id')
+    file_response = client.get_script_execution_result_files(action_id, endpoint_id)
+    try:
+        filename = file_response.headers.get('Content-Disposition').split('attachment; filename=')[1]
+    except Exception as e:
+        demisto.debug(f'Failed extracting filename from response headers - [{str(e)}]')
+        filename = action_id + '.zip'
+    return fileResult(filename, file_response.content)
+
+
+def run_script_execute_commands_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'commands_list': argToList(args.get('commands'))}
+    response = client.run_script('a6f7683c8e217d85bd3c398f0d3fb6bf', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Execute Commands', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'file_path': args.get('file_path')}
+    response = client.run_script('548023b6e4a01ec51a495ba6e5d2a15d', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Delete File', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'path': args.get('file_path')}
+    response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script File Exists', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
+def run_script_kill_process_command(client: Client, args: Dict) -> CommandResults:
+    endpoint_ids = argToList(args.get('endpoint_ids'))
+    timeout = arg_to_number(args.get('timeout', 600)) or 600
+    parameters = {'process_name': args.get('process_name')}
+    response = client.run_script('fd0a544a99a9421222b4f57a11839481', endpoint_ids, parameters, timeout)
+    reply = response.get('reply')
+    return CommandResults(
+        readable_output=tableToMarkdown('Run Script Kill Process', reply),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+        outputs_key_field='action_id',
+        outputs=reply,
+        raw_response=response,
+    )
+
+
 def main():
     """
     Executes an integration command
@@ -2748,6 +3027,8 @@ def main():
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
+    statuses = demisto.params().get('status')
+
     try:
         timeout = int(demisto.params().get('timeout', 120))
     except ValueError as e:
@@ -2759,7 +3040,6 @@ def main():
         demisto.debug(f'Failed casting max fetch parameter to int, falling back to 10 - {e}')
         max_fetch = 10
 
-    # nonce, timestamp, auth = create_auth(API_KEY)
     nonce = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
     auth_key = "%s%s%s" % (api_key, nonce, timestamp)
@@ -2791,7 +3071,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
-                                                  max_fetch)
+                                                  max_fetch, statuses)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
@@ -2896,6 +3176,33 @@ def main():
 
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client, demisto.args()))
+
+        elif demisto.command() == 'xdr-run-script':
+            return_results(run_script_command(client, args))
+
+        elif demisto.command() == 'xdr-run-snippet-code-script':
+            return_results(run_snippet_code_script_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-status':
+            return_results(get_script_execution_status_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-results':
+            return_results(get_script_execution_results_command(client, args))
+
+        elif demisto.command() == 'xdr-get-script-execution-result-files':
+            return_results(get_script_execution_result_files_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-execute-commands':
+            return_results(run_script_execute_commands_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-delete-file':
+            return_results(run_script_delete_file_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-file-exists':
+            return_results(run_script_file_exists_command(client, args))
+
+        elif demisto.command() == 'xdr-run-script-kill-process':
+            return_results(run_script_kill_process_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

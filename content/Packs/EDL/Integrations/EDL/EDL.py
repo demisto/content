@@ -628,8 +628,12 @@ def main():
     """
     Main
     """
+    global PAGE_SIZE
     params = demisto.params()
-
+    try:
+        PAGE_SIZE = max(PAGE_SIZE, int(params.get('page_size', PAGE_SIZE)))
+    except ValueError:
+        demisto.debug(f'Non integer "page_size" provided: {params.get("page_size")}. defaulting to {PAGE_SIZE}')
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')

@@ -1,5 +1,5 @@
 from requests import Response
-from MicrosoftApiModule import MicrosoftClient
+from MicrosoftApiModule import *
 import demistomock as demisto
 import pytest
 import datetime
@@ -65,6 +65,29 @@ def test_error_parser(mocker):
     err._content = b'{"error":{"code":"code","message":"message"}}'
     response = MicrosoftClient.error_parser(err)
     assert response == 'code: message'
+
+
+def test_page_not_found_error(mocker):
+    """
+    Given:
+        - The http_request command for making MS API calls.
+    When:
+        - The response returned is a 404 response.
+    Then:
+        - Validate that the exception is handled in the http_request function of MicrosoftClient.
+    """
+    error_404 = Response()
+    error_404._content = b'{"error": {"code": "Request_ResourceNotFound", "message": "Resource ' \
+                         b'"NotExistingUser does not exist."}}'
+    error_404.status_code = 404
+    client = self_deployed_client()
+    mocker.patch.object(BaseClient, '_http_request', return_value=error_404)
+    mocker.patch.object(client, 'get_access_token')
+
+    try:
+        client.http_request()
+    except Exception as e:  # Validate that a `NotFoundError` was raised
+        assert type(e).__name__ == 'NotFoundError'
 
 
 def test_epoch_seconds(mocker):

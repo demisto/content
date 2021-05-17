@@ -37,11 +37,17 @@ from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
 SKIPPED_PACKS = ['NonSupported', 'ApiModules']
+NO_PROXY = ','.join([
+    'oproxy.demisto.ninja',
+    'oproxy-dev.demisto.ninja',
+])
+NO_PROXY_CONFIG = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}'}  # noqa: E501
 DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
-    'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+    'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',    # noqa: E501
+    'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
@@ -353,7 +359,7 @@ def get_new_and_modified_integration_files(branch_name):
     # get changed yaml files (filter only added and modified files)
     file_validator = ValidateManager()
     file_validator.branch_name = branch_name
-    modified_files, added_files, _, _, _ = file_validator.get_modified_and_added_files('...', 'origin/master')
+    modified_files, added_files, _, _ = file_validator.get_changed_files_from_git()
 
     new_integration_files = [
         file_path for file_path in added_files if
@@ -877,9 +883,11 @@ def configure_servers_and_restart(build):
         if LooseVersion(build.server_numeric_version) <= LooseVersion('5.5.0'):
             configure_types.append('ignore docker image validation')
             configurations.update(AVOID_DOCKER_IMAGE_VALIDATION)
+            configurations.update(NO_PROXY_CONFIG)
         if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
             if is_redhat_instance(server.internal_ip):
                 configurations.update(DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN)
+                configurations.update(NO_PROXY_CONFIG)
             else:
                 configurations.update(DOCKER_HARDENING_CONFIGURATION)
             configure_types.append('docker hardening')
@@ -1385,7 +1393,7 @@ def main():
 
     configure_servers_and_restart(build)
     disable_instances(build)
-    installed_content_packs_successfully = install_packs_pre_update(build)
+    install_packs_pre_update(build)
 
     new_integrations, modified_integrations = get_changed_integrations(build)
 
@@ -1393,7 +1401,7 @@ def main():
                                                                                   new_integrations,
                                                                                   modified_integrations)
     modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
-    installed_content_packs_successfully = update_content_on_servers(build) and installed_content_packs_successfully
+    installed_content_packs_successfully = update_content_on_servers(build)
 
     successful_tests_post, failed_tests_post = test_integrations_post_update(build,
                                                                              new_module_instances,
