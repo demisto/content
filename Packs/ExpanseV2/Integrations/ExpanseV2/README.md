@@ -947,6 +947,8 @@ Retrieve Expanse issue by issue ID.
 | Expanse.Issue.certificate.validNotAfter | Date | The valid not after date in the certificate | 
 | Expanse.Issue.certificate.validNotBefore | Date | The valid not before date in the certificate | 
 | Expanse.Issue.certificate.version | String | The version in the certificate | 
+| Expanse.Issue.cloudManagementStatus.id | String | The id of the cloud management status |
+| Expanse.Issue.cloudManagementStatus.name | String | The friendly name of the cloud management status |
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
 | Expanse.Issue.headline | String | A brief summary of the issue | 
@@ -1687,6 +1689,8 @@ Retrieve services
 | country_code | Returns only results whose country code matches one of the given ISO-3166 two character country codes (comma separated list). | Optional | 
 | activity_status | Returns only results whose activity status matches one of the given values. Possible values are: Active, Inactive. | Optional | 
 | tag | Returns only results that are associated with the provided tag names (comma separated string). | Optional | 
+| cloud_management_status | Returns only results whose cloud management status is the following.
+        (comma separated string, options are 'NotApplicable', 'ManagedCloud', 'UnmanagedCloud'). | Optional |
 | sort | Sort by specified properties. Possible values are: firstObserved, -firstObserved, lastObserved, -lastObserved, name, -name. Default is firstObserved. | Optional | 
 
 
