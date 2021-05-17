@@ -54,9 +54,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  required: false
-script: '-'
-  
+  required: false 
   type: python
   commands:
   - name: fetch-incidents
@@ -131,5 +129,6 @@ script: '-'
   dockerimage: demisto/python:2.7.18.18413
   isfetch: true
   runonce: false
+  script: '-'
   subtype: python2
   isFetchSamples: true
