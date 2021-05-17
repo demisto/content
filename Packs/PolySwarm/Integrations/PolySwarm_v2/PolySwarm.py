@@ -35,7 +35,7 @@ class PolyswarmConnector():
                      positives: int,
                      permalink: str,
                      artifact: str,
-                     indicator: object = None) -> object:
+                     indicator: object) -> object:
 
         results = {'Scan_UUID': artifact,
                    'Total': str(total_scans),
@@ -48,8 +48,7 @@ class PolyswarmConnector():
             outputs_key_field='Scan_UUID',
             outputs=results,
             indicator=indicator,
-            ignore_auto_extract=True
-        )
+            ignore_auto_extract=True)
 
     def test_connectivity(self) -> bool:
         EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'  # guardrails-disable-line
@@ -64,72 +63,80 @@ class PolyswarmConnector():
 
         return True
 
+    def return_hash_results(self,
+                            results: dict,
+                            error_msg: str) -> object:
+
+        # default values
+        total_scans: int = 0
+        positives: int = 0
+        md5: str = ''
+        sha256: str = ''
+        sha1: str = ''
+
+        for result in results:
+            if result.failed:
+                return_error(error_msg)
+
+            if not result.assertions:
+                return_error('Run Rescan for this hash')
+
+            # iterate for getting positives and total_scan number
+            for assertion in result.assertions:
+                if assertion.verdict:
+                    positives += 1
+                total_scans += 1
+
+            demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
+                          format(positives=positives, total_scans=total_scans))
+
+            md5 = result.md5
+            sha256 = result.sha256
+            sha1 = result.sha1
+
+        score = Common.DBotScore.SUSPICIOUS if positives > 0 else Common.DBotScore.GOOD
+
+        dbot_score = Common.DBotScore(indicator=md5,
+                                      indicator_type=DBotScoreType.FILE,
+                                      integration_name='PolySwarm',
+                                      score=score)
+
+        indicator = Common.File(md5=md5,
+                                sha1=sha1,
+                                sha256=sha256,
+                                dbot_score=dbot_score)
+
+        return self._get_results('File', total_scans,
+                                 positives, result.permalink,
+                                 sha256, indicator)
+
     def file_reputation(self,
                         param: dict) -> object:
         file_hash = param.get('file', param.get('hash'))
         if not file_hash:
-            return_error("Please specify a file hash to enrich.")
+            return_error('Please specify a file hash to enrich.')
 
         title = 'PolySwarm File Reputation for Hash: %s' % file_hash
 
         demisto.debug(f'[file_reputation] {title}')
 
-        # default values
-        total_scans = 0
-        positives = 0
-        permalink = ''
-
         try:
             results = self.polyswarm_api.search(file_hash)
 
-            for result in results:
-                if result.failed:
-                    return_error('Error fetching results. Please try again.')
-
-                if not result.assertions:
-                    return_error('Run Rescan for this hash')
-
-                for assertion in result.assertions:
-                    if assertion.verdict:
-                        positives += 1
-                    total_scans += 1
-
-                permalink = result.permalink
-
-            demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
-                          format(positives=positives, total_scans=total_scans))
-
         except Exception as err:
             return_error('{ERROR_ENDPOINT}{err}'.
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results('File', total_scans,
-                                 positives, permalink,
-                                 file_hash)
+        error_msg = 'Error fetching results. Please try again.'
 
-    def get_file(self, param: dict) -> object:
-        demisto.debug(f'[get_file] Hash: {param["hash"]}')
-
-        handle_file = io.BytesIO()
-
-        try:
-            self.polyswarm_api.download_to_handle(param['hash'],
-                                                  handle_file)
-            return fileResult(param['hash'], handle_file.getvalue())
-        except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
+        return self.return_hash_results(results,
+                                        error_msg)
 
     def detonate_file(self, param: dict) -> object:
         title = 'PolySwarm File Detonation for Entry ID: %s' % param['entryID']
 
         demisto.debug(f'[detonate_file] {title}')
-
-        # default values
-        total_scans = 0
-        positives = 0
 
         try:
             file_info = demisto.getFilePath(param['entryID'])
@@ -143,54 +150,48 @@ class PolyswarmConnector():
                                                  artifact_name=file_info['name'])
             result = self.polyswarm_api.wait_for(instance)
 
-            if result.failed:
-                return demisto.results('Error submitting File.')
-
-            # iterate for getting positives and total_scan number
-            for assertion in result.assertions:
-                if assertion.verdict:
-                    positives += 1
-                total_scans += 1
-
         except Exception as err:
             return_error('{ERROR_ENDPOINT}{err}'.
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results('File', total_scans,
-                                 positives, result.permalink,
-                                 file_info['name'])
+        error_msg = 'Error submitting File.'
+
+        return self.return_hash_results(result,
+                                        error_msg)
 
     def rescan_file(self, param: dict) -> object:
         title = 'PolySwarm Rescan for Hash: %s' % param['hash']
 
         demisto.debug(f'[rescan_file] {title}')
 
-        # default values
-        total_scans = 0
-        positives = 0
-
         try:
             instance = self.polyswarm_api.rescan(param['hash'])
             result = self.polyswarm_api.wait_for(instance)
-
-            if result.failed:
-                return demisto.results('Error rescaning File.')
-
-            # iterate for getting positives and total_scan number
-            for assertion in result.assertions:
-                if assertion.verdict:
-                    positives += 1
-                total_scans += 1
 
         except Exception as err:
             return_error('{ERROR_ENDPOINT}{err}'.
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                 err=err))
 
-        return self._get_results('File', total_scans,
-                                 positives, result.permalink,
-                                 param['hash'])
+        error_msg = 'Error rescaning File.'
+
+        return self.return_hash_results(result,
+                                        error_msg)
+
+    def get_file(self, param: dict):
+        demisto.debug(f'[get_file] Hash: {param["hash"]}')
+
+        handle_file = io.BytesIO()
+
+        try:
+            self.polyswarm_api.download_to_handle(param['hash'],
+                                                  handle_file)
+            return fileResult(param['hash'], handle_file.getvalue())
+        except Exception as err:
+            return_error('{ERROR_ENDPOINT}{err}'.
+                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                err=err))
 
     def url_reputation(self,
                        param: dict,
@@ -281,37 +282,7 @@ class PolyswarmConnector():
 
         demisto.debug(f'[get_report] {title}')
 
-        # default values
-        total_scans = 0
-        positives = 0
-
-        try:
-            results = self.polyswarm_api.search(param['scan_uuid'])
-            for result in results:
-                if result.failed:
-                    return_error('Error fetching results. Please try again.')
-
-                if not result.assertions:
-                    return_error('Run Rescan for this hash')
-
-                for assertion in result.assertions:
-                    if assertion.verdict:
-                        positives += 1
-                    total_scans += 1
-
-                permalink = result.permalink
-
-            demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
-                          format(positives=positives, total_scans=total_scans))
-
-        except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
-
-        return self._get_results('File', total_scans,
-                                 positives, permalink,
-                                 param['scan_uuid'])
+        return self.file_reputation(param)
 
 
 def main():
