@@ -2714,7 +2714,7 @@ def main() -> None:
         elif command == "cidr":
             return_results(cidr_command(client, demisto.args()))
 
-        elif command == "cloud_management_status":
+        elif command == "expanse-get-cloud-resources":
             return_results(get_cloud_resource_command(client, demisto.args()))
 
         elif command == "expanse-get-risky-flows":
