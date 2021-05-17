@@ -1,4 +1,4 @@
-from ExtractEmail import verify_is_email, main
+from ExtractEmailFormatting import verify_is_email, main
 import pytest
 import demistomock as demisto
 
