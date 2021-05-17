@@ -1,7 +1,7 @@
 {
     "name": "Linkshadow - XSOAR",
     "description": "Fetch Network Anomalies data from LinkShadow and execute the remediation Actions.",
-    "support": "Linkshadow",
+    "support": "partner",
     "currentVersion": "1.1.0",
     "author": "Linkshadow",
     "url": "https://www.linkshadow.com/account/login",
