@@ -97,6 +97,14 @@ class Client(BaseClient):
                 )
             raise e
 
+    def api_v1_logs_defender_download_request(self, hostname, lines):
+        params = assign_params(hostname=hostname, lines=int(lines))
+
+        headers = self._headers
+        response = self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type='response')
+
+        return response
+
 
 def str_to_bool(s):
     """
@@ -253,11 +261,22 @@ def fetch_incidents(client):
     return incidents
 
 
+
+def api_v1_logs_defender_download_command(client, args):
+    hostname = str(args.get('hostname', ''))
+    lines = args.get('lines', None)
+
+    response = client.api_v1_logs_defender_download_request(hostname, lines)
+
+    return fileResult("logs.tar.gz", response.content)
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
+    args = demisto.args()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     base_url = params.get('address')
@@ -265,7 +284,8 @@ def main():
     verify_certificate = not params.get('insecure', False)
     cert = params.get('certificate')
     proxy = params.get('proxy', False)
-
+    
+    command = demisto.command()
     # If checked to verify and given a certificate, save the certificate as a temp file
     # and set the path to the requests client
     if verify_certificate and cert:
@@ -279,6 +299,9 @@ def main():
 
     try:
         LOG(f'Command being called is {demisto.command()}')
+        headers = {
+            "Content-Type": "application/json"
+        }
 
         # Init the client
         client = Client(
@@ -286,7 +309,12 @@ def main():
             verify=verify,
             auth=(username, password),
             proxy=proxy,
-            project=project)
+            project=project,
+            headers=headers)
+
+        commands = {
+           "prismacloudcompute-logs-defender-download": api_v1_logs_defender_download_command,
+        }
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button
@@ -298,7 +326,8 @@ def main():
             # this method is called periodically when 'fetch incidents' is checked
             incidents = fetch_incidents(client)
             demisto.incidents(incidents)
-
+        else:
+            return_results(commands[command](client,args))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')

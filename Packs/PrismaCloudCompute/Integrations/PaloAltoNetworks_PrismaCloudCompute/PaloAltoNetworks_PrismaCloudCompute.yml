@@ -51,6 +51,14 @@ script:
   script: '-'
   subtype: python3
   type: python
+  commands:
+  - name: prismacloudcompute-logs-defender-download
+    arguments:
+    - name: hostname
+      description: 'Hostname is the target defender hostname '
+    - name: lines
+      description: 'Lines is the number of lines to fetch '
+    description: 'DownloadDefenderLogs downloads all defender logs and metadata '
 tests:
 - No test
 fromversion: 5.0.0
