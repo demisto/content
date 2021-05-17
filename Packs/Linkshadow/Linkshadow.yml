@@ -55,9 +55,6 @@ configuration:
   name: incidentType
   type: 13
   required: false
-script: '-'
-  
-  type: python
   commands:
   - name: fetch-incidents
     arguments: []
@@ -133,3 +130,5 @@ script: '-'
   runonce: false
   subtype: python2
   isFetchSamples: true
+  script: '-'
+    type: python
