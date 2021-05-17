@@ -1,12 +1,12 @@
 commonfields:
   id: ExtractEmail
-  version: 5
+  version: -1
 name: ExtractEmail
 script: '-'
 type: python
 tags:
 - indicator-format
-comment: Verifies that an email address is valid and only returns the address if it is valid..
+comment: Verifies that an email address is valid and only returns the address if it is valid.
 enabled: true
 args:
 - name: input
