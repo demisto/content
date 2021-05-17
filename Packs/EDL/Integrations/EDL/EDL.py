@@ -4,22 +4,36 @@ from CommonServerUserPython import *
 
 import re
 import subprocess
+import requests
 from base64 import b64decode
 from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
-from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
 from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
-from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from string import Template
+from time import sleep
+import urllib3
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 NGINX_SERVER_CONF_FILE = '/etc/nginx/conf.d/default.conf'
+NGINX_SSL_KEY_FILE = '/etc/nginx/ssl/ssl.key'
+NGINX_SSL_CRT_FILE = '/etc/nginx/ssl/ssl.crt'
+NGINX_SSL_CERTS = f'''
+    ssl_certificate {NGINX_SSL_CRT_FILE};
+    ssl_certificate_key {NGINX_SSL_KEY_FILE};
+'''
 NGINX_SERVER_CONF = '''
 server {
 
     listen $port default_server $ssl;
     listen [::]:$port default_server $ssl;
+
+    $sslcerts
+
+    proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
 
     # Static test file
     location = /nginx-test {
@@ -29,9 +43,8 @@ server {
 
     # Proxy everything to python
     location / {
-        proxy_pass http://192.168.1.37:6001/;
+        proxy_pass http://localhost:$serverport/;
     }
-
 }
 
 '''
@@ -600,16 +613,46 @@ def test_module(_: Dict, params: Dict):
     return 'ok', {}, {}
 
 
-def create_nginx_server_conf(file_path: str, params: Dict):
-    port = get_params_port(params)
+def create_nginx_server_conf(file_path: str, port: int, params: Dict):
+    """Create nginx conf file
+
+    Args:
+        file_path (str): path of server conf file
+        port (int): listening port. server port to proxy to will be port+1
+        params (Dict): additional nginx params
+
+    Raises:
+        DemistoException: raised if there is a detected config error
+    """
     template_str = params.get('nginx_server_conf') or NGINX_SERVER_CONF
-    server_conf = Template(template_str).safe_substitute(port=port, ssl='')
+    certificate: str = params.get('certificate', '')
+    private_key: str = params.get('key', '')
+    ssl = ''
+    sslcerts = ''
+    serverport = port + 1
+    extra_cache_key = ''
+    if (certificate and not private_key) or (private_key and not certificate):
+        raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
+    if certificate and private_key:
+        demisto.debug('Using HTTPS for nginx conf')
+        with open(NGINX_SSL_CRT_FILE, 'wt') as f:
+            f.write(certificate)
+        with open(NGINX_SSL_KEY_FILE, 'wt') as f:
+            f.write(private_key)
+        ssl = 'ssl'  # to be included in the listen directive
+        sslcerts = NGINX_SSL_CERTS
+    credentials = params.get('credentials') or {}
+    if credentials.get('identifier'):
+        extra_cache_key = "$http_authorization"
+    server_conf = Template(template_str).safe_substitute(port=port, serverport=serverport, ssl=ssl,
+                                                         sslcerts=sslcerts, extra_cache_key=extra_cache_key)
     with open(file_path, mode='wt') as f:
         f.write(server_conf)
+    return port
 
 
-def start_nginx_server(params: Dict):
-    create_nginx_server_conf(NGINX_SERVER_CONF_FILE, params)
+def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
+    port = create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
     nginx_global_directives = ['daemon off']
     global_directives_conf = params.get('nginx_global_directives')
     if global_directives_conf:
@@ -629,7 +672,22 @@ def start_nginx_server(params: Dict):
         raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
     nginx_command = ['nginx']
     nginx_command.extend(directive_args)
-    # subprocess.Popen
+    return subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+def test_nginx_server(port: int, params: Dict):
+    nginx_process = start_nginx_server(port, params)
+    # let nginx startup
+    sleep(0.5)
+    try:
+        protocol = 'https' if params.get('key') else 'http'
+        res = requests.get(f'{protocol}://localhost:{port}/nginx-test', verify=False)
+        res.raise_for_status()
+        welcome = 'Welcome to nginx'
+        if welcome not in res.text:
+            raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
+    finally:
+        nginx_process.terminate()
 
 
 def run_long_running(params: Dict, is_test: bool = False):
@@ -639,56 +697,29 @@ def run_long_running(params: Dict, is_test: bool = False):
     :param is_test: Indicates whether it's test-module run or regular run
     :return: None
     """
-    certificate: str = params.get('certificate', '')
-    private_key: str = params.get('key', '')
-
-    certificate_path = str()
-    private_key_path = str()
-
+    nginx_process = None
     try:
-        port = get_params_port(params)
-        ssl_args = dict()
-
-        if (certificate and not private_key) or (private_key and not certificate):
-            raise DemistoException('If using HTTPS connection, both certificate and private key should be provided.')
-
-        if certificate and private_key:
-            certificate_file = NamedTemporaryFile(delete=False)
-            certificate_path = certificate_file.name
-            certificate_file.write(bytes(certificate, 'utf-8'))
-            certificate_file.close()
-
-            private_key_file = NamedTemporaryFile(delete=False)
-            private_key_path = private_key_file.name
-            private_key_file.write(bytes(private_key, 'utf-8'))
-            private_key_file.close()
-            context = SSLContext(PROTOCOL_TLSv1_2)
-            context.load_cert_chain(certificate_path, private_key_path)
-            ssl_args['ssl_context'] = context
-            demisto.debug('Starting HTTPS Server')
-        else:
-            demisto.debug('Starting HTTP Server')
-
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
+        nginx_port = get_params_port(params)
+        server_port = nginx_port + 1
+        server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
         if is_test:
+            test_nginx_server(nginx_port, params)
             server_process = Process(target=server.serve_forever)
             server_process.start()
             time.sleep(5)
             server_process.terminate()
         else:
+            nginx_process = start_nginx_server(nginx_port, params)
             server.serve_forever()
-    except SSLError as e:
-        ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
-        demisto.error(ssl_err_message)
-        raise ValueError(ssl_err_message)
     except Exception as e:
-        demisto.error(f'An error occurred in long running loop: {str(e)}')
+        demisto.error(f'An error occurred: {str(e)}')
         raise ValueError(str(e))
     finally:
-        if certificate_path:
-            os.unlink(certificate_path)
-        if private_key_path:
-            os.unlink(private_key_path)
+        if nginx_process:
+            try:
+                nginx_process.terminate()
+            except Exception as ex:
+                demisto.error(f'Failed stopping nginx process when exiting: {ex}')
 
 
 def update_edl_command(args: Dict, params: Dict):
