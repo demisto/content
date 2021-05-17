@@ -1,0 +1,135 @@
+commonfields:
+  id: Linkshadow - XSOAR
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Linkshadow - XSOAR
+display: Linkshadow - XSOAR
+category: Data Enrichment & Threat Intelligence
+description: Fetch Network Anomalies data from LinkShadow and execute the remediation
+  Actions.
+detaileddescription: |2
+
+  ## Linkshadow
+  - This section explains how to configure the instance of Linkshadow in Cortex XSOAR.
+  - You can use the following API Key: `VxVQklA6O4r5B2KSS1phb3oBav6Lo3HUZONS2q6u`
+  - api_username : `lsadmin`
+  - plugin_id :  `xsoar_integration_1604211382`
+  - action : `fetch_entity_anomalies`
+
+  ---
+configuration:
+- display: API Key
+  name: apiKey
+  type: 4
+  required: true
+- display: URL
+  name: url
+  type: 0
+  required: true
+- display: ACTION
+  name: action
+  type: 0
+  required: true
+- display: Time Frame
+  name: time_frame
+  type: 0
+  required: true
+- display: API Username
+  name: api_username
+  type: 0
+  required: true
+- display: Plugin ID
+  name: plugin_id
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script: '-'
+  
+  type: python
+  commands:
+  - name: fetch-incidents
+    arguments: []
+    outputs:
+    - contextPath: time_seen
+      description: time_seen
+      type: date
+    - contextPath: category
+      description: category
+      type: string
+    - contextPath: anomaly_type
+      description: anomaly_type
+      type: string
+    - contextPath: sip
+      description: sip
+      type: string
+    - contextPath: GlobalID
+      description: GlobalID
+      type: string
+    - contextPath: anomaly_id
+      description: anomaly_id
+      type: number
+    - contextPath: inserted_time
+      description: inserted_time
+      type: date
+    - contextPath: smac
+      description: smac
+      type: string
+    - contextPath: bandwidth
+      description: bandwidth
+      type: number
+    - contextPath: score
+      description: score
+      type: number
+    - contextPath: dport
+      description: dport
+      type: string
+    - contextPath: dmac
+      description: dmac
+      type: string
+    - contextPath: sport
+      description: sport
+      type: string
+    - contextPath: dip
+      description: dip
+      type: string
+    - contextPath: id
+      description: id
+      type: number
+    - contextPath: desc
+      description: desc
+      type: string
+    - contextPath: linkflow_file_path
+      description: linkflow_file_path
+      type: string
+    - contextPath: pcap_waiting
+      description: pcap_waiting
+      type: string
+    - contextPath: log_source
+      description: log_source
+      type: string
+    - contextPath: process_finder
+      description: process_finder
+      type: string
+    - contextPath: end_time
+      description: end_time
+      type: date
+    - contextPath: pcap
+      description: pcap
+      type: string
+  dockerimage: demisto/python:2.7.18.18413
+  isfetch: true
+  runonce: false
+  subtype: python2
+  isFetchSamples: true
