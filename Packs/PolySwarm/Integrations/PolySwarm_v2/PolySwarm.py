@@ -64,7 +64,7 @@ class PolyswarmConnector():
         return True
 
     def get_score(self,
-                  polyscore):
+                  polyscore) -> int:
 
         if float(polyscore) < 0.2:
             return Common.DBotScore.GOOD
@@ -83,6 +83,7 @@ class PolyswarmConnector():
         md5: str = ''
         sha256: str = ''
         sha1: str = ''
+        polyscore: int = 0
 
         for result in results:
             if result.failed:
