@@ -63,6 +63,16 @@ class PolyswarmConnector():
 
         return True
 
+    def get_score(self,
+                  polyscore):
+
+        if float(polyscore) < 0.2:
+            return Common.DBotScore.GOOD
+        elif 0.2 <= float(polyscore) < 0.7:
+            return Common.DBotScore.SUSPICIOUS
+        elif float(polyscore) >= 0.7:
+            return Common.DBotScore.BAD
+
     def return_hash_results(self,
                             results: dict,
                             error_msg: str) -> object:
@@ -94,12 +104,12 @@ class PolyswarmConnector():
             sha256 = result.sha256
             sha1 = result.sha1
 
-        score = Common.DBotScore.SUSPICIOUS if positives > 0 else Common.DBotScore.GOOD
+            polyscore = result.polyscore
 
         dbot_score = Common.DBotScore(indicator=md5,
                                       indicator_type=DBotScoreType.FILE,
                                       integration_name='PolySwarm',
-                                      score=score)
+                                      score=self.get_score(polyscore))
 
         indicator = Common.File(md5=md5,
                                 sha1=sha1,
@@ -210,6 +220,7 @@ class PolyswarmConnector():
             # default values
             total_scans = 0
             positives = 0
+            polyscore = 0
 
             # IP validation
             if artifact_type == 'ip':
@@ -234,12 +245,12 @@ class PolyswarmConnector():
                         positives += 1
                     total_scans += 1
 
+                polyscore = result.polyscore
+
             except Exception as err:
                 return_error('{ERROR_ENDPOINT}{err}'.
                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
                                     err=err))
-
-            score = Common.DBotScore.SUSPICIOUS if positives > 0 else Common.DBotScore.GOOD
 
             if artifact_type == 'ip':
                 object_name = 'IP'
@@ -254,7 +265,7 @@ class PolyswarmConnector():
             dbot_score = Common.DBotScore(indicator=artifact,
                                           indicator_type=dbot_score_type,
                                           integration_name='PolySwarm',
-                                          score=score)
+                                          score=self.get_score(polyscore))
 
             indicator = None
             if artifact_type == 'ip':
