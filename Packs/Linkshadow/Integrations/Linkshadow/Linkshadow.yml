@@ -126,10 +126,11 @@ script:
     - contextPath: pcap
       description: pcap
       type: string
-  dockerimage: demisto/python:2.7.18.18413
+  dockerimage: demisto/python:2.7.18.19851
   isfetch: true
   runonce: false
   script: '-'
   subtype: python2
   type: python
   isFetchSamples: true
+  fromversion: 5.0.0
