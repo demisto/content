@@ -209,8 +209,9 @@ script:
         'X-DTAS-SourceID': '1',
         'X-DTAS-SourceName': 'DemistoIntegration',
     }
+
     if HOST:
-      DEFAULT_HEADERS['Host'] = HOST
+        DEFAULT_HEADERS['Host'] = HOST
 
 
     # for fetch incident
