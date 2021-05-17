@@ -12,7 +12,7 @@ Uses the XSOAR API to query for custom content, configuration, and statistics, t
 a HTML and Markdown output based on this.
 """
 DEMISTO_INTEGRATIONS_PATH = "/settings/integration/search"
-DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installed"
+DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installedblah"
 DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
 DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
@@ -307,10 +307,12 @@ contat details, project scope, etc."></textarea>
         settings->about->troubleshooting.</p>
     <p style="page-break-after: always;"></p>
 
-    {{ installed_packs_table }}
-    <p>The installed packs are all the content packs currently installed on the server. Content packs
-        include playbooks, automations, and in some cases, integrations.</p>
-    <p style="page-break-after: always;"></p>
+    {% if installed_packs_table %}
+        {{ installed_packs_table }}
+        <p>The installed packs are all the content packs currently installed on the server. Content packs
+            include playbooks, automations, and in some cases, integrations.</p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
     {% if playbooks_table %}
         {{ playbooks_table }}
@@ -343,7 +345,7 @@ contat details, project scope, etc."></textarea>
         <p>
             Custom dashboards are a dynamic way to visualize statistics within XSOAR.<br><br>
             XSOAR ships with a number of Out Of the Box dashboards, the above respresent only
-            those that have been created as part of this PS engagement. 
+            those that have been created as part of this PS engagement.
         </p>
         <p style="page-break-after: always;"></p>
     {% endif %}
@@ -394,6 +396,7 @@ class SortedTableData(TableData):
     def __init__(self, data, name, sort_key):
         sorted_data = sorted(data, key=lambda i: i[sort_key].lower())
         super(SortedTableData, self).__init__(sorted_data, name)
+
 
 class SingleFieldData:
     def __init__(self, name, data):
@@ -568,11 +571,16 @@ def get_api_request(url):
         "uri": url
     }
     raw_res = demisto.executeCommand("demisto-api-get", api_args)
+
     try:
         res = raw_res[0]['Contents']['response']
+        # If it's a string and not an object response, means this command has failed.
+        if type(res) is str:
+            return None
         return res
     except KeyError:
         return_error(f'API Request failed, no response from API call to {url}')
+
 
 
 def get_all_incidents(days=7, size=1000):
@@ -670,8 +678,12 @@ def get_installed_packs():
     Get all the installed Content Packs
     :return: TableData
     """
+    # if tis doesn't work, return nothing.
     r = get_api_request(DEMISTO_INSTALLED_PATH)
-    rd = SortedTableData(r, "Installed Content Packs", "name")
+    if not r:
+        rd = NoneTableData()
+    else:
+        rd = SortedTableData(r, "Installed Content Packs", "name")
     return rd
 
 

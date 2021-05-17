@@ -93,10 +93,12 @@ contat details, project scope, etc."></textarea>
         settings->about->troubleshooting.</p>
     <p style="page-break-after: always;"></p>
 
-    {{ installed_packs_table }}
-    <p>The installed packs are all the content packs currently installed on the server. Content packs
-        include playbooks, automations, and in some cases, integrations.</p>
-    <p style="page-break-after: always;"></p>
+    {% if installed_packs_table %}
+        {{ installed_packs_table }}
+        <p>The installed packs are all the content packs currently installed on the server. Content packs
+            include playbooks, automations, and in some cases, integrations.</p>
+        <p style="page-break-after: always;"></p>
+    {% endif %}
 
     {% if playbooks_table %}
         {{ playbooks_table }}
