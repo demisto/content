@@ -1,13 +1,13 @@
-import requests
 from typing import Optional
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-DEFAULT_LIST_FIELD = ['name', 'uid', 'type', 'ipv4-address', 'domain-name', 'domain-uid', 'groups',
+DEFAULT_LIST_FIELD = ['name', 'uid', 'type', 'ipv4-address', 'ipv6-address', 'domain-name', 'domain-uid', 'groups',
                       'read-only', 'creator', 'last-modifier']
 
 
@@ -43,10 +43,10 @@ class Client(BaseClient):
         return self._http_request(method='POST', url_suffix='show-host', headers=self.headers,
                                   json_data={'name': identifier})
 
-    def add_host(self, name, ip_address, groups):
+    def add_host(self, name, ip_address, ignore_warnings: bool, ignore_errors: bool, groups):
         return self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
                                   json_data={"name": name, "ip-address": ip_address,
-                                             'groups': groups})
+                                             "ignore-warnings": ignore_warnings, "ignore-errors": ignore_errors, "groups": groups})
 
     def update_host(self, identifier: str, ignore_warnings: bool, ignore_errors: bool,
                     ip_address: Optional[str], new_name: Optional[str],
@@ -300,21 +300,23 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
         limit (int): The maximal number of returned results. default is 50.
         offset (int): Number of the results to initially skip. default is 0.
     """
-    result = client.list_hosts(limit, offset)
-    result = result.get('objects')
-
     printable_result = []
     readable_output = ''
 
-    if result:
+    result = client.list_hosts(limit, offset)
+    demisto.info(result)
+    if result.get('total') == 0:
+        printable_result = 'no_more_output'
+    else:
+        result = result.get('objects')
         for element in result:
             current_printable_result = {}
             for endpoint in DEFAULT_LIST_FIELD:
                 current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
 
-        readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
-                                          DEFAULT_LIST_FIELD, removeNull=True)
+    readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
+                                      DEFAULT_LIST_FIELD, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Host',
         outputs_key_field='uid',
@@ -350,7 +352,7 @@ def checkpoint_get_host_command(client: Client, identifier: str) -> CommandResul
     return command_results
 
 
-def checkpoint_add_host_command(client: Client, name, ip_address,
+def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warnings, ignore_errors,
                                 groups: str = None) -> CommandResults:
     """
     Add new host object.
@@ -375,7 +377,7 @@ def checkpoint_add_host_command(client: Client, name, ip_address,
         raise ValueError('Number of host-names and host-IP has to be equal')
     else:
         for index, item in enumerate(name):
-            current_result = client.add_host(item, ip_address[index], groups)
+            current_result = client.add_host(item, ip_address[index], ignore_warnings, ignore_errors, groups)
             printable_result = build_printable_result(headers, current_result)
             current_readable_output = tableToMarkdown('CheckPoint data for adding host:',
                                                       printable_result, headers=headers,
@@ -1454,14 +1456,19 @@ def checkpoint_list_package_command(client: Client, identifier: str) -> CommandR
     if result:
 
         gwinfo = result.get('installation-targets-revision')
-        for element in gwinfo:
-            current_printable_result = {}
-            current_printable_result['name'] = result.get('name')
-            for endpoint in headers:
-                current_printable_result[endpoint] = element.get(endpoint)
+        if gwinfo:
+            for element in gwinfo:
+                current_printable_result = {}
+                current_printable_result['name'] = result.get('name')
+                for endpoint in headers:
+                    current_printable_result[endpoint] = element.get(endpoint)
             printable_result.append(current_printable_result)
-        readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
-                                          headers, removeNull=True)
+            readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
+                                              headers, removeNull=True)
+        else:
+            # error suppression in case no targets associated with the given policy
+            pass
+
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Package',
         outputs_key_field='target-uid',
@@ -1660,8 +1667,12 @@ def build_member_data(result: dict, readable_output: str, printable_result: dict
         for member in members:
             current_object_data = {'member-name': member.get('name'),
                                    'member-uid': member.get('uid'),
-                                   'member-type': member.get('type'),
+                                   'member-type': member.get('type')
                                    }
+            if member.get('ipv4-address'):
+                current_object_data['member-ipv4-address'] = member.get('ipv4-address')
+            if member.get('ipv6-address'):
+                current_object_data['member-ipv6-address'] = member.get('ipv6-address')
 
             member_domain = member.get('domain')
             if member_domain:
@@ -1674,8 +1685,8 @@ def build_member_data(result: dict, readable_output: str, printable_result: dict
         printable_result['members'] = members_printable_result
         member_readable_output = tableToMarkdown('CheckPoint member data:',
                                                  members_printable_result,
-                                                 ['member-name', 'member-uid', 'member-type',
-                                                  'member-domain-name', 'member-domain-uid'],
+                                                 ['member-name', 'member-uid', 'member-type''member-ipv4-address',
+                                                  'member-ipv6-address', 'member-domain-name', 'member-domain-uid'],
                                                  removeNull=True)
         readable_output = readable_output + member_readable_output
     return readable_output, printable_result
