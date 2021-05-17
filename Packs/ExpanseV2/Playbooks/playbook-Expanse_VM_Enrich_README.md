@@ -9,12 +9,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 * Tenable.io
+* Rapid7 Nexpose
 
 ### Scripts
 * This playbook does not use any scripts.
 
 ### Commands
 * tenable-io-get-vulnerabilities-by-asset
+* nexpose-search-assets
 
 ## Playbook Inputs
 ---
