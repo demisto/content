@@ -36,9 +36,9 @@ EXPECTED_RESULTS = ['Xsoar@test.org.de', 'Xsoar@test.uk', 'Xsoar@xsoar.co.il']
 def test_main(mocker):
     """Verifies that all valid addresses get returned.
        Given
-       - addresses.
+       - Email addresses that were auto-extracted by the Email regex.
        When
-       - When there are multiple addresses that looks like a bitcoin address.
+       - Auto extracting an email address or using the extractIndicator script.
        Then
        - Return all valid addresses
        """
