@@ -295,6 +295,7 @@ class Client(BaseClient):
             'activityStatus': activity_status if activity_status else None,
             'discoveryType': discovery_type if discovery_type else None,
             'tagName': tags if tags else None,
+            'cloudManagementStatus': cloud_management_status if cloud_management_status else None,
             'sort': sort
         }
 
@@ -2713,7 +2714,7 @@ def main() -> None:
         elif command == "cidr":
             return_results(cidr_command(client, demisto.args()))
 
-        elif command == "expanse-get-cloud-resources":
+        elif command == "cloud_management_status":
             return_results(get_cloud_resource_command(client, demisto.args()))
 
         elif command == "expanse-get-risky-flows":

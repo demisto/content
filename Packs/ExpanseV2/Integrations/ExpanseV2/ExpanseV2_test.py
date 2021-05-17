@@ -232,7 +232,7 @@ def test_fetch_incidents(requests_mock):
 
     next_run, result = fetch_incidents(client, max_incidents=int(MOCK_LIMIT), last_run=last_run, business_units=MOCK_BU,
                                        first_fetch=None, priority=None, activity_status=None, progress_status=None,
-                                       issue_types=None, tags=None, mirror_direction=None, sync_tags=False,
+                                       issue_types=None, tags=None, cloud_management_status=None, mirror_direction=None, sync_tags=False,
                                        fetch_details=None)
 
     assert next_run == {
