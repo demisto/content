@@ -18,15 +18,13 @@ API Token, API Username from Linkshadow  ( Generate tokens from following url : 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-
-
 | API Key | Use API Token  | True |
 | url | Server URL \(e.g. https://<Linkshadow_IP>/) | True |
 | API Username | Use API Username | True |
 | action | fetch_entity_anomalies | True |
 | plugin_id | xsoar_integration_1604211382 | True |
-**| TimeFrame | 01 | True |
-**| Incidents Fetch Interval | 01 Minutes | True
+| **TimeFrame | 01 | True |
+| **Incidents Fetch Interval | 01 Minutes | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
