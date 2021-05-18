@@ -90,8 +90,8 @@ configuration:
   defaultvalue: '3'
   type: 0
   required: false
-- additionalinfo: 'Select the list of relationships which will be brought from the api. Note that relationships that are signed with * key are
-                    available only for VirusTotal premium api key'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
   display: IP Relationships
   name: ip_relationships
   options:
@@ -102,8 +102,8 @@ configuration:
   required: false
   type: 16
   defaultvalue: 'communicating files,* downloaded files,referrer files,* urls'
-- additionalinfo: 'Select the list of relationships which will be brought from the api. Note that relationships that are signed with * key are
-                                      available only for VirusTotal premium api key'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
   display: Domain Relationships
   name: domain_relationships
   options:
@@ -123,8 +123,8 @@ configuration:
   required: false
   type: 16
   defaultvalue: '* cname records,* caa records,communicating files,* downloaded files,immediate parent,* mx records,* ns records,parent,referrer files,siblings,* soa records,subdomains,* urls'
-- additionalinfo: 'Select the list of relationships which will be brought from the api. Note that relationships that are signed with * key are
-                                      available only for VirusTotal premium api key'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
   display: URL Relationships
   name: url_relationships
   options:
@@ -141,8 +141,8 @@ configuration:
   required: false
   type: 16
   defaultvalue: 'communicating files,* contacted domains,* contacted ips,* downloaded files,last serving ip address,network location,* redirecting urls,* redirects to,* referrer files,* referrer urls'
-- additionalinfo: 'Select the list of relationships which will be brought from the api. Note that relationships that are signed with * key are
-                                      available only for VirusTotal premium api key'
+- additionalinfo: 'Select the list of relationships to retrieve from the API. Note that relationships that are signed with * key are
+                    available only for the VirusTotal premium API key.'
   display: File Relationships
   name: file_relationships
   options:
