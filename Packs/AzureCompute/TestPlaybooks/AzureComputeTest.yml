@@ -134,7 +134,7 @@ tasks:
       resource_group:
         simple: compute-integration
       virtual_machine_name:
-        simple: TestOAuth
+        simple: TestOAuth2
     separatecontext: false
     view: |-
       {
@@ -165,7 +165,7 @@ tasks:
       retry-count:
         simple: "3"
       virtual_machine_name:
-        simple: TestOAuth
+        simple: TestOAuth2
     separatecontext: false
     view: |-
       {
