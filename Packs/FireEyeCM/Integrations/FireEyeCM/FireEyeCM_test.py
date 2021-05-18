@@ -27,7 +27,7 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
-                                          first_fetch_time='1 year',
+                                          first_fetch='1 year',
                                           max_fetch=50,
                                           info_level='concise')
     assert len(incidents) == 11
@@ -52,7 +52,7 @@ def test_fetch_incidents_with_limit(mocker):
     mocker.patch.object(Client, 'get_alerts_request', return_value=util_load_json('test_data/alerts.json'))
     last_run, incidents = fetch_incidents(client=client,
                                           last_run={},
-                                          first_fetch_time='1 year',
+                                          first_fetch='1 year',
                                           max_fetch=5,
                                           info_level='concise')
     assert len(incidents) == 5
@@ -84,7 +84,7 @@ def test_fetch_incidents_last_alert_ids(mocker):
     }
     last_run, incidents = fetch_incidents(client=client,
                                           last_run=last_run,
-                                          first_fetch_time='1 year',
+                                          first_fetch='1 year',
                                           max_fetch=50,
                                           info_level='concise')
 

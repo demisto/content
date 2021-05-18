@@ -470,7 +470,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
 
 
 @logger
-def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int = 50,
+def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
                     info_level: str = 'concise') -> Tuple[dict, list]:
     def alert_severity_to_dbot_score(severity_str: str):
         severity = severity_str.lower()
@@ -486,14 +486,14 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
 
     if not last_run:  # if first time fetching
         next_run = {
-            'time': to_fe_datetime_converter(first_fetch_time),
+            'time': to_fe_datetime_converter(first_fetch),
             'last_alert_ids': []
         }
     else:
         next_run = last_run
 
     raw_response = client.get_alerts_request(request_params={
-        'start_time': to_fe_datetime_converter(first_fetch_time),
+        'start_time': to_fe_datetime_converter(first_fetch),
         'info_level': info_level
     })
     alerts = raw_response.get('alert')
@@ -547,7 +547,7 @@ def main() -> None:
 
     # # fetch params
     max_fetch = int(params.get('max_fetch', '50'))
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch = params.get('first_fetch', '3 days').strip()
     info_level = params.get('info_level', 'concise')
 
     command = demisto.command()
@@ -574,7 +574,7 @@ def main() -> None:
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
+                first_fetch=first_fetch,
                 max_fetch=max_fetch,
                 info_level=info_level
             )
