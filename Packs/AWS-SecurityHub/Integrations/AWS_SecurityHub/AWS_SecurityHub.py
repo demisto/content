@@ -777,20 +777,20 @@ def main():  # pragma: no cover
     archive_findings = params.get('archiveFindings', False)
     additional_filters = params.get('additionalFilters', '')
 
-    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
-                    aws_secret_access_key)
-    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                           aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                           retries)
-    client = aws_client.aws_session(
-        service='securityhub',
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration')
-    )
-
     try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                        aws_secret_access_key)
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                               retries)
+        client = aws_client.aws_session(
+            service='securityhub',
+            region=args.get('region'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration')
+        )
+
         LOG('Command being called is {command}'.format(
             command=command))
 
