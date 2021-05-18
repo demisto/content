@@ -31,45 +31,8 @@ class Client(BaseClient):
         return resp.headers['X-FeApi-Token']
 
     @logger
-    def get_alerts_request(self, alert_id: Optional[str], start_time: Optional[str], end_time: Optional[str],
-                           duration: Optional[str], callback_domain: Optional[str], dst_ip: Optional[str],
-                           src_ip: Optional[str], file_name: Optional[str], file_type: Optional[str],
-                           info_level: Optional[str], malware_name: Optional[str], malware_type: Optional[str],
-                           recipient_email: Optional[str], sender_email: Optional[str], url_: Optional[str]) -> Dict[
-        str, str]:
-        params = {
-            'info_level': info_level
-        }
-        if start_time:
-            params['start_time'] = start_time
-        if end_time:
-            params['end_time'] = end_time
-        if duration:
-            params['duration'] = duration
-        if alert_id:
-            params['alert_id'] = alert_id
-        if callback_domain:
-            params['callback_domain'] = callback_domain
-        if dst_ip:
-            params['dst_ip'] = dst_ip
-        if src_ip:
-            params['src_ip'] = src_ip
-        if file_name:
-            params['file_name'] = file_name
-        if file_type:
-            params['file_type'] = file_type
-        if malware_name:
-            params['malware_name'] = malware_name
-        if malware_type:
-            params['malware_type'] = malware_type
-        if recipient_email:
-            params['recipient_email'] = recipient_email
-        if sender_email:
-            params['sender_email'] = sender_email
-        if url_:
-            params['url'] = url_
-
-        return self._http_request(method='GET', url_suffix='alerts', params=params, resp_type='json')
+    def get_alerts_request(self, request_params: Dict[str, Any]) -> Dict[str, str]:
+        return self._http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
 
     @logger
     def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
@@ -199,30 +162,63 @@ def test_module(client: Client) -> str:
 
 @logger
 def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
-    alert_id = args.get('alert_id', '')
-    start_time = args.get('start_time', '')
-    if start_time:
-        start_time = to_fe_datetime_converter(start_time)
-    end_time = args.get('end_time')
-    if end_time:
-        end_time = to_fe_datetime_converter(end_time)
-    duration = args.get('duration')
-    callback_domain = args.get('callback_domain', '')
-    dst_ip = args.get('dst_ip', '')
-    src_ip = args.get('src_ip', '')
-    file_name = args.get('file_name', '')
-    file_type = args.get('file_type', '')
-    info_level = args.get('info_level', 'concise')
-    malware_name = args.get('malware_name', '')
-    malware_type = args.get('malware_type', '')
-    recipient_email = args.get('recipient_email', '')
-    sender_email = args.get('sender_email', '')
-    url_ = args.get('url', '')
+    def parse_request_params(args: Dict[str, Any]) -> Dict:
+        alert_id = args.get('alert_id', '')
+        start_time = args.get('start_time', '')
+        if start_time:
+            start_time = to_fe_datetime_converter(start_time)
+        end_time = args.get('end_time')
+        if end_time:
+            end_time = to_fe_datetime_converter(end_time)
+        duration = args.get('duration')
+        callback_domain = args.get('callback_domain', '')
+        dst_ip = args.get('dst_ip', '')
+        src_ip = args.get('src_ip', '')
+        file_name = args.get('file_name', '')
+        file_type = args.get('file_type', '')
+        malware_name = args.get('malware_name', '')
+        malware_type = args.get('malware_type', '')
+        recipient_email = args.get('recipient_email', '')
+        sender_email = args.get('sender_email', '')
+        url_ = args.get('url', '')
+
+        request_params = {
+            'info_level': args.get('info_level', 'concise')
+        }
+        if start_time:
+            request_params['start_time'] = start_time
+        if end_time:
+            request_params['end_time'] = end_time
+        if duration:
+            request_params['duration'] = duration
+        if alert_id:
+            request_params['alert_id'] = alert_id
+        if callback_domain:
+            request_params['callback_domain'] = callback_domain
+        if dst_ip:
+            request_params['dst_ip'] = dst_ip
+        if src_ip:
+            request_params['src_ip'] = src_ip
+        if file_name:
+            request_params['file_name'] = file_name
+        if file_type:
+            request_params['file_type'] = file_type
+        if malware_name:
+            request_params['malware_name'] = malware_name
+        if malware_type:
+            request_params['malware_type'] = malware_type
+        if recipient_email:
+            request_params['recipient_email'] = recipient_email
+        if sender_email:
+            request_params['sender_email'] = sender_email
+        if url_:
+            request_params['url'] = url_
+        return request_params
+
+    request_params = parse_request_params(args)
     limit = int(args.get('limit', '100'))
 
-    raw_response = client.get_alerts_request(alert_id, start_time, end_time, duration, callback_domain, dst_ip, src_ip,
-                                             file_name, file_type, info_level, malware_name, malware_type,
-                                             recipient_email, sender_email, url_)
+    raw_response = client.get_alerts_request(request_params)
 
     alerts = raw_response.get('alert')
     if not alerts:
@@ -496,10 +492,10 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_f
     else:
         next_run = last_run
 
-    raw_response = client.get_alerts_request(alert_id='', start_time=to_fe_datetime_converter(first_fetch_time),
-                                             end_time='', duration='', callback_domain='', dst_ip='', src_ip='',
-                                             file_name='', file_type='', info_level=info_level, malware_name='',
-                                             malware_type='', recipient_email='', sender_email='', url_='')
+    raw_response = client.get_alerts_request(request_params={
+        'start_time': to_fe_datetime_converter(first_fetch_time),
+        'info_level': info_level
+    })
     alerts = raw_response.get('alert')
 
     if not alerts:
