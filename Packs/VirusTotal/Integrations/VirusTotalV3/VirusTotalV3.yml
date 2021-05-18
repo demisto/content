@@ -34,7 +34,7 @@ configuration:
   - C - Fairly reliable
   - D - Not usually reliable
   - E - Unreliable
-  - F - Reliability cannot be judged  
+  - F - Reliability cannot be judged
 - display: Premium Subscription
   name: is_premium_api
   defaultvalue: 'false'
@@ -1229,7 +1229,7 @@ script:
         type: String
     description: Retrieves resolutions of the given IP.
   runonce: false
-  dockerimage: demisto/python3:3.9.2.18414
+  dockerimage: demisto/python3:3.9.5.20070
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
