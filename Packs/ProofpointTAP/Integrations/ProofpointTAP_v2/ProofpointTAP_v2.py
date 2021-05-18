@@ -1169,7 +1169,7 @@ def main():
 
     # Remove trailing slash to prevent wrong URL path to service
     server_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
-    api_version = 'v2'
+    api_version = params.get('api_version')
 
     verify_certificate = not params.get('insecure', False)
     # How many time before the first fetch to retrieve incidents
