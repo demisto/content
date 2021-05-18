@@ -9,45 +9,18 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 urllib3.disable_warnings()
 
-EDL_EXPECTED_SIZES = (10 * 1000, 50 * 1000, 100 * 1000)
-CONCURRENT_LIMITS = (1, 4, 8, 16)
-TIMEOUT_LIMITS = (3, 5, 10, 30)
-
 # ---------- CLASSES ---------- #
-
-class EDLQueryBuilder:
-    """
-    Utility class for building a URL query for EDL
-    """
-
-    def __init__(self, size: int):
-        """
-        :param size: Size of the EDL to query to create
-        """
-        self._size = size
-
-    def _get_query(self, _type: str):
-        return f"?q=type:{_type}&n={self._size}"
-
-    def get_domain_query(self):
-        return self._get_query('Domain')
-
-    def get_url_query(self):
-        return self._get_query('URL')
-
-    def get_ip_query(self):
-        return self._get_query('IP')
 
 
 class EDLPerformanceResult:
-    def __init__(self, timeout: int, concurrent: int, ioc_type: str, size: int, result: str):
-        self._t = timeout
-        self._c = concurrent
-        self._type = ioc_type
-        self._size = size
-        self._result = result
+    def __init__(self, timeout: str, concurrent: str, ioc_type: str, size: str, result: str):
+        self._t = timeout or ''
+        self._c = concurrent or ''
+        self._type = ioc_type or ''
+        self._size = size or ''
+        self._result = result or ''
 
-    def to_csv_line(self):
+    def to_command_results(self) -> CommandResults:
         df = pd.read_csv(StringIO(self._result), usecols=['response-time'])
         if len(df) == 0:
             max_time = 0
@@ -58,11 +31,16 @@ class EDLPerformanceResult:
             max_time = max(response_times)
             avg_time = response_times.mean()
             requests_num = len(response_times)
-        return f"{self._type},{self._size},{self._t},{self._c},{requests_num},{max_time},{avg_time}\n"
-
-    @staticmethod
-    def get_headers():
-        return "type,size,timeout,concurrency,requests,max-time,average-time\nֿ"
+        outputs = {
+            'Type': self._type,
+            'Size': self._size,
+            "Timeout": self._t,
+            "Concurrency": self._c,
+            "Requests": requests_num,
+            "MaxTime": max_time,
+            "AverageTime": avg_time
+        }
+        return CommandResults(outputs=outputs, outputs_prefix="Hey.EDL")
 
 
 # ---------- HELPER FUNCTIONS ---------- #
@@ -84,35 +62,19 @@ def run_command(command: str) -> str:
     return output
 
 
-def run_test_for_ioc_types(hey_query: str, t: int, c: int, size: int) -> str:
-    perf_results = ""
-    edl_qb = EDLQueryBuilder(size)
-    tests_map = {
-        'IP': edl_qb.get_ip_query(),
-        'URL': edl_qb.get_url_query(),
-        'Domain': edl_qb.get_domain_query()
-    }
+def hey_edl_test_command(url: str, edl_suffix: str, ioc_type: str, size: str, n: str = None, t: str = None,
+                         c: str = None, z: str = None) -> CommandResults:
+    edl_url = os.path.join(url, edl_suffix) + f"?q=type:{ioc_type}&n={size}"
+    hey_map = assign_params(
+        t=t,
+        n=n,
+        c=c,
+        z=z + 's' if z else None
+    )
+    hey_query = f"hey " + " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f'"{edl_url}"'
+    result = run_command(hey_query)
+    return EDLPerformanceResult(t, c, ioc_type, size, result).to_command_results()
 
-    for ioc_type, edl_query in tests_map.items():
-        result = tools.run_command(f'{hey_query}{edl_query}"')
-        perf_results += EDLPerformanceResult(t, c, ioc_type, size, result).to_csv_line()
-    return perf_results
-
-
-def run_performance_test(edl_url: str) -> pd.DataFrame:
-    test_results = EDLPerformanceResult.get_headers()
-    for c in CONCURRENT_LIMITS:
-        for t in TIMEOUT_LIMITS:
-            for size in EDL_EXPECTED_SIZES:
-                # TODO: Consider whether -z should be altered
-                query = f'hey -c {c} -z 30s -t {t} -o csv "{edl_url}'
-                test_results += run_test_for_ioc_types(query, t, c, size)
-    test_results = test_results.replace('ֿI', 'I')  # first I is different I than the rest
-    return pd.read_csv(StringIO(test_results)).sort_values(by=['type', 'size', 'concurrency'])
-
-
-def hey_edl_test_command(url: str, edl_suffix: str, n: str = None, t: str = None, c: str = None, z: str = None):
-    edl_url =
 
 def main() -> None:
     params = demisto.params()
@@ -123,8 +85,10 @@ def main() -> None:
         url = url[:-1]
     try:
         demisto.debug(f'Command being called is {command}')
-        if command == 'hey-test-edl':
-            hey_edl_test_command(url=url, **args)
+        if command == 'test-module':
+            demisto.results('ok')
+        elif command == 'hey-test-edl':
+            return_results(hey_edl_test_command(url=url, **args))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
