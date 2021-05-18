@@ -14,6 +14,18 @@ except ImportError:
 serr = sys.stderr
 sys.stderr = StringIO()
 
+''' GLOBAL VARIABLES '''
+LIMIT = demisto.args()["limit"]
+START = demisto.args()["start"]
+LIMIT_DATA = int(demisto.args()["limitData"])
+if "allowedContentTypes" not in demisto.args():
+    ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
+                             "application/xml", "application/xhtml+xml",
+                             "application/ld+json", "application/javascript",
+                             "multipart/alternative", "application/x-www-form-urlencoded")
+else:
+    ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
+
 # Used to convert pyshark keys to Demisto's conventions
 # Also used as a whitelist of relevant keys for outputs.
 PYSHARK_RES_TO_DEMISTO = {
@@ -381,17 +393,6 @@ def main():
         # Parse the arguments
         pcap_file_path_in_container, pcap_entry_id = get_entry_from_args()
         pcap_file_path_in_container = pcap_file_path_in_container[0]['Contents']['path']
-        LIMIT = demisto.args()["limit"]
-        START = demisto.args()["start"]
-        LIMIT_DATA = int(demisto.args()["limitData"])
-
-        if "allowedContentTypes" not in demisto.args():
-            ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
-                                     "application/xml", "application/xhtml+xml",
-                                     "application/ld+json", "application/javascript",
-                                     "multipart/alternative", "application/x-www-form-urlencoded")
-        else:
-            ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
 
         # Work on the pcap file and return a result
         http_flows = get_http_flows(pcap_file_path_in_container)
@@ -413,11 +414,11 @@ def main():
                          "Contents": markdown_output,
                          "EntryContext": {"PcapHTTPFlows": context_output}})
     except Exception as e:
-        sys.stderr = serr
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
+        sys.stderr = serr
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
