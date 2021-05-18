@@ -15,6 +15,8 @@ Amazon Web Services Simple Queuing Service (SQS)
     | Secret Key |  | False |
     | Role Session Duration |  | False |
     | QueueURL |  | False |
+    | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
+    | retries | The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
     | Fetch incidents |  | False |
     | Maximum incidents for one fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
