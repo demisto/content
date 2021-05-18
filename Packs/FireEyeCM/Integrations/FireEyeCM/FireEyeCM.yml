@@ -31,7 +31,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultValue: 'concise'
+- defaultvalue: 'concise'
   display: Info level for fetched alerts
   name: info_level
   options:
