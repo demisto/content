@@ -1,8 +1,9 @@
-## BaseIntegration Help
+## Cofense Intelligence v2
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+How to generate an api Token and configure a new instance:
+- Log in to your Threathq account: https://www.threathq.com
+- Navigate to 'API Tokens' and select 'Create New Token'
+- Copy the new generated User Token and Password to the corresponding fields in the instance configuration
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+
 

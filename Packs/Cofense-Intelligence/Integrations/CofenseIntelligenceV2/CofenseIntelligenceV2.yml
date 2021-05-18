@@ -12,14 +12,6 @@ configuration:
   defaultvalue: https://www.threathq.com/apiv1
   type: 0
   required: true
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
 - display: User name
   name: credentials
   type: 9
@@ -78,6 +70,14 @@ configuration:
   - Minor
   - Moderate
   - Major
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
 script:
   script: '-'
   type: python
@@ -136,7 +136,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.confidence
-      description: 'confidence'
+      description: 'level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Threat.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -151,7 +151,7 @@ script:
       description: 'Brief description of infrastructure type being used'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data
-      description: ''
+      description: 'Domain name or an IP address'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data_1
       description: 'Either a domain name or an IP address'
@@ -201,7 +201,7 @@ script:
       description: 'Date when this file was analyzed by Malcovery'
       type: Date
     - contextPath: CofenseIntelligence.Threat.executableSet.severityLevel
-      description: ''
+      description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.fileNameExtension
       description: 'extension of the file'
@@ -225,13 +225,13 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.executableSubtype.description
-      description: ''
+      description: 'description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Threat.senderIpSet.totalCount
-      description: 'Count of the instances of each item named.'
+      description: 'Count of the instances of each item named'
       type: Number
     - contextPath: CofenseIntelligence.Threat.senderIpSet.ip
-      description: 'One of possibly many IPs used in the delivery of the email.'
+      description: 'One of possibly many IPs used in the delivery of the email'
       type: String
     - contextPath: CofenseIntelligence.Threat.senderNameSet.totalCount
       description: 'Count of the instances of each item named'
@@ -265,7 +265,7 @@ script:
       description: 'Direct URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.apiReportURL
-      description: ''
+      description: 'URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.threatDetailURL
       description: 'T3 Report URL'
@@ -331,7 +331,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.confidence
-      description: 'confidence'
+      description: 'level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Threat.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -346,7 +346,7 @@ script:
       description: 'Brief description of infrastructure type being used'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data
-      description: ''
+      description: 'Domain name or an IP address'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data_1
       description: 'Either a domain name or an IP address'
@@ -396,7 +396,7 @@ script:
       description: 'Date when this file was analyzed by Malcovery'
       type: Date
     - contextPath: CofenseIntelligence.Threat.executableSet.severityLevel
-      description: ''
+      description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.fileNameExtension
       description: 'extension of the file'
@@ -420,7 +420,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.executableSubtype.description
-      description: ''
+      description: 'description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Threat.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -460,7 +460,7 @@ script:
       description: 'Direct URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.apiReportURL
-      description: ''
+      description: 'URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.threatDetailURL
       description: 'T3 Report URL'
@@ -529,7 +529,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.confidence
-      description: 'confidence'
+      description: 'level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Threat.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -544,7 +544,7 @@ script:
       description: 'Brief description of infrastructure type being used'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data
-      description: ''
+      description: 'Domain name or an IP address'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data_1
       description: 'Either a domain name or an IP address'
@@ -594,7 +594,7 @@ script:
       description: 'Date when this file was analyzed by Malcovery'
       type: Date
     - contextPath: CofenseIntelligence.Threat.executableSet.severityLevel
-      description: ''
+      description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.fileNameExtension
       description: 'extension of the file'
@@ -618,7 +618,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.executableSubtype.description
-      description: ''
+      description: 'description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Threat.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -658,7 +658,7 @@ script:
       description: 'Direct URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.apiReportURL
-      description: ''
+      description: 'URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.threatDetailURL
       description: 'T3 Report URL'
@@ -727,7 +727,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.confidence
-      description: 'confidence'
+      description: 'level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Threat.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -742,7 +742,7 @@ script:
       description: 'Brief description of infrastructure type being used'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data
-      description: ''
+      description: 'Domain name or an IP address'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data_1
       description: 'Either a domain name or an IP address'
@@ -792,7 +792,7 @@ script:
       description: 'Date when this file was analyzed by Malcovery'
       type: Date
     - contextPath: CofenseIntelligence.Threat.executableSet.severityLevel
-      description: ''
+      description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.fileNameExtension
       description: 'extension of the file'
@@ -816,7 +816,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.executableSubtype.description
-      description: ''
+      description: 'description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Threat.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -856,7 +856,7 @@ script:
       description: 'Direct URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.apiReportURL
-      description: ''
+      description: 'URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.threatDetailURL
       description: 'T3 Report URL'
@@ -924,7 +924,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.confidence
-      description: 'confidence'
+      description: 'level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Threat.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -939,7 +939,7 @@ script:
       description: 'Brief description of infrastructure type being used'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data
-      description: ''
+      description: 'Domain name or an IP address'
       type: String
     - contextPath: CofenseIntelligence.Threat.blockSet.data_1
       description: 'Either a domain name or an IP address'
@@ -989,7 +989,7 @@ script:
       description: 'Date when this file was analyzed by Malcovery'
       type: Date
     - contextPath: CofenseIntelligence.Threat.executableSet.severityLevel
-      description: ''
+      description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.fileNameExtension
       description: 'extension of the file'
@@ -1013,7 +1013,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threat.executableSet.executableSubtype.description
-      description: ''
+      description: 'description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Threat.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -1053,7 +1053,7 @@ script:
       description: 'Direct URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.apiReportURL
-      description: ''
+      description: 'URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.Threat.threatDetailURL
       description: 'T3 Report URL'
@@ -1067,9 +1067,9 @@ script:
     - contextPath: CofenseIntelligence.Threat.threatType
       description: 'This will only have one value for malware'
       type: String
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.9.5.20070
   runonce: false
   subtype: python3
 tests:
 - Cofense Intelligence v2 test
-fromversion: 5.0.0
+fromversion: 5.5.0
