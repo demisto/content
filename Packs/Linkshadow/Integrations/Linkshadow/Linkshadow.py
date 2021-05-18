@@ -4,12 +4,12 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import requests
-import dateparser
+
+
 import traceback
-import time
+
 from datetime import datetime
-import time
+
 
 urllib3.disable_warnings()
 
@@ -22,6 +22,7 @@ MAX_INCIDENTS_TO_FETCH = 50
 Linkshadow_SEVERITIES = 0
 
 ''' CLIENT CLASS '''
+
 
 class Client(BaseClient):
     def fetch_anomaly(self, apiKey, start_time, api_username, plugin_id, action, time_frame):
@@ -42,10 +43,15 @@ class Client(BaseClient):
             url_suffix='/api/plugin/',
             data=request_params
         )
+
+
 ''' COMMAND FUNCTIONS '''
+
+
 def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
     try:
-        alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time, api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame)
+        alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time,
+                                      api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame)
         if 'error' in str(alerts.get('message')) or 'success' in str(alerts.get('message')):
             return "ok"
         else:
@@ -56,6 +62,7 @@ def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, actio
         else:
             return e
     return 'ok'
+
 
 def format_JSON_for_fetch_incidents(ls_anomaly):
 
@@ -79,6 +86,7 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
     anomaly_info['desc'] = anomaly['desc']if 'desc' in anomaly else 'no ls_anomaly desc'
     return anomaly_info
 
+
 def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
 
     last_fetch = last_run.get('last_fetch', None)
@@ -88,14 +96,15 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
         last_fetch = int(last_fetch)
     latest_created_time = int(last_fetch)
     incidents = []
-    alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time, api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame)
-    alert={}
+    alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time,
+                                  api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame)
+    alert = {}
     for alert in alerts:
 
-        if  alert == 'data':
-            for dic in  alerts['data']:
+        if alert == 'data':
+            for dic in alerts['data']:
                 for key in dic.keys():
-                    if key =='time_seen':
+                    if key == 'time_seen':
                         incident_created_time = dic['time_seen']
                         if last_fetch:
                             if incident_created_time <= last_fetch:
@@ -128,30 +137,31 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
 
+
 def fetch_entity_anomalies(client, args):
     apiKey = args.get('apiKey'),
-    username  = args.get('api_username')
+    username = args.get('api_username')
     plugin_id = args.get('plugin_id')
     action = args.get('action')
 
     time_frame = arg_to_int(
-        arg = args.get('time_frame'),
-        arg_name = 'time_frame',
-        required = False
+        arg=args.get('time_frame'),
+        arg_name='time_frame',
+        required=False
     )
 
     alerts = client.fetch_anomaly(
-        apiKey = apiKey,
-        api_username = username,
-        plugin_id = plugin_id,
-        action = action,
-        time_frame = time_frame
+        apiKey=apiKey,
+        api_username=username,
+        plugin_id=plugin_id,
+        action=action,
+        time_frame=time_frame
     )
 
     return CommandResults(
-        outputs_prefix = 'Linkshadow.anomaly',
-        outputs_key_field = 'demisto.args()',
-        outputs = alerts
+        outputs_prefix='Linkshadow.anomaly',
+        outputs_key_field='demisto.args()',
+        outputs=alerts
     )
 
 
@@ -169,7 +179,8 @@ def arg_to_int(arg, arg_name, required=False):
         return arg
     raise ValueError('Invalid number: "{arg_name}"')
 
-def arg_to_timestamp(arg, arg_name, required = False) :
+
+def arg_to_timestamp(arg, arg_name, required=False):
 
     if arg is None:
         if required is True:
@@ -181,7 +192,7 @@ def arg_to_timestamp(arg, arg_name, required = False) :
         return int(arg)
     if isinstance(arg, str):
 
-        date =datetime.utcnow()
+        date = datetime.utcnow()
         if date is None:
             # if d is None it means dateparser failed to parse it
             raise ValueError('Invalid date: {arg_name}')
@@ -192,6 +203,7 @@ def arg_to_timestamp(arg, arg_name, required = False) :
         return int(arg)
     raise ValueError('Invalid date: "{arg_name}"')
 
+
 ''' MAIN FUNCTION '''
 
 
@@ -201,14 +213,14 @@ def main():
     base_url = urljoin(demisto.params()['url'])
     api_username = demisto.params().get('api_username')
     plugin_id = demisto.params().get("plugin_id")
-    action =demisto.params().get("action")
+    action = demisto.params().get("action")
     time_frame = demisto.params().get("time_frame")
     verify_certificate = not demisto.params().get('insecure', False)
 
     first_fetch_time = arg_to_timestamp(
-        arg = demisto.params().get('first_fetch', '1 days'),
-        arg_name ='First fetch time',
-        required = True
+        arg=demisto.params().get('first_fetch', '1 days'),
+        arg_name='First fetch time',
+        required=True
     )
 
     proxy = demisto.params().get('proxy', False)
@@ -216,9 +228,9 @@ def main():
     try:
 
         headers = {
-            "apiKey" : apiKey,
-            "api_username" :api_username,
-            "plugin_id" : plugin_id,
+            "apiKey": apiKey,
+            "api_username": api_username,
+            "plugin_id": plugin_id,
             "action": action,
             "time_frame": time_frame
 
@@ -230,34 +242,31 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-
             result = test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame)
-            return_results(result)
+            return _results(result)
 
         if demisto.command() == 'fetch-incidents':
-
-            max_alerts=MAX_INCIDENTS_TO_FETCH
-
+            max_alerts = MAX_INCIDENTS_TO_FETCH
             next_run, incidents = fetch_incidents(
-                client = client,
-                max_alerts = max_alerts,
-                last_run = demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time = first_fetch_time,
-                apiKey = apiKey,
-                api_username = api_username,
-                plugin_id = plugin_id,
-                action = action,
-                time_frame = time_frame
+                client=client,
+                max_alerts=max_alerts,
+                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+                first_fetch_time=first_fetch_time,
+                apiKey=apiKey,
+                api_username=api_username,
+                plugin_id=plugin_id,
+                action=action,
+                time_frame=time_frame
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
             # demisto.createIncidents(incidents)
         elif demisto.command() == 'Linkshadow_fetch_entity_anomalies':
             # print ("Linkshadow_fetch_entity_anomalies")
-            return_results(fetch_entity_anomalies(client,demisto.args()))
+            return _results(fetch_entity_anomalies(client, demisto.args()))
     except DemistoException as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error('Failed to execute {demisto.command()} command')
+        return _error('Failed to execute {demisto.command()} command')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
