@@ -12,7 +12,7 @@ Uses the XSOAR API to query for custom content, configuration, and statistics, t
 a HTML and Markdown output based on this.
 """
 DEMISTO_INTEGRATIONS_PATH = "/settings/integration/search"
-DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installedblah"
+DEMISTO_INSTALLED_PATH = "/contentpacks/metadata/installed"
 DEMISTO_PLAYBOOKS_PATH = "/playbook/search"
 DEMISTO_AUTOMATIONS_PATH = "/automation/search"
 DEMISTO_CONFIG_PATH = "/system/config"
