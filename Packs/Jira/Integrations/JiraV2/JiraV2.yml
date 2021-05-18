@@ -655,7 +655,7 @@ script:
       incidents that were modified since the last update. This method is only used for debugging purposes.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.17529
+  dockerimage: demisto/oauthlib:1.0.0.19245
   feed: false
   isfetch: true
   ismappable: true
