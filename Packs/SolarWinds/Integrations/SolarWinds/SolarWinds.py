@@ -212,7 +212,7 @@ def prepare_query_for_fetch_events(last_run: dict, params: dict) -> str:
     event_types = params.get("event_types")
 
     query = QUERY_PARAM["FETCH_EVENTS"].format(max_fetch)
-
+# The EventIDs are unique for events, so it is used instead of timestamp for the last run for simplicity
     if last_run.get('event_id'):
         query += f" WHERE A.EventID>{last_run.get('event_id')}"
     else:
