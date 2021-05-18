@@ -1471,6 +1471,11 @@
             "playbookID": "IPInfoTest"
         },
         {
+            "integrations": "ipinfo_v2",
+            "playbookID": "IPInfo_v2Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "VerifyHumanReadableFormat"
         },
         {
@@ -3293,6 +3298,12 @@
             ],
             "fromversion": "6.0.0",
             "nightly": true
+        },
+        {
+            "integrations": "Carbon Black Endpoint Standard",
+            "playbookID": "carbonBlackEndpointStandardTestPlaybook",
+            "fromversion": "5.5.0",
+            "is_mockable": false
         }
     ],
     "skipped_tests": {
@@ -3385,7 +3396,9 @@
         "playbook_TrendmicroCAS_Test": "Issue 32730",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "Rundeck_test": "Issue 31174",
-        "Azure NSG - Test": "Issue 33217"
+        "Azure NSG - Test": "Issue 33217",
+        "AutoFocus V2 test": "Issue 26464",
+        "VirusTotal (API v3) Detonate Test": "Issue 36004"
     },
     "skipped_integrations": {
         
@@ -3604,6 +3617,7 @@
         "Tanium",
         "LogRhythmRest",
         "ipinfo",
+        "ipinfo_v2",
         "Demisto REST API",
         "syslog",
         "ElasticsearchFeed",
