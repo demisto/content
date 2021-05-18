@@ -197,29 +197,23 @@ EXPECTED_QUERY_TICKETS = {
 EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK = {
     'Ticket(val.ID===obj.ID)': [
         {
-            'ID': '9c573169c611228700193229fff72400',
-            'Summary': "Can't read email",
-            'Number': 'INC0000001',
-            'CreatedOn': '06/12/2018 10:24:13',
-            'Active': 'false',
-            'CloseCode': 'Closed/Resolved by Caller',
-            'OpenedAt': '06/05/2020 16:09:51',
-            'Priority': '1 - Critical',
-            'State': 'Closed'
+            'ID': '9c573169c611228700193229fff72400', 'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '06/12/2018 10:24:13', 'Active': 'false', 'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '06/05/2020 16:09:51', 'ResolvedBy': 'Don Goodliffe', 'OpenedBy': 'Joe Employee',
+            'Creator': 'Joe Employee', 'Assignee': 'Charlie Whitherspoon', 'Priority': '1 - Critical', 'State': 'Closed'
         }
     ],
     'ServiceNow.Ticket(val.ID===obj.ID)': [
-            {
-                'ID': '9c573169c611228700193229fff72400',
-                'Summary': "Can't read email",
-                'Number': 'INC0000001',
-                'CreatedOn': '06/12/2018 10:24:13',
-                'Active': 'false',
-                'CloseCode': 'Closed/Resolved by Caller',
-                'OpenedAt': '06/05/2020 16:09:51',
-                'Priority': '1 - Critical',
-                'State': 'Closed'
-            }
+        {
+            'ID': '9c573169c611228700193229fff72400',
+            'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '06/12/2018 10:24:13', 'Active': 'false',
+            'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '06/05/2020 16:09:51', 'ResolvedBy': 'Don Goodliffe',
+            'OpenedBy': 'Joe Employee', 'Creator': 'Joe Employee',
+            'Assignee': 'Charlie Whitherspoon', 'Priority': '1 - Critical',
+            'State': 'Closed'
+        }
     ]
 }
 EXPECTED_ADD_LINK_HR = '### Link successfully added to ServiceNow ticket'
