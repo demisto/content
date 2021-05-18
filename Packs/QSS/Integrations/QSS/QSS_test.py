@@ -30,6 +30,8 @@ def test_fetch_incidents(requests_mock):
         alert_status='ACTIVE',
         min_severity='Low',
         first_fetch_time='3 days',
+        false_positive='No',
+        api_key='aS5Xcaf7b17e4c5e679d2a851a91a2'
     )
 
     assert new_incidents == [
