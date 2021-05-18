@@ -71,9 +71,9 @@ def describe_certificate(args, aws_client):
     client = aws_client.aws_session(
         service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
 
@@ -110,9 +110,9 @@ def list_certificates(args, aws_client):
     client = aws_client.aws_session(
         service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     obj = vars(client._client_config)
     kwargs = {}
@@ -147,9 +147,9 @@ def add_tags_to_certificate(args, aws_client):
     client = aws_client.aws_session(
         service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'CertificateArn': args.get('certificateArn'),
@@ -164,9 +164,9 @@ def remove_tags_from_certificate(args, aws_client):
     client = aws_client.aws_session(
         service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {
         'CertificateArn': args.get('certificateArn'),
@@ -181,9 +181,9 @@ def list_tags_for_certificate(args, aws_client):
     client = aws_client.aws_session(
         service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {'CertificateArn': args.get('certificateArn')}
@@ -204,9 +204,9 @@ def get_certificate(args, aws_client):
     client = aws_client.aws_session(
         service='acm',
         region=args.get('region'),
-        roleArn=args.get('roleArn'),
-        roleSessionName=args.get('roleSessionName'),
-        roleSessionDuration=args.get('roleSessionDuration'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
     )
 
     kwargs = {'CertificateArn': args.get('certificateArn')}
