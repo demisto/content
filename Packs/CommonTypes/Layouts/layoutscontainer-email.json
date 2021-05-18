@@ -1,7 +1,7 @@
 {
-    "id": "emailRep",
+    "id": "emailRepUpdated",
     "group": "indicator",
-    "name": "Email Indicator",
+    "name": "Email Indicator Updated",
     "version": -1,
     "fromVersion": "6.0.0",
     "indicatorsDetails": {
