@@ -120,7 +120,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: HPEArubaClearPass.endpoints.[0]
+              simple: HPEArubaClearPass.Endpoints.[0]
             iscontext: true
     view: |-
       {
@@ -182,7 +182,7 @@ tasks:
       description:
         simple: test_playbook
       endpoint_id:
-        simple: ${HPEArubaClearPass.endpoints.[0].id}
+        simple: ${HPEArubaClearPass.Endpoints.[0].id}
     separatecontext: false
     view: |-
       {
@@ -219,7 +219,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: HPEArubaClearPass.endpoints.description
+              simple: HPEArubaClearPass.Endpoints.description
             iscontext: true
           right:
             value:
@@ -259,11 +259,11 @@ tasks:
       - - operator: in
           left:
             value:
-              simple: ${HPEArubaClearPass.attributes.id}
+              simple: ${HPEArubaClearPass.Attributes.id}
             iscontext: true
           right:
             value:
-              simple: ${HPEArubaClearPass.attributes.id}
+              simple: ${HPEArubaClearPass.Attributes.id}
     view: |-
       {
         "position": {
@@ -336,7 +336,7 @@ tasks:
     scriptarguments:
       attribute_id:
         complex:
-          root: HPEArubaClearPass.attributes
+          root: HPEArubaClearPass.Attributes
           accessor: id
     separatecontext: false
     view: |-
@@ -371,7 +371,7 @@ tasks:
       - "13"
     scriptarguments:
       attribute_id:
-        simple: ${HPEArubaClearPass.attributes.id}
+        simple: ${HPEArubaClearPass.Attributes.id}
       data_type:
         simple: String
       entity_name:
@@ -414,7 +414,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${HPEArubaClearPass.attributes.name}
+              simple: ${HPEArubaClearPass.Attributes.name}
             iscontext: true
           right:
             value:
@@ -422,11 +422,11 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${HPEArubaClearPass.attributes.id}
+              simple: ${HPEArubaClearPass.Attributes.id}
             iscontext: true
           right:
             value:
-              simple: ${HPEArubaClearPass.attributes.id}
+              simple: ${HPEArubaClearPass.Attributes.id}
     view: |-
       {
         "position": {
@@ -459,7 +459,7 @@ tasks:
       - "4"
     scriptarguments:
       attribute_id:
-        simple: ${HPEArubaClearPass.attributes.id}
+        simple: ${HPEArubaClearPass.Attributes.id}
     separatecontext: false
     view: |-
       {
