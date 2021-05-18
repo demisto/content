@@ -132,5 +132,5 @@ tests:
 - test-domain-indicator
 - URL Enrichment - Generic v2 - Test
 - Wait Until Datetime - Test
-fromversion: 5.5.0
+fromversion: 5.0.0
 description: This playbook will block emails at your mail relay integration.
