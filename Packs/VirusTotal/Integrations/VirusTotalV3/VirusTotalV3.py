@@ -1064,23 +1064,24 @@ def create_relationships(entity_a: str, entity_a_type: str, relationships_respon
     for relationship_type, relationship_type_raw in relationships_response.items():
 
         relationships_data = relationship_type_raw.get('data', [])
-        if isinstance(relationships_data, dict):
-            relationships_data = [relationships_data]
+        if relationships_data:
+            if isinstance(relationships_data, dict):
+                relationships_data = [relationships_data]
 
-        for relation in relationships_data:
-            name = RELATIONSHIP_TYPE.get(entity_a_type.lower(), {}).get(relationship_type)
-            entity_b = relation.get('id', '')
-            entity_b_type = INDICATOR_TYPE.get(relation.get('type', '').lower())
-            if entity_b and entity_b_type and name:
-                if entity_b_type == FeedIndicatorType.URL:
-                    entity_b = dict_safe_get(relation, ['context_attributes', 'url'])
-                relationships_list.append(
-                    EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=name,
-                                       entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=reliability,
-                                       brand=INTEGRATION_NAME))
-            else:
-                demisto.info(
-                    f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {name}")
+            for relation in relationships_data:
+                name = RELATIONSHIP_TYPE.get(entity_a_type.lower(), {}).get(relationship_type)
+                entity_b = relation.get('id', '')
+                entity_b_type = INDICATOR_TYPE.get(relation.get('type', '').lower())
+                if entity_b and entity_b_type and name:
+                    if entity_b_type == FeedIndicatorType.URL:
+                        entity_b = dict_safe_get(relation, ['context_attributes', 'url'])
+                    relationships_list.append(
+                        EntityRelationship(entity_a=entity_a, entity_a_type=entity_a_type, name=name,
+                                           entity_b=entity_b, entity_b_type=entity_b_type, source_reliability=reliability,
+                                           brand=INTEGRATION_NAME))
+                else:
+                    demisto.info(
+                        f"WARNING: Relationships will not be created to entity A {entity_a} with relationship name {name}")
     return relationships_list
 
 
