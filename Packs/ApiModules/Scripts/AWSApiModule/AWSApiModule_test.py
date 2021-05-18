@@ -50,7 +50,7 @@ VALIDATE_CASES_MISSING_PARAMS = [
      'aws_access_key_id': None,
      'aws_secret_access_key': None
      },
-     'When using role ARN you must provide role session name.')]
+     'Role session name is required when using role ARN.')]
 
 
 @pytest.mark.parametrize('params, raised_message', VALIDATE_CASES_MISSING_PARAMS)
