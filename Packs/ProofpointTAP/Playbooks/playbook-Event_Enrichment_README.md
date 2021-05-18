@@ -7,7 +7,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Proofpoint TAP v3
 * ProofpointTAP_v2
 
 ### Scripts

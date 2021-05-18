@@ -897,7 +897,7 @@ def test_get_campaign(requests_mock):
         proxies=None
     )
     result = get_campaign_command(client, "1")
-    assert len(result.outputs) == 6
+    assert len(result.outputs) == 7
     assert result.outputs_prefix == 'Proofpoint.Campaign'
     assert result.outputs.get('info').get('id') == "aa9b3d62-4d72-4ebc-8f39-3da3833e7038"
 
