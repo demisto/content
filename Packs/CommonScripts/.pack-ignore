@@ -14,7 +14,7 @@ ignore=SC105
 ignore=SC105
 
 [file:FindSimilarIncidentsV2.yml]
-ignore=SC105
+ignore=SC105,BA109
 
 [file:GetByIncidentId.yml]
 ignore=SC105
@@ -30,3 +30,6 @@ ignore=SC105
 
 [file:script-hideFieldsOnNewIncident.yml]
 ignore=SC105
+
+[file:FileToBase64List.yml]
+ignore=BA109
