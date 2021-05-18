@@ -208,15 +208,25 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
 
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
-    if closed_by and type(closed_by) == dict:
-        context['ResolvedBy'] = closed_by.get('value', '')
+    if closed_by:
+        if isinstance(closed_by, dict):
+            context['ResolvedBy'] = closed_by.get('value', '')
+        else:
+            context['ResolvedBy'] = closed_by
     opened_by = data.get('opened_by')
-    if opened_by and type(opened_by) == dict:
-        context['OpenedBy'] = opened_by.get('value', '')
-        context['Creator'] = opened_by.get('value', '')
+    if opened_by:
+        if isinstance(opened_by, dict):
+            context['OpenedBy'] = opened_by.get('value', '')
+            context['Creator'] = opened_by.get('value', '')
+        else:
+            context['OpenedBy'] = opened_by
+            context['Creator'] = opened_by
     assigned_to = data.get('assigned_to')
-    if assigned_to and type(assigned_to) == dict:
-        context['Assignee'] = assigned_to.get('value', '')
+    if assigned_to:
+        if isinstance(assigned_to, dict):
+            context['Assignee'] = assigned_to.get('value', '')
+        else:
+            context['Assignee'] = assigned_to
 
     # Try to map fields
     priority = data.get('priority')
