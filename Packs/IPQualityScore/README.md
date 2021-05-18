@@ -17,4 +17,4 @@ The playbooks included in this pack analyze threat details in real-time:
 
 Simply plug in your IPQS API key to enable real-time scoring with Cortex XSOAR.
 
-_For more information, please visit our [Cortex XSOAR Developer Docs](https://www.ipqualityscore.com/create-account/cortex)_
+_For more information, please visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/integrations/ip-quality-score)_
