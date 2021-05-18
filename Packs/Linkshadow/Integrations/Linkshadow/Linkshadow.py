@@ -24,50 +24,34 @@ Linkshadow_SEVERITIES = 0
 ''' CLIENT CLASS '''
 
 class Client(BaseClient):
-
-    def fetch_anomaly(self,apiKey, start_time,api_username, plugin_id, action, time_frame):
-        # print("fetch_anomaly")
-
+    def fetch_anomaly(self, apiKey, start_time, api_username, plugin_id, action, time_frame):
         request_params = {}
-
         if apiKey:
             request_params['api_key'] = apiKey
-
         if api_username:
             request_params['api_username'] = api_username
-
         if plugin_id:
             request_params['plugin_id'] = plugin_id
-
         if action:
             request_params['action'] = action
-
         if time_frame:
             request_params['time_frame'] = int(time_frame)
-
         return self._http_request(
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             method='POST',
             url_suffix='/api/plugin/',
             data=request_params
         )
-
 ''' COMMAND FUNCTIONS '''
-
-
-def test_module(client,first_fetch_time,apiKey,api_username,plugin_id,action,time_frame):
-
+def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
     try:
-
         alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time, api_username=api_username,
                                 plugin_id=plugin_id,action=action,time_frame=time_frame)
-
         if 'error' in str(alerts.get('message')) or 'success' in str(alerts.get('message')):
             return "ok"
         else:
             return alerts.get('message')
     except DemistoException as e:
-
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
@@ -169,7 +153,6 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
     return next_run, incidents
 
 def fetch_entity_anomalies(client,args):
-    CommandResults={}
     apiKey = args.get('apiKey'),
     username  = args.get('api_username')
     plugin_id = args.get('plugin_id')
@@ -275,7 +258,7 @@ def main():
 
         if demisto.command() == 'test-module':
 
-            result = test_module(client, first_fetch_time,apiKey,api_username,plugin_id,action,time_frame)
+            result = test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame)
             return_results(result)
 
         if demisto.command() == 'fetch-incidents':
