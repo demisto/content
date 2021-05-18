@@ -279,7 +279,7 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     base_url = demisto.params().get('url')
     username = demisto.params().get('username', None)['identifier']
-    password = demisto.params().get('password', None)['identifier']
+    password = demisto.params().get('username', None)['password']
 
     demisto.debug(f'Command being called is {demisto.command()}')
 
