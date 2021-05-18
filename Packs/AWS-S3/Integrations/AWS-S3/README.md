@@ -1,6 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the AWS S3 integration to manage your AWS object storage. </p>
 <p>This integration was integrated and tested with API Version 2012-11-05.</p>
+<p>For more information regarding the AWS S3 service, please visit the official documentation found <a href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html">here</a>.</p>
 <h2>Prerequisites</h2>
 <p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
 <h2>Configure the AWS S3 Integration in Demisto</h2>
@@ -18,6 +19,8 @@
 <li><strong>Role Session Duration</strong></li>
 <li><strong>Access Key</strong></li>
 <li><strong>Secret Key</strong></li>
+<li><strong>Timeout</strong></li>
+<li><strong>Retries</strong></li>
 <li><strong>Use System Proxy</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 </ul>
