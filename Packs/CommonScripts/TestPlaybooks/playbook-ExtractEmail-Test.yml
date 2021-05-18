@@ -107,7 +107,7 @@ tasks:
       - "8"
     scriptarguments:
       input:
-        simple: Xsoar@xsoar.com, xsoar@test.net.bla
+        simple: Xsoar@Xsoar.com, xsoar@test.net.bla
     separatecontext: false
     view: |-
       {
@@ -169,7 +169,7 @@ tasks:
     task:
       id: 84e63a8c-ac14-4664-898c-f772625bb9bd
       version: -1
-      name: Verify Xsoar@xsoar.com was extracted
+      name: Verify Xsoar@Xsoar.com was extracted
       description: Verify given entry contains a string
       scriptName: VerifyHumanReadableContains
       type: regular
@@ -189,7 +189,7 @@ tasks:
                 value:
                   simple: "0"
       substring:
-        simple: Xsoar@xsoar.com
+        simple: Xsoar@Xsoar.com
     separatecontext: false
     view: |-
       {

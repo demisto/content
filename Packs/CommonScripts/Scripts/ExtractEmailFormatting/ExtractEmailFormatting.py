@@ -3,8 +3,20 @@ from CommonServerPython import *  # lgtm [py/polluting-import]
 
 import re
 
-VALID_EXTENSION = '(?!\\S*\\.(?:jpg|png|gif|bmp|txt|pdf|xls|xlsx|doc|docx)(?:[\\s\\n\\r]|$))'
-VALID_ADDRESS_FORMAT = '[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}'
+# Negative lookahead - Verify the the pattern does not end with the listed file extensions. Separated by |
+VALID_EXTENSION = r'(?!\S*\.(?:jpg|png|gif|bmp|txt|pdf|xls|xlsx|doc|docx|eml|msg)(?:\s*$))'
+
+"""
+First Group - [a-z0-9._%+-]+ :
+    any character of: 'A-Z', '0-9','.', '_', '%', '+', '-' 1 or more times
+Second Group - [a-z0-9.-]+ :
+    any character of: 'A-Z', '0-9','.', '-' 1 or more times
+Third Group - [a-z]{2,} :
+    any character of: 'A-Z' 2 or more times.
+
+The pattern will be: <First Group>@<Second Group>.<Third Group>
+"""
+VALID_ADDRESS_FORMAT = r'[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}'
 VALID_ADDRESS_REGEX = VALID_EXTENSION + VALID_ADDRESS_FORMAT
 
 
@@ -21,9 +33,9 @@ def main():
     list_results = [email_address for email_address in emails if verify_is_email(email_address)]
 
     if list_results:
-        demisto.results(list_results)
+        return_results(list_results)
     else:
-        demisto.results('')
+        return_results('')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

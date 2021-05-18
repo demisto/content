@@ -6,7 +6,7 @@ testdata = [
     ('Xsoar@test.org.de', True),
     ('xsoar@test.net.bla', True),
     ('Xsoar@test.uk.Png', False),
-    ('Xsoar@test.pNG', False),
+    ('Xsoar@test.eml', False),
     ('Xsoar@test.new.Docx', False),
     ('entry@id.com.gif', False),
     ('randomName@randomDomain.com', True),
@@ -29,7 +29,7 @@ def test_verify_is_email(address, valid):
 
 
 ARGS = {
-    'input': 'Xsoar@test.org.de,Xsoar@test.pNG, Xsoar@test.uk, Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il'}
+    'input': 'Xsoar@test.org.de,Xsoar@test.eml, Xsoar@test.uk, Xsoar@xsoar.xlsx,Xsoar@xsoar.co.il'}
 EXPECTED_RESULTS = ['Xsoar@test.org.de', 'Xsoar@test.uk', 'Xsoar@xsoar.co.il']
 
 
