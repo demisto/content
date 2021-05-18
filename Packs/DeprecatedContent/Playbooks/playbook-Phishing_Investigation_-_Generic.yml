@@ -1014,3 +1014,4 @@ inputs:
 outputs: []
 tests:
 - No test - tests in no circle - Phishing test - attachment and Phishing test - Inline
+deprecated: true
