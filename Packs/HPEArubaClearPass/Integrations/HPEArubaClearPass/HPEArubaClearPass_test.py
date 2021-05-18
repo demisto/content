@@ -75,7 +75,7 @@ def test_get_endpoints_list_command(mocker):
     mock_endpoints_response = util_load_json("test_data/endpoints_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoints_response)
     results = get_endpoints_list_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearPass.endpoints"
+    assert results.outputs_prefix == "HPEArubaClearPass.Endpoints"
     assert results.outputs_key_field == "id"
     assert results.outputs[0]['id'] == 1
     assert results.outputs[1]['id'] == 2
@@ -99,7 +99,7 @@ def test_update_endpoint_command(mocker):
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"endpoint_id": '1', "mac_address": "123456789", "description": "test1", "status": "Unknown"}
     results = update_endpoint_command(client, args)
-    assert results.outputs_prefix == "HPEArubaClearPass.endpoints"
+    assert results.outputs_prefix == "HPEArubaClearPass.Endpoints"
     assert results.outputs_key_field == "id"
     assert results.outputs['id'] == 1
     assert results.outputs['mac_address'] == '123456789'
@@ -122,7 +122,7 @@ def test_get_attributes_list_command(mocker):
     mock_attributes_response = util_load_json("test_data/attributes_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_attributes_response)
     results = get_attributes_list_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearPass.attributes"
+    assert results.outputs_prefix == "HPEArubaClearPass.Attributes"
     assert results.outputs_key_field == "id"
     assert results.outputs[0]['id'] == 1
     assert results.outputs[0]['name'] == 'Controller Id'
@@ -148,7 +148,7 @@ def test_create_attribute_command(mocker):
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"data_type": "Boolean", "name": "new123", "entity_name": "Device"}
     results = create_attribute_command(client, args)
-    assert results.outputs_prefix == "HPEArubaClearPass.attributes"
+    assert results.outputs_prefix == "HPEArubaClearPass.Attributes"
     assert results.outputs_key_field == "id"
     assert results.outputs['id'] == 1
     assert results.outputs['name'] == args.get('name')
@@ -174,7 +174,7 @@ def test_update_attribute_command(mocker):
     mocker.patch.object(client, "prepare_request", return_value=mock_endpoint_response)
     args = {"attribute_id": "1", "data_type": "Boolean", "name": "new123", "entity_name": "Device"}
     results = update_attribute_command(client, args)
-    assert results.outputs_prefix == "HPEArubaClearPass.attributes"
+    assert results.outputs_prefix == "HPEArubaClearPass.Attributes"
     assert results.outputs_key_field == "id"
     assert results.outputs['id'] == 1
     assert results.outputs['name'] == args.get('name')
@@ -218,7 +218,7 @@ def test_get_active_sessions_list_command(mocker):
     mock_sessions_response = util_load_json("test_data/active_sessions_list_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
     results = get_active_sessions_list_command(client, {})
-    assert results.outputs_prefix == "HPEArubaClearPass.sessions"
+    assert results.outputs_prefix == "HPEArubaClearPass.Sessions"
     assert results.outputs_key_field == "id"
     assert results.outputs[0]['ID'] == 1
     assert results.outputs[0]['Device_IP'] == "1.2.3.4"
@@ -242,7 +242,7 @@ def test_disconnect_active_session_command(mocker):
     mock_sessions_response = util_load_json("test_data/disconnect_active_session_response.json")
     mocker.patch.object(client, "prepare_request", return_value=mock_sessions_response)
     results = disconnect_active_session_command(client, {'session_id': 1})
-    assert results.outputs_prefix == "HPEArubaClearPass.sessions"
+    assert results.outputs_prefix == "HPEArubaClearPass.Sessions"
     assert results.outputs_key_field == "id"
     assert results.outputs['Error_code'] == 0
     assert results.outputs['Response_message'] == "Success"

@@ -157,7 +157,7 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.endpoints',
+        outputs_prefix='HPEArubaClearPass.Endpoints',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -192,7 +192,7 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.endpoints',
+        outputs_prefix='HPEArubaClearPass.Endpoints',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -241,7 +241,7 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.attributes',
+        outputs_prefix='HPEArubaClearPass.Attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -283,7 +283,7 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.attributes',
+        outputs_prefix='HPEArubaClearPass.Attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -333,7 +333,7 @@ def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.attributes',
+        outputs_prefix='HPEArubaClearPass.Attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -370,7 +370,7 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.sessions',
+        outputs_prefix='HPEArubaClearPass.Sessions',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -411,7 +411,7 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearPass.sessions',
+        outputs_prefix='HPEArubaClearPass.Sessions',
         outputs_key_field='id',
         outputs=outputs,
     )
