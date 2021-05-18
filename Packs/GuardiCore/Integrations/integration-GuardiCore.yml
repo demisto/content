@@ -729,6 +729,28 @@ script:
     }
 
 
+    var requestLogout = function(method, url, token) {
+        var headers = {'Content-Type': ['application/json']};
+        if (token) {
+            headers.Authorization = ['Bearer ' + token];
+        }
+        console.log('Sending logout request: ' + server + url);
+        res = http(server + url,
+            {
+                Method: method,
+                Headers: headers,
+                Body: '',
+                SaveToFile: false
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+    }
+
+
     var sendRequest = function(method, url, token, args, isRawOutput, shouldIgnoreUrlArgs) {
         var headers = {'Content-Type': ['application/json']};
         if (token) {
@@ -751,18 +773,23 @@ script:
             params.insecure,
             params.proxy
         );
-
         if (res.StatusCode < 200 || res.StatusCode >= 300) {
             if (token) {
-                sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+                requestLogout(methodDictionary.logout, urlDictionary.logout, token);
+            }
+            msg = '';
+            if (url == 'incidents'){
+                msg = '\nPlease consider adding the \'to_time\' and \'from_time\ arguments to the command execution';
             }
 
-            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            throw 'Request to GuardiCore ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.' + msg;
         }
 
         if (isRawOutput) {
             return res.Path;
-        } else {
+        } else if (res.Body.length <= 0) {  // If body is empty return an empty object
+            throw 'Request to GuardiCore ' + url + ' returned empty, request status code: ' + res.StatusCode + '.';
+            } else {
             return JSON.parse(res.Body);
         }
     }
@@ -772,20 +799,36 @@ script:
 
     delete(args['raw-response']);
 
-
     var token = sendRequest(methodDictionary.login, urlDictionary.login, undefined, {username: params.credentials.identifier, password: params.credentials.password}).access_token;
 
     var commandUrlKey;
 
     switch (command) {
         case 'test-module':
-            sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+            requestLogout(methodDictionary.logout, urlDictionary.logout, token);
             return 'ok';
 
         case 'guardicore-get-incident-pcap':
         case 'guardicore-get-incident-attachments':
             commandUrlKey = 'guardicore-get-incident';
             break;
+        case 'guardicore-get-incidents':
+            var isDateExist = false;
+            var regEx = /^\d{2}-\d{2}-\d{4}$/;
+            console.log("Arguments are: "+ JSON.stringify(args));
+
+            if (args["to_time"] && args["from_time"]){
+                if (args["to_time"].match(regEx) && args["from_time"].match(regEx) ){
+                    splittedDateTo=args["to_time"].split("-");
+                    args["to_time"] = String(new Date(parseInt(splittedDateTo[2], 10), parseInt(splittedDateTo[1], 10) - 1 , parseInt(splittedDateTo[0]), 10).getTime());
+
+                    splittedDateFrom=args["from_time"].split("-");
+                    args["from_time"] = String(new Date(parseInt(splittedDateFrom[2], 10), parseInt(splittedDateFrom[1], 10) - 1 , parseInt(splittedDateFrom[0]), 10).getTime());
+
+                } else { throw 'Argument \'to_time\' or \'from_time\' is not with the right format. Format should be: DD-MM-YYYY'}
+            }
+            commandUrlKey = command;
+            break
 
         default:
             commandUrlKey = command;
@@ -803,7 +846,7 @@ script:
 
     var entries = entriesFromResponse(command, result, token);
 
-    sendRequest(methodDictionary.logout, urlDictionary.logout, token);
+    requestLogout(methodDictionary.logout, urlDictionary.logout, token);
 
 
     return entries;
@@ -821,6 +864,10 @@ script:
       description: Filter by severity.
     - name: tag
       description: Filter by tag.
+    - name: from_time
+      description: From which date to fetch incidents, format is DD-MM-YYYY.
+    - name: to_time
+      description: Until which date to fetch incidents, format is DD-MM-YYY.
     - name: incident_type
       description: Filter by type of incidents, e.g. Deception, Lateral Movement.
     - name: source

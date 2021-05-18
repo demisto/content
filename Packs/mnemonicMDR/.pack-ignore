@@ -1,2 +1,8 @@
 [file:Pull_Case_Metadata_-_Argus_Managed_Defence.yml]
 ignore=PB106
+
+[file:pack_metadata.json]
+ignore=PA125
+
+[file:ArgusManagedDefence.yml]
+ignore=BA109

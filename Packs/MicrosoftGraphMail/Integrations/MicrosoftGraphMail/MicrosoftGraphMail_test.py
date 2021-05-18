@@ -1,7 +1,7 @@
 import pytest
 from CommonServerPython import *
 from MicrosoftGraphMail import MsGraphClient, build_mail_object, assert_pages, build_folders_path, \
-    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment
+    add_second_to_str_date, list_mails_command, item_result_creator, create_attachment, reply_email_command
 from MicrosoftApiModule import MicrosoftClient
 import demistomock as demisto
 
@@ -181,7 +181,8 @@ def last_run_data():
         'LAST_RUN_TIME': '2019-11-12T15:00:00Z',
         'LAST_RUN_IDS': [],
         'LAST_RUN_FOLDER_ID': 'last_run_dummy_folder_id',
-        'LAST_RUN_FOLDER_PATH': "Phishing"
+        'LAST_RUN_FOLDER_PATH': "Phishing",
+        'LAST_RUN_ACCOUNT': 'dummy@mailbox.com',
     }
 
     return last_run
@@ -218,6 +219,19 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_da
     client.fetch_incidents(last_run_data)
 
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_fetch_incidents_changed_account(mocker, client, emails_data, last_run_data):
+    changed_account = "Changed_Account"
+    client._mailbox_to_fetch = changed_account
+    mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
+                                                return_value={'id': 'some_dummy_folder_id'})
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    mocker.patch.object(demisto, "info")
+    client.fetch_incidents(last_run_data)
+
+    mocker_folder_by_path.assert_called_once_with(changed_account, last_run_data['LAST_RUN_FOLDER_PATH'])
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -319,7 +333,7 @@ def test_get_attachment(client):
         - Validate that the message object created successfully
 
     """
-    output_prefix = 'MSGraphMail(val.ID == obj.ID)'
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
@@ -373,3 +387,30 @@ def test_create_attachment(mocker, function_name, attachment_type):
     user_id = 'ex@example.com'
     create_attachment(raw_response, user_id)
     assert mocked_function.called
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_reply_mail_command(client, mocker):
+    """
+    Given:
+        - reply-mail arguments
+
+    When:
+        - send a reply mail message
+
+    Then:
+        - validates that the outputs fit the updated reply mail message
+
+    """
+    args = {'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "id",
+            'from': "ex1@example.com"}
+    mocker.patch.object(MicrosoftClient, 'http_request')
+
+    reply_message = reply_email_command(client, args)
+
+    assert reply_message.outputs_prefix == "MicrosoftGraph"
+    assert reply_message.outputs_key_field == "SentMail"
+    assert reply_message.outputs['ID'] == args['inReplyTo']
+    assert reply_message.outputs['subject'] == 'Re: ' + args['subject']
+    assert reply_message.outputs['toRecipients'] == args['to']
+    assert reply_message.outputs['bodyPreview'] == args['body']

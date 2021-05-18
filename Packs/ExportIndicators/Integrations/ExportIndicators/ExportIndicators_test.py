@@ -199,7 +199,8 @@ class TestHelperFunctions:
             ei_vals = ei.refresh_outbound_context(request_args)
             for ioc in iocs_json:
                 ip = ioc.get('value')
-                assert ip in ei_vals
+                if ip:
+                    assert ip in ei_vals
 
     @pytest.mark.refresh_outbound_context
     def test_refresh_outbound_context_2(self, mocker):

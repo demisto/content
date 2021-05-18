@@ -5,7 +5,11 @@
         "STIX Attack Pattern",
         "STIX Tool",
         "STIX Threat Actor",
-        "STIX Report"
+        "STIX Report",
+        "Campaign",
+        "Course of Action",
+        "Infrastructure",
+        "Intrusion Set"
     ],
     "breachScript": "",
     "caseInsensitive": true,

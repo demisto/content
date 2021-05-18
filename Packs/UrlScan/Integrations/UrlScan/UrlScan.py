@@ -10,7 +10,6 @@ import json as JSON
 from urlparse import urlparse
 from requests.utils import quote  # type: ignore
 
-
 """ POLLING FUNCTIONS"""
 try:
     from Queue import Queue
@@ -20,10 +19,26 @@ except ImportError:
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 '''GLOBAL VARS'''
 BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
                                 'For your own safety we did not perform this scan...'
+BRAND = 'urlscan.io'
+
+""" RELATIONSHIP TYPE"""
+RELATIONSHIP_TYPE = {
+    'page': {
+        'domain': {
+            'indicator_type': FeedIndicatorType.Domain,
+            'name': EntityRelationship.Relationships.HOSTED_ON,
+            'detect_type': False
+        },
+        'ip': {
+            'indicator_type': FeedIndicatorType.IP,
+            'name': EntityRelationship.Relationships.HOSTED_ON,
+            'detect_type': False
+        }
+    }
+}
 
 
 class Client:
@@ -38,13 +53,26 @@ class Client:
 '''HELPER FUNCTIONS'''
 
 
+def detect_ip_type(indicator):
+    """
+    Helper function which detects wheather an IP is a IP or IPv6 by string
+    """
+    indicator_type = ''
+    if '::' in indicator:
+        indicator_type = FeedIndicatorType.IPv6
+    else:
+        indicator_type = FeedIndicatorType.IP
+    return indicator_type
+
+
 def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
     headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix, json))
+        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix,
+                                                                             json))
     r = requests.request(
         method,
         client.base_url + url_suffix,
@@ -123,7 +151,6 @@ def is_truthy(val):
 def poll(target, step, args=(), kwargs=None, timeout=60,
          check_success=is_truthy, step_function=step_constant,
          ignore_exceptions=(), collect_values=None, **k):
-
     kwargs = kwargs or dict()
     values = collect_values or Queue()
 
@@ -173,9 +200,50 @@ def urlscan_submit_url(client):
     return r
 
 
+def create_relationship(scan_type, field, entity_a, entity_a_type, entity_b, entity_b_type, reliability):
+    """
+    Create a single relation with the given arguments.
+    """
+    return EntityRelationship(name=RELATIONSHIP_TYPE.get(scan_type, {}).get(field, {}).get('name', ''),
+                              entity_a=entity_a,
+                              entity_a_type=entity_a_type,
+                              entity_b=entity_b,
+                              entity_b_type=entity_b_type,
+                              source_reliability=reliability,
+                              brand=BRAND)
+
+
+def create_list_relationships(scans_dict, url, reliability):
+    """
+    Creates a list of EntityRelationships object from all of the lists in scans_dict according to RELATIONSHIP_TYPE dict.
+    """
+    relationships_list = []
+    for scan_name, scan_dict in scans_dict.items():
+        fields = RELATIONSHIP_TYPE.get(scan_name, {}).keys()
+        for field in fields:
+            indicators = scan_dict.get(field)
+            if not isinstance(indicators, list):
+                indicators = [indicators]
+            relationship_dict = RELATIONSHIP_TYPE.get(scan_name, {}).get(field, {})
+            indicator_type = relationship_dict.get('indicator_type', '')
+            for indicator in indicators:
+                # For a case where the destination side does not exist
+                if not indicator:
+                    pass
+                # For a case where the type of the IP indicator should be detected, whether its IPv6/IP
+                if not indicator_type and relationship_dict.get('detect_type'):
+                    indicator_type = detect_ip_type(indicator)
+                relationship = create_relationship(scan_type=scan_name, field=field, entity_a=url,
+                                                   entity_a_type=FeedIndicatorType.URL, entity_b=indicator,
+                                                   entity_b_type=indicator_type, reliability=reliability)
+                relationships_list.append(relationship)
+    return relationships_list
+
+
 def format_results(client, uuid):
     # Scan Lists sometimes returns empty
     num_of_attempts = 0
+    relationships = []
     response = urlscan_submit_request(client, uuid)
     scan_lists = response.get('lists')
     while scan_lists is None:
@@ -204,6 +272,8 @@ def format_results(client, uuid):
     file_context = makehash()
     url_cont = makehash()
 
+    feed_related_indicators = []
+
     LIMIT = int(demisto.args().get('limit', 20))
     if 'certificates' in scan_lists:
         cert_md = []
@@ -219,6 +289,9 @@ def format_results(client, uuid):
     if 'urls' in scan_lists:
         url_cont['Data'] = demisto.args().get('url')
         cont['URL'] = demisto.args().get('url')
+        if isinstance(scan_lists.get('urls'), list):
+            for url in scan_lists['urls']:
+                feed_related_indicators.append({'value': url, 'type': 'URL'})
     # effective url of the submitted url
     human_readable['Effective URL'] = scan_page.get('url')
     cont['EffectiveURL'] = scan_page.get('url')
@@ -246,6 +319,9 @@ def format_results(client, uuid):
             ip_asn_MD.append(ip_info)
             i = i + 1
         cont['RelatedIPs'] = ip_ec_info
+        if isinstance(scan_lists.get('ips'), list):
+            for ip in scan_lists.get('ips'):
+                feed_related_indicators.append({'value': ip, 'type': 'IP'})
         IP_HEADERS = ['Count', 'IP', 'ASN']
     # add redirected URLs
     if 'requests' in scan_data:
@@ -264,12 +340,31 @@ def format_results(client, uuid):
         hashes = scan_lists.get('hashes', [])
         cont['RelatedHash'] = hashes
         human_readable['Related Hashes'] = hashes
+        for hashe in hashes:
+            feed_related_indicators.append({'value': hashe, 'type': 'File'})
     if 'domains' in scan_lists:
-        subdomains = scan_lists['domains']
+        subdomains = scan_lists.get('domains', [])
         cont['Subdomains'] = subdomains
         human_readable['Subdomains'] = subdomains
+        for domain in subdomains:
+            feed_related_indicators.append({'value': domain, 'type': 'Domain'})
+    if 'linkDomains' in scan_lists:
+        link_domains = scan_lists.get('domains', [])
+        for domain in link_domains:
+            feed_related_indicators.append({'value': domain, 'type': 'Domain'})
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
+        url_cont['ASN'] = scan_page.get('asn')
+    if 'asnname' in scan_page:
+        url_cont['ASOwner'] = scan_page['asnname']
+    if 'country' in scan_page:
+        url_cont['Geo']['Country'] = scan_page['country']
+    if 'domain' in scan_page:
+        feed_related_indicators.append({'value': scan_page['domain'], 'type': 'Domain'})
+    if 'ip' in scan_page:
+        feed_related_indicators.append({'value': scan_page['ip'], 'type': 'IP'})
+    if 'url' in scan_page:
+        feed_related_indicators.append({'value': scan_page['url'], 'type': 'URL'})
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):
@@ -291,6 +386,8 @@ def format_results(client, uuid):
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
         dbot_score['Reliability'] = client.reliability
+    if 'urlscan' in scan_verdicts and 'tags' in scan_verdicts['urlscan']:
+        url_cont['Tags'] = scan_verdicts['urlscan']['tags']
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
@@ -311,11 +408,17 @@ def format_results(client, uuid):
         cont['File']['FileType'] = filetype
         file_context['Type'] = filetype
         file_context['Hostname'] = demisto.args().get('url')
-
-    ec = {
+    if feed_related_indicators:
+        related_indicators = []
+        for related_indicator in feed_related_indicators:
+            related_indicators.append(Common.FeedRelatedIndicators(value=related_indicator['value'],
+                                                                   indicator_type=related_indicator['type']))
+        url_cont['FeedRelatedIndicators'] = related_indicators
+    if demisto.params().get('create_relationships') is True:
+        relationships = create_list_relationships({'page': scan_page}, url_query,
+                                                  client.reliability)
+    outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
-        'DBotScore': dbot_score,
-        'URL': url_cont,
         outputPaths['file']: file_context
     }
 
@@ -325,13 +428,22 @@ def format_results(client, uuid):
         response_img = requests.request("GET", screen_path, verify=client.use_ssl)
         stored_img = fileResult('screenshot.png', response_img.content)
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': response,
-        'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
-        'EntryContext': ec
-    })
+    dbot_score = Common.DBotScore(indicator=dbot_score.get('Indicator'), indicator_type=dbot_score.get('Type'),
+                                  integration_name=BRAND, score=dbot_score.get('Score'),
+                                  reliability=dbot_score.get('Reliability'))
+
+    url = Common.URL(url=url_cont.get('Data'), dbot_score=dbot_score, relationships=relationships,
+                     feed_related_indicators=url_cont.get('FeedRelatedIndicators'))
+
+    command_result = CommandResults(
+        readable_output=tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
+        outputs=outputs,
+        indicator=url,
+        raw_response=response,
+        relationships=relationships
+    )
+
+    demisto.results(command_result.to_context())
 
     if len(cert_md) > 0:
         demisto.results({
@@ -341,6 +453,8 @@ def format_results(client, uuid):
             'HumanReadable': tableToMarkdown('Certificates', cert_md, CERT_HEADERS)
         })
     if 'ips' in scan_lists:
+        if isinstance(scan_lists.get('ips'), list):
+            feed_related_indicators += scan_lists.get('ips')
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
@@ -563,7 +677,6 @@ def format_http_transaction_list(client):
 
 
 def main():
-
     params = demisto.params()
 
     api_key = params.get('apikey')
