@@ -2,7 +2,7 @@ PolySwarm - Real-time threat intelligence from a crowdsourced network of securit
 
 ## Detailed Description
 
-PolySwarm is a crowdsourced malware threat intelligence and scanning platform. Our Cortex XSOAR integration allows you to use PolySwarm's dataset over millions of malware samples to enrich your existing indicators. This integration is updated and ready for PolySwarm API version 2.
+PolySwarm is a crowdsourced malware threat intelligence and scanning platform. Our Cortex XSOAR integration allows you to use PolySwarm's dataset over millions of malware samples to enrich your existing indicators. This integration is updated and ready mfor PolySwarm API version 2.
 
 ##### What does this pack do?
 - Submit a File, URL, IP or Domain, and get enriched threat intelligence information about the artifact.
@@ -67,6 +67,7 @@ Returns a report from the Hash.
 ##### Command Example
 
 `!polyswarm-get-report scan_uuid="25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e"`
+`!polyswarm-get-report scan_uuid="25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e, 2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`
 
 
 ### 2\. file
@@ -99,6 +100,7 @@ Queries Polyswarm for file reputation information.
 ##### Command Example
 
 `!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`
+`!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe, 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a"`
 
 
 ### 3\. ip
@@ -134,6 +136,7 @@ Queries Polyswarm for IP reputation information.
 ##### Command Example
 
 `!ip ip="8.8.8.8"`
+`!ip ip="8.8.8.8, 4.4.4.4"`
 
 
 ### 4\. url
@@ -167,6 +170,7 @@ Queries Polyswarm for URL reputation information.
 ##### Command Example
 
 `!url url="https://polyswarm.io"`
+`!url url="https://polyswarm.io, https://polyswarm.network"`
 
 
 ### 5\. domain
@@ -199,7 +203,8 @@ Queries Polyswarm for Domain reputation information.
 
 ##### Command Example
 
-`!domain domain="google.com"`
+`!domain domain="polyswarm.io"`
+`!domain domain="polyswarm.io, polyswarm.network"`
 
 
 ### 6\. url-scan
@@ -232,6 +237,7 @@ Uploads a URL to Polyswarm and retrieves analysis results.
 ##### Command Example
 
 `!url-scan url="https://polyswarm.io"`
+`!url-scan url="https://polyswarm.io, https://polyswarm.network"`
 
 
 ### 7\. file-rescan
@@ -266,7 +272,8 @@ Rescans the uploaded artifact by hash.
 
 ##### Command Example
 
-`!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe""`
+`!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`
+`!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe, 25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e"`
 
 
 ### 8\. get-file
