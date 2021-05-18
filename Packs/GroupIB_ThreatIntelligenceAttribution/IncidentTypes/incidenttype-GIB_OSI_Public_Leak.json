@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#8052f3",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "GIB OSI Public Leak",
+    "layout": "GIB OSI Public Leak Layout",
+    "locked": false,
+    "name": "GIB OSI Public Leak",
+    "onChangeRepAlg": 1,
+    "playbookId": "Incident Postprocessing - Group-IB Threat Intelligence & Attribution",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
