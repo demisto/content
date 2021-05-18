@@ -679,15 +679,8 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
 
     outputs = []
     raw_responses = []
-    request_error = []
     for interval_string in intervals:
-        try:
-            raw_response = client.get_clicks(clicks_type, interval_string, threat_status)
-        except Exception:
-            request_error.append(
-                {'interval': interval_string,
-                 "message": f'Error retrieving data from {interval_string}. Please validate the interval format'})
-            continue
+        raw_response = client.get_clicks(clicks_type, interval_string, threat_status)
 
         clicks_path = ['clicksBlocked'] if clicks_type == 'blocked' else ['clicksPermitted']
         if dict_safe_get(raw_response, clicks_path):
@@ -700,12 +693,6 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
                                                         'clickTime', 'campaignId', 'userAgent'],
                                       headerTransform=pascalToSpace
                                       )
-
-    if request_error:
-        readable_output += "\n" + tableToMarkdown('Errors',
-                                                  request_error, headers=['interval', 'message'],
-                                                  headerTransform=pascalToSpace
-                                                  )
 
     return CommandResults(
         readable_output=readable_output,
@@ -800,15 +787,8 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
     outputs = []
     raw_responses = []
-    request_error = []
     for interval_string in intervals:
-        try:
-            raw_response = client.get_messages(messages_type, interval_string, threat_status, threat_type)
-        except Exception:
-            request_error.append(
-                {'interval': interval_string,
-                 "message": f'Error retrieving data from {interval_string}. Please validate the interval format'})
-            continue
+        raw_response = client.get_messages(messages_type, interval_string, threat_status, threat_type)
 
         messages_path = ['messagesBlocked'] if messages_type == 'blocked' else ['messagesDelivered']
         if dict_safe_get(raw_response, messages_path):
@@ -832,12 +812,6 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
                                                    headerTransform=pascalToSpace)
 
     readable_output = messages_readable_output + "\n" + threats_info_readable_output
-
-    if request_error:
-        readable_output += "\n" + tableToMarkdown('Errors',
-                                                  request_error, headers=['interval', 'message'],
-                                                  headerTransform=pascalToSpace
-                                                  )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1125,17 +1099,9 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
     clicks_outputs = []
     clicks_raw_responses = []
     command_results_list = []
-    request_error = []
 
     for interval_string in intervals:
-
-        try:
-            raw_response = client.list_issues(interval_string, threat_status, threat_type)
-        except Exception:
-            request_error.append(
-                {'interval': interval_string,
-                 "message": f'Error retrieving data from {interval_string}. Please validate the interval format'})
-            continue
+        raw_response = client.list_issues(interval_string, threat_status, threat_type)
 
         messages = dict_safe_get(raw_response, ['messagesDelivered'])
 
@@ -1182,12 +1148,6 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
                                              headerTransform=pascalToSpace
                                              )
 
-    if request_error:
-        clicks_readable_output += "\n" + tableToMarkdown('Errors',
-                                                         request_error, headers=['interval', 'message'],
-                                                         headerTransform=pascalToSpace
-                                                         )
-
     command_results_list.append(CommandResults(
         readable_output=clicks_readable_output,
         outputs_prefix='Proofpoint.ClicksPermitted',
@@ -1209,7 +1169,7 @@ def main():
 
     # Remove trailing slash to prevent wrong URL path to service
     server_url = params['url'][:-1] if (params['url'] and params['url'].endswith('/')) else params['url']
-    api_version = params.get('api_version')
+    api_version = 'v2'
 
     verify_certificate = not params.get('insecure', False)
     # How many time before the first fetch to retrieve incidents

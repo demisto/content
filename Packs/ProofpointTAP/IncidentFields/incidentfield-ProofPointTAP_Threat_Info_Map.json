@@ -90,7 +90,7 @@
         },
         {
             "key": "threat",
-            "displayName": "threat",
+            "displayName": "Threat",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -114,7 +114,7 @@
         },
         {
             "key": "threattime",
-            "displayName": "threatTime",
+            "displayName": "Threat Time",
             "type": "shortText",
             "required": false,
             "script": "",
