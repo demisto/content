@@ -98,10 +98,35 @@ class Client(BaseClient):
             raise e
 
     def api_v1_logs_defender_download_request(self, hostname, lines):
-        params = assign_params(hostname=hostname, lines=int(lines))
+        """
+        Download all logs for a certain defender
+        """
+        params = assign_params(hostname=hostname, lines=lines)
 
         headers = self._headers
         response = self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type='response')
+
+        return response
+
+    def api_v1_hosts_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, hostname, distro, provider, compact, clusters):
+        """
+        List all available hosts
+        """
+        params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, hostname=hostname, distro=distro, provider=provider, compact=compact, clusters=clusters)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'hosts', params=params, headers=headers)
+
+        return response
+
+    def api_v1_containers_scan_request(self):
+        """
+        Initialize a scan on all containers.
+        """
+        headers = self._headers
+
+        response = self._http_request('post', 'containers/scan', headers=headers, resp_type="response")
 
         return response
 
@@ -270,6 +295,54 @@ def api_v1_logs_defender_download_command(client, args):
 
     return fileResult("logs.tar.gz", response.content)
 
+def api_v1_list_hosts_command(client, args):
+    offset = args.get('offset', None)
+    limit = args.get('limit', None)
+    search = str(args.get('search', ''))
+    sort = str(args.get('sort', ''))
+    reverse = argToBoolean(args.get('reverse', False))
+    collections = str(args.get('collections', ''))
+    accountIDs = str(args.get('accountIDs', ''))
+    fields = str(args.get('fields', ''))
+    hostname = str(args.get('hostname', ''))
+    distro = str(args.get('distro', ''))
+    provider = str(args.get('provider', ''))
+    compact = argToBoolean(args.get('compact', False))
+    clusters = str(args.get('clusters', ''))
+
+    response = client.api_v1_hosts_request(offset, limit, search, sort, reverse, collections, accountIDs, fields, hostname, distro, provider, compact, clusters)
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.-_sharedImageScanResult',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def api_v1_containers_scan_command(client, args):
+
+    response = client.api_v1_containers_scan_request()
+
+    if response.status_code == 200:
+        entry = {
+            "Result": "Succesfully initiated scan on all containers"
+        }
+    else:
+        entry = {
+            "Result": f"Error, something went wrong. Status code: {response.status_code}"
+        }
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute',
+        outputs_key_field='',
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
 
 def main():
     """
@@ -314,6 +387,8 @@ def main():
 
         commands = {
            "prismacloudcompute-logs-defender-download": api_v1_logs_defender_download_command,
+           "prismacloudcompute-list-hosts": api_v1_list_hosts_command,
+           "prismacloudcompute-containers-scan": api_v1_containers_scan_command
         }
 
         if demisto.command() == 'test-module':

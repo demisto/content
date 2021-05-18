@@ -59,6 +59,40 @@ script:
     - name: lines
       description: 'Lines is the number of lines to fetch '
     description: 'DownloadDefenderLogs downloads all defender logs and metadata '
+  - name: prismacloudcompute-list-hosts
+    arguments:
+    - name: offset
+      description: 'Offset from query start '
+    - name: limit
+      description: 'Limit limits the number of documents '
+    - name: search
+      description: 'Search is the search term '
+    - name: sort
+      description: 'Sort is the sort key '
+    - name: reverse
+      description: 'Reverse is the sorting order '
+    - name: collections
+      description: 'Collections are collections scoping the query '
+    - name: accountIDs
+      description: 'AccountIDs are the account IDs scoping the query '
+    - name: fields
+      description: 'Select is a list of fields to select from the query (others will
+        be empty) '
+    - name: hostname
+      description: 'Hostanme is the hostname filter'
+    - name: distro
+      description: 'Distro is the OS distro filter'
+    - name: provider
+      description: 'Provider is the cloud provider filter'
+    - name: compact
+      description: 'Compact indicates that only minimum image data should be sent
+        (vulnerabilities, compliance and extended image metadata should be skipped) '
+    - name: clusters
+      description: 'Clusters is the cluster filter'
+    description: 'Hosts returns the hosts list'
+  - name: prismacloudcompute-containers-scan
+    arguments: []
+    description: 'Sends a container scan request to all containers'
 tests:
 - No test
 fromversion: 5.0.0
