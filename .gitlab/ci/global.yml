@@ -20,9 +20,9 @@
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
 
 .open-ssh-tunnel:
-  - mv $SSH_CONFIGURATION ~/.ssh/config
+  - cat $SSH_CONFIGURATION >> ~/.ssh/config
   - chmod 700 ~/.ssh/config
-  - Tests/scripts/open_ssh_tunnel.sh
+  - ./Tests/scripts/open_ssh_tunnel.sh
 
 
 
