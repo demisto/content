@@ -926,7 +926,7 @@ def test_file_rescan(mocker, requests_mock):
                       json=MOCK_SCAN_JSON_RESPONSE)
 
     results = polyswarm.rescan_file(param['hash'])
-    results = results.to_context()
+    results = results[0].to_context()
 
     assert results['Contents']['Positives'] == '1'
     assert results['Contents']['Total'] == '3'

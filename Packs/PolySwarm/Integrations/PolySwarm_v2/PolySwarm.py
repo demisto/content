@@ -173,24 +173,31 @@ class PolyswarmConnector():
         return self.return_hash_results([result],
                                         error_msg)
 
-    def rescan_file(self, hash_file: str) -> object:
-        title = 'PolySwarm Rescan for Hash: %s' % hash_file
+    def rescan_file(self,
+                    hashes: list) -> object:
+        command_results = []
 
-        demisto.debug(f'[rescan_file] {title}')
+        artifacts = argToList(hashes)
 
-        try:
-            instance = self.polyswarm_api.rescan(hash_file)
-            result = self.polyswarm_api.wait_for(instance)
+        for artifact in artifacts:
+            title = 'PolySwarm Rescan for Hash: %s' % artifact
 
-        except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
+            demisto.debug(f'[rescan_file] {title}')
 
-        error_msg = 'Error rescaning File.'
+            try:
+                instance = self.polyswarm_api.rescan(artifact)
+                result = self.polyswarm_api.wait_for(instance)
 
-        return self.return_hash_results([result],
-                                        error_msg)
+            except Exception as err:
+                return_error('{ERROR_ENDPOINT}{err}'.
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
+
+            error_msg = 'Error rescaning File.'
+
+            command_results.append(self.return_hash_results([result],
+                                                            error_msg))
+        return command_results
 
     def get_file(self, hash_file: str):
         demisto.debug(f'[get_file] Hash: {hash_file}')
