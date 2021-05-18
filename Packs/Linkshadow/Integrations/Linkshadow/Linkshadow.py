@@ -17,6 +17,7 @@ Linkshadow_SEVERITIES = 0
 
 ''' CLIENT CLASS '''
 
+
 class Client(BaseClient):
     def fetch_anomaly(self, apiKey, start_time, api_username, plugin_id, action, time_frame):
         request_params = {}
@@ -37,7 +38,9 @@ class Client(BaseClient):
             data=request_params
         )
 
+
 ''' COMMAND FUNCTIONS '''
+
 
 def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
     try:
@@ -199,7 +202,7 @@ def arg_to_timestamp(arg, arg_name, required=False):
 
 
 def main():
-
+    
     apiKey = demisto.params().get('apiKey')
     base_url = urljoin(demisto.params()['url'])
     api_username = demisto.params().get('api_username')
@@ -247,7 +250,7 @@ def main():
             return_results(fetch_entity_anomalies(client, demisto.args()))
     except DemistoException as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error('Failed to execute {demisto.command()} command',e)
+        return_error('Failed to execute {demisto.command()} command', e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
