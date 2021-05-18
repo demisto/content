@@ -46,9 +46,10 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
                       json=[])
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 10
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815411000}
+    # 1620826211000 was taken according to the AWS machine timestamp
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826211000}
 
-
+@freeze_time("2020-11-04T13:34:14.758295Z")
 def test_fetch_incidents_with_pagination(mocker, requests_mock):
     """Unit test
     Given
@@ -81,4 +82,5 @@ def test_fetch_incidents_with_pagination(mocker, requests_mock):
                       json=[])
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 14
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815415000}
+    # 1620826215000 was taken according to the AWS machine timestamp
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826215000}
