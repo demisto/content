@@ -1,4 +1,4 @@
-from GitHub import main, BASE_URL
+from GitHub import main, BASE_URL, list_branch_pull_requests
 import demistomock as demisto
 import json
 import pytest
@@ -18,7 +18,8 @@ def load_test_data(json_path):
 
 def test_search_code(requests_mock, mocker):
     raw_response = load_test_data('./test_data/search_code_response.json')
-    requests_mock.get(f'{BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10', json=raw_response)
+    requests_mock.get(f'{BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10',
+                      json=raw_response)
 
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     mocker.patch.object(demisto, 'args', return_value={
@@ -34,6 +35,16 @@ def test_search_code(requests_mock, mocker):
     assert results['Contents'] == raw_response
     assert len(results['EntryContext']['GitHub.CodeSearchResults(val.html_url && val.html_url == obj.html_url)']) == 7
     assert 'Repository Name' in results['HumanReadable']
+
+
+def test_list_branch_pull_requests_command(requests_mock):
+    test_list_branch_pull_requests_command_response = load_test_data(
+        './test_data/get-branch-pull-requests-response.json')
+    requests_mock.get('https://api.github.com/repos/demisto/content/pulls?head=demisto:Update-Docker-Image',
+                      json=test_list_branch_pull_requests_command_response['response'])
+    formatted_outputs = list_branch_pull_requests(branch_name='Update-Docker-Image', repository='content',
+                                                  organization='demisto')
+    assert formatted_outputs == test_list_branch_pull_requests_command_response['expected']
 
 
 def mock_http_request(method, url_suffix, params=None, data=None, headers=None, is_raw_response=False):
