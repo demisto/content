@@ -55,7 +55,7 @@ def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, actio
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             return e
-    return 'ok'
+    # return 'ok'
 
 
 def format_JSON_for_fetch_incidents(ls_anomaly):
@@ -66,7 +66,6 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
     anomaly_info['category'] = anomaly['category']if 'category' in anomaly else 'no ls_anomaly category'
     anomaly_info['anomaly_type'] = anomaly['anomaly_type'] if 'anomaly_type' in anomaly else 'no ls_anomaly anomaly_type'
     anomaly_info['sip'] = anomaly['sip']if 'sip' in anomaly else 'no ls_anomaly sip'
-    # anomaly_info['GlobalID'] = anomaly['GlobalID']if 'GlobalID' in anomaly else 'no ls_anomaly GlobalID'
     anomaly_info['anomaly_id'] = anomaly['anomaly_id']if 'anomaly_id' in anomaly else 'no ls_anomaly anomaly_id'
     anomaly_info['inserted_time'] = anomaly['inserted_time']if 'inserted_time' in anomaly else 'no ls_anomaly inserted_time'
     anomaly_info['smac'] = anomaly['smac']if 'smac' in anomaly else 'no ls_anomaly smac'
@@ -76,7 +75,6 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
     anomaly_info['dmac'] = anomaly['dmac']if 'dmac' in anomaly else 'no ls_anomaly dmac'
     anomaly_info['sport'] = anomaly['sport']if 'sport' in anomaly else 'no ls_anomaly sport'
     anomaly_info['dip'] = anomaly['dip']if 'dip' in anomaly else 'no ls_anomaly dip'
-    # anomaly_info['id'] = anomaly['id']if 'id' in anomaly else 'no ls_anomaly id'
     anomaly_info['desc'] = anomaly['desc']if 'desc' in anomaly else 'no ls_anomaly desc'
     return anomaly_info
 
