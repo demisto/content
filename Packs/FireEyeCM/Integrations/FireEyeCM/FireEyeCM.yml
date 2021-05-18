@@ -172,8 +172,8 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '100'
-      description: Maximum number of alerts to return. Default is 100.
+      defaultValue: '20'
+      description: Maximum number of alerts to return. Default is 20.
       isArray: false
       name: limit
       required: false
@@ -346,8 +346,8 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '10000'
-      description: Number of records to return. Default is 10000.
+      defaultValue: '20'
+      description: Number of emails to return. Default is 20.
       isArray: false
       name: limit
       required: false
