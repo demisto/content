@@ -49,6 +49,7 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
     # 1620826211000 was taken according to the AWS machine timestamp
     assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826211000}
 
+
 def test_fetch_incidents_with_pagination(mocker, requests_mock):
     """Unit test
     Given
