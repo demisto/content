@@ -1048,7 +1048,7 @@ def search_attributes() -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
-     # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
+    # search function 'enforceWarninglist' parameter gets 0 or 1 instead of bool.
     if 'enforceWarninglist' in args:
         args['enforceWarninglist'] = 1 if d_args.get('enforceWarninglist') in ('true', '1', 1) else 0
     if 'include_decay_score' in args:
