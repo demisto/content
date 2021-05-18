@@ -66,7 +66,7 @@ Returns a report from the Hash.
 
 ##### Command Example
 
-`!polyswarm-get-report scan_uuid="25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e"`
+`!polyswarm-get-report scan_uuid="25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e"`  
 `!polyswarm-get-report scan_uuid="25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e, 2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`
 
 
@@ -99,7 +99,7 @@ Queries Polyswarm for file reputation information.
 
 ##### Command Example
 
-`!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`
+`!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`  
 `!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe, 1d4c0b32aea68056755daf70689699200ffa09688495ccd65a0907cade18bd2a"`
 
 
@@ -135,7 +135,7 @@ Queries Polyswarm for IP reputation information.
 
 ##### Command Example
 
-`!ip ip="8.8.8.8"`
+`!ip ip="8.8.8.8"`  
 `!ip ip="8.8.8.8, 4.4.4.4"`
 
 
@@ -169,7 +169,7 @@ Queries Polyswarm for URL reputation information.
 
 ##### Command Example
 
-`!url url="https://polyswarm.io"`
+`!url url="https://polyswarm.io"`  
 `!url url="https://polyswarm.io, https://polyswarm.network"`
 
 
@@ -203,7 +203,7 @@ Queries Polyswarm for Domain reputation information.
 
 ##### Command Example
 
-`!domain domain="polyswarm.io"`
+`!domain domain="polyswarm.io"`  
 `!domain domain="polyswarm.io, polyswarm.network"`
 
 
@@ -236,7 +236,7 @@ Uploads a URL to Polyswarm and retrieves analysis results.
 
 ##### Command Example
 
-`!url-scan url="https://polyswarm.io"`
+`!url-scan url="https://polyswarm.io"`  
 `!url-scan url="https://polyswarm.io, https://polyswarm.network"`
 
 
@@ -272,7 +272,7 @@ Rescans the uploaded artifact by hash.
 
 ##### Command Example
 
-`!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`
+`!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"`  
 `!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe, 25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e"`
 
 
