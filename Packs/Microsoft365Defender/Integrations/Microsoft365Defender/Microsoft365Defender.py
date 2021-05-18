@@ -16,11 +16,8 @@ MAX_ENTRIES = 100
 TIMEOUT = '30'
 ''' CLIENT CLASS '''
 
-# todo Add timeout argument for list commands.
 
 # todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
-# todo Add limit argument to hunting command - default value 50.
-# todo Add default value for timeout param
 
 class Client(BaseClient):
     @logger
@@ -48,7 +45,7 @@ class Client(BaseClient):
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     @logger
-    def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
+    def incidents_list(self, timeout: int = TIMEOUT, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
                        skip: Optional[int] = None) -> Dict:
         """
@@ -383,7 +380,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                     "Fetch incidents - Time out. Please change first_fetch parameter to be more recent one")
 
             # HTTP request
-            response = client.incidents_list(from_date=last_run, skip=offset)
+            response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
             raw_incidents = response.get('value')
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
@@ -405,15 +402,37 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                         'incidents_queue': incidents_queue[fetch_limit:]})
     return oldest_incidents
 
-def _query_set_limit(query: str, limit:int)->str:
+
+def _query_set_limit(query: str, limit: int) -> str:
     """
-    Add limit to given query. If the query has limt, change it
+    Add limit to given query. If the query has limit, changes it.
     Args:
         query: the original query
-        limit: number of entries in the query
+        limit: new limit value, if the value is negative return the original query.
     Returns: query with limit parameters
     """
-    # break query
+    if limit < 0:
+        return query
+
+    # the query has the structure of "section | section | section ..."
+    query_list = query.split('|')
+
+    # split the query to sections and find limit sections
+    changed = False
+    for i, section in enumerate(query_list):
+        section_list = section.split()
+        # 'take' and 'limit' are synonyms.
+        if section_list and section_list[0] == 'limit' or section_list[0] == 'take':
+            query_list[i] = f" limit {limit} "
+            changed = True
+
+    # if the query have not been changed than limit is added to the query
+    if not changed:
+        query_list.append(f" limit {limit} ")
+
+    fixed_query = '|'.join(query_list)
+    return fixed_query
+
 
 @logger
 def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) -> CommandResults:
@@ -423,14 +442,17 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
         client(Client): Microsoft 365 Defender's client to preform the API calls.
         args(Dict): Demisto arguments:
               - query (str) - The query to run (required)
+              - limit (int) - number of entries in the result, -1 for no limit.
     Returns:
 
     """
     query = args.get('query', '')
-    limit = args.get('limit')
-    timeout = args.get('timeout')
+    limit = arg_to_number(args.get('limit', '-1'))
+    timeout = arg_to_number(args.get('timeout'))
 
-    response = client.advanced_hunting(query=query, limit=limit, timeout=timeout)
+    query = _query_set_limit(query, limit)
+
+    response = client.advanced_hunting(query=query, timeout=timeout)
     results = response.get('Results')
     schema = response.get('Schema', {})
     headers = [item.get('Name') for item in schema]
@@ -464,7 +486,7 @@ def main() -> None:
 
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     fetch_limit = demisto.params().get('max_fetch', 10)
-    fetch_timeout = demisto.params().get('fetch_timeout')
+    fetch_timeout = arg_to_number(demisto.params().get('fetch_timeout',TIMEOUT))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()

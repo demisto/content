@@ -10,8 +10,11 @@ you are implementing with your integration
 
 import json
 import io
+
+import pytest
+
 import demistomock as demisto
-from Microsoft365Defender import Client, fetch_incidents
+from Microsoft365Defender import Client, fetch_incidents, _query_set_limit
 
 
 def util_load_json(path):
@@ -109,3 +112,10 @@ def test_fetch_incidents(mocker):
     for current_flow in ['first', 'second', 'third', 'forth']:
         fetch_check(mocker, client, response_dict[f'{current_flow}_last_run'], first_fetch_time, fetch_limit,
                     results[f'{current_flow}_result'])
+
+@pytest.mark.parametrize('query, limit, result', [("a | b | limit 5",10,"a | b | limit 10 "),
+                                                  ("a | b ", 10, "a | b | limit 10 "),
+                                                  ("a | b | limit 1 | take 1", 10, "a | b | limit 10 | limit 10 "),
+                                                  ])
+def test_query_set_limit(query: str, limit: int, result:str):
+    assert _query_set_limit(query, limit) == result

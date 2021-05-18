@@ -27,6 +27,7 @@ configuration:
   type: 0
 - additionalinfo: The time limit in seconds for fetch incidents to run. Leave this
     empty to cancel the timeout limit.
+  defaultvalue: '30'
   display: Fetch incidents timeout
   hidden: false
   name: fetch_timeout
@@ -283,6 +284,13 @@ script:
       isArray: false
       name: timeout
       required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Number of entries.  Enter -1 for unlimited query.
+      isArray: false
+      name: limt
+      required: true
       secret: false
     deprecated: false
     description: 'Advanced hunting is a threat-hunting tool that uses specially constructed
