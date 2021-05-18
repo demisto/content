@@ -1,3 +1,7 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 import json
 import urllib3
 import requests
