@@ -14,14 +14,14 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR"
 
 class Client(BaseClient):
     """
-    Client to use in the HPE Aruba Clearpass integration. Overrides BaseClient.
+    Client to use in the HPE Aruba ClearPass integration. Overrides BaseClient.
 
         Args:
            proxy (bool): Whether the client should use proxies.
            verify (bool): Whether to check for SSL certificate validity.
            base_url (str) : Base URL for the service.
-           client_id (str): HPE Aruba Clearpass client identifier.
-           client_secret (str): HPE Aruba Clearpass client secret.
+           client_id (str): HPE Aruba ClearPass client identifier.
+           client_secret (str): HPE Aruba ClearPass client secret.
    """
 
     def __init__(self, proxy: bool, verify: bool, base_url: str, client_id: str, client_secret: str):
@@ -62,7 +62,7 @@ class Client(BaseClient):
             if auth_response_dict.get("access_token"):
                 self.save_access_token_to_context(auth_response_dict)
             else:
-                return_error("HPE Aruba Clearpass error: The client credentials are invalid.")
+                return_error("HPE Aruba ClearPass error: The client credentials are invalid.")
 
     def set_request_headers(self):
         """
@@ -75,7 +75,7 @@ class Client(BaseClient):
     def get_expiration_in_seconds(self, auth_response: Dict[str, str]):
         access_token_expiration_in_seconds = auth_response.get("expires_in")
         is_expiration_valid = access_token_expiration_in_seconds and isinstance(auth_response.get("expires_in"), int)
-        error_msg = f"HPEArubaClearpass error: Got an invalid access token expiration time from the API: " \
+        error_msg = f"HPEArubaClearPass error: Got an invalid access token expiration time from the API: " \
                     f"{access_token_expiration_in_seconds} from type: {type(access_token_expiration_in_seconds)}"
         return access_token_expiration_in_seconds if is_expiration_valid else return_error(error_msg)
 
@@ -153,11 +153,11 @@ def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     res = client.prepare_request(method='GET', params=params, url_suffix='endpoint')
     readable_output, outputs = parse_items_response(res)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', readable_output, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass endpoints', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_prefix='HPEArubaClearPass.endpoints',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -188,11 +188,11 @@ def update_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResu
                                              attributes)
     outputs = client.prepare_request(method='PATCH', params={}, url_suffix=f'endpoint/{endpoint_id}', body=request_body)
     delete_redundant_data(outputs)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass endpoints', outputs, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass endpoints', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.endpoints',
+        outputs_prefix='HPEArubaClearPass.endpoints',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -237,11 +237,11 @@ def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     res = client.prepare_request(method='GET', params=params, url_suffix='attribute')
     readable_output, outputs = parse_items_response(res)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass attributes', readable_output, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass attributes', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes',
+        outputs_prefix='HPEArubaClearPass.attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -279,11 +279,11 @@ def create_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     new_attribute_body = create_new_attribute_body(args)
     outputs = client.prepare_request(method='POST', params={}, url_suffix='attribute', body=new_attribute_body)
     delete_redundant_data(outputs)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass new attribute', outputs, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass new attribute', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes',
+        outputs_prefix='HPEArubaClearPass.attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -329,11 +329,11 @@ def update_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     outputs = client.prepare_request(method='PATCH', params={}, url_suffix=f'attribute/{attribute_id}',
                                      body=new_attribute_body)
     delete_redundant_data(outputs)
-    human_readable = tableToMarkdown('HPE Aruba Clearpass update attribute', outputs, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass update attribute', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.attributes',
+        outputs_prefix='HPEArubaClearPass.attributes',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -346,7 +346,7 @@ def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
     attribute_id = args['attribute_id']
     client.prepare_request(method='DELETE', params={}, url_suffix=f'attribute/{attribute_id}', resp_type='content')
 
-    human_readable = f"HPE Aruba Clearpass attribute with ID: {attribute_id} deleted successfully."
+    human_readable = f"HPE Aruba ClearPass attribute with ID: {attribute_id} deleted successfully."
     return CommandResults(readable_output=human_readable)
 
 
@@ -366,11 +366,11 @@ def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> Co
     res = client.prepare_request(method='GET', params=params, url_suffix='session')
     readable_output, all_active_sessions_list = parse_items_response(res, parse_active_sessions_response)
     outputs = [parse_active_sessions_response(item) for item in all_active_sessions_list]
-    human_readable = tableToMarkdown('HPE Aruba Clearpass Active Sessions', readable_output, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass Active Sessions', readable_output, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.sessions',
+        outputs_prefix='HPEArubaClearPass.sessions',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -407,11 +407,11 @@ def disconnect_active_session_command(client: Client, args: Dict[str, Any]) -> C
 
     res = client.prepare_request(method='POST', params={}, url_suffix=url_suffix, body=body)
     outputs = {"Error_code": res.get('error'), "Response_message": res.get('message')}
-    human_readable = tableToMarkdown('HPE Aruba Clearpass Disconnect active session', outputs, removeNull=True)
+    human_readable = tableToMarkdown('HPE Aruba ClearPass Disconnect active session', outputs, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='HPEArubaClearpass.sessions',
+        outputs_prefix='HPEArubaClearPass.sessions',
         outputs_key_field='id',
         outputs=outputs,
     )
@@ -461,7 +461,7 @@ def main() -> None:
             return_results(disconnect_active_session_command(client, args))
 
         else:
-            raise NotImplementedError(f'{demisto.command()} is not an existing HPE Aruba Clearpass command')
+            raise NotImplementedError(f'{demisto.command()} is not an existing HPE Aruba ClearPass command')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

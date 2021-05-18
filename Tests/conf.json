@@ -3306,8 +3306,8 @@
             "is_mockable": false
         },
         {
-           "integrations": "HPEArubaClearpass",
-            "playbookID": "HPEArubaClearpass_TestPlaybook"
+           "integrations": "HPEArubaClearPass",
+            "playbookID": "HPEArubaClearPass_TestPlaybook"
         }
     ],
     "skipped_tests": {
