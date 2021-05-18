@@ -4,10 +4,8 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 import re
-import boto3
 import json
 from datetime import datetime, date
-from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
 
