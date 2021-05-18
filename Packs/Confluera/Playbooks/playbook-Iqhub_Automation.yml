@@ -50,10 +50,6 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      access-token:
-        simple: ${Confluera.LoginData.access_token}
-      access_token:
-        simple: ${Confluera.LoginData.access_token}
       hours: {}
     separatecontext: false
     view: |-
@@ -85,10 +81,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      access-token:
-        simple: ${Confluera.LoginData.access_token}
-      access_token:
-        simple: ${Confluera.LoginData.access_token}
       hours: {}
     separatecontext: false
     view: |-
@@ -184,11 +176,6 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      access-token:
-        simple: ${Confluera.LoginData.access_token}
-      access_token:
-        simple: ${Confluera.LoginData.access_token}
-      trail-id: {}
       trail_id:
         simple: ${Enter Trail Id.Answers.0}
     separatecontext: false

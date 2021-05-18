@@ -1,6 +1,4 @@
-# DetectionSummaryWarroom Script
-
-<br>
+# ConflueraDetectionsSummaryWarroom Script
 
 ### Script Data
 ---
@@ -8,15 +6,11 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | Confluera |
-| Demisto Version | 6.0.2 |
-
-<br>
+| Demisto Version | 6.0.0 |
 
 ### Script Example
 ---
-```!DetectionsSummaryWarroom```
-
-<br>
+```!ConflueraDetectionsSummaryWarroom```
 
 ## Inputs
 ---
@@ -24,15 +18,11 @@
 | --- | --- |
 | N/A | N/A |
 
-<br>
-
 ## Outputs
 ---
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 |  N/A  | N/A | N/A |
-
-<br>
 
 ### Human Readable Output
 ---

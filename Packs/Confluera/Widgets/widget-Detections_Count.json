@@ -3,7 +3,7 @@
   "name": "Confluera Detections Count",
   "dataType": "scripts",
   "widgetType": "number",
-  "query": "DetectionsCount",
+  "query": "ConflueraDetectionsCount",
   "version": -1,
   "description": "Logs detections count",
   "isPredefined": true,

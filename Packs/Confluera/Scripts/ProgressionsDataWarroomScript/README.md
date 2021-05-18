@@ -1,6 +1,4 @@
-# ProgressionsDataWarroom Script
-
-<br>
+# ConflueraProgressionsDataWarroom Script
 
 ### Script Data
 ---
@@ -8,9 +6,7 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | Confluera |
-| Demisto Version | 6.0.2 |
-
-<br>
+| Demisto Version | 6.0.0 |
 
 ### Inputs
 ---
@@ -19,8 +15,6 @@
 | --- | --- |
 | N/A | N/A |
 
-<br>
-
 ### Outputs
 ---
 
@@ -28,13 +22,9 @@
 | --- | --- | --- |
 | N/A | N/A | N/A |
 
-<br>
-
 ### Script Example
 ---
-```!ProgressionsDataWarroom```
-
-<br>
+```!ConflueraProgressionsDataWarroom```
 
 ### Human Readable Output
 ---

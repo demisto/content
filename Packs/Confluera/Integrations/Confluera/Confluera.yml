@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Confluera
 display: Confluera
-category: Utilities
+category: Network Security
 description: This is the confluera Iq-Hub integration with cortex.
 configuration:
 - display: Trust any certificate (not secure)
@@ -25,11 +25,6 @@ configuration:
   type: 9
   required: true
   additionalinfo: The username required to authenticate to the service.
-- display: Password
-  name: password
-  type: 9
-  required: true
-  additionalinfo: The password required to authenticate to the service.
 script:
   script: '-'
   type: python

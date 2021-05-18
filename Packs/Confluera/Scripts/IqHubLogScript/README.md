@@ -1,7 +1,5 @@
 # IqHubLog Script
 
-<br>
-
 ### Script Data
 ---
 
@@ -9,17 +7,13 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | Confluera |
-| Demisto Version | 6.0.2 |
-
-<br>
+| Demisto Version | 6.0.0 |
 
 ### Inputs
 ---
 | **Argument Name** | **Description** |
 | --- | --- |
 | N/A | N/A |
-
-<br>
 
 ### Outputs
 ---
@@ -31,8 +25,6 @@
 ### Script Example
 ---
 ```!IqHubLog```
-
-<br>
 
 ### Human Readable Output
 ---

@@ -1,17 +1,17 @@
 {
     "name": "Confluera",
-    "description": "Use the Confluera integration to fetch live data (detections & progressions) from confluera's Iq-Hub portal",
+    "description": "This content pack uses the Confluera integration to fetch detections & progressions from confluera's Iq-Hub portal",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "confluera",
     "url": "https://www.confluera.com",
-    "email": "sheetal@confluera.com",
+    "email": "support@confluera.com",
     "created": "2021-01-01T10:21:07Z",
     "categories": [
-        "Incident Investigation"
+        "Network Security"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": ["https://github.com/shubhamyadav-coditas"]
+    "githubUser": ["shubhamyadav-coditas"]
 }
