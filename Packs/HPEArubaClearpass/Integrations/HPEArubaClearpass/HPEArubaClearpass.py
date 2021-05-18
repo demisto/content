@@ -383,7 +383,8 @@ def sessions_filter_to_json_object(session_id, device_ip, device_mac_address, st
     session_filter.update({"mac_address": device_mac_address}) if device_mac_address else None
     session_filter.update({"state": state}) if state else None
     session_filter.update({"visitor_phone": visitor_phone}) if visitor_phone else None
-    return json.dumps(session_filter)  # the API requires the value of 'filter' to be a json object.
+    # the API requires the value of 'filter' to be a json object.
+    return json.dumps(session_filter) if session_filter else session_filter
 
 
 def parse_active_sessions_response(response: dict) -> dict:
