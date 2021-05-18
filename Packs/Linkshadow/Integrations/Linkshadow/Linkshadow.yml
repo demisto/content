@@ -133,4 +133,3 @@ script:
   subtype: python2
   type: python
   isFetchSamples: true
-  fromversion: 5.0.0
