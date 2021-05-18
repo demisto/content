@@ -211,7 +211,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     if closed_by:
         context['ResolvedBy'] = closed_by.get('value', '')
     opened_by = data.get('opened_by')
-    if opened_by:
+    if opened_by and type(opened_by) == dict:
         context['OpenedBy'] = opened_by.get('value', '')
         context['Creator'] = opened_by.get('value', '')
     assigned_to = data.get('assigned_to')
