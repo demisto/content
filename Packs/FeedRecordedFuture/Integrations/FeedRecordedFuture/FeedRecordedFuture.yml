@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Recorded Future Feed
+  id: Recorded Future Feed batches
   version: -1
 configuration:
 - display: Fetch indicators
@@ -144,8 +144,8 @@ configuration:
   required: false
   type: 0
 description: Ingests indicators from Recorded Future feeds into Demisto.
-display: Recorded Future RiskList Feed
-name: Recorded Future Feed
+display: Recorded Future RiskList Feed batches
+name: Recorded Future Feed batches
 script:
   commands:
   - arguments:
