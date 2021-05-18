@@ -20,7 +20,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aruba-clearpass-endpoints-list
 ***
-Get a list of endpoints.
+Get a list of endpoints. An endpoint device is an Internet-capable hardware device on a TCP/IP network (e.g. laptops, smart phones, tablets, etc.)
 
 
 #### Base Command
@@ -156,7 +156,7 @@ Updates some fields of an endpoint.
 
 ### aruba-clearpass-attributes-list
 ***
-Get a list of attributes. If no arguments were given, all of the attributes will be displayed.
+Get a list of attributes. Attributes allows you to specify unique sets of criteria for local users, guest users, endpoints, and devices. If no arguments were given, all of the attributes will be displayed.
 
 
 #### Base Command
