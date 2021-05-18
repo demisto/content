@@ -1,3 +1,5 @@
+from typing import Tuple
+
 from CommonServerPython import *
 
 # Disable insecure warnings
@@ -25,11 +27,49 @@ class Client(BaseClient):
         resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
         if resp.status_code != 200:
             raise DemistoException(f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
+        # raise DemistoException(str(resp.headers['X-FeApi-Token']))
         return resp.headers['X-FeApi-Token']
 
     @logger
-    def get_alerts_request(self, alert_id: str) -> Dict[str, str]:
-        return self._http_request(method='GET', url_suffix='alerts', params={'alert_id': alert_id}, resp_type='json')
+    def get_alerts_request(self, alert_id: Optional[str], start_time: Optional[str], end_time: Optional[str],
+                           duration: Optional[str], callback_domain: Optional[str], dst_ip: Optional[str],
+                           src_ip: Optional[str], file_name: Optional[str], file_type: Optional[str],
+                           info_level: Optional[str], malware_name: Optional[str], malware_type: Optional[str],
+                           recipient_email: Optional[str], sender_email: Optional[str], url_: Optional[str]) -> Dict[
+        str, str]:
+        params = {
+            'info_level': info_level
+        }
+        if start_time:
+            params['start_time'] = start_time
+        if end_time:
+            params['end_time'] = end_time
+        if duration:
+            params['duration'] = duration
+        if alert_id:
+            params['alert_id'] = alert_id
+        if callback_domain:
+            params['callback_domain'] = callback_domain
+        if dst_ip:
+            params['dst_ip'] = dst_ip
+        if src_ip:
+            params['src_ip'] = src_ip
+        if file_name:
+            params['file_name'] = file_name
+        if file_type:
+            params['file_type'] = file_type
+        if malware_name:
+            params['malware_name'] = malware_name
+        if malware_type:
+            params['malware_type'] = malware_type
+        if recipient_email:
+            params['recipient_email'] = recipient_email
+        if sender_email:
+            params['sender_email'] = sender_email
+        if url_:
+            params['url'] = url_
+
+        return self._http_request(method='GET', url_suffix='alerts', params=params, resp_type='json')
 
     @logger
     def get_alert_details_request(self, alert_id: str) -> Dict[str, str]:
@@ -40,7 +80,7 @@ class Client(BaseClient):
         # data here is redundant, but without it we are getting an error.
         # "Bad Request" with Invalid input. code:ALRTCONF001
         return self._http_request(method='POST', url_suffix=f'alerts/alert/{uuid}',
-                                  params={'schema_compatibility': True}, data=json.dumps({"annotation": "<test>"}),
+                                  params={'schema_compatibility': True}, json_data={"annotation": "<test>"},
                                   resp_type='resp')
 
     @logger
@@ -160,14 +200,36 @@ def test_module(client: Client) -> str:
 @logger
 def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_id = args.get('alert_id', '')
+    start_time = args.get('start_time', '')
+    if start_time:
+        start_time = to_fe_datetime_converter(start_time)
+    end_time = args.get('end_time')
+    if end_time:
+        end_time = to_fe_datetime_converter(end_time)
+    duration = args.get('duration')
+    callback_domain = args.get('callback_domain', '')
+    dst_ip = args.get('dst_ip', '')
+    src_ip = args.get('src_ip', '')
+    file_name = args.get('file_name', '')
+    file_type = args.get('file_type', '')
+    info_level = args.get('info_level', 'concise')
+    malware_name = args.get('malware_name', '')
+    malware_type = args.get('malware_type', '')
+    recipient_email = args.get('recipient_email', '')
+    sender_email = args.get('sender_email', '')
+    url_ = args.get('url', '')
+    limit = int(args.get('limit', '100'))
 
-    raw_response = client.get_alerts_request(alert_id)
+    raw_response = client.get_alerts_request(alert_id, start_time, end_time, duration, callback_domain, dst_ip, src_ip,
+                                             file_name, file_type, info_level, malware_name, malware_type,
+                                             recipient_email, sender_email, url_)
 
     alerts = raw_response.get('alert')
     if not alerts:
         md_ = 'No alerts with teh given arguments were found.'
     else:
-        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
+        alerts = alerts[:limit]
+        headers = ['id', 'occurred', 'product', 'name', 'malicious', 'severity', 'alertUrl']
         md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Alerts:', t=alerts, headers=headers, removeNull=True)
 
     return CommandResults(
@@ -411,6 +473,73 @@ def get_reports(client: Client, args: Dict[str, Any]):
                                file_type=EntryType.ENTRY_INFO_FILE))
 
 
+@logger
+def fetch_incidents(client: Client, last_run: dict, first_fetch_time: str, max_fetch: int = 50,
+                    info_level: str = 'concise') -> Tuple[dict, list]:
+    def alert_severity_to_dbot_score(severity_str: str):
+        severity = severity_str.lower()
+        if severity == 'minr':
+            return 1
+        if severity == 'majr':
+            return 2
+        if severity == 'crit':
+            return 3
+        demisto.info(f'{INTEGRATION_NAME} incident severity: {severity} is not known. '
+                     f'Setting as unknown(DBotScore of 0).')
+        return 0
+
+    if not last_run:  # if first time fetching
+        next_run = {
+            'time': to_fe_datetime_converter(first_fetch_time),
+            'last_alert_ids': []
+        }
+    else:
+        next_run = last_run
+
+    raw_response = client.get_alerts_request(alert_id='', start_time=to_fe_datetime_converter(first_fetch_time),
+                                             end_time='', duration='', callback_domain='', dst_ip='', src_ip='',
+                                             file_name='', file_type='', info_level=info_level, malware_name='',
+                                             malware_type='', recipient_email='', sender_email='', url_='')
+    alerts = raw_response.get('alert')
+
+    if not alerts:
+        demisto.info(f'{INTEGRATION_NAME} no alerts were fetched at: {str(next_run)}')
+        # as no alerts occurred till now, update last_run time accordingly
+        last_run['time'] = to_fe_datetime_converter('now')
+        return last_run, []
+
+    alerts = alerts[:max_fetch]
+    last_alert_ids = last_run.get('last_alert_ids', [])
+    incidents = []
+
+    for alert in alerts:
+        alert_id = str(alert.get('id'))
+        if alert_id not in last_alert_ids:  # check that event was not fetched in the last fetch
+            incident = {
+                'name': f'{INTEGRATION_NAME} Alert: {alert_id}',
+                'occurred': dateparser.parse(alert.get('occurred')).strftime(DATE_FORMAT),
+                'severity': alert_severity_to_dbot_score(alert.get('severity')),
+                'rawJSON': json.dumps(alert)
+            }
+            incidents.extend([incident])
+            last_alert_ids.extend([alert_id])
+
+    if not incidents:
+        demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}')
+        # as no alerts occurred till now, update last_run time accordingly
+        last_run['time'] = alerts[-1].get('occurred')
+        return last_run, []
+
+    # as alerts occurred till now, update last_run time accordingly to the that of latest fetched alert
+    last_alert_occurred_time = alerts[-1].get('occurred')
+    next_run = {
+        'time': last_alert_occurred_time,
+        'last_alert_ids': json.dumps(last_alert_ids)  # save the alert IDs from the last fetch
+    }
+    demisto.info(f'{INTEGRATION_NAME} Fetched {len(incidents)}. last fetch at: {str(next_run)}')
+    return next_run, incidents
+
+
 def main() -> None:
     params = demisto.params()
     username = params.get('credentials').get('identifier')
@@ -421,9 +550,9 @@ def main() -> None:
     proxy = argToBoolean(params.get('proxy'))
 
     # # fetch params
-    # fetch_query = params.get('fetch_query')
-    # max_fetch = min('50', params.get('max_fetch', '50'))
-    # first_fetch_time = params.get('fetch_time', '3 days').strip()
+    max_fetch = int(params.get('max_fetch', '50'))
+    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    info_level = params.get('info_level', 'concise')
 
     command = demisto.command()
     args = demisto.args()
@@ -445,16 +574,16 @@ def main() -> None:
         }
         if demisto.command() == 'test-module':
             return_results(test_module(client))
-        # elif command == 'fetch-incidents':
-        #     next_run, incidents = fetch_incidents(
-        #         client=client,
-        #         last_run=demisto.getLastRun(),
-        #         fetch_query=fetch_query,
-        #         first_fetch_time=first_fetch_time,
-        #         max_fetch=max_fetch
-        #     )
-        #     demisto.setLastRun(next_run)
-        #     demisto.incidents(incidents)
+        elif command == 'fetch-incidents':
+            next_run, incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time,
+                max_fetch=max_fetch,
+                info_level=info_level
+            )
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-artifacts-by-uuid':
             get_artifacts_by_uuid(client, args)
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-reports':

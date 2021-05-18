@@ -16,12 +16,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Fetch Query.
-  name: fetch_query
-  required: false
-  type: 0
 - defaultvalue: '50'
-  display: Max fetch
+  display: Max incidents to fetch
   name: max_fetch
   required: false
   type: 0
@@ -35,6 +31,15 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- defaultValue: 'concise'
+  display: Info level for fetched alerts
+  name: info_level
+  options:
+  - 'concise'
+  - 'normal'
+  - 'extended'
+  required: false
+  type: 18
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -55,16 +60,6 @@ script:
       name: alert_id
       required: false
       secret: false
-    - default: false
-      description: Searches for alerts that include callbacks to the specified domain.
-      isArray: false
-      name: callback_domain
-      required: false
-    - default: false
-      description: The destination IPv4 address related to the malware alert.
-      isArray: false
-      name: dst_ip
-      required: false
     - default: false
       description: "The time interval to search. This filter is used with either the start_time or end_time filter.
       If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time.
@@ -93,7 +88,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: TODO
+      description: Searches for alerts that include callbacks to the specified domain.
+      isArray: false
+      name: callback_domain
+      required: false
+    - default: false
+      description: The destination IPv4 address related to the malware alert.
+      isArray: false
+      name: dst_ip
+      required: false
+    - default: false
+      description: The source IPv4 address related to the malware alert.
+      isArray: false
+      name: src_ip
+      required: false
+    - default: false
+      description: The name of the malware file.
       isArray: false
       name: file_name
       required: false
@@ -118,6 +128,12 @@ script:
       secret: false
     - default: false
       description: The name of the malware object.
+      isArray: false
+      name: malware_name
+      required: false
+      secret: false
+    - default: false
+      description: The type of the malware object.
       predefined:
         - 'domain_match'
         - 'malware_callback'
@@ -128,7 +144,7 @@ script:
         - 'riskware-callback'
         - 'riskware-object'
       isArray: false
-      name: malware_name
+      name: malware_type
       required: false
       secret: false
     - default: false
@@ -150,15 +166,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The source IPv4 address related to the malware alert.
-      isArray: false
-      name: src_ip
-      required: false
-      secret: false
-    - default: false
       description: Searches for a specific alert URL.
       isArray: false
       name: url
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of alerts to return. Default is 100.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -536,7 +553,7 @@ script:
     - contextPath: InfoFile.Type
       description: The type of the artifact file.
       type: string
-  isfetch: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python
