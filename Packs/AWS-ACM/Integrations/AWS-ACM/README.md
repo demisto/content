@@ -1,5 +1,7 @@
 Amazon Web Services Certificate Manager Service (acm)
 
+For more information regarding the AWS ACM service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/acm.html).
+
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
 ## Configure AWS - ACM on Cortex XSOAR
