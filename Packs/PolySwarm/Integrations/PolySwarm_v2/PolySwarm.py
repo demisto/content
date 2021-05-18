@@ -170,7 +170,7 @@ class PolyswarmConnector():
 
         error_msg = 'Error submitting File.'
 
-        return self.return_hash_results(result,
+        return self.return_hash_results([result],
                                         error_msg)
 
     def rescan_file(self, hash_file: str) -> object:
@@ -189,7 +189,7 @@ class PolyswarmConnector():
 
         error_msg = 'Error rescaning File.'
 
-        return self.return_hash_results(result,
+        return self.return_hash_results([result],
                                         error_msg)
 
     def get_file(self, hash_file: str):
