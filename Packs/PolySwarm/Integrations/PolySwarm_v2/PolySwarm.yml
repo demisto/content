@@ -109,6 +109,30 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags that are associated with the IP.
+      type: String
   - arguments:
     - default: true
       description: The URL for which to retrieve the reputation information.
@@ -299,4 +323,3 @@ script:
   type: python
   dockerimage: demisto/polyswarm:1.0.0.18926
 fromversion: 5.0.0
-
