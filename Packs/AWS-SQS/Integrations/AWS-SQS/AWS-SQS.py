@@ -149,7 +149,7 @@ def parse_incident_from_finding(message):
 
 def fetch_incidents(aws_client, aws_queue_url):
     try:
-        client = aws_client.aws_session()
+        client = aws_client.aws_session(service='sqs')
         messages = client.receive_message(
             QueueUrl=aws_queue_url,
             MaxNumberOfMessages=10,
@@ -181,7 +181,7 @@ def fetch_incidents(aws_client, aws_queue_url):
 
 def test_function(aws_client):
     try:
-        client = aws_client.aws_session()
+        client = aws_client.aws_session(service='sqs')
         response = client.list_queues()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             return "ok"
@@ -229,6 +229,7 @@ def main():
             sys.exit(0)
         elif command in commands:
             client = aws_client.aws_session(
+                service='sqs',
                 region=args.get('region'),
                 role_arn=args.get('roleArn'),
                 role_session_name=args.get('roleSessionName'),
