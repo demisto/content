@@ -180,7 +180,7 @@ script:
       description: 'The vendor used to calculate the score.'
     - contextPath: IP.Address
       type: string
-      description: 'IP address'
+      description: 'The IP address.'
     - contextPath: IP.ASN
       type: string
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -310,7 +310,7 @@ script:
       description: 'A unique identifier for this request that can be used to lookup the request details or send a postback conversion notice.'
     - contextPath: IPQualityScore.Email.address
       type: String
-      description: 'The email address that was queried'
+      description: 'The email address that was queried.'
     - contextPath: DBotScore.Indicator
       type: String
       description: 'The indicator that was tested.'
@@ -422,7 +422,7 @@ script:
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.4.19537
   feed: false
   isfetch: false
   longRunning: false

@@ -1,7 +1,8 @@
 id: Detonate URL - Phish.AI
 version: -1
+hidden: true
 name: Detonate URL - Phish.AI
-description: Detonates a URL using the Phish.AI integration.
+description: Deprecated. Vendor has declared end of life for this product. No available replacement.
 fromversion: "5.0.0"
 starttaskid: "0"
 tasks:
@@ -337,4 +338,5 @@ outputs:
   description: URL's Address
   type: string
 tests:
-- Test-Detonate URL - Phish.AI
+- No tests
+deprecated: true

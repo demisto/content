@@ -21,12 +21,14 @@ BASE_URL = 'https://management.azure.com'
 SUBSCRIPTION_PATH = 'subscriptions/{}'
 RESOURCE_PATH = 'resourceGroups/{}'
 POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
+
 ''' CLIENT CLASS '''
 
 
 class AzureWAFClient:
     @logger
-    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy,
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
 
         # for dev environment use:
         if '@' in app_id:
@@ -49,7 +51,8 @@ class AzureWAFClient:
             'proxy': proxy,
             'resource': 'https://management.core.windows.net',  # disable-secrets-detection
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
-            'ok_codes': (200, 201, 202, 204)
+            'ok_codes': (200, 201, 202, 204),
+            'azure_ad_endpoint': azure_ad_endpoint
         }
 
         self.ms_client = MicrosoftClient(**client_args)
@@ -119,12 +122,8 @@ def test_connection(client: AzureWAFClient, params: Dict):
 
 @logger
 def start_auth(client: AzureWAFClient) -> CommandResults:
-    user_code = client.ms_client.device_auth_request()
-    return CommandResults(readable_output=f"""### Authorization instructions
-        1. To sign in, use a web browser to open the page:
-            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
-           and enter the code **{user_code}** to authenticate.
-        2. Run the **!azure-waf-auth-complete** command in the War Room.""")
+    result = client.ms_client.start_auth('!azure-waf-auth-complete')
+    return CommandResults(readable_output=result)
 
 
 @logger
@@ -358,6 +357,8 @@ def main() -> None:
         resource_group_name=params.get('resource_group_name', ''),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
+        azure_ad_endpoint=params.get('azure_ad_endpoint',
+                                     'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
     )
 
     demisto.debug(f'Command being called in Azure WAF is {command}')

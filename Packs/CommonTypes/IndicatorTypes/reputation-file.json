@@ -395,6 +395,76 @@
           }]
         }
       },
+      "feedrelatedindicators": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "FeedRelatedIndicators",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "communitynotes": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "CommunityNotes",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "publications": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "Publications",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "behavior": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "Behavior",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
       "tags": {
         "simple": "",
         "complex": {

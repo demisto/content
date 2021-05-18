@@ -138,7 +138,7 @@ def refresh_edl_context(request_args: RequestArguments, save_integration_context
 
     while actual_indicator_amount < request_args.limit:
         # from where to start the new poll and how many results should be fetched
-        new_offset = len(iocs) + request_args.offset + actual_indicator_amount - 1
+        new_offset = len(iocs) + request_args.offset
         new_limit = request_args.limit - actual_indicator_amount
 
         # poll additional indicators into list from demisto
@@ -198,7 +198,7 @@ def find_indicators_to_limit(indicator_query: str, limit: int, offset: int = 0) 
 
 
 def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetched: int = 0,
-                                  next_page: int = 0, last_found_len: int = PAGE_SIZE):
+                                  next_page: int = 0, last_found_len: int = None):
     """
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
 
@@ -214,10 +214,15 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
         (tuple): The iocs and the last page
     """
     iocs: List[dict] = []
+    filter_fields = "name,type"  # based on func ToIoC https://github.com/demisto/server/blob/master/domain/insight.go
+    search_indicators = IndicatorsSearcher(page=next_page, filter_fields=filter_fields)
+    if last_found_len is None:
+        last_found_len = PAGE_SIZE
     if not last_found_len:
         last_found_len = total_fetched
-    while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+    # last_found_len should be PAGE_SIZE (or PAGE_SIZE - 1, as observed for some users) for full pages
+    while last_found_len in (PAGE_SIZE, PAGE_SIZE - 1) and limit and total_fetched < limit:
+        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
         # In case the result from searchIndicators includes the key `iocs` but it's value is None
         fetched_iocs = fetched_iocs or []
 
@@ -226,8 +231,7 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
                     for ioc in fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-        next_page += 1
-    return iocs, next_page
+    return iocs, search_indicators.page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -308,33 +312,35 @@ def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) 
         # protocol stripping
         indicator = _PROTOCOL_REMOVAL.sub('', indicator)
 
-        # Port stripping
-        indicator_with_port = indicator
-        # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
-        indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
-        # check if removing the port changed something about the indicator
-        if indicator != indicator_with_port and not request_args.url_port_stripping:
-            # if port was in the indicator and url_port_stripping param not set - ignore the indicator
-            continue
-        # Reformatting to to PAN-OS URL format
-        with_invalid_tokens_indicator = indicator
-        # mix of text and wildcard in domain field handling
-        indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
-        # check if the indicator held invalid tokens
-        if with_invalid_tokens_indicator != indicator:
-            # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
-            if request_args.drop_invalids:
+        if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
+                            FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
+            # Port stripping
+            indicator_with_port = indicator
+            # remove port from indicator - from demisto.com:369/rest/of/path -> demisto.com/rest/of/path
+            indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
+            # check if removing the port changed something about the indicator
+            if indicator != indicator_with_port and not request_args.url_port_stripping:
+                # if port was in the indicator and url_port_stripping param not set - ignore the indicator
                 continue
-        # for PAN-OS *.domain.com does not match domain.com
-        # we should provide both
-        # this could generate more than num entries according to PAGE_SIZE
-        if indicator.startswith('*.'):
-            formatted_indicators.append(indicator.lstrip('*.'))
+            # Reformatting to PAN-OS URL format
+            with_invalid_tokens_indicator = indicator
+            # mix of text and wildcard in domain field handling
+            indicator = _INVALID_TOKEN_REMOVAL.sub('*', indicator)
+            # check if the indicator held invalid tokens
+            if with_invalid_tokens_indicator != indicator:
+                # invalid tokens in indicator- if drop_invalids is set - ignore the indicator
+                if request_args.drop_invalids:
+                    continue
+            # for PAN-OS *.domain.com does not match domain.com
+            # we should provide both
+            # this could generate more than num entries according to PAGE_SIZE
+            if indicator.startswith('*.'):
+                formatted_indicators.append(indicator.lstrip('*.'))
 
-        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == 'IP':
+        if request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IP:
             ipv4_formatted_indicators.append(IPAddress(indicator))
 
-        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == 'IPv6':
+        elif request_args.collapse_ips != DONT_COLLAPSE and ioc_type == FeedIndicatorType.IPv6:
             ipv6_formatted_indicators.append(IPAddress(indicator))
 
         else:
@@ -659,7 +665,7 @@ def main():
     global PAGE_SIZE
     params = demisto.params()
     try:
-        PAGE_SIZE = max(PAGE_SIZE, int(params.get('page_size', PAGE_SIZE)))
+        PAGE_SIZE = max(1, int(params.get('page_size') or PAGE_SIZE))
     except ValueError:
         demisto.debug(f'Non integer "page_size" provided: {params.get("page_size")}. defaulting to {PAGE_SIZE}')
     credentials = params.get('credentials') if params.get('credentials') else {}

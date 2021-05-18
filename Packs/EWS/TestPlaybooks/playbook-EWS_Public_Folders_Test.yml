@@ -6,15 +6,14 @@ description: ""
 tasks:
   "0":
     id: "0"
-    taskid: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
+    taskid: e5fd1879-d7f7-4dc8-8116-67367d36d3e3
     type: start
     task:
-      id: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
+      id: e5fd1879-d7f7-4dc8-8116-67367d36d3e3
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -27,12 +26,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: afa7fd40-59b1-4b4f-869e-266afabe5d05
+    taskid: bfff5578-2b91-463f-886c-76c26b2388ab
     type: regular
     task:
-      id: afa7fd40-59b1-4b4f-869e-266afabe5d05
+      id: bfff5578-2b91-463f-886c-76c26b2388ab
       version: -1
       name: ews-find-folders
       description: Get folders information for a mailbox. Only folders with read permissions
@@ -45,9 +50,6 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      is-public: {}
-      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -57,12 +59,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5a19781c-491a-4e4b-810b-228cfbafee89
+    taskid: 820b55f7-0f75-4274-8ea2-8a9e2c694bdf
     type: regular
     task:
-      id: 5a19781c-491a-4e4b-810b-228cfbafee89
+      id: 820b55f7-0f75-4274-8ea2-8a9e2c694bdf
       version: -1
       name: ews-get-folder
       description: Get a single specific folder.
@@ -72,10 +80,9 @@ tasks:
       brand: ""
     scriptarguments:
       folder-path:
-        simple: pub/sub
+        simple: pub
       is-public:
         simple: "True"
-      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -85,12 +92,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ee559217-5399-41b9-8778-abab57420f2f
+    taskid: 5e17d139-59ee-4a89-8aee-172643f081d1
     type: regular
     task:
-      id: ee559217-5399-41b9-8778-abab57420f2f
+      id: 5e17d139-59ee-4a89-8aee-172643f081d1
       version: -1
       name: ews-search-mailbox
       description: Search items in a specific mailbox. Notice that a proper permissions
@@ -104,13 +117,11 @@ tasks:
       - "2"
     scriptarguments:
       folder-path:
-        simple: pub/sub
+        simple: pub
       is-public:
         simple: "True"
-      limit: {}
       query:
         simple: From:demistoadmin@demisto.int AND Subject:ismyplaybookworking?
-      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -120,12 +131,18 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3affa4ea-b4a8-4ca8-823b-c9baa7619948
+    taskid: 85570a06-dcc7-4b70-80ee-22ac0a3d7434
     type: regular
     task:
-      id: 3affa4ea-b4a8-4ca8-823b-c9baa7619948
+      id: 85570a06-dcc7-4b70-80ee-22ac0a3d7434
       version: -1
       name: ews-get-items-from-folder
       description: Get items from a specific folder in a mailbox. The items will return
@@ -139,11 +156,9 @@ tasks:
       - "1"
     scriptarguments:
       folder-path:
-        simple: pub/sub
+        simple: pub
       is-public:
         simple: "True"
-      limit: {}
-      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -153,6 +168,12 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},

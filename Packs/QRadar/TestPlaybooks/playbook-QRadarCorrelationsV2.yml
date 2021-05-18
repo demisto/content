@@ -44,14 +44,12 @@ tasks:
       '#none#':
       - '2'
     scriptarguments:
-      Fields:
-        simple: action
       GetCorrelationLogs:
         simple: 'True'
       GetOnlyCREEvents:
         simple: All
       ID:
-        simple: '482'
+        simple: '490'
       MaxCorrelationCount:
         simple: '100'
       MaxLogsCount:

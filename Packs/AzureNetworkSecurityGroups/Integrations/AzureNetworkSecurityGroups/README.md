@@ -5,6 +5,16 @@ In both options below, the [device authorization grant flow](https://docs.micros
 
 In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
+   
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Application ID |  | True |
+    | Subscription ID |  | True |
+    | Resource Group Name |  | True |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+   
 2. Run the ***!azure-nsg-auth-start*** command. 
 3. Follow the instructions that appear.
 4. Run the ***!azure-nsg-auth-complete*** command.

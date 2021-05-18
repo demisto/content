@@ -1,0 +1,1052 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: Track threat actors and campaigns by uploading threat intelligence in
+  the form of briefs and IOCs. Add notes and find IOCs in related incidents.
+id: TIM - Intel Tracking
+inputs: []
+name: TIM - Intel Tracking
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c7416d95-0dde-4994-85f8-79cf88d52a93
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c7416d95-0dde-4994-85f8-79cf88d52a93
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.threatdetected
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8a8a621e-2f96-40d3-8630-e2283a56ab41
+      iscommand: false
+      description: Check for threat detected flag
+      name: Was  the campaign or actor detected in the environment?
+      type: condition
+      version: -1
+    taskid: 8a8a621e-2f96-40d3-8630-e2283a56ab41
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Optionally increases the incident severity to the new value if
+        it is greater than the existing severity.
+      id: 09b80fdb-b68d-4419-8a53-bd78ced13683
+      iscommand: false
+      name: Increase incident severity
+      script: IncreaseIncidentSeverity
+      type: regular
+      version: -1
+    taskid: 09b80fdb-b68d-4419-8a53-bd78ced13683
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 520
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f1bb446a-6f23-4ab8-8f7d-84346b7b191b
+      iscommand: false
+      name: Extract Indicators From File - Generic v2
+      playbookId: Extract Indicators From File - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: f1bb446a-6f23-4ab8-8f7d-84346b7b191b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 835
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: RelatedIncidents=.
+      incidentId:
+        simple: ${incident.id}
+      maxDistance: {}
+      threshold: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.relatedIncidents
+      id: 0dc5687e-dc80-4100-85cb-bf86f903cc08
+      iscommand: true
+      name: Find Related Incidents
+      script: Builtin|||relatedIncidents
+      type: regular
+      version: -1
+    taskid: 0dc5687e-dc80-4100-85cb-bf86f903cc08
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1680
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f6bb0cc-0edc-43a0-802c-3df2474cf434
+      iscommand: false
+      name: Triage
+      type: title
+      version: -1
+      description: ''
+    taskid: 7f6bb0cc-0edc-43a0-802c-3df2474cf434
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b64cbaf9-b88b-4c7d-8fe1-ab8024c33e6d
+      iscommand: false
+      name: Enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: b64cbaf9-b88b-4c7d-8fe1-ab8024c33e6d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 479ebb84-e399-4934-86b6-62d34dec3eb3
+      iscommand: false
+      name: Additional Context
+      type: title
+      version: -1
+      description: ''
+    taskid: 479ebb84-e399-4934-86b6-62d34dec3eb3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1535
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: CVE
+          operator: isExists
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c2df97df-9219-43f6-873a-223910a8e79e
+      iscommand: false
+      description: Check for CVEs in incident context
+      name: Are there CVE's?
+      type: condition
+      version: -1
+    taskid: c2df97df-9219-43f6-873a-223910a8e79e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1010
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cve_id:
+        simple: ${CVE.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns CVE information by CVE ID.
+      id: ae32bce4-9b63-4680-8ceb-18c3f4694671
+      iscommand: true
+      name: Enrich CVEs
+      script: '|||cve'
+      type: regular
+      version: -1
+    taskid: ae32bce4-9b63-4680-8ceb-18c3f4694671
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1185
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      asowner: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedcves: {}
+      associatedfilenames: {}
+      associations: {}
+      behavior: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip: {}
+      chroniclepotentiallyblockedip: {}
+      city: {}
+      communitynotes: {}
+      confidence: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      downloadurl: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanselastobserved: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expanseservicestatus: {}
+      expansesourcedomain: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expiration: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      indicatorsIDs: {}
+      indicatorsValues:
+        complex:
+          accessor: Indicator
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: DBotScore.Score
+              operator: greaterThan
+              right:
+                value:
+                  simple: "1"
+          root: DBotScore
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitrecourseofaction: {}
+      mitrecreated: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitremodified: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretactics: {}
+      mitretype: {}
+      mitreversion: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      organizationtype: {}
+      osversion: {}
+      path: {}
+      pem: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publications: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseaddress: {}
+      registrarabusecountry: {}
+      registrarabuseemail: {}
+      registrarabusename: {}
+      registrarabusenetwork: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reports: {}
+      reputation: {}
+      serialnumber: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags:
+        simple: ${incident.threatactor}
+      targets: {}
+      tenablesolution: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      vulnerabilities: {}
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicators
+      id: 7b61a441-5e6d-49e6-8e52-b5ff5b447861
+      iscommand: true
+      name: Tag Suspcious and Bad Indicators with Threat Actor
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 7b61a441-5e6d-49e6-8e52-b5ff5b447861
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 2380
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      asowner: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedcves: {}
+      associatedfilenames: {}
+      associations: {}
+      behavior: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip: {}
+      chroniclepotentiallyblockedip: {}
+      city: {}
+      communitynotes: {}
+      confidence: {}
+      costcenter: {}
+      costcentercode: {}
+      countryname: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: CVE.Description
+              operator: isExists
+          root: CVE.Description
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainidnname: {}
+      domainname: {}
+      domainreferringips: {}
+      domainreferringsubnets: {}
+      domainstatus: {}
+      downloadurl: {}
+      email: {}
+      emailaddress: {}
+      entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanselastobserved: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expanseservicestatus: {}
+      expansesourcedomain: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
+      expiration: {}
+      expirationdate: {}
+      extension: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      givenname: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      indicatorsIDs: {}
+      indicatorsValues:
+        complex:
+          accessor: ID
+          root: CVE
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      internal: {}
+      ipaddress: {}
+      issuerdn: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      lastseenbysource: {}
+      leadership: {}
+      location: {}
+      locationregion: {}
+      macaddress: {}
+      malwarefamily: {}
+      malwaretypes: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitrecourseofaction: {}
+      mitrecreated: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitremodified: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretactics: {}
+      mitretype: {}
+      mitreversion: {}
+      mobilephone: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      organizationtype: {}
+      osversion: {}
+      path: {}
+      pem: {}
+      personalemail: {}
+      port: {}
+      positivedetections: {}
+      primarymotivation: {}
+      processor: {}
+      processors: {}
+      publications: {}
+      publickey: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseaddress: {}
+      registrarabusecountry: {}
+      registrarabuseemail: {}
+      registrarabusename: {}
+      registrarabusenetwork: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reports: {}
+      reputation: {}
+      serialnumber: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      spkisha256: {}
+      ssdeep: {}
+      state: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      streetaddress: {}
+      subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
+      surname: {}
+      tags:
+        simple: ${incident.threatactor}
+      targets: {}
+      tenablesolution: {}
+      threattypes: {}
+      title: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
+      vulnerabilities: {}
+      workphone: {}
+      xdrstatus: {}
+      zipcode: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicators
+      id: 733ac6ee-010e-4dfc-84d7-d9158c6c6c4a
+      iscommand: true
+      name: Tag CVE
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 733ac6ee-010e-4dfc-84d7-d9158c6c6c4a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1360
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: RelatedIncidents.incidentid
+          operator: isExists
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 32ff038f-9fc4-4cae-8b36-e8a1678c0c3b
+      description: Check for related incidents
+      iscommand: false
+      name: Related Incidents?
+      type: condition
+      version: -1
+    taskid: 32ff038f-9fc4-4cae-8b36-e8a1678c0c3b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1860
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action: {}
+      incidentId:
+        simple: ${incident.id}
+      linkedIncidentIDs:
+        complex:
+          accessor: incidentid
+          root: RelatedIncidents
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: 2b8d27bc-e8b9-43fc-84ad-a46955b7df75
+      iscommand: true
+      name: Link Related Incidents
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 2b8d27bc-e8b9-43fc-84ad-a46955b7df75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2030
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: greaterThan
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5d884727-f7c0-4535-8f8f-92f48045b715
+      iscommand: false
+      description: Check for bad indicators
+      name: Bad or Suspicious Indicators?
+      type: condition
+      version: -1
+    taskid: 5d884727-f7c0-4535-8f8f-92f48045b715
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2205
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3fa0ebdd-f842-4f04-8adf-2c6a3b009aeb
+      iscommand: false
+      name: Fin
+      type: title
+      version: -1
+      description: ''
+    taskid: 3fa0ebdd-f842-4f04-8adf-2c6a3b009aeb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2555
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2570,
+        "width": 607.5,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
