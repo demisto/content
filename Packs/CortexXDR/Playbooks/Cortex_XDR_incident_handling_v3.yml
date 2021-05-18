@@ -924,7 +924,7 @@ tasks:
       id: a156cd63-d9c1-4cf0-8c1a-d752c2d378e3
       version: -1
       name: Find similar incidents
-      description: Find past similar incidents based on incident fields' similarity.
+      description: Find past similar incidents based on incident fields similarity.
         Includes an option to also display indicators similarity.
       scriptName: DBotFindSimilarIncidents
       type: regular
