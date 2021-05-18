@@ -1002,7 +1002,7 @@ tasks:
       message_name:
         simple: B607ef9ac0000
       recipient:
-        simple: x@x.x
+        simple: test@example.com
       server_id:
         simple: "1"
       spam_report_message:

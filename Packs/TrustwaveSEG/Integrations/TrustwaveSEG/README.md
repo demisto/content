@@ -8,9 +8,9 @@ This integration was integrated and tested with version 10 of trustwave secure e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Hostname or IP | Hostname or IP \(localhost or 127.0.0.1\) | True |
-    | SEG Configuration Service Port | Used for retrieving token for the commands | True |
-    | SEG API Port | Used for accessing the API console | True |
+    | Hostname or IP | Hostname or IP address \(localhost or 127.0.0.1\). | True |
+    | SEG Configuration Service Port | Used for retrieving a token for the commands. | True |
+    | SEG API Port | Used for accessing the API console. | True |
     | User Credentials |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### trustwave-seg-get-version
 ***
-Get Trustwave version information.
+Gets Trustwave version information.
 
 
 #### Base Command
@@ -35,9 +35,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Version.configVersion | Number | The configVersion of the Version. | 
-| TrustwaveSEG.Version.productVersion | String | The productVersion of the Version. | 
-| TrustwaveSEG.Version.rpcInterfaceVersion | Number | rpcInterfaceVersion of the Version. | 
+| TrustwaveSEG.Version.configVersion | Number | The configuration version. | 
+| TrustwaveSEG.Version.productVersion | String | The product version. | 
+| TrustwaveSEG.Version.rpcInterfaceVersion | Number | The RPC interface version. | 
 
 
 #### Command Example
@@ -66,7 +66,7 @@ There are no input arguments for this command.
 
 ### trustwave-seg-automatic-config-backup-list
 ***
-Return list of automatic config backups.
+Returns a list of automatic configuration backups.
 
 
 #### Base Command
@@ -80,19 +80,19 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.AutomaticBackupConfig.fileSize | Number | The fileSize of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.filename | String | The filename of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.backupTime | Number | The backupTime of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.backupTimeStr | Date | The backupTimeStr of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.backupType | String | The backupType of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.backupUser | String | The backupUser of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.commitDescription | String | The commitDescription of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.commitSetId | Number | The commitSetId of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.commitUser | String | The commitUser of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.configVersion | Number | The configVersion of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.containsDkimKeys | Boolean | The containsDkimKeys of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.info.productVersion | String | The product version of the AutomaticBackupConfig. | 
-| TrustwaveSEG.AutomaticBackupConfig.lastModified | Number | The lastModified of the AutomaticBackupConfig. | 
+| TrustwaveSEG.AutomaticBackupConfig.fileSize | Number | The file size of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.filename | String | The filename of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupTime | Number | The backup time of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupTimeStr | Date | The backup time string of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupType | String | The backup type of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.backupUser | String | The back up user of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.commitDescription | String | The commit description of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.commitSetId | Number | The commit set ID of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.commitUser | String | The commit user of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.configVersion | Number | The configuration version of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.containsDkimKeys | Boolean | Whether there are DomainKeys Identified Mail \(DKIM\) keys for the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.info.productVersion | String | The product version of the automatic configuration backup. | 
+| TrustwaveSEG.AutomaticBackupConfig.lastModified | Number | The date the automatic backup configuration was last modified. | 
 
 
 #### Command Example
@@ -705,7 +705,7 @@ There are no input arguments for this command.
 
 ### trustwave-seg-automatic-config-backup-restore
 ***
-Restore a specific automatic config backup.
+Restores a specific automatic configuration backup.
 
 
 #### Base Command
@@ -715,10 +715,10 @@ Restore a specific automatic config backup.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the backup to restore (e.g: MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10). | Required | 
-| timeout | The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more seconds to the timeout. Default is 30. | Optional | 
-| include_dkim | Choose if DKIM (DomainKeys Identified Mail) should be used. Possible values are: true, false. Default is false. | Optional | 
-| dkim_password | If include_dkim equals to true - The DKIM password for the action. | Optional | 
+| name | The name of the backup to restore (e.g., MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10). | Required | 
+| timeout | The timeout for the request in seconds. This request might take a while. If the request fails due to a connectivity error, try to add more time to this argument. Default is 30. | Optional | 
+| include_dkim | Whether DKIM (DomainKeys Identified Mail) should be used. Possible values are: true, false. Default is false. | Optional | 
+| dkim_password | If include_dkim is true, the DKIM password for the action. | Optional | 
 
 
 #### Context Output
@@ -775,8 +775,8 @@ Run automatic backup now.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.AutomaticBackupRun.backupName | String | The backup name of the AutomaticBackupRun. | 
-| TrustwaveSEG.AutomaticBackupRun.reason | String | The reason of the AutomaticBackupRun. | 
+| TrustwaveSEG.AutomaticBackupRun.backupName | String | The backup name of the automatic backup run. | 
+| TrustwaveSEG.AutomaticBackupRun.reason | String | The reason for the automatic backup run. | 
 
 
 #### Command Example
@@ -804,7 +804,7 @@ Run automatic backup now.
 
 ### trustwave-seg-list-alerts
 ***
-Get a list of current alerts.
+Gets a list of current alerts.
 
 
 #### Base Command
@@ -814,19 +814,19 @@ Get a list of current alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| active_only | Return only active alarms. Possible values are: true, false. Default is false. | Optional | 
+| active_only | Whether to return only active alarms. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Alert.active | Boolean | The activity of the Alert. | 
-| TrustwaveSEG.Alert.description | String | The description of the Alert. | 
-| TrustwaveSEG.Alert.node | Number | The node of the Alert. | 
-| TrustwaveSEG.Alert.source | String | The source of the Alert. | 
-| TrustwaveSEG.Alert.triggered | Number | The triggered of the Alert. | 
-| TrustwaveSEG.Alert.type | Number | The type of the Alert. | 
+| TrustwaveSEG.Alert.active | Boolean | The activity of the alert. | 
+| TrustwaveSEG.Alert.description | String | The description of the alert. | 
+| TrustwaveSEG.Alert.node | Number | The node of the alert. | 
+| TrustwaveSEG.Alert.source | String | The source of the alert. | 
+| TrustwaveSEG.Alert.triggered | Number | The trigger of the alert. | 
+| TrustwaveSEG.Alert.type | Number | The type of the alert. | 
 
 
 #### Command Example
@@ -905,7 +905,7 @@ Get a list of current alerts.
 
 ### trustwave-seg-statistics
 ***
-Get Trustwave SEG statistics. Must provide start time or time range.
+Gets Trustwave SEG statistics. Must provide a start time or time range.
 
 
 #### Base Command
@@ -915,33 +915,33 @@ Get Trustwave SEG statistics. Must provide start time or time range.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_range | An optional time range. i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
-| start_time | Start time. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time. | Optional | 
-| end_time | End time. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
+| time_range | An optional time range, i.e., 3 months, 1 week, 1 day ago, etc. | Optional | 
+| start_time | Start time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time. | Optional | 
+| end_time | End time in the format of: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Statistics.maliciousUrls | Number | The malicious URLs of the Statistics. | 
-| TrustwaveSEG.Statistics.msgsBlendedThreats | Number | The messages Blended Threats of the Statistics. | 
-| TrustwaveSEG.Statistics.msgsIn | Number | The messages in of the Statistics. | 
-| TrustwaveSEG.Statistics.msgsInternal | Number | The messages Internal of the Statistics. | 
-| TrustwaveSEG.Statistics.msgsOut | Number | The messages Out of the Statistics. | 
-| TrustwaveSEG.Statistics.msgsSpam | Number | The message spam of the Statistics. | 
-| TrustwaveSEG.Statistics.msgsVirus | Number | The messages Virus of the Statistics. | 
-| TrustwaveSEG.Statistics.numQuarantined | Number | The number of quarantined of the Statistics. | 
-| TrustwaveSEG.Statistics.numQuarantinesPerMsg | Number | The number of quarantines per message of the Statistics. | 
-| TrustwaveSEG.Statistics.pFolders | Number | The pFolders of the Statistics. | 
-| TrustwaveSEG.Statistics.pThreats | Number | The pThreats of the Statistics. | 
-| TrustwaveSEG.Statistics.safeClicks | Number | The safe clicks of the Statistics. | 
-| TrustwaveSEG.Statistics.unsafeClicks | Number | The unsafe clicks of the Statistics. | 
-| TrustwaveSEG.Statistics.unsafeUrls | Number | The unsafe URLs of the Statistics. | 
-| TrustwaveSEG.Statistics.urlsFound | Number | The URLs found of the Statistics. | 
-| TrustwaveSEG.Statistics.urlsRewritten | Number | The urlsRewritten of the Statistics. | 
-| TrustwaveSEG.Statistics.virusDetected | Number | The virus detected of the Statistics. | 
-| TrustwaveSEG.Statistics.virusScanned | Number | The virus-scanned Statistics. | 
+| TrustwaveSEG.Statistics.maliciousUrls | Number | The number of malicious URLs in the statistics. | 
+| TrustwaveSEG.Statistics.msgsBlendedThreats | Number | The number blended threats messages in the statistics. | 
+| TrustwaveSEG.Statistics.msgsIn | Number | The number of incoming messages in the statistics. | 
+| TrustwaveSEG.Statistics.msgsInternal | Number | The number of internal messages in the statistics. | 
+| TrustwaveSEG.Statistics.msgsOut | Number | The number of outgoing messages in the statistics. | 
+| TrustwaveSEG.Statistics.msgsSpam | Number | The number of spam messages in the statistics. | 
+| TrustwaveSEG.Statistics.msgsVirus | Number | The number of virus messages in the statistics. | 
+| TrustwaveSEG.Statistics.numQuarantined | Number | The number of quarantined messages in the statistics. | 
+| TrustwaveSEG.Statistics.numQuarantinesPerMsg | Number | The number of quarantines per message in the statistics. | 
+| TrustwaveSEG.Statistics.pFolders | Number | The number of pFolders in the statistics. | 
+| TrustwaveSEG.Statistics.pThreats | Number | The number of pThreats in the statistics. | 
+| TrustwaveSEG.Statistics.safeClicks | Number | The number of safe clicks in the statistics.in the statistics. | 
+| TrustwaveSEG.Statistics.unsafeClicks | Number | The number of unsafe clicks | 
+| TrustwaveSEG.Statistics.unsafeUrls | Number | The number of unsafe URLs in the statistics. | 
+| TrustwaveSEG.Statistics.urlsFound | Number | The number of URLs found in the statistics. | 
+| TrustwaveSEG.Statistics.urlsRewritten | Number | The number of urls rewritten in the statistics. | 
+| TrustwaveSEG.Statistics.virusDetected | Number | The number of viruses detected in the statistics. | 
+| TrustwaveSEG.Statistics.virusScanned | Number | The number of virus-scanned statistics. | 
 
 
 #### Command Example
@@ -985,7 +985,7 @@ Get Trustwave SEG statistics. Must provide start time or time range.
 
 ### trustwave-seg-list-servers
 ***
-Get a list of servers.
+Gets a list of servers.
 
 
 #### Base Command
@@ -999,25 +999,25 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Server.configCommitSetId | Number | The config commit set ID of the Server. | 
-| TrustwaveSEG.Server.configTimeStamp | Number | The config timestamp of the Server. | 
-| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason of the Server. | 
+| TrustwaveSEG.Server.configCommitSetId | Number | The configuration commit set ID of the server. | 
+| TrustwaveSEG.Server.configTimeStamp | Number | The configuration timestamp of the server. | 
+| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason for the server. | 
 | TrustwaveSEG.Server.isActive | Boolean | Activation status of the Server. | 
-| TrustwaveSEG.Server.isConfigDeferred | Boolean | The isConfigDeferred of the Server. | 
-| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the Server. | 
-| TrustwaveSEG.Server.osVersion | String | The OS version of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The serviceId of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the Server. | 
-| TrustwaveSEG.Server.productVersion | String | The product version of the Server. | 
-| TrustwaveSEG.Server.serverDescription | String | The description of the Server. | 
-| TrustwaveSEG.Server.serverId | Number | The ID of the Server. | 
-| TrustwaveSEG.Server.serverLocation | String | The location of the Server. | 
-| TrustwaveSEG.Server.serverName | String | The name of the Server. | 
-| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the Server. | 
-| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the Server. | 
+| TrustwaveSEG.Server.isConfigDeferred | Boolean | Whether the configuration of the server is deferred. | 
+| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the server. | 
+| TrustwaveSEG.Server.osVersion | String | The operating system version of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The service ID of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the server. | 
+| TrustwaveSEG.Server.productVersion | String | The product version of the server. | 
+| TrustwaveSEG.Server.serverDescription | String | The description of the server. | 
+| TrustwaveSEG.Server.serverId | Number | The ID of the server. | 
+| TrustwaveSEG.Server.serverLocation | String | The location of the server. | 
+| TrustwaveSEG.Server.serverName | String | The name of the server. | 
+| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the server. | 
+| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the server. | 
 
 
 #### Command Example
@@ -1080,7 +1080,7 @@ There are no input arguments for this command.
 
 ### trustwave-seg-get-server
 ***
-Get server details.
+Gets server details.
 
 
 #### Base Command
@@ -1090,32 +1090,32 @@ Get server details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| server_id | The ID of the Server to retrieve its information. | Required | 
+| server_id | The ID of the server from which to retrieve information. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Server.configCommitSetId | Number | The config commit set ID of the Server. | 
-| TrustwaveSEG.Server.configTimeStamp | Number | The config timestamp of the Server. | 
-| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason of the Server. | 
+| TrustwaveSEG.Server.configCommitSetId | Number | The configuration commit set ID of the server. | 
+| TrustwaveSEG.Server.configTimeStamp | Number | The configuration timestamp of the server. | 
+| TrustwaveSEG.Server.disconnectedReason | String | Disconnected reason for the server. | 
 | TrustwaveSEG.Server.isActive | Boolean | Activation status of the Server. | 
-| TrustwaveSEG.Server.isConfigDeferred | Boolean | The isConfigDeferred of the Server. | 
-| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the Server. | 
-| TrustwaveSEG.Server.osVersion | String | The OS version of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The serviceId of the Server. | 
-| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the Server. | 
-| TrustwaveSEG.Server.productVersion | String | The product version of the Server. | 
-| TrustwaveSEG.Server.serverDescription | String | The description of the Server. | 
-| TrustwaveSEG.Server.serverId | Number | The ID of the Server. | 
-| TrustwaveSEG.Server.serverLocation | String | The location of the Server. | 
-| TrustwaveSEG.Server.serverName | String | The name of the Server. | 
-| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the Server. | 
-| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the Server. | 
+| TrustwaveSEG.Server.isConfigDeferred | Boolean | Whether the configuration of the server is deferred. | 
+| TrustwaveSEG.Server.lastConnected | Number | Last connected time of the server. | 
+| TrustwaveSEG.Server.osVersion | String | The operating system version of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.description | String | The description of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.lastError | Unknown | Last error of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.name | String | The name of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.serviceId | Number | The service ID of the server. | 
+| TrustwaveSEG.Server.pServiceStatus.state | Number | The state of the server. | 
+| TrustwaveSEG.Server.productVersion | String | The product version of the server. | 
+| TrustwaveSEG.Server.serverDescription | String | The description of the server. | 
+| TrustwaveSEG.Server.serverId | Number | The ID of the server. | 
+| TrustwaveSEG.Server.serverLocation | String | The location of the server. | 
+| TrustwaveSEG.Server.serverName | String | The name of the server. | 
+| TrustwaveSEG.Server.timeZoneName | String | Timezone name of the server. | 
+| TrustwaveSEG.Server.timeZoneOffset | Number | Timezone offset of the server. | 
 
 
 #### Command Example
@@ -1178,7 +1178,7 @@ Get server details.
 
 ### trustwave-seg-list-classifications
 ***
-Get a list of classifications.
+Gets a list of classifications.
 
 
 #### Base Command
@@ -1192,10 +1192,10 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Classification.code | Number | The code of the Classification. | 
-| TrustwaveSEG.Classification.id | Number | The ID of the Classification. | 
-| TrustwaveSEG.Classification.name | String | The name of the Classification. | 
-| TrustwaveSEG.Classification.type | Number | The type of the Classification. | 
+| TrustwaveSEG.Classification.code | Number | The code of the classification. | 
+| TrustwaveSEG.Classification.id | Number | The ID of the classification. | 
+| TrustwaveSEG.Classification.name | String | The name of the classification. | 
+| TrustwaveSEG.Classification.type | Number | The type of the classification. | 
 
 
 #### Command Example
@@ -1745,7 +1745,7 @@ There are no input arguments for this command.
 
 ### trustwave-seg-list-quarantine-folders
 ***
-Get a list of folders.
+Gets a list of folders.
 
 
 #### Base Command
@@ -1759,22 +1759,22 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Folder.description | String | The description of the Folder. | 
-| TrustwaveSEG.Folder.folderId | Number | The folder ID of the Folder. | 
-| TrustwaveSEG.Folder.folderType | Number | The folder type of the Folder. | 
-| TrustwaveSEG.Folder.iconIndex | Number | The iconIndex of the Folder. | 
-| TrustwaveSEG.Folder.isDeleted | Boolean | The isDeleted of the Folder. | 
-| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | The isFingerprintingEnabled of the Folder. | 
-| TrustwaveSEG.Folder.isPassThru | Boolean | The isPassThru of the Folder. | 
-| TrustwaveSEG.Folder.isPublishedInbound | Boolean | The isPublishedInbound of the Folder. | 
-| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | The isPublishedOutbound of the Folder. | 
-| TrustwaveSEG.Folder.isReadOnly | Boolean | Is the folder read-only. | 
-| TrustwaveSEG.Folder.name | String | The name of the Folder. | 
-| TrustwaveSEG.Folder.numFiles | Number | The numFiles of the Folder. | 
-| TrustwaveSEG.Folder.parentId | Number | The parentId of the Folder. | 
-| TrustwaveSEG.Folder.path | String | The path of the Folder. | 
-| TrustwaveSEG.Folder.retention | Number | The retention of the Folder. | 
-| TrustwaveSEG.Folder.securityDescription | String | The security description of the Folder. | 
+| TrustwaveSEG.Folder.description | String | The description of the folder. | 
+| TrustwaveSEG.Folder.folderId | Number | The ID of the folder. | 
+| TrustwaveSEG.Folder.folderType | Number | The type of the folder. | 
+| TrustwaveSEG.Folder.iconIndex | Number | The icon index of the folder. | 
+| TrustwaveSEG.Folder.isDeleted | Boolean | Whether the folder is deleted. | 
+| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | Whether fingerprinting is enabled for the folder. | 
+| TrustwaveSEG.Folder.isPassThru | Boolean | Whether pass thru is enabled for the folder. | 
+| TrustwaveSEG.Folder.isPublishedInbound | Boolean | Whether the folder is published inbound. | 
+| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | Whether the folder is published outbound. | 
+| TrustwaveSEG.Folder.isReadOnly | Boolean | Whether the folder is read-only. | 
+| TrustwaveSEG.Folder.name | String | The name of the folder. | 
+| TrustwaveSEG.Folder.numFiles | Number | The number of files in the folder. | 
+| TrustwaveSEG.Folder.parentId | Number | The parent ID of the folder. | 
+| TrustwaveSEG.Folder.path | String | The path of the folder. | 
+| TrustwaveSEG.Folder.retention | Number | The retention of the folder. | 
+| TrustwaveSEG.Folder.securityDescription | String | The security description of the folder. | 
 
 
 #### Command Example
@@ -2749,7 +2749,7 @@ There are no input arguments for this command.
 
 ### trustwave-seg-list-quarantine-folders-with-day-info
 ***
-Get a list of folders with current day info.
+Gets a list of folders with current day information.
 
 
 #### Base Command
@@ -2763,23 +2763,23 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Folder.dayItems | Unknown | The items of the day for the Folder. | 
-| TrustwaveSEG.Folder.description | String | The description of the Folder. | 
-| TrustwaveSEG.Folder.folderId | Number | The folder ID of the Folder. | 
-| TrustwaveSEG.Folder.folderType | Number | The folder type of the Folder. | 
-| TrustwaveSEG.Folder.iconIndex | Number | The iconIndex of the Folder. | 
-| TrustwaveSEG.Folder.isDeleted | Boolean | The isDeleted of the Folder. | 
-| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | The isFingerprintingEnabled of the Folder. | 
-| TrustwaveSEG.Folder.isPassThru | Boolean | The isPassThru of the Folder. | 
-| TrustwaveSEG.Folder.isPublishedInbound | Boolean | The isPublishedInbound of the Folder. | 
-| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | The isPublishedOutbound of the Folder. | 
-| TrustwaveSEG.Folder.isReadOnly | Boolean | Is the folder read-only. | 
-| TrustwaveSEG.Folder.name | String | The name of the Folder. | 
-| TrustwaveSEG.Folder.numFiles | Number | The numFiles of the Folder. | 
-| TrustwaveSEG.Folder.parentId | Number | The parentId of the Folder. | 
-| TrustwaveSEG.Folder.path | String | The path of the Folder. | 
-| TrustwaveSEG.Folder.retention | Number | The retention of the Folder. | 
-| TrustwaveSEG.Folder.securityDescription | String | The security description of the Folder. | 
+| TrustwaveSEG.Folder.dayItems | Unknown | The items of the day for the folder. | 
+| TrustwaveSEG.Folder.description | String | The description of the folder. | 
+| TrustwaveSEG.Folder.folderId | Number | The ID of the folder. | 
+| TrustwaveSEG.Folder.folderType | Number | The type of the folder. | 
+| TrustwaveSEG.Folder.iconIndex | Number | The icon index of the folder. | 
+| TrustwaveSEG.Folder.isDeleted | Boolean | Whether the folder is deleted. | 
+| TrustwaveSEG.Folder.isFingerprintingEnabled | Boolean | Whether fingerprinting is enabled for the folder. | 
+| TrustwaveSEG.Folder.isPassThru | Boolean | Whether pass thru is enabled for the folder. | 
+| TrustwaveSEG.Folder.isPublishedInbound | Boolean | Whether the folder is published inbound. | 
+| TrustwaveSEG.Folder.isPublishedOutbound | Boolean | Whether the folder is published outbound. | 
+| TrustwaveSEG.Folder.isReadOnly | Boolean | Whether the is folder read-only. | 
+| TrustwaveSEG.Folder.name | String | The name of the folder. | 
+| TrustwaveSEG.Folder.numFiles | Number | The number of files in the folder. | 
+| TrustwaveSEG.Folder.parentId | Number | The parent ID of the folder. | 
+| TrustwaveSEG.Folder.path | String | The path of the folder. | 
+| TrustwaveSEG.Folder.retention | Number | The retention of the folder. | 
+| TrustwaveSEG.Folder.securityDescription | String | The security description of the folder. | 
 
 
 #### Command Example
@@ -3761,7 +3761,7 @@ There are no input arguments for this command.
 
 ### trustwave-seg-list-day-info-by-quarantine-folder
 ***
-Get current day info for a folder.
+Get the current day information for a folder.
 
 
 #### Base Command
@@ -3771,16 +3771,16 @@ Get current day info for a folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The id of the Folder with quarantine day info. | Required | 
+| folder_id | The ID of the folder with quarantine day information. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.DayInfo.endTime | Number | The end time of the day info. | 
-| TrustwaveSEG.DayInfo.numFiles | Number | The number of files of the day info. | 
-| TrustwaveSEG.DayInfo.startTime | Number | The start time of the day info. | 
+| TrustwaveSEG.DayInfo.endTime | Number | The end time of the day information. | 
+| TrustwaveSEG.DayInfo.numFiles | Number | The number of files of the day information. | 
+| TrustwaveSEG.DayInfo.startTime | Number | The start time of the day information. | 
 
 
 #### Command Example
@@ -3804,49 +3804,49 @@ Find message by specified parameters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time_range | An optional time range of the search. i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
-| start_time | Start time of the search. format: YYYY-mm-ddTHH:MM:SSZ or 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time. | Optional | 
-| end_time | End time of the search. format: YYYY-mm-ddTHH:MM:SSZ or i.e: 3 months, 1 week, 1 day ago, etc. | Optional | 
-| max_rows | The number of rows to return from the API. default to 10 rows. Default is 10. | Optional | 
-| folder_id | The ID of the Folder. to search info in (e.g: 1006). | Optional | 
-| message_name | The name of the Message. to search for. | Optional | 
-| classification | The classification ID. Can be found by the classification command. (e.g: 37). | Optional | 
-| from_user | Find a message that this email address sent. | Optional | 
-| to_user | Find a message that this email address received. | Optional | 
-| to_domain | Find a message that this domain received. | Optional | 
-| min_size | The minimum size of in Bytes of the Message. (e.g: 0). | Optional | 
-| max_size | The maximum size of in Bytes of the Message. (e.g: 1024). | Optional | 
-| subject | The subject of the Message. to search for (e.g: "some subject"). | Optional | 
-| search_history | Should the search include history. Possible values are: true, false. | Optional | 
-| forwards | Should the search include forwarded messages. Possible values are: true, false. | Optional | 
-| block_number | The block number of the message to search for (e.g: 106098471075840). | Optional | 
-| search_blank_subject | Should the search include messages with a blank subject. Possible values are: true, false. | Optional | 
+| time_range | An optional time range of the search, i.e., 3 months, 1 week, 1 day ago, etc. | Optional | 
+| start_time | Start time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc. Given only the start_time, end_time will be set to the current time. | Optional | 
+| end_time | End time of the search in the format: YYYY-mm-ddTHH:MM:SSZ or i.e., 3 months, 1 week, 1 day ago, etc. | Optional | 
+| max_rows | The number of rows to return from the API. Default to 10. Default is 10. | Optional | 
+| folder_id | The ID of the folder in which to search for information (e.g., 1006). | Optional | 
+| message_name | The name of the message to search for. | Optional | 
+| classification | The classification ID. Can be found by using the classification command (e.g., 37). | Optional | 
+| from_user | The email address from which the message was sent. | Optional | 
+| to_user | The email address to which the message was sent. | Optional | 
+| to_domain | The domain to which the message was sent. | Optional | 
+| min_size | The minimum size in bytes of the message (e.g., 0). | Optional | 
+| max_size | The maximum size in bytes of the message (e.g., 1024). | Optional | 
+| subject | The subject of the message.  (e.g., "some subject"). | Optional | 
+| search_history | Whether the search should include the history. Possible values are: true, false. | Optional | 
+| forwards | Whether the search should include forwarded messages. Possible values are: true, false. | Optional | 
+| block_number | The block number of the message (e.g., 106098471075840). | Optional | 
+| search_blank_subject | Whether the search should include messages with a blank subject. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TrustwaveSEG.Message.actionType | Number | The actionType of the Message. | 
-| TrustwaveSEG.Message.blockNumber | Number | The blockNumber of the Message. | 
-| TrustwaveSEG.Message.blockRecipientIndex | Number | The blockRecipientIndex of the Message. | 
-| TrustwaveSEG.Message.classification | Number | The classification of the Message. | 
-| TrustwaveSEG.Message.deleted | Number | The deleted of the Message. | 
-| TrustwaveSEG.Message.description | String | The description of the Message. | 
-| TrustwaveSEG.Message.edition | String | The edition of the Message. | 
-| TrustwaveSEG.Message.folderId | Number | The folderId of the Message. | 
-| TrustwaveSEG.Message.hasAttachments | Boolean | The hasAttachments of the Message. | 
-| TrustwaveSEG.Message.messageBody | String | The messageBody of the Message. | 
-| TrustwaveSEG.Message.messageName | String | The messageName of the Message. | 
-| TrustwaveSEG.Message.recipient | String | The recipient of the Message. | 
-| TrustwaveSEG.Message.sender | String | The sender of the Message. | 
-| TrustwaveSEG.Message.serverId | Number | The serverId of the Message. | 
-| TrustwaveSEG.Message.sessionNumber | Number | The sessionNumber of the Message. | 
-| TrustwaveSEG.Message.size | Number | The size of the Message. | 
-| TrustwaveSEG.Message.subject | String | The subject of the Message. | 
-| TrustwaveSEG.Message.timeArrived | Number | The timeArrived of the Message. | 
-| TrustwaveSEG.Message.timeLogged | Number | The timeLogged of the Message. | 
-| TrustwaveSEG.Message.unicodeSubject | String | The unicodeSubject of the Message. | 
+| TrustwaveSEG.Message.actionType | Number | The action type of the message. | 
+| TrustwaveSEG.Message.blockNumber | Number | The block number of the message. | 
+| TrustwaveSEG.Message.blockRecipientIndex | Number | The block recipient index of the message. | 
+| TrustwaveSEG.Message.classification | Number | The classification of the message. | 
+| TrustwaveSEG.Message.deleted | Number | The number of the deleted message. | 
+| TrustwaveSEG.Message.description | String | The description of the message. | 
+| TrustwaveSEG.Message.edition | String | The edition of the message. | 
+| TrustwaveSEG.Message.folderId | Number | The folder ID of the message. | 
+| TrustwaveSEG.Message.hasAttachments | Boolean | Whether the message has attachments. | 
+| TrustwaveSEG.Message.messageBody | String | The body of the message. | 
+| TrustwaveSEG.Message.messageName | String | The name of the message. | 
+| TrustwaveSEG.Message.recipient | String | The recipient of the message. | 
+| TrustwaveSEG.Message.sender | String | The sender of the message. | 
+| TrustwaveSEG.Message.serverId | Number | The server ID of the message. | 
+| TrustwaveSEG.Message.sessionNumber | Number | The session number of the message. | 
+| TrustwaveSEG.Message.size | Number | The size of the message. | 
+| TrustwaveSEG.Message.subject | String | The subject of the message. | 
+| TrustwaveSEG.Message.timeArrived | Number | The time the message arrived. | 
+| TrustwaveSEG.Message.timeLogged | Number | The time the message was logged. | 
+| TrustwaveSEG.Message.unicodeSubject | String | The unicode subject of the message. | 
 
 
 #### Command Example
@@ -3869,7 +3869,7 @@ Find message by specified parameters.
                 "hasAttachments": false,
                 "messageBody": "This is the body of the email\r",
                 "messageName": "B6082e3b60000",
-                "recipient": "sarb@qmasters.co",
+                "recipient": "test@example.com",
                 "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": -474611712,
@@ -3891,7 +3891,7 @@ Find message by specified parameters.
                 "hasAttachments": false,
                 "messageBody": "This is the body of the email\r",
                 "messageName": "B608249020000",
-                "recipient": "sarb@qmasters.co",
+                "recipient": "test@example.com",
                 "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": 1224933376,
@@ -3913,7 +3913,7 @@ Find message by specified parameters.
                 "hasAttachments": false,
                 "messageBody": "This is the bodydhgdghdfghgfd54645645645fddfgdgdf\r",
                 "messageName": "B608174e50000",
-                "recipient": "bsitk25@gmail.com",
+                "recipient": "test@example.com",
                 "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": 1961164800,
@@ -3935,7 +3935,7 @@ Find message by specified parameters.
                 "hasAttachments": false,
                 "messageBody": "This is the bodydhgdghdfghgfd54645645645fddfgdgdf\r",
                 "messageName": "B6080e1390000",
-                "recipient": "bsitk25@gmail.com",
+                "recipient": "test@example.com",
                 "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": -516030464,
@@ -3957,7 +3957,7 @@ Find message by specified parameters.
                 "hasAttachments": false,
                 "messageBody": "This is the body of the email\r",
                 "messageName": "B607ef9ac0000",
-                "recipient": "sarb@qmasters.co",
+                "recipient": "test@example.com",
                 "sender": "root@localhost.localdomain",
                 "serverId": 1,
                 "sessionNumber": -106037248,
@@ -3977,16 +3977,16 @@ Find message by specified parameters.
 >### Find Quarantine Messages Results
 >|Subject|Description|Block Number|Edition|Folder Id|Message Name|Recipient|Server Id|Time Logged|
 >|---|---|---|---|---|---|---|---|---|
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106115282632704 | 6082e3b60013 | 1006 | B6082e3b60000 | sarb@qmasters.co | 1 | 1619190710 |
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106112687144960 | 608249030012 | 1006 | B608249020000 | sarb@qmasters.co | 1 | 1619151106 |
->| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106109128212480 | 608174e50003 | 1007 | B608174e50000 | bsitk25@gmail.com | 1 | 1619096805 |
->| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106106651148288 | 6080e13e0000 | 1007 | B6080e1390000 | bsitk25@gmail.com | 1 | 1619059003 |
->| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106098471075840 | 607ef9ae0000 | 1006 | B607ef9ac0000 | sarb@qmasters.co | 1 | 1618934189 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106115282632704 | 6082e3b60013 | 1006 | B6082e3b60000 | test@example.com | 1 | 1619190710 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106112687144960 | 608249030012 | 1006 | B608249020000 | test@example.com | 1 | 1619151106 |
+>| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106109128212480 | 608174e50003 | 1007 | B608174e50000 | test@example.com | 1 | 1619096805 |
+>| This isafdsafasgfaiysgfsaidghfuisf   sdgsgsd the subject line | - Message Archiving : Archive All Outbound Messages | 106106651148288 | 6080e13e0000 | 1007 | B6080e1390000 | test@example.com | 1 | 1619059003 |
+>| This is the subject line | - Message Archiving : Archive All Inbound Messages | 106098471075840 | 607ef9ae0000 | 1006 | B607ef9ac0000 | test@example.com | 1 | 1618934189 |
 
 
 ### trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
 ***
-Forward a message to spiderlabs as spam.
+Forwards a message to Spiderlabs as spam.
 
 
 #### Base Command
@@ -3996,15 +3996,15 @@ Forward a message to spiderlabs as spam.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| block_number | The block number of the Message to search for. Should be retrieved from the find message endpoint. (e.g: 106098471075840). | Required | 
-| edition | edition of the Message. Should be retrieved from the find message endpoint. (e.g: "607ef9ae0000"). | Required | 
-| folder_id | folder ID of the Message. Should be retrieved from the find message endpoint. (e.g: 1006). | Required | 
-| message_name | The name of the Message. Should be retrieved from the find message endpoint. (e.g: "B607ef9ac0000"). | Required | 
-| recipient | The recipient of the Message. Should be retrieved from the find message endpoint. (e.g: email@example.com). | Required | 
-| server_id | The server ID of the Message. Should be retrieved from the find message endpoint. (e.g: 1). | Required | 
-| time_logged | The logged time of the Message. Should be retrieved from the find message endpoint. (e.g: 1618934189). | Required | 
-| spam_report_message | The message that should be shown with the message on Spiderlabs. (e.g: "This message is spam..."). | Required | 
-| is_spam | Is the message spam or not. Possible values are: true, false. | Required | 
+| block_number | The block number of the message to search for (e.g., 106098471075840). Can be retrieved from the find message endpoint. | Required | 
+| edition | Edition of the message (e.g., "607ef9ae0000"). Can be retrieved from the find message endpoint. | Required | 
+| folder_id | Folder ID of the message (e.g., 1006). Can be retrieved from the find message endpoint. | Required | 
+| message_name | The name of the message (e.g., "B607ef9ac0000"). Can be retrieved from the find message endpoint. | Required | 
+| recipient | The recipient of the message (e.g., email@example.com). Can be retrieved from the find message endpoint. | Required | 
+| server_id | The server ID of the message (e.g., 1). Can be retrieved from the find message endpoint. . | Required | 
+| time_logged | The time the message was logged (e.g., 1618934189). Can be retrieved from the find message endpoint. . | Required | 
+| spam_report_message | The message that should be shown with the message on Spiderlabs. (e.g., "This message is spam..."). | Required | 
+| is_spam | Whether the message is spam. Possible values are true, false. | Required | 
 
 
 #### Context Output
@@ -4012,7 +4012,7 @@ Forward a message to spiderlabs as spam.
 There is no context output for this command.
 
 #### Command Example
-```!trustwave-seg-spiderlabs-forward-quarantine-message-as-spam block_number=106098471075840 edition=607ef9ae0000 folder_id=1006 is_spam="true" message_name=B607ef9ac0000 recipient=sarb@qmasters.co server_id=1 spam_report_notification_from_address="This is a spam" time_logged=1618934189 spam_report_message="This is a spam"```
+```!trustwave-seg-spiderlabs-forward-quarantine-message-as-spam block_number=106098471075840 edition=607ef9ae0000 folder_id=1006 is_spam="true" message_name=B607ef9ac0000 recipient=test@example.com server_id=1 spam_report_notification_from_address="This is a spam" time_logged=1618934189 spam_report_message="This is a spam"```
 
 #### Human Readable Output
 

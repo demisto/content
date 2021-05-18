@@ -97,7 +97,7 @@ script:
       description: The product version of the automatic configuration backup.
       type: String
     - contextPath: TrustwaveSEG.AutomaticBackupConfig.lastModified
-      description: The date the automatic backup configuration was last modified. 
+      description: The date the automatic backup configuration was last modified.
       type: Number
   - arguments:
     - default: false
@@ -284,7 +284,7 @@ script:
       description: The number of safe clicks in the statistics.in the statistics.
       type: Number
     - contextPath: TrustwaveSEG.Statistics.unsafeClicks
-      description: The number of unsafe clicks 
+      description: The number of unsafe clicks
       type: Number
     - contextPath: TrustwaveSEG.Statistics.unsafeUrls
       description: The number of unsafe URLs in the statistics.
@@ -641,7 +641,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The domain to which the message was sent. 
+      description: The domain to which the message was sent.
       isArray: false
       name: to_domain
       required: false
@@ -836,7 +836,7 @@ script:
     description: Forwards a message to Spiderlabs as spam.
     execution: false
     name: trustwave-seg-spiderlabs-forward-quarantine-message-as-spam
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false
@@ -846,3 +846,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests
