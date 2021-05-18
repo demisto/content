@@ -4,11 +4,11 @@
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35267",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 00:47:44 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -35,18 +35,18 @@
                 "ip": "2.2.2.2",
                 "port": 48706
             },
-            "uuid": "e6d42d5a-d095-42d7-bd11-597e19726654",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35268",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 01:50:45 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -73,18 +73,18 @@
                 "ip": "2.2.2.2",
                 "port": 48862
             },
-            "uuid": "02abba5e-886e-467f-ab9d-c4c406e53b96",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35269",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 02:53:54 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -111,18 +111,18 @@
                 "ip": "2.2.2.2",
                 "port": 8081
             },
-            "uuid": "e845701f-f343-4476-8d01-08e7336a2060",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35272",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 03:57:14 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -149,18 +149,18 @@
                 "ip": "2.2.2.2",
                 "port": 58906
             },
-            "uuid": "eb2f50a9-fdfe-4b16-b310-711505b38caa",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35273",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 05:04:36 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -187,18 +187,18 @@
                 "ip": "2.2.2.2",
                 "port": 43716
             },
-            "uuid": "a588efdd-8a57-4dd6-83e1-7d7ebeb96af0",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35274",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 06:11:42 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -225,18 +225,18 @@
                 "ip": "2.2.2.2",
                 "port": 49980
             },
-            "uuid": "a9bb11fa-6efd-40c3-a733-2c33161361fb",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35275",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 07:23:49 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -263,18 +263,18 @@
                 "ip": "2.2.2.2",
                 "port": 50164
             },
-            "uuid": "46699992-cd95-430a-b6bd-a37db922ad60",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35276",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 08:35:44 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -301,18 +301,18 @@
                 "ip": "2.2.2.2",
                 "port": 50334
             },
-            "uuid": "a3588585-3409-43ca-b3ef-cde4df7caef9",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35277",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 09:39:22 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -339,18 +339,18 @@
                 "ip": "2.2.2.2",
                 "port": 51668
             },
-            "uuid": "8a58b761-570b-4ab8-b354-5bfc48a04c53",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35278",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 10:46:28 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -377,18 +377,18 @@
                 "ip": "2.2.2.2",
                 "port": 50656
             },
-            "uuid": "274c45a3-c329-43d6-bc61-d003fba07a7e",
+            "uuid": "uuid",
             "vlan": 0
         },
         {
             "ack": "no",
             "action": "notified",
             "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35279",
-            "applianceId": "866AE6624A94",
+            "applianceId": "app",
             "attackTime": "2021-05-18 12:02:54 +0000",
             "dst": {
                 "ip": "1.1.1.1",
-                "mac": "00:50:56:94:b8:42",
+                "mac": "00:00:00:00:00:00",
                 "port": 443
             },
             "explanation": {
@@ -415,7 +415,7 @@
                 "ip": "1.1.1.1",
                 "port": 8080
             },
-            "uuid": "e6459901-99a2-42b5-94a7-da6fcccb702c",
+            "uuid": "uuid",
             "vlan": 0
         }
     ],
