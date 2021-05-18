@@ -1782,6 +1782,8 @@ def main():
     password = params.get('username', {}).get('password')
 
     server = params['server']
+    if server[-1] == "/":
+        server = server[:-1]
     port = params['port']
     base_url = f'https://{server}:{port}/web_api/'
 
