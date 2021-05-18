@@ -19,14 +19,14 @@ JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### jamf-computers-get
+### jamf-get-computers
 ***
 This command will return a list of computers or a single computer based on the parameters being passed. In case no parameter are passed, a list of all computers with their associated IDs will be returned. Please note that only one of the parameters should be passed. By default, will return the first 50 computers to the context (id + name).
 
 
 #### Base Command
 
-`jamf-computers-get`
+`jamf-get-computers`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -86,7 +86,7 @@ This command will return a list of computers or a single computer based on the p
 
 
 #### Command Example
-```!jamf-computers-get limit=5```
+```!jamf-get-computers limit=5```
 
 #### Context Example
 ```json

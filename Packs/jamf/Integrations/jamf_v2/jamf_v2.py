@@ -936,7 +936,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == 'jamf-computers-get':
+        elif demisto.command() == 'jamf-get-computers':
             return_results(get_computers_command(client, demisto.args()))
 
         elif demisto.command() == 'jamf-get-computer-subset':

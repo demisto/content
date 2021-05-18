@@ -80,7 +80,7 @@ script:
       only one of the parameters should be passed. By default, will return the first
       50 computers to the context (id + name).
     execution: false
-    name: jamf-computers-get
+    name: jamf-get-computers
     outputs:
     - contextPath: JAMF.Computer.id
       description: The computer id.

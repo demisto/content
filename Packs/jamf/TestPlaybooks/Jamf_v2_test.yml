@@ -41,13 +41,13 @@ tasks:
     task:
       id: ae9c53b2-f3e3-4512-8d11-ab8818ae50f8
       version: -1
-      name: jamf-computers-get
+      name: jamf-get-computers
       description: This command will return a list of computers or a single computer
         based on the parameters being passed. In case no parameter are passed, a list
         of all computers with their associated IDs will be returned. Please note that
         only one of the parameters should be passed. By default, will return the first
         50 computers to the context (id + name).
-      script: '|||jamf-computers-get'
+      script: '|||jamf-get-computers'
       type: regular
       iscommand: true
       brand: ""
