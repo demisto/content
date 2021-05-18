@@ -1,7 +1,7 @@
 {
     "description": "Incoming mapper for SolarWinds Event",
     "feed": false,
-    "id": "1a93d531-04b1-49df-82c7-eb35e8725c05",
+    "id": "inoming-solarwinds-event-mapper",
     "mapping": {
         "SolarWinds Event": {
             "dontMapEventToLabels": true,
