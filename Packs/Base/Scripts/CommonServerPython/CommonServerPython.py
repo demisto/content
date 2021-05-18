@@ -5452,6 +5452,9 @@ class CommandResults:
     :type entry_type: ``int`` code of EntryType
     :param entry_type: type of return value, see EntryType
 
+    :type entry_type: ``int`` code of EntryType
+    :param entry_type: type of return value, see EntryType
+
     :type ignore_readable_output: ``bool``
     :param ignore_readable_output: expects a bool value. if true then the readable output will not be printed.
 
