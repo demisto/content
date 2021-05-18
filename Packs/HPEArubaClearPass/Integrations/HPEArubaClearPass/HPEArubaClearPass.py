@@ -143,6 +143,7 @@ def parse_items_response(response: dict, active_sessions_parsing=None):  # type:
 def get_endpoints_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Gets a list of endpoints. If mac_address was not given, all the endpoints will be returned.
+    Note: In Aruba ClearPass all endpoints appear in Configuration > Identity > Endpoints.
     """
     mac_address = args.get('mac_address')
     status = args.get('status')
@@ -220,6 +221,7 @@ def get_endpoint_request_body(status, mac_address, description, device_insight_t
 def get_attributes_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Gets a list of attributes. If attribute_id was not given, all the attributes will be returned.
+    Note: In Aruba ClearPass all attributes appear in Administration > Dictionaries > Dictionary Attributes.
     """
     attribute_id = args.get('attribute_id')
     try:
@@ -352,7 +354,8 @@ def delete_attribute_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 def get_active_sessions_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    Gets a list of active sessions. If session_id was not given, all the active sessoions will be returned.
+    Gets a list of active sessions. If session_id was not given, all the active sessions will be returned.
+    Note: In Aruba ClearPass all active sessions appear in: Home > Guest > Active Sessions.
     """
     session_id = args.get('session_id')
     device_ip = args.get('device_ip')
