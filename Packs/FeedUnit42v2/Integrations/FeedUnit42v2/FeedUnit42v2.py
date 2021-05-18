@@ -479,14 +479,14 @@ def create_list_relationships(relationships_objects, id_to_object):
         a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
         a_type = ''
         if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
-            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)
+            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)  # type: ignore
         elif a_threat_intel_type == 'indicator':
             a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
         b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
         b_type = ''
         if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
-            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
+            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)  # type: ignore
         if b_threat_intel_type == 'indicator':
             b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
 
