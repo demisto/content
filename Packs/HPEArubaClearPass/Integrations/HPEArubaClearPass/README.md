@@ -643,7 +643,6 @@ Disconnect active session.
 | HPEArubaClearPass.Sessions.Response_message | String | Describes the result of the disconnected operation. | 
 
 
-
 #### Command Example
 ``` ```
 
