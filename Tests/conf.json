@@ -3512,6 +3512,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "NetscoutArborSightline": "Uses timestamp",
         "EwsExtension": "Powershell does not support proxy",
         "EWS Extension Online Powershell v2": "Powershell does not support proxy/ssl",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
