@@ -40,12 +40,12 @@ Get a list of endpoints. An endpoint device is an Internet-capable hardware devi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.endpoints.id | Number | The ID of the endpoint. | 
-| HPEArubaClearPass.endpoints.mac_address | string | The MAC address of the endpoint. | 
-| HPEArubaClearPass.endpoints.description | string | The description of the endpoint. | 
-| HPEArubaClearPass.endpoints.status | string | The status of the endpoint. | 
-| HPEArubaClearPass.endpoints.device_insight_tags | Unknown | List of Device Insight Tags. | 
-| HPEArubaClearPass.endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) that may be stored with the endpoint. | 
+| HPEArubaClearPass.Endpoints.id | Number | The ID of the endpoint. | 
+| HPEArubaClearPass.Endpoints.mac_address | string | The MAC address of the endpoint. | 
+| HPEArubaClearPass.Endpoints.description | string | The description of the endpoint. | 
+| HPEArubaClearPass.Endpoints.status | string | The status of the endpoint. | 
+| HPEArubaClearPass.Endpoints.device_insight_tags | Unknown | List of Device Insight Tags. | 
+| HPEArubaClearPass.Endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) that may be stored with the endpoint. | 
 
 
 #### Command Example
@@ -115,12 +115,12 @@ Updates some fields of an endpoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.endpoints.id | Number | The ID of the endpoint. | 
-| HPEArubaClearPass.endpoints.mac_address | string | The MAC address of the endpoint. | 
-| HPEArubaClearPass.endpoints.description | string | The description of the endpoint. | 
-| HPEArubaClearPass.endpoints.status | string | The status of the endpoint. | 
-| HPEArubaClearPass.endpoints.device_insight_tags | Unknown | List of Device Insight Tags. | 
-| HPEArubaClearPass.endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) that may be stored with the endpoint. | 
+| HPEArubaClearPass.Endpoints.id | Number | The ID of the endpoint. | 
+| HPEArubaClearPass.Endpoints.mac_address | string | The MAC address of the endpoint. | 
+| HPEArubaClearPass.Endpoints.description | string | The description of the endpoint. | 
+| HPEArubaClearPass.Endpoints.status | string | The status of the endpoint. | 
+| HPEArubaClearPass.Endpoints.device_insight_tags | Unknown | List of Device Insight Tags. | 
+| HPEArubaClearPass.Endpoints.attributes | Unknown | Additional attributes \(key/value pairs\) that may be stored with the endpoint. | 
 
 
 #### Command Example
@@ -177,14 +177,14 @@ Get a list of attributes. Attributes allows you to specify unique sets of criter
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.attributes.id | Number | The ID of the attribute. | 
-| HPEArubaClearPass.attributes.name | string | The name of the attribute. | 
-| HPEArubaClearPass.attributes.entity_name | string | The entity name of the attribute. | 
-| HPEArubaClearPass.attributes.data_type | string | The data type of the attribute \(can be one of the following - Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay\). | 
-| HPEArubaClearPass.attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
-| HPEArubaClearPass.attributes.default_value | Unknown | Default value of the attribute. | 
-| HPEArubaClearPass.attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
-| HPEArubaClearPass.attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
+| HPEArubaClearPass.Attributes.id | Number | The ID of the attribute. | 
+| HPEArubaClearPass.Attributes.name | string | The name of the attribute. | 
+| HPEArubaClearPass.Attributes.entity_name | string | The entity name of the attribute. | 
+| HPEArubaClearPass.Attributes.data_type | string | The data type of the attribute \(can be one of the following - Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay\). | 
+| HPEArubaClearPass.Attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
+| HPEArubaClearPass.Attributes.default_value | Unknown | Default value of the attribute. | 
+| HPEArubaClearPass.Attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
+| HPEArubaClearPass.Attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
 
 
 #### Command Example
@@ -457,14 +457,14 @@ Create a new attribute.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.attributes.id | Number | The ID of the attribute. | 
-| HPEArubaClearPass.attributes.name | string | The name of the attribute. | 
-| HPEArubaClearPass.attributes.entity_name | string | The entity name of the attribute. | 
-| HPEArubaClearPass.attributes.data_type | string | The data type of the attribute. Can be one of the following: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | 
-| HPEArubaClearPass.attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
-| HPEArubaClearPass.attributes.default_value. | Unknown | Default value of the attribute. | 
-| HPEArubaClearPass.attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
-| HPEArubaClearPass.attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
+| HPEArubaClearPass.Attributes.id | Number | The ID of the attribute. | 
+| HPEArubaClearPass.Attributes.name | string | The name of the attribute. | 
+| HPEArubaClearPass.Attributes.entity_name | string | The entity name of the attribute. | 
+| HPEArubaClearPass.Attributes.data_type | string | The data type of the attribute. Can be one of the following: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | 
+| HPEArubaClearPass.Attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
+| HPEArubaClearPass.Attributes.default_value. | Unknown | Default value of the attribute. | 
+| HPEArubaClearPass.Attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
+| HPEArubaClearPass.Attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
 
 
 #### Command Example
@@ -520,14 +520,14 @@ Update some fields of an attribute by the attribute's ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.attributes.id | Number | The ID of the attribute. | 
-| HPEArubaClearPass.attributes.name | string | The name of the attribute. | 
-| HPEArubaClearPass.attributes.entity_name | string | The entity name of the attribute. | 
-| HPEArubaClearPass.attributes.data_type | string | The data type of the attribute. Can be one of the following: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | 
-| HPEArubaClearPass.attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
-| HPEArubaClearPass.attributes.default_value. | Unknown | Default value of the attribute. | 
-| HPEArubaClearPass.attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
-| HPEArubaClearPass.attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
+| HPEArubaClearPass.Attributes.id | Number | The ID of the attribute. | 
+| HPEArubaClearPass.Attributes.name | string | The name of the attribute. | 
+| HPEArubaClearPass.Attributes.entity_name | string | The entity name of the attribute. | 
+| HPEArubaClearPass.Attributes.data_type | string | The data type of the attribute. Can be one of the following: Boolean, Date, Day, IPv4Address, Integer32, List, MACAddress, String, Text, Time, TimeOfDay. | 
+| HPEArubaClearPass.Attributes.mandatory | Boolean | Whether this attribute is mandatory for the given entity_name. | 
+| HPEArubaClearPass.Attributes.default_value. | Unknown | Default value of the attribute. | 
+| HPEArubaClearPass.Attributes.allow_multiple | Boolean | Whether to allow multiple values of the attribute with data type String only \(API limitation\). | 
+| HPEArubaClearPass.Attributes.allowed_value | Unknown | The allowed value for attribute with data type List \(e.g., example1,example2,example3\). | 
 
 
 #### Command Example
@@ -606,11 +606,11 @@ Get a list of active sessions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.sessions.ID | String | ID of the active session. | 
-| HPEArubaClearPass.sessions.Device_IP | String | IP address of the client. | 
-| HPEArubaClearPass.sessions.Device_mac_address | String | MAC address of the client device. | 
-| HPEArubaClearPass.sessions.state | String | The current state of the session \(active, stale, closed\). | 
-| HPEArubaClearPass.sessions.Visitor_phone | String | The visitor’s phone number. | 
+| HPEArubaClearPass.Sessions.ID | String | ID of the active session. | 
+| HPEArubaClearPass.Sessions.Device_IP | String | IP address of the client. | 
+| HPEArubaClearPass.Sessions.Device_mac_address | String | MAC address of the client device. | 
+| HPEArubaClearPass.Sessions.state | String | The current state of the session \(active, stale, closed\). | 
+| HPEArubaClearPass.Sessions.Visitor_phone | String | The visitor’s phone number. | 
 
 
 #### Command Example
@@ -639,8 +639,8 @@ Disconnect active session.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HPEArubaClearPass.sessions.Error_code | Number | Error status code of the response \(non-zero if a problem occurred\). | 
-| HPEArubaClearPass.sessions.Response_message | String | Describes the result of the disconnected operation. | 
+| HPEArubaClearPass.Sessions.Error_code | Number | Error status code of the response \(non-zero if a problem occurred\). | 
+| HPEArubaClearPass.Sessions.Response_message | String | Describes the result of the disconnected operation. | 
 
 
 #### Command Example
