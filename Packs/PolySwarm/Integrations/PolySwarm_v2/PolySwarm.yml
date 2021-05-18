@@ -160,6 +160,31 @@ script:
     - contextPath: PolySwarm.Artifact/
       description: The artifact queried.
       type: String
+  outputs:
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: URL.MalwareFamily
+      description: The malware family associated with the url.
+      type: String
+    - contextPath: URL.Tags
+      description: Tags that are associated with the url.
+      type: String
   - arguments:
     - default: true
       description: Domain for which to retrieve the reputation information.
