@@ -921,7 +921,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' ISO8601-formatted interval date.The minimum interval is thirty
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
         seconds. The maximum interval is one hour. For example : 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
       isArray: false
       name: interval
@@ -936,7 +936,7 @@ script:
       secret: false
     deprecated: false
     description: Get events for clicks to malicious URLs blocked in the specified
-      time period. Must provide interval or time_range.
+      time period. Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-get-events-clicks-blocked
     outputs:
@@ -1004,7 +1004,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' ISO8601-formatted interval date.The minimum interval is thirty
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
         seconds. The maximum interval is one hour. For example : 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
       isArray: false
       name: interval
@@ -1019,7 +1019,7 @@ script:
       secret: false
     deprecated: false
     description: Get events for clicks to malicious URLs permitted in the specified
-      time period.  Must provide interval or time_range.
+      time period.  Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-get-events-clicks-permitted
     outputs:
@@ -1099,7 +1099,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' ISO8601-formatted interval date. The minimum interval is thirty
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
         seconds. The maximum interval is one hour. For example : 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
       isArray: false
       name: interval
@@ -1113,7 +1113,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get events for blocked messages in the specified time period.  Must provide interval or time_range.
+    description: Get events for blocked messages in the specified time period.  Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-get-events-messages-blocked
     outputs:
@@ -1245,7 +1245,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' ISO8601-formatted interval date. The minimum interval is thirty
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
         seconds. The maximum interval is one hour. For example : 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
       isArray: false
       name: interval
@@ -1259,7 +1259,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get events for delivered messages in the specified time period.  Must provide interval or time_range.
+    description: Get events for delivered messages in the specified time period.  Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-get-events-messages-delivered
     outputs:
@@ -1391,7 +1391,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' ISO8601-formatted interval date. The minimum interval is thirty
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
         seconds. The maximum interval is one hour. For example : 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
       isArray: false
       name: interval
@@ -1406,7 +1406,7 @@ script:
       secret: false
     deprecated: false
     description: Get events for clicks to malicious URLs permitted and messages delivered
-      containing a known attachment threat within the specified time period.  Must provide interval or time_range.
+      containing a known attachment threat within the specified time period.  Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-list-issues
     outputs:
@@ -1564,7 +1564,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ' ISO8601-formatted interval date. The minimum interval is thirty
+      description: 'ISO8601-formatted interval date. The minimum interval is thirty
         seconds. The maximum interval is one day. For example : 2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
       isArray: false
       name: interval
@@ -1593,7 +1593,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a list of IDs of campaigns active in a time window.  Must provide interval or time_range.
+    description: Get a list of IDs of campaigns active in a time window.  Must provide either the interval or time_range arguments.
     execution: false
     name: proofpoint-list-campaigns
     outputs:
@@ -1676,7 +1676,7 @@ script:
       description: The total number of VAP users for the interval.
       type: Number
     - contextPath: Proofpoint.Vap.interval
-      description: an  ISO8601-formatted interval showing what time the response was
+      description: An ISO8601-formatted interval showing what time the response was
         calculated for.
       type: String
     - contextPath: Proofpoint.Vap.averageAttackIndex
@@ -1727,7 +1727,7 @@ script:
       description: The total number of top clickers in the time interval.
       type: int
     - contextPath: Proofpoint.Topclickers.interval
-      description: an  ISO8601-formatted interval showing what time the response was
+      description: An ISO8601-formatted interval showing what time the response was
         calculated for.
       type: Date
   - arguments:

@@ -263,11 +263,8 @@ def test_module(client: Client) -> str:
         str : 'ok' if test passed, anything else will fail the test.
     """
 
-    url_list = [
-        "https://urldefense.com/v3/__https://google.com:443/search?q=a*test&gs=ps__;Kw!-"
-        "612Flbf0JvQ3kNJkRi5Jg!Ue6tQudNKaShHg93trcdjqDP8se2ySE65jyCIe2K1D_uNjZ1Lnf6YLQERujngZv9UWf66ujQIQ$"]
     try:
-        client.url_decode(url_list)
+        client.get_top_clickers(window='90')
     except Exception as exception:
         if 'Unauthorized' in str(exception) or 'authentication' in str(exception):
             return 'Authorization Error: make sure API Credentials are correctly set'
@@ -935,6 +932,7 @@ def get_campaign_command(client: Client, campaign_id: str) -> Union[CommandResul
     campaign_fields = ['families', 'techniques', 'actors', 'brands', 'malware']
 
     outputs = {}
+    outputs['campaignMembers'] = dict_safe_get(raw_response, ['campaignMembers'])
     outputs['info'] = {key: value for key, value in raw_response.items() if key in campaign_general_fields}
     outputs.update({key: value for key, value in raw_response.items() if key in campaign_fields})
     fields_readable_output = ""
@@ -950,7 +948,7 @@ def get_campaign_command(client: Client, campaign_id: str) -> Union[CommandResul
                                            headerTransform=pascalToSpace
                                            )
     campaign_members_output = tableToMarkdown('Campaign Members',
-                                              dict_safe_get(outputs, ['campaignMembers']),
+                                              outputs['campaignMembers'],
                                               headers=['id', 'threat', 'type'],
                                               headerTransform=pascalToSpace
                                               )
