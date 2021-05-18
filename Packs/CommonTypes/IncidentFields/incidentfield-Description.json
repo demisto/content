@@ -5,7 +5,7 @@
     "ownerOnly": false,
     "description": "The description of the incident",
     "cliName": "description",
-    "type": "markdown",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
