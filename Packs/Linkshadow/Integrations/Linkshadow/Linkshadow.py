@@ -201,15 +201,13 @@ def arg_to_timestamp(arg, arg_name, required=False):
 ''' MAIN FUNCTION '''
 
 
-def main():
-    
+def main():   
     apiKey = demisto.params().get('apiKey')
     base_url = urljoin(demisto.params()['url'])
     api_username = demisto.params().get('api_username')
     plugin_id = demisto.params().get("plugin_id")
     action = demisto.params().get("action")
-    time_frame = demisto.params().get("time_frame")
-    
+    time_frame = demisto.params().get("time_frame")   
     first_fetch_time = arg_to_timestamp(
         arg=demisto.params().get('first_fetch', '1 days'),
         arg_name='First fetch time',
