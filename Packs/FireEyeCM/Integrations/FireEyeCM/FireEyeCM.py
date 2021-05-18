@@ -110,7 +110,7 @@ class Client(BaseClient):
                                   timeout=timeout)
 
     @logger
-    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: int, interface: str,
+    def get_reports_request(self, report_type: str, start_time: str, end_time: str, limit: str, interface: str,
                             alert_id: str, infection_type: str, infection_id: str, timeout: int):
         params = {
             'report_type': report_type,
@@ -353,7 +353,7 @@ def get_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResul
     from_ = args.get('from', '')
     subject = args.get('subject', '')
     appliance_id = args.get('appliance_id', '')
-    limit = int(args.get('limit', '10000'))
+    limit = (args.get('limit', '10000'))
 
     raw_response = client.get_quarantined_emails_request(start_time, end_time, from_, subject, appliance_id, limit)
     if not raw_response:
@@ -441,7 +441,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
     report_type = args.get('report_type', '')
     start_time = to_fe_datetime_converter(args.get('start_time', '1 week'))
     end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
-    limit = int(args.get('limit', '100'))
+    limit = args.get('limit', '100')
     interface = args.get('interface', '')
     alert_id = args.get('alert_id', '')
     infection_id = args.get('infection_id', '')
