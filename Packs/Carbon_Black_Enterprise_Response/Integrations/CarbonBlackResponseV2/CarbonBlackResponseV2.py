@@ -12,7 +12,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class ProcessEventDetailMap:
 
-    class filemod_complete():
+    class filemod_complete:
         FIELDS = ['operation type', 'event time', 'file path', 'md5 of the file after last write',
                   'file type', 'flagged as potential tamper attempt']
         OPERATION_TYPE = {'1': 'Created the file',
@@ -41,7 +41,45 @@ class ProcessEventDetailMap:
             self.fields['file type'] = self.FILE_TYPE.get(self.fields.get('file type'), '')
             return self.fields
 
-    COMPLEX_FIELDS = {'filemod_complete': filemod_complete}
+    class modload_complete:
+        FIELDS = ['event time', 'MD5 of the loaded module', 'Full path of the loaded module']
+
+        def __init__(self, piped_version):
+            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
+
+        def format(self):
+            return self.fields
+
+    class regmod_complete:
+        FIELDS = ['operation type', 'event time', 'the registry key path']
+        OPERATION_TYPE = {'1': 'Created the file',
+                          '2': 'First wrote to the file',
+                          '4': 'Deleted the file',
+                          '8': 'Last wrote to the file'}
+
+        def __init__(self, piped_version):
+            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
+
+        def format(self):
+            self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
+            return self.fields
+
+    class crossproc_complete:
+        FIELDS = ['type of cross-process access', 'event time', 'unique_id of the targeted process',
+                  'md5 of the targeted process', 'path of the targeted process', 'sub-type for ProcessOpen',
+                  'requested access priviledges', 'flagged as potential tamper attempt']
+        SUB_TYPES = {'1':'handle open to process', '2': 'handle open to thread in process'}
+
+        def __init__(self, piped_version):
+            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
+
+        def format(self):
+            self.fields['sub-type for ProcessOpen'] = self.SUB_TYPES.get(self.fields.get('sub-type for ProcessOpen'), '')
+            return self.fields
+
+
+    COMPLEX_FIELDS = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
+                      'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
 
     def get_formatted_process(self, process_json: dict):
         formatted_json = {}
