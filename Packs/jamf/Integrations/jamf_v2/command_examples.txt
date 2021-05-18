@@ -1,0 +1,10 @@
+jamf-computers-get limit=5
+jamf-get-computer-subset identifier=name identifier_value="Computer 95" subset=Location
+jamf-computer-lock id=138 passcode=123456
+jamf-computer-erase id=138 passcode=123456
+jamf-get-users limit=3
+jamf-get-mobile-devices limit=3
+jamf-get-mobile-device-subset identifier=id identifier_value=114 subset=Location
+jamf-get-computers-by-application application=safar* limit=3
+jamf-mobile-device-lost-mode id=114
+jamf-mobile-device-erase id=114

@@ -1,0 +1,354 @@
+id: Jamf_v2_test
+version: -1
+name: Jamf_v2_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40a03933-95c2-4f32-8501-e1a1b8d1f537
+    type: start
+    task:
+      id: 40a03933-95c2-4f32-8501-e1a1b8d1f537
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ae9c53b2-f3e3-4512-8d11-ab8818ae50f8
+    type: regular
+    task:
+      id: ae9c53b2-f3e3-4512-8d11-ab8818ae50f8
+      version: -1
+      name: jamf-computers-get
+      description: This command will return a list of computers or a single computer
+        based on the parameters being passed. In case no parameter are passed, a list
+        of all computers with their associated IDs will be returned. Please note that
+        only one of the parameters should be passed. By default, will return the first
+        50 computers to the context (id + name).
+      script: '|||jamf-computers-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a00345ef-02ad-4df6-85eb-7e95b2805a4e
+    type: regular
+    task:
+      id: a00345ef-02ad-4df6-85eb-7e95b2805a4e
+      version: -1
+      name: jamf-computer-lock
+      description: Will send a "DeviceLock" command to a computer which will then
+        reboot it and lock the computer with a passcode.
+      script: '|||jamf-computer-lock'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: "138"
+      lock_message:
+        simple: Testing
+      passcode:
+        simple: "123456"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3ceff652-dffd-4920-85e4-84a3655073aa
+    type: regular
+    task:
+      id: 3ceff652-dffd-4920-85e4-84a3655073aa
+      version: -1
+      name: jamf-computer-erase
+      description: Will send a "EraseDevice" command to a computer which will then
+        reboot it and lock the computer with a passcode.
+      script: '|||jamf-computer-erase'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      id:
+        simple: "138"
+      passcode:
+        simple: "123456"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3bf7bf33-0520-4e69-85be-9207ace6c42e
+    type: regular
+    task:
+      id: 3bf7bf33-0520-4e69-85be-9207ace6c42e
+      version: -1
+      name: jamf-get-computer-subset
+      description: Returns a specific subset for a specific computer.
+      script: '|||jamf-get-computer-subset'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      identifier:
+        simple: id
+      identifier_value:
+        simple: ${JAMF.Computer.id}
+      subset:
+        simple: Location
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0824515f-8d05-49e8-892b-b0e30205831f
+    type: regular
+    task:
+      id: 0824515f-8d05-49e8-892b-b0e30205831f
+      version: -1
+      name: jamf-get-computers-by-application
+      description: Will return a list of computers with basic information based on
+        an application filter.
+      script: '|||jamf-get-computers-by-application'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      application:
+        simple: safari
+      limit:
+        simple: "10"
+      version:
+        simple: 7.0.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fb8badae-f7a7-4918-8da8-2d6f7eae99eb
+    type: regular
+    task:
+      id: fb8badae-f7a7-4918-8da8-2d6f7eae99eb
+      version: -1
+      name: jamf-get-users
+      description: Return a list of users with their IDs or a specific user with general
+        data about the user.
+      script: '|||jamf-get-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 31a99cc7-a324-4b63-8a97-fc03c785c147
+    type: regular
+    task:
+      id: 31a99cc7-a324-4b63-8a97-fc03c785c147
+      version: -1
+      name: jamf-get-mobile-devices
+      description: Will return a list of all devices with general information on each
+        of them.
+      script: '|||jamf-get-mobile-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 40213580-2cb1-4b02-8e59-c2d0a9a0817b
+    type: regular
+    task:
+      id: 40213580-2cb1-4b02-8e59-c2d0a9a0817b
+      version: -1
+      name: jamf-get-mobile-device-subset
+      description: Returns a specific subset for a specific mobile device.
+      script: '|||jamf-get-mobile-device-subset'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      Identifier_value:
+        complex:
+          root: ${Jamf.Mobile
+          accessor: name}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      identifier:
+        simple: name
+      identifier_value:
+        complex:
+          root: ${JAMF.MobileDevice
+          accessor: name}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      subset:
+        simple: Location
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 635,
+        "width": 1830,
+        "x": -90,
+        "y": 20
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
