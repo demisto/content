@@ -89,11 +89,11 @@ The following lists the changes in this version according to the commands from t
 - For each reputation command there is the new *extended_data* argument . When set to "true", the results returned by the commands will contain  
   additional information as *last_analysis_results* which contains the service name and its specific analysis.
 - Reputation commands can return relationships of the indicator. 
-  The relationships that are supported defined as part of the instance configuration.
-  For more data regarding URL relationships go to: https://developers.virustotal.com/v3.0/reference#url-object
-  For more data regarding IP relationships go to: https://developers.virustotal.com/v3.0/reference#ip-object
-  For more data regarding Domain relationships go to: https://developers.virustotal.com/v3.0/reference#domains-1
-  For more data regarding File relationships go to: https://developers.virustotal.com/v3.0/reference#files
+  The relationships that are supported are defined as part of the instance configuration.
+  For more information regarding URL relationships, see: https://developers.virustotal.com/v3.0/reference#url-object
+  For more information regarding IP relationships, see: https://developers.virustotal.com/v3.0/reference#ip-object
+  For more information regarding Domain relationships, see: https://developers.virustotal.com/v3.0/reference#domains-1
+  For more information regarding File relationships, see: https://developers.virustotal.com/v3.0/reference#files
 
 ### Comments
 In VirusTotal (API v3) you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
