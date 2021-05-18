@@ -154,7 +154,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: devdemisto/flask-nginx:1.0.0.20081
+  dockerimage: devdemisto/flask-nginx:1.0.0.20260
   feed: false
   isfetch: false
   longRunning: true

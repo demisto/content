@@ -9,11 +9,15 @@ from base64 import b64decode
 from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
 from flask import Flask, Response, request
+from flask.logging import default_handler
 from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
 from string import Template
 from time import sleep
+from math import ceil
 import urllib3
+from datetime import datetime, timezone
+import dateparser
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -44,6 +48,9 @@ server {
     # Proxy everything to python
     location / {
         proxy_pass http://localhost:$serverport/;
+        add_header X-Proxy-Cache $upstream_cache_status;
+        # allow bypassing the cache with an arg of nocache=1 ie http://server:7000/?nocache=1
+        proxy_cache_bypass $arg_nocache;
     }
 }
 
@@ -53,13 +60,13 @@ server {
 class Handler:
     @staticmethod
     def write(msg: str):
-        demisto.info(msg)
+        demisto.info(f'wsgi log: {msg}')
 
 
 class ErrorHandler:
     @staticmethod
     def write(msg: str):
-        demisto.error(msg)
+        demisto.error(f'wsgi error: {msg}')
 
 
 ''' GLOBAL VARIABLES '''
@@ -523,22 +530,37 @@ def route_edl_values() -> Response:
     credentials = params.get('credentials') if params.get('credentials') else {}
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
+    cache_refresh_rate: str = params.get('cache_refresh_rate')
     if username and password:
         headers: dict = cast(Dict[Any, Any], request.headers)
         if not validate_basic_authentication(headers, username, password):
             err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
             demisto.debug(err_msg)
-            return Response(err_msg, status=401)
+            return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                ('WWW-Authenticate', 'Basic realm="Login Required"'),
+            ])
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
-
+    created = datetime.now(timezone.utc)
     values = get_edl_ioc_values(
         on_demand=on_demand,
         request_args=request_args,
-        cache_refresh_rate=params.get('cache_refresh_rate'),
+        cache_refresh_rate=cache_refresh_rate,
     )
-    return Response(values, status=200, mimetype='text/plain')
+    query_time = (datetime.now(timezone.utc) - created).total_seconds()
+    edl_size = values.count('\n') + 1  # add 1 as last line doesn't have a \n
+    max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())
+    demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
+                  f' max age: [{max_age}]')
+    resp = Response(values, status=200, mimetype='text/plain', headers=[
+        ('x-edl-created', created.isoformat()),
+        ('x-edl-query-time-secs', str(query_time)),
+        ('x-edl-size', str(edl_size))
+    ])
+    resp.cache_control.max_age = max_age
+    resp.cache_control['stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
+    return resp
 
 
 def get_request_args(request_args: dict, params: dict) -> RequestArguments:
@@ -687,7 +709,11 @@ def test_nginx_server(port: int, params: Dict):
         if welcome not in res.text:
             raise ValueError(f'Unexpected response from nginx-text (does not contain "{welcome}"): {res.text}')
     finally:
-        nginx_process.terminate()
+        try:
+            nginx_process.terminate()
+            nginx_process.wait(1.0)
+        except Exception as ex:
+            demisto.error(f'failed stoping test nginx process: {ex}')
 
 
 def run_long_running(params: Dict, is_test: bool = False):
@@ -701,13 +727,23 @@ def run_long_running(params: Dict, is_test: bool = False):
     try:
         nginx_port = get_params_port(params)
         server_port = nginx_port + 1
+        # set our own log handlers
+        APP.logger.removeHandler(default_handler)
+        integration_logger = IntegrationLogger()
+        integration_logger.buffering = False
+        log_handler = DemistoHandler(integration_logger)
+        log_handler.setFormatter(
+            logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s")
+        )
+        APP.logger.addHandler(log_handler)
+        demisto.debug('done setting demisto handler for logging')
         server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
         if is_test:
             test_nginx_server(nginx_port, params)
             server_process = Process(target=server.serve_forever)
             server_process.start()
             time.sleep(5)
-            server_process.terminate()
+            server_process.terminate()            
         else:
             nginx_process = start_nginx_server(nginx_port, params)
             server.serve_forever()
