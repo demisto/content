@@ -24,7 +24,6 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'campaign': 'Campaign',
     'attack-pattern': 'Attack Pattern',
     'report': 'Report',
-    'indicator': 'IOC',
     'malware': 'Malware',
     'course-of-action': 'Course of Action',
     'intrusion-set': 'Intrusion Set'
@@ -172,7 +171,6 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: list
         A list of processed reports.
     """
     reports = []
-    report_relationships = []
 
     for report_object in report_objects:
         if is_sub_report(report_object):
@@ -202,11 +200,11 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: list
             'unit42_object_refs': report_object.get('object_refs')
         }
 
-        report_relationships.extend(get_campaign_from_sub_reports(report_object, id_to_object))
+        report['relationships'] = get_campaign_from_sub_reports(report_object, id_to_object)
 
         reports.append(report)
 
-    return reports, report_relationships
+    return reports
 
 
 def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
@@ -456,26 +454,6 @@ def get_ioc_value(ioc, id_to_obj):
             return ioc_obj.get('name')
 
 
-def get_a_type(relationships_object, id_to_object):
-    a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
-    a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)
-
-    if a_type == 'IOC':
-        a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
-
-    return a_type
-
-
-def get_b_type(relationships_object, id_to_object):
-    b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
-    b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
-
-    if b_type == 'IOC':
-        b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
-
-    return b_type
-
-
 def create_list_relationships(relationships_objects, id_to_object):
     """Parse the Relationships objects retrieved from the feed.
 
@@ -498,8 +476,19 @@ def create_list_relationships(relationships_objects, id_to_object):
                 demisto.debug(f"Invalid relation type: {relationship_type}")
                 continue
 
-        a_type = get_a_type(relationships_object, id_to_object)
-        b_type = get_b_type(relationships_object, id_to_object)
+        a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
+        a_type = ''
+        if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
+            a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)
+        elif a_threat_intel_type == 'indicator':
+            a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
+
+        b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
+        b_type = ''
+        if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
+            b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)
+        if b_threat_intel_type == 'indicator':
+            b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)
 
         if not a_type or not b_type:
             continue
@@ -561,8 +550,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     }
 
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
-    reports, report_relationships = parse_reports_and_report_relationships(client.objects_data['report'], feed_tags,
-                                                                           tlp_color, id_to_object)
+    reports = parse_reports_and_report_relationships(client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
     attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'], feed_tags, tlp_color)
     intrusion_sets = create_intrusion_sets(client.objects_data['intrusion-set'], feed_tags, tlp_color)
@@ -572,11 +560,10 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     dummy_indicator = {}
     if create_relationships:
         list_relationships = create_list_relationships(client.objects_data['relationship'], id_to_object)
-        all_relationships = list_relationships + report_relationships
 
         dummy_indicator = {
             "value": "$$DummyIndicator$$",
-            "relationships": all_relationships
+            "relationships": list_relationships
         }
 
     if dummy_indicator:

@@ -232,7 +232,8 @@ REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
                                    'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
                                    'unit42_published': '1994-08-12T11:00:00.000Z'},
                        'type': 'Report',
-                       'value': '[Unit42 ATOM] Main Report'}], []
+                       'relationships': [],
+                       'value': '[Unit42 ATOM] Main Report'}]
 
 INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
                                 'indicatoridentification': 'indicator--0025039e-f0b5-4ad2-aaab-5374fe3734be',
