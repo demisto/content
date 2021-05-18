@@ -335,6 +335,30 @@ script:
     - contextPath: PolySwarm.FileID
       description: The file ID.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.Tags.TagGroups.TagGroupName
+      description: The tag's group name.
+      type: String
+    - contextPath: File.Tags.Aliases
+      description: Aliases of the tags.
+      type: String
+    - contextPath: File.Tags.PublicTagName
+      description: The public name of the tag. This is usually used as the ID of the tag.
+      type: String
+    - contextPath: File.Tags.TagName
+      description: The simple name of the tag.
+      type: String
   - arguments:
     - default: true
       description: The War Room entry ID of the file.
