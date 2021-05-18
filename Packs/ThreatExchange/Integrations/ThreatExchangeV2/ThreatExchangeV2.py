@@ -11,7 +11,7 @@ from CommonServerUserPython import *  # noqa
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings #
-urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 DEFAULT_LIMIT = 20
 COMMAND_PREFIX = 'threatexchange'
@@ -23,6 +23,8 @@ THREAT_TAGS_SUFFIX = 'threat_tags'
 TAGGED_OBJECTS_SUFFIX = 'tagged_objects'
 THREAT_EXCHANGE_MEMBERS_SUFFIX = 'threat_exchange_members'
 TIMEOUT_FOR_LIST_CALLS = 30
+DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR = 'Indicator was classified as malicious by more than {}%' \
+                                              ' of detection engines.'
 
 
 class ThreatExchangeV2Status:
@@ -46,12 +48,15 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxy)
         self.access_token = access_token
 
-    def ip(self, ip: str) -> Dict:
+    def ip(self, ip: str, since: Optional[int], until: Optional[int], limit: Optional[int] = DEFAULT_LIMIT) -> Dict:
         """
         See Also:
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-descriptors
         Args:
             ip: ip address
+            since: Returns malware collected after a timestamp
+            until: Returns malware collected before a timestamp
+            limit: Defines the maximum size of a page of results. The maximum is 1,000
 
         Returns: The API call response
         """
@@ -62,7 +67,10 @@ class Client(BaseClient):
                 'access_token': self.access_token,
                 'type': 'IP_ADDRESS',
                 'text': ip,
-                'strict_text': True
+                'strict_text': True,
+                'since': since,
+                'until': until,
+                'limit': limit
             }
         )
         return response
@@ -167,7 +175,7 @@ class Client(BaseClient):
         )
         return response
 
-    def query(self, text: str, type: str, since: Optional[int], until: Optional[int],
+    def query(self, text: str, descriptor_type: str, since: Optional[int], until: Optional[int],
               limit: Optional[int] = DEFAULT_LIMIT, strict_text: Optional[bool] = False,
               before: Optional[str] = None, after: Optional[str] = None) -> Dict:
         """
@@ -175,7 +183,7 @@ class Client(BaseClient):
             https://developers.facebook.com/docs/threat-exchange/reference/apis/threat-descriptors
         Args:
             text: Freeform text field with a value to search for
-            type: The type of descriptor to search for
+            descriptor_type: The type of descriptor to search for
             since: Returns malware collected after a timestamp
             until: Returns malware collected before a timestamp
             limit: Defines the maximum size of a page of results. The maximum is 1,000
@@ -191,7 +199,7 @@ class Client(BaseClient):
             THREAT_DESCRIPTORS_SUFFIX,
             params=assign_params(**{
                 'access_token': self.access_token,
-                'type': type,
+                'type': descriptor_type,
                 'text': text,
                 'strict_text': strict_text,
                 'since': since,
@@ -284,11 +292,7 @@ def get_reputation_data_statuses(reputation_data: List) -> List[str]:
 
     Returns: a list of reported statuses
     """
-    reputation_statuses: List[str] = list()
-    for data_entry in reputation_data:
-        status = data_entry.get('status', False)
-        if status:
-            reputation_statuses.append(status)
+    reputation_statuses = [status for data_entry in reputation_data if (status := data_entry.get('status'))]
     return reputation_statuses
 
 
@@ -305,11 +309,17 @@ def calculate_dbot_score(reputation_data: List, params: Dict[str, Any]) -> int:
         params: parameters of the integration
     Returns: the calculated Dbot score
     """
-
     # get user's thresholds:
-    malicious_threshold = int(params.get('malicious_threshold', 50))
-    suspicious_threshold = int(params.get('suspicious_threshold', 1))
-    non_malicious_threshold = int(params.get('non_malicious_threshold', 50))
+    malicious_threshold = arg_to_number(params.get('malicious_threshold', 50), arg_name='malicious_threshold')
+    if malicious_threshold is None:
+        malicious_threshold = 50
+    suspicious_threshold = arg_to_number(params.get('suspicious_threshold', 1), arg_name='suspicious_threshold')
+    if suspicious_threshold is None:
+        suspicious_threshold = 1
+    non_malicious_threshold = arg_to_number(params.get('non_malicious_threshold', 50),
+                                            arg_name='non_malicious_threshold')
+    if non_malicious_threshold is None:
+        non_malicious_threshold = 50
 
     # collect and count reported statuses:
     reputation_statuses = get_reputation_data_statuses(reputation_data)
@@ -355,7 +365,7 @@ def calculate_engines(reputation_data: List) -> Tuple[int, int]:
     return num_of_engines, num_of_positive_engines
 
 
-def flatten_outputs_paging(raw_response) -> Dict:
+def flatten_outputs_paging(raw_response: Dict) -> Dict:
     """
     flatten the paging section of the raw_response - i.e removes 'cursors' key.
     Args:
@@ -364,16 +374,66 @@ def flatten_outputs_paging(raw_response) -> Dict:
     Returns: outputs dict
 
     """
-    paging = raw_response.get('paging')
+    paging: Dict
+    paging = raw_response.get('paging', {})
     outputs = raw_response.copy()
-    cursor_before = paging['cursors']['before']
-    cursor_after = paging['cursors']['after']
-    del outputs['paging']
+    cursor_before = paging.get('cursors', {}).get('before')
+    cursor_after = paging.get('cursors', {}).get('after')
+    outputs.pop('paging', None)
     outputs['paging'] = {}
     outputs['paging']['before'] = cursor_before
     outputs['paging']['after'] = cursor_after
 
     return outputs
+
+
+def get_malicious_description(score: int, reputation_data_entry: Dict, params: Dict[str, Any]) -> str:
+    """
+    Gets the malicious description of certain indicator.
+    If the indicator was classified as malicious, description will be taken from reputation_data_entry that was
+    returned from ThreatExchange reputation call.
+    If such a description doesn't exist, description will be defined as default malicious description.
+    If the indicator wasn't classified as malicious, description will be None (and won't be added to context).
+    Args:
+        score: calculated dbot score of the indicator
+        reputation_data_entry: returned data entry of a certain reputation command
+        params: integration's parameters
+
+    Returns: malicious description
+
+    """
+    if score == Common.DBotScore.BAD:
+        malicious_threshold = arg_to_number(params.get('malicious_threshold', 50))
+        default_description = DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR.format(malicious_threshold)
+        malicious_description = reputation_data_entry.get('description', default_description)
+    else:  # dbot-score isn't malicious
+        malicious_description = None
+
+    return malicious_description
+
+
+def convert_string_to_epoch_time(date: Optional[str], arg_name: Optional[str] = None) -> Optional[int]:
+    """
+    Converts a string representing a date into epoch time format
+    Args:
+        date: date string
+        arg_name: name of the date argument
+
+    Returns: date in epoch time format (if an error occurred, or date in None returns None)
+    """
+    if date:
+        if date.isdigit():  # date is an epoch time format string
+            return int(date)
+
+        date_obj = dateparser.parse(date)  # date is a string in a time format such as: iso 8601, free text, etc
+        if isinstance(date_obj, datetime):
+            epoch_time = date_obj.timestamp()
+            return int(epoch_time)
+        else:  # date was given in a wrong format
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, date))
+
+    return None
 
 
 def test_module(client: Client) -> str:
@@ -390,7 +450,7 @@ def test_module(client: Client) -> str:
     Returns: 'ok' if test passed, anything else will fail the test
     """
 
-    client.ip('8.8.8.8')
+    client.ip(ip='8.8.8.8', since=None, until=None)
     return 'ok'
 
 
@@ -398,32 +458,42 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
     """
     Returns IP's reputation
     """
+    error_occurred = False
+    err_msg = None
     ips = argToList(args.get('ip'))
+    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
+    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
+    limit = arg_to_number(args.get('limit'), arg_name='limit')
+    headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
     results: List[CommandResults] = list()
+
     for ip in ips:
         if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
             raise ValueError(f'IP "{ip}" is not valid')
         try:
-            raw_response = client.ip(ip)
+            raw_response = client.ip(ip, since, until, limit)
         except Exception as exception:
-            # If anything happens, just keep going
-            demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
-            continue
+            # If anything happens, handle like there are no results
+            error_occurred = True
+            err_msg = f'Could not process IP: "{ip}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
 
             for data_entry in data:
+                malicious_description = get_malicious_description(score, data_entry, params)
                 dbot_score = Common.DBotScore(
                     indicator=ip,
                     indicator_type=DBotScoreType.IP,
                     integration_name=VENDOR_NAME,
                     score=score,
                     reliability=reliability,
-                    malicious_description=data_entry.get('description')
+                    malicious_description=malicious_description
                 )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP: {ip}:', data_entry)
+                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP {ip}', data_entry, headers=headers)
                 ip_indicator = Common.IP(
                     ip=ip,
                     dbot_score=dbot_score,
@@ -449,6 +519,8 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about IP: {ip} \n'
+            if error_occurred:
+                readable_output += err_msg
             ip_indicator = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score,
@@ -460,7 +532,6 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 indicator=ip_indicator,
                 readable_output=readable_output,
                 raw_response=raw_response
-
             )
             results.append(result)
     return results
@@ -470,34 +541,42 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
     """
     Returns file's reputation
     """
+    error_occurred = False
+    err_msg = None
     files = argToList(args.get('file'))
-    since = arg_to_number(args.get('since'), arg_name='since')
-    until = arg_to_number(args.get('until'), arg_name='until')
+    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
+    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
     limit = arg_to_number(args.get('limit'), arg_name='limit')
+    headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
     results: List[CommandResults] = list()
+
     for file in files:
         if get_hash_type(file) not in ('sha256', 'sha1', 'md5'):  # check file's validity
             raise ValueError(f'Hash "{file}" is not of type SHA-256, SHA-1 or MD5')
         try:
             raw_response = client.file(file, since, until, limit)
         except Exception as exception:
-            # If anything happens, just keep going
-            demisto.debug(f'Could not process file: "{file}"\n {str(exception)}')
-            continue
+            # If anything happens, handle like there are no results
+            error_occurred = True
+            err_msg = f'Could not process file: "{file}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
 
             for data_entry in data:
+                malicious_description = get_malicious_description(score, data_entry, params)
                 dbot_score = Common.DBotScore(
                     indicator=file,
                     indicator_type=DBotScoreType.FILE,
                     integration_name=VENDOR_NAME,
                     score=score,
                     reliability=reliability,
-                    malicious_description=data_entry.get('description')
+                    malicious_description=malicious_description
                 )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for file hash: {file}:', data_entry)
+                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for file hash {file}', data_entry,
+                                                  headers=headers)
                 file_indicator = Common.File(
                     dbot_score=dbot_score,
                     file_type=data_entry.get('sample_type'),
@@ -527,6 +606,8 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about file: {file} \n'
+            if error_occurred:
+                readable_output += err_msg
             file_indicator = Common.File(
                 dbot_score=dbot_score
             )
@@ -546,33 +627,41 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
     """
     Returns domain's reputation
     """
+    error_occurred = False
+    err_msg = None
     domains = argToList(args.get('domain'))
-    since = arg_to_number(args.get('since'), arg_name='since')
-    until = arg_to_number(args.get('until'), arg_name='until')
+    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
+    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
     limit = arg_to_number(args.get('limit'), arg_name='limit')
+    headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
     results: List[CommandResults] = list()
+
     for domain in domains:
         try:
             raw_response = client.domain(domain, since, until, limit)
         except Exception as exception:
-            # If anything happens, just keep going
-            demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
-            continue
+            # If anything happens, handle like there are no results
+            error_occurred = True
+            err_msg = f'Could not process domain: "{domain}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
 
             for data_entry in data:
+                malicious_description = get_malicious_description(score, data_entry, params)
                 dbot_score = Common.DBotScore(
                     indicator=domain,
                     indicator_type=DBotScoreType.DOMAIN,
                     integration_name=VENDOR_NAME,
                     score=score,
                     reliability=reliability,
-                    malicious_description=data_entry.get('description')
+                    malicious_description=malicious_description
                 )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain: {domain}:', data_entry)
+                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain {domain}', data_entry,
+                                                  headers=headers)
                 domain_indicator = Common.Domain(
                     domain=domain,
                     dbot_score=dbot_score,
@@ -598,6 +687,8 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about domain: {domain} \n'
+            if error_occurred:
+                readable_output += err_msg
             domain_indicator = Common.Domain(
                 domain=domain,
                 dbot_score=dbot_score
@@ -618,33 +709,39 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
     """
     Returns URL's reputation
     """
+    error_occurred = False
+    err_msg = None
     urls = argToList(args.get('url'))
-    since = arg_to_number(args.get('since'), arg_name='since')
-    until = arg_to_number(args.get('until'), arg_name='until')
+    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
+    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
     limit = arg_to_number(args.get('limit'), arg_name='limit')
+    headers = argToList(args.get('headers'))
     reliability = params.get('feedReliability')
     results: List[CommandResults] = list()
     for url in urls:
         try:
             raw_response = client.url(url, since, until, limit)
         except Exception as exception:
-            # If anything happens, just keep going
-            demisto.debug(f'Could not process URL: "{url}"\n {str(exception)}')
-            continue
+            # If anything happens, handle like there are no results
+            error_occurred = True
+            err_msg = f'Could not process URL: "{url}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
 
             for data_entry in data:
+                malicious_description = get_malicious_description(score, data_entry, params)
                 dbot_score = Common.DBotScore(
                     indicator=url,
                     indicator_type=DBotScoreType.URL,
                     integration_name=VENDOR_NAME,
                     score=score,
                     reliability=reliability,
-                    malicious_description=data_entry.get('description')
+                    malicious_description=malicious_description
                 )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL: {url}:', data_entry)
+                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL {url}', data_entry, headers=headers)
                 url_indicator = Common.URL(
                     url=url,
                     dbot_score=dbot_score,
@@ -670,6 +767,8 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about URL: {url} \n'
+            if error_occurred:
+                readable_output += err_msg
             url_indicator = Common.URL(
                 url=url,
                 dbot_score=dbot_score
@@ -715,37 +814,38 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Searches for subjective opinions on indicators of compromise stored in ThreatExchange.
     """
     text = str(args.get('text'))
-    type = str(args.get('type'))
-    since = arg_to_number(args.get('since'), arg_name='since')
-    until = arg_to_number(args.get('until'), arg_name='until')
+    descriptor_type = str(args.get('descriptor_type'))
+    since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
+    until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
     limit = arg_to_number(args.get('limit'), arg_name='limit')
     strict_text = argToBoolean(args.get('strict_text', False))
+    headers = argToList(args.get('headers'))
     before = args.get('before')
     after = args.get('after')
 
-    raw_response = client.query(text, type, since, until, limit, strict_text, before, after)
+    raw_response = client.query(text, descriptor_type, since, until, limit, strict_text, before, after)
     try:  # removes 'next' field to prevent access token uncovering
         del raw_response['paging']['next']
     except KeyError:  # for no paging cases
         pass
 
     if data := raw_response.get('data'):
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Query Result:', data)
+        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Query Result:', data, headers=headers)
         if raw_response.get('paging'):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
         else:  # no paging
             outputs = raw_response
 
     else:  # no data
-        readable_output = f'{CONTEXT_PREFIX} does not have details about {type}: {text} \n'
+        readable_output = f'{CONTEXT_PREFIX} does not have details about {descriptor_type}: {text} \n'
         outputs = raw_response
 
     outputs['text'] = text
-    outputs['type'] = type
+    outputs['descriptor_type'] = descriptor_type
 
     result = CommandResults(
         outputs_prefix=f'{CONTEXT_PREFIX}.Query',
-        outputs_key_field=['text', 'type'],
+        outputs_key_field=['text', 'descriptor_type'],
         outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response

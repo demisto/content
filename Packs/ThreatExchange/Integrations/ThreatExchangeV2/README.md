@@ -18,6 +18,14 @@ This integration was integrated and tested with API version v3.2 of ThreatExchan
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## Backwards compatibility
+The integration is fully backwards compatible. 
+
+## Changes compared to previous version
+The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
+that says no information was found for the given input, along with a description of the error that occurred.
+
+
 ## DBot Score / Reputation scores
 
 The following information describes a DBot Score calculation logic which is new for this version:
