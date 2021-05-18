@@ -3304,7 +3304,13 @@
             "playbookID": "carbonBlackEndpointStandardTestPlaybook",
             "fromversion": "5.5.0",
             "is_mockable": false
+        },
+        {
+            "integrations": "jamf v2",
+            "playbookID": "Jamf_v2_test",
+            "fromversion": "5.5.0"
         }
+
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
