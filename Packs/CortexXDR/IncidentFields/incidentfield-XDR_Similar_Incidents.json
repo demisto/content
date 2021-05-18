@@ -19,7 +19,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "shortText",
+            "type": "url",
             "width": 150
         },
         {
@@ -57,19 +57,49 @@
             "selectValues": null,
             "type": "shortText",
             "width": 150
+        },
+        {
+            "displayName": "Username",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "username",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Hostname",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hostname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "OS actor command line",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "osactorcommandline",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
         }
     ],
     "content": true,
     "defaultRows": [
-        {
-
-        },
-        {
-
-        },
-        {
-
-        }
+        {},
+        {},
+        {}
     ],
     "editForm": true,
     "group": 0,

@@ -1,13 +1,11 @@
-
-name: Cortex XDR incident handling v3
-version: -1
-id: Cortex XDR incident handling v3
 description: |-
   This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
   The playbook syncs and updates new XDR alerts that construct the incident and triggers a sub-playbook to handle each alert by type.
   Then, the playbook performs enrichment on the incident’s indicators and hunts for related IOCs.
   Based on the severity, it lets the analyst decide whether to continue to the remediation stage or close the investigation as a false positive.
   After the remediation, if there are no new alerts, the playbook stops the alert sync and closes the XDR incident and investigation. For performing the bidirectional sync, the playbook uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0. After the Calculate Severity - Generic v2 sub-playbook’s run, Cortex XSOAR will be treated as the single source of truth for the severity field, and it will sync only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR will not update in the XSOAR incident.
+name: Cortex XDR incident handling v3
+id: Cortex XDR incident handling v3
 inputs:
 - description: Incident ID.
   key: incident_id
@@ -1292,8 +1290,7 @@ tasks:
       assetid: {}
       closeNotes:
         simple: Closed as false positive.
-      closeReason: 
-        simple: False Positive
+      closeReason: {}
       code42alerttype: {}
       emailclassification: {}
       id: {}
@@ -1333,8 +1330,7 @@ tasks:
       assetid: {}
       closeNotes:
         simple: Closed as duplicate.
-      closeReason:
-        simple: Duplicate
+      closeReason: {}
       code42alerttype: {}
       emailclassification: {}
       id: {}
@@ -1814,13 +1810,14 @@ tasks:
     quietmode: 0
     scriptarguments:
       columns:
-        simple: Incident Id,Created,Name,Incident Similarity
+        simple: Incident Id,Created,Name,Incident Similarity,Username,Hostname,OS
+          actor command line
       context_path:
-        simple: DBotFindSimilarIncidents.similarIncident
+        simple: DBotFindSimilarIncidents.similarIncident(val.id='#/Details/'+val.id)
       grid_id:
         simple: xdrsimilarincidents
       keys:
-        simple: id,created,name,similarity incident
+        simple: id,created,name,similarity incident,xdralerts.user_name,xdralerts.host_name,xdralerts.osactorprocesscommandline
       overwrite: {}
       sort_by: {}
       unpack_nested_elements: {}
@@ -1829,13 +1826,13 @@ tasks:
     task:
       brand: ""
       description: Creates a Grid table from items or key-value pairs.
-      id: 667c7c23-0d2b-4490-86bd-c000a78bf8ec
+      id: 5a8723cb-a358-40d6-82c4-e45d5e1d749e
       iscommand: false
       name: Set similar incidents grid
       script: SetGridField
       type: regular
       version: -1
-    taskid: 667c7c23-0d2b-4490-86bd-c000a78bf8ec
+    taskid: 5a8723cb-a358-40d6-82c4-e45d5e1d749e
     timertriggers: []
     type: regular
     view: |-
@@ -1845,6 +1842,7 @@ tasks:
           "y": -280
         }
       }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {
