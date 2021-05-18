@@ -1145,7 +1145,7 @@ def search_samples_with_polling_command(args):
         schedule_config = ScheduledCommand(command='autofocus-search-samples',
                                            next_run_in_seconds=interval_in_secs,
                                            args=polling_args, timeout_in_seconds=600)
-        return CommandResults(scheduled_command=schedule_config)
+        return CommandResults(scheduled_command=schedule_config, ignore_readable_output=True)
 
 
 def search_sessions_with_polling_command(args):
@@ -1183,6 +1183,7 @@ def search_sessions_with_polling_command(args):
                                            next_run_in_seconds=interval_in_secs,
                                            args=polling_args, timeout_in_seconds=600)
         command_results.scheduled_command = schedule_config
+        command_results.ignore_readable_output = True
     return command_results
 
 
@@ -1355,7 +1356,7 @@ def top_tags_search_command(args):
     )
 
 
-def top_tags_results_command(args):
+def top_tags_results_command(args) -> List[CommandResults]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
@@ -1415,7 +1416,9 @@ def top_tags_with_polling_command(args):
         schedule_config = ScheduledCommand(command='autofocus-top-tags-search',
                                            next_run_in_seconds=interval_in_secs,
                                            args=polling_args, timeout_in_seconds=600)
-        command_results[1].scheduled_command = schedule_config
+        command_results[0].scheduled_command = schedule_config
+        for result in command_results:
+            result.ignore_readable_output = True
     return command_results
 
 
