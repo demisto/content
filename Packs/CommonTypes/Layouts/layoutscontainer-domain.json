@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "domainRepUnifiedUpdated",
+    "id": "domainRepUnified",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -883,7 +883,7 @@
             }
         ]
     },
-    "name": "Domain Indicator Updated",
+    "name": "Domain Indicator",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

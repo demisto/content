@@ -1,7 +1,7 @@
 {
-    "id": "urlRepUpdated",
+    "id": "urlRep",
     "group": "indicator",
-    "name": "URL Indicator Updated",
+    "name": "URL Indicator",
     "description": "",
     "indicatorsDetails": {
         "tabs": [
