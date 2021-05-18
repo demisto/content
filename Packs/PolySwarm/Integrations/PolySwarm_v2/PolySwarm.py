@@ -295,15 +295,16 @@ class PolyswarmConnector():
 
         return command_results
 
-    def get_report(self, file_hash: str) -> object:
+    def get_report(self,
+                   hashes: list) -> object:
         """
             UUID is equal to Hash.
         """
-        title = 'PolySwarm Report for UUID: %s' % file_hash
+        title = 'PolySwarm Report for UUID: %s' % hashes
 
         demisto.debug(f'[get_report] {title}')
 
-        return self.file_reputation(file_hash)
+        return self.file_reputation(hashes)
 
 
 def main():
