@@ -122,26 +122,29 @@ class PolyswarmConnector():
                                  sha256, indicator)
 
     def file_reputation(self,
-                        file_hash: str) -> object:
-        if not file_hash:
-            return_error('Please specify a file hash to enrich.')
+                        hashes: list) -> object:
+        command_results = []
 
-        title = 'PolySwarm File Reputation for Hash: %s' % file_hash
+        artifacts = argToList(hashes)
 
-        demisto.debug(f'[file_reputation] {title}')
+        for artifact in artifacts:
+            title = 'PolySwarm File Reputation for Hash: %s' % artifact
 
-        try:
-            results = self.polyswarm_api.search(file_hash)
+            demisto.debug(f'[file_reputation] {title}')
 
-        except Exception as err:
-            return_error('{ERROR_ENDPOINT}{err}'.
-                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                err=err))
+            try:
+                results = self.polyswarm_api.search(artifact)
 
-        error_msg = 'Error fetching results. Please try again.'
+            except Exception as err:
+                return_error('{ERROR_ENDPOINT}{err}'.
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
 
-        return self.return_hash_results(results,
-                                        error_msg)
+            error_msg = 'Error fetching results. Please try again.'
+
+            command_results.append(self.return_hash_results(results,
+                                                            error_msg))
+        return command_results
 
     def detonate_file(self, entry_id: dict) -> object:
         title = 'PolySwarm File Detonation for Entry ID: %s' % entry_id
