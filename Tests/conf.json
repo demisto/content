@@ -3407,7 +3407,8 @@
         "Centreon-Test-Playbook": "Issue 37022",
         "AWS-securityhub Test": "Issue 29796",
         "McAfeeWebGatewayTest": "Issue 37020",
-        "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024"
+        "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
+        "Microsoft Advanced Threat Analytics - Test": "Issue 29593"
     },
     "skipped_integrations": {
         
