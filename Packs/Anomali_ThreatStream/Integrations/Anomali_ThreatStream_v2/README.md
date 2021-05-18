@@ -56,7 +56,8 @@ Checks the reputation of the given IP.
 | IP.ASN | String | Autonomous System \(AS\) number associated with the indicator. | 
 | IP.Address | String | IP address of the indicator. | 
 | IP.Geo.Country | String | Country associated with the indicator. | 
-| IP.Geo.Location | String | Longitude and latitude of the IP address. | 
+| IP.Geo.Location | String | Longitude and latitude of the IP address. |
+| IP.Tags | Unknown | (List) Tags of the IP. | 
 | ThreatStream.IP.ASN | String | Autonomous System \(AS\) number associated with the indicator. | 
 | ThreatStream.IP.Address | String | IP address of the indicator. | 
 | ThreatStream.IP.Country | String | Country associated with the indicator. | 
@@ -67,6 +68,7 @@ Checks the reputation of the given IP.
 | ThreatStream.IP.Status | String | Status assigned to the indicator. | 
 | ThreatStream.IP.Organization | String | Name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.IP.Source | String | The source of the indicator. | 
+| ThreatStream.IP.Tags | Unknown | Tags assigned to the IP. |
 | DBotScore.Score | Number | The actual score. | 
 | IP.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 
@@ -83,7 +85,8 @@ Checks the reputation of the given IP.
                 "Location": "33.6007,73.0679"
             }, 
             "ASN": "45595", 
-            "Address": "39.41.26.166"
+            "Address": "39.41.26.166",
+            "Tags": ["phish-target", "victim-hi-tech"]
         }, 
         "DBotScore": {
             "Vendor": "TOR Exit Nodes", 
@@ -101,6 +104,7 @@ Checks the reputation of the given IP.
             "Address": "39.41.26.166", 
             "Organization": "PTCL", 
             "Type": "ip", 
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
             "ASN": "45595"
         }
     }
@@ -137,6 +141,7 @@ Checks the reputation of the given domain name.
 | --- | --- | --- |
 | Domain.Name | String | The domain name. | 
 | Domain.DNS | String | IPs resolved by DNS.  | 
+| Domain.Tags | Unknown | (List) Tags of the domain. | 
 | Domain.WHOIS.CreationDate | Date | Date the domain was created. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.UpdatedDate | Date | Date the domain was last updated. The date format is: YYYYMMDDThhmmss. Where T denotes the start of the value for time, in UTC time. | 
 | Domain.WHOIS.Registrant.Name | String | Name of the registrant. | 
@@ -152,6 +157,7 @@ Checks the reputation of the given domain name.
 | ThreatStream.Domain.Status | String | Status assigned to the indicator. | 
 | ThreatStream.Domain.Organization | String | Name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.Domain.Source | String | The source of the indicator. | 
+| ThreatStream.Domain.Tags | Unknown | Tags assigned to the domain. |
 | Domain.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -175,6 +181,7 @@ Checks the reputation of the given domain name.
             "Address": "microsoftfaq.com", 
             "Organization": "", 
             "Type": "domain", 
+            "Tags": ["phish-target", "victim-hi-tech"],
             "ASN": ""
         }, 
         "Domain": {
@@ -191,7 +198,8 @@ Checks the reputation of the given domain name.
                     "Email": "", 
                     "Name": "Registrant City:"
                 }
-            }
+            },
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}]
         }, 
         "DBotScore": {
             "Vendor": "Analyst", 
@@ -235,7 +243,8 @@ Checks the reputation of the given hash of the file.
 | File.SHA1 | String | SHA1 hash of the file. | 
 | File.SHA256 | String | SHA256 hash of the file. | 
 | File.SHA512 | String | SHA512 hash of the file. | 
-| File.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
+| File.Malicious.Vendor | String | Vendor that reported the indicator as malicious. |
+| File.Tags | Unknown | (List) Tags of the file. |  
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -250,6 +259,7 @@ Checks the reputation of the given hash of the file.
 | ThreatStream.File.SHA512 | String | The SHA512 hash of the indicator. | 
 | ThreatStream.File.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.File.Source | String | The source of the indicator. | 
+| ThreatStream.File.Tags | Unknown | Tags assigned to the file. |
 
 
 #### Command Example
@@ -271,10 +281,12 @@ Checks the reputation of the given hash of the file.
             "Modified": "2019-06-24T10:13:27.284Z", 
             "Source": "URLHaus Hashes", 
             "Type": "md5", 
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
             "MD5": "07df6c1d9a76d81f191be288d463784b"
         }, 
         "File": {
-            "MD5": "07df6c1d9a76d81f191be288d463784b"
+            "MD5": "07df6c1d9a76d81f191be288d463784b",
+            "Tags": ["phish-target", "victim-hi-tech"]
         }
     }
 
@@ -319,6 +331,7 @@ Checks the reputation of the given email address.
 | ThreatStream.EmailReputation.Email | String | The email address of the indicator. | 
 | ThreatStream.EmailReputation.Source | String | The source of the indicator. | 
 | ThreatStream.EmailReputation.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
+| ThreatStream.EmailReputation.Tags | Unknown | Tags assigned to the email. |
 
 
 #### Command Example
@@ -340,6 +353,7 @@ Checks the reputation of the given email address.
             "Modified": "2019-06-24T09:50:23.810Z", 
             "Source": "Anomali Labs Compromised Credentials", 
             "Type": "email", 
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}],
             "Email": "goo@test.com"
         }
     }
@@ -1679,6 +1693,7 @@ Checks the reputation of the given URL.
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | URL.Data | String | The URL of the indicator. | 
+| URL.Tags | Unknown | (List) Tags of the URL. | 
 | URL.Malicious.Vendor | String | Vendor that reported the indicator as malicious. | 
 | ThreatStream.URL.Modified | String | Date and time when the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time. | 
 | ThreatStream.URL.Confidence | String | Level of certainty that an observable is of the reported indicator type. Confidence score can range from 0-100, in increasing order of confidence. | 
@@ -1689,7 +1704,7 @@ Checks the reputation of the given URL.
 | ThreatStream.URL.Type | String | The indicator type. | 
 | ThreatStream.URL.Source | String | The source of the indicator. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
-
+| ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. |
 
 #### Command Example
     url url=http://194.147.35.172/mikey.mpsl using-brand="Anomali ThreatStream v2"
@@ -1701,7 +1716,8 @@ Checks the reputation of the given URL.
             "Malicious": {
                 "Vendor": "ThreatStream"
             }, 
-            "Data": "http://194.147.35.172/mikey.mpsl"
+            "Data": "http://194.147.35.172/mikey.mpsl",
+            "Tags": ["phish-target", "victim-hi-tech"]
         }, 
         "ThreatStream.URL": {
             "Status": "active", 
@@ -1712,7 +1728,8 @@ Checks the reputation of the given URL.
             "Source": "H3X Tracker", 
             "Address": "http://194.147.35.172/mikey.mpsl", 
             "Organization": "LLC Baxet", 
-            "Type": "url"
+            "Type": "url",
+            "Tags": [{"id": "4wq", "name": "phish-target", "org_id": "88"}, {"id": "ezn", "name": "victim-hi-tech", "org_id": "88"}]
         }, 
         "DBotScore": {
             "Vendor": "H3X Tracker", 
@@ -1729,4 +1746,3 @@ Checks the reputation of the given URL.
 | Address | Confidence | Source | Type | Status | Modified | Organization | Country | Severity |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `http://194.147.35.172/mikey.mpsl` | 90 | H3X Tracker | url | active | 2019-06-24T10:10:05.890Z | LLC Baxet | RU | very-high |
-
