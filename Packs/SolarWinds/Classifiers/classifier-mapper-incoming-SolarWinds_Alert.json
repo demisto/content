@@ -1,7 +1,7 @@
 {
     "description": "Incoming mapper for SolarWinds Alert",
     "feed": false,
-    "id": "1c48e4e5-cba0-4e62-8ae8-0070338eb95c",
+    "id": "incoming-solarwinds-alert-mapper",
     "mapping": {
         "SolarWinds Alert": {
             "dontMapEventToLabels": true,
