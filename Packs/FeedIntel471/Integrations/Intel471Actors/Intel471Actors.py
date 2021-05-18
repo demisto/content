@@ -11,7 +11,7 @@ SEARCH_PARAMS = {
 }
 FEED_URL = 'https://api.intel471.com/v1/actors?'
 MAPPING = {
-    'handles': 'stixaliases',
+    'handles': 'aliases',  # TODO: check if it works
     'lastUpdated': 'updateddate',
     'activeFrom': 'activefrom',
     'activeUntil': 'activeuntil',
@@ -163,11 +163,11 @@ def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
     url = _create_url(**params)
     params['url'] = url
-    params['indicator_type'] = 'STIX Threat Actor'
+    params['indicator_type'] = 'Threat Actor'
     params['feed_name_to_config'] = {
         'actors': {
             'extractor': 'actors[*]',
-            'indicator_type': 'STIX Threat Actor',
+            'indicator_type': 'Threat Actor',
             'indicator': 'links_forums',
             'mapping': MAPPING,
             'flat_json_with_prefix': True,
