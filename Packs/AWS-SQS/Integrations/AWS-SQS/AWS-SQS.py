@@ -242,5 +242,7 @@ def main():
         return_error("Failed to execute {} command.\nError:\n{}".format(demisto.command(), str(e)))
 
 
+from AWSApiModule import *  # noqa: E402
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
