@@ -1,4 +1,4 @@
-Analyze suspicious hashes, URLs, domains and IP addresses
+Analyze suspicious hashes, URLs, domains, and IP addresses.
 ## Configure VirusTotal on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -19,10 +19,10 @@ Analyze suspicious hashes, URLs, domains and IP addresses
     | Preferred Vendors List. CSV list of vendors which are considered more trustworthy. |  | False |
     | Preferred Vendor Threshold. The minimum number of highly trusted vendors required to consider a domain, IP address, URL, or file as malicious.  |  | False |
     | Determines whether to return all results, which can number in the thousands. If “true”, returns all results and overrides the _fullResponse_, _long_ arguments (if set to “false”) in a command. If “false”, the _fullResponse_, _long_ arguments in the command determines how results are returned. |  | False |
-    | IP Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
-    | Domain Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
-    | URL Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
-    | File Relationships | Select the list of relationships which will be brought from the api. Some of the relationships are signed with * key which indicates that they are available only for premium api key | False |
+    | IP Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+    | Domain Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+    | URL Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
+    | File Relationships | Select the list of relationships to retrieve from the API. Some of the relationships are signed with * key which indicates that they are available only when using a premium API key. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -91,12 +91,12 @@ Checks the reputation of an IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address to check. | Required | 
-| long | Whether to return full response for detected URLs. Default is "false". Possible values are: true, false. Default is false. | Optional | 
+| long | Whether to return a full response for detected URLs. Default is "false". Possible values are: "true" and "false". | Optional | 
 | threshold | If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used. | Optional | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10". Default is 10. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional | 
-| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: true, false. Default is false. | Optional | 
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display in the long format. Default is "10". | Optional | 
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". | Optional | 
+| retries | Number of retries for the API rate limit. Default is "0". | Optional | 
+| fullResponse | Whether to return all results, which can be thousands. We recommend that you don't return full results in playbooks. Possible values are: "true" and "false". Default is "false". | Optional | 
 
 
 #### Context Output
@@ -143,13 +143,13 @@ Checks the reputation of a URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas. | Required | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional | 
-| long | Whether to return the full response for the detected URLs. Possible values are: true, false. Default is false. | Optional | 
+| url | A comma-separated list of URLs to check. This command will not work properly on URLs containing commas. | Required | 
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10". | Optional | 
+| long | Whether to return the full response for the detected URLs. Possible values are: "true" and "false". Default is "false". | Optional | 
 | threshold | If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| submitWait | Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0". Default is 0. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional | 
+| submitWait | Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".  | Optional | 
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".  | Optional | 
+| retries | Number of retries for the API rate limit. Default is "0".  | Optional | 
 
 
 #### Context Output
