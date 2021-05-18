@@ -876,8 +876,8 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
     last_created_time = ''
     if last_run:
-        id_offset = last_run.get('idOffset') if last_run.get('idOffset') else ''
-        last_created_time = last_run.get('lastCreatedTime') if last_run.get('lastCreatedTime') else ''
+        id_offset = last_run.get('idOffset') or ''
+        last_created_time = last_run.get('lastCreatedTime') or ''
     if not id_offset:
         id_offset = 0
 
