@@ -19,7 +19,7 @@ dependson:
   - Confluera|||confluera-fetch-detections
   - Confluera|||confluera-fetch-progressions
 runonce: false
-dockerimage: demisto/python3:3.9.4.19537
+dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
