@@ -1,2 +1,5 @@
 [file:integration-AWS-SQS.yml]
 ignore=IN126
+
+[file:AWS-SQS.yml]
+ignore=IN126,BA108,BA109
