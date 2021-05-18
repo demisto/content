@@ -3,9 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 # flake8: noqa
-import boto3
 import json
-from botocore.config import Config
 from botocore.parsers import ResponseParserError
 import urllib3.util
 from datetime import timezone
