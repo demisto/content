@@ -122,8 +122,7 @@ class PolyswarmConnector():
                                  sha256, indicator)
 
     def file_reputation(self,
-                        param: dict) -> object:
-        file_hash = param.get('file', param.get('hash'))
+                        file_hash: str) -> object:
         if not file_hash:
             return_error('Please specify a file hash to enrich.')
 
@@ -144,16 +143,16 @@ class PolyswarmConnector():
         return self.return_hash_results(results,
                                         error_msg)
 
-    def detonate_file(self, param: dict) -> object:
-        title = 'PolySwarm File Detonation for Entry ID: %s' % param['entryID']
+    def detonate_file(self, entry_id: dict) -> object:
+        title = 'PolySwarm File Detonation for Entry ID: %s' % entry_id
 
         demisto.debug(f'[detonate_file] {title}')
 
         try:
-            file_info = demisto.getFilePath(param['entryID'])
+            file_info = demisto.getFilePath(entry_id)
         except Exception:
-            return_error('File not found - EntryID: {entryID}'.
-                         format(entryID=param['entryID']))
+            return_error('File not found - EntryID: {entry_id}'.
+                         format(entryID=entry_id))
 
         try:
             demisto.debug(f'Submit file: {file_info}')
@@ -171,13 +170,13 @@ class PolyswarmConnector():
         return self.return_hash_results(result,
                                         error_msg)
 
-    def rescan_file(self, param: dict) -> object:
-        title = 'PolySwarm Rescan for Hash: %s' % param['hash']
+    def rescan_file(self, hash_file: str) -> object:
+        title = 'PolySwarm Rescan for Hash: %s' % hash_file
 
         demisto.debug(f'[rescan_file] {title}')
 
         try:
-            instance = self.polyswarm_api.rescan(param['hash'])
+            instance = self.polyswarm_api.rescan(hash_file)
             result = self.polyswarm_api.wait_for(instance)
 
         except Exception as err:
@@ -190,15 +189,15 @@ class PolyswarmConnector():
         return self.return_hash_results(result,
                                         error_msg)
 
-    def get_file(self, param: dict):
-        demisto.debug(f'[get_file] Hash: {param["hash"]}')
+    def get_file(self, hash_file: str):
+        demisto.debug(f'[get_file] Hash: {hash_file}')
 
         handle_file = io.BytesIO()
 
         try:
-            self.polyswarm_api.download_to_handle(param['hash'],
+            self.polyswarm_api.download_to_handle(hash_file,
                                                   handle_file)
-            return fileResult(param['hash'], handle_file.getvalue())
+            return fileResult(hash_file, handle_file.getvalue())
         except Exception as err:
             return_error('{ERROR_ENDPOINT}{err}'.
                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
@@ -286,15 +285,15 @@ class PolyswarmConnector():
 
         return command_results
 
-    def get_report(self, param: dict) -> object:
+    def get_report(self, file_hash: str) -> object:
         """
             UUID is equal to Hash.
         """
-        title = 'PolySwarm Report for UUID: %s' % param['scan_uuid']
+        title = 'PolySwarm Report for UUID: %s' % file_hash
 
         demisto.debug(f'[get_report] {title}')
 
-        return self.file_reputation(param)
+        return self.file_reputation(file_hash)
 
 
 def main():
@@ -312,13 +311,13 @@ def main():
             else:
                 return_error('Connection Failed')
         elif command == 'file':
-            return_results(polyswarm.file_reputation(param))
+            return_results(polyswarm.file_reputation(param['hash']))
         elif command == 'get-file':
-            return_results(polyswarm.get_file(param))
+            return_results(polyswarm.get_file(param['hash']))
         elif command == 'file-scan':
-            return_results(polyswarm.detonate_file(param))
+            return_results(polyswarm.detonate_file(param['entryID']))
         elif command == 'file-rescan':
-            return_results(polyswarm.rescan_file(param))
+            return_results(polyswarm.rescan_file(param['hash']))
         elif command == 'url':
             return_results(polyswarm.url_reputation(param, 'url'))
         elif command == 'url-scan':
@@ -328,7 +327,7 @@ def main():
         elif command == 'domain':
             return_results(polyswarm.url_reputation(param, 'domain'))
         elif command == 'polyswarm-get-report':
-            return_results(polyswarm.get_report(param))
+            return_results(polyswarm.get_report(param['scan_uuid']))
 
     except Exception as e:
         return_error(str(e),
