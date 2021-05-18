@@ -243,7 +243,7 @@ def main():
 
         if demisto.command() == 'test-module':
             result = test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame)
-            return _results(result)
+            return_results(result)
 
         if demisto.command() == 'fetch-incidents':
             max_alerts = MAX_INCIDENTS_TO_FETCH
@@ -263,10 +263,10 @@ def main():
             # demisto.createIncidents(incidents)
         elif demisto.command() == 'Linkshadow_fetch_entity_anomalies':
             # print ("Linkshadow_fetch_entity_anomalies")
-            return _results(fetch_entity_anomalies(client, demisto.args()))
+            return_results(fetch_entity_anomalies(client, demisto.args()))
     except DemistoException as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return _error('Failed to execute {demisto.command()} command')
+        return_error('Failed to execute {demisto.command()} command')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
