@@ -10,6 +10,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
+
 class ProcessEventDetailMap:
 
     class filemod_complete:
@@ -479,14 +481,14 @@ def test_module(client: Client) -> str:
 
 def main() -> None:
 
-    api_token = demisto.params().get('apitoken')
-    base_url = urljoin(demisto.params()['url'], '/api')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-    command = demisto.command()
-    args = demisto.args() if demisto.args() else {}
-    demisto.debug(f'Command being called is {command}')
     try:
+        api_token = demisto.params().get('apitoken')
+        base_url = urljoin(demisto.params()['url'], '/api')
+        verify_certificate = not demisto.params().get('insecure', False)
+        proxy = demisto.params().get('proxy', False)
+        command = demisto.command()
+        args = demisto.args() if demisto.args() else {}
+        demisto.debug(f'Command being called is {command}')
 
         client = Client(
             base_url=base_url,
