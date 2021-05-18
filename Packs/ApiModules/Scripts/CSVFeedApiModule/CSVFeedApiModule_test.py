@@ -280,11 +280,11 @@ def test_get_indicators_with_relations():
         'https://ipstack.com': {
             'fieldnames': ['value', 'a'],
             'indicator_type': 'IP',
-            'relation_entity_b_type': 'IP',
-            'relation_name': 'resolved-from',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
             'mapping': {
                 'AAA': 'a',
-                'relation_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
             }
         }
     }
@@ -293,7 +293,7 @@ def test_get_indicators_with_relations():
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relation_entity_b': 'Test',
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
                                 'tags': []},
                      'relationships': [
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
@@ -332,11 +332,11 @@ def test_get_indicators_without_relations():
         'https://ipstack.com': {
             'fieldnames': ['value', 'a'],
             'indicator_type': 'IP',
-            'relation_entity_b_type': 'IP',
-            'relation_name': 'resolved-from',
+            'relationship_entity_b_type': 'IP',
+            'relationship_name': 'resolved-from',
             'mapping': {
                 'AAA': 'a',
-                'relation_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
+                'relationship_entity_b': ('a', r'.*used\s+by\s(.*?)\s', None),
             }
         }
     }
@@ -345,7 +345,7 @@ def test_get_indicators_without_relations():
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relation_entity_b': 'Test',
+                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
                                 'tags': []}, 'relationships': []}]
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
