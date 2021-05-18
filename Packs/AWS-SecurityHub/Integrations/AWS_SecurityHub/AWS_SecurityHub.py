@@ -824,5 +824,7 @@ def main():  # pragma: no cover
             code=type(e), message=e), error=e)
 
 
+from AWSApiModule import *  # noqa: E402
+
 if __name__ in ['__builtin__', 'builtins', '__main__']:  # pragma: no cover
     main()
