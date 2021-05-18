@@ -20,8 +20,8 @@ IGNORED_FILES_IN_DIR = {'.', '..'}
 # Using Py API
 def put_file_command(api_client: CBCloudAPI, sensor_id: str, destination_path: str, file_id: str):
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
-    file_path = demisto.getFilePath(file_id).get('path')
-    session.put_file(open(file_path, 'rb'), destination_path)
+    path = demisto.getFilePath(file_id)
+    session.put_file((path['name'], open(path['path'], 'rb')), destination_path)
     return f'File: {file_id} is successfully put to the remote destination {destination_path}'
 
 
