@@ -13,10 +13,12 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $SKIP_PRIVATE_BUILD != "true"'
-    - if: '$NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
-    - if: '$INSTANCE_TESTS && $SKIP_PRIVATE_BUILD != "true"'
-    - if: '$DEMISTO_SDK_NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$SKIP_PRIVATE_BUILD == "true"'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$NIGHTLY'
+    - if: '$INSTANCE_TESTS'
+    - if: '$DEMISTO_SDK_NIGHTLY'
     - if: '$CI_COMMIT_BRANCH !~ /pull\/[0-9]+/'
   script:
     - echo "====Trigger Private Build===="
