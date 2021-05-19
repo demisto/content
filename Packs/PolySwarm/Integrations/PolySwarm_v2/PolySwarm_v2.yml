@@ -187,7 +187,7 @@ script:
   - arguments:
     - default: true
       description: Domain for which to retrieve the reputation information.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
