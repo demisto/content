@@ -497,10 +497,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 66518ad8-2c46-400b-8b8a-c9240b0b5b15
+    taskid: 1918ca34-a147-4363-8666-33e7e482deb3
     type: regular
     task:
-      id: 66518ad8-2c46-400b-8b8a-c9240b0b5b15
+      id: 1918ca34-a147-4363-8666-33e7e482deb3
       version: -1
       name: ThreatExchange-Query
       description: Searches for subjective opinions on indicators of compromise stored
@@ -513,6 +513,8 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
+      descriptor_type:
+        simple: IP_ADDRESS
       strict_text:
         simple: "true"
       text:
@@ -534,10 +536,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: ddca035b-b75a-48c4-8b9a-d92f5f961cc4
+    taskid: 2aa804ec-005e-4e3a-8457-a9eeda961d6e
     type: condition
     task:
-      id: ddca035b-b75a-48c4-8b9a-d92f5f961cc4
+      id: 2aa804ec-005e-4e3a-8457-a9eeda961d6e
       version: -1
       name: Verify Query
       type: condition
