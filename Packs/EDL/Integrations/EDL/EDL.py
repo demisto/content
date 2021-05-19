@@ -723,7 +723,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                 start = 1
                 for lines in batch(f.readlines(), 100):
                     end = start + len(lines)
-                    demisto.info(f'nginx access log ({start}-{end-1}): ' + '\n'.join(lines))
+                    demisto.info(f'nginx access log ({start}-{end-1}): ' + ''.join(lines))
                     start = end
             os.unlink(old_access)
         if log_error:
@@ -731,7 +731,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                 start = 1
                 for lines in batch(f.readlines(), 100):
                     end = start + len(lines)
-                    demisto.error(f'nginx error log ({start}-{end-1}): ' + '\n'.join(lines))
+                    demisto.error(f'nginx error log ({start}-{end-1}): ' + ''.join(lines))
                     start = end
             os.unlink(old_error)
     except Exception as e:

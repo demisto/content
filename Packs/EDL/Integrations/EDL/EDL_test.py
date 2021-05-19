@@ -69,9 +69,7 @@ IOC_RES_LEN = 38
 '''Tests'''
 
 
-@pytest.mark.helper_commands
 class TestHelperFunctions:
-    @pytest.mark.get_edl_ioc_values
     def test_get_edl_ioc_values_1(self, mocker):
         """Test on_demand"""
         from EDL import get_edl_ioc_values, RequestArguments
@@ -87,7 +85,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_edl_ioc_values
     def test_get_edl_ioc_values_2(self, mocker):
         """Test update by not on_demand with no refresh"""
         import CommonServerPython as CSP
@@ -107,7 +104,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.get_edl_ioc_values
     def test_get_edl_ioc_values_3(self, mocker):
         """Test update by not on_demand with refresh"""
         import CommonServerPython as CSP
@@ -127,7 +123,6 @@ class TestHelperFunctions:
             for ioc_row in ioc_list:
                 assert ioc_row in iocs_text_dict
 
-    @pytest.mark.list_to_str
     def test_list_to_str_1(self):
         """Test invalid"""
         from EDL import list_to_str
@@ -139,7 +134,6 @@ class TestHelperFunctions:
             invalid_list_value = {'invalid': 'invalid'}
             list_to_str(invalid_list_value)
 
-    @pytest.mark.list_to_str
     def test_list_to_str_2(self):
         """Test empty"""
         from EDL import list_to_str
@@ -147,7 +141,6 @@ class TestHelperFunctions:
         assert list_to_str([]) == ''
         assert list_to_str({}) == ''
 
-    @pytest.mark.list_to_str
     def test_list_to_str_3(self):
         """Test non empty fields"""
         from EDL import list_to_str
@@ -156,7 +149,6 @@ class TestHelperFunctions:
         assert list_to_str(valid_list_value, '.') == '1.2.3.4'
         assert list_to_str(valid_list_value, map_func=lambda x: f'{x}a') == '1a,2a,3a,4a'
 
-    @pytest.mark.get_params_port
     def test_get_params_port_1(self):
         """Test invalid"""
         from CommonServerPython import DemistoException
@@ -165,7 +157,6 @@ class TestHelperFunctions:
         with pytest.raises(DemistoException):
             get_params_port(params)
 
-    @pytest.mark.get_params_port
     def test_get_params_port_2(self):
         """Test empty"""
         from EDL import get_params_port
@@ -173,14 +164,12 @@ class TestHelperFunctions:
         with pytest.raises(ValueError):
             get_params_port(params)
 
-    @pytest.mark.get_params_port
     def test_get_params_port_3(self):
         """Test valid"""
         from EDL import get_params_port
         params = {'longRunningPort': '80'}
         assert get_params_port(params) == 80
 
-    @pytest.mark.refresh_edl_context
     def test_refresh_edl_context_1(self, mocker):
         """Sanity"""
         import EDL as edl
@@ -197,7 +186,6 @@ class TestHelperFunctions:
                 else:
                     assert ip in edl_vals
 
-    @pytest.mark.find_indicators_to_limit
     def test_find_indicators_to_limit_1(self, mocker):
         """Test find indicators limit"""
         import EDL as edl
@@ -208,7 +196,6 @@ class TestHelperFunctions:
             edl_vals = edl.find_indicators_to_limit(indicator_query='', limit=limit)
             assert len(edl_vals) == limit
 
-    @pytest.mark.find_indicators_to_limit
     def test_find_indicators_to_limit_and_offset_1(self, mocker):
         """Test find indicators limit and offset"""
         import EDL as edl
@@ -222,7 +209,6 @@ class TestHelperFunctions:
             # check that the first value is the second on the list
             assert edl_vals[0].get('value') == '212.115.110.19'
 
-    @pytest.mark.find_indicators_to_limit_loop
     def test_find_indicators_to_limit_loop_1(self, mocker):
         """Test find indicators stops when reached last page"""
         import EDL as edl
@@ -233,7 +219,6 @@ class TestHelperFunctions:
             edl_vals, nxt_pg = edl.find_indicators_to_limit_loop(indicator_query='', limit=limit)
             assert nxt_pg == 1  # assert entered into loop
 
-    @pytest.mark.find_indicators_to_limit_loop
     def test_find_indicators_to_limit_loop_2(self, mocker):
         """Test find indicators stops when reached limit"""
         import EDL as edl
@@ -246,7 +231,6 @@ class TestHelperFunctions:
                                                                  last_found_len=IOC_RES_LEN)
             assert nxt_pg == 1  # assert entered into loop
 
-    @pytest.mark.validate_basic_authentication
     def test_create_values_for_returned_dict(self):
         from EDL import create_values_for_returned_dict, EDL_VALUES_KEY, RequestArguments
         with open('EDL_test/TestHelperFunctions/demisto_url_iocs.json', 'r') as iocs_json_f:
@@ -273,7 +257,6 @@ class TestHelperFunctions:
             assert returned_output == 'www.demisto.com/cool\nwww.demisto.com/*'
             assert num_of_indicators == 2
 
-    @pytest.mark.validate_basic_authentication
     def test_create_values_for_returned_dict__filters(self):
         from EDL import create_values_for_returned_dict, EDL_VALUES_KEY, RequestArguments
         iocs = [
@@ -295,7 +278,6 @@ class TestHelperFunctions:
         assert 'domain.com' in returned_output  # PAN-OS URLs
         assert num_of_indicators == 6
 
-    @pytest.mark.validate_basic_authentication
     def test_validate_basic_authentication(self):
         """Test Authentication"""
         from EDL import validate_basic_authentication
@@ -325,7 +307,6 @@ class TestHelperFunctions:
         assert not validate_basic_authentication(data.get('wrong_credentials_auth'), username, password)
         assert validate_basic_authentication(data.get('right_credentials_auth'), username, password)
 
-    @pytest.mark.ips_to_ranges
     def test_ips_to_ranges_range(self):
         from EDL import ips_to_ranges, COLLAPSE_TO_RANGES
         ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
@@ -339,7 +320,6 @@ class TestHelperFunctions:
         assert "2.2.2.2" in ip_range_list
         assert "25.24.23.22" in ip_range_list
 
-    @pytest.mark.ips_to_cidrs
     def test_ips_to_ranges_cidr(self):
         from EDL import ips_to_ranges, COLLAPSE_TO_CIDR
         ip_list = [IPAddress("1.1.1.1"), IPAddress("25.24.23.22"), IPAddress("22.21.20.19"),
@@ -376,9 +356,9 @@ def nginx_cleanup():
     global NGINX_PROCESS
     if NGINX_PROCESS:
         NGINX_PROCESS.terminate()
-        NGINX_PROCESS = None
         # let the process terminate
-        sleep(0.5)
+        NGINX_PROCESS.wait(1.0)
+        NGINX_PROCESS = None
 
 
 docker_only = pytest.mark.skipif('flask-nginx' not in os.getenv('DOCKER_IMAGE', ''), reason='test should run only within docker')
