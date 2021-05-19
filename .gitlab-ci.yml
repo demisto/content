@@ -12,7 +12,6 @@ stages:
   - create-instances
   - run-instances
   - upload-to-marketplace
-  - testing
 
 
 variables:
