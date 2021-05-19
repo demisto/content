@@ -1656,7 +1656,7 @@ class Pack(object):
             # Since premium packs cannot be legacy, we directly set this attribute to false.
             self._legacy = False
 
-            # ===== Pack Statistics Attributes =====
+        # ===== Pack Statistics Attributes =====
         if not self._is_private_pack and statistics_handler:  # Public Content case
             self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
                 self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
