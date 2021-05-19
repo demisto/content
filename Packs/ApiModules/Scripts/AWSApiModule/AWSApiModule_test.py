@@ -98,4 +98,3 @@ def test_get_timeout():
     assert read == 100 and connect == 10
     (read, connect) = AWSClient.get_timeout("200,2")
     assert read == 200 and connect == 2
-
