@@ -220,6 +220,7 @@ CAMPAIGN_INDICATOR = [{'fields': {'description': 'Since the beginning of the cal
                        'value': 'Campaign 1 - [Endor] Maze Ransomware'}]
 
 REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
+                                  'firstseenbysource': '1993-06-17T11:00:00.000Z',
                                   'published': '1994-08-12T11:00:00.000Z',
                                   'reportedby': 'Unit42',
                                   'stixid': 'report--a',
@@ -231,8 +232,9 @@ REPORTS_INDICATORS = [{'fields': {'description': 'A description of the report',
                                    'unit42_modified_date': '1993-06-17T11:00:00.000Z',
                                    'unit42_object_refs': ['intrusion-set--a', 'report--ab'],
                                    'unit42_published': '1994-08-12T11:00:00.000Z'},
-                       'type': 'Report',
                        'relationships': [],
+                       'score': 3,
+                       'type': 'Report',
                        'value': '[Unit42 ATOM] Main Report'}]
 
 INDICATORS_RESULT = {'fields': {'firstseenbysource': '2019-07-30T09:29:07.724Z',
@@ -334,6 +336,7 @@ ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
                                         'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
                                         'tags': ['T1047']},
                              'type': 'Attack Pattern',
+                             "score": 2,
                              'value': 'Windows Management Instrumentation'}]
 
 COURSE_OF_ACTION_DATA = [{
@@ -376,7 +379,7 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'stixid': 'course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5',
                                            'tags': []},
                                 'score': 0,
-                                'type': 'Attack Pattern',
+                                'type': 'Course of Action',
                                 'value': 'Deploy XSOAR Playbook - Phishing Investigation - Generic V2'},
                                {'fields': {'description': 'Enable all three scan options in a Zone '
                                                           'Protection profile.',
@@ -387,7 +390,7 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                            'stixid': 'course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2',
                                            'tags': []},
                                 'score': 0,
-                                'type': 'Attack Pattern',
+                                'type': 'Course of Action',
                                 'value': 'Ensure that all zones have Zone Protection Profiles with all '
                                          'Reconnaissance Protection settings enabled.'}]
 
