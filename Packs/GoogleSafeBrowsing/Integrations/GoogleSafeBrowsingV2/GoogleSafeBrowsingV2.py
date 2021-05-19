@@ -150,7 +150,10 @@ def url_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
     result = client.url_request(client.client_body, url)
 
-    if not result or result.get('StatusCode'):
+    if not result:
+        return f'No information was found for url {url}'
+
+    if result.get('StatusCode'):
         handle_errors(result)
 
     urls_data = arrange_results_to_urls(result.get('matches'), url)  # type: ignore
