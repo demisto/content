@@ -1,5 +1,6 @@
-id: Cofense Intelligence v2 test
-version: -1
+id: 851b403a-b576-4dcc-847d-0e0e1bec8005
+version: 19
+vcShouldKeepItemLegacyProdMachine: false
 name: Cofense Intelligence v2 test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,6 +30,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 174c28fb-dc1b-4eb3-8c5b-75f9a3645dcc
@@ -62,6 +64,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 69e11612-a34b-472b-87b0-91457b13eaa9
@@ -97,6 +101,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 59036682-c02c-459a-86c9-91b26f28b1a5
@@ -129,6 +135,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: ac6d26bf-294e-42f4-8d68-461f54202257
@@ -164,6 +172,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: ac234477-b11e-4697-8da9-3319a35219cc
@@ -196,6 +206,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
     taskid: e899e1b7-08b9-4293-8e56-b466f025fe11
@@ -228,6 +240,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
     taskid: c2e52885-5124-4073-8e71-7e46c855ba5b
@@ -267,6 +281,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 005a53e9-a379-4011-8d18-84c657c6fa19
@@ -305,6 +321,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 8237cec9-c163-43a9-8ef5-d098c6e2e476
@@ -337,6 +355,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: 86b3da4d-4198-4c8a-8dfe-9a58b7e87b09
@@ -350,7 +370,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -376,15 +396,17 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: 9b750c20-ebfc-45bd-8e37-dac914eef5db
-    type: regular
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fd8ad50a-5440-4fb1-8bf0-df6596a47115
+    type: title
     task:
-      id: 9b750c20-ebfc-45bd-8e37-dac914eef5db
+      id: fd8ad50a-5440-4fb1-8bf0-df6596a47115
       version: -1
       name: Done
-      type: regular
+      type: title
       iscommand: false
       brand: ""
     separatecontext: false
@@ -392,7 +414,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2290
+          "y": 2360
         }
       }
     note: false
@@ -400,6 +422,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -407,7 +431,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2335,
+        "height": 2375,
         "width": 380,
         "x": 450,
         "y": 50
@@ -420,7 +444,7 @@ inputs:
     simple: myinfo1234@zoho.com
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.5.0
 description: ''
