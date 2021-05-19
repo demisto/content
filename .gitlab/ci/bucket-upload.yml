@@ -3,7 +3,7 @@
     - if: '$BUCKET_UPLOAD == "true"'
 
 .start_tunnel: &start_tunnel
-  - echo "=====Start Tunnel====="
+  - section_start "Start Tunnel"
   - echo "Open an ssh tunnel to the demisto servers and wait until the tunnels are established"
   - echo "Add ssh configurations"
   - |
@@ -14,9 +14,10 @@
     fi
   - echo "Open SSH Tunnel"
   - Tests/scripts/open_ssh_tunnel.sh
+  - section_end "Start Tunnel"
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
-  - echo "=====Check User Permissions to Upload Packs=====" # if bucket upload and uploading to marketplace-dist
+  - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
   - |
     if [[ -n "${BUCKET_UPLOAD}" || -n "${FORCE_BUCKET_UPLOAD}" ]] && [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
@@ -30,6 +31,7 @@
         echo "User '${GITLAB_USER_NAME}' is allowed to upload packs / force upload packs."
       fi
     fi
+  - section_end "Check User Permissions to Upload Packs"
 
 .install_packs_in_server:
   needs: ["create-instances"]
@@ -46,17 +48,21 @@
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - echo "======= Download configuration ========"
+    - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - *start_tunnel
-    - echo "=====Get Instance Variables====="
+    - section_end "Download configuration"
+    - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
-    - echo "=====Wait Until Server Ready====="
+    - section_end "Get Instance Variables"
+    - section_start "Wait Until Server Ready"
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
-    - echo "=====Install Packs====="
+    - section_end "Wait Until Server Ready"
+    - section_start "Install Packs"
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
-    - echo "=====Destroy Instances====="
+    - section_end "Install Packs"
+    - section_start "Destroy Instances"
     - |
       if [ -n "${CONTRIB_BRANCH}" ]; then
         echo "Skipping - not running in contribution instance"
@@ -66,6 +72,7 @@
         zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $ARTIFACTS_FOLDER/server*.log
       fi
+    - section_end "Destroy Instances"
 
 install-packs-in-server6_0:
   extends: .install_packs_in_server
@@ -96,7 +103,7 @@ upload-packs-to-marketplace:
   script:
     - *start_tunnel
     - *check_user_permissions_to_upload_packs
-    - echo "=====Upload Packs To Marketplace Storage====="
+    - section_start "Upload Packs To Marketplace Storage"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
         EXTRACT_FOLDER=$(mktemp -d)
@@ -109,13 +116,15 @@ upload-packs-to-marketplace:
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH"
       fi
-    - echo "=====Validate Premium Packs====="
+    - section_end "Upload Packs To Marketplace Storage"
+    - section_start "Validate Premium Packs"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ "$GCS_MARKET_BUCKET" != "marketplace-dist" ]]; then
         ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       else
         echo "Skipping Premium Packs Validation"
       fi
+    - section_end "Validate Premium Packs"
 
 force-pack-upload:
   stage: upload-to-marketplace
