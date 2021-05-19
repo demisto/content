@@ -829,7 +829,7 @@ def taxii_make_response(taxii_message: TAXIIMessage):
 @APP.route('/taxii-discovery-service', methods=['POST'])
 @taxii_check
 @validate_credentials
-@set_url_scheme
+# @set_url_scheme
 def taxii_discovery_service() -> Response:
     """
     Route for discovery service.
@@ -848,7 +848,7 @@ def taxii_discovery_service() -> Response:
 @APP.route('/taxii-collection-management-service', methods=['POST'])
 @taxii_check
 @validate_credentials
-@set_url_scheme
+# @set_url_scheme
 def taxii_collection_management_service() -> Response:
     """
     Route for collection management.
