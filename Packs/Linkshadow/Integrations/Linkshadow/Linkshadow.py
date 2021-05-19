@@ -6,7 +6,6 @@ import dateparser
 import json
 import urllib3
 import traceback
-from datetime import datetime
 urllib3.disable_warnings()
 
 
@@ -159,7 +158,6 @@ def fetch_entity_anomalies(client, args):
     return_results(results)
 
 
-
 ''' MAIN FUNCTION '''
 
 
@@ -170,7 +168,6 @@ def main():
     plugin_id = demisto.params().get("plugin_id")
     action = demisto.params().get("action")
     time_frame = demisto.params().get("time_frame")
-    verify_certificate = not demisto.params().get('insecure', False)
     first_fetch = demisto.params().get('first_fetch', '1 days')
     first_fetch_time = date_to_timestamp(dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}))
     proxy = demisto.params().get('proxy', False)
@@ -178,9 +175,9 @@ def main():
     try:
 
         client = Client(
-            base_url = base_url,
-            verify = False,
-            proxy = proxy)
+            base_url=base_url,
+            verify=False,
+            proxy=proxy)
 
         if demisto.command() == 'test-module':
             result = test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame)
@@ -200,8 +197,7 @@ def main():
                 time_frame=time_frame
             )
             demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-            
+            demisto.incidents(incidents)         
         elif demisto.command() == 'Linkshadow_fetch_entity_anomalies':
             return_results(fetch_entity_anomalies(client, demisto.args()))
     except Exception as e:

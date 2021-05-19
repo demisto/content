@@ -70,6 +70,7 @@ configuration:
 - display: Max Fetch
   name: max_fetch
   defaultvalue: '50'
+  type: 0
   required: false
 - display: Use system proxy settings
   name: proxy
