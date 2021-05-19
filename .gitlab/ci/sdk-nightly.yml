@@ -12,13 +12,17 @@
     demisto-sdk upload -i Packs/HelloWorld/IncidentTypes/incidenttype-Hello_World_Alert_Test.json --insecure
     demisto-sdk upload -i Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorldTest.json --insecure
 
+
 #### Commented Out Until Resolve Running Docker in Docker #### 
 # demisto-sdk-nightly:run-unittests-and-lint:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .sdk-nightly-schedule-rule
 #   variables:
-#     DEMISTO_SDK_NIGHTLY: 'true'
+#     DEMISTO_SDK_NIGHTLY: "true"
+#     SLACK_TEST_TYPE: "sdk_unittests"
+#     SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+#     SLACK_ONLY_IF: "true"
 
 
 demisto-sdk-nightly:run-validations:
@@ -26,7 +30,10 @@ demisto-sdk-nightly:run-validations:
     - .run-validations
     - .sdk-nightly-schedule-rule
   variables:
-    DEMISTO_SDK_NIGHTLY: 'true'
+    DEMISTO_SDK_NIGHTLY: "true"
+    SLACK_TEST_TYPE: "sdk_unittests"
+    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+    SLACK_ONLY_IF: "true"
 
 
 demisto-sdk-nightly:create-instance:
@@ -34,7 +41,7 @@ demisto-sdk-nightly:create-instance:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    DEMISTO_SDK_NIGHTLY: 'true'
+    DEMISTO_SDK_NIGHTLY: "true"
     IFRA_ENV_TYPE: "Server Master"
   cache:
     policy: pull-push
@@ -52,8 +59,11 @@ demisto-sdk-nightly:run-commands-against-instance:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    DEMISTO_SDK_NIGHTLY: 'true'
+    DEMISTO_SDK_NIGHTLY: "true"
     INSTANCE_ROLE: "Server Master"
+    SLACK_TEST_TYPE: "sdk_faild_steps"
+    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+    SLACK_ONLY_IF: "true"
   needs: ["demisto-sdk-nightly:create-instance"]
   dependencies:
     - demisto-sdk-nightly:create-instance
