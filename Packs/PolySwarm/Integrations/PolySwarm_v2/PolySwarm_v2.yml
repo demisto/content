@@ -13,8 +13,8 @@ configuration:
   required: true
   type: 0
 - defaultvalue: default
-  display: PolySwarm community
-  name: Polyswarm V2
+  display: PolySwarm_v2 Community
+  name: PolySwarm_V2 Community
   required: true
   type: 0
 description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
