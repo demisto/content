@@ -1,12 +1,56 @@
 import io
 import json
 
-from FireEyeCM import Client, fetch_incidents
+import pytest
+
+from FireEyeCM import Client, get_alerts, get_quarantined_emails, alert_severity_to_dbot_score, fetch_incidents
+from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT
 
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_get_alerts(mocker):
+    """Unit test
+    Given
+    - get_alerts command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_alerts_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_alerts_request',
+                        return_value=util_load_json('test_data/get_alerts.json'))
+    command_results = get_alerts(client=client,
+                                 args={'limit': '2', 'start_time': '8 days', 'src_ip': '2.2.2.2'})
+    assert command_results.outputs == GET_ALERTS_CONTEXT
+
+
+def test_get_quarantined_emails(mocker):
+    """Unit test
+    Given
+    - get_quarantined_emails command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_quarantined_emails_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_quarantined_emails_request',
+                        return_value=util_load_json('test_data/quarantined_emails.json'))
+    command_results = get_quarantined_emails(client=client, args={})
+    assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
 
 
 def test_fetch_incidents(mocker):
@@ -89,3 +133,22 @@ def test_fetch_incidents_last_alert_ids(mocker):
                                           info_level='concise')
 
     assert len(incidents) == 0
+
+
+@pytest.mark.parametrize('severity_str, dbot_score', [
+    ('minr', 1),
+    ('majr', 2),
+    ('crit', 3),
+    ('kookoo', 0)
+])
+def test_alert_severity_to_dbot_score(severity_str: str, dbot_score: int):
+    """Unit test
+    Given
+    - alert_severity_to_dbot_score command
+    - severity string
+    When
+    - running alert_severity_to_dbot_score
+    Then
+    - Validate that the dbot score is as expected
+    """
+    assert alert_severity_to_dbot_score(severity_str) == dbot_score

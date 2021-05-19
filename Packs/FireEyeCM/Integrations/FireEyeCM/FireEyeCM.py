@@ -222,7 +222,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     alerts = raw_response.get('alert')
     if not alerts:
-        md_ = 'No alerts with teh given arguments were found.'
+        md_ = f'No alerts with the given arguments were found.\n Arguments {str(request_params)}'
     else:
         alerts = alerts[:limit]
         headers = ['id', 'occurred', 'product', 'name', 'malicious', 'severity', 'alertUrl']
@@ -472,18 +472,6 @@ def get_reports(client: Client, args: Dict[str, Any]):
 @logger
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int = 50,
                     info_level: str = 'concise') -> Tuple[dict, list]:
-    def alert_severity_to_dbot_score(severity_str: str):
-        severity = severity_str.lower()
-        if severity == 'minr':
-            return 1
-        if severity == 'majr':
-            return 2
-        if severity == 'crit':
-            return 3
-        demisto.info(f'{INTEGRATION_NAME} incident severity: {severity} is not known. '
-                     f'Setting as unknown(DBotScore of 0).')
-        return 0
-
     if not last_run:  # if first time fetching
         next_run = {
             'time': to_fe_datetime_converter(first_fetch),
@@ -534,6 +522,19 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
     }
     demisto.info(f'{INTEGRATION_NAME} Fetched {len(incidents)}. last fetch at: {str(next_run)}')
     return next_run, incidents
+
+
+def alert_severity_to_dbot_score(severity_str: str):
+    severity = severity_str.lower()
+    if severity == 'minr':
+        return 1
+    if severity == 'majr':
+        return 2
+    if severity == 'crit':
+        return 3
+    demisto.info(f'{INTEGRATION_NAME} incident severity: {severity} is not known. '
+                 f'Setting as unknown(DBotScore of 0).')
+    return 0
 
 
 def main() -> None:

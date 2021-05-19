@@ -2,7 +2,7 @@
     {
         "appliance_id": "appliance_id",
         "completed_at": "2021-02-14T09:42:48",
-        "email_uuid": "a816564a-6ae7-48b6-9c8e-34bf3e6db2cb",
+        "email_uuid": "uuid",
         "from": "test@malicious.net",
         "message_id": "queue-id@no-message-id",
         "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
@@ -12,7 +12,7 @@
     {
         "appliance_id": "appliance_id",
         "completed_at": "2021-02-14T09:43:56",
-        "email_uuid": "9110a26c-5a32-476e-9e4d-f5413842a253",
+        "email_uuid": "uuid",
         "from": "test@malicious.net",
         "message_id": "queue-id@no-message-id",
         "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
@@ -22,7 +22,7 @@
     {
         "appliance_id": "appliance_id",
         "completed_at": "2021-02-14T09:45:59",
-        "email_uuid": "4301e130-4522-49d2-a729-d15ecc8e53ba",
+        "email_uuid": "uuid",
         "from": "test@malicious.net",
         "message_id": "queue-id@no-message-id",
         "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",
@@ -32,7 +32,7 @@
     {
         "appliance_id": "appliance_id",
         "completed_at": "2021-02-14T09:53:34",
-        "email_uuid": "819bc44d-2137-459b-b8b9-41e21d6dbc5b",
+        "email_uuid": "uuid",
         "from": "test@malicious.net",
         "message_id": "queue-id@no-message-id",
         "quarantine_path": "/data/email-analysis/quarantine2/2021-02-14/09/queue_id",

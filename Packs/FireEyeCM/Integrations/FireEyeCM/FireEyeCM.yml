@@ -39,7 +39,7 @@ configuration:
   - 'normal'
   - 'extended'
   required: false
-  type: 18
+  type: 16
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
