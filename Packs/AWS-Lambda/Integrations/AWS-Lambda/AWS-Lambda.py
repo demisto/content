@@ -1,13 +1,9 @@
-from typing import Tuple
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
 """IMPORTS"""
-import boto3
-import base64
-from datetime import datetime, date
-from botocore.config import Config
+from datetime import date
 from botocore.parsers import ResponseParserError
 import urllib3.util
 
