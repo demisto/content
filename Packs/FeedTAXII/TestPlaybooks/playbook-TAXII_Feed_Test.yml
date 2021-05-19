@@ -111,7 +111,7 @@ tasks:
             value:
               complex:
                 root: TAXII
-                accessor: Indicator.Rawjson.value
+                accessor: Indicator.Rawjson.valueqqqqqqq
             iscontext: true
     view: |-
       {
