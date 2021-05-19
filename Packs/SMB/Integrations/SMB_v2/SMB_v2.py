@@ -47,7 +47,9 @@ class SMBClient:
             username=user or self._user,
             password=password or self._password,
             port=port or self._port,
-            encrypt=encrypt or self._encrypt)
+            encrypt=encrypt or self._encrypt,
+            auth_protocol='ntlm'
+        )
 
 
 def test_module(client: SMBClient):
@@ -186,7 +188,8 @@ def main():
         try:
             client_guid = uuid.UUID(client_guid)
         except ValueError:
-            demisto.info(f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
+            demisto.info(
+                f'Failed to convert {client_guid} to a valid UUID string. Using a random generated UUID instead')
             client_guid = None
 
     smbclient.ClientConfig(username=user, password=password, require_secure_negotiate=verify, domain_controller=dc,
