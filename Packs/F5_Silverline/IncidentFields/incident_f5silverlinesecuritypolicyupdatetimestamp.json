@@ -1,0 +1,30 @@
+{
+    "id": "incident_f5silverlinesecuritypolicyupdatetimestamp",
+    "version": -1,
+    "modified": "2021-05-13T15:17:42.091593584Z",
+    "name": "F5 Silverline Security Policy update timestamp",
+    "ownerOnly": false,
+    "cliName": "f5silverlinesecuritypolicyupdatetimestamp",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "F5 Silverline WAF Events"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -21,14 +21,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 description: F5 Silverline Threat Intelligence is a cloud-based service incorporating
   external IP reputation and reducing threat-based communications. By identifying
   IP addresses and security categories associated with malicious activity, this managed
@@ -161,8 +153,9 @@ script:
       secret: false
     - default: false
       description: The duration (in seconds) of a new particular threatening IP address
-        object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object
-        will never expire. This feature has been removed for allowlist.
+        object where the list type is 'denylist'. Setting the duration to 0 (default)
+        means the new IP address object will never expire. This feature has been removed
+        for allowlist.
       isArray: false
       name: duration
       required: false
@@ -208,11 +201,8 @@ script:
       object ID.
     execution: false
     name: f5-silverline-ip-object-delete
-  dockerimage: demisto/python3:3.9.4.18682
-  feed: false
-  isfetch: true
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.9.5.20070
+  isfetch: false
   runonce: false
   script: '-'
   subtype: python3
