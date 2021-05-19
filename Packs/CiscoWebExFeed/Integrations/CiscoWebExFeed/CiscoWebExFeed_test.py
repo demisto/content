@@ -7,7 +7,8 @@ DOMAIN_TABLE = [['Client Type', 'Domain(s)'],
 def test_grab_domains():
     """
     Given:
-        - Raw list of tuples that contains domain name and domain url, returned by api call
+        - Raw list of tuples that contains domain name and domain url, returned by api call:
+        first array is the title, 2 seconds arrays are data, last array is message.
     When:
         - Filtered list contains domain's urls only
     Then:
