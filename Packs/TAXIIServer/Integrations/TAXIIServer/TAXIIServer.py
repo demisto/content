@@ -964,7 +964,7 @@ def main():
         http_server = False
 
     global SERVER
-    scheme = 'http'
+    scheme = server_link_parts.scheme
     host_name = server_link_parts.netloc
     if not http_server:
         scheme = 'https'
