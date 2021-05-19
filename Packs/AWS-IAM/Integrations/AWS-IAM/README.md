@@ -18,6 +18,10 @@
 <li><strong>Role Arn</strong></li>
 <li><strong>Role Session Name</strong></li>
 <li><strong>Role Session Duration</strong></li>
+<li><strong>Access Key</strong></li>
+<li><strong>Secret Key</strong></li>
+<li><strong>Timeout</strong></li>
+<li><strong>Retries</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs and token.</li>
