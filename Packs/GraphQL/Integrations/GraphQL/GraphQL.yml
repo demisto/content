@@ -1,0 +1,149 @@
+category: Utilities
+commonfields:
+  id: GraphQL
+  version: -1
+configuration:
+- display: GraphQL Server URL (e.g., https://api.github.com/graphql)
+  name: url
+  required: true
+  type: 0
+- display: Username / Header Name
+  hidden: false
+  name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: The Generic GraphQL client can interact with any GraphQL server API.
+display: GraphQL
+name: GraphQL
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The GraphQL query to execute.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Primary key field in the response to provide a unique object in
+        the context. data.
+      isArray: false
+      name: outputs_key_field
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of names, for example: flag,num,alpha'
+      isArray: true
+      name: variables_names
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of values, for example: true,4,3.5'
+      isArray: true
+      name: variables_values
+      required: false
+      secret: false
+    - default: false
+      description: 'An optional comma-separated list of types, for example: boolean,number,number.
+        Optional values are: string, boolean and number. If not provided, integers and booleans
+        will be detected automatically, and the rest of the variables will be handled as strings.'
+      isArray: true
+      name: variables_types
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Max result size in KBs.
+      isArray: false
+      name: max_result_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to populate the result to the context data.
+      isArray: false
+      name: populate_context_data
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a query request to the GraphQL server.
+    execution: false
+    name: graphql-query
+  - arguments:
+    - default: false
+      description: The GraphQL mutation to execute.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Primary key field in the response to provide a unique object in
+        the context. data.
+      isArray: false
+      name: outputs_key_field
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of names, for example: flag,num,alpha'
+      isArray: true
+      name: variables_names
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of values, for example: true,4,3.5'
+      isArray: true
+      name: variables_values
+      required: false
+      secret: false
+    - default: false
+      description: 'An optional comma-separated list of types, for example: boolean,number,number.
+        Optional values are: string, boolean and number. If not provided, integers and booleans
+        will be detected automatically, and the rest of the variables will be handled as strings.'
+      isArray: true
+      name: variables_types
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Max result size in KBs.
+      isArray: false
+      name: max_result_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to populate the result to the context data.
+      isArray: false
+      name: populate_context_data
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a mutation request to the GraphQL server.
+    execution: false
+    name: graphql-mutation
+  dockerimage: demisto/graphql:1.0.0.17480
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

@@ -13,6 +13,7 @@ import time
 import json
 import os
 import re
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -1211,7 +1212,7 @@ def get_alert():
         'Contents': alert,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': '{}\n{}'.format(alert_table, event_table),
+        'HumanReadable': u'{}\n{}'.format(alert_table, event_table),
         'EntryContext': {
             "FireEyeHX.Alerts(obj._id==val._id)": alert
         }
@@ -2392,7 +2393,7 @@ def parse_alert_to_incident(alert):
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = '{event_type_parsed}: {indicator}'.format(
+    incident_name = u'{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )

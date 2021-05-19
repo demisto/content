@@ -17,3 +17,10 @@ def test_main(mocker):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args
     assert results[0][0] is False
+
+    mocker.patch.object(demisto, 'args', return_value={'value': None, 'left': '8.8.8.8'})
+    mocker.patch.object(demisto, 'results')
+    main()
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args
+    assert results[0][0] is False

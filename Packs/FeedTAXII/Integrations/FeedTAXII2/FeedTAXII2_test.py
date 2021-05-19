@@ -141,12 +141,75 @@ class TestHelperFunctions:
         with pytest.raises(DemistoException, match='parse failure'):
             try_parse_integer('a', 'parse failure')
 
+    class TestAssertIncrementalFeedParams:
+        """Scenario: Test assert_incremental_feed_params raises appropriate errors"""
+
+        def test_both_params_are_false(self):
+            """
+            Scenario: Both params are False
+
+            Given:
+            - fetch_full_feed is false
+            - feedIncremental is false
+
+            When:
+            - calling assert_incremental_feed_params
+
+            Then:
+            - raise appropriate error
+            """
+            fetch_full_feed = is_incremental_feed = False
+            with pytest.raises(DemistoException) as e:
+                assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+                assert "'Full Feed Fetch' cannot be disabled when 'Incremental Feed' is disabled." in str(e)
+
+        def test_both_params_are_true(self):
+            """
+            Scenario: Both params are True
+
+            Given:
+            - fetch_full_feed is true
+            - feedIncremental is true
+
+            When:
+            - calling assert_incremental_feed_params
+
+            Then:
+            - raise appropriate error
+            """
+            fetch_full_feed = is_incremental_feed = True
+            with pytest.raises(DemistoException) as e:
+                assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+                assert "'Full Feed Fetch' cannot be enabled when 'Incremental Feed' is enabled." in str(e)
+
+        def test_params_have_different_values(self):
+            """
+            Scenario: Both params are False
+
+            Given:
+            - fetch_full_feed is false / true
+            - feedIncremental is true / false
+
+            When:
+            - calling assert_incremental_feed_params
+
+            Then:
+            - don't raise any error
+            """
+            fetch_full_feed = False
+            is_incremental_feed = True
+            assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+
+            fetch_full_feed = True
+            is_incremental_feed = False
+            assert_incremental_feed_params(fetch_full_feed, is_incremental_feed)
+
     class TestGetAddedAfter:
         """Scenario: Test get_added_after"""
 
         def test_get_last_fetch_time(self):
             """
-            Scenario: Incremental feed and last fetch is set
+            Scenario: fetch_full_feed and last fetch is set
 
             Given:
             - fetch_full_feed is false

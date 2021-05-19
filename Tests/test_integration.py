@@ -2,26 +2,23 @@ from __future__ import print_function
 
 import ast
 import copy
-import json
 import logging
 import re
 import time
-from typing import Optional, Tuple
 import urllib.parse
 import uuid
 from pprint import pformat
+from typing import Optional, Tuple
 
 import demisto_client
 import requests.exceptions
 import urllib3
 from demisto_client.demisto_api import DefaultApi
-from demisto_client.demisto_api.rest import ApiException
 from demisto_client.demisto_api.models.incident import Incident
+from demisto_client.demisto_api.rest import ApiException
+
 from demisto_sdk.commands.common.constants import PB_Status
-
-
 # Disable insecure warnings
-from demisto_sdk.commands.test_content.Docker import Docker
 from demisto_sdk.commands.test_content.tools import update_server_configuration
 
 urllib3.disable_warnings()
@@ -175,12 +172,12 @@ def __delete_integration_instance_if_determined_by_name(client, instance_name, l
 # return instance name if succeed, None otherwise
 def __create_integration_instance(server, username, password, integration_name, integration_instance_name,
                                   integration_params, is_byoi, logging_manager=logging, validate_test=True):
-
     # get configuration config (used for later rest api
-    integration_conf_client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+    integration_conf_client = demisto_client.configure(base_url=server, username=username, password=password,
+                                                       verify_ssl=False)
     configuration = __get_integration_config(integration_conf_client, integration_name, logging_manager)
     if not configuration:
-        return None, 'No configuration', None
+        return None, 'No configuration'
 
     module_configuration = configuration['configuration']
     if not module_configuration:
@@ -242,13 +239,13 @@ def __create_integration_instance(server, username, password, integration_name, 
     except ApiException:
         error_message = f'Error trying to create instance for integration: {integration_name}'
         logging_manager.exception(error_message)
-        return None, error_message, None
+        return None, error_message
 
     if res[1] != 200:
         error_message = f'create instance failed with status code  {res[1]}'
         logging_manager.error(error_message)
         logging_manager.error(pformat(res[0]))
-        return None, error_message, None
+        return None, error_message
 
     integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
@@ -265,11 +262,9 @@ def __create_integration_instance(server, username, password, integration_name, 
 
     if not test_succeed:
         __disable_integrations_instances(refreshed_client, [module_instance], logging_manager)
-        return None, failure_message, None
+        return None, failure_message
 
-    docker_image = Docker.get_integration_image(integration_config)
-
-    return module_instance, '', docker_image
+    return module_instance, ''
 
 
 def __disable_integrations_instances(client, module_instances, logging_module=logging):
@@ -471,10 +466,6 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
     options = options if options is not None else {}
     # create integrations instances
     module_instances = []
-    test_docker_images = set()
-
-    with open("./Tests/conf.json", 'r') as conf_file:
-        docker_thresholds = json.load(conf_file).get('docker_thresholds', {}).get('images', {})
 
     for integration in integrations:
         integration_name = integration.get('name', None)
@@ -486,14 +477,14 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance, failure_message, docker_image = __create_integration_instance(server_url,
-                                                                                       demisto_user,
-                                                                                       demisto_pass,
-                                                                                       integration_name,
-                                                                                       integration_instance_name,
-                                                                                       integration_params,
-                                                                                       is_byoi, logging_module,
-                                                                                       validate_test=validate_test)
+        module_instance, failure_message = __create_integration_instance(server_url,
+                                                                         demisto_user,
+                                                                         demisto_pass,
+                                                                         integration_name,
+                                                                         integration_instance_name,
+                                                                         integration_params,
+                                                                         is_byoi, logging_module,
+                                                                         validate_test=validate_test)
         if module_instance is None:
             failure_message = failure_message if failure_message else 'No failure message could be found'
             logging_module.error(f'Failed to create instance: {failure_message}')
@@ -501,8 +492,6 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
             return False, -1
 
         module_instances.append(module_instance)
-        if docker_image:
-            test_docker_images.update(docker_image)
 
         logging_module.info(f'Create integration {integration_name} succeed')
 
@@ -555,22 +544,6 @@ def check_integration(client, server_url, demisto_user, demisto_pass, integratio
         i = i + 1
 
     __disable_integrations_instances(client, module_instances, logging_module)
-
-    if test_docker_images:
-        memory_threshold = options.get('memory_threshold', Docker.DEFAULT_CONTAINER_MEMORY_USAGE)
-        pids_threshold = options.get('pid_threshold', Docker.DEFAULT_CONTAINER_PIDS_USAGE)
-        error_message = Docker.check_resource_usage(server_url=server_url,
-                                                    docker_images=test_docker_images,
-                                                    def_memory_threshold=memory_threshold,
-                                                    def_pid_threshold=pids_threshold,
-                                                    docker_thresholds=docker_thresholds,
-                                                    logging_module=logging_module)
-
-        if error_message:
-            logging_module.error(error_message)
-            return PB_Status.FAILED_DOCKER_TEST, inc_id
-    else:
-        logging_module.debug(f"Skipping docker container memory resource check for test {playbook_id}")
 
     test_pass = playbook_state in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
     if test_pass:

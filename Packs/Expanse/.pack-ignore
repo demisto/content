@@ -5,4 +5,10 @@ ignore=BA101
 ignore=IN126
 
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM104
+
+[file:layoutscontainer-Expanse_Appearance.json]
+ignore=BA101
+
+[file:layoutscontainer-Expanse_Behavior.json]
+ignore=BA101

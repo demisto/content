@@ -69,6 +69,11 @@
 <td style="width: 511px;">IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".</td>
 <td style="width: 83px;">Required</td>
 </tr>
+<tr>
+<td style="width: 146px;">description</td>
+<td style="width: 511px;">The description of the IP record in the block list. The default value is: "Added by ThreatX Demisto Integration".</td>
+<td style="width: 83px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -207,6 +212,11 @@
 <td style="width: 430px;">IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".</td>
 <td style="width: 71px;">Required</td>
 </tr>
+<tr>
+<td style="width: 146px;">description</td>
+<td style="width: 511px;">The description of the IP record in the blacklist. The default value is: "Added by ThreatX Demisto Integration".</td>
+<td style="width: 83px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -343,6 +353,11 @@
 <td style="width: 148px;">ip</td>
 <td style="width: 509px;">IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".</td>
 <td style="width: 83px;">Required</td>
+</tr>
+<tr>
+<td style="width: 146px;">description</td>
+<td style="width: 511px;">The description of the IP record in the whitelist. The default value is: "Added by ThreatX Demisto Integration".</td>
+<td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
 </table>

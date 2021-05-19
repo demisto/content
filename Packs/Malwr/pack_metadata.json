@@ -1,5 +1,5 @@
 {
-  "name": "malwr",
+  "name": "Malwr",
   "description": "Analyze files using the malwr sandbox",
   "support": "xsoar",
   "currentVersion": "1.0.0",

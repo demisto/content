@@ -1,0 +1,30 @@
+{
+    "id": "incident_qualysfimquery",
+    "version": -1,
+    "modified": "2021-02-23T12:02:34.27872131+02:00",
+    "name": "Qualys-Fim Query",
+    "ownerOnly": false,
+    "cliName": "qualysfimquery",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Qualys-Fim"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

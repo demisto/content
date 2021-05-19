@@ -19,7 +19,7 @@ from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 urllib3.disable_warnings()
 
-ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS')
+ARTIFACTS_PATH = os.environ.get('ARTIFACTS_FOLDER')
 MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
@@ -64,8 +64,8 @@ def docker_login(ip: str) -> None:
     Args:
         ip: The ip of the server that should be logged in
     """
-    docker_username = os.environ.get('DOCKERHUB_USER')
-    docker_password = os.environ.get('DOCKERHUB_PASSWORD')
+    docker_username = os.environ.get('DOCKER_READ_ONLY_USER')
+    docker_password = os.environ.get('DOCKER_READ_ONLY_PASSWORD')
     container_engine_type = 'podman' if is_redhat_instance(ip) else 'docker'
     try:
         check_output(
@@ -81,7 +81,7 @@ def main():
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
-    with open('./env_results.json', 'r') as json_file:
+    with open('./artifacts/env_results.json', 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
 

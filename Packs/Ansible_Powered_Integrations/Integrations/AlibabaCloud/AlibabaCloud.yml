@@ -1,0 +1,347 @@
+category: IT Services
+commonfields:
+  id: AlibabaCloud
+  version: -1
+configuration:
+- additionalinfo: Aliyun Cloud access key
+  display: Access Key
+  name: alicloud_access_key
+  required: true
+  type: 0
+- additionalinfo: Aliyun Cloud secret key
+  display: Access Secret Key
+  name: alicloud_secret_key
+  required: true
+  type: 4
+- additionalinfo: Aliyun Cloud region
+  display: Region
+  name: alicloud_region
+  required: true
+  type: 0
+description: Manage Alibaba Cloud Elastic Compute Instances
+display: Alibaba Cloud
+name: AlibabaCloud
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: present
+      description: The state of the instance after operating.
+      name: state
+      predefined:
+      - present
+      - running
+      - stopped
+      - restarted
+      - absent
+    - description: Aliyun availability zone ID in which to launch the instance. If
+        it is not specified, it will be allocated by system automatically.
+      name: availability_zone
+    - description: Image ID used to launch instances. Required when `state=present`
+        and creating new ECS instances.
+      name: image_id
+    - description: Instance type used to launch instances. Required when `state=present`
+        and creating new ECS instances.
+      name: instance_type
+    - description: A list of security group IDs.
+      name: security_groups
+    - description: The subnet ID in which to launch the instances (VPC).
+      name: vswitch_id
+    - description: The name of ECS instance, which is a string of 2 to 128 Chinese
+        or English characters. It must begin with an uppercase/lowercase letter or
+        a Chinese character and can contain numerals, ".", "_" or "-". It cannot begin
+        with http:// or https://.
+      name: instance_name
+    - description: The description of ECS instance, which is a string of 2 to 256
+        characters. It cannot begin with http:// or https://.
+      name: description
+    - auto: PREDEFINED
+      defaultValue: PayByBandwidth
+      description: Internet charge type of ECS instance.
+      name: internet_charge_type
+      predefined:
+      - PayByBandwidth
+      - PayByTraffic
+    - defaultValue: "200"
+      description: Maximum incoming bandwidth from the public network, measured in
+        Mbps (Megabits per second).
+      name: max_bandwidth_in
+    - defaultValue: "0"
+      description: Maximum outgoing bandwidth to the public network, measured in Mbps
+        (Megabits per second).
+      name: max_bandwidth_out
+    - description: Instance host name.
+      name: host_name
+    - description: The password to login instance. After rebooting instances, modified
+        password will take effect.
+      name: password
+    - auto: PREDEFINED
+      defaultValue: cloud_efficiency
+      description: Category of the system disk.
+      name: system_disk_category
+      predefined:
+      - cloud_efficiency
+      - cloud_ssd
+    - defaultValue: "40"
+      description: Size of the system disk, in GB. The valid values are 40~500.
+      name: system_disk_size
+    - description: Name of the system disk.
+      name: system_disk_name
+    - description: Description of the system disk.
+      name: system_disk_description
+    - defaultValue: "1"
+      description: The number of the new instance. An integer value which indicates
+        how many instances that match `count_tag` should be running. Instances are
+        either created or terminated based on this value.
+      name: count
+    - description: '`count` determines how many instances based on a specific tag
+        criteria should be present. This can be expressed in multiple ways and is
+        shown in the EXAMPLES section. The specified count_tag must already exist
+        or be passed in as the `instance_tags` option. If it is not specified, it
+        will be replaced by `instance_name`.'
+      name: count_tag
+    - defaultValue: "False"
+      description: Whether allocate a public ip for the new instance.
+      name: allocate_public_ip
+    - auto: PREDEFINED
+      defaultValue: PostPaid
+      description: The charge type of the instance.
+      name: instance_charge_type
+      predefined:
+      - PrePaid
+      - PostPaid
+    - defaultValue: "1"
+      description: |-
+        The charge duration of the instance, in month. Required when `instance_charge_type=PrePaid`.
+        The valid value are [1-9, 12, 24, 36].
+      name: period
+    - defaultValue: "False"
+      description: Whether automate renew the charge of the instance.
+      name: auto_renew
+    - auto: PREDEFINED
+      description: The duration of the automatic renew the charge of the instance.
+        Required when `auto_renew=True`.
+      name: auto_renew_period
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "6"
+      - "12"
+    - description: A list of instance ids. It is required when need to operate existing
+        instances. If it is specified, `count` will lose efficacy.
+      name: instance_ids
+    - defaultValue: "False"
+      description: Whether the current operation needs to be execute forcibly.
+      name: force
+    - description: A hash/dictionaries of instance tags, to add to the new instance
+        or for starting/stopping instance by tag. `{"key":"value"}`
+      name: instance_tags
+    - description: The name of key pair which is used to access ECS instance in SSH.
+      name: key_name
+    - description: User-defined data to customize the startup behaviors of an ECS
+        instance and to pass data into an ECS instance. It only will take effect when
+        launching the new ECS instances.
+      name: user_data
+    description: Create, Start, Stop, Restart or Terminate an Instance in ECS. Add
+      or Remove Instance to/from a Security Group.
+    name: ali-instance
+    outputs:
+    - contextPath: AlibabaCloud.instances.availability_zone
+      description: The availability zone of the instance is iali_instance_infon.
+      type: string
+    - contextPath: AlibabaCloud.instances.block_device_mappings
+      description: Any block device mapping entries for the instance.
+    - contextPath: AlibabaCloud.instances.cpu
+      description: The CPU core count of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.creation_time
+      description: The time the instance was created.
+      type: string
+    - contextPath: AlibabaCloud.instances.description
+      description: The instance description.
+      type: string
+    - contextPath: AlibabaCloud.instances.eip
+      description: The attribution of EIP associated with the instance.
+    - contextPath: AlibabaCloud.instances.expired_time
+      description: The time the instance will expire.
+      type: string
+    - contextPath: AlibabaCloud.instances.gpu
+      description: The attribution of instance GPU.
+    - contextPath: AlibabaCloud.instances.host_name
+      description: The host name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.id
+      description: Alias of instance_id.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_id
+      description: ECS instance resource ID.
+      type: string
+    - contextPath: AlibabaCloud.instances.image_id
+      description: The ID of the image used to launch the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.inner_ip_address
+      description: The inner IPv4 address of the classic instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_charge_type
+      description: The instance charge type.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_name
+      description: The name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_type
+      description: The instance type of the running instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_charge_type
+      description: The billing method of the network bandwidth.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_in
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_out
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.io_optimized
+      description: Indicates whether the instance is optimized for EBS I/O.
+      type: boolean
+    - contextPath: AlibabaCloud.instances.memory
+      description: Memory size of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.network_interfaces
+      description: One or more network interfaces for the instance.
+    - contextPath: AlibabaCloud.instances.osname
+      description: The operation system name of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.ostype
+      description: The operation system type of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.private_ip_address
+      description: The IPv4 address of the network interface within the subnet.
+      type: string
+    - contextPath: AlibabaCloud.instances.public_ip_address
+      description: The public IPv4 address assigned to the instance
+      type: string
+    - contextPath: AlibabaCloud.instances.resource_group_id
+      description: The id of the resource group to which the instance belongs.
+      type: string
+    - contextPath: AlibabaCloud.instances.security_groups
+      description: One or more security groups for the instance.
+    - contextPath: AlibabaCloud.instances.status
+      description: The current status of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.tags
+      description: Any tags assigned to the instance.
+    - contextPath: AlibabaCloud.instances.vswitch_id
+      description: The ID of the vswitch in which the instance is running.
+      type: string
+    - contextPath: AlibabaCloud.instances.vpc_id
+      description: The ID of the VPC the instance is in.
+  - arguments:
+    - description: Aliyun availability zone ID in which to launch the instance
+      name: availability_zone
+    - description: A list of ECS instance names.
+      name: instance_names
+    - description: A list of ECS instance ids.
+      name: instance_ids
+    - description: A hash/dictionaries of instance tags. `{"key":"value"}`
+      name: instance_tags
+    description: Gather information on instances of Alibaba Cloud ECS.
+    name: ali-instance-info
+    outputs:
+    - contextPath: AlibabaCloud.instances.availability_zone
+      description: The availability zone of the instance is in.
+      type: string
+    - contextPath: AlibabaCloud.instances.block_device_mappings
+      description: Any block device mapping entries for the instance.
+    - contextPath: AlibabaCloud.instances.cpu
+      description: The CPU core count of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.creation_time
+      description: The time the instance was created.
+      type: string
+    - contextPath: AlibabaCloud.instances.description
+      description: The instance description.
+      type: string
+    - contextPath: AlibabaCloud.instances.eip
+      description: The attribution of EIP associated with the instance.
+    - contextPath: AlibabaCloud.instances.expired_time
+      description: The time the instance will expire.
+      type: string
+    - contextPath: AlibabaCloud.instances.gpu
+      description: The attribution of instance GPU.
+    - contextPath: AlibabaCloud.instances.host_name
+      description: The host name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.id
+      description: Alias of instance_id.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_id
+      description: ECS instance resource ID.
+      type: string
+    - contextPath: AlibabaCloud.instances.image_id
+      description: The ID of the image used to launch the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.inner_ip_address
+      description: The inner IPv4 address of the classic instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_charge_type
+      description: The instance charge type.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_name
+      description: The name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_type
+      description: The instance type of the running instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_charge_type
+      description: The billing method of the network bandwidth.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_in
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_out
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.io_optimized
+      description: Indicates whether the instance is optimized for EBS I/O.
+      type: boolean
+    - contextPath: AlibabaCloud.instances.memory
+      description: Memory size of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.network_interfaces
+      description: One or more network interfaces for the instance.
+    - contextPath: AlibabaCloud.instances.osname
+      description: The operation system name of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.ostype
+      description: The operation system type of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.private_ip_address
+      description: The IPv4 address of the network interface within the subnet.
+      type: string
+    - contextPath: AlibabaCloud.instances.public_ip_address
+      description: The public IPv4 address assigned to the instance
+      type: string
+    - contextPath: AlibabaCloud.instances.resource_group_id
+      description: The id of the resource group to which the instance belongs.
+      type: string
+    - contextPath: AlibabaCloud.instances.security_groups
+      description: One or more security groups for the instance.
+    - contextPath: AlibabaCloud.instances.status
+      description: The current status of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.tags
+      description: Any tags assigned to the instance.
+    - contextPath: AlibabaCloud.instances.vswitch_id
+      description: The ID of the vswitch in which the instance is running.
+      type: string
+    - contextPath: AlibabaCloud.instances.vpc_id
+      description: The ID of the VPC the instance is in.
+  dockerimage: demisto/ansible-runner:1.0.0.16542
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

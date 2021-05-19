@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "12345",
+    "name": "Free Assessment"
+  },
+  {
+    "_id": "34",
+    "name": "Cymulate Best Practice"
+  },
+  {
+    "_id": "56",
+    "name": "DLL Side loading"
+  },
+  {
+    "_id": "78",
+    "name": "Cymulate Behavior-based"
+  },
+  {
+    "_id": "90",
+    "name": "Cymulate Signature-based"
+  },
+  {
+    "_id": "11-12",
+    "name": "Cymulate Ransomware Behavior-based"
+  },
+  {
+    "_id": "13-14",
+    "name": "Cymulate Worm Behavior-based"
+  },
+  {
+    "_id": "15-16",
+    "name": "Cymulate Trojan Behavior-based"
+  },
+  {
+    "_id": "17-18",
+    "name": "rootkit"
+  }
+]

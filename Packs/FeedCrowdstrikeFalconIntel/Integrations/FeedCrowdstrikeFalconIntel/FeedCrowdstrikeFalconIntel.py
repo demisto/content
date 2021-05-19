@@ -17,7 +17,8 @@ class Client(BaseClient):
         self._client_id = params.get('client_id')
         self._client_secret = params.get('client_secret')
         self._verify_certificate = not demisto.params().get('insecure', False)
-        super().__init__(base_url="https://api.crowdstrike.com/", verify=self._verify_certificate,
+        self._server_url = params.get('server_url', "https://api.crowdstrike.com/")
+        super().__init__(base_url=self._server_url, verify=self._verify_certificate,
                          ok_codes=tuple(), proxy=params.get('proxy', False))
         self._token = self._get_access_token()
         self._headers = {'Authorization': 'Bearer ' + self._token}

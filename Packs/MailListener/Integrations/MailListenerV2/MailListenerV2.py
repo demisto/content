@@ -50,7 +50,7 @@ class Email(object):
         labels = [{'type': 'Email/headers', 'value': json.dumps(self.headers)},
                   {'type': 'Email/from', 'value': self.from_},
                   {'type': 'Email/format', 'value': self.format},
-                  {'type': 'Email/text', 'value': self.text},
+                  {'type': 'Email/text', 'value': self.text.strip()},
                   {'type': 'Email/subject', 'value': self.subject},
                   ]
         labels.extend([
@@ -61,7 +61,7 @@ class Email(object):
         labels.extend([{'type': 'Email/cc', 'value': cc_mail} for cc_mail in self.cc])
         labels.extend([{'type': 'Email/bcc', 'value': bcc_mail} for bcc_mail in self.bcc])
         if self.html:
-            labels.append({'type': 'Email/html', 'value': self.html})
+            labels.append({'type': 'Email/html', 'value': self.html.strip()})
         if self.attachments:
             labels.append({'type': 'Email/attachments',
                            'value': ','.join([attachment['filename'] for attachment in self.attachments])})
@@ -173,6 +173,8 @@ def fetch_incidents(client: IMAPClient,
     time (could also happen that the limit parameter, which is implemented in the code and cannot be passed as a
     criterion to the search, causes us to keep retrieving the same email messages in the search result)
     The SINCE criterion will be sent only for the first fetch, and then the fetch will be by UID
+    We will continue using the first fetch time as it may take more than one fetch interval to get to the mail that
+    was actually received after the first fetch time
 
     Args:
         client: IMAP client
@@ -190,11 +192,7 @@ def fetch_incidents(client: IMAPClient,
         incidents: Incidents that will be created in Demisto
     """
     uid_to_fetch_from = last_run.get('last_uid', 1)
-    # time_to_fetch_from is required only for the first fetch, as after that we will use UID to fetch from
-    time_to_fetch_from = parse(f'{first_fetch_time} UTC') if not last_run else None
-    if uid_to_fetch_from == 1 and last_run.get('last_fetch'):
-        # for back compatibility, if an instance was using the timestamp and was upgraded to use UID
-        time_to_fetch_from = datetime.fromisoformat(last_run.get('last_fetch', ''))
+    time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
@@ -261,7 +259,7 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (time_to_fetch_from and time_to_fetch_from < email_message_object.date) or \
+        if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)

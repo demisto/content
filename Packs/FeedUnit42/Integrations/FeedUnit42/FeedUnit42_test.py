@@ -1,8 +1,8 @@
 import pytest
 from FeedUnit42 import Client, get_indicators_command, fetch_indicators, sort_report_objects_by_type, parse_reports, \
-    match_relationships
+    match_relationships, parse_related_indicators, create_mitre_indicator
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
-    REPORTS_INDICATORS, MATCHED_RELATIONSHIPS
+    REPORTS_INDICATORS, MATCHED_RELATIONSHIPS, ID_TO_OBJECT
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -35,7 +35,8 @@ TYPE_TO_RESPONSE = {
     'attack-pattern': ATTACK_PATTERN_DATA,
     'malware': MALWARE_DATA,
     'campaign': [],
-    'relationship': RELATIONSHIP_DATA
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': []
 }
 
 
@@ -60,7 +61,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client)
-    assert len(indicators) == 11
+    assert len(indicators) == 13
 
 
 def test_feed_tags_param(mocker):
@@ -234,4 +235,63 @@ def test_match_relationships():
         - Creates a dict of relationship in the form of `id: [related_ids]`
 
     """
-    assert match_relationships(RELATIONSHIP_DATA) == MATCHED_RELATIONSHIPS
+    assert match_relationships(RELATIONSHIP_DATA) == (MATCHED_RELATIONSHIPS,
+                                                      {'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': 'No product'})
+
+
+def test_parse_related_indicators():
+    """
+
+    Given
+        - Stix report object.
+        - Malware objects ids related to the report.
+        - Dict in the form of `id: stix_object`.
+
+    When
+        - Parsing related indicator from Stix report object.
+
+    Then
+        - Creates indicator and update the feedrelatedindicators field in the report.
+
+    """
+    report = {'fields': {'feedrelatedindicators': []}}
+    indicators = parse_related_indicators(report, ['attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'],
+                                          ID_TO_OBJECT, {}, {})
+
+    assert len(report['fields']['feedrelatedindicators']) == 1
+    assert report['fields']['feedrelatedindicators'][0]['value'] == '8.8.8.8'
+    assert len(indicators) == 1
+    assert indicators[0]['value'] == '8.8.8.8'
+    assert indicators[0]['fields']['mitrecourseofaction'] == 'No courses of action found.'
+    assert indicators[0]['fields']['mitredescription'] == 'description'
+    assert indicators[0]['fields']['mitrename'] == 'Software Discovery'
+
+
+def test_create_mitre_indicator():
+    """
+
+    Given
+        - Indicator value.
+        - Stix relationship object.
+        - Dict of relationships in the form of `id: list(related_ids)`.
+        - Dict in the form of `id: stix_object`.
+        - Dict Connects courses of action id with the relationship product.
+
+    When
+        - Parsing the indicator.
+
+    Then
+        - Creates indicator and update the mitrecourseofaction field with markdown table.
+
+    """
+    indicator = create_mitre_indicator('8.8.8.8',
+                                       {'id': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055'},
+                                       MATCHED_RELATIONSHIPS,
+                                       ID_TO_OBJECT,
+                                       {'course-of-action--fd0da09e-a0b2-4018-9476-1a7edd809b59': 'NGFW'})
+
+    assert indicator['value'] == '8.8.8.8'
+    assert indicator['type'] == 'MITRE ATT&CK'
+    assert indicator['fields']['mitrecourseofaction'] == '\n### NGFW\n|Name|Title|Description|\n|---|---|---|' \
+                                                         '\n| Deploy XSOAR Playbook | Deploy XSOAR Playbook |' \
+                                                         ' Deploy XSOAR Playbook - Phishing Investigation - Generic V2 |\n'

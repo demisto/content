@@ -1,0 +1,60 @@
+{
+	"PxgRetVal": [
+		{
+			"type": "params",
+			"value": {
+				"KLPOL_ACCEPT_PARENT": true,
+				"KLPOL_ACTIVE": true,
+				"KLPOL_CREATED": {
+					"type": "datetime",
+					"value": "2021-02-25T08:14:39Z"
+				},
+				"KLPOL_DN": "Kaspersky Endpoint Security for Windows (11.5.0)",
+				"KLPOL_FORCED": false,
+				"KLPOL_FORCE_DISTRIB2CHILDREN": false,
+				"KLPOL_GROUP_ID": 0,
+				"KLPOL_GROUP_NAME": "Managed devices",
+				"KLPOL_GSYN_ID": 13,
+				"KLPOL_HIDE_ON_SLAVES": false,
+				"KLPOL_ID": 1,
+				"KLPOL_INHERITED": false,
+				"KLPOL_MODIFIED": {
+					"type": "datetime",
+					"value": "2021-02-25T08:14:43Z"
+				},
+				"KLPOL_PRODUCT": "KES",
+				"KLPOL_PROFILES_NUM": 0,
+				"KLPOL_ROAMING": false,
+				"KLPOL_VERSION": "11.0.0.0"
+			}
+		},
+		{
+			"type": "params",
+			"value": {
+				"KLPOL_ACCEPT_PARENT": true,
+				"KLPOL_ACTIVE": true,
+				"KLPOL_CREATED": {
+					"type": "datetime",
+					"value": "2021-02-25T08:14:44Z"
+				},
+				"KLPOL_DN": "Kaspersky Security Center Network Agent",
+				"KLPOL_FORCED": false,
+				"KLPOL_FORCE_DISTRIB2CHILDREN": false,
+				"KLPOL_GROUP_ID": 0,
+				"KLPOL_GROUP_NAME": "Managed devices",
+				"KLPOL_GSYN_ID": 14,
+				"KLPOL_HIDE_ON_SLAVES": false,
+				"KLPOL_ID": 2,
+				"KLPOL_INHERITED": false,
+				"KLPOL_MODIFIED": {
+					"type": "datetime",
+					"value": "2021-02-25T08:14:44Z"
+				},
+				"KLPOL_PRODUCT": "1103",
+				"KLPOL_PROFILES_NUM": 0,
+				"KLPOL_ROAMING": false,
+				"KLPOL_VERSION": "1.0.0.0"
+			}
+		}
+	]
+}

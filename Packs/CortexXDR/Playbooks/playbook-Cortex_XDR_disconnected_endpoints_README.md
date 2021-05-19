@@ -25,22 +25,24 @@ This playbook does not use any sub-playbooks.
 * CortexXDRIR
 
 ### Scripts
-This playbook does not use any scripts.
+* SetGridField
+* Set
+* ExportToCSV
 
 ### Commands
 * setIncident
 * send-mail
-* xdr-get-endpoints
 * closeInvestigation
+* xdr-get-endpoints
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| LastSeenStartDate | Last seen start date, in relative timestamp - "1 Day" or  "7 days"  | None | Optional |
-| LastSeenEndDate | Last seen end date, in relative timestamp - "1 Day" or  "7 days" <br/>For the current day use "0 days" | None | Optional |
-| Email | Email addresses to send the disconnected endpoints report. | None | Optional |
+| LastSeenStartDate | Last seen start date, in relative timestamp - "1 Day" or  "7 days"  |  | Optional |
+| LastSeenEndDate | Last seen end date, in relative timestamp - "1 Day" or  "7 days" <br/>For the current day use "0 days" |  | Optional |
+| Email | Email addresses to send the disconnected endpoints report. |  | Optional |
 | MessageBody | Body for the report email message.  | This message contains an automatically generated report by Cortex XSOAR, including a list of  disconnected Cortex XDR endpoints.<br/>Please investigate and remediate according to the organization's policy. | Optional |
 
 ## Playbook Outputs

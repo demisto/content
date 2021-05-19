@@ -1,0 +1,658 @@
+id: Azure Storage - Test
+version: -1
+name: Azure Storage - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 53a797b8-fecf-433c-8f8f-2fbbe989b56e
+    type: start
+    task:
+      id: 53a797b8-fecf-433c-8f8f-2fbbe989b56e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 51d6e348-6f9b-4d19-841d-fb9d88d08d34
+    type: regular
+    task:
+      id: 51d6e348-6f9b-4d19-841d-fb9d88d08d34
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e546395b-8cdd-45a5-801e-7b3c8dc50a20
+    type: regular
+    task:
+      id: e546395b-8cdd-45a5-801e-7b3c8dc50a20
+      version: -1
+      name: azure-storage-account-list
+      description: Run this command to get the all or specific account storage details
+      script: Azure Storage|||azure-storage-account-list
+      type: regular
+      iscommand: true
+      brand: Azure Storage
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      account_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 20bd1466-fbf6-4654-8e5f-7b850dd63ece
+    type: condition
+    task:
+      id: 20bd1466-fbf6-4654-8e5f-7b850dd63ece
+      version: -1
+      name: Checks is account name is exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AzureStorage.StorageAccount.name
+            iscontext: true
+          right:
+            value:
+              simple: demistotestdonotdelete
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bcdaed01-260f-4653-8478-741646bd058b
+    type: regular
+    task:
+      id: bcdaed01-260f-4653-8478-741646bd058b
+      version: -1
+      name: azure-storage-account-create-update
+      description: |-
+        Run this command to create or update an spesific
+        account storage
+      script: Azure Storage|||azure-storage-account-create-update
+      type: regular
+      iscommand: true
+      brand: Azure Storage
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      access_tier:
+        simple: Cool
+      account_name:
+        simple: demistotestdonotdelete
+      allow_blob_public_access: {}
+      custom_domain_name: {}
+      enc_key_source:
+        simple: Microsoft.Storage
+      enc_keyvault_key_name: {}
+      enc_keyvault_key_version: {}
+      enc_keyvault_uri: {}
+      enc_requireInfrastructureEncryption: {}
+      is_hns_enabled: {}
+      kind:
+        simple: BlobStorage
+      large_file_shares_state: {}
+      location:
+        simple: eastus
+      minimum_tls_version:
+        simple: TLS1_0
+      network_ruleset_bypass: {}
+      network_ruleset_default_action: {}
+      network_ruleset_ipRules: {}
+      sku:
+        simple: Standard_GRS
+      supports_https_traffic_only: {}
+      tags: {}
+      use_sub_domain_name: {}
+      virtual_network_rules: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: dc521895-c218-48fc-8d65-332b74732978
+    type: condition
+    task:
+      id: dc521895-c218-48fc-8d65-332b74732978
+      version: -1
+      name: Verify account update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureStorage.StorageAccount.properties.minimumTlsVersion
+            iscontext: true
+          right:
+            value:
+              simple: TLS1_0
+    - label: condition-2
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureStorage.StorageAccount.properties.encryption.keySource
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft.Storage
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 94230b04-95c3-4355-80cb-77e4323f2d1d
+    type: regular
+    task:
+      id: 94230b04-95c3-4355-80cb-77e4323f2d1d
+      version: -1
+      name: azure-storage-account-create-update
+      description: |-
+        Run this command to create or update an spesific
+        account storage
+      script: Azure Storage|||azure-storage-account-create-update
+      type: regular
+      iscommand: true
+      brand: Azure Storage
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      access_tier: {}
+      account_name:
+        simple: ${AzureStorage.StorageAccount.name}
+      allow_blob_public_access: {}
+      custom_domain_name: {}
+      enc_key_source:
+        simple: Microsoft.Storage
+      enc_keyvault_key_name: {}
+      enc_keyvault_key_version: {}
+      enc_keyvault_uri: {}
+      enc_requireInfrastructureEncryption: {}
+      is_hns_enabled: {}
+      kind:
+        simple: ${AzureStorage.StorageAccount.kind}
+      large_file_shares_state: {}
+      location:
+        simple: ${AzureStorage.StorageAccount.location}
+      minimum_tls_version:
+        simple: TLS1_1
+      network_ruleset_bypass: {}
+      network_ruleset_default_action: {}
+      network_ruleset_ipRules: {}
+      sku:
+        simple: ${AzureStorage.StorageAccount.sku.name}
+      supports_https_traffic_only:
+        simple: "false"
+      tags: {}
+      use_sub_domain_name: {}
+      virtual_network_rules: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 45351c74-1228-44fd-86c5-2544588f0693
+    type: condition
+    task:
+      id: 45351c74-1228-44fd-86c5-2544588f0693
+      version: -1
+      name: Verify account changes
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureStorage.StorageAccount.properties.minimumTlsVersion
+            iscontext: true
+          right:
+            value:
+              simple: TLS1_1
+    - label: condition-2
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: AzureStorage.StorageAccount.properties.supportsHttpsTrafficOnly
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 4eea7529-175c-4a38-87bb-e40256b6ded3
+    type: regular
+    task:
+      id: 4eea7529-175c-4a38-87bb-e40256b6ded3
+      version: -1
+      name: azure-storage-blob-service-properties-get
+      description: Run this command to get the blob service properties of a spesific
+        account storage
+      script: Azure Storage|||azure-storage-blob-service-properties-get
+      type: regular
+      iscommand: true
+      brand: Azure Storage
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      account_name:
+        simple: ${AzureStorage.StorageAccount.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b67b8024-a761-40b2-8314-9b94f164a784
+    type: condition
+    task:
+      id: b67b8024-a761-40b2-8314-9b94f164a784
+      version: -1
+      name: Verify blob service
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorage.BlobServiceProperties
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fcd64da9-6b27-45fe-8db9-2916debe9317
+    type: regular
+    task:
+      id: fcd64da9-6b27-45fe-8db9-2916debe9317
+      version: -1
+      name: azure-storage-blob-service-properties-set
+      description: |-
+        Run this command to set properties for
+        the blob service in a spesific account storage
+      script: Azure Storage|||azure-storage-blob-service-properties-set
+      type: regular
+      iscommand: true
+      brand: Azure Storage
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      account_name:
+        simple: ${AzureStorage.StorageAccount.name}
+      change_feed_enabled: {}
+      change_feed_retention_days: {}
+      container_delete_rentention_policy_days: {}
+      container_delete_rentention_policy_enabled: {}
+      delete_rentention_policy_days:
+        simple: "2"
+      delete_rentention_policy_enabled:
+        simple: "true"
+      last_access_time_tracking_policy_blob_types: {}
+      last_access_time_tracking_policy_days: {}
+      last_access_time_tracking_policy_enabled: {}
+      restore_policy_days: {}
+      restore_policy_enabled: {}
+      restore_policy_min_restore_time: {}
+      versioning:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 62dd8e4a-e01c-40f5-8f10-37c2d216471c
+    type: condition
+    task:
+      id: 62dd8e4a-e01c-40f5-8f10-37c2d216471c
+      version: -1
+      name: Verify blob service properties updates
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: AzureStorage.BlobServiceProperties.properties.isVersioningEnabled
+            iscontext: true
+    - label: condition-2
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: AzureStorage.BlobServiceProperties.properties.deleteRetentionPolicy.enabled
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureStorage.BlobServiceProperties.properties.deleteRetentionPolicy.days
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 804b5704-fc46-4cd8-8a5a-15d4d7ea66ea
+    type: regular
+    task:
+      id: 804b5704-fc46-4cd8-8a5a-15d4d7ea66ea
+      version: -1
+      name: azure-storage-blob-service-properties-set
+      description: |-
+        Run this command to set properties for
+        the blob service in a spesific account storage
+      script: Azure Storage|||azure-storage-blob-service-properties-set
+      type: regular
+      iscommand: true
+      brand: Azure Storage
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      account_name:
+        simple: ${AzureStorage.StorageAccount.name}
+      change_feed_enabled: {}
+      change_feed_retention_days: {}
+      container_delete_rentention_policy_days: {}
+      container_delete_rentention_policy_enabled: {}
+      delete_rentention_policy_days:
+        simple: "5"
+      delete_rentention_policy_enabled:
+        simple: "false"
+      last_access_time_tracking_policy_blob_types: {}
+      last_access_time_tracking_policy_days: {}
+      last_access_time_tracking_policy_enabled: {}
+      restore_policy_days: {}
+      restore_policy_enabled: {}
+      restore_policy_min_restore_time: {}
+      versioning:
+        simple: ${AzureStorage.BlobServiceProperties.properties.isVersioningEnabled}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: e0cead02-0534-4dfd-835e-627eaa021460
+    type: condition
+    task:
+      id: e0cead02-0534-4dfd-835e-627eaa021460
+      version: -1
+      name: Verify blob service properties changes
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: AzureStorage.BlobServiceProperties.properties.deleteRetentionPolicy.enabled
+            iscontext: true
+    - label: condition-3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AzureStorage.BlobServiceProperties.properties.deleteRetentionPolicy.days
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: dd9033e9-d485-4f23-83bc-6d587b00d526
+    type: title
+    task:
+      id: dd9033e9-d485-4f23-83bc-6d587b00d526
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2605,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Azure Storage Test Playbook

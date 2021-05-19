@@ -1,6 +1,6 @@
 import requests_mock
 from iDefense_v2 import Client, url_command, ip_command, _calculate_dbot_score
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, DBotScoreReliability
 from test_data.response_constants import URL_RES_JSON, IP_RES_JSON
 
 API_URL = "https://test.com"
@@ -27,13 +27,14 @@ def test_ip_command():
     json_data = IP_RES_JSON
     expected_output = {
         'IP': [{'Address': '0.0.0.0'}],
-        'DBOTSCORE': [{'Indicator': '0.0.0.0', 'Type': 'ip', 'Vendor': 'iDefense', 'Score': 2}]}
+        'DBOTSCORE': [{'Indicator': '0.0.0.0', 'Type': 'ip', 'Vendor': 'iDefense', 'Score': 2,
+                       'Reliability': 'B - Usually reliable'}]}
 
     ip_to_check = {'ip': '0.0.0.0'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
-        results = ip_command(client, ip_to_check)
+        results = ip_command(client, ip_to_check, DBotScoreReliability.B)
         output = results[0].to_context().get('EntryContext', {})
         assert output.get('IP(val.Address && val.Address == obj.Address)', []) == expected_output.get('IP')
         assert output.get(DBOT_KEY, []) == expected_output.get('DBOTSCORE')
@@ -61,7 +62,7 @@ def test_ip_not_found():
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
-        results = ip_command(client, ip_to_check)
+        results = ip_command(client, ip_to_check, DBotScoreReliability.B)
         output = results[0].to_context().get('HumanReadable')
         assert expected_output in output
 
@@ -82,7 +83,7 @@ def test_wrong_ip():
     ip_to_check = {'ip': '1'}
     client = Client(API_URL, 'api_token', True, False)
     try:
-        ip_command(client, ip_to_check)
+        ip_command(client, ip_to_check, DBotScoreReliability.B)
     except DemistoException as err:
         assert "Received wrong IP value" in str(err)
 
@@ -151,12 +152,12 @@ def test_url_command():
     expected_output = {
         'URL': [{'Data': 'http://www.malware.com'}],
         'DBOTSCORE': [{'Indicator': 'http://www.malware.com', 'Type': 'url', 'Vendor': 'iDefense',
-                       'Score': 2}]}
+                       'Score': 2, 'Reliability': 'B - Usually reliable'}]}
     url_to_check = {'url': 'http://www.malware.com'}
     with requests_mock.Mocker() as m:
         m.get(url, status_code=status_code, json=json_data)
         client = Client(API_URL, 'api_token', True, False)
-        results = url_command(client, url_to_check)
+        results = url_command(client, url_to_check, DBotScoreReliability.B)
         output = results[0].to_context().get('EntryContext', {})
         assert output.get('URL(val.Data && val.Data == obj.Data)', []) == expected_output.get('URL')
         assert output.get(DBOT_KEY, []) == expected_output.get('DBOTSCORE')
