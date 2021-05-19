@@ -45,7 +45,7 @@ class Client:
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
     @logger
-    def incidents_list(self, timeout: int = TIMEOUT, limit: int = MAX_ENTRIES, status: Optional[str] = None,
+    def incidents_list(self, timeout: int, limit: int = MAX_ENTRIES, status: Optional[str] = None,
                        assigned_to: Optional[str] = None, from_date: Optional[datetime] = None,
                        skip: Optional[int] = None) -> Dict:
         """
@@ -480,7 +480,7 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
 
     """
     query = args.get('query', '')
-    limit = arg_to_number(args.get('limit', '-1'))
+    limit = int(arg_to_number(args.get('limit', '-1')))
     timeout = arg_to_number(args.get('timeout'))
 
     query = _query_set_limit(query, limit)
