@@ -1,6 +1,5 @@
 id: Google Safe Browsing V2 Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Google Safe Browsing V2 Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,8 +30,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: ac62a7e7-05fb-471b-8e22-ac3b0a21658e
@@ -64,8 +62,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 5dd11f0d-8261-4484-8653-e0f08871f768
@@ -98,8 +94,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 14f2c9e6-a5c1-48d6-88a0-09581128a7bc
@@ -138,8 +132,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 06260395-94b4-4efe-83c2-87dc1bdec348
@@ -172,8 +164,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: dabee77e-dc07-4bac-897b-83310e86c109
@@ -212,8 +202,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 281ef348-5ee3-4c67-8e68-10778d3a4a3c
@@ -225,6 +213,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -238,8 +227,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -254,3 +241,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
