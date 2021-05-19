@@ -275,7 +275,7 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
             md_ = f'Alert {uuid} was acknowledged successfully.'
         except Exception as err:
             if 'Alert not found or cannot update' in str(err):
-                md_ = f'Alert {uuid} was not found or cannot update. it may have been acknowledged in the past.'
+                md_ = f'Alert {uuid} was not found or cannot update. It may have been acknowledged in the past.'
             else:
                 raise
 
@@ -465,7 +465,7 @@ def get_reports(client: Client, args: Dict[str, Any]):
     csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
                    'mpsWebAVReport'}
     prefix = 'csv' if report_type in csv_reports else 'pdf'
-    demisto.results(fileResult(f'report_{report_type}_{start_time}.{prefix}', data=raw_response,
+    demisto.results(fileResult(f'report_{report_type}_{datetime.now().timestamp()}.{prefix}', data=raw_response,
                                file_type=EntryType.ENTRY_INFO_FILE))
 
 

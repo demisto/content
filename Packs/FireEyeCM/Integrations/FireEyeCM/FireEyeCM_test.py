@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from FireEyeCM import Client, get_alerts, get_alert_details, get_quarantined_emails, alert_severity_to_dbot_score, \
-    to_fe_datetime_converter, fetch_incidents
+from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
+    alert_severity_to_dbot_score, to_fe_datetime_converter, fetch_incidents
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT
 
 
@@ -52,6 +52,51 @@ def test_get_alert_details(mocker):
                         return_value=util_load_json('test_data/get_alert_details.json'))
     command_results = get_alert_details(client=client, args={'alert_id': '563'})
     assert command_results[0].outputs == GET_ALERTS_DETAILS_CONTEXT
+
+
+def test_alert_acknowledge(mocker):
+    """Unit test
+    Given
+    - alert_acknowledge command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's alert_acknowledge_request response.
+    Then
+    - Validate the human readable
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'alert_acknowledge_request', return_value=None)
+    command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
+    assert command_results[0].readable_output == 'Alert uuid was acknowledged successfully.'
+
+
+def test_alert_acknowledge_already_acknowledged(mocker):
+    """Unit test
+    Given
+    - alert_acknowledge command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's alert_acknowledge_request response for an already acknowledged alert.
+    Then
+    - Validate the human readable
+    """
+    def error_404_mock():
+        raise Exception('Error in API call [404] - Not Found'
+                        '{"fireeyeapis": {"@version": "v2.0.0", "description": "Alert not found or cannot update.'
+                        ' code:ALRTCONF008", "httpStatus": 404, "message": "Alert not found or cannot update"}}')
+
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    mocker.patch.object(Client, 'alert_acknowledge_request', side_effect=error_404_mock)
+    command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
+    assert command_results[0].readable_output == \
+           'Alert uuid was not found or cannot update. It may have been acknowledged in the past.'
 
 
 def test_get_quarantined_emails(mocker):
