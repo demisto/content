@@ -3,7 +3,8 @@ import json
 
 import pytest
 
-from FireEyeCM import Client, get_alerts, get_quarantined_emails, alert_severity_to_dbot_score, fetch_incidents
+from FireEyeCM import Client, get_alerts, get_quarantined_emails, alert_severity_to_dbot_score, \
+    to_fe_datetime_converter,fetch_incidents
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT
 
 
@@ -114,8 +115,8 @@ def test_fetch_incidents_last_alert_ids(mocker):
     - mock the last_event_alert_ids
     - mock the Client's get_alerts_request.
     Then
-    - run the fetch incidents command using the Client
-    Validate that no incidents will be returned.
+    - Validate that no incidents will be returned.
+    - Validate that the last_run is "now"
     """
     mocker.patch.object(Client, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
@@ -133,6 +134,8 @@ def test_fetch_incidents_last_alert_ids(mocker):
                                           info_level='concise')
 
     assert len(incidents) == 0
+    # trim miliseconds to avoid glitches such as 2021-05-19T10:21:52.121+00:00 != 2021-05-19T10:21:52.123+00:00
+    assert last_run.get('time')[:-8] == to_fe_datetime_converter('now')[:-8]
 
 
 @pytest.mark.parametrize('severity_str, dbot_score', [
