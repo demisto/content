@@ -18,7 +18,8 @@ PARAMETERS_DICT = {
     'maxRatioOfMissingValue': 0.5,
     'modelExpiration': 24,
     'forceRetrain': 'True',
-    'modelHidden': 'False'
+    'modelHidden': 'False',
+    'numberOfFeaturesPerField': 500
 }
 
 FETCHED_INCIDENT_NOT_EMPTY = [
