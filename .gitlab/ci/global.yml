@@ -73,6 +73,8 @@
 
 .default-after-script:
   after_script:
+    - source ./venv/bin/activate
+    - source $BASH_ENV
     - source .gitlab/helper_functions.sh
     - section_start "Notify Slack"
     - |
