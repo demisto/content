@@ -1,0 +1,42 @@
+[
+    {
+        "active": false,
+        "description": "MMSender is now running",
+        "node": 1,
+        "source": "Sender",
+        "triggered": 1618122938,
+        "type": 0
+    },
+    {
+        "active": false,
+        "description": "MMReceiver is now running",
+        "node": 1,
+        "source": "Receiver",
+        "triggered": 1618122938,
+        "type": 0
+    },
+    {
+        "active": true,
+        "description": "MMEngine has stopped",
+        "node": 1,
+        "source": "Engine",
+        "triggered": 1617791105,
+        "type": 7
+    },
+    {
+        "active": false,
+        "description": "MMSender has stopped",
+        "node": 1,
+        "source": "Sender",
+        "triggered": 1617791105,
+        "type": 7
+    },
+    {
+        "active": false,
+        "description": "MMReceiver has stopped",
+        "node": 1,
+        "source": "Receiver",
+        "triggered": 1617791105,
+        "type": 7
+    }
+]
