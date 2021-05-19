@@ -128,7 +128,7 @@ def threats_analysis(threats: List, indicator: str, threshold: str):
     return md_data, dbot_score
 
 
-def ip_threats_analysis(threats: List, ip: str, threshold: str):
+def ip_threats_analysis(threats: List, ip: str, threshold: str, dbot_score_obj):
     """ process raw response data and generate dbot score ,human readable results, ip indicator object
             Args:
                 - threats (list): threats data from cofense raw response
@@ -147,7 +147,7 @@ def ip_threats_analysis(threats: List, ip: str, threshold: str):
     md_data = []
     indicator_found = False
     dbot_score = adjusted_score = severity_level = 0
-    ip_indicator = Common.IP(ip=ip, dbot_score=None)
+    ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score_obj)
     for threat in threats:
         severity_level = 0
         for block in threat.get('blockSet'):
@@ -177,7 +177,7 @@ def ip_threats_analysis(threats: List, ip: str, threshold: str):
     return md_data, dbot_score, ip_indicator
 
 
-def file_threats_analysis(threats: List, file: str, threshold: str):
+def file_threats_analysis(threats: List, file: str, threshold: str, dbot_score_obj):
     """ process raw response data and generate dbot score ,human readable results, file indicator object
             Args:
                 - threats (list): threats data from cofense raw response
@@ -197,7 +197,7 @@ def file_threats_analysis(threats: List, file: str, threshold: str):
     md_data = []
     dbot_score = adjusted_score = 0
 
-    file_indicator = Common.File(md5=file, dbot_score=None)
+    file_indicator = Common.File(md5=file, dbot_score=dbot_score_obj)
     for threat in threats:
         severity_level = 0
         block_set = threat.get('blockSet')
@@ -314,13 +314,14 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
     # Call the Client function and get the raw response
     result = client.threat_search_call(ip=ip)
     threats = result.get('data', {}).get('threats', [])
-
-    md_data, dbot_score, ip_indicator = ip_threats_analysis(threats=threats, ip=ip,
-                                                            threshold=params.get("ip_threshold"))
-
     dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
-                                      integration_name=INTEGRATION_NAME, score=dbot_score,
+                                      integration_name=INTEGRATION_NAME, score=0,
                                       reliability=params.get(RELIABILITY))
+    md_data, dbot_score, ip_indicator = ip_threats_analysis(threats=threats, ip=ip,
+                                                            threshold=params.get("ip_threshold"),
+                                                            dbot_score_obj=dbot_score_obj)
+
+    dbot_score_obj.score = dbot_score
     ip_indicator.dbot_score = dbot_score_obj
 
     return CommandResults(
@@ -394,14 +395,15 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandRe
     # Call the Client function and get the raw response
     result = client.threat_search_call(file=file)
     threats = result.get('data', {}).get('threats', [])
-    md_data, dbot_score, file_indicator = file_threats_analysis(threats=threats, file=file,
-                                                                threshold=params.get('file_threshold'))
     dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
-                                      integration_name=INTEGRATION_NAME, score=dbot_score,
+                                      integration_name=INTEGRATION_NAME, score=0,
                                       reliability=params.get(RELIABILITY))
+    md_data, dbot_score, file_indicator = file_threats_analysis(threats=threats, file=file,
+                                                                threshold=params.get('file_threshold'),
+                                                                dbot_score_obj=dbot_score_obj)
 
     file_indicator.dbot_score = dbot_score_obj
-
+    dbot_score_obj.score = dbot_score
     return CommandResults(
         outputs_prefix=OUTPUT_PREFIX,
         outputs_key_field='id',
