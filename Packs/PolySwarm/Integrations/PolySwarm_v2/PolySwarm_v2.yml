@@ -85,7 +85,7 @@ script:
   - arguments:
     - default: true
       description: The IP address for which to retrieve the reputation information.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
