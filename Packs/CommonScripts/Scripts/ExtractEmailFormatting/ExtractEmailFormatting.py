@@ -3,8 +3,8 @@ from CommonServerPython import *  # lgtm [py/polluting-import]
 
 import re
 
-# Negative lookahead - Verify the the pattern does not end with the listed file extensions. Separated by |
-VALID_EXTENSION = r'(?!\S*\.(?:jpg|png|gif|bmp|txt|pdf|xls|xlsx|doc|docx|eml|msg)(?:\s*$))'
+# Negative lookahead - Verify the pattern does not end with the listed file extensions. Separated by |
+VALID_EXTENSION = r'(?!\S*\.(?:zip|jpg|jpeg|csv|png|gif|bmp|txt|pdf|ppt|pptx|xls|xlsx|doc|docx|eml|msg)(?:\s*$))'
 
 """
 First Group - [a-z0-9._%+-]+ :
