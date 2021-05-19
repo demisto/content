@@ -1002,7 +1002,7 @@ def main():
         elif demisto.command() == 'aws-iam-attach-policy':
             attach_policy(demisto.args(), aws_client)
         elif demisto.command() == 'aws-iam-detach-policy':
-            detach_policy(demisto.args())
+            detach_policy(demisto.args(), aws_client)
         elif demisto.command() == 'aws-iam-delete-login-profile':
             delete_login_profile(demisto.args(), aws_client)
         elif demisto.command() == 'aws-iam-add-user-to-group':
