@@ -305,10 +305,11 @@ def load_conf_files(conf_path, secret_conf_path):
 
 
 def load_env_results_json():
-    env_results_path = os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'), 'env_results.json')
+    env_results_path = os.getenv('ENV_RESULTS_PATH', os.path.join(os.getenv('ARTIFACTS_FOLDER', './artifacts'),
+                                                                  'env_results.json'))
 
     if not os.path.isfile(env_results_path):
-        logging.warning(f'Did not find {env_results_path} file')
+        logging.warning(f"Did not find {env_results_path} file ")
         return {}
 
     with open(env_results_path, 'r') as json_file:
@@ -334,7 +335,7 @@ def get_server_numeric_version(ami_env, is_local_run=False):
 
     env_json = load_env_results_json()
     if not env_json:
-        logging.warning(f'assuming server version is {default_version}.')
+        logging.warning(f"assuming server version is {default_version}.")
         return default_version
 
     instances_ami_names = {env.get('AmiName') for env in env_json if ami_env in env.get('Role', '')}
