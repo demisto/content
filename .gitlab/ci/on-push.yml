@@ -17,8 +17,6 @@ trigger-private-build:
       when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
     - if: '$NIGHTLY'
-    - if: '$INSTANCE_TESTS'
-    - if: '$DEMISTO_SDK_NIGHTLY'
     - if: '$CI_COMMIT_BRANCH !~ /pull\/[0-9]+/'
   script:
     - echo "====Trigger Private Build===="
@@ -163,3 +161,7 @@ run-validations:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .push-rule
+#   variables:
+#     SLACK_TEST_TYPE: "unittests"
+#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
+#     SLACK_ONLY_IF: $BUCKET_UPLOAD
