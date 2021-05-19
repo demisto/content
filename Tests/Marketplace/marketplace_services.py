@@ -1643,9 +1643,9 @@ class Pack(object):
         self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        self._is_private_pack = user_metadata.get('partnerId', False)
-        self._is_premium = True if self._is_private_pack else False
-        self._preview_only = True if self._is_private_pack else False
+        self._is_private_pack = 'partnerId' in user_metadata
+        self._is_premium = self._is_private_pack
+        self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
         self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
         if self._is_private_pack:
             self._vendor_id = user_metadata.get('vendorId', "")
