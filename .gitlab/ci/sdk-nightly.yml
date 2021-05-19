@@ -88,6 +88,3 @@ demisto-sdk-nightly:run-commands-against-instance:
     - echo "Run Lint"
     - demisto-sdk lint -i Packs/HelloWorld/
     - *upload-entities-to-cortex-xsoar
-  after_script:
-    - source ./venv/bin/activate
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
