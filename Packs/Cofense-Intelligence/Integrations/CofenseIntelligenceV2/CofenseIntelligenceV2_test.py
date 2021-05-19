@@ -1,7 +1,6 @@
 import io
 from CofenseIntelligenceV2 import *
 
-
 mock_params = {'url_threshold': 'Major', 'file_threshold': 'Major', 'email_threshold': 'Major', 'ip_threshold': 'Major'}
 
 mock_base_url = 'mock_base_url'
@@ -24,6 +23,15 @@ def util_load_json(path):
 
 
 def test_threats_analysis():
+    """
+        Given:
+            - an indicator to search and a threats array  from cofense search
+        When:
+            - Running threat_analysis
+        Then:
+            - Verify md table data
+            - Verify dbot score
+    """
     indicator = 'email1'
     threshold = 'Major'
     mock_threats = util_load_json('test_data/test_threats.json').get('threats')
@@ -35,6 +43,15 @@ def test_threats_analysis():
 
 
 def test_create_threat_md_row():
+    """
+        Given:
+            - a threats from cofense search raw response
+        When:
+            - run create_threat_md_row
+        Then:
+            - Verify md row data
+    """
+
     threat = util_load_json('test_data/test_threats.json').get('threats')[0]
     severity_level = util_load_json('test_data/test_threats.json').get('mock_dbot_score')
     threat_md_row = create_threat_md_row(threat, severity_level)
@@ -43,6 +60,16 @@ def test_create_threat_md_row():
 
 
 def test_extracted_string(mocker):
+    """
+        Given:
+            - extracted string command args
+        When:
+            - run extracted_string_command
+        Then:
+            - Verify response outputs
+            - verify response readable output
+    """
+
     mock_args = {'str': 'str', 'limit': '10'}
     test_data = util_load_json('test_data/test_extracted_string.json')
 
@@ -52,11 +79,22 @@ def test_extracted_string(mocker):
 
     mock_outputs = test_data.get('mock_outputs')
     mock_readable_outputs = test_data.get('mock_readable')
+
     assert mock_outputs == response.outputs
     assert mock_readable_outputs == response.readable_output
 
 
 def test_search_url_command(mocker):
+    """
+        Given:
+            - url command args
+        When:
+            - run check_url_command
+        Then:
+            - Verify response outputs
+            - verify response readable output
+    """
+
     mock_args = {'url': 'url'}
     test_data = util_load_json('test_data/test_search_url.json')
     return_value = test_data.get('url_search_response')
@@ -69,6 +107,16 @@ def test_search_url_command(mocker):
 
 
 def test_check_email_command(mocker):
+    """
+        Given:
+            - email command args
+        When:
+            - run check_email_command
+        Then:
+            - Verify response outputs
+            - verify response readable output
+    """
+
     mock_args = {'email': 'email@email.com'}
     test_data = util_load_json('test_data/test_search_email.json')
     return_value = test_data.get('email_search_response')
@@ -81,6 +129,16 @@ def test_check_email_command(mocker):
 
 
 def test_check_ip_command(mocker):
+    """
+        Given:
+            - ip command args
+        When:
+            - run check_ip_command
+        Then:
+            - Verify response outputs
+            - verify response readable output
+    """
+
     mock_args = {'ip': '1.1.1.1'}
     test_data = util_load_json('test_data/test_search_ip.json')
     return_value = test_data.get('ip_search_response')
@@ -93,6 +151,16 @@ def test_check_ip_command(mocker):
 
 
 def test_check_md5_command(mocker):
+    """
+        Given:
+            - file command args
+        When:
+            - run check_md5_command
+        Then:
+            - Verify response outputs
+            - verify response readable output
+    """
+
     mock_args = {'file': 'file'}
     test_data = util_load_json('test_data/test_search_file.json')
     return_value = test_data.get('file_search_response')

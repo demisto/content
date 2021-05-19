@@ -1,6 +1,5 @@
-!ip ip=8.8.8.8
-!email email=myinfo1234@zoho.com
-!file file=021b08963d6be1bc000605350b18a6f4
-!cofense-search str="\"systime\""
-!url url=http://prosciuttuamo.it/tmp/ifeanyi.exe
-
+!ip ip=8.8.8.8 using=CofenseIntelligenceV2_instance_1
+!email email=email@email.com using=CofenseIntelligenceV2_instance_1
+!file file=md5 using=CofenseIntelligenceV2_instance_1
+!cofense-search str=string using=CofenseIntelligenceV2_instance_1
+!url url=http://prosciuttuamo.it/tmp/ifeanyi.exe using=CofenseIntelligenceV2_instance_1

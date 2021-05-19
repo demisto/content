@@ -16,16 +16,6 @@ configuration:
   name: credentials
   type: 9
   required: true
-- display: IP Threshold
-  name: ip_threshold
-  defaultvalue: Major
-  type: 15
-  required: false
-  options:
-  - None
-  - Minor
-  - Moderate
-  - Major
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: B - Usually reliable
@@ -40,6 +30,16 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
+- display: IP Threshold
+  name: ip_threshold
+  defaultvalue: Major
+  type: 15
+  required: false
+  options:
+  - None
+  - Minor
+  - Moderate
+  - Major
 - display: File Threshold
   name: file_threshold
   defaultvalue: Major
@@ -286,8 +286,6 @@ script:
       default: true
       description: String to search.
     - name: limit
-      required: false
-      default: 10
       description: 'Maximum number of strings to search. Default is 10.'
     outputs:
     - contextPath: DBotScore.Indicator

@@ -287,12 +287,12 @@
           "dateEntered": 1468519149893,
           "severityLevel": "Major",
           "fileNameExtension": "zip",
-          "md5Hex": "c1cd93111144dd9355f8245f518fc4ea",
-          "sha384Hex": "5e777a1ba32aaa519e273d898e2c75ecfa5e45cd7ac8382a857a05a0b3e34d15916bcb826c421af6735e680b28b156e4",
-          "sha512Hex": "d9a9b8ea9d78dab6e2e21983a65fa1d6e175c50fb6fad74c3c6a13e028b9219782069ab4655647ade05ea4e683ec99a4c20f7b230e413294a3f64d969a796290",
-          "sha1Hex": "709e919797d8c3fa81b3d3ed428067a7de2d18d6",
-          "sha224Hex": "1cb06da1084d3c303980cae246989da5e5b342dcc1bfe98a6e2dde54",
-          "sha256Hex": "f985f821d205213747aa642b708a93fb8bc0ed4886b312e358e8d387a630adb8"
+          "md5Hex": "md5",
+          "sha384Hex": "sha384",
+          "sha512Hex": "sha512",
+          "sha1Hex": "sha1",
+          "sha224Hex": "sha224",
+          "sha256Hex": "sha256"
         },
         {
           "malwareFamily": {
@@ -525,12 +525,12 @@
           "dateEntered": 1468519200483,
           "severityLevel": "Major",
           "fileNameExtension": "exe",
-          "md5Hex": "54a3c47427b82f695320c689d6a76503",
-          "sha384Hex": "a06d99a32f9378595a6fca60b90a3054a4f79726d9fba26c91a1d849c1a70519d05147846ccc52002a0cbe22328cf90b",
-          "sha512Hex": "48e0af208475ab0a9d1ba2f8cb6d1c82988f5087433afa485a742525973a511b201d6bb0e6332f1481345ddb882bd1a357f04eece6493b1fe9ccda6c510da19e",
-          "sha1Hex": "9cae93d9685f371623540e1a65186c7e63363937",
-          "sha224Hex": "5ac83786a9306d241fd8c0b84c28544cbf99918b741bd15e4e77e6bb",
-          "sha256Hex": "cf6cdc2fafd18ebd4b5be9f67d7407e5aa549f723e70267f1531a35ed5f3b824"
+          "md5Hex": "md5",
+          "sha384Hex": "sha384",
+          "sha512Hex": "sha512",
+          "sha1Hex": "sha1",
+          "sha224Hex": "sha224",
+          "sha256Hex": "sha256"
         },
         {
           "malwareFamily": {
@@ -760,12 +760,12 @@
           "dateEntered": 1468517926165,
           "severityLevel": "Major",
           "fileNameExtension": "exe",
-          "md5Hex": "54a3c47427b82f695320c689d6a76503",
-          "sha384Hex": "a06d99a32f9378595a6fca60b90a3054a4f79726d9fba26c91a1d849c1a70519d05147846ccc52002a0cbe22328cf90b",
-          "sha512Hex": "48e0af208475ab0a9d1ba2f8cb6d1c82988f5087433afa485a742525973a511b201d6bb0e6332f1481345ddb882bd1a357f04eece6493b1fe9ccda6c510da19e",
-          "sha1Hex": "9cae93d9685f371623540e1a65186c7e63363937",
-          "sha224Hex": "5ac83786a9306d241fd8c0b84c28544cbf99918b741bd15e4e77e6bb",
-          "sha256Hex": "cf6cdc2fafd18ebd4b5be9f67d7407e5aa549f723e70267f1531a35ed5f3b824"
+          "md5Hex": "md5",
+          "sha384Hex": "sha384",
+          "sha512Hex": "sha512",
+          "sha1Hex": "sha1",
+          "sha224Hex": "sha224",
+          "sha256Hex": "sha256"
         },
         {
           "malwareFamily": {
@@ -979,12 +979,12 @@
           "dateEntered": 1468519149724,
           "severityLevel": "Major",
           "fileNameExtension": "zip",
-          "md5Hex": "dfda5ab5c17087b4ddf91e612eec5606",
-          "sha384Hex": "8b402893d19f5d1e4070658ae73e0458ba090f1d9b21df8b8b00f4db8f6740b95c0c07c5b44d8115dd22453e4f3cc4ef",
-          "sha512Hex": "79b7d23742244d286f1ec31f70123ecffa99cefcb4c6ddb68751f4be1c9d86ec5b712eb45c891a5613b110f8eec628332c22b6ab7bc201f9e3326018772af1fc",
-          "sha1Hex": "1626f520d260b0c8be6cda9394a26a0a9d8f9927",
-          "sha224Hex": "eaa8d35b088ffcdccdf47633e041e183a8a8b5fb7a5ccd0af793df3c",
-          "sha256Hex": "f2f2f5a39e76a6699cba560f269b22f5a4af7ec43477ed85835df33de1a2e03b"
+          "md5Hex": "md5",
+          "sha384Hex": "sha384",
+          "sha512Hex": "sha512",
+          "sha1Hex": "sha1",
+          "sha224Hex": "sha224",
+          "sha256Hex": "sha256"
         }
       ],
       "senderIpSet": [
@@ -1157,12 +1157,12 @@
               "dateEntered": 1528320491512,
               "severityLevel": "Major",
               "fileNameExtension": "exe",
-              "md5Hex": "d92456bcd362adad306f9d27b93ffe8b",
-              "sha384Hex": "cee3f83ce4a8652f5edd3295cbbe35eff59fab13188c24a39a7980e99b5942f09ccf5da806976dfae070760088a2fffb",
-              "sha512Hex": "af96fd8f98856ccff61862cb019849c9331ef12cc09bed42ce179bc050ce9689a65980cfd5907ea0d5d4707654059f6e708c49c450570cce1be506ee227d6dc3",
-              "sha1Hex": "ca9eb1550f5555b84a7bda18777668d82d0a6d8e",
-              "sha224Hex": "8b59d26e88e067e4e06678d57b61f4b016e3dc23cf511c1a78626334",
-              "sha256Hex": "9d15486feaa6f11f38ef13b09e76cbcd5dc338a6d57c67372a10fe72e89552e5"
+              "md5Hex": "md5",
+              "sha384Hex": "sha384",
+              "sha512Hex": "sha512",
+              "sha1Hex": "sha1",
+              "sha224Hex": "sha224",
+              "sha256Hex": "sha256"
             }
           ],
           "senderNameSet": [],
