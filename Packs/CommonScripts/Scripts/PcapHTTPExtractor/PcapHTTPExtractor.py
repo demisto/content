@@ -15,16 +15,10 @@ serr = sys.stderr
 sys.stderr = StringIO()
 
 ''' GLOBAL VARIABLES '''
-LIMIT = demisto.args()["limit"]
-START = demisto.args()["start"]
-LIMIT_DATA = int(demisto.args()["limitData"])
-if "allowedContentTypes" not in demisto.args():
-    ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
-                             "application/xml", "application/xhtml+xml",
-                             "application/ld+json", "application/javascript",
-                             "multipart/alternative", "application/x-www-form-urlencoded")
-else:
-    ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
+LIMIT = ""
+START = ""
+LIMIT_DATA = 0
+ALLOWED_CONTENT_TYPES = ()
 
 # Used to convert pyshark keys to Demisto's conventions
 # Also used as a whitelist of relevant keys for outputs.
@@ -390,6 +384,19 @@ def get_markdown_output(http_flows):
 
 def main():
     try:
+        ''' GLOBAL VARIABLES '''
+        global LIMIT, START, LIMIT_DATA, ALLOWED_CONTENT_TYPES
+        LIMIT = demisto.args().get("limit")
+        START = demisto.args().get("start")
+        LIMIT_DATA = int(demisto.args().get("limitData"))
+        if "allowedContentTypes" not in demisto.args():
+            ALLOWED_CONTENT_TYPES = ("text", "application/json", "multipart/form-data",
+                                     "application/xml", "application/xhtml+xml",
+                                     "application/ld+json", "application/javascript",
+                                     "multipart/alternative", "application/x-www-form-urlencoded")
+        else:
+            ALLOWED_CONTENT_TYPES = tuple(demisto.args()["allowedContentTypes"].split(","))  # type: ignore
+
         # Parse the arguments
         pcap_file_path_in_container, pcap_entry_id = get_entry_from_args()
         pcap_file_path_in_container = pcap_file_path_in_container[0]['Contents']['path']
@@ -416,6 +423,7 @@ def main():
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute PcapHTTPExtractor Script. Error: {str(e)}')
+    finally:
         sys.stderr = serr
 
 
