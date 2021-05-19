@@ -13,6 +13,6 @@ def test_grab_domains():
     Then:
         - Return domains list without errors
     """
-    from Packs.CiscoWebExFeed.Integrations.CiscoWebExFeed.CiscoWebExFeed import grab_domains
+    from CiscoWebExFeed import grab_domains
     expected_result = ['*.d1.com', '*.d2.com']
     assert grab_domains(DOMAIN_TABLE) == expected_result
