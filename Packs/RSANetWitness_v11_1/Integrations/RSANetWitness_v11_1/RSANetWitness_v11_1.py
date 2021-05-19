@@ -1,6 +1,6 @@
-import demistomock as demisto
+import urllib3
+
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 """
 
@@ -14,7 +14,7 @@ import json
 import re
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """
 
@@ -57,22 +57,34 @@ def get_token_request(username, password):
         - response body does not contain valid json (ValueError)
 
     """
-    username_password = "username={}&password={}".format(username, password)
-    url = '{}/auth/userpass'.format(BASE_PATH)
     get_token_headers = {
         'Content-Type': 'application/x-www-form-urlencoded;charset=ISO-8859-1',
         'Accept': 'application/json; charset=UTF-8',
         'NetWitness-Version': VERSION
     }
 
+    url = urljoin(BASE_PATH, 'auth/userpass')
+    username_password = "username={}&password={}".format(username, password)
     response = requests.post(url, headers=get_token_headers, data=username_password, verify=USE_SSL)
 
     # successful get_token
-    if response.status_code == 200:
-        return response.json()
-    # bad request - NetWitness returns a common json structure for errors
-    error_lst = response.json().get('errors')
-    raise ValueError('get_token failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst)))
+    try:
+        response_json = response.json()
+    except ValueError:
+        raise ValueError(
+            'Could not find a JSON in the response from RSANetWitness v11.1.\n'
+            'url: {}\n'
+            'status code: {}.\n'
+            'text (might be HTML/XML): {}'.format(url, response.status_code, response.text)
+        )
+    else:
+        if response.ok:
+            return response_json
+        # bad request - NetWitness returns a common json structure for errors
+        error_lst = response_json.get('errors')
+        raise ValueError(
+            'get_token failed with status: {}\n{}'.format(response.status_code, dict_list_to_str(error_lst))
+        )
 
 
 def get_token():
@@ -102,15 +114,16 @@ def get_token():
 GLOBAL VARS
 
 """
-SERVER_URL = demisto.params()['server']
-BASE_PATH = '{}/rest/api'.format(SERVER_URL)
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-USE_SSL = not demisto.params()['insecure']
-VERSION = demisto.params()['version']
-IS_FETCH = demisto.params()['isFetch']
-FETCH_TIME = demisto.params().get('fetch_time', '1 days')
-FETCH_LIMIT = int(demisto.params().get('fetch_limit', '100'))
+params = demisto.params()
+SERVER_URL = params['server']
+BASE_PATH = urljoin(SERVER_URL, '/rest/api')
+USERNAME = params['credentials']['identifier']
+PASSWORD = params['credentials']['password']
+USE_SSL = not params['insecure']
+VERSION = params['version']
+IS_FETCH = params['isFetch']
+FETCH_TIME = params.get('fetch_time', '1 days')
+FETCH_LIMIT = int(params.get('fetch_limit', '100'))
 TOKEN = None
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -154,9 +167,10 @@ def http_request(method, url, body=None, headers=None, url_params=None):
     if url_params is not None:
         request_kwargs['params'] = url_params
 
-    LOG('Attempting {} request to {}\nWith params:{}\nWith body:\n{}'.format(method, url,
-                                                                             json.dumps(url_params, indent=4),
-                                                                             json.dumps(body, indent=4)))
+    LOG('Attempting {} request to {}\nWith params:{}\nWith body:\n{}'.format(
+        method, url,
+        json.dumps(url_params, indent=4),
+        json.dumps(body, indent=4)))
     response = requests.request(
         method,
         url,
@@ -173,12 +187,16 @@ def http_request(method, url, body=None, headers=None, url_params=None):
             **request_kwargs
         )
     # successful request
-    if response.status_code == 200:
+    if response.ok:
         try:
             return response.json()
-        except Exception as e:
-            demisto.debug('Could not parse response as a JSON.\nResponse is: {}.'
-                          '\nError is: {}'.format(response.content, e.message))
+        except ValueError as e:
+            demisto.debug(
+                'Could not parse response as a JSON.\n'
+                'URL is: {}'
+                'Response is: {}.\n'
+                'Error is: {}'.format(url, response.content, e.message)
+            )
             return None
     # bad request - NetWitness returns a common json structure for errors; a list of error objects
     error_lst = response.json().get('errors')
@@ -197,7 +215,7 @@ def get_incident_request(incident_id):
         - response body does not contain valid json (ValueError)
 
     """
-    url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
+    url = urljoin(BASE_PATH, urljoin('incidents', incident_id))
 
     response = http_request(
         'GET',
@@ -263,7 +281,7 @@ def get_incidents_request(since=None, until=None, page_number=None, page_size=10
         'pageNumber': page_number,
         'pageSize': page_size
     }
-    url = '{}/incidents'.format(BASE_PATH)
+    url = urljoin(BASE_PATH, 'incidents')
 
     response = http_request(
         'GET',
@@ -439,7 +457,7 @@ def update_incident_request(incident_id, assignee=None, status=None):
         'assignee': assignee,
         'status': status
     }
-    url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
+    url = urljoin(BASE_PATH, urljoin('incidents', incident_id))
     response = http_request(
         'PATCH',
         url,
@@ -502,7 +520,7 @@ def delete_incident_request(incident_id):
 
     """
     LOG('Requesting to delete incident ' + incident_id)
-    url = '{}/incidents/{}'.format(BASE_PATH, incident_id)
+    url = urljoin(BASE_PATH, urljoin('incidents', incident_id))
     response = http_request(
         'DELETE',
         url,
@@ -550,7 +568,7 @@ def get_alerts_request(incident_id, page_number=None, page_size=None):
 
     """
 
-    url = '{}/incidents/{}/alerts'.format(BASE_PATH, incident_id)
+    url = urljoin(BASE_PATH, urljoin('incidents', urljoin(incident_id, 'alerts')))
     url_params = {
         'pageNumber': page_number,
         'pageSize': page_size
@@ -685,7 +703,7 @@ def fetch_incidents():
     last_incident_timestamp = timestamp
 
     # set boolean flag for fetching alerts per incident
-    import_alerts = demisto.params().get('importAlerts')
+    import_alerts = params.get('importAlerts')
 
     for incident in netwitness_incidents:
         incident_timestamp = incident.get('created')
@@ -1055,11 +1073,7 @@ def main():
         elif command == 'netwitness-get-alerts':
             get_alerts()
     except ValueError as e:
-        if command == 'fetch-incidents':  # fetch-incidents supports only raising exceptions
-            LOG(e.message)
-            LOG.print_log()
-            raise
-        return_error(str(e))
+        return_error(str(e), e)
 
 
 if __name__ in ('__builtin__', 'builtins'):
