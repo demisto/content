@@ -1418,6 +1418,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "Google Safe Browsing v2",
+            "playbookID": "Google Safe Browsing V2 Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "EWS v2",
             "playbookID": "EWSv2_empty_attachment_test",
             "instance_names": "ewv2_regular"
