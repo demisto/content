@@ -6,6 +6,7 @@ import sys
 import re
 import json
 import base64
+import urllib3
 from github import Github
 from github.PullRequest import PullRequest
 from github.Repository import Repository
@@ -14,6 +15,7 @@ from github.Branch import Branch
 
 from utils import load_json, CONTENT_ROOT_PATH, timestamped_print
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
 METADATA = 'pack_metadata.json'
@@ -23,24 +25,26 @@ XSOAR_SUPPORT = 'xsoar'
 PACK_NAME_REGEX = re.compile(r'Packs/([A-Za-z0-9-_.]+)/')
 
 
-def get_metadata_filename_from_pr(pr_files) -> str:
+def get_metadata_filename_from_pr(pr_files, pack_name) -> str:
     """ Iterates over all pr files and return the pr metadata.json filename if exists, else None
 
     Args:
         pr_files (PaginatedList[File]): The list of pr files
+        pack_name (str): The pack name
 
     Returns:
         The pr metadata.json filename if exists, else None
 
     """
-    print(f'Looking for a {METADATA} file in the PR.')
+    pack_metadata_path = os.path.join(PACKS, pack_name, METADATA)
+    print(f'Searching for a {pack_metadata_path} file in the PR.')
 
     for file in pr_files:
-        if METADATA in file.filename:
-            print(f'Found {METADATA} file in PR: {file.filename}.')
+        if pack_metadata_path in file.filename:
+            print(f'Found {METADATA} file in PR for pack {pack_name}: {file.filename}.')
             return file.filename
 
-    print(f'Did not find a {METADATA} file in the PR.')
+    print(f'Did not find a {pack_metadata_path} file in the PR.')
     return ''
 
 
@@ -65,21 +69,26 @@ def get_pack_support_type_from_pr_metadata_file(pr_metadata_filename: str, pr: P
     return metadata_file_content.get(SUPPORT)
 
 
-def get_pack_name_from_pr(pr_files) -> str:
-    """ Extracts the pack name from the pr files
+def get_pack_names_from_pr(pr_files) -> set:
+    """ Extracts the pack names from the pr files
 
     Args:
         pr_files (PaginatedList[File]): The list of pr files
 
     Returns:
-        The pack name
+        The set of pack names
 
     """
+    pack_names = set()
+
     for file in pr_files:
         if PACKS in file.filename:
-            return re.findall(PACK_NAME_REGEX, file.filename)[0]
+            pack_names.add(re.findall(PACK_NAME_REGEX, file.filename)[0])
 
-    raise Exception('PR does not contains files prefixed with "Packs".')
+    if not pack_names:
+        raise Exception('PR does not contains files prefixed with "Packs".')
+
+    return pack_names
 
 
 def get_pack_support_type_from_repo_metadata_file(pack_name):
@@ -92,9 +101,9 @@ def get_pack_support_type_from_repo_metadata_file(pack_name):
         The support type
 
     """
-    print(f'Getting support type from the repo.')
+    print('Getting support type from the repo.')
     repo_pack_metadata_path: str = os.path.join(CONTENT_ROOT_PATH, PACKS, pack_name, METADATA)
-    print(f'Pack {METADATA} file is at path: {repo_pack_metadata_path}')
+    print(f'{pack_name} pack {METADATA} file is at path: {repo_pack_metadata_path}')
     repo_pack_metadata: dict = load_json(repo_pack_metadata_path)
     return repo_pack_metadata.get(SUPPORT)
 
@@ -119,27 +128,41 @@ def main():
 
     org_name: str = 'demisto'
     repo_name: str = 'content'
+    exit_status = 0
+    packs_without_metadata_or_support = set()
+    not_filled_packs = set()
+
     github_client: Github = Github(github_token, verify=False)
     content_repo: Repository = github_client.get_repo(f'{org_name}/{repo_name}')
     pr: PullRequest = content_repo.get_pull(int(pr_number))
     pr_files = pr.get_files()
-    pack_name: str = get_pack_name_from_pr(pr_files)
 
-    if pr_metadata_filename := get_metadata_filename_from_pr(pr_files):
-        support_type = get_pack_support_type_from_pr_metadata_file(pr_metadata_filename, pr)
-    else:
-        support_type = get_pack_support_type_from_repo_metadata_file(pack_name)
-    print(f'Support for pack {pack_name} type is: {support_type}')
+    for pack_name in get_pack_names_from_pr(pr_files):
+        if pr_metadata_filename := get_metadata_filename_from_pr(pr_files, pack_name):
+            support_type = get_pack_support_type_from_pr_metadata_file(pr_metadata_filename, pr)
+        else:
+            support_type = get_pack_support_type_from_repo_metadata_file(pack_name)
 
-    if support_type == XSOAR_SUPPORT:
-        print('\nContribution form should not be filled for XSOAR supported contributions.')
-        sys.exit(0)
-    else:
-        error_message: str = f'\nContribution form was not filled for PR: {pr_number}\n' \
-                             f'Make sure to register your contribution by filling the contribution registration form ' \
-                             f'in - https://forms.gle/XDfxU4E61ZwEESSMA'
-        print(error_message)
-        sys.exit(1)
+        if not support_type:
+            packs_without_metadata_or_support.add(pack_name)
+            exit_status = 1
+        elif support_type == XSOAR_SUPPORT:
+            print(f'\n{pack_name} pack is XSOAR supported. Contribution form should not be filled for XSOAR supported '
+                  f'contributions.')
+        else:
+            not_filled_packs.add(pack_name)
+            print(f'{pack_name} pack is {support_type} supported.')
+            exit_status = 1
+
+    if packs_without_metadata_or_support:
+        print(f'ERROR: {METADATA} file / pack support is missing for the following packs: '
+              f'{packs_without_metadata_or_support}')
+
+    if not_filled_packs:
+        print(f'\nERROR: Contribution form was not filled for PR: {pr_number}.\nMake sure to register your contribution'
+              f' by filling the contribution registration form in - https://forms.gle/XDfxU4E61ZwEESSMA')
+
+    sys.exit(exit_status)
 
 
 if __name__ == "__main__":
