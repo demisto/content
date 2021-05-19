@@ -18,7 +18,7 @@ sys.stderr = StringIO()
 LIMIT = ""
 START = ""
 LIMIT_DATA = 0
-ALLOWED_CONTENT_TYPES = ()
+ALLOWED_CONTENT_TYPES: tuple = ()
 
 # Used to convert pyshark keys to Demisto's conventions
 # Also used as a whitelist of relevant keys for outputs.
