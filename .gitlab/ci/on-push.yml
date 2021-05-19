@@ -15,9 +15,10 @@ trigger-private-build:
   rules:
     - if: '$SKIP_PRIVATE_BUILD == "true"'
       when: never
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
     - if: '$NIGHTLY'
-    - if: '$CI_COMMIT_BRANCH !~ /pull\/[0-9]+/'
   script:
     - echo "====Trigger Private Build===="
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
