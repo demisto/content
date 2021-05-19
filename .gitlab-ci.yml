@@ -1,5 +1,5 @@
 default:
-  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18863
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18999
   artifacts:
     expire_in: 30 days
     paths:
@@ -28,6 +28,8 @@ variables:
   GIT_STRATEGY: clone
   GIT_DEPTH: 0
   IFRA_ENV_TYPE: "Content-Env"
+# Remove this when https://github.com/demisto/etc/issues/36775 is done.
+  SKIP_PRIVATE_BUILD: "true"
 
 
 include:
