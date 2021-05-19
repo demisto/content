@@ -289,6 +289,8 @@ def get_args():  # type: ignore
     display_fields = extract_fields_from_args(display_fields)
     display_fields = list(set(['id', 'created', 'name'] + display_fields))
 
+    number_feature_per_field = int(demisto.args().get('numberOfFeaturesPerField'))
+
     min_homogeneity_cluster = float(demisto.args().get('minHomogeneityCluster'))
 
     from_date = demisto.args().get('fromDate')
@@ -309,7 +311,7 @@ def get_args():  # type: ignore
 
     return fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
-        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden
+        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden, number_feature_per_field
 
 
 def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
@@ -830,10 +832,13 @@ def main():
     # Get argument of the automation
     fields_for_clustering, field_for_cluster_name, display_fields, from_date, to_date, limit, query, incident_type, \
         min_number_of_incident_in_cluster, model_name, store_model, min_homogeneity_cluster, model_override, \
-        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden = get_args()
+        max_percentage_of_missing_value, debug, force_retrain, model_expiration, model_hidden, \
+        number_feature_per_field = get_args()
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
+
+    TFIDF_PARAMS.update({'max_features': number_feature_per_field})
 
     # Check if need to retrain
     model_processed, retrain = is_model_needs_retrain(force_retrain, model_expiration, model_name)

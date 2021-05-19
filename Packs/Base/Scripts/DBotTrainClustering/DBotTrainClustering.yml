@@ -160,6 +160,13 @@ args:
   name: fieldsToDisplay
   required: false
   secret: false
+- default: false
+  defaultValue: '500'
+  description: Number of features per field
+  isArray: false
+  name: numberOfFeaturesPerField
+  required: false
+  secret: false
 comment: Train clustering model on any incident type.
 commonfields:
   id: DBotTrainClustering
