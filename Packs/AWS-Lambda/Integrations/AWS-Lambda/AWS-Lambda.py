@@ -310,6 +310,7 @@ def main():
         return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
             error=type(e), message=str(e)))
 
+
 from AWSApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
