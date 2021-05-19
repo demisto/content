@@ -264,13 +264,13 @@ script:
     - contextPath: FireEyeCM.Alerts.uuid
       description: Universally unique ID (UUID) of the alert.
       type: string
-    - contextPath: FireEyeCM.Alerts.artifactType
+    - contextPath: FireEyeCM.Alerts.artifactsInfoList.artifactType
       description: The artifact type.
       type: string
-    - contextPath: FireEyeCM.Alerts.artifactName
+    - contextPath: FireEyeCM.Alerts.artifactsInfoList.artifactName
       description: The artifact name.
       type: string
-    - contextPath: FireEyeCM.Alerts.artifactSize
+    - contextPath: FireEyeCM.Alerts.artifactsInfoList.artifactSize
       description: The zipped artifact size in bytes.
       type: string
   - arguments:

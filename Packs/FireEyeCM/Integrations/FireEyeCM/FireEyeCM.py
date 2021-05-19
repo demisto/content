@@ -304,17 +304,16 @@ def get_artifacts_metadata_by_uuid(client: Client, args: Dict[str, Any]) -> List
     for uuid in uuids:
         raw_response = client.get_artifacts_metadata_by_uuid_request(uuid)
 
-        metadata = raw_response.get('artifactsInfoList')
-        if isinstance(metadata, list):
-            metadata = metadata[0]
-        metadata['uuid'] = uuid  # type: ignore
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} {uuid} Artifact metadata:', t=metadata, removeNull=True)
+        outputs = raw_response
+        outputs['uuid'] = uuid  # type: ignore
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} {uuid} Artifact metadata:',
+                              t=raw_response.get('artifactsInfoList'), removeNull=True)
 
         command_results.append(CommandResults(
             readable_output=md_,
             outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Alerts',
             outputs_key_field='uuid',
-            outputs=metadata,
+            outputs=outputs,
             raw_response=raw_response
         ))
 

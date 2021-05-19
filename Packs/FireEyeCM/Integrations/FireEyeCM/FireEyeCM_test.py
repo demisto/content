@@ -4,8 +4,9 @@ import json
 import pytest
 
 from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    get_reports, alert_severity_to_dbot_score, to_fe_datetime_converter, fetch_incidents
-from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT
+    get_artifacts_metadata_by_uuid, get_reports, alert_severity_to_dbot_score, to_fe_datetime_converter, fetch_incidents
+from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
+    GET_ARTIFACTS_METADATA_CONTEXT
 
 
 def util_load_json(path):
@@ -100,6 +101,26 @@ def test_alert_acknowledge_already_acknowledged(mocker):
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == \
            'Alert uuid was not found or cannot update. It may have been acknowledged in the past.'
+
+
+def test_get_artifacts_metadata(mocker):
+    """Unit test
+    Given
+    - get_artifacts_metadata_by_uuid command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_artifacts_metadata_by_uuidrequest response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_artifacts_metadata_by_uuid_request',
+                        return_value=util_load_json('test_data/get_artifact_metadata.json'))
+    command_results = get_artifacts_metadata_by_uuid(client=client, args={'uuid': 'uuid'})
+    assert command_results[0].outputs == GET_ARTIFACTS_METADATA_CONTEXT
 
 
 def test_get_quarantined_emails(mocker):
