@@ -188,7 +188,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             indicators.extend(
                 handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
                                           use_prefix_flat, feedTags, auto_detect, mapping_function,
-                                          create_relationships, custom_relationships_creator))
+                                          create_relationships, create_relationships_function))
 
             if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
