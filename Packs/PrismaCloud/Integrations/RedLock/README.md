@@ -6,7 +6,7 @@
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server API URL. See [here](https://api.docs.prismacloud.io/reference) for the relevant API URL for your tenant. | True |
+| url | Server API URL. See [here](https://api.docs.prismacloud.io/api/cloud/api-urls) for the relevant API URL for your tenant. | True |
 | username | API Access Key | True |
 | password | API Secret | True |
 | customer | Customer name | False |
@@ -448,7 +448,7 @@ Run RQL query on Prisma Cloud
 | Redlock.RQL.Response.AccountName | String | The cloud account name. | 
 | Redlock.RQL.Response.AllowDrillDown | Boolean | Flag to allow drill down. | 
 | Redlock.RQL.Response.CloudType | String | The cloud type. | 
-| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/reference#search-config | 
+| Redlock.RQL.Response.Data | Object | The data object returned by the RQL response. Reference: https://api.docs.prismacloud.io/api/cloud/cspm/search/ | 
 | Redlock.RQL.Response.Deleted | Boolean | Flag if deleted. | 
 | Redlock.RQL.Response.HasAlert | Boolean | Flag to check if RQL response has alerts. | 
 | Redlock.RQL.Response.HasExtFindingRiskFactors | Boolean | Flag if query returns external risk factors. | 
