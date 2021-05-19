@@ -5452,8 +5452,8 @@ class CommandResults:
     :type entry_type: ``int`` code of EntryType
     :param entry_type: type of return value, see EntryType
 
-    :type ignore_readable_output: ``bool``
-    :param ignore_readable_output: expects a bool value. if true then the readable output will not be printed.
+    :type disable_readable_output: ``bool``
+    :param disable_readable_output: must be a boolean, default value is False. Used to disable readable output.
 
     :return: None
     :rtype: ``None``
@@ -5461,7 +5461,8 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None, ignore_readable_output=None):
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None,
+                 disable_readable_output=None):
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
@@ -5498,8 +5499,8 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.scheduled_command = scheduled_command  # type: Optional[ScheduledCommand]
-        self.ignore_readable_output = ignore_readable_output
+        self.scheduled_command = scheduled_command
+        self.disable_readable_output = disable_readable_output
 
         self.relationships = relationships
 
@@ -5555,7 +5556,7 @@ class CommandResults:
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
-        if self.ignore_readable_output:
+        if self.disable_readable_output: # disable_readable_output
             human_readable = ''
 
         if self.relationships:
