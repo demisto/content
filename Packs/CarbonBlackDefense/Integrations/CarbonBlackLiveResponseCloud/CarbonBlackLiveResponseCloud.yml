@@ -88,7 +88,7 @@ script:
       description: The sensor (endpoint) id
     - name: directory_path
       required: true
-      description: Directory to list. This parameter should end with the path separator
+      description: Directory to list. This parameter should end with the path separator or have some filter pattern e.g *.txt
     - name: limit
       description: Limit the number of returned directory entries
       defaultValue: "100"

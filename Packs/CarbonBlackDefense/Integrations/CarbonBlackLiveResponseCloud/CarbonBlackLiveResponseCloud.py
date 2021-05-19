@@ -253,15 +253,18 @@ def create_process_command(
     process_results_str = None
     if wait_for_output and process_results_bytes:
         process_results_str = process_results_bytes.decode('utf-8')
-        human_readable = tableToMarkdown(name='Carbon Black Defense Live Response Process Execution Result',
-                                         t=[process_results_str],
-                                         headers=['Process output'])
+        human_readable = process_results_str
     else:
         human_readable = f'Process: {command_string} was successfully executed.'
 
+    context_output = dict(return_value=process_results_str,
+                          sensor_id=sensor_id,
+                          command_string=command_string,
+                          )
+
     return CommandResults(outputs_prefix='CarbonBlackDefenseLR.ExecuteProcess',
-                          outputs_key_field='sensor_id',
-                          outputs=dict(return_value=process_results_str, sensor_id=sensor_id),
+                          outputs_key_field=['sensor_id', 'command_string'],
+                          outputs=context_output,
                           readable_output=human_readable,
                           raw_response=process_results_str,
                           )

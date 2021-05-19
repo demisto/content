@@ -142,7 +142,7 @@ List the contents of a directory on the remote machine
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The sensor (endpoint) id. | Required | 
-| directory_path | Directory to list. This parameter should end with the path separator. | Required | 
+| directory_path | Directory to list. This parameter should end with the path separator or have some filter pattern e.g *.txt | Required | 
 
 
 #### Context Output
