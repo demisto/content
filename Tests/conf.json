@@ -2844,6 +2844,10 @@
             "memory_threshold": 190
         },
         {
+            "integrations": "F5 Silverline",
+            "playbookID": "F5Silverline_TestPlaybook"
+        },
+        {
             "integrations": "BruteForceBlocker Feed",
             "playbookID": "playbook-BruteForceBlocker_test",
             "fromversion": "5.5.0",
