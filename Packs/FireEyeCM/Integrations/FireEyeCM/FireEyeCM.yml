@@ -198,9 +198,54 @@ script:
     execution: false
     name: fireeye-cm-get-alert-details
     outputs:
-    - contextPath: FireEyeCM.alert
-      description: TODO
+    - contextPath: FireEyeCM.Alerts.id
+      description: The ID of the alert.
       type: String
+    - contextPath: FireEyeCM.Alerts.uuid
+      description: The UUID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.occurred
+      description: The time when the alert occurred.
+      type: String
+    - contextPath: FireEyeCM.Alerts.product
+      description: The product name of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.rootInfection
+      description: The ID of the infection associated with the malware alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.name
+      description: The link to the infection associated with the malware alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.vlan
+      description: The virtual LAN (VLAN) of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.malicious
+      description: A flag indicating whether the alert is malicious.
+      type: String
+    - contextPath: FireEyeCM.Alerts.severity
+      description: The severity of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.sensor
+      description: The sensor name which the alert associated with.
+      type: String
+    - contextPath: FireEyeCM.Alerts.applianceId
+      description: The appliance ID of the alert.
+      type: String
+    - contextPath: FireEyeCM.Alerts.sensorIp
+      description: The sensor IP which the alert associated with.
+      type: String
+    - contextPath: FireEyeCM.Alerts.ack
+      description: A flag indicating whether an acknowledgment is received.
+      type: String
+    - contextPath: FireEyeCM.Alerts.src
+      description: The source of the alert.
+      type: Unknown
+    - contextPath: FireEyeCM.Alerts.dst
+      description: The destination of the alert.
+      type: Unknown
+    - contextPath: FireEyeCM.Alerts.explanation
+      description: The explanation data of the alert.
+      type: Unknown
   - arguments:
     - default: false
       description: The universally unique identifier (UUID) for the alert.
