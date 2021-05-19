@@ -148,6 +148,18 @@ def test_command_url(mocker):
 
 
 def test_url_not_found(mocker):
+    """
+        Given:
+        - A url to check with no results
+
+    When:
+        - Running the url_command and mocking no results
+
+    Then:
+        - validating that the IOC score is as expected
+        - validating the the Reliability is as expected
+        - validating the the Contents is as expected
+    """
     from GoogleSafeBrowsingV2 import url_command
     client = create_client(base_url="https://safebrowsing.googleapis.com/v4/threatMatches:find")
     mocker.patch.object(client, '_http_request', return_value={})
