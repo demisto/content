@@ -160,7 +160,6 @@ script:
     - contextPath: PolySwarm.Artifact/
       description: The artifact queried.
       type: String
-  outputs:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: String
