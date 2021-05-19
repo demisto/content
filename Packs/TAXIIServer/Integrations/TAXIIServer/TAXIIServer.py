@@ -965,7 +965,7 @@ def main():
 
     global SERVER
     scheme = server_link_parts.scheme
-    host_name = server_link_parts.netloc
+    host_name = server_link_parts.hostname
     if not http_server:
         scheme = 'https'
         host_name = get_https_hostname(host_name)
