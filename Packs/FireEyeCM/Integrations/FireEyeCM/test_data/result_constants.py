@@ -38,3 +38,30 @@ GET_ALERTS_CONTEXT = [
      'sensor': 'fireeye-941918', 'sensorIp': '1.1.1.1', 'severity': 'CRIT', 'src': {'ip': '2.2.2.2', 'port': 33552},
      'uuid': 'uuid', 'vlan': 0}
 ]
+GET_ALERTS_DETAILS_CONTEXT = [
+    {'ack': 'no',
+     'action': 'notified',
+     'alertUrl': 'https://FireEyeCM/emps/eanalysis?e_id=560&type=url',
+     'applianceId': 'app',
+     'attackTime': '2021-05-09 04:01:12 +0000',
+     'dst': {'smtpTo': 'test@actualdomain.org'},
+     'explanation': {
+         'malwareDetected': {'malware': [{'md5Sum': '2a0bea4c95837d5e6c62eb1e7faa4cc4',
+                                          'name': 'Phish.LIVE.DTI.URL',
+                                          'sha256': '56805163764d9eab8b7311844fa0df3c4c32535042794b1c9a24579fb7836f29'}]},
+         'osChanges': []},
+     'id': 563,
+     'malicious': 'yes',
+     'name': 'MALWARE_OBJECT',
+     'occurred': '2021-05-09 04:01:16 +0000',
+     'product': 'EMAIL_MPS',
+     'rootInfection': 560,
+     'scVersion': '1149.206',
+     'sensor': 'FireEyeEX',
+     'sensorIp': '1.1.1.1',
+     'severity': 'MAJR',
+     'smtpMessage': {'subject': 'test'},
+     'src': {'smtpMailFrom': 'test@malicious.net'},
+     'uuid': 'uuid',
+     'vlan': 0}
+]

@@ -3,9 +3,9 @@ import json
 
 import pytest
 
-from FireEyeCM import Client, get_alerts, get_quarantined_emails, alert_severity_to_dbot_score, \
-    to_fe_datetime_converter,fetch_incidents
-from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT
+from FireEyeCM import Client, get_alerts, get_alert_details, get_quarantined_emails, alert_severity_to_dbot_score, \
+    to_fe_datetime_converter, fetch_incidents
+from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT
 
 
 def util_load_json(path):
@@ -32,6 +32,26 @@ def test_get_alerts(mocker):
     command_results = get_alerts(client=client,
                                  args={'limit': '2', 'start_time': '8 days', 'src_ip': '2.2.2.2'})
     assert command_results.outputs == GET_ALERTS_CONTEXT
+
+
+def test_get_alert_details(mocker):
+    """Unit test
+    Given
+    - get_alert_details command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_alert_details_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_alert_details_request',
+                        return_value=util_load_json('test_data/get_alert_details.json'))
+    command_results = get_alert_details(client=client, args={'alert_id': '563'})
+    assert command_results[0].outputs == GET_ALERTS_DETAILS_CONTEXT
 
 
 def test_get_quarantined_emails(mocker):
