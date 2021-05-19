@@ -165,7 +165,7 @@ script:
   isfetch: true
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
   isFetchSamples: true
-fromversion: 5.0.0
+fromversion: 5.5.0

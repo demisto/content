@@ -202,7 +202,7 @@ def main():
             return_results(fetch_entity_anomalies(client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error('Failed to execute {demisto.command()} command', e)
+        return_error(f'Failed to execute {demisto.command()} command', e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
