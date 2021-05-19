@@ -99,7 +99,7 @@
   needs: []
   stage: unittests-and-validations
   artifacts:
-    expire_in: 48 hrs
+    expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
       - /builds/xsoar/content/artifacts/*
@@ -152,7 +152,7 @@
     - .default-job-settings
   needs: []
   artifacts:
-    expire_in: 48 hrs
+    expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
   script:
@@ -168,7 +168,7 @@
       if [[ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]]; then
           echo "Skipping, Should not run on contributor's branch."
       else
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out
+        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auth.out
         echo "successfully activated google cloud service account"
 
         echo "Download private ID set"

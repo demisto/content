@@ -17,15 +17,12 @@ trigger-private-build:
     - if: '$NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
     - if: '$INSTANCE_TESTS && $SKIP_PRIVATE_BUILD != "true"'
     - if: '$DEMISTO_SDK_NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
+    - if: '$CI_COMMIT_BRANCH =~ pull/[0-9]+'
+      when: never
   script:
-    - |
-      if [ $CI_COMMIT_BRANCH =~ pull/[0-9]+ ]; then
-        echo "Not running private build in contrib branch."
-      else
-        echo "====Trigger Private Build===="
-        python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-        python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
-      fi
+    - echo "====Trigger Private Build===="
+    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 create-instances:
   extends:
