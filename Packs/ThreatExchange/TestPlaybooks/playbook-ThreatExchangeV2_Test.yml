@@ -817,4 +817,5 @@ view: |-
   }
 inputs: []
 outputs: []
+sourceplaybookid: ThreatExchange-test
 fromversion: 5.5.0
