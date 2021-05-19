@@ -898,7 +898,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
         curr_id = int(id_offset)
         for ticket in res.get('issues'):
             ticket_id = int(ticket.get('id'))
-            ticket_created = ticket['fields']['created'] if 'fields' in ticket and 'created' in ticket['fields'] else ''
+            ticket_created = ticket.get('fields', {}).get('created', '')
             if ticket_id <= curr_id:
                 continue
             if ticket_id > int(id_offset):
