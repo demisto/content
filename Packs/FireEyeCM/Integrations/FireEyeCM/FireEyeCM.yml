@@ -76,7 +76,7 @@ script:
       name: duration
       required: false
     - default: false
-      description: The ID number of the alert to retrieve.
+      description: "Specifies the start time of the search. This filter is optional. Default is last day. Syntax: end_time=YYYY-MM-DDTHH:mm:ss.sss-OH:om or '1 day/month/year'"
       isArray: false
       name: start_time
       required: false
