@@ -15,7 +15,7 @@ def validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws
         raise DemistoException('You must provide Access Key id and Secret key id to configure the instance with '
                                'credentials.')
     if bool(aws_role_arn) != bool(aws_role_session_name):
-        raise DemistoException('Role session name is required when using role ARN.')
+        raise DemistoException('When using role ARN you must provide role session name.')
 
 
 class AWSClient:
@@ -128,8 +128,7 @@ class AWSClient:
             timeout_vals = timeout.split(',')
             read_timeout = int(timeout_vals[0])
         except ValueError:
-            raise DemistoException("You can specify just the read timeout (for example 60) or also the connect "
-                                   "timeout followed after a comma (for example 60,10). If a connect timeout is not "
-                                   "specified, a default of 10 second will be used.")
+            "You can specify just the read timeout (for example 60) or also the connect timeout followed after a " \
+                "comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
         connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
         return read_timeout, connect_timeout
