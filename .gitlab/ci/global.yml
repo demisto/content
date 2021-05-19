@@ -13,9 +13,8 @@
     policy: pull
 
 
-.prepare_env: &prepare_env
+.clone_and_export_variables: &clone_and_export_variables
   - source .gitlab/helper_functions.sh
-  - echo "=== Running before script ==="
   - git checkout $CI_COMMIT_BRANCH
   - git config diff.renameLimit 6000
   - mkdir -p -m 777 $ARTIFACTS_FOLDER/
@@ -25,17 +24,12 @@
     fi
   - source .circleci/content_release_vars.sh
   - export PATH="${PWD}/node_modules/.bin:${PATH}"
-
-  - section_start "Creating new clean logs folder" --collapsed
-  - rm -rf $ARTIFACTS_FOLDER/logs
-  - mkdir -p $ARTIFACTS_FOLDER/logs
-  - section_end "Creating new clean logs folder"
-
   - section_start "Granting execute permissions on files" --collapsed
   - chmod +x ./Tests/scripts/*
   - chmod +x ./Tests/Marketplace/*
   - section_end "Granting execute permissions on files"
 
+.install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
   - |
     if [ -f "./venv/bin/activate" ]; then
@@ -53,6 +47,7 @@
     fi
   - section_end "Installing Virtualenv"
 
+.install_ssh_keys: &install_ssh_keys
   - section_start "Installing SSH keys" --collapsed
   - eval $(ssh-agent -s)
   - chmod 400 $OREGON_CI_KEY
@@ -61,21 +56,29 @@
   - chmod 700 ~/.ssh
   - section_end "Installing SSH keys"
 
-  - section_start "Build Parameters"
-  - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
-  - python --version
-  - python3 --version
-  - node --version
-  - npm --version
-  - demisto-sdk --version
-  - section_end "Build Parameters"
-
 .default-before-script:
-  before_script: *prepare_env
+  before_script:
+    - *clone_and_export_variables
+    - section_start "Creating new clean logs folder" --collapsed
+    - rm -rf $ARTIFACTS_FOLDER/logs
+    - mkdir -p $ARTIFACTS_FOLDER/logs
+    - section_end "Creating new clean logs folder"
+    - *install_venv
+    - *install_ssh_keys
+    - section_start "Build Parameters"
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^GCS_MARKET_BUCKET=|^SLACK_CHANNEL="
+    - python --version
+    - python3 --version
+    - node --version
+    - npm --version
+    - demisto-sdk --version
+    - section_end "Build Parameters"
 
 .default-after-script:
   after_script:
-    - *prepare_env
+    - *clone_and_export_variables
+    - *install_venv
+    - *install_ssh_keys
     - section_start "Notify Slack"
     - |
       if [ -n "${SLACK_ONLY_IF}" ]; then
