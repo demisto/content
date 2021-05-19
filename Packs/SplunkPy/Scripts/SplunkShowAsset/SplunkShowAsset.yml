@@ -4,7 +4,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.9.2.17957
+dockerimage: demisto/python3:3.9.5.20070
 enabled: true
 name: SplunkShowAsset
 runas: DBotWeakRole
@@ -15,6 +15,7 @@ subtype: python3
 tags:
 - dynamic-section
 type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
+comment: Automation to display asset objects from Splunk. 
 tests:
 - No tests (auto formatted)
