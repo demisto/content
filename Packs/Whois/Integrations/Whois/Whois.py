@@ -8481,8 +8481,8 @@ def setup_proxy():
     }
     proxy_url = demisto.params().get('proxy_url')
     def_scheme = 'socks5h'
-    if proxy_url == 'system_http' or not proxy_url and demisto.params().get('proxy'):
-        system_proxy = handle_proxy('proxy')
+    if proxy_url == 'system_http':
+        system_proxy = handle_proxy('proxy_url')
         # use system proxy. Prefer https and fallback to http
         proxy_url = system_proxy.get('https') if system_proxy.get('https') else system_proxy.get('http')
         def_scheme = 'http'
@@ -8497,6 +8497,10 @@ def setup_proxy():
         raise ValueError("Un supported proxy scheme: {}".format(scheme))
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
+
+    # system proxy handling
+    handle_proxy('proxy')
+
 
 ''' EXECUTION CODE '''
 
