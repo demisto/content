@@ -8,6 +8,8 @@ import requests
 from base64 import b64decode
 from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
+import gevent
+from signal import SIGUSR1
 from flask import Flask, Response, request
 from flask.logging import default_handler
 from netaddr import IPAddress, IPSet
@@ -18,10 +20,13 @@ from math import ceil
 import urllib3
 from datetime import datetime, timezone
 import dateparser
+import os
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+NGINX_SERVER_ACCESS_LOG = '/var/log/nginx/access.log'
+NGINX_SERVER_ERROR_LOG = '/var/log/nginx/error.log'
 NGINX_SERVER_CONF_FILE = '/etc/nginx/conf.d/default.conf'
 NGINX_SSL_KEY_FILE = '/etc/nginx/ssl/ssl.key'
 NGINX_SSL_CRT_FILE = '/etc/nginx/ssl/ssl.crt'
@@ -554,9 +559,9 @@ def route_edl_values() -> Response:
     demisto.debug(f'Returning edl of size: [{edl_size}], created: [{created}], query time seconds: [{query_time}],'
                   f' max age: [{max_age}]')
     resp = Response(values, status=200, mimetype='text/plain', headers=[
-        ('x-edl-created', created.isoformat()),
-        ('x-edl-query-time-secs', str(query_time)),
-        ('x-edl-size', str(edl_size))
+        ('X-EDL-Created', created.isoformat()),
+        ('X-EDL-Query-Time-Secs', str(query_time)),
+        ('X-EDL-Size', str(edl_size))
     ])
     resp.cache_control.max_age = max_age
     resp.cache_control['stale-if-error'] = '600'  # number of seconds we are willing to serve stale content when there is an error
@@ -670,11 +675,10 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
                                                          sslcerts=sslcerts, extra_cache_key=extra_cache_key)
     with open(file_path, mode='wt') as f:
         f.write(server_conf)
-    return port
 
 
 def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
-    port = create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
+    create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
     nginx_global_directives = ['daemon off']
     global_directives_conf = params.get('nginx_global_directives')
     if global_directives_conf:
@@ -697,13 +701,61 @@ def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
     return subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
+def nginx_log_process(nginx_process: subprocess.Popen):
+    try:
+        old_access = NGINX_SERVER_ACCESS_LOG + '.old'
+        old_error = NGINX_SERVER_ERROR_LOG + '.old'
+        log_access = False
+        log_error = False
+        if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
+            log_access = True
+            os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
+        if os.path.getsize(NGINX_SERVER_ERROR_LOG):
+            log_error = True
+            os.rename(NGINX_SERVER_ERROR_LOG, old_error)
+        if log_access or log_error:
+            # nginx rolls the logs when getting sigusr1
+            nginx_process.send_signal(int(SIGUSR1))
+            gevent.sleep(0.2)  # sleep 0.2 to let nginx complete the roll
+        if log_access:
+            with open(old_access, 'rt') as f:
+                start = 1
+                for lines in batch(f.readlines(), 100):
+                    end = start + len(lines)
+                    demisto.info(f'nginx access log ({start}-{end-1}): ' + '\n'.join(lines))
+                    start = end
+            os.unlink(old_access)
+        if log_error:
+            with open(old_error, 'rt') as f:
+                start = 1
+                for lines in batch(f.readlines(), 100):
+                    end = start + len(lines)
+                    demisto.error(f'nginx error log ({start}-{end-1}): ' + '\n'.join(lines))
+                    start = end
+            os.unlink(old_error)
+    except Exception as e:
+        demisto.error(f'Failed nginx log processing: {e}')
+
+
+def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
+    """An endless loop to monitor nginx logs. Meant to be spawned as a greenlet.
+    Will run every minute and if needed will dump the nginx logs and roll them if needed.
+
+    Args:
+        nginx_process (subprocess.Popen): the nginx process. Will send signal for log rolling.
+    """
+    while True:
+        gevent.sleep(60)
+        nginx_log_process(nginx_process)
+
+
 def test_nginx_server(port: int, params: Dict):
     nginx_process = start_nginx_server(port, params)
     # let nginx startup
     sleep(0.5)
     try:
         protocol = 'https' if params.get('key') else 'http'
-        res = requests.get(f'{protocol}://localhost:{port}/nginx-test', verify=False)
+        res = requests.get(f'{protocol}://localhost:{port}/nginx-test', verify=False)  # nosec
         res.raise_for_status()
         welcome = 'Welcome to nginx'
         if welcome not in res.text:
@@ -724,28 +776,34 @@ def run_long_running(params: Dict, is_test: bool = False):
     :return: None
     """
     nginx_process = None
+    nginx_log_monitor = None
     try:
         nginx_port = get_params_port(params)
         server_port = nginx_port + 1
         # set our own log handlers
-        APP.logger.removeHandler(default_handler)
+        APP.logger.removeHandler(default_handler)  # pylint: disable=no-member
         integration_logger = IntegrationLogger()
         integration_logger.buffering = False
         log_handler = DemistoHandler(integration_logger)
         log_handler.setFormatter(
             logging.Formatter("flask log: [%(asctime)s] %(levelname)s in %(module)s: %(message)s")
         )
-        APP.logger.addHandler(log_handler)
+        APP.logger.addHandler(log_handler)  # pylint: disable=no-member
         demisto.debug('done setting demisto handler for logging')
         server = WSGIServer(('0.0.0.0', server_port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER)
         if is_test:
             test_nginx_server(nginx_port, params)
             server_process = Process(target=server.serve_forever)
             server_process.start()
-            time.sleep(5)
-            server_process.terminate()            
+            time.sleep(2)
+            try:
+                server_process.terminate()
+                server_process.join(1.0)
+            except Exception as ex:
+                demisto.error(f'failed stoping test wsgi server process: {ex}')
         else:
             nginx_process = start_nginx_server(nginx_port, params)
+            nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
             server.serve_forever()
     except Exception as e:
         demisto.error(f'An error occurred: {str(e)}')
@@ -756,6 +814,11 @@ def run_long_running(params: Dict, is_test: bool = False):
                 nginx_process.terminate()
             except Exception as ex:
                 demisto.error(f'Failed stopping nginx process when exiting: {ex}')
+        if nginx_log_monitor:
+            try:
+                nginx_log_monitor.kill(timeout=1.0)
+            except Exception as ex:
+                demisto.error(f'Failed stopping nginx_log_monitor when exiting: {ex}')
 
 
 def update_edl_command(args: Dict, params: Dict):

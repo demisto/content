@@ -1,6 +1,7 @@
 """Imports"""
 import json
 import pytest
+import requests
 import demistomock as demisto
 from netaddr import IPAddress
 from pathlib import Path
@@ -424,3 +425,32 @@ def test_nginx_test_start_valid(nginx_cleanup, params):
     sleep(0.5)
     ps_out = subprocess.check_output(['ps', 'aux'], text=True)
     assert 'nginx' not in ps_out
+
+
+@docker_only
+def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
+    import EDL as edl
+    # clear logs for test
+    Path(edl.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
+    Path(edl.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
+    NGINX_PROCESS = edl.start_nginx_server(12345, {})
+    sleep(0.5)  # give nginx time to start
+    # create a request to get a log line
+    requests.get('http://localhost:12345/nginx-test?unit_testing')
+    sleep(0.2)
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'error')
+    edl.nginx_log_process(NGINX_PROCESS)
+    # call_args is tuple (args list, kwargs). we only need the args
+    arg = demisto.info.call_args[0][0]
+    assert 'nginx access log' in arg
+    assert 'unit_testing' in arg
+    arg = demisto.error.call_args[0][0]
+    assert '[warn]' in arg
+    assert 'the master process runs with super-user privileges' in arg
+    # make sure old file was removed
+    assert not Path(edl.NGINX_SERVER_ACCESS_LOG + '.old').exists()
+    assert not Path(edl.NGINX_SERVER_ERROR_LOG + '.old').exists()
+    # make sure log was rolled over files should be of size 0
+    assert not Path(edl.NGINX_SERVER_ACCESS_LOG).stat().st_size
+    assert not Path(edl.NGINX_SERVER_ERROR_LOG).stat().st_size
