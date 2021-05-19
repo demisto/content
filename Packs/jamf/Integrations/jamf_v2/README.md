@@ -31,10 +31,10 @@ This command will return a list of computers or a single computer based on the p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | When querying for a specific id, jamf will return a response with all of the computer’s subsets. Default output for a specific computer should only include the “general” section (or subset). | Optional | 
-| basic_subset | Default  “false”. If “true”, it will return the “basic” subset for all of the computers. Possible values are: True, false. Default is False. | Optional | 
-| match | Match computers by specific characteristics like: name, udid, serial_number, mac_address, username, realname, email. Supports wildcards. Possible values are: . | Optional | 
-| limit | The number of results in each page (default should be 50, max is 1000. relevant when no id is provided). Default is 50. | Optional | 
+| id | get the “general” subset of a specific computer. | Optional | 
+| basic_subset | Default is “False”. “True” will return the “basic” subset for all of the computers. Possible values are: True, false. Default is False. | Optional | 
+| match | Match computers by specific characteristics (supports wildcards) like: name, udid, serial_number, mac_address, username, realname, email. e.g: “match=john*”, “match=C52F72FACB9T”. Possible values are: . | Optional | 
+| limit | The number of results to be returned on each page (default is 50). The maximum size is 200. Relevant only when no “id” is provided. Default is 50. | Optional | 
 | page |  number of requested page (relevant when no id is provided). Default is 0. | Optional | 
 
 
@@ -142,9 +142,9 @@ Returns a specific subset for a specific computer.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these should be configured: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
-| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose the “mac_address” identifier, a value of a computer’s mac address should be passed, etc. | Required | 
-| subset | Available Subsets:General,Location,Purchasing,Peripherals, Hardware,Certificates,Software,ExtensionAttributes,GroupsAccounts, iphones,ConfigurationProfiles. Possible values are: General, Location, Purchasing, Peripherals, Hardware, Certificates, Software, ExtensionAttributes, GroupsAccounts, iphones, ConfigurationProfiles. | Required | 
+| identifier | In order to identify which computer is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier_value | The value of the “identifier”. For example, if we choose the “id” identifier, a value of a computer id should be passed. If we choose “mac_address” as the identifier, a value of a computer’s mac address should be passed, etc. | Required | 
+| subset | The requested subset. Available Subsets: General, Location, Purchasing, Peripherals, Hardware, Certificates, Software, ExtensionAttributes, GroupsAccounts,  iphones, ConfigurationProfiles. Possible values are: General, Location, Purchasing, Peripherals, Hardware, Certificates, Software, ExtensionAttributes, GroupsAccounts, iphones, ConfigurationProfiles. | Required | 
 
 
 #### Context Output
@@ -332,7 +332,8 @@ Returns a specific subset for a specific computer.
 
 ### jamf-computer-lock
 ***
-Will send a "DeviceLock" command to a computer which will then reboot it and lock the computer with a passcode.
+Will send the "DeviceLock" command to a computer. This command logs the user out of the computer, restarts the computer, and then locks the computer. Optional: Displays a message on the computer when it locks. To unlock the computer, the user must enter the passcode that you specified when you sent the Lock Computer command.
+For further information, please read the “Managing Computers → Settings and Security Management for Computers → Remote Commands for Computers” section in the official documentation (choose the relevant version first): https://www.jamf.com/resources/product-documentation/jamf-pro-administrators-guide/
 
 
 #### Base Command
@@ -342,8 +343,8 @@ Will send a "DeviceLock" command to a computer which will then reboot it and loc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode | a 6 digits value. | Required | 
-| id | The computer id. | Required | 
+| passcode | A 6 digits value. This will be the passcode which will lock the computer after being locked. | Required | 
+| id | The computer id which you like to lock. | Required | 
 | lock_message |  A message to display on the lock screen. | Optional | 
 
 
@@ -352,7 +353,7 @@ Will send a "DeviceLock" command to a computer which will then reboot it and loc
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.ComputerCommands.name | String | The command name | 
-| JAMF.ComputerCommands.command_uuid | String | The command uuid. | 
+| JAMF.ComputerCommands.command_uuid | String | The command udid. | 
 | JAMF.ComputerCommands.computer_id | String | The computer ID. | 
 
 
@@ -382,8 +383,8 @@ Will send a "DeviceLock" command to a computer which will then reboot it and loc
 
 ### jamf-computer-erase
 ***
-Will send a "EraseDevice" command to a computer which will then reboot it and lock the computer with a passcode.
-
+Will send the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type. Please note: When the command is sent to a computer with macOS 10.15 or later with an Apple T2 Security Chip, or a computer with Apple silicon (i.e., M1 chip), the computer will be erased and no passcode will be set.
+For further information, please read the “Managing Computers → Settings and Security Management for Computers → Remote Commands for Computers” section in the official documentation (choose the relevant version first): https://www.jamf.com/resources/product-documentation/jamf-pro-administrators-guide/
 
 #### Base Command
 
@@ -392,8 +393,8 @@ Will send a "EraseDevice" command to a computer which will then reboot it and lo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode |  a 6 digits value. | Required | 
-| id | The computer id. | Required | 
+| passcode | A 6 digits value. This will be the passcode which will lock the computer after being erased. | Required | 
+| id | The computer id which you like to erase. | Required | 
 
 
 #### Context Output
@@ -401,7 +402,7 @@ Will send a "EraseDevice" command to a computer which will then reboot it and lo
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.ComputerCommands.name | String | The command name. | 
-| JAMF.ComputerCommands.command_uuid | String | The command uuid. | 
+| JAMF.ComputerCommands.command_uuid | String | The command udid. | 
 | JAMF.ComputerCommands.computer_id | String | The computer ID. | 
 
 
@@ -522,9 +523,9 @@ Will return a list of all devices with general information on each of them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | When querying for a specific id, jamf will return a response with all of the device’s subsets. Default output for a specific device should only include the “general” section (or subset). | Optional | 
-| match | match. Possible values are: . | Optional | 
-| limit | Maximum number of users to retrieve (maximal value is 200). Default is 50. | Optional | 
+| id | Gets the “general” subset of a specific device. | Optional | 
+| match | Match devices by specific characteristics (supports wildcards) like: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”, “match=C52F72FACB9T”. Possible values are: . | Optional | 
+| limit | Maximum number of devices to retrieve (maximal value is 200). Default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
 
 
@@ -673,9 +674,9 @@ Returns a specific subset for a specific mobile device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | In order to identify which computer is requested, one of these should be configured: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
+| identifier | In order to identify which device is requested, one of these identifiers should be selected: id, name, udid, serial_number, mac_address. Possible values are: id, name, udid, serialnumber, macaddress. | Required | 
 | identifier_value |  the value of the “identifier”. For example, if we choose the “id” identifier, a value of a mobile device’s id should be passed. If we choose the “mac_address” identifier, a value of a mobile device’s mac address should be passed, etc. | Required | 
-| subset |  Available Subsets: General, Location, Purchasing, Applications, Security, Network, Certificates, ExtensionAttributes, ProvisioningProfiles, MobileDeviceGroups, ConfigurationProfiles. Possible values are: General, Location, Purchasing, Applications, Security_object, Network, Certificates, ExtensionAttributes, ProvisioningProfiles, MobileDeviceGroups, ConfigurationProfiles. | Required | 
+| subset | The requested subset. Available Subsets: General, Location, Purchasing, Applications, Security, Network, Certificates, ExtensionAttributes, ProvisioningProfiles, MobileDeviceGroups, ConfigurationProfiles. Possible values are: General, Location, Purchasing, Applications, Security_object, Network, Certificates, ExtensionAttributes, ProvisioningProfiles, MobileDeviceGroups, ConfigurationProfiles. | Required | 
 
 
 #### Context Output
@@ -871,7 +872,7 @@ Will return a list of computers with basic information based on an application f
 | --- | --- | --- |
 | application | the application’s name (supports wildcards). | Required | 
 | version | the application’s version (supports wildcards) - applicable only when “application” parameter value is set. | Optional | 
-| limit | Maximum number of users to retrieve (maximal value is 200). Default is 50. | Optional | 
+| limit | Maximum number of devices to retrieve (maximal value is 200). Default is 50. | Optional | 
 | page | Page number. Default is 0. | Optional | 
 
 
@@ -932,7 +933,6 @@ Will return a list of computers with basic information based on an application f
 >| 2 | 14.0.3 |
 >| 1 | 7.0 |
 >| 1 | 7.0.1 |
-
 
 
 ### jamf-mobile-device-lost-mode

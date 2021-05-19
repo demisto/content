@@ -30,9 +30,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: When querying for a specific id, jamf will return a response with
-        all of the computer’s subsets. Default output for a specific computer should
-        only include the “general” section (or subset).
+      description: get the “general” subset of a specific computer.
       isArray: false
       name: id
       required: false
@@ -40,8 +38,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Default  “false”. If “true”, it will return the “basic” subset
-        for all of the computers.
+      description: Default is “False”. “True” will return the “basic” subset for all
+        of the computers.
       isArray: false
       name: basic_subset
       predefined:
@@ -50,8 +48,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Match computers by specific characteristics like: name, udid,
-        serial_number, mac_address, username, realname, email. Supports wildcards'
+      description: 'Match computers by specific characteristics (supports wildcards)
+        like: name, udid, serial_number, mac_address, username, realname, email. e.g:
+        “match=john*”, “match=C52F72FACB9T”.'
       isArray: false
       name: match
       predefined:
@@ -60,8 +59,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The number of results in each page (default should be 50, max is
-        1000. relevant when no id is provided)
+      description: The number of results to be returned on each page (default is 50).
+        The maximum size is 200. Relevant only when no “id” is provided.
       isArray: false
       name: limit
       required: false
@@ -209,7 +208,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'In order to identify which computer is requested, one of these
-        should be configured: id, name, udid, serial_number, mac_address.'
+        identifiers should be selected: id, name, udid, serial_number, mac_address.'
       isArray: false
       name: identifier
       predefined:
@@ -222,16 +221,17 @@ script:
       secret: false
     - default: false
       description: The value of the “identifier”. For example, if we choose the “id”
-        identifier, a value of a computer id should be passed. If we choose the “mac_address”
-        identifier, a value of a computer’s mac address should be passed, etc.
+        identifier, a value of a computer id should be passed. If we choose “mac_address”
+        as the identifier, a value of a computer’s mac address should be passed, etc.
       isArray: false
       name: identifier_value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Available Subsets:General,Location,Purchasing,Peripherals, Hardware,Certificates,Software,ExtensionAttributes,GroupsAccounts,
-        iphones,ConfigurationProfiles.
+      description: 'The requested subset. Available Subsets: General, Location, Purchasing,
+        Peripherals, Hardware, Certificates, Software, ExtensionAttributes, GroupsAccounts,  iphones,
+        ConfigurationProfiles.'
       isArray: false
       name: subset
       predefined:
@@ -678,13 +678,14 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: a 6 digits value.
+      description: A 6 digits value. This will be the passcode which will lock the
+        computer after being locked.
       isArray: false
       name: passcode
       required: true
       secret: false
     - default: false
-      description: The computer id.
+      description: The computer id which you like to lock.
       isArray: false
       name: id
       required: true
@@ -696,8 +697,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Will send a "DeviceLock" command to a computer which will then reboot
-      it and lock the computer with a passcode.
+    description: 'Will send the "DeviceLock" command to a computer. This command logs
+      the user out of the computer, restarts the computer, and then locks the computer.
+      Optional: Displays a message on the computer when it locks.'
     execution: false
     name: jamf-computer-lock
     outputs:
@@ -712,20 +714,22 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ' a 6 digits value.'
+      description: A 6 digits value. This will be the passcode which will lock the
+        computer after being erased.
       isArray: false
       name: passcode
       required: true
       secret: false
     - default: false
-      description: The computer id.
+      description: The computer id which you like to erase.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: Will send a "EraseDevice" command to a computer which will then reboot
-      it and lock the computer with a passcode.
+    description: Will send the “EraseDevice'' command to a computer. Permanently erases
+      all the data on the computer and sets a passcode when required by the computer
+      hardware type.
     execution: false
     name: jamf-computer-erase
     outputs:
@@ -842,15 +846,15 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: When querying for a specific id, jamf will return a response with
-        all of the device’s subsets. Default output for a specific device should only
-        include the “general” section (or subset).
+      description: Gets the “general” subset of a specific device.
       isArray: false
       name: id
       required: false
       secret: false
     - default: false
-      description: match
+      description: 'Match devices by specific characteristics (supports wildcards)
+        like: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”,
+        “match=C52F72FACB9T”.'
       isArray: false
       name: match
       predefined:
@@ -859,7 +863,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of users to retrieve (maximal value is 200).
+      description: Maximum number of devices to retrieve (maximal value is 200).
       isArray: false
       name: limit
       required: false
@@ -1048,8 +1052,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'In order to identify which computer is requested, one of these
-        should be configured: id, name, udid, serial_number, mac_address.'
+      description: 'In order to identify which device is requested, one of these identifiers
+        should be selected: id, name, udid, serial_number, mac_address.'
       isArray: false
       name: identifier
       predefined:
@@ -1071,8 +1075,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' Available Subsets: General, Location, Purchasing, Applications,
-        Security, Network, Certificates, ExtensionAttributes, ProvisioningProfiles,
+      description: 'The requested subset. Available Subsets: General, Location, Purchasing,
+        Applications, Security, Network, Certificates, ExtensionAttributes, ProvisioningProfiles,
         MobileDeviceGroups, ConfigurationProfiles.'
       isArray: false
       name: subset
@@ -1522,7 +1526,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Maximum number of users to retrieve (maximal value is 200).
+      description: Maximum number of devices to retrieve (maximal value is 200).
       isArray: false
       name: limit
       required: false
@@ -1638,7 +1642,7 @@ script:
     - contextPath: JAMF.MobileDeviceCommands.id
       description: The mobile device command ID.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.19464
+  dockerimage: demisto/btfl-soup:1.0.1.20315
   feed: false
   isfetch: false
   longRunning: false

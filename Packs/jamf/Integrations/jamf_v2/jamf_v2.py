@@ -20,7 +20,7 @@ GET_HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
-MAX_PAGE_SIZE = 1000
+MAX_PAGE_SIZE = 200
 ''' CLIENT CLASS '''
 
 
@@ -199,9 +199,8 @@ class Client(BaseClient):
             Mobile device subset response from API.
         """
 
-        uri = '/mobiledevices'
-        res = self._http_request(method='GET', url_suffix=f'{uri}/{identifier}/{identifier_value}/subset/'
-                                                          f'{subset}', headers=GET_HEADERS,
+        url_suffix = f'/mobiledevices/{identifier}/{identifier_value}/subset/{subset}'
+        res = self._http_request(method='GET', url_suffix=url_suffix, headers=GET_HEADERS,
                                  error_handler=self._generic_error_handler)
 
         return res
@@ -687,14 +686,14 @@ def get_computers_command(client: Client, args: Dict[str, Any]) -> CommandResult
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
 
-    response = client.get_computers_request(computer_id, basic_subset, match)
+    computers_response = client.get_computers_request(computer_id, basic_subset, match)
 
     if computer_id:
-        response = response.get('computer').get('general')
+        computers_response = computers_response.get('computer').get('general')
     else:
-        response = pagination(response.get('computers'), limit, page)
+        computers_response = pagination(computers_response.get('computers'), limit, page)
 
-    readable_output = get_computers_readable_output(response, computer_id)
+    readable_output = get_computers_readable_output(computers_response, computer_id)
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -704,8 +703,8 @@ def get_computers_command(client: Client, args: Dict[str, Any]) -> CommandResult
         ),
         outputs_prefix='JAMF.Computer',
         outputs_key_field='id',
-        outputs=response,
-        raw_response=response
+        outputs=computers_response,
+        raw_response=computers_response
     )
 
 
@@ -714,10 +713,10 @@ def get_computer_subset_command(client: Client, args: Dict[str, Any]) -> Command
     identifier_value = args['identifier_value']
     subset = args['subset']
 
-    response = client.get_computer_subset_request(identifier, identifier_value, subset)
-    computer_id = get_computer_id(client, response, subset, identifier, identifier_value)
-    readable_output = get_computer_subset_readable_output(response, subset)
-    response['computer']['id'] = computer_id
+    computer_subset_response = client.get_computer_subset_request(identifier, identifier_value, subset)
+    computer_id = get_computer_id(client, computer_subset_response, subset, identifier, identifier_value)
+    readable_output = get_computer_subset_readable_output(computer_subset_response, subset)
+    computer_subset_response['computer']['id'] = computer_id
     return CommandResults(
         readable_output=tableToMarkdown(
             'Jamf computer subset result',
@@ -726,8 +725,8 @@ def get_computer_subset_command(client: Client, args: Dict[str, Any]) -> Command
         ),
         outputs_prefix='JAMF.ComputerSubset.computer',
         outputs_key_field='id',
-        outputs=response['computer'],
-        raw_response=response
+        outputs=computer_subset_response['computer'],
+        raw_response=computer_subset_response
     )
 
 
@@ -746,8 +745,8 @@ def computer_lock_command(client: Client, args: Dict[str, Any]) -> CommandResult
     passcode = args['passcode']
     lock_msg = args.get('lock_message')
 
-    response = client.computer_lock_request(computer_id, passcode, lock_msg)
-    computer_lock_outputs = computer_commands_readable_output(response)
+    computer_response = client.computer_lock_request(computer_id, passcode, lock_msg)
+    computer_lock_outputs = computer_commands_readable_output(computer_response)
     return CommandResults(
         readable_output=tableToMarkdown(
             f'Computer {computer_id} locked successfully',
@@ -756,7 +755,7 @@ def computer_lock_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix='JAMF.ComputeCommands',
         outputs_key_field='id',
         outputs=computer_lock_outputs,
-        raw_response=response
+        raw_response=computer_response
     )
 
 
@@ -764,8 +763,8 @@ def computer_erase_command(client: Client, args: Dict[str, Any]) -> CommandResul
     computer_id = args['id']
     passcode = args['passcode']
 
-    response = client.computer_erase_request(computer_id, passcode)
-    computer_erase_outputs = computer_commands_readable_output(response)
+    computer_response = client.computer_erase_request(computer_id, passcode)
+    computer_erase_outputs = computer_commands_readable_output(computer_response)
     return CommandResults(
         readable_output=tableToMarkdown(
             f'Computer {computer_id} erase successfully',
@@ -774,7 +773,7 @@ def computer_erase_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_prefix='JAMF.ComputerCommands',
         outputs_key_field='id',
         outputs=computer_erase_outputs,
-        raw_response=response
+        raw_response=computer_response
     )
 
 
@@ -785,12 +784,12 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
 
-    response = client.get_users_request(user_id, name, email)
+    user_response = client.get_users_request(user_id, name, email)
     if not user_id and not name and not email:
-        response = pagination(response.get('users'), limit, page)
+        user_response = pagination(user_response.get('users'), limit, page)
     else:
-        response = response['user']
-    readable_output = get_users_readable_output(response, user_id, name, email)
+        user_response = user_response['user']
+    readable_output = get_users_readable_output(user_response, user_id, name, email)
     return CommandResults(
         readable_output=tableToMarkdown(
             'Jamf get users result',
@@ -798,8 +797,8 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         ),
         outputs_prefix='JAMF.User',
         outputs_key_field='id',
-        outputs=response,
-        raw_response=response
+        outputs=user_response,
+        raw_response=user_response
     )
 
 
@@ -809,11 +808,11 @@ def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> CommandR
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
 
-    response = client.get_mobile_devices_request(mobile_id, match)
+    mobile_response = client.get_mobile_devices_request(mobile_id, match)
 
     if not mobile_id:
-        response = pagination(response.get('mobile_devices'), limit, page)
-    computers_response, readable_output = get_mobile_devices_readable_output(response, mobile_id)
+        mobile_response = pagination(mobile_response.get('mobile_devices'), limit, page)
+    mobile_outputs, readable_output = get_mobile_devices_readable_output(mobile_response, mobile_id)
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -822,8 +821,8 @@ def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> CommandR
         ),
         outputs_prefix='JAMF.MobileDevice',
         outputs_key_field='id',
-        outputs=computers_response,
-        raw_response=response
+        outputs=mobile_outputs,
+        raw_response=mobile_response
     )
 
 
@@ -832,15 +831,15 @@ def get_mobile_device_subset_command(client: Client, args: Dict[str, Any]) -> Co
     identifier_value = args['identifier_value']
     subset = args['subset']
 
-    response = client.get_mobile_devices_subset_request(identifier, identifier_value, subset)
+    mobile_subset_response = client.get_mobile_devices_subset_request(identifier, identifier_value, subset)
     if subset != 'General':
         mobile_id = client.get_mobile_devices_subset_request(identifier, identifier_value, 'General')\
             .get('mobile_device').get('general').get('id')
     else:
-        mobile_id = response.get('mobile_device').get('general').get('id')
+        mobile_id = mobile_subset_response.get('mobile_device').get('general').get('id')
 
-    readable_output = get_mobile_device_subset_readable_output(response, subset)
-    response['mobile_device']['id'] = mobile_id
+    readable_output = get_mobile_device_subset_readable_output(mobile_subset_response, subset)
+    mobile_subset_response['mobile_device']['id'] = mobile_id
     return CommandResults(
         readable_output=tableToMarkdown(
             'Jamf mobile device subset result',
@@ -849,8 +848,8 @@ def get_mobile_device_subset_command(client: Client, args: Dict[str, Any]) -> Co
         ),
         outputs_prefix='JAMF.MobileDeviceSubset.mobiledevice',
         outputs_key_field='id',
-        outputs=response['mobile_device'],
-        raw_response=response
+        outputs=mobile_subset_response['mobile_device'],
+        raw_response=mobile_subset_response
     )
 
 
@@ -859,11 +858,11 @@ def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> Comman
     version = args.get('version')
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
-    response = client.get_computers_by_app_request(app, version)
+    computer_response = client.get_computers_by_app_request(app, version)
 
-    computers_list = pagination(response.get('computer_applications').get('unique_computers'), limit, page)
+    computers_list = pagination(computer_response.get('computer_applications').get('unique_computers'), limit, page)
 
-    readable_output = get_computers_by_app_readable_output(response.get('computer_applications'))[:limit]
+    readable_output = get_computers_by_app_readable_output(computer_response.get('computer_applications'))[:limit]
     outputs = {'application': app, 'computers': computers_list}
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -873,7 +872,7 @@ def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> Comman
         outputs_prefix='JAMF.ComputersByApp',
         outputs_key_field='application',
         outputs=outputs,
-        raw_response=response
+        raw_response=computer_response
     )
 
 
@@ -881,9 +880,9 @@ def mobile_device_lost_command(client: Client, args: Dict[str, Any]) -> CommandR
     mobile_id = args['id']
     lost_mode_msg = args.get('lost_mode_message')
 
-    response = client.mobile_device_lost_request(mobile_id, lost_mode_msg)
-    outputs, readable_output = mobile_device_commands_readable_output(response)
-    outputs['name'] = 'EnableLostMode'
+    mobile_response = client.mobile_device_lost_request(mobile_id, lost_mode_msg)
+    mobile_outputs, readable_output = mobile_device_commands_readable_output(mobile_response)
+    mobile_outputs['name'] = 'EnableLostMode'
 
     return CommandResults(
         readable_output=tableToMarkdown(
@@ -892,8 +891,8 @@ def mobile_device_lost_command(client: Client, args: Dict[str, Any]) -> CommandR
         ),
         outputs_prefix='JAMF.MobileDeviceCommands',
         outputs_key_field='id',
-        outputs=outputs,
-        raw_response=response
+        outputs=mobile_outputs,
+        raw_response=mobile_response
     )
 
 
@@ -901,9 +900,10 @@ def mobile_device_erase_command(client: Client, args: Dict[str, Any]) -> Command
     mobile_id = args['id']
     preserve_data_plan = args.get('preserve_data_plan', False)
     clear_activation_code = args.get('clear_activation_code', False)
-    response = client.mobile_device_erase_request(mobile_id, preserve_data_plan, clear_activation_code)
-    outputs, readable_output = mobile_device_commands_readable_output(response)
-    outputs['name'] = 'EraseDevice'
+
+    mobile_response = client.mobile_device_erase_request(mobile_id, preserve_data_plan, clear_activation_code)
+    mobile_outputs, readable_output = mobile_device_commands_readable_output(mobile_response)
+    mobile_outputs['name'] = 'EraseDevice'
     return CommandResults(
         readable_output=tableToMarkdown(
             f'Mobile device {mobile_id} erased successfully',
@@ -911,8 +911,8 @@ def mobile_device_erase_command(client: Client, args: Dict[str, Any]) -> Command
         ),
         outputs_prefix='JAMF.MobileDeviceCommands',
         outputs_key_field='id',
-        outputs=outputs,
-        raw_response=response
+        outputs=mobile_outputs,
+        raw_response=mobile_response
     )
 
 
