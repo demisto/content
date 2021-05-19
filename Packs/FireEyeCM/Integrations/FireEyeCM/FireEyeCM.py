@@ -459,14 +459,19 @@ def get_reports(client: Client, args: Dict[str, Any]):
             if not infection_id and not infection_type:
                 raise DemistoException(err_str)
 
-    raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
-                                              infection_type, infection_id, timeout)
-
-    csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
-                   'mpsWebAVReport'}
-    prefix = 'csv' if report_type in csv_reports else 'pdf'
-    demisto.results(fileResult(f'report_{report_type}_{datetime.now().timestamp()}.{prefix}', data=raw_response,
-                               file_type=EntryType.ENTRY_INFO_FILE))
+    try:
+        raw_response = client.get_reports_request(report_type, start_time, end_time, limit, interface, alert_id,
+                                                  infection_type, infection_id, timeout)
+        csv_reports = {'empsEmailAVReport', 'empsEmailHourlyStat', 'mpsCallBackServer', 'mpsInfectedHostsTrend',
+                       'mpsWebAVReport'}
+        prefix = 'csv' if report_type in csv_reports else 'pdf'
+        demisto.results(fileResult(f'report_{report_type}_{datetime.now().timestamp()}.{prefix}', data=raw_response,
+                                   file_type=EntryType.ENTRY_INFO_FILE))
+    except Exception as err:
+        if 'WSAPI_REPORT_ALERT_NOT_FOUND' in str(err):
+            return CommandResults(readable_output=f'Report {report_type} was not found with the given arguments.')
+        else:
+            raise
 
 
 @logger

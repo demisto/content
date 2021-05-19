@@ -4,7 +4,7 @@ import json
 import pytest
 
 from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    alert_severity_to_dbot_score, to_fe_datetime_converter, fetch_incidents
+    get_reports, alert_severity_to_dbot_score, to_fe_datetime_converter, fetch_incidents
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT
 
 
@@ -89,7 +89,7 @@ def test_alert_acknowledge_already_acknowledged(mocker):
                 '{"fireeyeapis": {"@version": "v2.0.0", "description": "Alert not found or cannot update.' \
                 ' code:ALRTCONF008", "httpStatus": 404, "message": "Alert not found or cannot update"}}'
 
-    def error_404_mock(message):
+    def error_404_mock(*kwargs):
         raise Exception(error_msg)
 
     mocker.patch.object(Client, '_generate_token', return_value='token')
@@ -120,6 +120,36 @@ def test_get_quarantined_emails(mocker):
                         return_value=util_load_json('test_data/quarantined_emails.json'))
     command_results = get_quarantined_emails(client=client, args={})
     assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
+
+
+def test_get_report_not_found(mocker):
+    """Unit test
+    Given
+    - get_reports command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_reports_request response for a non found report.
+    Then
+    - Validate the human readable
+    """
+    error_msg = 'Error in API call [400] - Bad Request ' \
+                '{"fireeyeapis": {"@version": "v2.0.0", "description": "WSAPI_REPORT_ALERT_NOT_FOUND.' \
+                ' code:WSAPI_WITH_ERRORCODE_2016", "httpStatus": 400,' \
+                ' "message": "parameters{infection_id=34013; infection_type=malware-callback}"}}'
+
+    def error_400_mock(*kwargs):
+        raise Exception(error_msg)
+
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+
+    mocker.patch('FireEyeCM.Client.get_reports_request', side_effect=error_400_mock)
+
+    command_results = get_reports(client=client, args={'report_type': 'alertDetailsReport', 'infection_id': '34013',
+                                                       'infection_type': 'mallware-callback'})
+    assert command_results.readable_output == 'Report alertDetailsReport was not found with the given arguments.'
 
 
 def test_fetch_incidents(mocker):
