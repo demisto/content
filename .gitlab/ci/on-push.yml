@@ -164,7 +164,3 @@ run-validations:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .push-rule
-#   variables:
-#     SLACK_TEST_TYPE: "unittests"
-#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
-#     SLACK_ONLY_IF: $BUCKET_UPLOAD

@@ -87,8 +87,8 @@ install-packs-in-server-master:
     INSTANCE_ROLE: "Server Master"
 
 upload-packs-to-marketplace:
-#  needs: ["run-validations", "run-unittests-and-lint", "install-packs-in-server6_0", "install-packs-in-server-master"]
-  needs: ["install-packs-in-server6_0", "install-packs-in-server-master"]
+#  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"]
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -147,3 +147,19 @@ force-pack-upload:
           STORAGE_BASE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content/packs"
       fi
     - python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+
+
+run-validations-upload-flow:
+  extends:
+    - .run-validations
+    - .bucket-upload-rule
+
+# Uncomment when docker in docker will work
+# run-unittests-and-lint-upload-flow:
+#   extends:
+#     - .run-unittests-and-lint
+#     - .bucket-upload-rule
+#   variables:
+#     SLACK_TEST_TYPE: "unittests"
+#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
+#     SLACK_ONLY_IF: "true"
