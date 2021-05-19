@@ -52,7 +52,7 @@ Fetches list of detections in confluera for past x hours.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Confluera.Detections | Unknown| Detections Response | 
+| Confluera.Detections | Unknown | Detections Response |
 
 
 #### Command Example
@@ -136,7 +136,7 @@ Fetches list of progressions in confluera for past x hours.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Confluera.Progressions| Unknown | Progressions response | 
+| Confluera.Progressions | Unknown | Progressions response |
 
 
 #### Command Example
@@ -268,7 +268,7 @@ Fetches progression details of which provided trailId is a part of.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Confluera.TrailDetails| Unknown| Progression Details | 
+| Confluera.TrailDetails | Unknown | Progression Details |
 
 
 #### Command Example
