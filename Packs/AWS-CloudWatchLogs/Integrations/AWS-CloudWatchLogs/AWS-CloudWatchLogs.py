@@ -3,12 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from datetime import date
 
-AWS_DEFAULT_REGION = demisto.params()['defaultRegion']
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
-
 
 def aws_session(service='logs', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
     kwargs = {}
@@ -96,13 +90,14 @@ def raise_error(error):
     }
 
 
-def create_log_group(args):
+def create_log_group(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {'logGroupName': args.get('logGroupName')}
 
@@ -117,13 +112,14 @@ def create_log_group(args):
         return raise_error(e)
 
 
-def create_log_stream(args):
+def create_log_stream(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'logGroupName': args.get('logGroupName'),
@@ -137,13 +133,14 @@ def create_log_stream(args):
         return raise_error(e)
 
 
-def delete_log_stream(args):
+def delete_log_stream(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'logGroupName': args.get('logGroupName'),
@@ -157,13 +154,14 @@ def delete_log_stream(args):
         return raise_error(e)
 
 
-def delete_log_group(args):
+def delete_log_group(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {'logGroupName': args.get('logGroupName')}
         response = client.delete_log_group(**kwargs)
@@ -174,13 +172,14 @@ def delete_log_group(args):
         return raise_error(e)
 
 
-def filter_log_events(args):
+def filter_log_events(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
 
         data = []
@@ -216,13 +215,14 @@ def filter_log_events(args):
         return raise_error(e)
 
 
-def describe_log_groups(args):
+def describe_log_groups(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         data = []
         kwargs = {}
@@ -254,13 +254,14 @@ def describe_log_groups(args):
         return raise_error(e)
 
 
-def describe_log_streams(args):
+def describe_log_streams(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         data = []
         kwargs = {'logGroupName': args.get('logGroupName')}
@@ -297,13 +298,14 @@ def describe_log_streams(args):
         return raise_error(e)
 
 
-def put_retention_policy(args):
+def put_retention_policy(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'logGroupName': args.get('logGroupName'),
@@ -317,13 +319,14 @@ def put_retention_policy(args):
         return raise_error(e)
 
 
-def delete_retention_policy(args):
+def delete_retention_policy(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         response = client.delete_retention_policy(logGroupName=args.get('logGroupName'))
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -333,13 +336,14 @@ def delete_retention_policy(args):
         return raise_error(e)
 
 
-def put_log_events(args):
+def put_log_events(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'logGroupName': args.get('logGroupName'),
@@ -362,13 +366,14 @@ def put_log_events(args):
         return raise_error(e)
 
 
-def put_metric_filter(args):
+def put_metric_filter(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'logGroupName': args.get('logGroupName'),
@@ -388,13 +393,14 @@ def put_metric_filter(args):
         return raise_error(e)
 
 
-def delete_metric_filter(args):
+def delete_metric_filter(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         kwargs = {
             'logGroupName': args.get('logGroupName'),
@@ -409,13 +415,14 @@ def delete_metric_filter(args):
         return raise_error(e)
 
 
-def describe_metric_filters(args):
+def describe_metric_filters(args, aws_client):
     try:
-        client = aws_session(
+        client = aws_client.aws_session(
+            service='logs',
             region=args.get('region'),
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
         )
         data = []
         kwargs = {}
@@ -445,9 +452,9 @@ def describe_metric_filters(args):
         return raise_error(e)
 
 
-def test_function():
+def test_function(aws_client):
     try:
-        client = aws_session()
+        client = aws_client.aws_session(service='logs')
         response = client.describe_log_groups()
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             return 'ok'
@@ -456,47 +463,74 @@ def test_function():
         return error
 
 
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    result = test_function()
+def main():
 
-if demisto.command() == 'aws-logs-create-log-group':
-    result = create_log_group(demisto.args())
+    params = demisto.params()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('access_key')
+    aws_secret_access_key = params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
 
-if demisto.command() == 'aws-logs-create-log-stream':
-    result = create_log_stream(demisto.args())
+    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+                    aws_secret_access_key)
 
-if demisto.command() == 'aws-logs-delete-log-group':
-    result = delete_log_group(demisto.args())
+    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                           aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                           retries)
 
-if demisto.command() == 'aws-logs-delete-log-stream':
-    result = delete_log_stream(demisto.args())
+    if demisto.command() == 'test-module':
+        # This is the call made when pressing the integration test button.
+        result = test_function(aws_client)
 
-if demisto.command() == 'aws-logs-filter-log-events':
-    result = filter_log_events(demisto.args())
+    if demisto.command() == 'aws-logs-create-log-group':
+        result = create_log_group(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-describe-log-groups':
-    result = describe_log_groups(demisto.args())
+    if demisto.command() == 'aws-logs-create-log-stream':
+        result = create_log_stream(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-describe-log-streams':
-    result = describe_log_streams(demisto.args())
+    if demisto.command() == 'aws-logs-delete-log-group':
+        result = delete_log_group(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-put-retention-policy':
-    result = put_retention_policy(demisto.args())
+    if demisto.command() == 'aws-logs-delete-log-stream':
+        result = delete_log_stream(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-delete-retention-policy':
-    result = delete_retention_policy(demisto.args())
+    if demisto.command() == 'aws-logs-filter-log-events':
+        result = filter_log_events(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-put-log-events':
-    result = put_log_events(demisto.args())
+    if demisto.command() == 'aws-logs-describe-log-groups':
+        result = describe_log_groups(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-put-metric-filter':
-    result = put_metric_filter(demisto.args())
+    if demisto.command() == 'aws-logs-describe-log-streams':
+        result = describe_log_streams(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-delete-metric-filter':
-    result = delete_metric_filter(demisto.args())
+    if demisto.command() == 'aws-logs-put-retention-policy':
+        result = put_retention_policy(demisto.args(), aws_client)
 
-if demisto.command() == 'aws-logs-describe-metric-filters':
-    result = describe_metric_filters(demisto.args())
+    if demisto.command() == 'aws-logs-delete-retention-policy':
+        result = delete_retention_policy(demisto.args(), aws_client)
 
-demisto.results(result)
+    if demisto.command() == 'aws-logs-put-log-events':
+        result = put_log_events(demisto.args(), aws_client)
+
+    if demisto.command() == 'aws-logs-put-metric-filter':
+        result = put_metric_filter(demisto.args(), aws_client)
+
+    if demisto.command() == 'aws-logs-delete-metric-filter':
+        result = delete_metric_filter(demisto.args(), aws_client)
+
+    if demisto.command() == 'aws-logs-describe-metric-filters':
+        result = describe_metric_filters(demisto.args(), aws_client)
+
+    demisto.results(result)
+
+
+from AWSApiModule import *  # noqa: E402
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
