@@ -884,7 +884,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     incidents, max_results = [], 50
     if fetch_by_created and last_created_time:
         last_issue_time = parse(last_created_time)
-        minute_to_fetch = last_issue_time - timedelta(minutes=1)
+        minute_to_fetch = last_issue_time - timedelta(minutes=2)
         formatted_minute_to_fetch = minute_to_fetch.strftime('%Y-%m-%d %H:%M')
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
     else:
