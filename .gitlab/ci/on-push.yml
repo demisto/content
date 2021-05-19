@@ -158,11 +158,8 @@ run-validations:
     - .run-validations
     - .push-rule
 
-run-unittests-and-lint:
-  extends:
-    - .run-unittests-and-lint
-    # - .push-rule # uncomment when docker in docker will work
-  rules:
-    - if: "true" # Remove this once a docker in docker solution has been found.
-      when: never
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+# Uncomment when docker in docker will work
+# run-unittests-and-lint:
+#   extends:
+#     - .run-unittests-and-lint
+#     - .push-rule
