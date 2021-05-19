@@ -27,12 +27,12 @@ BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 # ====== BUCKET CONFIGURATION  ======
 if [[ -z "$1" ]]; then
-  GCS_MARKET_BUCKET='marketplace-dist'
+  GCS_MARKET_BUCKET=$GCS_PRODUCTION_BUCKET
 else
   GCS_MARKET_BUCKET=$1
 fi
 
-if [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+if [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
   SOURCE_PATH="content"
 else
   # ====== UPDATING TESTING BUCKET ======

@@ -29,6 +29,7 @@ variables:
   GIT_DEPTH: 0
   IFRA_ENV_TYPE: "Content-Env"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
+  GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # change to marketplace-dist this after testing period
 
 
 include:
