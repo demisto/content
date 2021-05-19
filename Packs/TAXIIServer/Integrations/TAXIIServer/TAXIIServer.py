@@ -300,7 +300,9 @@ class TAXIIServer:
         if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
-            return f'{base_url}/instance/execute'
+            calling_context = get_calling_context()
+            instance_name = calling_context.get('IntegrationInstance', '')
+            return os.path.join(base_url, 'instance', 'execute', instance_name)
         else:
             return f'{base_url}:{self.port}'
 
@@ -963,7 +965,7 @@ def main():
 
     global SERVER
     scheme = 'http'
-    host_name = server_link_parts.hostname
+    host_name = server_link_parts.netloc
     if not http_server:
         scheme = 'https'
         host_name = get_https_hostname(host_name)
