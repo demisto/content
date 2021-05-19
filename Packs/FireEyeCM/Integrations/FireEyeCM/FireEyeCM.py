@@ -274,7 +274,7 @@ def alert_acknowledge(client: Client, args: Dict[str, Any]) -> List[CommandResul
             client.alert_acknowledge_request(uuid)
             md_ = f'Alert {uuid} was acknowledged successfully.'
         except Exception as err:
-            if 'Alert not found or cannot update' in str(err):
+            if 'Error in API call [404]' in str(err):
                 md_ = f'Alert {uuid} was not found or cannot update. It may have been acknowledged in the past.'
             else:
                 raise

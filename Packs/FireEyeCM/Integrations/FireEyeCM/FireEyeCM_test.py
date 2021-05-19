@@ -85,15 +85,18 @@ def test_alert_acknowledge_already_acknowledged(mocker):
     Then
     - Validate the human readable
     """
-    def error_404_mock():
-        raise Exception('Error in API call [404] - Not Found'
-                        '{"fireeyeapis": {"@version": "v2.0.0", "description": "Alert not found or cannot update.'
-                        ' code:ALRTCONF008", "httpStatus": 404, "message": "Alert not found or cannot update"}}')
+    error_msg = 'Error in API call [404] - Not Found' \
+                '{"fireeyeapis": {"@version": "v2.0.0", "description": "Alert not found or cannot update.' \
+                ' code:ALRTCONF008", "httpStatus": 404, "message": "Alert not found or cannot update"}}'
+
+    def error_404_mock(message):
+        raise Exception(error_msg)
 
     mocker.patch.object(Client, '_generate_token', return_value='token')
     client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
 
-    mocker.patch.object(Client, 'alert_acknowledge_request', side_effect=error_404_mock)
+    mocker.patch('FireEyeCM.Client.alert_acknowledge_request', side_effect=error_404_mock)
+
     command_results = alert_acknowledge(client=client, args={'uuid': 'uuid'})
     assert command_results[0].readable_output == \
            'Alert uuid was not found or cannot update. It may have been acknowledged in the past.'
