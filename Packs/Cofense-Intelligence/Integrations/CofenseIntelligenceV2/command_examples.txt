@@ -1,0 +1,6 @@
+!ip ip=8.8.8.8
+!email email=myinfo1234@zoho.com
+!file file=021b08963d6be1bc000605350b18a6f4
+!cofense-search str="\"systime\""
+!url url=http://prosciuttuamo.it/tmp/ifeanyi.exe
+

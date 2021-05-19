@@ -285,6 +285,10 @@ script:
       required: true
       default: true
       description: String to search.
+    - name: limit
+      required: false
+      default: 10
+      description: 'Maximum number of strings to search. Default is 10.'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -474,7 +478,6 @@ script:
     - contextPath: CofenseIntelligence.Threat.threatType
       description: 'This will only have one value for malware'
       type: String
-    - description: Maximum number of strings to search. Default is 10.
     description: Searches for extracted strings identified within malware campaigns.
   - name: file
     arguments:
