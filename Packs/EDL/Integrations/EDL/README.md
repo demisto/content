@@ -37,6 +37,8 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 | Credentials | Set user and password for accessing the EDL instance. (Only applicable when https is used and a certificate profile is configured on the pan-os edl object) | False |
 | Collapse IPs | Whether to collapse IPs, and if so - to ranges or CIDRs. | False |
 | XSOAR Indicator Page Size | Internal page size used when querying XSOAR for the EDL. By default, this value shouldn't be changed | False |
+| NGINX Global Directives | NGINX global directives to be passed on the command line using the -g option. Seperate directives using `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by XSOAR Support. | False |
+| NGINX Server Conf | NGINX server configuration. To be used instead of the default `NGINX_SERVER_CONF` used in the integration code. Advanced configuration to be used only if instructed by XSOAR Support. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

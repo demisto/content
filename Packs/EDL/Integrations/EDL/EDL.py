@@ -686,8 +686,10 @@ def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
         nginx_global_directives.extend(global_directives_conf.split(';'))
     directive_args = []
     for directive in nginx_global_directives:
-        directive_args.append('-g')
-        directive_args.append(directive + ';')
+        directive = directive.strip()
+        if directive:
+            directive_args.append('-g')
+            directive_args.append(directive + ';')
     # we first do a test that all config is good and log it
     try:
         nginx_test_command = ['nginx', '-T']
