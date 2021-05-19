@@ -17,8 +17,7 @@ trigger-private-build:
     - if: '$NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
     - if: '$INSTANCE_TESTS && $SKIP_PRIVATE_BUILD != "true"'
     - if: '$DEMISTO_SDK_NIGHTLY && $SKIP_PRIVATE_BUILD != "true"'
-    - if: '$CI_COMMIT_BRANCH =~ pull/[0-9]+'
-      when: never
+    - if: '$CI_COMMIT_BRANCH !~ /pull\/[0-9]+/'
   script:
     - echo "====Trigger Private Build===="
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
