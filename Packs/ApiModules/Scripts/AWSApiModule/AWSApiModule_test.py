@@ -81,3 +81,21 @@ def test_validate_params(mocker, params):
     - Validates that all parameters are given for each authentication method
     """
     validate_params(**params)
+
+
+def test_get_timeout():
+    """
+    Given
+    - Different valid values for timeout and retries parameters
+    When
+    - before setting aws config instance
+    Then
+    - validates the logic of setting read_timeout and connect_timeout values
+    """
+    (read, connect) = AWSClient.get_timeout(None)
+    assert read == 60 and connect == 10
+    (read, connect) = AWSClient.get_timeout("100")
+    assert read == 100 and connect == 10
+    (read, connect) = AWSClient.get_timeout("200,2")
+    assert read == 200 and connect == 2
+
