@@ -1,0 +1,25 @@
+
+[
+    {
+        "actionType": 1,
+        "blockNumber": 106098471075840,
+        "blockRecipientIndex": 0,
+        "classification": 37,
+        "deleted": 0,
+        "description": "- Message Archiving : Archive All Inbound Messages",
+        "edition": "607ef9ae0000",
+        "folderId": 1006,
+        "hasAttachments": false,
+        "messageBody": "This is the body of the email\r",
+        "messageName": "B607ef9ac0000",
+        "recipient": "test@example.com",
+        "sender": "test@example.com",
+        "serverId": 1,
+        "sessionNumber": -106037248,
+        "size": 870,
+        "subject": "This is the subject line",
+        "timeArrived": 1618934189,
+        "timeLogged": 1618934189,
+        "unicodeSubject": "This is the subject line"
+    }
+]
