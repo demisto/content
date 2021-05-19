@@ -157,7 +157,7 @@ script:
     - contextPath: PolySwarm.Scan_UUID
       description: The PolySwarm scan UUID.
       type: String
-    - contextPath: PolySwarm.Artifact/
+    - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
     - contextPath: DBotScore.Vendor
