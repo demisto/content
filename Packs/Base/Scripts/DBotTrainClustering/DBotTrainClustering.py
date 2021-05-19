@@ -162,7 +162,7 @@ class Clustering(object):
         Compute center for each cluster
         :return: None
         """
-        for cluster_ in range(-1, self.number_clusters):  # type: ignore
+        for cluster_ in range(self.number_clusters):  # type: ignore
             center = np.mean(self.data[self.model.labels_ == cluster_], axis=0)  # type: ignore
             if center.isnull().values.any():  # type: ignore
                 self.centers[cluster_] = center.fillna(0)   # type: ignore
@@ -558,6 +558,14 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
         data['data'].append(d)
+    d_outliers = {
+        'incidents_ids': [x for x in incidents_df[  # type: ignore
+            clustering.model.labels_ == -1].id.values.tolist()],  # type: ignore
+        'incidents': incidents_df[clustering.model.labels_ == -1][display_fields].to_json(
+            # type: ignore
+            orient='records'),  # type: ignore
+    }
+    data['outliers'] = d_outliers
     data['range'] = calculate_range(data)
     pretty_json = json.dumps(data, indent=4, sort_keys=True)
     return pretty_json
