@@ -918,7 +918,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
-        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' \
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId'\
                                  f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
