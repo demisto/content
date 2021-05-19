@@ -180,8 +180,10 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: list
 
         report['type'] = 'Report'
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
+        report['score'] = 3
         report['fields'] = {
             'stixid': report_object.get('id'),
+            "firstseenbysource": report_object.get('created'),
             'published': report_object.get('published'),
             'description': report_object.get('description', ''),
             "reportedby": 'Unit42',
@@ -307,8 +309,6 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
         A list of processed Attack Pattern.
     """
 
-    feed_tags = [] if not feed_tags else feed_tags
-
     attack_pattern_indicators = []
 
     for attack_indicator in attack_indicator_objects:
@@ -322,6 +322,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
         indicator = {
             "value": value,
             "type": 'Attack Pattern',
+            "score": 2,
             "fields": {
                 'stixid': attack_indicator.get('id'),
                 "killchainphases": kill_chain_phases,
@@ -332,7 +333,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
                 "publications": publications,
                 "mitreid": mitre_id,
                 "reportedby": 'Unit42',
-                "tags": feed_tags,
+                "tags": [tag for tag in feed_tags],
             }
         }
         indicator['fields']['tags'].extend([mitre_id])
@@ -362,7 +363,7 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
 
         indicator = {
             "value": coa_indicator.get('name'),
-            "type": 'Attack Pattern',
+            "type": 'Course of Action',
             "score": 0,
             "fields": {
                 'stixid': coa_indicator.get('id'),
@@ -378,6 +379,7 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
             indicator['fields']['trafficlightprotocol'] = tlp_color
 
         course_of_action_indicators.append(indicator)
+
     return course_of_action_indicators
 
 
