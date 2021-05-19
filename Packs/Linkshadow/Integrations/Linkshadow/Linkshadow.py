@@ -19,7 +19,7 @@ Linkshadow_SEVERITIES = 0
 
 
 class Client(BaseClient):
-    def fetch_anomaly(self, apiKey, start_time, api_username, plugin_id, action, time_frame):
+    def fetch_anomaly(self, apiKey, api_username, plugin_id, action, time_frame):
         request_params = {}
         if apiKey:
             request_params['api_key'] = apiKey
@@ -44,8 +44,8 @@ class Client(BaseClient):
 
 def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
     try:
-        alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time,
-                                      api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame)
+        alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
+                                      plugin_id=plugin_id, action=action, time_frame=time_frame)
         if 'error' in str(alerts.get('message')) or 'success' in str(alerts.get('message')):
             return "ok"
         else:
@@ -87,8 +87,8 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
         last_fetch = int(last_fetch)
     latest_created_time = int(last_fetch)
     incidents = []
-    alerts = client.fetch_anomaly(apiKey=apiKey, start_time=first_fetch_time,
-                                  api_username=api_username, plugin_id=plugin_id, action=action, time_frame=time_frame)
+    alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
+                                  plugin_id=plugin_id, action=action, time_frame=time_frame)
     alert = {}
     for alert in alerts:
 
@@ -197,8 +197,8 @@ def main():
                 time_frame=time_frame
             )
             demisto.setLastRun(next_run)
-            demisto.incidents(incidents)         
-        elif demisto.command() == 'Linkshadow_fetch_entity_anomalies':
+            demisto.incidents(incidents)
+        elif demisto.command() == 'Linkshadow-fetch-entity-anomalies':
             return_results(fetch_entity_anomalies(client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
