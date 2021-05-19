@@ -505,8 +505,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                 'severity': alert_severity_to_dbot_score(alert.get('severity')),
                 'rawJSON': json.dumps(alert)
             }
-            incidents.extend([incident])
-            last_alert_ids.extend([alert_id])
+            incidents.append(incident)
+            last_alert_ids.append(alert_id)
 
     if not incidents:
         demisto.info(f'{INTEGRATION_NAME} no new alerts were fetched at: {str(next_run)}')
