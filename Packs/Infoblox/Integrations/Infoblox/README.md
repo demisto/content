@@ -5,7 +5,7 @@ This integration was integrated and tested with version V2 of Infoblox
 </p>
 <h2>Configure Infoblox on XSOAR</h2>
 <h5>Required Permissions</h5>
-<p>The API supports only HTTP Basic Authentication. Every user must have permissions that grant him access to the API.</p>
+<p>The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.</p>
 
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
