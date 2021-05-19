@@ -1,14 +1,15 @@
 import concurrent.futures
 import secrets
 from enum import Enum
+from ipaddress import ip_address
 from threading import Lock
 from typing import Tuple
 
 import pytz
 import urllib3
+from CommonServerUserPython import *  # noqa
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -723,6 +724,15 @@ def build_headers(first_headers: List[str], all_headers: Set[str]) -> List[str]:
     return first_headers + list(set.difference(all_headers, first_headers))
 
 
+def is_valid_ip(ip: str) -> bool:
+    try:
+        ip_address(ip)
+        return True
+    except ValueError:
+        print_debug_msg(f'IP {ip} was found invalid.')
+        return False
+
+
 def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     """
     Receives list of offenses, and performs API call to QRadar service to retrieve the offense type names
@@ -737,14 +747,8 @@ def get_offense_types(client: Client, offenses: List[Dict]) -> Dict:
     offense_types_ids = {offense.get('offense_type') for offense in offenses if offense.get('offense_type') is not None}
     if not offense_types_ids:
         return dict()
-    try:
-        offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
-                                             fields='id,name')
-    except Exception as e:
-        print_debug_msg(
-            f'Error occurred in offenses types call. '
-            f'''filter parameter is: id in ({','.join(map(str, offense_types_ids))})''')
-        raise e
+    offense_types = client.offense_types(filter_=f'''id in ({','.join(map(str, offense_types_ids))})''',
+                                         fields='id,name')
     return {offense_type.get('id'): offense_type.get('name') for offense_type in offense_types}
 
 
@@ -763,14 +767,8 @@ def get_offense_closing_reasons(client: Client, offenses: List[Dict]) -> Dict:
                           if offense.get('closing_reason_id') is not None}
     if not closing_reason_ids:
         return dict()
-    try:
-        closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
-                                                      fields='id,text')
-    except Exception as e:
-        print_debug_msg(
-            f'Error occurred in closing reasons list call. '
-            f'''filter parameter is: id in ({','.join(map(str, closing_reason_ids))})''')
-        raise e
+    closing_reasons = client.closing_reasons_list(filter_=f'''id in ({','.join(map(str, closing_reason_ids))})''',
+                                                  fields='id,text')
     return {closing_reason.get('id'): closing_reason.get('text') for closing_reason in closing_reasons}
 
 
@@ -828,12 +826,7 @@ def get_offense_addresses(client: Client, offenses: List[Dict], is_destination_a
     url_suffix = f'{address_type}_addresses'
 
     def get_addresses_for_batch(b: List):
-        try:
-            return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
-        except Exception as e:
-            print_debug_msg('Error occurred in get offense addresses call. '
-                            f'''filter parameter is: id in ({','.join(map(str, b))})''')
-            raise e
+        return client.get_addresses(url_suffix, f'''id in ({','.join(map(str, b))})''', f'id,{address_field}')
 
     addresses_ids = [address_id for offense in offenses
                      for address_id in offense.get(address_list_field, [])]
@@ -885,6 +878,7 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
         return client.assets_list(filter_=filter_query)
 
+    offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
               for asset in get_assets_for_ips_batch(b)]
@@ -924,7 +918,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
-        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId'\
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' \
                                  f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
@@ -1383,10 +1377,8 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     filter_fetch_query = f'id>{offense_highest_id}{user_query}'
     range_max = offenses_per_fetch - 1 if offenses_per_fetch else MAXIMUM_OFFENSES_PER_FETCH - 1
     range_ = f'items=0-{range_max}'
-    print_debug_msg(f'Query for offenses: {filter_fetch_query}')
 
     offenses = client.offenses_list(range_, filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER)
-    print_debug_msg(f'Fetched {len(offenses)} from QRadar.')
     new_highest_offense_id = offenses[-1].get('id') if offenses else offense_highest_id
 
     if fetch_mode != FetchMode.no_events.value:
@@ -1482,7 +1474,6 @@ def long_running_execution_command(client: Client, params: Dict):
             demisto.createIncidents(incidents)
 
         except Exception as e:
-            demisto.error(traceback.format_exc())
             demisto.error(str(e))
 
         finally:
