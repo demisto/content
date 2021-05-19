@@ -1,0 +1,53 @@
+[
+    {
+        "fileSize": 69621136,
+        "filename": "MailMarshal-10.0.1-ManualBackup_11-Apr-2021-05-00-10",
+        "info": {
+            "backupTime": 1618142411,
+            "backupTimeStr": "2021-04-11T12:00:11Z",
+            "backupType": "full",
+            "backupUser": "admin",
+            "commitDescription": "Committing Marshal RBL credentials update",
+            "commitSetId": 5,
+            "commitUser": "admin",
+            "configVersion": 39,
+            "containsDkimKeys": false,
+            "productVersion": "10.0.1.2030"
+        },
+        "lastModified": 1618142420
+    },
+    {
+        "fileSize": 69620815,
+        "filename": "MailMarshal-10.0.1-ManualBackup_11-Apr-2021-04-37-14",
+        "info": {
+            "backupTime": 1618141036,
+            "backupTimeStr": "2021-04-11T11:37:16Z",
+            "backupType": "full",
+            "backupUser": "admin",
+            "commitDescription": "Files updates automatically applied.",
+            "commitSetId": 2,
+            "commitUser": "admin",
+            "configVersion": 39,
+            "containsDkimKeys": false,
+            "productVersion": "10.0.1.2030"
+        },
+        "lastModified": 1618141049
+    },
+    {
+        "fileSize": 69620814,
+        "filename": "MailMarshal-10.0.1-AutomaticBackup_11-Apr-2021-02-00-04",
+        "info": {
+            "backupTime": 1618132219,
+            "backupTimeStr": "2021-04-11T09:10:19Z",
+            "backupType": "full",
+            "backupUser": "admin",
+            "commitDescription": "Files updates automatically applied.",
+            "commitSetId": 2,
+            "commitUser": "admin",
+            "configVersion": 39,
+            "containsDkimKeys": false,
+            "productVersion": "10.0.1.2030"
+        },
+        "lastModified": 1618132480
+    }
+]
