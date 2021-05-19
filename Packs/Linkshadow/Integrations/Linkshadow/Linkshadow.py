@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import dateparser
 import json
 import urllib3
 import traceback
@@ -55,7 +56,6 @@ def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, actio
             return 'Authorization Error: make sure API Key is correctly set'
         else:
             return e
-    # return 'ok'
 
 
 def format_JSON_for_fetch_incidents(ls_anomaly):
@@ -99,7 +99,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                     if key == 'time_seen':
                         incident_created_time = dic['time_seen']
                         if last_fetch:
-                            if incident_created_time <= last_fetch:
+                            if int(incident_created_time) <= last_fetch:
                                 continue
                         incident_name = "Linkshadow-entityAnomaly"
                         formatted_JSON = format_JSON_for_fetch_incidents(dic)
@@ -136,7 +136,7 @@ def fetch_entity_anomalies(client, args):
     plugin_id = args.get('plugin_id')
     action = args.get('action')
 
-    time_frame = arg_to_int(
+    time_frame = arg_to_number(
         arg=args.get('time_frame'),
         arg_name='time_frame',
         required=False
@@ -150,50 +150,14 @@ def fetch_entity_anomalies(client, args):
         time_frame=time_frame
     )
 
-    return CommandResults(
+    results = CommandResults(
         outputs_prefix='Linkshadow.anomaly',
         outputs_key_field='demisto.args()',
         outputs=alerts
     )
 
+    return_results(results)
 
-def arg_to_int(arg, arg_name, required=False):
-
-    if arg is None:
-        if required is True:
-            raise ValueError('Missing "{arg_name}"')
-        return None
-    if isinstance(arg, str):
-        if arg.isdigit():
-            return int(arg)
-        raise ValueError('Invalid number: "{arg_name}"="{arg}"')
-    if isinstance(arg, int):
-        return arg
-    raise ValueError('Invalid number: "{arg_name}"')
-
-
-def arg_to_timestamp(arg, arg_name, required=False):
-
-    if arg is None:
-        if required is True:
-            raise ValueError('Missing "{arg_name}"')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit():
-
-        return int(arg)
-    if isinstance(arg, str):
-
-        date = datetime.utcnow()
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            raise ValueError('Invalid date: {arg_name}')
-
-        return int(date.strftime('%s'))
-    if isinstance(arg, (int, float)):
-
-        return int(arg)
-    raise ValueError('Invalid date: "{arg_name}"')
 
 
 ''' MAIN FUNCTION '''
@@ -201,25 +165,22 @@ def arg_to_timestamp(arg, arg_name, required=False):
 
 def main():
     apiKey = demisto.params().get('apiKey')
-    base_url = urljoin(demisto.params()['url'])
+    base_url = demisto.params().get('url')
     api_username = demisto.params().get('api_username')
     plugin_id = demisto.params().get("plugin_id")
     action = demisto.params().get("action")
     time_frame = demisto.params().get("time_frame")
-    first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '1 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-
+    verify_certificate = not demisto.params().get('insecure', False)
+    first_fetch = demisto.params().get('first_fetch', '1 days')
+    first_fetch_time = date_to_timestamp(dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}))
     proxy = demisto.params().get('proxy', False)
     demisto.debug('Command being called is {demisto.command()}')
     try:
 
         client = Client(
-            base_url=base_url,
-            verify=False,
-            proxy=proxy)
+            base_url = base_url,
+            verify = False,
+            proxy = proxy)
 
         if demisto.command() == 'test-module':
             result = test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame)
@@ -240,11 +201,10 @@ def main():
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-            # demisto.createIncidents(incidents)
+            
         elif demisto.command() == 'Linkshadow_fetch_entity_anomalies':
-            # print ("Linkshadow_fetch_entity_anomalies")
             return_results(fetch_entity_anomalies(client, demisto.args()))
-    except DemistoException as e:
+    except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error('Failed to execute {demisto.command()} command', e)
 
