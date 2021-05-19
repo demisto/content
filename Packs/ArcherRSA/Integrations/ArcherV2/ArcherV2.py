@@ -1189,6 +1189,10 @@ def fetch_incidents(
             demisto.debug(
                 f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
             )
+    if next_fetch == last_fetch_time:
+        # if no incidents were fetched we increase the next fetch by 1 second to avoid a case where we might hit the
+        # the fetch limit and the next fetch will stuck and the next fetch time wont will not advance
+        next_fetch += timedelta(seconds=1)
     demisto.debug(f'Going out fetch incidents with {next_fetch=}, {len(incidents)=}')
     return incidents, next_fetch
 
