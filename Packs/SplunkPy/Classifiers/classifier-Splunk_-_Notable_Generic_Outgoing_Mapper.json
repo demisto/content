@@ -1,0 +1,41 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "561b72e1-68b3-426f-89b2-7555afecf1d2",
+    "mapping": {
+        "Splunk Notable Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "urgency": {
+                    "complex": null,
+                    "simple": "notableurgency"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "comment": {
+                    "complex": null,
+                    "simple": "comments"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                },
+                "status": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "urgency": {
+                    "complex": null,
+                    "simple": "notableurgency"
+                }
+            }
+        }
+    },
+    "name": "Splunk - Notable Generic Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
