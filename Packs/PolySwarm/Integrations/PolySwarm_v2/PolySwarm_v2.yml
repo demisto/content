@@ -239,7 +239,7 @@ script:
   - arguments:
     - default: true
       description: The URL to scan.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
