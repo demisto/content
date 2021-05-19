@@ -14,29 +14,132 @@
                     "complex": null,
                     "simple": "determination"
                 },
+                "Microsoft 365 Defender Active": {
+                    "complex": null,
+                    "simple": "Active alerts"
+                },
+                "Microsoft 365 Defender Active alerts": {
+                    "complex": null,
+                    "simple": "Active alerts"
+                },
+                "Microsoft 365 Defender Alerts": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Microsoft 365 Defender Categories count": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Categories",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            },
+                            {
+                                "args": {},
+                                "operator": "ab282779-9eea-497c-8cff-be4f4ecdc080"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
                 "Microsoft 365 Defender Classification": {
                     "complex": null,
                     "simple": "classification"
+                },
+                "Microsoft 365 Defender Devices": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Devices",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Microsoft 365 Defender Display Name": {
+                    "complex": null,
+                    "simple": "incidentName"
+                },
+                "Microsoft 365 Defender First activity": {
+                    "complex": null,
+                    "simple": "First activity"
+                },
+                "Microsoft 365 Defender ID": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "Microsoft 365 Defender Incident ID": {
+                    "complex": null,
+                    "simple": "incidentId"
+                },
+                "Microsoft 365 Defender Last activity": {
+                    "complex": null,
+                    "simple": "Last activity"
                 },
                 "Microsoft 365 Defender Status": {
                     "complex": null,
                     "simple": "status"
                 },
-                "OS": {
+                "Microsoft 365 Defender Tags": {
                     "complex": {
-                        "accessor": "[0].devices.[0].osProcessor",
+                        "accessor": "",
                         "filters": [],
-                        "root": "alerts",
+                        "root": "tags",
                         "transformers": []
                     },
                     "simple": ""
                 },
-                "State": {
+                "Microsoft 365 Defender Users": {
                     "complex": {
-                        "accessor": "[5].investigationState",
+                        "accessor": "",
                         "filters": [],
-                        "root": "alerts",
-                        "transformers": []
+                        "root": "Impacted entities",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            },
+                            {
+                                "args": {},
+                                "operator": "3b758874-5a4b-417f-8ad8-5add2f5d8608"
+                            },
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
                     },
                     "simple": ""
                 },
@@ -46,6 +149,42 @@
                         "filters": [],
                         "root": "alerts",
                         "transformers": []
+                    },
+                    "simple": ""
+                },
+                "impacted devices": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Devices",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            },
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "impacted entities": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "Impacted entities",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "uniq"
+                            },
+                            {
+                                "args": {},
+                                "operator": "count"
+                            }
+                        ]
                     },
                     "simple": ""
                 }

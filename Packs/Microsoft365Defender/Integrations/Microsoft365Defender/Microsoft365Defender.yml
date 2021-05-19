@@ -260,13 +260,13 @@ script:
       description: 'The determination of the incident. Possible values are: NotAvailable,
         Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other.'
       type: String
-    - contextPath: Microsoft365Defender.Incident.status
-      description: 'The current status of the incident. Possible values are: Active,
-        Resolved, and Redirected.'
-      type: String
     - contextPath: Microsoft365Defender.Incident.severity
       description: 'Severity of the incident. Possible values are: UnSpecified, Informational,
         Low, Medium, and High.'
+      type: String
+    - contextPath: Microsoft365Defender.Incident.status
+      description: 'The current status of the incident. Possible values are: Active,
+        Resolved, and Redirected.'
       type: String
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents

@@ -1,12 +1,12 @@
-import demistomock as demisto
+from typing import Dict
+
+import urllib3
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
-from typing import Dict, Optional, List
-
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -19,7 +19,7 @@ TIMEOUT = '30'
 
 # todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
 
-class Client(BaseClient):
+class Client:
     @logger
     def __init__(self, app_id: str, base_url: str, verify: bool, proxy: bool):
         if '@' in app_id:
@@ -204,6 +204,42 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
+    """
+    Calculated metadata for the gicen incident
+    Args:
+        raw_incident (Dict): The incident as received from microsoft 365 defender
+
+    Returns: Dictionary with the calculated data
+
+    """
+    if not raw_incident:
+        raw_incident = {}
+
+    alerts_list = raw_incident.get('alerts', [])
+
+    alerts_status = [alert.get('status') for alert in alerts_list if alert.get('status')]
+    first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
+    last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
+
+    return {
+        'Categories': [alert.get('category') for alert in alerts_list],
+        'Impacted entities': list({(entity.get('domainName'))
+                                   for alert in alerts_list
+                                   for entity in alert.get('entities') if entity.get('entityType') == 'User'}),
+        'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
+        'Service sources': list({alert.get('serviceSource') for alert in alerts_list}),
+        'Detection sources': list({alert.get('detectionSource') for alert in alerts_list}),
+        'First activity': str(min(first_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
+        'Last activity': str(max(last_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
+        'Devices': [{'device name': device.get('deviceDnsName'),
+                     'risk level': device.get('riskScore'),
+                     'tags': ','.join(device.get('tags'))
+                     } for alert in alerts_list
+                    for device in alert.get('devices')]
+    }
+
+
 def convert_incident_to_readable(raw_incident: Dict) -> Dict:
     """
     Converts incident received from microsoft 365 defender to readable format
@@ -215,32 +251,27 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
     """
     if not raw_incident:
         raw_incident = {}
-    alerts_list = raw_incident.get('alerts', [])
 
-    alerts_status = [alert.get('status') for alert in alerts_list]
-    first_activity_list = [alert.get('firstActivity') for alert in alerts_list]
-    last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
-
+    incident_meta_data = _get_meta_data_for_incident(raw_incident)
+    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])}
     return {
         'Incident name': raw_incident.get('incidentName'),
         'Tags': ', '.join(raw_incident.get('tags', [])),
         'Severity': raw_incident.get('severity'),
         'Incident ID': raw_incident.get('incidentId'),
         # investigation state - relevant only for alerts.
-        'Categories': ', '.join({alert.get('category') for alert in alerts_list}),
-        'Impacted entities': ', '.join({entity.get('accountName') for alert in alerts_list
-                                        for entity in alert.get('entities') if entity.get('entityType') == 'User'}),
-        'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
-        'Service sources': ', '.join({alert.get('serviceSource') for alert in alerts_list}),
-        'Detection sources': ', '.join({alert.get('detectionSource') for alert in alerts_list}),
+        'Categories': ', '.join(set(incident_meta_data.get('Categories', []))),
+        'Impacted entities': ', '.join(incident_meta_data.get('Impacted entities', [])),
+        'Active alerts': incident_meta_data.get('Active alerts', []),
+        'Service sources': ', '.join(incident_meta_data.get('Service sources', [])),
+        'Detection sources': ', '.join(incident_meta_data.get('Detection sources', [])),
         # Data sensitivity - is not relevant
-        'First activity': min(first_activity_list, key=lambda x: dateparser.parse(x)) if alerts_list else '',
-        'Last activity': max(last_activity_list, key=lambda x: dateparser.parse(x)) if alerts_list else '',
+        'First activity': incident_meta_data.get('First activity', ''),
+        'Last activity': incident_meta_data.get('Last activity', ''),
         'Status': raw_incident.get('status'),
         'Assigned to': raw_incident.get('assignedTo', 'Unassigned'),
         'Classification': raw_incident.get('classification', 'Not set'),
-        'Device groups': ', '.join({device.get('deviceDnsName') for alert in alerts_list
-                                    for device in alert.get('devices')})
+        'Device groups': ', '.join(device_groups),
     }
 
 
@@ -382,6 +413,8 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             # HTTP request
             response = client.incidents_list(from_date=last_run, skip=offset, timeout=timeout)
             raw_incidents = response.get('value')
+            for incident in raw_incidents:
+                incident.update(_get_meta_data_for_incident(incident))
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),
@@ -486,7 +519,7 @@ def main() -> None:
 
     first_fetch_time = demisto.params().get('first_fetch', '3 days').strip()
     fetch_limit = demisto.params().get('max_fetch', 10)
-    fetch_timeout = arg_to_number(demisto.params().get('fetch_timeout',TIMEOUT))
+    fetch_timeout = arg_to_number(demisto.params().get('fetch_timeout', TIMEOUT))
     demisto.debug(f'Command being called is {demisto.command()}')
 
     command = demisto.command()

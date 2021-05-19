@@ -1,0 +1,31 @@
+args:
+- name: value
+  description: list of users
+commonfields:
+  id: UserListToTable
+  version: -1
+dockerimage: demisto/python3:3.9.5.20070
+enabled: true
+name: UserListToTable
+runas: DBotWeakRole
+runonce: false
+script: |
+  def count_dict(value):
+      if not isinstance(value, str):
+          return value
+      users = value.split(',')
+
+
+      return [{'User': user  for user in users}]
+
+  if __name__ in ('__main__', '__builtin__', 'builtins'):
+      return_results(count_dict(**demisto.args()))
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 5.5.0
+tests:
+- Microsoft_365_Defender-Test
+comment: comment

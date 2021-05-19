@@ -37,7 +37,8 @@ def mock_client(mocker, function: str = None, http_response=None):
     client = Client(
         app_id='app_id',
         verify=False,
-        proxy=False
+        proxy=False,
+        base_url='https://api.security.microsoft.com'
     )
     if http_response:
         mocker.patch.object(client, function, return_value=http_response)
@@ -98,7 +99,8 @@ def test_fetch_incidents(mocker):
     client = Client(
         app_id='app_id',
         verify=False,
-        proxy=False
+        proxy=False,
+        base_url='https://api.security.microsoft.com'
     )
     mocker.patch.object(demisto, 'getIntegrationContext',
                         return_value={'current_refresh_token': 'refresh_token', 'access_token': 'access_token'})
@@ -113,9 +115,10 @@ def test_fetch_incidents(mocker):
         fetch_check(mocker, client, response_dict[f'{current_flow}_last_run'], first_fetch_time, fetch_limit,
                     results[f'{current_flow}_result'])
 
-@pytest.mark.parametrize('query, limit, result', [("a | b | limit 5",10,"a | b | limit 10 "),
+
+@pytest.mark.parametrize('query, limit, result', [("a | b | limit 5", 10, "a | b | limit 10 "),
                                                   ("a | b ", 10, "a | b | limit 10 "),
                                                   ("a | b | limit 1 | take 1", 10, "a | b | limit 10 | limit 10 "),
                                                   ])
-def test_query_set_limit(query: str, limit: int, result:str):
+def test_query_set_limit(query: str, limit: int, result: str):
     assert _query_set_limit(query, limit) == result

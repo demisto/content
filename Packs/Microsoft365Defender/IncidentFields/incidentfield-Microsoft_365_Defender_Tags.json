@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Microsoft 365 Defender Incident"
+    ],
     "caseInsensitive": true,
     "cliName": "microsoft365defendertags",
     "closeForm": false,
@@ -14,6 +17,9 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
+    "selectValues": [
+        "test5"
+    ],
     "sla": 0,
     "system": false,
     "threshold": 72,

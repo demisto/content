@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Microsoft 365 Defender Incident"
+    ],
     "caseInsensitive": true,
     "cliName": "microsoft365defenderclassification",
     "closeForm": false,
