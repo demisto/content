@@ -801,8 +801,8 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         ]
 
         if "id" in raw_dict:
-            new_dict["id"] = raw_dict["id"]
-            fields_list.append("id")
+            new_dict["itemId"] = raw_dict["id"]
+            fields_list.append("itemId")
 
         for field in fields_list:
             if field in raw_dict:
@@ -1491,7 +1491,7 @@ def get_items_from_folder(
         "receivedBy",
         "author",
         "toRecipients",
-        "id",
+        "itemId",
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
