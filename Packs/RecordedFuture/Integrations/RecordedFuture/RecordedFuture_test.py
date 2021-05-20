@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 import json
 from pathlib import Path
 from RecordedFuture import (
@@ -57,7 +57,7 @@ class RFTest(unittest.TestCase):
     def test_ip_reputation(self) -> None:
         resp = lookup_command(self.client, "37.48.83.137", "ip")
         entity = resp[0].to_context()["Contents"]["data"]["results"][0]
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']
+        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']
 
         self.assertIsInstance(resp[0], CommandResults)
         # there are many rules that are concatenated
@@ -67,7 +67,7 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence(self) -> None:
         resp = enrich_command(self.client, "184.168.221.96", "ip", True, True)
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']  # noqa
+        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']  # noqa
 
         self.assertIsInstance(resp[0], CommandResults)
         # rules are concatenated
@@ -84,14 +84,12 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence_profile(self) -> None:
         """Will fetch related entities even if related_entities param is false"""  # noqa
-        resp = enrich_command(self.client, "184.168.221.96", "ip", False, False, "Vulnerability Analyst")  # noqa
+        resp = enrich_command(self.client, "184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
-
-        list_of_lists = [entry for entry in data['relatedEntities']]  # noqa
-        flat_related_types = sorted([entry['type'] for entry in list_of_lists])
+        list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
         expected = ['RelatedMalwareCategory', 'RelatedMalware', 'RelatedThreatActor']  # noqa
-        self.assertEqual(flat_related_types, sorted(expected))
+        self.assertEqual(list_of_lists, sorted(expected))
 
     @vcr.use_cassette()
     def test_threat_assessment(self) -> None:

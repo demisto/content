@@ -48,4 +48,4 @@ All the playbooks are meant to be used as sub-playbooks to get reputation, intel
 
 
 ---
-Copyright 2020 Recorded Future, Inc.
+Copyright 2020-2021 Recorded Future, Inc.
