@@ -42,6 +42,8 @@ tasks:
       name: illusive-run-forensics-on-demand
       description: Collect forensics on a specified host and retrieve the forensics
         timeline
+      tags:
+      - forensics
       script: IllusiveNetworks|||illusive-run-forensics-on-demand
       type: regular
       iscommand: true
@@ -129,6 +131,8 @@ tasks:
       version: -1
       name: illusive-get-event-incident-id
       description: event_id
+      tags:
+      - forensics
       script: IllusiveNetworks|||illusive-get-event-incident-id
       type: regular
       iscommand: true
@@ -214,6 +218,8 @@ tasks:
       version: -1
       name: illusive-get-forensics-timeline
       description: Retrieve forensics timeline for a specific incident
+      tags:
+      - forensics
       script: IllusiveNetworks|||illusive-get-forensics-timeline
       type: regular
       iscommand: true
@@ -254,6 +260,8 @@ tasks:
       version: -1
       name: Print Forensics Timeline
       description: Prints text to war room (Markdown supported)
+      tags:
+      - forensics
       scriptName: Print
       type: regular
       iscommand: false
