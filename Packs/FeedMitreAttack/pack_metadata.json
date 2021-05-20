@@ -16,5 +16,11 @@
         "MITRE",
         "Feed",
         "ATT&CK"
-    ]
+    ],
+    "dependencies": {
+        "GetLicenseID": {
+            "mandatory": true,
+            "name": "Get License ID"
+        }
+    }
 }
