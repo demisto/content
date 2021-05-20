@@ -10,7 +10,7 @@
         "F5 Silverline L7 DDoS Events": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert Type": {
+                "F5 Silverline Alert Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -627,7 +627,7 @@
                     },
                     "simple": ""
                 },
-                "Alert Type": {
+                "F5 Silverline Alert Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -1550,7 +1550,7 @@
         "F5 Silverline WAF Events": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert Type": {
+                "F5 Silverline Alert Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -2563,7 +2563,7 @@
         "F5 Silverline iRule Events": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Alert Type": {
+                "F5 Silverline Alert Type": {
                     "complex": {
                         "accessor": "",
                         "filters": [],

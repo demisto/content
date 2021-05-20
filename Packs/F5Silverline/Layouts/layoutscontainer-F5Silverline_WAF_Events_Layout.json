@@ -56,7 +56,7 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "alerttype",
+								"fieldId": "f5silverlinealerttype",
 								"height": 53,
 								"id": "c4927280-b892-11eb-acc5-0dea9504b51a",
 								"index": 4,
