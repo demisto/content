@@ -153,7 +153,7 @@ script:
       description: 'Whether the folder should inherit permissions from its parent
         (default: true)'
       isArray: false
-      name: inheritPermissions
+      name: inheritpermissions
       predefined:
       - 'true'
       - 'false'
@@ -164,7 +164,7 @@ script:
       description: Whether the folder should inherit the secret policy. Defaults to
         true unless creating a root folder.
       isArray: false
-      name: inheritSecretPolicy
+      name: inheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
@@ -173,7 +173,7 @@ script:
     - default: false
       description: Secret policy ID
       isArray: false
-      name: secretPolicyId
+      name: secretpolicyid
       required: false
       secret: false
     deprecated: false
@@ -234,7 +234,7 @@ script:
       default: false
       description: Whether to allow DoubleLocks as part of the search. True by default
       isArray: false
-      name: filter.allowDoubleLocks
+      name: filter_allowdoublelocks
       predefined:
       - 'true'
       - 'false'
@@ -245,7 +245,7 @@ script:
       description: Whether to return the total number of secrets matching the filters.
         False by default
       isArray: false
-      name: filter.doNotCalculateTotal
+      name: filter_donotcalculatetotal
       predefined:
       - 'true'
       - 'false'
@@ -255,32 +255,32 @@ script:
       description: Only include Secrets with this DoubleLock ID assigned in the search
         results
       isArray: false
-      name: filter.doubleLockId
+      name: filter_doublelockid
       required: false
       secret: false
     - default: false
       description: Names of Secret Template fields to return. Only exposed fields
         can be returned.
       isArray: false
-      name: filter.extendedFields
+      name: filter_extendedfields
       required: false
       secret: false
     - default: false
       description: Return only secrets matching a certain extended type
       isArray: false
-      name: filter.extendedTypeId
+      name: filter_extendedtypeid
       required: false
       secret: false
     - default: false
       description: Return only secrets within a certain folder
       isArray: false
-      name: filter.folderId
+      name: filter_folderid
       required: false
       secret: false
     - default: false
       description: Return only secrets with a certain heartbeat status
       isArray: false
-      name: filter.heartbeatStatus
+      name: filter_heartbeatstatus
       required: false
       secret: false
     - auto: PREDEFINED
@@ -288,7 +288,7 @@ script:
       description: Whether to include active secrets in results (when excluded equals
         true)
       isArray: false
-      name: filter.includeActive
+      name: filter_includeactive
       predefined:
       - 'true'
       - 'false'
@@ -298,7 +298,7 @@ script:
       default: false
       description: Whether to include inactive secrets in results
       isArray: false
-      name: filter.includeInactive
+      name: filter_includeinactive
       predefined:
       - 'true'
       - 'false'
@@ -308,7 +308,7 @@ script:
       default: false
       description: "Whether to include restricted secrets in results\t\t"
       isArray: false
-      name: filter.includeRestricted
+      name: filter_includerestricted
       predefined:
       - 'true'
       - 'false'
@@ -318,7 +318,7 @@ script:
       default: false
       description: Whether to do an exact match of the search text or a partial match
       isArray: false
-      name: filter.isExactMatch
+      name: filter_isexactmatch
       predefined:
       - 'true'
       - 'false'
@@ -329,7 +329,7 @@ script:
       description: Whether to only include secrets whose template has Remote Password
         Changing enabled
       isArray: false
-      name: filter.onlyRPCEnabled
+      name: filter_onlyrpcenabled
       predefined:
       - 'true'
       - 'false'
@@ -340,7 +340,7 @@ script:
       description: When true only Secrets where you are not the owner and the Secret
         was shared explicitly with your user id will be returned.
       isArray: false
-      name: filter.onlySharedWithMe
+      name: filter_onlysharedwithme
       predefined:
       - 'true'
       - 'false'
@@ -349,7 +349,7 @@ script:
     - default: false
       description: Return only secrets matching certain password types
       isArray: false
-      name: filter.passwordTypeIds
+      name: filter_passwordtypelds
       required: false
       secret: false
     - auto: PREDEFINED
@@ -357,7 +357,7 @@ script:
       description: Specify whether to filter by List, View, Edit, or Owner permission.
         Default is List. (List = 1, View = 2, Edit = 3, Owner = 4
       isArray: false
-      name: filter.permissionRequired
+      name: filter_permissionrequired
       predefined:
       - '1'
       - '2'
@@ -370,7 +370,7 @@ script:
       description: Specify whether to search AllSecrets, Recent, or Favorites (All
         = 1, Recent = 2,Favorites = 3
       isArray: false
-      name: filter.scope
+      name: filter_scope
       predefined:
       - '1'
       - '2'
@@ -380,31 +380,31 @@ script:
     - default: false
       description: Field to search
       isArray: false
-      name: filter.searchField
+      name: filter_searchfield
       required: false
       secret: false
     - default: false
       description: Field-slug to search. This will override SearchField.
       isArray: false
-      name: filter.searchFieldSlug
+      name: filter_searchfieldslug
       required: false
       secret: false
     - default: false
       description: Search text
       isArray: false
-      name: filter.searchText
+      name: filter_searchtext
       required: false
       secret: false
     - default: false
       description: Return only secrets matching a certain template
       isArray: false
-      name: filter.secretTemplateId
+      name: filter_secrettemplateid
       required: false
       secret: false
     - default: false
       description: Return only secrets within a certain site
       isArray: false
-      name: filter.siteId
+      name: filter_siteid
       required: false
       secret: false
     - default: false
@@ -416,19 +416,19 @@ script:
     - default: false
       description: Sort direction
       isArray: false
-      name: sortBy[0].direction
+      name: sortBy[0]_direction
       required: false
       secret: false
     - default: false
       description: Sort field name
       isArray: false
-      name: sortBy[0].name
+      name: sortBy[0]_name
       required: false
       secret: false
     - default: false
       description: Priority index. Sorts with lower values are executed earlier
       isArray: false
-      name: sortBy[0].priority
+      name: sortBy[0]_priority
       required: false
       secret: false
     - default: false
@@ -441,7 +441,7 @@ script:
       default: false
       description: Whether to include secrets in subfolders of the specified folder
       isArray: false
-      name: filter.includeSubFolders
+      name: filter_includesubfolders
       predefined:
       - 'true'
       - 'false'
@@ -459,13 +459,13 @@ script:
     - default: false
       description: Folder name
       isArray: false
-      name: folderName
+      name: foldername
       required: false
       secret: false
     - default: false
       description: Folder type ID
       isArray: false
-      name: folderTypeId
+      name: foldertypeid
       required: false
       secret: false
     - default: false
@@ -478,7 +478,7 @@ script:
       default: false
       description: Whether the folder inherits permissions from its parent
       isArray: false
-      name: inheritPermissions
+      name: inheritpermissions
       predefined:
       - 'true'
       - 'false'
@@ -488,7 +488,7 @@ script:
       default: false
       description: Whether the folder inherits the secret policy
       isArray: false
-      name: inheritSecretPolicy
+      name: inheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
@@ -497,13 +497,13 @@ script:
     - default: false
       description: ID parent folder
       isArray: false
-      name: parentFolderId
+      name: parentfolderid
       required: false
       secret: false
     - default: false
       description: Secret Policy ID
       isArray: false
-      name: secretPolicyId
+      name: secretpolicyid
       required: false
       secret: false
     deprecated: false
@@ -519,7 +519,7 @@ script:
       default: false
       description: AutoChangeEnabled options
       isArray: false
-      name: autoChangeEnabled
+      name: autochangeenabled
       predefined:
       - 'true'
       - 'false'
@@ -529,7 +529,7 @@ script:
       default: false
       description: CheckOutChangePasswordEnabled options
       isArray: false
-      name: checkOutChangePasswordEnabled
+      name: checkoutchangepasswordenabled
       predefined:
       - 'true'
       - 'false'
@@ -539,7 +539,7 @@ script:
       default: false
       description: Whether secret checkout is enabled
       isArray: false
-      name: checkOutEnabled
+      name: checkoutenabled
       predefined:
       - 'true'
       - 'false'
@@ -548,14 +548,14 @@ script:
     - default: false
       description: Checkout interval, in minutes (integer)
       isArray: false
-      name: checkOutIntervalMinutes
+      name: checkoutintervalminutes
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether the secret inherits permissions from the containing folder
       isArray: false
-      name: enableInheritPermissions
+      name: enableinheritpermissions
       predefined:
       - 'true'
       - 'false'
@@ -565,7 +565,7 @@ script:
       default: false
       description: Whether the secret policy is inherited from the containing folder
       isArray: false
-      name: enableInheritSecretPolicy
+      name: enableinheritsecretpolicy
       predefined:
       - 'true'
       - 'false'
@@ -575,13 +575,13 @@ script:
       description: Secret folder ID. May be null unless secrets are required to be
         in folders.(integer)
       isArray: false
-      name: folderId
+      name: folderid
       required: false
       secret: false
     - default: false
       description: LauncherConnectAsSecretId(integer)
       isArray: false
-      name: launcherConnectAsSecretId
+      name: launcherconnectassecretid
       required: false
       secret: false
     - default: false
@@ -593,14 +593,14 @@ script:
     - default: false
       description: passwordTypeWebScriptId options(integer)
       isArray: false
-      name: passwordTypeWebScriptId
+      name: passwordtypewebscriptld
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: proxyEnabled options
       isArray: false
-      name: proxyEnabled
+      name: proxyenabled
       predefined:
       - 'true'
       - 'false'
@@ -610,7 +610,7 @@ script:
       default: false
       description: requiresCommen options
       isArray: false
-      name: requiresCommen
+      name: requirescommen
       predefined:
       - 'true'
       - 'false'
@@ -619,20 +619,20 @@ script:
     - default: false
       description: secretPolicyId options(integer)
       isArray: false
-      name: secretPolicyId
+      name: secretpolicyid
       required: false
       secret: false
     - default: false
       description: Secret Template ID (integer)
       isArray: false
-      name: secretTemplateId
+      name: secrettemplateid
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
       description: sessionRecordingEnabled options
       isArray: false
-      name: sessionRecordingEnabled
+      name: sessionrecordingenabled
       predefined:
       - 'true'
       - 'false'
@@ -642,13 +642,13 @@ script:
       defaultValue: '1'
       description: siteId options (integer)
       isArray: false
-      name: siteId
+      name: siteid
       required: true
       secret: false
     - default: false
       description: sshKeyArgs options(list args)
       isArray: false
-      name: sshKeyArgs
+      name: sshkeyargs
       required: false
       secret: false
     - default: false
@@ -708,7 +708,7 @@ script:
     - default: false
       description: User display name
       isArray: false
-      name: displayName
+      name: displayname
       required: true
       secret: false
     - default: false
@@ -720,26 +720,26 @@ script:
     - default: false
       description: Username
       isArray: false
-      name: userName
+      name: username
       required: true
       secret: false
     - default: false
       description: Active Directory unique identifier
       isArray: false
-      name: adGuid
+      name: adguid
       required: false
       secret: false
     - default: false
       description: Active Directory domain ID
       isArray: false
-      name: domainId
+      name: domainid
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether Duo two-factor authentication is enabled
       isArray: false
-      name: duoTwoFactor
+      name: duotwofactor
       predefined:
       - 'true'
       - 'false'
@@ -748,7 +748,7 @@ script:
     - default: false
       description: User email address
       isArray: false
-      name: emailAddress
+      name: emailaddress
       required: false
       secret: false
     - auto: PREDEFINED
@@ -766,7 +766,7 @@ script:
       default: false
       description: Whether Duo two-factor authentication is enabled
       isArray: false
-      name: fido2TwoFactor
+      name: fido2twofactor
       predefined:
       - 'true'
       - 'false'
@@ -776,7 +776,7 @@ script:
       default: false
       description: IsApplicationAccount
       isArray: false
-      name: isApplicationAccount
+      name: isapplicationaccount
       predefined:
       - 'true'
       - 'false'
@@ -786,7 +786,7 @@ script:
       default: false
       description: Whether OATH two-factor authentication is enabled
       isArray: false
-      name: oathTwoFactor
+      name: oathtwofactor
       predefined:
       - 'true'
       - 'false'
@@ -796,7 +796,7 @@ script:
       default: false
       description: Whether RADIUS two-factor authentication is enabled
       isArray: false
-      name: radiusTwoFactor
+      name: radiustwofactor
       predefined:
       - 'true'
       - 'false'
@@ -805,14 +805,14 @@ script:
     - default: false
       description: RADIUS username
       isArray: false
-      name: radiusUserName
+      name: radiususername
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether two-factor authentication is enabled
       isArray: false
-      name: twoFactor
+      name: twofactor
       predefined:
       - 'true'
       - 'false'
@@ -830,14 +830,14 @@ script:
     - default: false
       description: Filter users by Active Directory domain (integer)
       isArray: false
-      name: filter.domainId
+      name: filter_domainid
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether to include inactive users in the results
       isArray: false
-      name: filter.includeInactive
+      name: filter_includeinactive
       predefined:
       - 'true'
       - 'false'
@@ -846,13 +846,13 @@ script:
     - default: false
       description: Fields to search
       isArray: false
-      name: filter.searchFields
+      name: filter_searchfields
       required: false
       secret: false
     - default: false
       description: Search text
       isArray: false
-      name: filter.searchText
+      name: filter_searchtext
       required: false
       secret: false
     - default: false
@@ -864,19 +864,19 @@ script:
     - default: false
       description: Sort direction
       isArray: false
-      name: sortBy[0].direction
+      name: sortBy[0]_direction
       required: false
       secret: false
     - default: false
       description: Sort field name
       isArray: false
-      name: sortBy[0].name
+      name: sortBy[0]_name
       required: false
       secret: false
     - default: false
       description: Priority index. Sorts with lower values are executed earlier (integer)
       isArray: false
-      name: sortBy[0].priority
+      name: sortBy[0]_priority
       required: false
       secret: false
     - default: false
@@ -903,20 +903,20 @@ script:
     - default: false
       description: DateOptionId(integer)
       isArray: false
-      name: dateOptionId
+      name: dateoptionid
       required: false
       secret: false
     - default: false
       description: Display name
       isArray: false
-      name: displayName
+      name: displayname
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether Duo two-factor authentication is enabled
       isArray: false
-      name: duoTwoFactor
+      name: duotwofactor
       predefined:
       - 'true'
       - 'false'
@@ -925,7 +925,7 @@ script:
     - default: false
       description: E-mail
       isArray: false
-      name: emailAddress
+      name: emailaddress
       required: false
       secret: false
     - auto: PREDEFINED
@@ -942,7 +942,7 @@ script:
       default: false
       description: Whether FIDO2 two-factor authentication is enabled
       isArray: false
-      name: fido2TwoFactor
+      name: fido2twofactor
       predefined:
       - 'true'
       - 'false'
@@ -951,14 +951,14 @@ script:
     - default: false
       description: GroupOwners(integer)
       isArray: false
-      name: groupOwners
+      name: groupowners
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: IsApplicationAccount
       isArray: false
-      name: isApplicationAccount
+      name: isapplicationaccount
       predefined:
       - 'true'
       - 'false'
@@ -968,7 +968,7 @@ script:
       default: false
       description: isGroupOwnerUpdate
       isArray: false
-      name: isGroupOwnerUpdate
+      name: isgroupownerupdate
       predefined:
       - 'true'
       - 'false'
@@ -978,7 +978,7 @@ script:
       default: false
       description: Whether the user is locked out
       isArray: false
-      name: isLockedOut
+      name: isLockedout
       predefined:
       - 'true'
       - 'false'
@@ -987,14 +987,14 @@ script:
     - default: false
       description: Number of login failures
       isArray: false
-      name: loginFailures
+      name: loginfailures
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether OATH two-factor authentication is enabled
       isArray: false
-      name: oathTwoFactor
+      name: oathtwofactor
       predefined:
       - 'true'
       - 'false'
@@ -1010,7 +1010,7 @@ script:
       default: false
       description: Whether RADIUS two-factor authentication is enabled
       isArray: false
-      name: radiusTwoFactor
+      name: radiustwofactor
       predefined:
       - 'true'
       - 'false'
@@ -1019,20 +1019,20 @@ script:
     - default: false
       description: RADIUS username
       isArray: false
-      name: radiusUserName
+      name: radiususername
       required: false
       secret: false
     - default: false
       description: timeOptionId (integer)
       isArray: false
-      name: timeOptionId
+      name: timeoptionid
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
       description: Whether two-factor authentication is enabled
       isArray: false
-      name: twoFactor
+      name: twofactor
       predefined:
       - 'true'
       - 'false'
@@ -1069,20 +1069,20 @@ script:
       required: true
       secret: false
     - default: false
-      description: New secret password
+      description: Password
       isArray: false
-      name: newPassword
+      name: newpassword
       required: true
       secret: false
     deprecated: false
-    description: Change a secret's password
+    description: Remote Password Changing
     execution: false
     name: thycotic-secret-rpc-changepassword
     outputs:
     - contextPath: Thycotic.Secret.ChangePassword
-      description: Secret  object
+      description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false

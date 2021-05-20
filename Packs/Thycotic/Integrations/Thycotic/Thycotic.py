@@ -68,6 +68,7 @@ class Client(BaseClient):
         params = {}
         if count_params > 0:
             for key, value in kwargs.items():
+                key = key.replace('_', '.')
                 params[key] = value
 
         response = self._http_request("GET", url_suffix="/api/v1/secrets", params=params).get("records")
@@ -84,9 +85,10 @@ class Client(BaseClient):
 
     def secret_checkout(self, secret_id: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/check-out"
-
-        self._http_request("POST", url_suffix)
-        return self._http_request("GET", url_suffix="/api/v1/secrets/" + str(secret_id) + "/summary")
+#        self._http_request("POST", url_suffix)
+#        return self._http_request("GET", url_suffix="/api/v1/secrets/" + str(secret_id) + "/summary")
+#        return self._http_request("POST", url_suffix)
+        return self._http_request("POST", url_suffix)
 
     def secret_checkin(self, secret_id: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/check-in"
@@ -191,6 +193,7 @@ class Client(BaseClient):
         count_params = len(kwargs)
         if count_params > 0:
             for key, value in kwargs.items():
+                key = key.replace('_', '.')
                 params[key] = value
 
         return (self._http_request("GET", url_suffix="/api/v1/users", params=params)).get('records')
@@ -218,8 +221,11 @@ def test_module(client) -> str:
 def secret_password_get_command(client, secret_id: str = ''):
     secret_password = client.getPasswordById(secret_id)
 
+    markdown = tableToMarkdown('Password for secret',
+                               {'Secret ID': secret_id, 'Password': secret_password})
+
     return CommandResults(
-        readable_output=f"Retrieved password for ID={secret_id}: {secret_password}",
+        readable_output=markdown,
         outputs_prefix='Thycotic.Secret.Password',
         outputs_key_field="secret_password",
         raw_response=secret_password,
@@ -230,8 +236,11 @@ def secret_password_get_command(client, secret_id: str = ''):
 def secret_username_get_command(client, secret_id: str = ''):
     secret_username = client.getUsernameById(secret_id)
 
+    markdown = tableToMarkdown('Username for secret',
+                               {'Secret ID': secret_id, 'Password': secret_username})
+
     return CommandResults(
-        readable_output=f"Retrieved username from ID={secret_id}: {secret_username}",
+        readable_output=markdown,
         outputs_prefix='Thycotic.Secret.Username',
         outputs_key_field="secret_username",
         raw_response=secret_username,
@@ -242,8 +251,11 @@ def secret_username_get_command(client, secret_id: str = ''):
 def secret_get_command(client, secret_id: str = ''):
     secret = client.getSecret(secret_id)
 
+    markdown = tableToMarkdown('Full secret object', secret)
+    markdown += tableToMarkdown('Items for secret', secret['items'])
+
     return CommandResults(
-        readable_output=f"Secret object by ID {secret_id}\n{secret}",
+        readable_output=markdown,
         outputs_prefix='Thycotic.Secret',
         outputs_key_field="secret",
         raw_response=secret,
@@ -253,9 +265,10 @@ def secret_get_command(client, secret_id: str = ''):
 
 def secret_search_name_command(client, search_name: str = ''):
     search_id = client.searchSecretIdByName(search_name)
+    markdown = tableToMarkdown('Retrieves IDs for secret name', search_id, headers=['Secret id'])
 
     return CommandResults(
-        readable_output=f"Retrieves IDs for secret name={search_name}: {search_id}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Id",
         outputs_key_field="search_id",
         raw_response=search_id,
@@ -265,9 +278,10 @@ def secret_search_name_command(client, search_name: str = ''):
 
 def secret_search_command(client, **kwargs):
     search_result = client.searchSecret(**kwargs)
+    markdown = tableToMarkdown('Search secret', search_result, headers=['id'])
 
     return CommandResults(
-        readable_output=f"Secret by parameters: {search_result}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Secret",
         outputs_key_field="search_secret",
         raw_response=search_result,
@@ -278,8 +292,11 @@ def secret_search_command(client, **kwargs):
 def secret_password_update_command(client, secret_id: str = '', newpassword: str = ''):
     secret_newpassword = client.updateSecretPassword(secret_id, newpassword)
 
+    markdown = tableToMarkdown('Set new password for secret',
+                               {'Secret ID': secret_id, 'New password': newpassword})
+
     return CommandResults(
-        readable_output=f"Set new password for secret ID={secret_id}: password={newpassword}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Newpassword",
         outputs_key_field="secret_newpassword",
         raw_response=secret_newpassword,
@@ -290,8 +307,10 @@ def secret_password_update_command(client, secret_id: str = '', newpassword: str
 def secret_checkout_command(client, secret_id: str = ''):
     secret_checkout = client.secret_checkout(secret_id)
 
+    markdown = tableToMarkdown('Check Out Secret', secret_checkout)
+
     return CommandResults(
-        readable_output=f"Check Out Secret ID={secret_id}, ResponseCode - {secret_checkout}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Checkout",
         outputs_key_field="secret_checkout",
         raw_response=secret_checkout,
@@ -301,10 +320,10 @@ def secret_checkout_command(client, secret_id: str = ''):
 
 def secret_checkin_command(client, secret_id: str = ''):
     secret_checkin = client.secret_checkin(secret_id)
-    status_checkout = secret_checkin.get('checkedOut')
+    markdown = tableToMarkdown('Check In Secret', secret_checkin)
 
     return CommandResults(
-        readable_output=f"Check In for secret ID={secret_id}. CheckOut = {status_checkout}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Checkin",
         outputs_key_field="secret_checkin",
         raw_response=secret_checkin,
@@ -314,9 +333,9 @@ def secret_checkin_command(client, secret_id: str = ''):
 
 def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **kwargs):
     secret = client.secretCreate(name, secretTemplateId, **kwargs)
-
+    markdown = tableToMarkdown('Created new secret', secret)
     return CommandResults(
-        readable_output=f"New secret: {secret}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Create",
         outputs_key_field="secret",
         raw_response=secret,
@@ -326,9 +345,10 @@ def secret_create_command(client, name: str = '', secretTemplateId: int = 0, **k
 
 def secret_delete_command(client, id: int = 0):
     delete = client.secretDelete(id)
+    markdown = tableToMarkdown('Deleted secret', delete)
 
     return CommandResults(
-        readable_output=f"Deleted secret ID:{id}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.Deleted",
         outputs_key_field="delete",
         raw_response=delete,
@@ -338,10 +358,11 @@ def secret_delete_command(client, id: int = 0):
 
 def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, parentfolderid: int = 1, **kwargs):
     folder = client.folderCreate(foldername, foldertypeid, parentfolderid, **kwargs)
-    name = folder.get('folderName')
+
+    markdown = tableToMarkdown('Created new folder', folder)
 
     return CommandResults(
-        readable_output=f"New folder created - {name}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Folder.Create",
         outputs_key_field="folder",
         raw_response=folder,
@@ -351,9 +372,10 @@ def folder_create_command(client, foldername: str = '', foldertypeid: int = 1, p
 
 def folder_search_command(client, foldername: str = ''):
     folder_id = client.searchFolder(foldername)
+    markdown = tableToMarkdown('Search folder', folder_id, headers=['id'])
 
     return CommandResults(
-        readable_output=f"Folder name = {foldername}, List ID: {folder_id}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Folder.Id",
         outputs_key_field="folder_id",
         raw_response=folder_id,
@@ -363,9 +385,10 @@ def folder_search_command(client, foldername: str = ''):
 
 def folder_update_command(client, id: str = '', **kwargs):
     folder = client.folderUpdate(id, **kwargs)
+    markdown = tableToMarkdown('Updated folder', folder)
 
     return CommandResults(
-        readable_output=f"Folder: {folder}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Folder.Update",
         outputs_key_field="folder",
         raw_response=folder,
@@ -375,9 +398,10 @@ def folder_update_command(client, id: str = '', **kwargs):
 
 def folder_delete_command(client, folder_id: str = ''):
     folder = client.folderDelete(folder_id)
+    markdown = tableToMarkdown('Deleted folder', folder)
 
     return CommandResults(
-        readable_output=f"Deleted folder ID: {folder_id}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Folder.Delete",
         outputs_key_field="folder",
         raw_response=folder,
@@ -387,10 +411,11 @@ def folder_delete_command(client, folder_id: str = ''):
 
 def user_create_command(client, **kwargs):
     user = client.userCreate(**kwargs)
-    username = user.get('userName')
+
+    markdown = tableToMarkdown('Created new user', user)
 
     return CommandResults(
-        readable_output=f"Create new user {username}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.User.Create",
         outputs_key_field="user",
         raw_response=user,
@@ -400,9 +425,10 @@ def user_create_command(client, **kwargs):
 
 def user_search_command(client, **kwargs):
     user = client.userSearch(**kwargs)
+    markdown = tableToMarkdown('Search user', user)
 
     return CommandResults(
-        readable_output=f"{user}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.User.Search",
         outputs_key_field="user",
         raw_response=user,
@@ -412,9 +438,10 @@ def user_search_command(client, **kwargs):
 
 def user_update_command(client, id: str = '', **kwargs):
     user = client.userUpdate(id, **kwargs)
+    markdown = tableToMarkdown('Updated user', user)
 
     return CommandResults(
-        readable_output=f"{user}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.User.Update",
         outputs_key_field="user",
         raw_response=user,
@@ -424,9 +451,10 @@ def user_update_command(client, id: str = '', **kwargs):
 
 def user_delete_command(client, id: str = ''):
     user = client.userDelete(id)
+    markdown = tableToMarkdown('Deleted user', user)
 
     return CommandResults(
-        readable_output=f"User: {user}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.User.Delete",
         outputs_key_field="user",
         raw_response=user,
@@ -434,11 +462,12 @@ def user_delete_command(client, id: str = ''):
     )
 
 
-def secret_rpc_changepassword_command(client, secret_id: str = '', newPassword: str = ''):
-    secret = client.secretChangePassword(secret_id, newPassword)
+def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: str = ''):
+    secret = client.secretChangePassword(secret_id, newpassword)
+    markdown = tableToMarkdown('Change password for remote machine', secret)
 
     return CommandResults(
-        readable_output=f"Secret: {secret}",
+        readable_output=markdown,
         outputs_prefix="Thycotic.Secret.ChangePassword",
         outputs_key_field="secret",
         raw_response=secret,
