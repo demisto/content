@@ -7,12 +7,13 @@ category: Utilities
 description: 'Use the Cofense Intelligence integration to check the reputation of
   URLs, IP addresses, file hashes, and email addresses.'
 configuration:
-- display: Server URL (e.g., https://www.threathq.com/apiv1)
+- display: Server URL
   name: url
   defaultvalue: https://www.threathq.com/apiv1
   type: 0
   required: true
-- display: User name
+- display: Token Name
+  displaypassword: Password
   name: credentials
   type: 9
   required: true
@@ -40,6 +41,7 @@ configuration:
   - Minor
   - Moderate
   - Major
+  additionalinfo: Threshold for IP reletad threats' severity.
 - display: File Threshold
   name: file_threshold
   defaultvalue: Major
@@ -50,6 +52,7 @@ configuration:
   - Minor
   - Moderate
   - Major
+  additionalinfo: Threshold for file reletad threats' severity.
 - display: URL Threshold
   name: url_threshold
   defaultvalue: Major
@@ -60,6 +63,7 @@ configuration:
   - Minor
   - Moderate
   - Major
+  additionalinfo: Threshold for URL reletad threats' severity.
 - display: Email Threshold
   name: email_threshold
   defaultvalue: Major
@@ -70,6 +74,7 @@ configuration:
   - Minor
   - Moderate
   - Major
+  additionalinfo: Threshold for email reletad threats' severity.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

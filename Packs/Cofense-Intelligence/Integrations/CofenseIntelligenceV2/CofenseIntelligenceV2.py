@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR_NAME = "Cofense Intelligence v2"
 INTEGRATION_NAME = "CofenseIntelligenceV2"
-OUTPUT_PREFIX = 'CofenseIntelligence.Threat'
+OUTPUT_PREFIX = 'CofenseIntelligence'
 RELIABILITY = 'integration_reliability'
 
 SEVERITY_SCORE = {'None': 0, 'Minor': 1, 'Moderate': 2, 'Major': 3}
@@ -238,13 +238,16 @@ def connectivity_testing(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
         client.threat_search_call()
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure user name and password are correctly set'
+        if e.res is not None:
+            if e.res.status_code in [401, 403]:
+                message = 'Authorization Error: make sure user name and password are correctly set'
+
+            elif e.res.status_code == 404:
+                message = 'Not Found: make sure server URL is correct'
 
         else:
             raise e
@@ -277,7 +280,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandR
     url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj)
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX,
+        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
         outputs_key_field='id',
         outputs=threats,
         raw_response=result,
@@ -325,7 +328,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
     ip_indicator.dbot_score = dbot_score_obj
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX,
+        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
         outputs_key_field='IP',
         outputs=threats,
         raw_response=result,
@@ -367,7 +370,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> Command
 
     email_indicator = Common.EMAIL(address=email, dbot_score=dbot_score_obj, domain=email.split('@')[1])
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX,
+        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
         outputs=threats,
         outputs_key_field='id',
         raw_response=result,
@@ -405,7 +408,7 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandRe
     file_indicator.dbot_score = dbot_score_obj
     dbot_score_obj.score = dbot_score
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX,
+        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
         outputs_key_field='id',
         outputs=threats,
         raw_response=result,
@@ -449,7 +452,7 @@ def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
                     break
 
     return CommandResults(
-        outputs_prefix=OUTPUT_PREFIX,
+        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
         outputs_key_field='id',
         outputs={'CofenseIntelligence': {"String": string, "NumOfThreats": count_threats}},
         raw_response=result,
