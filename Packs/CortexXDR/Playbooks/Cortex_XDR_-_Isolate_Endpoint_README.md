@@ -4,10 +4,10 @@ This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Ne
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 This playbook does not use any scripts.
@@ -32,7 +32,7 @@ This playbook does not use any scripts.
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Endpoint.endpoint_id | The endpoint ID. | unknown |
 | PaloAltoNetworksXDR.Endpoint.endpoint_name | The endpoint name. | unknown |
-| PaloAltoNetworksXDR.Endpoint.endpoint_status | The status of the endpoint' | unknown |
+| PaloAltoNetworksXDR.Endpoint.endpoint_status | The status of the endpoint. | unknown |
 | PaloAltoNetworksXDR.Endpoint.ip | A list of IP addresses. | unknown |
 | PaloAltoNetworksXDR.Endpoint.is_isolated | Whether the endpoint is isolated. | unknown |
 | Endpoint.Hostname | The hostname that is mapped to this endpoint. | unknown |
