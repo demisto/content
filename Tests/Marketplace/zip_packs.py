@@ -242,6 +242,7 @@ def main():
     gcp_path = 'content/packs'
     remove_test_playbooks = option.remove_test_playbooks
     private_build = option.private
+    print("1.dest path is" + zip_path)
     if private_build:
         packs_dir = '/home/runner/work/content-private/content-private/content/artifacts/packs'
         zip_path = '/home/runner/work/content-private/content-private/content/temp-dir'
@@ -267,6 +268,7 @@ def main():
 
     success = True
     try:
+        print("2.dest path is" + zip_path)
         download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
     except Exception:
         logging.exception('Failed downloading packs')
