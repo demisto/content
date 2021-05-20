@@ -2848,7 +2848,8 @@
         },
         {
             "integrations": "F5Silverline",
-            "playbookID": "F5Silverline_TestPlaybook"
+            "playbookID": "F5Silverline_TestPlaybook",
+            "fromversion": "6.0.0"
         },
         {
             "integrations": "BruteForceBlocker Feed",
