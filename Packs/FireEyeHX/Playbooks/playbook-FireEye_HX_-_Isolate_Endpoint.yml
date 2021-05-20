@@ -1,7 +1,7 @@
 id: 'FireEye HX - Isolate Endpoint '
 version: -1
 name: 'FireEye HX - Isolate Endpoint '
-description: This playbook will auto Isolate endpoints by the endpoint id that was
+description: This playbook will auto isolate endpoints by the endpoint ID that was
   provided in the playbook.
 starttaskid: "0"
 tasks:
@@ -263,12 +263,12 @@ inputs:
 - key: Endpoint_id
   value: {}
   required: false
-  description: The endpoint id/device  id that  you wish to isolate.
+  description: The endpoint ID or device ID to isolate.
   playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
-  description: the hostname that you wish to isolate.
+  description: The hostname to isolate.
   playbookInputQuery:
 outputs: []
 tests:
