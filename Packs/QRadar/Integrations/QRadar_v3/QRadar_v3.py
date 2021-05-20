@@ -870,8 +870,8 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], offense_i
         try:
             return client.assets_list(filter_=filter_query)
         except Exception as e:
-            print_debug_msg(f'Get IPs for assets failed. filter query: {filter_query}, Offense ID: {offense_id}')
-            raise e
+            print_debug_msg(f'Get IPs for assets failed. filter query: {filter_query}')
+            raise DemistoException(f'Failed getting Asset by IPs for offense ID {offense_id}') from e
 
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
