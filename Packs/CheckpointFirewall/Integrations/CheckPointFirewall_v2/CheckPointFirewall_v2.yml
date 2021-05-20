@@ -1,5 +1,5 @@
 commonfields:
-  id: CheckPointFirewall_v2_morita
+  id: CheckPointFirewall_v2
   version: -1
 contentitemexportablefields:
   contentitemfields:
@@ -10,8 +10,8 @@ contentitemexportablefields:
     propagationLabels:
     - all
 vcShouldKeepItemLegacyProdMachine: false
-name: CheckPointFirewall_v2_morita
-display: CheckPointFirewall_v2_morita
+name: CheckPointFirewall_v2
+display: CheckPointFirewall_v2
 category: IT Services
 description: Read information and to send commands to the Check Point Firewall server.
 configuration:
@@ -204,17 +204,16 @@ script:
       - "true"
       - "false"
       description: Whether to ignore warnings when applying the updates. Can be "True"
-        or "False". Default is "True".
-      defaultValue: "True"
+        or "False". Default is "False".
+      defaultValue: "false"
     - name: ignore_errors
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: |-
-        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False". Note: you won't be able to publish such these changes.
-        If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "False"
+      description: Whether to ignore errors when applying the updates. Can be "True" 
+        or "False". Default is "False".
+      defaultValue: "false"
     - name: groups
       description: Collection of group identifiers.
       isArray: true
@@ -398,7 +397,7 @@ script:
       - "false"
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "True".
-      defaultValue: "True"
+      defaultValue: "true"
     - name: ignore_errors
       auto: PREDEFINED
       predefined:
@@ -408,7 +407,7 @@ script:
         Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
         Note: you won't be able to publish such these changes.
         If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "False"
+      defaultValue: "false"
     - name: session_id
       required: true
       description: Executes the command with the specified session ID.
@@ -590,7 +589,7 @@ script:
       - "false"
       description: Whether to ignore warnings when applying the updates. Can be "True"
         or "False". Default is "True".
-      defaultValue: "True"
+      defaultValue: "true"
     - name: ignore_errors
       auto: PREDEFINED
       predefined:
@@ -600,7 +599,7 @@ script:
         Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
         Note: you won't be able to publish such these changes.
         If the ignore-warnings flag was omitted, warnings will also be ignored.
-      defaultValue: "False"
+      defaultValue: "false"
     - name: groups
       description: Collection of group identifiers.
       isArray: true
@@ -1156,7 +1155,7 @@ script:
       - "false"
       description: If "True", the URL is defined as a Regular Expression. Default
         is "True".
-      defaultValue: "True"
+      defaultValue: "true"
     - name: url_list
       description: URLs that determine this particular application. This will replace
         the current url collection.
@@ -1253,7 +1252,7 @@ script:
       - "true"
       - "false"
       description: If "True", will install the Access Control policy.
-      defaultValue: "True"
+      defaultValue: "true"
     - name: session_id
       required: true
       description: Executes the command with the specified session ID.

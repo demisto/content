@@ -352,7 +352,7 @@ def checkpoint_get_host_command(client: Client, identifier: str) -> CommandResul
     return command_results
 
 
-def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warnings, ignore_errors,
+def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warnings: bool, ignore_errors: bool,
                                 groups: str = None) -> CommandResults:
     """
     Add new host object.
@@ -366,6 +366,8 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
     name = argToList(name)
     ip_address = argToList(ip_address)
     groups = argToList(groups)
+    ignore_warnings = argToBool(ignore_warnings)
+    ignore_errors = argToBool(ignore_errors)
 
     result = []
     printable_result = {}
@@ -1462,13 +1464,9 @@ def checkpoint_list_package_command(client: Client, identifier: str) -> CommandR
                 current_printable_result['name'] = result.get('name')
                 for endpoint in headers:
                     current_printable_result[endpoint] = element.get(endpoint)
-            printable_result.append(current_printable_result)
+                printable_result.append(current_printable_result)
             readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
                                               headers, removeNull=True)
-        else:
-            # error suppression in case no targets associated with the given policy
-            pass
-
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Package',
         outputs_key_field='target-uid',
@@ -1685,7 +1683,7 @@ def build_member_data(result: dict, readable_output: str, printable_result: dict
         printable_result['members'] = members_printable_result
         member_readable_output = tableToMarkdown('CheckPoint member data:',
                                                  members_printable_result,
-                                                 ['member-name', 'member-uid', 'member-type''member-ipv4-address',
+                                                 ['member-name', 'member-uid', 'member-type','member-ipv4-address',
                                                   'member-ipv6-address', 'member-domain-name', 'member-domain-uid'],
                                                  removeNull=True)
         readable_output = readable_output + member_readable_output
