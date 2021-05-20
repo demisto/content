@@ -369,15 +369,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "microsoft365defenderactivealerts",
-                                "height": 53,
-                                "id": "2017bfe0-b8b9-11eb-b4d7-0561d90d8297",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "microsoft365defenderactive",
                                 "height": 53,
                                 "id": "073f9620-b8f8-11eb-9238-bd79471db011",
@@ -413,15 +404,6 @@
                         "hideName": false,
                         "i": "caseinfoid-5cf06110-b8b9-11eb-b4d7-0561d90d8297",
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "microsoft365defenderimpacteduser",
-                                "height": 22,
-                                "id": "0b36ca20-b8ba-11eb-b4d7-0561d90d8297",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "impactedentities",
@@ -552,49 +534,6 @@
                         "w": 1,
                         "x": 2,
                         "y": 3
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "puixvzwlzx",
-                "name": "Alerts",
-                "sections": [
-                    {
-                        "displayType": "CARD",
-                        "h": 5,
-                        "hideName": true,
-                        "i": "caseinfoid-4b1a6bf0-b8bb-11eb-a9b1-9d0e69708c4a",
-                        "items": [
-                            {
-                                "endCol": 6,
-                                "fieldId": "microsoft365defendera",
-                                "height": 106,
-                                "id": "f9083670-b8f7-11eb-9238-bd79471db011",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "microsoft365defenderalerts",
-                                "height": 53,
-                                "id": "4cea49f0-b8bb-11eb-a9b1-9d0e69708c4a",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 3,
-                        "moved": false,
-                        "name": "Alerts",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
                     }
                 ],
                 "type": "custom"

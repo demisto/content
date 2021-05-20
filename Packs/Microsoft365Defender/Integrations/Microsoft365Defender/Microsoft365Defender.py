@@ -2,7 +2,7 @@ from typing import Dict, Optional, List
 
 import urllib3
 
-from CommonServerPython import *
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
