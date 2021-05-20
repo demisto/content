@@ -19,6 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
+    "layout": "F5 Silverline iRule Events Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
