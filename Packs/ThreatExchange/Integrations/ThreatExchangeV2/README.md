@@ -2,9 +2,10 @@ Receive threat intelligence about applications, IP addresses, URLs and hashes, a
 This integration was integrated and tested with API version v3.2 of ThreatExchange 
 
 ## Authentication
-The ThreatExchange APIs perform authentication via access tokens.
-After Facebook notifies you that your App can access ThreatExchange, use [the access token tool](https://developers.facebook.com/tools/accesstoken) to get an App Token.
-Please note, app tokens give access to sensitive details to your app and should be treated like a password.
+The ThreatExchange APIs perform authentication via access tokens consisting of App ID and App Secret.
+In order to get your App ID and App Secret, Facebook must first confirm your app's access to ThreatExchange.
+After Facebook notifies you that your App can access ThreatExchange, go to the App's Settings - Basic - and copy your App ID and App Secret.
+When Configuring ThreatExchange v2 on Cortex XSOAR you should set the copied values in the ***App ID*** and ***App Secret*** fields. 
 For more information see [the ThreatExchange API Overview](https://developers.facebook.com/docs/threat-exchange/api/v10.0)
 
 For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the ***password*** field.
@@ -32,10 +33,11 @@ For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the ***
 The integration is fully backwards compatible with the ThreatExchange integration. 
 
 ## Changes compared to previous version
-The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
+1. The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
 that says no information was found for the given input.
 In addition a description of the error that occurred is added to the Cortex XSOAR server log.
 
+2. Dbot score calculation is different see the section below for more details. 
 
 ## DBot Score / Reputation scores
 

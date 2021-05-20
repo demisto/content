@@ -387,16 +387,17 @@ def flatten_outputs_paging(raw_response: Dict) -> Dict:
     return outputs
 
 
-def get_malicious_description(score: int, reputation_data_entry: Dict, params: Dict[str, Any]) -> str:
+def get_malicious_description(score: int, reputation_data: List[Dict], params: Dict[str, Any]) -> Optional[str]:
     """
     Gets the malicious description of certain indicator.
-    If the indicator was classified as malicious, description will be taken from reputation_data_entry that was
-    returned from ThreatExchange reputation call.
+    If the indicator was classified as malicious, description will be determined by going over all the data entries
+    of reputation_data (that was returned from ThreatExchange reputation call) which their status is 'malicious',
+    and selecting the description of the first data entry which has a description.
     If such a description doesn't exist, description will be defined as default malicious description.
     If the indicator wasn't classified as malicious, description will be None (and won't be added to context).
     Args:
         score: calculated dbot score of the indicator
-        reputation_data_entry: returned data entry of a certain reputation command
+        reputation_data: returned data of a certain reputation command
         params: integration's parameters
 
     Returns: malicious description
@@ -405,7 +406,13 @@ def get_malicious_description(score: int, reputation_data_entry: Dict, params: D
     if score == Common.DBotScore.BAD:
         malicious_threshold = arg_to_number(params.get('malicious_threshold', 50))
         default_description = DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR.format(malicious_threshold)
-        malicious_description = reputation_data_entry.get('description', default_description)
+        for data_entry in reputation_data:
+            status = data_entry.get('status')
+            if status == ThreatExchangeV2Status.MALICIOUS:
+                if malicious_description := data_entry.get('description'):
+                    return malicious_description
+        malicious_description = default_description
+
     else:  # dbot-score isn't malicious
         malicious_description = None
 
@@ -479,33 +486,22 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
-
-            for data_entry in data:
-                malicious_description = get_malicious_description(score, data_entry, params)
-                dbot_score = Common.DBotScore(
-                    indicator=ip,
-                    indicator_type=DBotScoreType.IP,
-                    integration_name=VENDOR_NAME,
-                    score=score,
-                    reliability=reliability,
-                    malicious_description=malicious_description
-                )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP {ip}', data_entry, headers=headers)
-                ip_indicator = Common.IP(
-                    ip=ip,
-                    dbot_score=dbot_score,
-                    detection_engines=num_of_engines,
-                    positive_engines=num_of_positive_engines
-                )
-                result = CommandResults(
-                    outputs_prefix=f'{CONTEXT_PREFIX}.IP',
-                    outputs_key_field='id',
-                    outputs=data_entry,
-                    indicator=ip_indicator,
-                    readable_output=readable_output,
-                    raw_response=raw_response
-                )
-                results.append(result)
+            malicious_description = get_malicious_description(score, data, params)
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability,
+                malicious_description=malicious_description
+            )
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP {ip}', data, headers=headers)
+            ip_indicator = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score,
+                detection_engines=num_of_engines,
+                positive_engines=num_of_positive_engines
+            )
 
         else:  # no data
             dbot_score = Common.DBotScore(
@@ -520,15 +516,17 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 ip=ip,
                 dbot_score=dbot_score,
             )
-            result = CommandResults(
-                outputs_prefix=f'{CONTEXT_PREFIX}.IP',
-                outputs_key_field='id',
-                outputs=data,
-                indicator=ip_indicator,
-                readable_output=readable_output,
-                raw_response=raw_response
-            )
-            results.append(result)
+
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.IP',
+            outputs_key_field='id',
+            outputs=data,
+            indicator=ip_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
+        )
+        results.append(result)
+
     return results
 
 
@@ -556,38 +554,27 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
             raw_response = {}
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
-
-            for data_entry in data:
-                malicious_description = get_malicious_description(score, data_entry, params)
-                dbot_score = Common.DBotScore(
-                    indicator=file,
-                    indicator_type=DBotScoreType.FILE,
-                    integration_name=VENDOR_NAME,
-                    score=score,
-                    reliability=reliability,
-                    malicious_description=malicious_description
-                )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for file hash {file}', data_entry,
-                                                  headers=headers)
-                file_indicator = Common.File(
-                    dbot_score=dbot_score,
-                    file_type=data_entry.get('sample_type'),
-                    size=data_entry.get('sample_size'),
-                    md5=data_entry.get('md5'),
-                    sha1=data_entry.get('sha1'),
-                    sha256=data_entry.get('sha256'),
-                    ssdeep=data_entry.get('ssdeep'),
-                    tags=data_entry.get('tags')
-                )
-                result = CommandResults(
-                    outputs_prefix=f'{CONTEXT_PREFIX}.File',
-                    outputs_key_field='id',
-                    outputs=data_entry,
-                    indicator=file_indicator,
-                    readable_output=readable_output,
-                    raw_response=raw_response
-                )
-                results.append(result)
+            malicious_description = get_malicious_description(score, data, params)
+            dbot_score = Common.DBotScore(
+                indicator=file,
+                indicator_type=DBotScoreType.FILE,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability,
+                malicious_description=malicious_description
+            )
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for file hash {file}', data, headers=headers)
+            data_entry = data[0]
+            file_indicator = Common.File(
+                dbot_score=dbot_score,
+                file_type=data_entry.get('sample_type'),
+                size=data_entry.get('sample_size'),
+                md5=data_entry.get('md5'),
+                sha1=data_entry.get('sha1'),
+                sha256=data_entry.get('sha256'),
+                ssdeep=data_entry.get('ssdeep'),
+                tags=data_entry.get('tags')
+            )
 
         else:  # no data
             dbot_score = Common.DBotScore(
@@ -601,15 +588,17 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
             file_indicator = Common.File(
                 dbot_score=dbot_score
             )
-            result = CommandResults(
-                outputs_prefix=f'{CONTEXT_PREFIX}.File',
-                outputs_key_field='id',
-                outputs=data,
-                indicator=file_indicator,
-                readable_output=readable_output,
-                raw_response=raw_response
-            )
-            results.append(result)
+
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.File',
+            outputs_key_field='id',
+            outputs=data,
+            indicator=file_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
+        )
+        results.append(result)
+
     return results
 
 
@@ -636,35 +625,22 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
-
-            for data_entry in data:
-                malicious_description = get_malicious_description(score, data_entry, params)
-                dbot_score = Common.DBotScore(
-                    indicator=domain,
-                    indicator_type=DBotScoreType.DOMAIN,
-                    integration_name=VENDOR_NAME,
-                    score=score,
-                    reliability=reliability,
-                    malicious_description=malicious_description
-                )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain {domain}', data_entry,
-                                                  headers=headers)
-                domain_indicator = Common.Domain(
-                    domain=domain,
-                    dbot_score=dbot_score,
-                    detection_engines=num_of_engines,
-                    positive_detections=num_of_positive_engines
-                )
-                result = CommandResults(
-                    outputs_prefix=f'{CONTEXT_PREFIX}.Domain',
-                    outputs_key_field='id',
-                    outputs=data_entry,
-                    indicator=domain_indicator,
-                    readable_output=readable_output,
-                    raw_response=raw_response
-                )
-                results.append(result)
-
+            malicious_description = get_malicious_description(score, data, params)
+            dbot_score = Common.DBotScore(
+                indicator=domain,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability,
+                malicious_description=malicious_description
+            )
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain {domain}', data, headers=headers)
+            domain_indicator = Common.Domain(
+                domain=domain,
+                dbot_score=dbot_score,
+                detection_engines=num_of_engines,
+                positive_detections=num_of_positive_engines
+            )
         else:  # no data
             dbot_score = Common.DBotScore(
                 indicator=domain,
@@ -678,15 +654,17 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
                 domain=domain,
                 dbot_score=dbot_score
             )
-            result = CommandResults(
-                outputs_prefix=f'{CONTEXT_PREFIX}.Domain',
-                outputs_key_field='id',
-                outputs=data,
-                indicator=domain_indicator,
-                readable_output=readable_output,
-                raw_response=raw_response
-            )
-            results.append(result)
+
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.Domain',
+            outputs_key_field='id',
+            outputs=data,
+            indicator=domain_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
+        )
+        results.append(result)
+
     return results
 
 
@@ -712,34 +690,22 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
         if data := raw_response.get('data'):
             score = calculate_dbot_score(reputation_data=data, params=params)
             num_of_engines, num_of_positive_engines = calculate_engines(reputation_data=data)
-
-            for data_entry in data:
-                malicious_description = get_malicious_description(score, data_entry, params)
-                dbot_score = Common.DBotScore(
-                    indicator=url,
-                    indicator_type=DBotScoreType.URL,
-                    integration_name=VENDOR_NAME,
-                    score=score,
-                    reliability=reliability,
-                    malicious_description=malicious_description
-                )
-                readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL {url}', data_entry, headers=headers)
-                url_indicator = Common.URL(
-                    url=url,
-                    dbot_score=dbot_score,
-                    detection_engines=num_of_engines,
-                    positive_detections=num_of_positive_engines
-                )
-                result = CommandResults(
-                    outputs_prefix=f'{CONTEXT_PREFIX}.URL',
-                    outputs_key_field='id',
-                    outputs=data_entry,
-                    indicator=url_indicator,
-                    readable_output=readable_output,
-                    raw_response=raw_response
-                )
-                results.append(result)
-
+            malicious_description = get_malicious_description(score, data, params)
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability,
+                malicious_description=malicious_description
+            )
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL {url}', data, headers=headers)
+            url_indicator = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                detection_engines=num_of_engines,
+                positive_detections=num_of_positive_engines
+            )
         else:  # no data
             dbot_score = Common.DBotScore(
                 indicator=url,
@@ -753,15 +719,17 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
                 url=url,
                 dbot_score=dbot_score
             )
-            result = CommandResults(
-                outputs_prefix=f'{CONTEXT_PREFIX}.URL',
-                outputs_key_field='id',
-                outputs=data,
-                indicator=url_indicator,
-                readable_output=readable_output,
-                raw_response=raw_response
-            )
-            results.append(result)
+
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.URL',
+            outputs_key_field='id',
+            outputs=data,
+            indicator=url_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
+        )
+        results.append(result)
+
     return results
 
 
