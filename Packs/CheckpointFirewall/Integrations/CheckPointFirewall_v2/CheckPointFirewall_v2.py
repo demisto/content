@@ -305,15 +305,16 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
 
     result = client.list_hosts(limit, offset)
     demisto.info(result)
-    if result.get('total') == 0:
-        printable_result = 'no_more_output'
-    else:
-        result = result.get('objects')
-        for element in result:
-            current_printable_result = {}
-            for endpoint in DEFAULT_LIST_FIELD:
-                current_printable_result[endpoint] = element.get(endpoint)
-            printable_result.append(current_printable_result)
+    if result:
+        if result.get('total') == 0:
+            printable_result = 'no_more_output'
+        else:
+            result = result.get('objects')
+            for element in result:
+                current_printable_result = {}
+                for endpoint in DEFAULT_LIST_FIELD:
+                    current_printable_result[endpoint] = element.get(endpoint)
+                printable_result.append(current_printable_result)
 
     readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
                                       DEFAULT_LIST_FIELD, removeNull=True)
@@ -352,7 +353,7 @@ def checkpoint_get_host_command(client: Client, identifier: str) -> CommandResul
     return command_results
 
 
-def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warnings: bool, ignore_errors: bool,
+def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warnings: str, ignore_errors: str,
                                 groups: str = None) -> CommandResults:
     """
     Add new host object.
@@ -366,6 +367,8 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
     name = argToList(name)
     ip_address = argToList(ip_address)
     groups = argToList(groups)
+    ignore_warnings = argToBool(ignore_warnings)
+    ignore_errors = argToBool(ignore_errors)
 
     result = []
     printable_result = {}
@@ -1681,7 +1684,7 @@ def build_member_data(result: dict, readable_output: str, printable_result: dict
         printable_result['members'] = members_printable_result
         member_readable_output = tableToMarkdown('CheckPoint member data:',
                                                  members_printable_result,
-                                                 ['member-name', 'member-uid', 'member-type','member-ipv4-address',
+                                                 ['member-name', 'member-uid', 'member-type', 'member-ipv4-address',
                                                   'member-ipv6-address', 'member-domain-name', 'member-domain-uid'],
                                                  removeNull=True)
         readable_output = readable_output + member_readable_output
