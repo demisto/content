@@ -4,8 +4,8 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Isolate Endpoint - Generic V2
 description: |-
-  This playbook isolates a given endpoint via various of endpoints products integration.
-  Make sure to provide the valid playbook input for the integration that you using.
+  This playbook isolates a given endpoint via various endpoint product integrations.
+  Make sure to provide the valid playbook input for the integration you are using.
 starttaskid: "0"
 tasks:
   "0":
@@ -151,7 +151,7 @@ tasks:
       id: 2604374d-9538-4451-8064-2f5bb5c6dd81
       version: -1
       name: 'Crowdstrike Falcon - Isolate Endpoint '
-      description: This playbook will auto Isolate endpoints by the device id that
+      description: This playbook will auto isolate endpoints by the device ID that
         was provided in the playbook.
       playbookName: 'Crowdstrike Falcon - Isolate Endpoint '
       type: playbook
@@ -189,7 +189,7 @@ tasks:
       id: 48226108-0787-44b0-80f6-cf333758b5e8
       version: -1
       name: 'FireEye HX - Isolate Endpoint '
-      description: This playbook will auto Isolate endpoints by the endpoint id that
+      description: This playbook will auto isolate endpoints by the endpoint ID that
         was provided in the playbook.
       playbookName: 'FireEye HX - Isolate Endpoint '
       type: playbook
@@ -229,7 +229,7 @@ tasks:
       id: 04a17761-3b84-492f-87c6-ef29fc4adc7d
       version: -1
       name: Block Endpoint - Carbon Black Response V2
-      description: Carbon Black Response - isolate an endpoint, given a hostname.
+      description: Carbon Black Response - isolate an endpoint for a given hostname.
       playbookName: Block Endpoint - Carbon Black Response V2
       type: playbook
       iscommand: false
@@ -276,22 +276,22 @@ inputs:
 - key: Endpoint_hostname
   value: {}
   required: false
-  description: The hostname of the endpoint that you wish to isolate.
+  description: The hostname of the endpoint to isolate.
   playbookInputQuery:
 - key: ManualHunting.DetectedHosts
   value: {}
   required: false
-  description: Hosts that where detected as infected during the manual hunting.
+  description: Hosts that were detected as infected during the manual hunting.
   playbookInputQuery:
 - key: Endpoint_ip
   value: {}
   required: false
-  description: The ip of the endpoint that you wish to isolate.
+  description: The IP of the endpoint to isolate.
   playbookInputQuery:
 - key: Endpoint_id
   value: {}
   required: false
-  description: The id of the endpoint that you wish to isolate.
+  description: The ID of the endpoint to isolate.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
@@ -307,9 +307,9 @@ outputs:
   description: The status of the isolation operation.
   type: string
 - contextPath: Cybereason.Machine
-  description: Cybereason Machine name.
+  description: Cybereason machine name.
 - contextPath: Cybereason.IsIsolated
-  description: Is the machine isolated.
+  description: Whether the machine is isolated.
 - contextPath: Endpoint.Hostname
   description: Hostname of the endpoint.
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_id
@@ -319,14 +319,14 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Endpoint.endpoint_status
   description: The status of the endpoint.
 - contextPath: PaloAltoNetworksXDR.Endpoint.ip
-  description: The endpoint's IP addresses.
+  description: The endpoint's IP address.
 - contextPath: PaloAltoNetworksXDR.Endpoint.is_isolated
   description: Whether the endpoint is isolated.
 - contextPath: CbResponse.Sensors.Status
   description: Sensor status.
   type: unknown
 - contextPath: CbResponse.Sensors.Isolated
-  description: Is sensor isolated.
+  description: Whether the sensor is isolated.
   type: unknown
 tests:
 - Account Enrichment - Generic v2.1 - Test
