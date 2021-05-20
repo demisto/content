@@ -178,7 +178,7 @@ def test_context_for_token() -> None:
     Returns:
 
     """
-    if not get_integration_context().get('access_token'):
+    if not (get_integration_context().get('access_token') or get_integration_context().get('current_refresh_token')):
         raise DemistoException(
             "This integration does not have a test module. Please run !microsoft-365-defender-auth-start and "
             "!microsoft-365-defender-auth-complete and check the connection using !microsoft-365-defender-auth-test")
