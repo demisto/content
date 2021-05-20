@@ -216,26 +216,6 @@ def test_get_events(mocker):
     assert command_results.outputs == GET_EVENTS_CONTEXT
 
 
-def test_get_quarantined_emails(mocker):
-    """Unit test
-    Given
-    - get_quarantined_emails command
-    - command args
-    - command raw response
-    When
-    - mock the Client's token generation.
-    - mock the Client's get_quarantined_emails_request response.
-    Then
-    - Validate The entry context
-    """
-    mocker.patch.object(Client, '_generate_token', return_value='token')
-    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
-    mocker.patch.object(Client, 'get_quarantined_emails_request',
-                        return_value=util_load_json('test_data/quarantined_emails.json'))
-    command_results = get_quarantined_emails(client=client, args={})
-    assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
-
-
 def test_fetch_incidents(mocker):
     """Unit test
     Given
