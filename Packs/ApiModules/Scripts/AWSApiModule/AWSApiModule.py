@@ -42,9 +42,7 @@ class AWSClient:
             proxies=proxies
         )
 
-    def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
-                    role_policy=None):
-        kwargs = {}
+    def update_config(self):
         command_config = {}
         retries = demisto.getArg('retries')  # Supports retries and timeout parameters on the command execution level
         if retries is not None:
@@ -57,6 +55,12 @@ class AWSClient:
         if retries or timeout:
             demisto.debug('Merging client config settings: {}'.format(command_config))
             self.config = self.config.merge(Config(**command_config))
+
+    def aws_session(self, service, region=None, role_arn=None, role_session_name=None, role_session_duration=None,
+                    role_policy=None):
+        kwargs = {}
+
+        self.update_config()
 
         if role_arn and role_session_name is not None:
             kwargs.update({
