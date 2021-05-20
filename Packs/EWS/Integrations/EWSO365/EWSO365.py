@@ -2293,7 +2293,6 @@ def sub_main():
 
         # special outputs commands
         elif command in special_output_commands:
-            merit = command
             demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
 
         # normal commands
