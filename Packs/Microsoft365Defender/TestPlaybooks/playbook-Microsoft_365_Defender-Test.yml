@@ -3,6 +3,7 @@ id: Microsoft_365_Defender-Test
 inputs: []
 name: Microsoft_365_Defender-Test
 outputs: []
+fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
