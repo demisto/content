@@ -871,7 +871,8 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str], offense_i
             return client.assets_list(filter_=filter_query)
         except Exception as e:
             print_debug_msg(f'Get IPs for assets failed. filter query: {filter_query}')
-            raise DemistoException(f'Failed getting Asset by IPs for offense ID {offense_id}') from e
+            raise DemistoException(
+                f'Failed getting Asset by IPs for offense ID {offense_id}. filter query: {filter_query}') from e
 
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
@@ -912,7 +913,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
     destination_addresses_id_ip_dict = get_offense_addresses(client, offenses, True) if enrich_ip_addresses else dict()
 
     def create_enriched_offense(offense: Dict) -> Dict:
-        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId'\
+        link_to_offense_suffix = '/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId' \
                                  f'''={offense.get('id')}'''
         basic_enriches = {
             'offense_type': offense_types_id_name_dict.get(offense.get('offense_type')),
