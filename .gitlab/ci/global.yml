@@ -15,6 +15,12 @@
 
 ### Global Script Snippets ###
 
+.create-id-set: &create-id-set
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - section_end "Create ID Set"
+
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
@@ -176,8 +182,7 @@
     - demisto-sdk secrets --post-commit --ignore-entropy
     - section_end "Look For Secrets"
     - section_start "Create id set"
-    - demisto-sdk create-id-set -o ./Tests/id_set.json > $ARTIFACTS_FOLDER/logs/create_id_set.log
-    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - *create-id-set
     - section_end "Create id set"
     - section_start "Merge public and private id sets"
     - |

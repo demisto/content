@@ -33,8 +33,7 @@ create-instances:
   stage: create-instances
   script:
     - !reference [.download-demisto-conf]
-    - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
-    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - !reference [.create-id-set]
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
