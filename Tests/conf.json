@@ -2847,7 +2847,7 @@
             "memory_threshold": 190
         },
         {
-            "integrations": "F5 Silverline",
+            "integrations": "F5Silverline",
             "playbookID": "F5Silverline_TestPlaybook"
         },
         {
