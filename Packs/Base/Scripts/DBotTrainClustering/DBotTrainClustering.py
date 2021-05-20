@@ -566,7 +566,10 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
             orient='records'),  # type: ignore
     }
     data['outliers'] = d_outliers
-    data['range'] = calculate_range(data)
+    ranges = calculate_range(data)
+    data['range'] = ranges[0]
+    data['rangeX'] = ranges[1]
+    data['rangeY'] = ranges[2]
     pretty_json = json.dumps(data, indent=4, sort_keys=True)
     return pretty_json
 
@@ -822,11 +825,13 @@ def keep_high_level_field(incidents_field: List[str]) -> List[str]:
 
 def calculate_range(data):
     all_data_size = list(map(lambda x: x['data'][0], data['data']))
+    all_x = list(map(lambda x: x['x'], data['data']))
+    all_y = list(map(lambda x: x['y'], data['data']))
     max_size = max(all_data_size)
     min_size = min(all_data_size)
     min_range = max(30, min_size)
     max_range = min_range + max(300, max_size - min_size)
-    return [min_range, max_range]
+    return [min_range, max_range], [min(all_x), max(all_x)], [min(all_y), max(all_y)]
 
 
 def main():
