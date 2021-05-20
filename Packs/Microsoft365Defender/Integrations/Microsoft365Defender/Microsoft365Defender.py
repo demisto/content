@@ -1,4 +1,5 @@
 from typing import Dict, Optional, List
+import demistomock as demisto
 
 import urllib3
 
@@ -223,20 +224,20 @@ def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
     last_activity_list = [alert.get('lastActivity') for alert in alerts_list]
 
     return {
-        'Categories': [alert.get('category') for alert in alerts_list],
-        'Impacted entities': list({(entity.get('domainName'))
+        'Categories': [alert.get('category', '') for alert in alerts_list],
+        'Impacted entities': list({(entity.get('domainName', ''))
                                    for alert in alerts_list
                                    for entity in alert.get('entities') if entity.get('entityType') == 'User'}),
         'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
-        'Service sources': list({alert.get('serviceSource') for alert in alerts_list}),
-        'Detection sources': list({alert.get('detectionSource') for alert in alerts_list}),
+        'Service sources': list({alert.get('serviceSource', '') for alert in alerts_list}),
+        'Detection sources': list({alert.get('detectionSource', '') for alert in alerts_list}),
         'First activity': str(min(first_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
         'Last activity': str(max(last_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
-        'Devices': [{'device name': device.get('deviceDnsName'),
-                     'risk level': device.get('riskScore'),
-                     'tags': ','.join(device.get('tags'))
+        'Devices': [{'device name': device.get('deviceDnsName', ''),
+                     'risk level': device.get('riskScore', ''),
+                     'tags': ','.join(device.get('tags', []))
                      } for alert in alerts_list
-                    for device in alert.get('devices')]
+                    for device in alert.get('devices', [])]
     }
 
 
