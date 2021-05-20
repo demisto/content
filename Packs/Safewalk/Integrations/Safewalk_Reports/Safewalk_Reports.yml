@@ -1,5 +1,5 @@
 commonfields:
-  id: Safewalk_reports
+  id: Safewalk_Reports
   version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Safewalk_Reports
