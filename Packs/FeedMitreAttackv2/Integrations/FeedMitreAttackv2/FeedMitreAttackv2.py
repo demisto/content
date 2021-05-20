@@ -47,6 +47,15 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'command-and-control': "Command \u0026 Control"
 }
 
+FILTER_OBJS = {
+    "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
+    "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
+    "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
+    "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
+    "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
+    "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
+}
+
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 
 # Disable insecure warnings
@@ -81,6 +90,23 @@ class Client:
         self.get_roots()
         self.get_collections()
 
+    def create_indicator(self, item_type, value, mitre_item_json):
+        indicator_score = INDICATOR_TYPE_TO_SCORE.get(item_type)  # type: ignore
+        indicator_obj = {
+            "value": value,
+            "score": indicator_score,
+            "type": item_type,
+            "rawJSON": mitre_item_json,
+            "fields": map_fields_by_type(item_type, mitre_item_json)  # type: ignore
+        }
+
+        indicator_obj['fields']['tags'].extend(self.tags)
+
+        if self.tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
+
+        return indicator_obj
+
     def build_iterator(self, create_relationships=False, limit: int = -1) -> List:
         """Retrieves all entries from the feed.
 
@@ -107,20 +133,11 @@ class Client:
             # Supply the collection to TAXIICollection
             tc_source = TAXIICollectionSource(collection_data)
 
-            filter_objs = {
-                "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
-                "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
-                "Group": {"name": "intrusion-set", "filter": Filter("type", "=", "intrusion-set")},
-                "Malware": {"name": "malware", "filter": Filter("type", "=", "malware")},
-                "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
-                "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
-            }
-
-            for concept in filter_objs:
+            for concept in FILTER_OBJS:
                 if 0 < limit <= counter:
                     break
 
-                input_filter = filter_objs[concept]['filter']
+                input_filter = FILTER_OBJS[concept]['filter']
                 try:
                     mitre_data = tc_source.query(input_filter)
                 except Exception:
@@ -133,9 +150,9 @@ class Client:
                     mitre_item_json = json.loads(str(mitre_item))
                     if mitre_item_json.get('id') not in mitre_id_list:
                         value = mitre_item_json.get('name')
-                        indicator_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))  # type: ignore
+                        item_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))  # type: ignore
 
-                        if indicator_type == 'Relationship' and create_relationships:
+                        if item_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
                             relation_obj = create_relationship(mitre_item_json, id_to_name)
@@ -145,20 +162,7 @@ class Client:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
                                 continue
                             id_to_name[mitre_item_json.get('id')] = value
-                            indicator_score = INDICATOR_TYPE_TO_SCORE.get(indicator_type)  # type: ignore
-                            indicator_obj = {
-                                "value": value,
-                                "score": indicator_score,
-                                "type": indicator_type,
-                                "rawJSON": mitre_item_json,
-                                "fields": map_fields_by_type(indicator_type, mitre_item_json)  # type: ignore
-                            }
-
-                            indicator_obj['fields']['tags'].extend(self.tags)
-
-                            if self.tlp_color:
-                                indicator_obj['fields']['trafficlightprotocol'] = self.tlp_color
-
+                            indicator_obj = self.create_indicator(item_type, value, mitre_item_json)
                             indicators.append(indicator_obj)
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
@@ -281,9 +285,10 @@ def handle_multiple_dates_in_one_field(field_name: str, field_value: str):
 
 
 def test_module(client):
-    if client.collections:
+    try:
+        client.build_iterator(limit=1)
         demisto.results('ok')
-    else:
+    except DemistoException:
         return_error('Could not connect to server')
 
 

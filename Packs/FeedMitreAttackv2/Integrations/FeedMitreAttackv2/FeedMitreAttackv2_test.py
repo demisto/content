@@ -12,11 +12,11 @@ def mock_create_relations(original):
 
 
 @pytest.mark.parametrize('indicator, expected_result', [
-    # ([ATTACK_PATTERN.get('response')], ATTACK_PATTERN.get('indicator')),
-    # ([COURSE_OF_ACTION.get('response')], COURSE_OF_ACTION.get('indicator')),
-    # ([INTRUSION_SET.get('response')], INTRUSION_SET.get('indicator')),
-    # ([MALWARE.get('response')], MALWARE.get('indicator')),
-    # ([TOOL.get('response')], TOOL.get('indicator')),
+    ([ATTACK_PATTERN.get('response')], ATTACK_PATTERN.get('indicator')),
+    ([COURSE_OF_ACTION.get('response')], COURSE_OF_ACTION.get('indicator')),
+    ([INTRUSION_SET.get('response')], INTRUSION_SET.get('indicator')),
+    ([MALWARE.get('response')], MALWARE.get('indicator')),
+    ([TOOL.get('response')], TOOL.get('indicator')),
     ([RELATION.get('response')], RELATION.get('indicator'))
 ])
 def test_fetch_indicators(mocker, indicator, expected_result):
