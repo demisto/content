@@ -3,8 +3,7 @@ commonfields:
   id: jamf v2
   version: -1
 configuration:
-- defaultvalue: https://paloaltonfr3.jamfcloud.com
-  display: Server URL
+- display: Server URL
   name: url
   required: true
   type: 0

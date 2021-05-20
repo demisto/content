@@ -37,8 +37,8 @@ class Client(BaseClient):
         """
         uri = '/computers'
         if computer_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{computer_id}/subset/General', headers=GET_HEADERS,
-                                     error_handler=self._generic_error_handler)
+            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{computer_id}/subset/General',
+                                     headers=GET_HEADERS, error_handler=self._generic_error_handler)
         elif basic_subset:
             res = self._http_request(method='GET', url_suffix=f'{uri}/subset/basic', headers=GET_HEADERS,
                                      error_handler=self._generic_error_handler)
@@ -292,7 +292,7 @@ class Client(BaseClient):
                        '</mobile_device_command>'
 
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response', self._mobile_lost_erase_error_handler)
+                                 resp_type='response', error_handler=self._mobile_lost_erase_error_handler)
 
         raw_action = json.loads(xml2json(res.content))
         return raw_action
