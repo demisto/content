@@ -166,10 +166,6 @@
                     "complex": null,
                     "simple": "security_domain"
                 },
-                "Comments": {
-                    "complex": null,
-                    "simple": "comment"
-                },
                 "dbotMirrorDirection": {
                     "complex": null,
                     "simple": "mirror_direction"
