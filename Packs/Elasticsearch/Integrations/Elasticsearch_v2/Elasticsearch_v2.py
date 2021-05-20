@@ -110,7 +110,7 @@ def elasticsearch_builder(proxies):
         "connection_class": RequestsHttpConnection,
         "proxies": proxies,
         "verify_certs": INSECURE,
-        "timeout": TIMEOUT
+        "timeout": TIMEOUT,
     }
     if API_KEY_ID:
         connection_args["api_key"] = API_KEY
