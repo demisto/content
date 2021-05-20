@@ -21,33 +21,33 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
 }
 
 THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
-    'campaign': 'Campaign',
-    'attack-pattern': 'Attack Pattern',
-    'report': 'Report',
-    'malware': 'Malware',
-    'course-of-action': 'Course of Action',
-    'intrusion-set': 'Intrusion Set'
+    'campaign': ThreatIntel.ObjectsNames.CAMPAIGN,
+    'attack-pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    'report': ThreatIntel.ObjectsNames.REPORT,
+    'malware': ThreatIntel.ObjectsNames.MALWARE,
+    'course-of-action': ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
-    'build-capabilities': "Build Capabilities",
-    'privilege-escalation': "Privilege Escalation",
-    'adversary-opsec': "Adversary Opsec",
-    'credential-access': "Credential Access",
-    'exfiltration': "Exfiltration",
-    'lateral-movement': "Lateral Movement",
-    'defense-evasion': "Defense Evasion",
-    'persistence': "Persistence",
-    'collection': "Collection",
-    'impact': "Impact",
-    'initial-access': "Initial Access",
-    'discovery': "Discovery",
-    'execution': "Execution",
-    'installation': "Installation",
-    'delivery': "Delivery",
-    'weaponization': "Weaponization",
-    'act-on-objectives': "Actions on Objectives",
-    'command-and-control': "Command \u0026 Control"
+    'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
+    'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
+    'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
+    'credential-access': ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
+    'exfiltration': ThreatIntel.KillChainPhases.EXFILTRATION,
+    'lateral-movement': ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
+    'defense-evasion': ThreatIntel.KillChainPhases.DEFENSE_EVASION,
+    'persistence': ThreatIntel.KillChainPhases.PERSISTENCE,
+    'collection': ThreatIntel.KillChainPhases.COLLECTION,
+    'impact': ThreatIntel.KillChainPhases.IMPACT,
+    'initial-access': ThreatIntel.KillChainPhases.INITIAL_ACCESS,
+    'discovery': ThreatIntel.KillChainPhases.DISCOVERY,
+    'execution': ThreatIntel.KillChainPhases.EXECUTION,
+    'installation': ThreatIntel.KillChainPhases.INSTALLATION,
+    'delivery': ThreatIntel.KillChainPhases.DELIVERY,
+    'weaponization': ThreatIntel.KillChainPhases.WEAPONIZATION,
+    'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
+    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
 
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
@@ -178,9 +178,9 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: list
 
         report = dict()  # type: Dict[str, Any]
 
-        report['type'] = 'Report'
+        report['type'] = ThreatIntel.ObjectsNames.REPORT
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
-        report['score'] = 3
+        report['score'] = ThreatIntel.ObjectsScore.REPORT
         report['fields'] = {
             'stixid': report_object.get('id'),
             "firstseenbysource": report_object.get('created'),
@@ -224,9 +224,9 @@ def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
     for campaign in campaigns_obj:
         indicator_obj = {
             "value": campaign.get('name'),
-            "type": 'Campaign',
+            "type": ThreatIntel.ObjectsNames.CAMPAIGN,
             "rawJSON": campaign,
-            "score": 3,
+            "score": ThreatIntel.ObjectsScore.CAMPAIGN,
             "fields": {
                 'stixid': campaign.get('id'),
                 "firstseenbysource": campaign.get('created'),
@@ -321,8 +321,8 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
 
         indicator = {
             "value": value,
-            "type": 'Attack Pattern',
-            "score": 2,
+            "type": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+            "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
             "fields": {
                 'stixid': attack_indicator.get('id'),
                 "killchainphases": kill_chain_phases,
@@ -363,8 +363,8 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
 
         indicator = {
             "value": coa_indicator.get('name'),
-            "type": 'Course of Action',
-            "score": 0,
+            "type": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+            "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
             "fields": {
                 'stixid': coa_indicator.get('id'),
                 "firstseenbysource": handle_multiple_dates_in_one_field('created', coa_indicator.get('created')),
@@ -392,8 +392,8 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
 
         indicator = {
             "value": intrusion_set.get('name'),
-            "type": 'Intrusion Set',
-            "score": 3,
+            "type": ThreatIntel.ObjectsNames.INTRUSION_SET,
+            "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
             "fields": {
                 'stixid': intrusion_set.get('id'),
                 "firstseenbysource": handle_multiple_dates_in_one_field('created', intrusion_set.get('created')),
@@ -572,17 +572,17 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
         ioc_indicators.append(dummy_indicator)
 
     if ioc_indicators:
-        demisto.debug(f'{len(ioc_indicators)} XSOAR Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(ioc_indicators)} XSOAR Indicators were created.')
     if reports:
-        demisto.debug(f'{len(reports)} XSOAR Reports Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(reports)} XSOAR Reports Indicators were created.')
     if campaigns:
-        demisto.debug(f'{len(campaigns)} XSOAR campaigns Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(campaigns)} XSOAR campaigns Indicators were created.')
     if attack_patterns:
-        demisto.debug(f'{len(attack_patterns)} Attack Patterns Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(attack_patterns)} Attack Patterns Indicators were created.')
     if course_of_actions:
-        demisto.debug(f'{len(course_of_actions)} Course of Actions Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(course_of_actions)} Course of Actions Indicators were created.')
     if intrusion_sets:
-        demisto.debug(f'{len(intrusion_sets)} Intrusion Sets Indicators were created.')
+        demisto.debug(f'Feed Unit42 v2: {len(intrusion_sets)} Intrusion Sets Indicators were created.')
 
     return ioc_indicators + reports + campaigns + attack_patterns + course_of_actions + intrusion_sets
 
@@ -632,7 +632,7 @@ def main():
     create_relationships = params.get('create_relationships')
 
     command = demisto.command()
-    demisto.debug(f'Command being called in Unit42 feed is: {command}')
+    demisto.debug(f'Command being called in Unit42 v2 feed is: {command}')
 
     try:
         client = Client(api_key, verify)
@@ -650,6 +650,7 @@ def main():
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))
 
     except Exception as err:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(err)
 
 
