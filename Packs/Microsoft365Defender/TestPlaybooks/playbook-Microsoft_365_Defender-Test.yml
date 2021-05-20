@@ -1,9 +1,9 @@
 description: Test playbook
 id: Microsoft_365_Defender-Test
 inputs: []
+fromversion: 5.5.0
 name: Microsoft_365_Defender-Test
 outputs: []
-fromversion: 5.5.0
 starttaskid: "0"
 tasks:
   "0":
@@ -47,17 +47,19 @@ tasks:
     scriptarguments:
       limit:
         simple: "3"
+      timeout:
+        simple: "120"
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      id: 44dd8bb3-46f7-4cd8-8212-bff3957fa133
+      id: 47e1f4d3-c15e-4820-8c8a-60cc87603a21
       iscommand: true
       name: microsoft-365-defender-incidents-list
       script: '|||microsoft-365-defender-incidents-list'
       type: regular
       version: -1
-    taskid: 44dd8bb3-46f7-4cd8-8212-bff3957fa133
+    taskid: 47e1f4d3-c15e-4820-8c8a-60cc87603a21
     timertriggers: []
     type: regular
     view: |-
@@ -117,6 +119,8 @@ tasks:
     scriptarguments:
       id:
         simple: ${Microsoft365Defender.Incident.incidentId}
+      timeout:
+        simple: "120"
     separatecontext: false
     skipunavailable: false
     task:
@@ -186,7 +190,9 @@ tasks:
     quietmode: 0
     scriptarguments:
       query:
-        simple: AlertInfo
+        simple: AlertInfo | limit 3
+      timeout:
+        simple: "120"
     separatecontext: false
     skipunavailable: false
     task:
