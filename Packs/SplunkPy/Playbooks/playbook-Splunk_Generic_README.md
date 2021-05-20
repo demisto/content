@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Splunk Generic](Insert the link to your image here)
+![Splunk Generic](https://raw.githubusercontent.com/demisto/content/1612bb1a42cd5c913d76775970f14a5bc2578695/Packs/SplunkPy/doc_files/Splunk_Generic.png)
