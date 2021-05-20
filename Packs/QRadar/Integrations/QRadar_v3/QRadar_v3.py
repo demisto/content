@@ -853,12 +853,13 @@ def create_single_asset_for_offense_enrichment(asset: Dict) -> Dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[Dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: List[str], offense_id: Optional[str] = None) -> List[Dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
         client (Client): Client to perform the API request to QRadar.
         offense_ips (List[str]): List of all of the offense's IPs.
+        offense_id: Offense ID
 
     Returns:
         (List[Dict]): List of all the correlated assets.
@@ -866,7 +867,11 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        return client.assets_list(filter_=filter_query)
+        try:
+            return client.assets_list(filter_=filter_query)
+        except Exception as e:
+            print_debug_msg(f'Get IPs for assets failed. filter query: {filter_query}, Offense ID: {offense_id}')
+            raise e
 
     # Submit addresses in batches to avoid overloading QRadar service
     assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
@@ -942,7 +947,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
             source_ips: List = source_addresses_enrich.get('source_address_ids', [])
             destination_ips: List = destination_addresses_enrich.get('local_destination_address_ids', [])
             all_ips: List = source_ips + destination_ips
-            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips)}
+            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips, offense.get('id'))}
         else:
             asset_enrich = dict()
 
@@ -1435,38 +1440,31 @@ def long_running_execution_command(client: Client, params: Dict):
     incident_type = params.get('incident_type')
     mirror_direction = MIRROR_DIRECTION.get(params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION))
     while True:
-        try:
-            is_reset_triggered(handle_reset=True)
-            ctx = get_integration_context()
-            print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
-            incidents, new_highest_id = get_incidents_long_running_execution(
-                client=client,
-                offenses_per_fetch=offenses_per_fetch,
-                user_query=user_query,
-                fetch_mode=fetch_mode,
-                events_columns=events_columns,
-                events_limit=events_limit,
-                ip_enrich=ip_enrich,
-                asset_enrich=asset_enrich,
-                last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
-                incident_type=incident_type,
-                mirror_direction=mirror_direction
-            )
-            # Reset was called during execution, skip creating incidents.
-            if not incidents and not new_highest_id:
-                continue
+        is_reset_triggered(handle_reset=True)
+        ctx = get_integration_context()
+        print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
+        incidents, new_highest_id = get_incidents_long_running_execution(
+            client=client,
+            offenses_per_fetch=offenses_per_fetch,
+            user_query=user_query,
+            fetch_mode=fetch_mode,
+            events_columns=events_columns,
+            events_limit=events_limit,
+            ip_enrich=ip_enrich,
+            asset_enrich=asset_enrich,
+            last_highest_id=ctx.get(LAST_FETCH_KEY, 0),
+            incident_type=incident_type,
+            mirror_direction=mirror_direction
+        )
+        # Reset was called during execution, skip creating incidents.
+        if not incidents and not new_highest_id:
+            continue
 
-            incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
-            set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
-                                     'last_mirror_update': ctx.get('last_mirror_update')})
+        incident_batch_for_sample = incidents if incidents else ctx.get('samples', [])
+        set_integration_context({LAST_FETCH_KEY: new_highest_id, 'samples': incident_batch_for_sample,
+                                 'last_mirror_update': ctx.get('last_mirror_update')})
 
-            demisto.createIncidents(incidents)
-
-        except Exception as e:
-            demisto.error(str(e))
-
-        finally:
-            time.sleep(FETCH_SLEEP)
+        demisto.createIncidents(incidents)
 
 
 def qradar_offenses_list_command(client: Client, args: Dict) -> CommandResults:
