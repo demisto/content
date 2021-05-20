@@ -13,16 +13,19 @@
     policy: pull
 
 
-### Shared Script Snippets ###
+### Global Script Snippets ###
 
 .download-demisto-conf:
-  - echo "======= Download configuration ========"
+  - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+  - section_end "Download content-test-conf"
 
 .open-ssh-tunnel:
+  - section_start "Open SSH Tunnel" --collapsed
   - cat $SSH_CONFIGURATION >> ~/.ssh/config
   - chmod 700 ~/.ssh/config
   - ./Tests/scripts/open_ssh_tunnel.sh
+  - section_end "Open SSH Tunnel"
 
 
 .clone_and_export_variables: &clone_and_export_variables
