@@ -395,14 +395,84 @@ script:
       name: mvx_correlated_only
       required: false
       secret: false
+    - default: false
+      defaultValue: '20'
+      description: Maximum number of events to return. Default is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve information about existing IPS NX events. An IPS enabled appliance is a prequisite to be able to retrieve IPS event data.
     execution: false
     name: fireeye-cm-get-events
     outputs:
-    - contextPath: FireEyeCM.Events.TODO
-      description: Universally unique ID (UUID) of the alert.
+    - contextPath: FireEyeCM.Events.eventId
+      description: The ID of the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.occurred
+      description: The date and time when the event occurred.
       type: string
+    - contextPath: FireEyeCM.Events.srcIp
+      description: The IP address of the victim.
+      type: string
+    - contextPath: FireEyeCM.Events.srcPort
+      description: The port address of the victim.
+      type: Number
+    - contextPath: FireEyeCM.Events.dstIp
+      description: The IP address of the attacker.
+      type: string
+    - contextPath: FireEyeCM.Events.dstPort
+      description: The port address of the attacker.
+      type: Number
+    - contextPath: FireEyeCM.Events.vlan
+      description: The virtual LAN (VLAN) of the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.signatureMatchCnt
+      description: The date and time when the event occurred.
+      type: String
+    - contextPath: FireEyeCM.Events.signatureIden
+      description: The ID of the event.
+      type: String
+    - contextPath: FireEyeCM.Events.signatureRev
+      description: The date and time when the event occurred.
+      type: String
+    - contextPath: FireEyeCM.Events.severity
+      description: The ID of the event.
+      type: String
+    - contextPath: FireEyeCM.Events.vmVerified
+      description: The date and time when the event occurred.
+      type: String
+    - contextPath: FireEyeCM.Events.srcMac
+      description: The MAC address of the source machine.
+      type: String
+    - contextPath: FireEyeCM.Events.dstMac
+      description: The MAC address of the destination machine.
+      type: String
+    - contextPath: FireEyeCM.Events.ruleName
+      description: The rule name for the event.
+      type: String
+    - contextPath: FireEyeCM.Events.sensorId
+      description: The sensor ID of the FireEye machine.
+      type: String
+    - contextPath: FireEyeCM.Events.cveId
+      description: The CVE ID found in the event.
+      type: String
+    - contextPath: FireEyeCM.Events.actionTaken
+      description: The IPS blocking action taken on the event.
+      type: String
+    - contextPath: FireEyeCM.Events.attackMode
+      description: The attack mode mentioned in the event.
+      type: String
+    - contextPath: FireEyeCM.Events.interfaceId
+      description: The interface ID of the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.protocol
+      description: The protocol used in the event.
+      type: Number
+    - contextPath: FireEyeCM.Events.incidentId
+      description: The incident ID of the event on FireEye.
+      type: Number
   - arguments:
     - default: false
       defaultValue: '1 day'

@@ -4,9 +4,10 @@ import json
 import pytest
 
 from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    get_artifacts_metadata_by_uuid, get_reports, alert_severity_to_dbot_score, to_fe_datetime_converter, fetch_incidents
+    get_artifacts_metadata_by_uuid, get_events, get_reports, alert_severity_to_dbot_score, to_fe_datetime_converter, \
+    fetch_incidents
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
-    GET_ARTIFACTS_METADATA_CONTEXT
+    GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
 
 
 def util_load_json(path):
@@ -171,6 +172,68 @@ def test_get_report_not_found(mocker):
     command_results = get_reports(client=client, args={'report_type': 'alertDetailsReport', 'infection_id': '34013',
                                                        'infection_type': 'mallware-callback'})
     assert command_results.readable_output == 'Report alertDetailsReport was not found with the given arguments.'
+
+
+def test_get_events_no_events(mocker):
+    """Unit test
+    Given
+    - get_events command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_events_request response for no events.
+    Then
+    - Validate the human readable
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_events_request',
+                        return_value=util_load_json('test_data/get_events_none.json'))
+    command_results = get_events(client=client, args={'end_time': '2020-05-19T23:00:00.000-00:00',
+                                                      'duration': '48_hours', 'limit': '3'})
+    assert command_results.readable_output == 'No events in the given timeframe were found.'
+
+
+def test_get_events(mocker):
+    """Unit test
+    Given
+    - get_events command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_events_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_events_request',
+                        return_value=util_load_json('test_data/get_events.json'))
+    command_results = get_events(client=client, args={'end_time': '2021-05-19T23:00:00.000-00:00',
+                                                      'duration': '48_hours', 'limit': '3'})
+    assert command_results.outputs == GET_EVENTS_CONTEXT
+
+
+def test_get_quarantined_emails(mocker):
+    """Unit test
+    Given
+    - get_quarantined_emails command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's get_quarantined_emails_request response.
+    Then
+    - Validate The entry context
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'get_quarantined_emails_request',
+                        return_value=util_load_json('test_data/quarantined_emails.json'))
+    command_results = get_quarantined_emails(client=client, args={})
+    assert command_results.outputs == QUARANTINED_EMAILS_CONTEXT
 
 
 def test_fetch_incidents(mocker):

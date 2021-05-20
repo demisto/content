@@ -216,7 +216,7 @@ def get_alerts(client: Client, args: Dict[str, Any]) -> CommandResults:
         return request_params
 
     request_params = parse_request_params(args)
-    limit = int(args.get('limit', '100'))
+    limit = int(args.get('limit', '20'))
 
     raw_response = client.get_alerts_request(request_params)
 
@@ -325,21 +325,22 @@ def get_events(client: Client, args: Dict[str, Any]) -> CommandResults:
     duration = args.get('duration', '12_hours')
     end_time = to_fe_datetime_converter(args.get('end_time', 'now'))
     mvx_correlated_only = argToBoolean(args.get('mvx_correlated_only', 'false'))
+    limit = int(args.get('limit', '20'))
 
     raw_response = client.get_events_request(duration, end_time, mvx_correlated_only)
 
-    events = raw_response.get('event')
+    events = raw_response.get('events')
     if not events:
         md_ = 'No events in the given timeframe were found.'
     else:
-        # TODO - actual events
-        # headers = ['id', 'occurred', 'product', 'name', 'malicious', 'action', 'src', 'dst', 'severity', 'alertUrl']
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Events:', t=raw_response, removeNull=True)
+        events = events[:limit]
+        headers = ['occurred', 'ruleName', 'severity', 'malicious', 'cveId', 'eventId', 'srcIp', 'dstIp']
+        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Events:', t=events, headers=headers, removeNull=True)
 
     return CommandResults(
         readable_output=md_,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Events',
-        outputs_key_field='uuid',
+        outputs_key_field='eventId',
         outputs=events,
         raw_response=raw_response
     )
