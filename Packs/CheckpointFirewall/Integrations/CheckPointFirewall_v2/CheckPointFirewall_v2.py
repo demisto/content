@@ -63,9 +63,9 @@ class Client(BaseClient):
                                       json_data=body)
         return response
 
-    def delete_host(self, identifier: str):
+    def delete_host(self, identifier: str, ignore_warnings: bool, ignore_errors: bool):
         return self._http_request(method='POST', url_suffix='delete-host', headers=self.headers,
-                                  json_data={'name': identifier})
+                                  json_data={'name': identifier,"ignore-warnings": ignore_warnings, "ignore-errors": ignore_errors})
 
     def list_groups(self, limit: int, offset: int):
         return self._http_request(method='POST', url_suffix='show-groups', headers=self.headers,
@@ -366,8 +366,6 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
     name = argToList(name)
     ip_address = argToList(ip_address)
     groups = argToList(groups)
-    ignore_warnings = argToBool(ignore_warnings)
-    ignore_errors = argToBool(ignore_errors)
 
     result = []
     printable_result = {}
@@ -438,7 +436,7 @@ def checkpoint_update_host_command(client: Client, identifier: str, ignore_warni
     return command_results
 
 
-def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults:
+def checkpoint_delete_host_command(client: Client, identifier,ignore_warnings: bool, ignore_errors: bool) -> CommandResults:
     """
     delete host object using object name or uid.
 
@@ -451,7 +449,7 @@ def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults
     printable_result = {}
     result = []
     for item in identifiers_list:
-        current_result = client.delete_host(item)
+        current_result = client.delete_host(item, ignore_warnings, ignore_errors)
         result.append(current_result)
         printable_result = {'message': current_result.get('message')}
         current_readable_output = tableToMarkdown('CheckPoint data for deleting host:',
