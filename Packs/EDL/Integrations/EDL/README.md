@@ -43,7 +43,7 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 4. Click **Test** to validate the URLs, token, and connection.
 
 ### Access the EDL Service via XSOAR Server's HTTPS endpoint
-**Note: The EDL will be open to the same network the XSOAR Server is accessable. Make sure you are aware of the network risks. Enabling strong authentication is highly recommended if the route is open to the public.**
+**Note: The EDL will be open to the same network the XSOAR Server is accessible. Make sure you are aware of the network risks. Enabling strong authentication is highly recommended if the route is open to the public.**
 
 To access the EDL service by instance name, make sure ***Instance Execute External*** is enabled.
 
