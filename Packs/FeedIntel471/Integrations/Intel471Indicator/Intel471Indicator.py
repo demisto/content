@@ -126,7 +126,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
     return result
 
 
-def custom_build_relationships(feed_config, mapping, indicator_data):
+def custom_build_relationships(feed_config: dict, mapping: dict, indicator_data: dict):
     if indicator_data.get(mapping.get('relation_entity_b')):
         relationships_lst = EntityRelationship(
             name=feed_config.get('relation_name'),

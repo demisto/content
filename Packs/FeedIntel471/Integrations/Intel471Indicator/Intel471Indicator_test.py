@@ -72,6 +72,17 @@ def test_create_url(mocker, input, expected_results):
 
 
 def test_create_relationships():
+    """
+    Given:
+        - relationships configuration.
+
+    When:
+        - getting indicators feed.
+
+    Then:
+        - validate the relationships is created correctly.
+
+    """
     config = {'relation_entity_b_type': 'STIX Malware', 'relation_name': 'communicates-with'}
     indicator_data = {'type': 'URL', 'threat_data_family': 'test_malware', 'indicator_type': 'url',
                       'indicator_data_url': 'http://example_url.com', 'value': 'http://example_url.com'}
