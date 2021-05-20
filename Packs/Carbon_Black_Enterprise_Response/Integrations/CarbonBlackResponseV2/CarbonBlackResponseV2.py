@@ -12,86 +12,81 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
-class ProcessEventDetailMap:
 
-    class filemod_complete:
-        FIELDS = ['operation type', 'event time', 'file path', 'md5 of the file after last write',
-                  'file type', 'flagged as potential tamper attempt']
-        OPERATION_TYPE = {'1': 'Created the file',
-                          '2': 'First wrote to the file',
-                          '4': 'Deleted the file',
-                          '8': 'Last wrote to the file'}
-        FILE_TYPE = {'1': 'PE',
-                     '2': 'Elf',
-                     '3': 'UniversalBin',
-                     '8': 'EICAR',
-                     '16': 'OfficeLegacy',
-                     '17': 'OfficeOpenXml',
-                     '48': 'Pdf',
-                     '64': 'ArchivePkzip',
-                     '65': 'ArchiveLzh',
-                     '66': 'ArchiveLzw',
-                     '67': 'ArchiveRar',
-                     '68': 'ArchiveTar',
-                     '69': 'Archive7zip'}
+class ProcessEventDetail:
 
-        def __init__(self, piped_version):
-            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
-
-        def format(self):
-            self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
-            self.fields['file type'] = self.FILE_TYPE.get(self.fields.get('file type'), '')
-            return self.fields
-
-    class modload_complete:
-        FIELDS = ['event time', 'MD5 of the loaded module', 'Full path of the loaded module']
-
-        def __init__(self, piped_version):
-            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
-
-        def format(self):
-            return self.fields
-
-    class regmod_complete:
-        FIELDS = ['operation type', 'event time', 'the registry key path']
-        OPERATION_TYPE = {'1': 'Created the file',
-                          '2': 'First wrote to the file',
-                          '4': 'Deleted the file',
-                          '8': 'Last wrote to the file'}
-
-        def __init__(self, piped_version):
-            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
-
-        def format(self):
-            self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
-            return self.fields
-
-    class crossproc_complete:
-        FIELDS = ['type of cross-process access', 'event time', 'unique_id of the targeted process',
-                  'md5 of the targeted process', 'path of the targeted process', 'sub-type for ProcessOpen',
-                  'requested access priviledges', 'flagged as potential tamper attempt']
-        SUB_TYPES = {'1':'handle open to process', '2': 'handle open to thread in process'}
-
-        def __init__(self, piped_version):
-            self.fields = dict(zip(self.FIELDS, piped_version.split('|')))
-
-        def format(self):
-            self.fields['sub-type for ProcessOpen'] = self.SUB_TYPES.get(self.fields.get('sub-type for ProcessOpen'), '')
-            return self.fields
+    def __init__(self, piped_version, fields):
+        data = piped_version.split('|')
+        if len(data) != len(fields):
+            raise Exception("Data from API is in unexpected format.")
+        self.fields = dict(zip(fields, data))
 
 
-    COMPLEX_FIELDS = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
-                      'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
+class filemod_complete(ProcessEventDetail):
+    FIELDS = ['operation type', 'event time', 'file path', 'md5 of the file after last write',
+              'file type', 'flagged as potential tamper attempt']
+    OPERATION_TYPE = {'1': 'Created the file',
+                      '2': 'First wrote to the file',
+                      '4': 'Deleted the file',
+                      '8': 'Last wrote to the file'}
+    FILE_TYPE = {'1': 'PE',
+                 '2': 'Elf',
+                 '3': 'UniversalBin',
+                 '8': 'EICAR',
+                 '16': 'OfficeLegacy',
+                 '17': 'OfficeOpenXml',
+                 '48': 'Pdf',
+                 '64': 'ArchivePkzip',
+                 '65': 'ArchiveLzh',
+                 '66': 'ArchiveLzw',
+                 '67': 'ArchiveRar',
+                 '68': 'ArchiveTar',
+                 '69': 'Archive7zip'}
 
-    def get_formatted_process(self, process_json: dict):
-        formatted_json = {}
-        for field in process_json:
-            if field in self.COMPLEX_FIELDS:
-                formatted_json[field] = self.COMPLEX_FIELDS[field](process_json.get(field)).format()
-            else:
-                formatted_json[field] = process_json.get(field)
+    def __init__(self, piped_version):
+        super().__init__(piped_version, self.FIELDS)
 
-        return formatted_json
+    def format(self):
+        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
+        self.fields['file type'] = self.FILE_TYPE.get(self.fields.get('file type'), '')
+        return self.fields
+
+class modload_complete(ProcessEventDetail):
+    FIELDS = ['event time', 'MD5 of the loaded module', 'Full path of the loaded module']
+
+    def __init__(self, piped_version):
+        super().__init__(piped_version, self.FIELDS)
+
+    def format(self):
+        return self.fields
+
+class regmod_complete(ProcessEventDetail):
+    FIELDS = ['operation type', 'event time', 'the registry key path']
+    OPERATION_TYPE = {'1': 'Created the file',
+                      '2': 'First wrote to the file',
+                      '4': 'Deleted the file',
+                      '8': 'Last wrote to the file'}
+
+    def __init__(self, piped_version):
+        super().__init__(piped_version, self.FIELDS)
+
+    def format(self):
+        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
+        return self.fields
+
+class crossproc_complete(ProcessEventDetail):
+    FIELDS = ['type of cross-process access', 'event time', 'unique_id of the targeted process',
+              'md5 of the targeted process', 'path of the targeted process', 'sub-type for ProcessOpen',
+              'requested access priviledges', 'flagged as potential tamper attempt']
+    SUB_TYPES = {'1':'handle open to process', '2': 'handle open to thread in process'}
+
+    def __init__(self, piped_version):
+        super().__init__(piped_version, self.FIELDS)
+
+    def format(self):
+        self.fields['sub-type for ProcessOpen'] = self.SUB_TYPES.get(self.fields.get('sub-type for ProcessOpen'), '')
+        return self.fields
+
 
 ''' CLIENT CLASS '''
 
@@ -178,9 +173,21 @@ class Client(BaseClient):
                                )
         if facet_field:
             params['facet.field'] = facet_field
-        if facet_field:
+        if group_by:
             params['cb.group'] = group_by
         return self.http_request(url='/v1/process', method='GET', params=params)
+
+    def get_formatted_ProcessEventDetail(self, process_json: dict):
+        COMPLEX_FIELDS = {'filemod_complete': filemod_complete, 'modload_complete': modload_complete,
+                          'regmod_complete': regmod_complete, 'crossproc_complete': crossproc_complete}
+        formatted_json = {}
+        for field in process_json:
+            if field in COMPLEX_FIELDS:
+                formatted_json[field] = COMPLEX_FIELDS[field](process_json.get(field)).format()
+            else:
+                formatted_json[field] = process_json.get(field)
+
+        return formatted_json
 
 
 ''' HELPER FUNCTIONS '''
@@ -194,8 +201,7 @@ def _create_query_string(params: dict) -> str:
     current_query = ' AND '.join(current_query)
 
     if not current_query:
-        raise Exception(
-            f'Search without any filter is not permitted. Please add one of the following filters: {params.keys()}')
+        raise Exception('Search without any filter is not permitted.')
 
     return current_query
 
@@ -386,7 +392,7 @@ def process_events_list_command(client: Client, pid: str, segid: str, start: str
     start = int(start) if start else None
     count = int(count) if count else None
     res = client.http_request(url=url, method='GET')
-    process = ProcessEventDetailMap().get_formatted_process(res.get('process',{}))
+    process = ProcessEventDetail().get_formatted_process(res.get('process',{}))
 
 def process_segments_get_command(client: Client, process_id: str) -> CommandResults:
     url = f'/v1/process/{process_id}/segment'

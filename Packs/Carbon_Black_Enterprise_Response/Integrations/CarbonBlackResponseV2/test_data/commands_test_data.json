@@ -1,0 +1,5 @@
+{
+  "processes_search_command": [
+  {"query":"chrome.exe", "hostname":"ec2amaz-l4c2okc","facet": True, "facet_field":"hour_of_day"}, "")
+]
+}
