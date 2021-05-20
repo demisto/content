@@ -1,4 +1,4 @@
-Amazon Web Services Certificate Manager Service (acm)
+Amazon Web Services Certificate Manager Service (ACM)
 
 For more information regarding the AWS ACM service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/acm.html).
 

@@ -246,19 +246,21 @@ def main():
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
         args = demisto.args()
-        if demisto.command() == 'test-module':
+        command = demisto.command()
+
+        if command == 'test-module':
             test_function(aws_client)
-        if demisto.command() == 'aws-acm-describe-certificate':
+        if command == 'aws-acm-describe-certificate':
             describe_certificate(args, aws_client)
-        if demisto.command() == 'aws-acm-list-certificates':
+        if command == 'aws-acm-list-certificates':
             list_certificates(args, aws_client)
-        if demisto.command() == 'aws-acm-add-tags-to-certificate':
+        if command == 'aws-acm-add-tags-to-certificate':
             add_tags_to_certificate(args, aws_client)
-        if demisto.command() == 'aws-acm-remove-tags-from-certificate':
+        if command == 'aws-acm-remove-tags-from-certificate':
             remove_tags_from_certificate(args, aws_client)
-        if demisto.command() == 'aws-acm-list-tags-for-certificate':
+        if command == 'aws-acm-list-tags-for-certificate':
             list_tags_for_certificate(args, aws_client)
-        if demisto.command() == 'aws-acm-get-certificate':
+        if command == 'aws-acm-get-certificate':
             get_certificate(args, aws_client)
 
     except ResponseParserError as e:
@@ -274,5 +276,5 @@ def main():
 
 from AWSApiModule import *  # noqa: E402
 
-if __name__ in ['__builtin__', 'builtins', '__main__']:
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
