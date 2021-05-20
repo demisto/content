@@ -5452,8 +5452,8 @@ class CommandResults:
     :type entry_type: ``int`` code of EntryType
     :param entry_type: type of return value, see EntryType
 
-    :type disable_readable_output: ``bool``
-    :param disable_readable_output: must be a boolean, default value is False. Used to disable readable output.
+    :type scheduled_command: ``ScheduledCommand``
+    :param scheduled_command: manages the way the command should be polled.
 
     :return: None
     :rtype: ``None``
@@ -5461,9 +5461,8 @@ class CommandResults:
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
-                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None,
-                 disable_readable_output=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, bool) -> None  # noqa: E501
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -5500,7 +5499,6 @@ class CommandResults:
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
         self.scheduled_command = scheduled_command
-        self.disable_readable_output = disable_readable_output
 
         self.relationships = relationships
 
@@ -5555,9 +5553,6 @@ class CommandResults:
                 outputs[outputs_key] = self.outputs
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
-
-        if self.disable_readable_output: # disable_readable_output
-            human_readable = ''
 
         if self.relationships:
             relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]

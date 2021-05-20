@@ -274,10 +274,12 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
                 'polling': True,
                 **args
             }
-            schedule_config = ScheduledCommand(command=cmd,
-                                               next_run_in_seconds=interval_in_secs,
-                                               args=polling_args, timeout_in_seconds=600)
-            command_results.scheduled_command = schedule_config
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=600)
+            command_results.scheduled_command = scheduled_command
             return command_results
         else:
             # continue to look for search results
@@ -292,18 +294,14 @@ def run_polling_command(args: dict, cmd: str, search_function: Callable, results
             'polling': True,
             **args
         }
-        schedule_config = ScheduledCommand(command=cmd,
-                                           next_run_in_seconds=interval_in_secs,
-                                           args=polling_args, timeout_in_seconds=600)
-        if command_results is None:
-            command_results = CommandResults(scheduled_command=schedule_config, disable_readable_output=True)
-        elif isinstance(command_results, list):
-            command_results[0].scheduled_command = schedule_config
-            for result in command_results:
-                result.disable_readable_output = True
-        else:
-            command_results.scheduled_command = schedule_config
-            command_results.disable_readable_output = True
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
 
@@ -1338,20 +1336,11 @@ def top_tags_results_command(args) -> (List[CommandResults], str):
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
     context = createContext(results, keyTransform=string_to_context_key)
-    cmd_results = [
-        CommandResults(
-            outputs_prefix='AutoFocus.TopTagsResults',
-            outputs_key_field='PublicTagName',
-            outputs=context,
-            readable_output=md
-        ),
-        CommandResults(
-            outputs_prefix='AutoFocus.TopTagsSearch',
-            outputs_key_field='AFCookie',
-            outputs={'Status': status, 'AFCookie': af_cookie},
-        )
-    ]
-    return cmd_results, status
+    outputs = {
+        'AutoFocus.TopTagsResults(val.PublicTagName === obj.PublicTagName)': context,
+        'AutoFocus.TopTagsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie}
+    }
+    return CommandResults(outputs=outputs, raw_response=results, readable_output=md), status
 
 
 def top_tags_with_polling_command(args):
