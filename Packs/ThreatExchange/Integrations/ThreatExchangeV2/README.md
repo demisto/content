@@ -1,5 +1,14 @@
 Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook
 This integration was integrated and tested with API version v3.2 of ThreatExchange 
+
+## Authentication
+The ThreatExchange APIs perform authentication via access tokens.
+After Facebook notifies you that your App can access ThreatExchange, use [the access token tool](https://developers.facebook.com/tools/accesstoken) to get an App Token.
+Please note, app tokens give access to sensitive details to your app and should be treated like a password.
+For more information see [the ThreatExchange API Overview](https://developers.facebook.com/docs/threat-exchange/api/v10.0)
+
+For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the ***password*** field.
+
 ## Configure ThreatExchange v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -9,6 +18,7 @@ This integration was integrated and tested with API version v3.2 of ThreatExchan
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | App ID |  | True |
+    | App Secret | | True |
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -19,11 +29,12 @@ This integration was integrated and tested with API version v3.2 of ThreatExchan
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Backwards compatibility
-The integration is fully backwards compatible. 
+The integration is fully backwards compatible with the ThreatExchange integration. 
 
 ## Changes compared to previous version
 The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
-that says no information was found for the given input, along with a description of the error that occurred.
+that says no information was found for the given input.
+In addition a description of the error that occurred is added to the Cortex XSOAR server log.
 
 
 ## DBot Score / Reputation scores
@@ -59,17 +70,17 @@ Checks the file reputation of the given hash.
 | file | Hash of the file to query. Supports MD5, SHA1 and SHA256 hashes. | Required | 
 | limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
 | headers | A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3. | Optional | 
-| since | The start timestamp for collecting malware, format: 1391813489. | Optional | 
-| until | The end timestamp for collecting malware, format: 1391813489. | Optional | 
+| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
+| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | String | Bad MD5 hash found. | 
-| File.SHA1 | String | Bad SHA1 hash found. | 
-| File.SHA256 | String | Bad SHA256 hash found. | 
+| File.MD5 | String | The MD5 hash of the file | 
+| File.SHA1 | String | The SHA1 hash of the file | 
+| File.SHA256 | String | The SHA256 hash of the file | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -84,16 +95,16 @@ Checks the file reputation of the given hash.
 | ThreatExchange.File.id | String | Unique identifier of the threat descriptor. Automatically assigned at create time, and non-editable. | 
 | ThreatExchange.File.description | String | A short summary of the indicator and threat. | 
 | ThreatExchange.File.added_on | Date | The datetime this descriptor was first uploaded. Automatically computed; not directly editable. | 
-| ThreatExchange.File.sha1 | String | The SHA1 hash of the malware | 
-| ThreatExchange.File.sha256 | String | The SHA256 hash of the malware | 
+| ThreatExchange.File.sha1 | String | The SHA1 hash of the file | 
+| ThreatExchange.File.sha256 | String | The SHA256 hash of the file | 
 | ThreatExchange.File.sample_size_compressed | Number | The size of the compressed sample | 
-| ThreatExchange.File.ssdeep | String | The SSDeep hash of the malware | 
-| ThreatExchange.File.sample_type | String | The MIME type of the malware sample. | 
+| ThreatExchange.File.ssdeep | String | The SSDeep hash of the file | 
+| ThreatExchange.File.sample_type | String | The MIME type of the sample. | 
 | ThreatExchange.File.sample_size | Number | The size of the sample | 
-| ThreatExchange.File.sha3_384 | Unknown | The SHA3-384 hash of the malware | 
-| ThreatExchange.File.victim_count | Unknown | A count of known victims infected and/or spreading the malware | 
+| ThreatExchange.File.sha3_384 | String | The SHA3-384 hash of the file | 
+| ThreatExchange.File.victim_count | Number | A count of known victims infected and/or spreading the malware | 
 | ThreatExchange.File.password | String | The password required to decompress the sample | 
-| ThreatExchange.File.md5 | String | The MD5 hash of the malware | 
+| ThreatExchange.File.md5 | String | The MD5 hash of the file | 
 
 
 #### Command Example
@@ -143,7 +154,7 @@ Checks the file reputation of the given hash.
 
 #### Human Readable Output
 
->### ThreatExchange Result for file hash: cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c:
+>### ThreatExchange Result for file hash cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c
 >|added_on|description|id|md5|password|privacy_type|review_status|sample_size|sample_size_compressed|sample_type|sha1|sha256|sha3_384|share_level|ssdeep|status|victim_count|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2014-02-08T10:45:09+0000 | New Kilim spam template | 760220740669930 | f5c3281ed489772c840a137011c76b58 | infected | VISIBLE | REVIEWED_AUTOMATICALLY | 142 | 142 | application/octet-stream | 2517620f427f0019e2eee3b36e206567b6e7a74a | cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c | bc1ed0a4e634aaa784255bc50fa54fe41839c8763e797d083cefb87b87f7c743bc989c2c80bd6d72239fe86c489e802f | GREEN | 3:N8RdNcvALtGTmAS3gG9HV6qVJNerWl/DKKIFjnD0SrrVKmTQXQN/:27NFGi79es2TFjnDXrP0i/ | UNKNOWN | 0 |
@@ -163,13 +174,16 @@ Checks the reputation of the given IP address.
 | --- | --- | --- |
 | ip | IP address to check. | Required | 
 | headers | A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3. | Optional | 
+| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
+| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
+| limit | The maximum number of results per page. The maximum is 1000. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | Bad IP address found. | 
+| IP.Address | String | The IP address found. | 
 | IP.Malicious.Vendor | String | For malicious IPs addresse, the vendor that made the decision. | 
 | IP.Malicious.Description | String | For malicious IP addresses, the reason that the vendor made the decision. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -270,7 +284,7 @@ Checks the reputation of the given IP address.
 
 #### Human Readable Output
 
->### ThreatExchange Result for IP: 8.8.8.8:
+>### ThreatExchange Result for IP 8.8.8.8
 >|added_on|confidence|id|indicator|last_updated|owner|privacy_type|raw_indicator|review_status|severity|share_level|status|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2018-04-09T23:00:40+0000 | 50 | 1521082241333529 | id: 501655576609539<br/>indicator: 8.8.8.8<br/>type: IP_ADDRESS | 2021-04-16T10:00:01+0000 | id: 1656584897716085<br/>email: threatexchange@support.facebook.com<br/>name: JoeSandbox Analysis | HAS_PRIVACY_GROUP | 8.8.8.8 | UNREVIEWED | INFO | RED | UNKNOWN | IP_ADDRESS |
@@ -289,17 +303,17 @@ Checks URL Reputation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | url | URL to be checked. | Required | 
-| limit | The maximum number of results per page. The maximum is 1000. Default is 20. Default is 20. | Optional | 
+| limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
 | headers | Headers to display in Human readable format, comma separated format, for example: header1,header2,header3. | Optional | 
-| since | The start timestamp for collecting malware, format: 1391813489. | Optional | 
-| until | The end timestamp for collecting malware, format: 1391813489. | Optional | 
+| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
+| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | Bad URLs found | 
+| URL.Data | String | The URL found. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -399,7 +413,7 @@ Checks URL Reputation
 
 #### Human Readable Output
 
->### ThreatExchange Result for URL: https://www.test.com/:
+>### ThreatExchange Result for URL https://www.test.com/
 >|added_on|confidence|id|indicator|last_updated|owner|privacy_type|raw_indicator|review_status|severity|share_level|status|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2015-07-09T03:04:19+0000 | 1 | 835880593160550 | id: 838258172933557<br/>indicator: https://www.test.com/<br/>type: URI | 2020-07-24T03:37:14+0000 | id: 820763734618599<br/>email: threatexchange@support.facebook.com<br/>name: Facebook Administrator | HAS_PRIVACY_GROUP | https://www.test.com/ | REVIEWED_AUTOMATICALLY | INFO | RED | UNKNOWN | URI |
@@ -418,17 +432,17 @@ Checks domain reputation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain | Domain name to check reputation. | Required | 
-| limit | The maximum number of results per page. The maximum is 1000. Default is 20. Default is 20. | Optional | 
+| limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
 | headers | Headers to display in Human readable format, comma separated format, for example: header1,header2,header3. | Optional | 
-| since | The start timestamp for collecting malware, format: 1391813489. | Optional | 
-| until | The end timestamp for collecting malware, format: 1391813489. | Optional | 
+| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
+| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | Bad domain found | 
+| Domain.Name | String | The domain found. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
@@ -504,7 +518,7 @@ Checks domain reputation
 
 #### Human Readable Output
 
->### ThreatExchange Result for domain: google.com:
+>### ThreatExchange Result for domain google.com
 >|added_on|confidence|id|indicator|last_updated|owner|privacy_type|raw_indicator|review_status|severity|share_level|status|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2015-09-04T22:03:24+0000 | 50 | 955242124521797 | id: 826838047363868<br/>indicator: google.com<br/>type: DOMAIN | 2020-07-24T01:04:11+0000 | id: 588498724619612<br/>email: threatexchange@support.facebook.com<br/>name: Facebook CERT ThreatExchange | VISIBLE | google.com | REVIEWED_MANUALLY | INFO | WHITE | NON_MALICIOUS | DOMAIN |
@@ -523,11 +537,11 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | text | Free-form text field with a value to search for. This can be a file hash or a string found in other fields of the objects. | Required | 
-| type | The type of descriptor to search for. For more information see: https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9. | Required | 
-| limit | The maximum number of results per page. The maximum is 1000. Default is 20. Default is 20. | Optional | 
+| descriptor_type | The type of descriptor to search for. Possible values are: ADJUST_TOKEN, API_KEY, AS_NUMBER, BANNER, CMD_LINE, COOKIE_NAME, CRX, DEBUG_STRING, DEST_PORT, DIRECTORY_QUERIED, DOMAIN, EMAIL_ADDRESS, FILE_CREATED, FILE_DELETED, FILE_MOVED, FILE_NAME, FILE_OPENED, FILE_READ, FILE_WRITTEN, GET_PARAM, HASH_IMPHASH, HASH_MD5, HASH_PDQ, HASH_TMK, HASH_SHA1, HASH_SHA256, HASH_SSDEEP, HASH_VIDEO_MD5, HTML_ID, HTTP_REQUEST, IP_ADDRESS, IP_SUBNET, ISP, LATITUDE, LATITUDE, LAUNCH_AGENT, LOCATION, LONGITUDE, MALWARE_NAME, MEMORY_ALLOC, MEMORY_PROTECT, MEMORY_WRITTEN, MUTANT_CREATED, MUTEX, NAME_SERVER, OTHER_FILE_OP, PASSWORD, PASSWORD_SALT, PAYLOAD_DATA, PAYLOAD_TYPE, POST_DATA, PROTOCOL, REFERER, REGISTRAR, REGISTRY_KEY, REG_KEY_CREATED, REG_KEY_DELETED, REG_KEY_ENUMERATED, REG_KEY_MONITORED, REG_KEY_OPENED, REG_KEY_VALUE_CREATED, REG_KEY_VALUE_DELETED, REG_KEY_VALUE_MODIFIED, REG_KEY_VALUE_QUERIED, SIGNATURE, SOURCE_PORT, TELEPHONE, TEXT_STRING, TREND_QUERY, URI, USER_AGENT, VOLUME_QUERIED, WEBSTORAGE_KEY, WEB_PAYLOAD, WHOIS_NAME, WHOIS_ADDR1, WHOIS_ADDR2, XPI. | Required | 
+| limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
 | headers | Headers to display in Human readable format, comma separated format, for example: header1,header2,header3. | Optional | 
-| since | The start timestamp for collecting malware, format: 1391813489. | Optional | 
-| until | The end timestamp for collecting malware, format: 1391813489. | Optional | 
+| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
+| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
 | strict_text | When set to 'true', the API will not do approximate matching on the value in text. Default is false. | Optional | 
 | before | Returns results collected before this cursor. | Optional | 
 | after | Returns results collected after this cursor. | Optional | 
@@ -551,7 +565,7 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
 
 
 #### Command Example
-```!threatexchange-query text=geektime type=URI limit=3```
+```!threatexchange-query text=geektime descriptor_type=URI limit=3```
 
 #### Context Example
 ```json
@@ -583,12 +597,12 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
                     "type": "URI"
                 }
             ],
+            "descriptor_type": "URI",
             "paging": {
-                "after": "AcFQnBk3XT66uGd4JZCw5pOnMCkF3lfv7j7xdAkqCY34MqBA2xkuuNPAldpVRpZAZBdsM4ZD",
-                "before": "AcHHHZBi8rZBjqrxhk9vyqphzwvYNjhY1jUrLOXoGBeBwQuYajqNR8bDyeWxZA2LI5zEQkZD"
+                "after": "AcEQhEzPvmSJmlNNuYsT8wLbhsiWSGZAhyvnrCTolXwfX172HzdMJphzLsXxOnlNtkz8ZD",
+                "before": "AcFuZAqH9BMZANX7CZA4wPjGvfWhrf3HZC8WyAHwLILM31aQNNPW25hIljOrSeeyQDBrYQoZD"
             },
-            "text": "geektime",
-            "type": "URI"
+            "text": "geektime"
         }
     }
 }
@@ -637,7 +651,7 @@ There are no input arguments for this command.
                 "email": "user@example.com",
                 "id": "906975333085907",
                 "name": "2U ThreatExchange App"
-            }  
+            }
         ]
     }
 }
@@ -649,7 +663,6 @@ There are no input arguments for this command.
 >|email|id|name|
 >|---|---|---|
 >| user@example.com | 906975333085907 | 2U ThreatExchange App |
-
 
 
 ### threatexchange-tags-search
@@ -714,7 +727,7 @@ With this call you can search for ThreatTag objects by text.
 
 ### threatexchange-tagged-objects-list
 ***
-Gets a list of tagged objects for a specific ThreatTag.
+Gets a list of tagged objects for a specific ThreatTag
 
 
 #### Base Command
@@ -724,10 +737,10 @@ Gets a list of tagged objects for a specific ThreatTag.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_id | ThreatTag ID to get it's related tagged objects. | Required | 
+| tag_id | ThreatTag ID to get it's related tagged objects. ThreatTag ID can be retrieved by the threatexchange-tags-search command. | Required | 
 | tagged_since | Fetches all objects that have been tagged since this time (inclusive). | Optional | 
 | tagged_until | Fetches all objects that have been tagged until this time (inclusive). | Optional | 
-| before | Returns results collected before this cursor. Possible values are: . | Optional | 
+| before | Returns results collected before this cursor. | Optional | 
 | after | Returns results collected after this cursor. | Optional | 
 
 
@@ -755,7 +768,7 @@ Gets a list of tagged objects for a specific ThreatTag.
                     "id": "1460089820713228",
                     "name": "cafece4c21572473fed821bb64381d0a",
                     "type": "MALWARE_DESCRIPTOR"
-                }
+                },
             ],
             "paging": {
                 "after": "QVFIUmFFOERJZATZAmMW9wRnJwbjFiY2tTdFpHRk9PTVlIYm80bVREdXlIS1pWWmRrSU4zSHpYT2dXUTR0QW1HTkVWal9oalU5dGhyRlZA6U2ZAKWC04T0R0NXVR",
@@ -787,7 +800,7 @@ Gets ThreatExchange object by ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_id | ID of a ThreatExchange object. | Required | 
+| object_id | ID of a ThreatExchange object. Can be retrieved by ThreatExchange reputation commands and threatexchange-tagged-objects-list command. | Required | 
 
 
 #### Context Output
@@ -819,4 +832,3 @@ Gets ThreatExchange object by ID
 >|id|text|
 >|---|---|
 >| 1318516441499594 | malware |
-

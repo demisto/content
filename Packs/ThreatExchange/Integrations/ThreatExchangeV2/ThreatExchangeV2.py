@@ -380,10 +380,10 @@ def flatten_outputs_paging(raw_response: Dict) -> Dict:
     cursor_before = paging.get('cursors', {}).get('before')
     cursor_after = paging.get('cursors', {}).get('after')
     outputs.pop('paging', None)
-    outputs['paging'] = {}
-    outputs['paging']['before'] = cursor_before
-    outputs['paging']['after'] = cursor_after
-
+    outputs['paging'] = {
+        'before': cursor_before,
+        'after': cursor_after,
+    }
     return outputs
 
 
@@ -458,8 +458,6 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
     """
     Returns IP's reputation
     """
-    error_occurred = False
-    err_msg = None
     ips = argToList(args.get('ip'))
     since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
     until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
@@ -475,7 +473,6 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
             raw_response = client.ip(ip, since, until, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            error_occurred = True
             err_msg = f'Could not process IP: "{ip}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
@@ -519,8 +516,6 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about IP: {ip} \n'
-            if error_occurred:
-                readable_output += err_msg
             ip_indicator = Common.IP(
                 ip=ip,
                 dbot_score=dbot_score,
@@ -541,8 +536,6 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
     """
     Returns file's reputation
     """
-    error_occurred = False
-    err_msg = None
     files = argToList(args.get('file'))
     since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
     until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
@@ -558,7 +551,6 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
             raw_response = client.file(file, since, until, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            error_occurred = True
             err_msg = f'Could not process file: "{file}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
@@ -606,8 +598,6 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about file: {file} \n'
-            if error_occurred:
-                readable_output += err_msg
             file_indicator = Common.File(
                 dbot_score=dbot_score
             )
@@ -627,8 +617,6 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
     """
     Returns domain's reputation
     """
-    error_occurred = False
-    err_msg = None
     domains = argToList(args.get('domain'))
     since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
     until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
@@ -687,8 +675,6 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about domain: {domain} \n'
-            if error_occurred:
-                readable_output += err_msg
             domain_indicator = Common.Domain(
                 domain=domain,
                 dbot_score=dbot_score
@@ -709,8 +695,6 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
     """
     Returns URL's reputation
     """
-    error_occurred = False
-    err_msg = None
     urls = argToList(args.get('url'))
     since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
     until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
@@ -723,7 +707,6 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
             raw_response = client.url(url, since, until, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            error_occurred = True
             err_msg = f'Could not process URL: "{url}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
@@ -767,8 +750,6 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
                 reliability=reliability
             )
             readable_output = f'{CONTEXT_PREFIX} does not have details about URL: {url} \n'
-            if error_occurred:
-                readable_output += err_msg
             url_indicator = Common.URL(
                 url=url,
                 dbot_score=dbot_score

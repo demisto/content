@@ -7,7 +7,6 @@ configuration:
   name: app_id
   required: true
   type: 9
-  displaypassword: App Secret
 - additionalinfo: If the percentage of 'Malicious' reported statuses is above this
     threshold the indicator will be defined as malicious, otherwise suspicious
   defaultvalue: '50'
@@ -55,6 +54,8 @@ configuration:
   name: insecure
   required: false
   type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Receive threat intelligence about applications, IP addresses, URLs and
   hashes, a service by Facebook
@@ -84,13 +85,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware, format: 1391813489'
+      description: 'The start timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware, format: 1391813489'
+      description: 'The end timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -101,7 +106,7 @@ script:
     name: file
     outputs:
     - contextPath: File.MD5
-      description: ' The MD5 hash of the file'
+      description: The MD5 hash of the file
       type: String
     - contextPath: File.SHA1
       description: The SHA1 hash of the file
@@ -174,10 +179,10 @@ script:
       type: Number
     - contextPath: ThreatExchange.File.sha3_384
       description: The SHA3-384 hash of the file
-      type: Unknown
+      type: String
     - contextPath: ThreatExchange.File.victim_count
       description: A count of known victims infected and/or spreading the malware
-      type: Unknown
+      type: Number
     - contextPath: ThreatExchange.File.password
       description: The password required to decompress the sample
       type: String
@@ -199,13 +204,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware, format: 1391813489'
+      description: 'The start timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware, format: 1391813489'
+      description: 'The end timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -222,7 +231,7 @@ script:
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: Bad IP address found.
+      description: The IP address found.
       type: String
     - contextPath: IP.Malicious.Vendor
       description: For malicious IPs addresse, the vendor that made the decision.
@@ -331,13 +340,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware, format: 1391813489'
+      description: 'The start timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware, format: 1391813489'
+      description: 'The end timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -348,7 +361,7 @@ script:
     name: url
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
+      description: The URL found.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -456,13 +469,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware, format: 1391813489'
+      description: 'The start timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware, format: 1391813489'
+      description: 'The end timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -473,7 +490,7 @@ script:
     name: domain
     outputs:
     - contextPath: Domain.Name
-      description: Bad domain found
+      description: The domain found.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -664,13 +681,17 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start timestamp for collecting malware, format: 1391813489'
+      description: 'The start timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: since
       required: false
       secret: false
     - default: false
-      description: 'The end timestamp for collecting malware, format: 1391813489'
+      description: 'The end timestamp for collecting malware. Supported time formats:
+        epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text
+        (e.g 24 hours ago).'
       isArray: false
       name: until
       required: false
@@ -822,8 +843,6 @@ script:
       description: Returns results collected before this cursor
       isArray: false
       name: before
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
