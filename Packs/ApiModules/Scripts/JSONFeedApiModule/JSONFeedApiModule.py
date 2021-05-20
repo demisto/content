@@ -150,7 +150,7 @@ def test_module(client: Client, limit) -> str:
 
 
 def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
-                             limit: int = 0, create_relationships: bool = False, **kwargs) -> Union[Dict, List[Dict]]:
+                             create_relationships: bool = False, limit: int = 0, **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
@@ -248,12 +248,12 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     if mapping:
         mapping_function(mapping, indicator, attributes)
 
-    if create_relationships and feed_config.get('relation_name'):
+    if create_relationships and relations_function and feed_config.get('relation_name'):
         indicator['relationships'] = relations_function(feed_config, mapping, attributes)
 
     if feed_config.get('rawjson_include_indicator_type'):
         item['_indicator_type'] = current_indicator_type
-        
+
     indicator['rawJSON'] = item
 
     indicator_list.append(indicator)
@@ -346,7 +346,7 @@ def feed_main(params, feed_name, prefix):
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
             create_relationships = params.get('create_relationships')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, limit, create_relationships)
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, create_relationships, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
             return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
