@@ -199,7 +199,7 @@ tasks:
       version: -1
       name: check if endpoint is online
       description: Checks if the machine is currently connected to the Cybereason
-        server
+        server.
       script: '|||cybereason-is-probe-connected'
       type: regular
       iscommand: true
@@ -290,11 +290,11 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: Cybereason.Machine
-  description: Machine name
+  description: Machine name.
 - contextPath: Cybereason.IsIsolated
-  description: Is the machine isolated
+  description: Is the machine isolated.
 - contextPath: Endpoint.Hostname
-  description: Machine name
+  description: Machine name.
 tests:
 - no tests
 fromversion: 5.0.0
