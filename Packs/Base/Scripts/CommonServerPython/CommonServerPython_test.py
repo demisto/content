@@ -17,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException
+    url_to_clickable_markdown, WarningsHandler, DemistoException, urljoin
 
 try:
     from StringIO import StringIO
@@ -2476,6 +2476,18 @@ def test_encode_string_results():
     assert encode_string_results(s2) == res
     not_string = [1, 2, 3]
     assert not_string == encode_string_results(not_string)
+
+
+@pytest.mark.parametrize('args, result', [
+    (['https://google.com/', '/'], 'https://google.com'),
+    (['https://google.com', '/'], 'https://google.com'),
+    (['https://google.com', 'api'], 'https://google.com/api'),
+    (['https://google.com', '/api'], 'https://google.com/api'),
+    (['https://google.com', 'api/'], 'https://google.com/api'),
+    (['https://google.com', '/api', 'v1/', 'a'], 'https://google.com/api/v1/a')
+])
+def test_urljoin(args, result):
+    assert urljoin(*args) == result
 
 
 class TestReturnOutputs:
