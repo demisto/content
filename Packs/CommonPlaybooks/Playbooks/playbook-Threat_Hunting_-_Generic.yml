@@ -290,7 +290,7 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search. Can be a single or an array of domain/urls to search. By
+  description: Domain or URL to search. Can be a single domainor URL or an array of domains or URLs to search. By
     default, the LIKE clause is used.
   playbookInputQuery:
 - key: InternalRange
