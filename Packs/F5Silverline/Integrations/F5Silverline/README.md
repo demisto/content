@@ -28,7 +28,7 @@ Get a dynamic list of threatening IP addresses by the given list type. The list 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. | Required | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal. | Required | 
 | object_id | A comma separated list of IP object IDs. If this argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match the given list_type will be displayed. Note - In case you don't know what is the object ID, you should run this command without object_id arguemnt to get all the IDs. | Optional | 
 | page_number | Page number to return. The first page number is 1. | Optional | 
 | page_size | Number of results in a page. | Optional | 
@@ -147,7 +147,7 @@ Add a new particular threatening IP address object by its IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. | Required | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal. | Required | 
 | list_target | This argument can be supplied to target either the proxy or routed denylist. If list_target is not specified it will assume both proxy and routed are requested (i.e proxy-routed). The allowed values for list_target are proxy or routed or proxy-routed. This argument limits the denylist type but is ignored for the other list types. Possible values are: proxy, routed, proxy-routed. | Optional | 
 | IP | The IP address of a new particular threatening IP address object. | Required | 
 | mask | The mask address of a new particular threatening IP address object. Default is 32. | Optional | 
@@ -179,7 +179,7 @@ Delete an exising particular threatening IP address object by its object ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. | Required | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal. | Required | 
 | object_id | The ojbect ID of a particular threatening IP address object that should be deleted. | Required | 
 
 
