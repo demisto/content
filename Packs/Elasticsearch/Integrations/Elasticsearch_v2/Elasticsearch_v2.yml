@@ -52,7 +52,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '60'
-  display: Request time (in secondes). The default is 60.
+  display: Request time (in seconds).
   name: timeout
   required: false
   type: 0
