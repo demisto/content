@@ -31,8 +31,8 @@ MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering 
                                       "for training OR fieldForClusterName is incorrect."
 
 PREFIXES_TO_REMOVE = ['incident.']
-REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
-                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
+REGEX_DATE_PATTERN = [re.compile("^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
+                      re.compile("(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
 TFIDF_PARAMS = {'analyzer': 'char', 'max_features': 500, 'ngram_range': (2, 4)}
 
@@ -420,7 +420,7 @@ def normalize_json(obj) -> str:  # type: ignore
     my_dict = recursive_filter(obj, REGEX_DATE_PATTERN, "None", "N/A", None, "")
     extracted_values = [x if isinstance(x, str) else str(x) for x in json_extract(my_dict)]
     my_string = ' '.join(extracted_values)  # json.dumps(my_dict)
-    pattern = re.compile('([^\s\w]|_)+')
+    pattern = re.compile('([^\s\w]|_)+')  # guardrails-disable-line
     my_string = pattern.sub(" ", my_string)
     my_string = my_string.lower()
     return my_string
@@ -505,7 +505,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
 
 def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool,
                            model_hidden: bool) -> None:
-    model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')
+    model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')  # guardrails-disable-line
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
                                                    'modelName': model_name,
                                                    'modelOverride': model_override,
@@ -776,7 +776,7 @@ def load_model64(model_base64: str):
     :return: PostProcessing model
     """
     try:
-        model = pickle.loads(base64.b64decode(model_base64))
+        model = pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
         return model
     except pickle.UnpicklingError:
         return_error("Model exist but cannot be loaded")
