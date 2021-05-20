@@ -29,7 +29,16 @@
         "AccessInvestigation": {
             "mandatory": true,
             "display_name": "Access Investigation"
-        }
+        },
+        "Asset": {
+            "mandatory": true,
+            "display_name": "Asset"
+        },
+        "Identity": {
+        "mandatory": true,
+        "display_name": "Identity"
+    }
+
     },
     "displayedImages": [
         "CommonScripts",

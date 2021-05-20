@@ -24,8 +24,33 @@
                     "simple": "severity"
                 },
                 "status": {
-                    "complex": null,
-                    "simple": "status"
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "notablestatus",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "New, In Progress, Pending, Resolved, Closed"
+										}
+									},
+									"mapped_values": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "1,2,3,4,5"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					},
+					"simple": ""
                 },
                 "urgency": {
                     "complex": null,
