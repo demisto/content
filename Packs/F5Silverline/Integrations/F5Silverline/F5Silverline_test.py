@@ -1,7 +1,7 @@
 import json
 import io
 import pytest
-from F5_Silverline import get_ip_objects_list_command, add_ip_objects_command, delete_ip_objects_command, Client
+from F5Silverline import get_ip_objects_list_command, add_ip_objects_command, delete_ip_objects_command, Client
 
 
 def create_client(base_url: str, verify: bool, headers: dict, proxy: bool):
