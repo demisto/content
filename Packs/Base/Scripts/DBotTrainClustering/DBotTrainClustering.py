@@ -19,7 +19,8 @@ from typing import Type, Tuple
 
 GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
-                          "the group.\n #### - For %s incidents, we didn’t find any matching.\n"
+                          "the group.\n #### - For %s incidents, we didn’t find any matching.\n" \
+                          " #### - Model was trained on **%s**.\n"
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s. please either enlarge the time period " \
@@ -561,8 +562,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     d_outliers = {
         'incidents_ids': [x for x in incidents_df[  # type: ignore
             clustering.model.labels_ == -1].id.values.tolist()],  # type: ignore
-        'incidents': incidents_df[clustering.model.labels_ == -1][display_fields].to_json(
-            # type: ignore
+        'incidents': incidents_df[clustering.model.labels_ == -1][display_fields].to_json(  # type: ignore
             orient='records'),  # type: ignore
     }
     data['outliers'] = d_outliers
@@ -951,8 +951,9 @@ def main():
             field_clustering = ' , '.join(fields_for_clustering)
             field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
             number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
+            training_date = str(model_processed.date_training)
             msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
-                                             field_clustering, field_name, number_of_outliers)
+                                             field_clustering, field_name, number_of_outliers, training_date)
             return_outputs(readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
             model_processed.summary_description = msg
 
