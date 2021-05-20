@@ -1,7 +1,7 @@
 id: 'Get host forensics - Generic '
 version: -1
 name: 'Get host forensics - Generic '
-description: "This playbook purpose is to retrieve forensics from hosts.\nThe available\
+description: "This playbook retrieves forensics from hosts.\nThe available\
   \ integration:\n- Illusive networks. "
 starttaskid: "0"
 tasks:
@@ -41,7 +41,7 @@ tasks:
       version: -1
       name: Is illusive enabled
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -153,20 +153,20 @@ inputs:
 - key: fqdn_or_ip
   value: {}
   required: false
-  description: 'If using illusive integration to retrieve additional forensics please
-    provide fqdn_or_ip of the host that you would like to get the forensics from. '
+  description: 'If using the illusive integration to retrieve additional forensics, 
+    provide fqdn_or_ip of the host from which to get the forensics. '
   playbookInputQuery:
 - key: start_date
   value: {}
   required: false
   description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4
-    minutes,6 months, 1 day, etc.)'
+    minutes,6 months, 1 day, etc.).'
   playbookInputQuery:
 - key: end_date
   value: {}
   required: false
   description: 'Date_range must be "number date_range_unit", examples: (2 hours, 4
-    minutes,6 months, 1 day, etc.)'
+    minutes,6 months, 1 day, etc.).'
   playbookInputQuery:
 outputs: []
 tests:
