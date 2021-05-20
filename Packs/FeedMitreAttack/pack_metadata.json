@@ -18,9 +18,9 @@
         "ATT&CK"
     ],
     "dependencies": {
-        "GetLicenseID": {
+        "CommonTypes": {
             "mandatory": true,
-            "name": "Get License ID"
+            "display_name": "Common Types"
         }
     }
 }
