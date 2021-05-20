@@ -5,6 +5,20 @@
     "self": "https://www.virustotal.com/api/v3/files/:sha256:"
   },
   "data": {
+    "relationships": {
+      "contacted_domains": {
+        "data": [
+          {
+            "type": "domain",
+            "id": "test.org"
+          }
+        ],
+        "links": {
+          "self": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3/relationships/contacted_domains?limit=20",
+          "related": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3/contacted_domains"
+        }
+      }
+    },
     "attributes": {
       "first_seen_itw_date": 1075654056,
       "first_submission_date": 1170892383,
