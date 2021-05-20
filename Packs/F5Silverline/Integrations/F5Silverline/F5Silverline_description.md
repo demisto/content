@@ -1,8 +1,11 @@
-## BaseIntegration Help
+## F5 Silverline
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+To configure an instance of F5 Silverline, you need to obtain the following information.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+* Server URL
+* API Key
 
+## Get your API Key
+1. In F5 Silverline portal, go to **Config** > **API Tokens** .
+2. If you already have an API key you can find it there.
+3. If you do not have an API Client, generate one.
