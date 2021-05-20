@@ -4817,17 +4817,6 @@ script:
       - 'False'
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Indicates that the fleet launches all Spot Instances into a single
-        Availability Zone.
-      isArray: false
-      name: SpotSingleInstanceType
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
     - default: false
       description: The minimum target capacity for Spot Instances in the fleet. If
         the minimum target capacity is not reached, the fleet launches no instances.

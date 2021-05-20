@@ -2958,229 +2958,234 @@ def main():
         verify_certificate = not params.get('insecure', True)
         timeout = params.get('timeout')
         retries = params.get('retries') or 5
+
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
 
-        LOG('Command being called is {command}'.format(command=demisto.command()))
-        if demisto.command() == 'test-module':
+        command = demisto.command()
+        args = demisto.args()
+
+        LOG('Command being called is {command}'.format(command=command))
+
+        if command == 'test-module':
             # This is the call made when pressing the integration test button.
             client = aws_client.aws_session(service='ec2')
             response = client.describe_regions()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
-        elif demisto.command() == 'aws-ec2-describe-regions':
-            describe_regions_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-regions':
+            describe_regions_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-instances':
-            describe_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-instances':
+            describe_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-images':
-            describe_images_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-images':
+            describe_images_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-addresses':
-            describe_addresses_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-addresses':
+            describe_addresses_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-snapshots':
-            describe_snapshots_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-snapshots':
+            describe_snapshots_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-volumes':
-            describe_volumes_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-volumes':
+            describe_volumes_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-launch-templates':
-            describe_launch_templates_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-launch-templates':
+            describe_launch_templates_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-key-pairs':
-            describe_key_pairs_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-key-pairs':
+            describe_key_pairs_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-vpcs':
-            describe_vpcs_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-vpcs':
+            describe_vpcs_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-subnets':
-            describe_subnets_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-subnets':
+            describe_subnets_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-security-groups':
-            describe_security_groups_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-security-groups':
+            describe_security_groups_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-allocate-address':
-            allocate_address_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-allocate-address':
+            allocate_address_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-associate-address':
-            associate_address_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-associate-address':
+            associate_address_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-snapshot':
-            create_snapshot_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-snapshot':
+            create_snapshot_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-snapshot':
-            delete_snapshot_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-snapshot':
+            delete_snapshot_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-image':
-            create_image_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-image':
+            create_image_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-deregister-image':
-            deregister_image_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-deregister-image':
+            deregister_image_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-volume':
-            modify_volume_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-volume':
+            modify_volume_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-tags':
-            create_tags_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-tags':
+            create_tags_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-disassociate-address':
-            disassociate_address_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-disassociate-address':
+            disassociate_address_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-release-address':
-            release_address_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-release-address':
+            release_address_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-start-instances':
-            start_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-start-instances':
+            start_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-stop-instances':
-            stop_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-stop-instances':
+            stop_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-terminate-instances':
-            terminate_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-terminate-instances':
+            terminate_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-volume':
-            create_volume_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-volume':
+            create_volume_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-attach-volume':
-            attach_volume_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-attach-volume':
+            attach_volume_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-detach-volume':
-            detach_volume_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-detach-volume':
+            detach_volume_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-volume':
-            delete_volume_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-volume':
+            delete_volume_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-run-instances':
-            run_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-run-instances':
+            run_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-waiter-instance-running':
-            waiter_instance_running_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-waiter-instance-running':
+            waiter_instance_running_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-waiter-instance-status-ok':
-            waiter_instance_status_ok_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-waiter-instance-status-ok':
+            waiter_instance_status_ok_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-waiter-instance-stopped':
-            waiter_instance_stopped_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-waiter-instance-stopped':
+            waiter_instance_stopped_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-waiter-instance-terminated':
-            waiter_instance_terminated_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-waiter-instance-terminated':
+            waiter_instance_terminated_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-waiter-image-available':
-            waiter_image_available_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-waiter-image-available':
+            waiter_image_available_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-waiter-snapshot_completed':
-            waiter_snapshot_completed_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-waiter-snapshot_completed':
+            waiter_snapshot_completed_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-get-latest-ami':
-            get_latest_ami_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-get-latest-ami':
+            get_latest_ami_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-security-group':
-            create_security_group_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-security-group':
+            create_security_group_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-security-group':
-            delete_security_group_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-security-group':
+            delete_security_group_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-authorize-security-group-ingress-rule':
-            authorize_security_group_ingress_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-authorize-security-group-ingress-rule':
+            authorize_security_group_ingress_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-revoke-security-group-ingress-rule':
-            revoke_security_group_ingress_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-revoke-security-group-ingress-rule':
+            revoke_security_group_ingress_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-revoke-security-group-egress-rule':
-            revoke_security_group_egress_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-revoke-security-group-egress-rule':
+            revoke_security_group_egress_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-copy-image':
-            copy_image_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-copy-image':
+            copy_image_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-copy-snapshot':
-            copy_snapshot_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-copy-snapshot':
+            copy_snapshot_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-reserved-instances':
-            describe_reserved_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-reserved-instances':
+            describe_reserved_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-monitor-instances':
-            monitor_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-monitor-instances':
+            monitor_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-unmonitor-instances':
-            unmonitor_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-unmonitor-instances':
+            unmonitor_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-reboot-instances':
-            reboot_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-reboot-instances':
+            reboot_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-get-password-data':
-            get_password_data_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-get-password-data':
+            get_password_data_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-network-interface-attribute':
-            modify_network_interface_attribute_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-network-interface-attribute':
+            modify_network_interface_attribute_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-instance-attribute':
-            modify_instance_attribute_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-instance-attribute':
+            modify_instance_attribute_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-network-acl':
-            create_network_acl_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-network-acl':
+            create_network_acl_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-network-acl-entry':
-            create_network_acl_entry_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-network-acl-entry':
+            create_network_acl_entry_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-fleet':
-            create_fleet_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-fleet':
+            create_fleet_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-fleet':
-            delete_fleet_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-fleet':
+            delete_fleet_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-fleets':
-            describe_fleets_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-fleets':
+            describe_fleets_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-fleet-instances':
-            describe_fleet_instances_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-fleet-instances':
+            describe_fleet_instances_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-fleet':
-            modify_fleet_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-fleet':
+            modify_fleet_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-launch-template':
-            create_launch_template_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-launch-template':
+            create_launch_template_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-launch-template':
-            delete_launch_template_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-launch-template':
+            delete_launch_template_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-image-attribute':
-            modify_image_attribute_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-image-attribute':
+            modify_image_attribute_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-network-interface-attribute':
-            modify_network_interface_attribute_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-network-interface-attribute':
+            modify_network_interface_attribute_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-modify-instance-attribute':
-            modify_instance_attribute_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-modify-instance-attribute':
+            modify_instance_attribute_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-detach-internet-gateway':
-            detach_internet_gateway_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-detach-internet-gateway':
+            detach_internet_gateway_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-internet-gateway':
-            delete_internet_gateway_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-internet-gateway':
+            delete_internet_gateway_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-describe-internet-gateway':
-            describe_internet_gateway_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-describe-internet-gateway':
+            describe_internet_gateway_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-subnet':
-            delete_subnet_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-subnet':
+            delete_subnet_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-delete-vpc':
-            delete_vpc_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-delete-vpc':
+            delete_vpc_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-create-traffic-mirror-session':
-            create_traffic_mirror_session_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-create-traffic-mirror-session':
+            create_traffic_mirror_session_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-allocate-hosts':
-            allocate_hosts_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-allocate-hosts':
+            allocate_hosts_command(args, aws_client)
 
-        elif demisto.command() == 'aws-ec2-release-hosts':
-            release_hosts_command(demisto.args(), aws_client)
+        elif command == 'aws-ec2-release-hosts':
+            release_hosts_command(args, aws_client)
 
     except ResponseParserError as e:
         return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
