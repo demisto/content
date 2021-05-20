@@ -499,6 +499,8 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
 
     alerts = all_alerts[:max_fetch]
     last_alert_ids = last_run.get('last_alert_ids', [])
+    if last_alert_ids:
+        last_alert_ids = json.loads(last_alert_ids)  # unescape the dumped json
     incidents = []
 
     for alert in alerts:
