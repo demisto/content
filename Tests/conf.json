@@ -1006,7 +1006,8 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "pid_threshold": 8
         },
         {
             "playbookID": "Test_export_indicators_service",
