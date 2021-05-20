@@ -193,3 +193,34 @@ There is no context output for this command.
 #### Human Readable Output
 
 >IP object with ID: d3a8179e-043d-43cb-acff-745b6765d18a deleted successfully from the denylist list.
+
+
+## Fetch F5 Silverline alerts
+
+| **F5 Silverline supported alert type** | **Incident Type** | 
+| --- | --- |
+| WAF logs | F5 Silverline WAF Events |
+| L7 DDoS logs | F5 Silverline L7 DDoS Events |  
+| Threat Intelligence logs | F5 Silverline Threat Intelligence Events |  
+| iRule logs | F5 Silverline iRule Events |  
+
+
+In order to fetch alerts from F5 Silverline you should follow the instructions below:
+1. In your Cortex XSOAR install F5 Silverline integration.
+2. In F5 Silverline portal, go to **Config** > **Log Export** .
+3. F5 Silverline "Log Export" should be configured with a "Host" destination that supports TLS+TCP communication.
+4. Follow the instructions here: https://support.f5silverline.com/hc/en-us/articles/214152048
+5. In your Cortex XSOAR install Syslog integration.
+6. Configure the Syslog instance with your log receiver details:
+   * Click on "Fetches incidents".
+   * Set the Classifier to "F5 Silverline Classifier". 
+   * Set the Mapper to "F5 Silverline Mapper".
+   * IP address - The IP of your log receiver host.
+   * Port - The port of your log receiver host.
+   * Protocol - TCP or UDP.
+   * Format - Auto.
+7. Once the log receiver is configured it should forward the logs in TCP or UDP toward Cortex XSOAR - Syslog integration.
+If everything goes as expected you should be able to ses that incidents were successfully pulled. 
+
+* After incidents are being created you can go to incidents page and sort them by their type.
+* You can go to an incident info tab (by clicking on an incident) and see all of the incident fields (under the Case Details header). 
