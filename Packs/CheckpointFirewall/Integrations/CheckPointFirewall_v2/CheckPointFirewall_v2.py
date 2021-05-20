@@ -367,8 +367,8 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
     name = argToList(name)
     ip_address = argToList(ip_address)
     groups = argToList(groups)
-    ignore_warnings = argToBool(ignore_warnings)
-    ignore_errors = argToBool(ignore_errors)
+    ignore_warnings = argToBoolean(ignore_warnings)
+    ignore_errors = argToBoolean(ignore_errors)
 
     result = []
     printable_result = {}
