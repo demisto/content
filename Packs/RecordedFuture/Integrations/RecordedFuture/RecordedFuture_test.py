@@ -57,7 +57,7 @@ class RFTest(unittest.TestCase):
     def test_ip_reputation(self) -> None:
         resp = lookup_command(self.client, "37.48.83.137", "ip")
         entity = resp[0].to_context()["Contents"]["data"]["results"][0]
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']
+        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']
 
         self.assertIsInstance(resp[0], CommandResults)
         # there are many rules that are concatenated
@@ -67,7 +67,7 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence(self) -> None:
         resp = enrich_command(self.client, "184.168.221.96", "ip", True, True)
-        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']  # noqa
+        context = resp[0].to_context()["EntryContext"]['RecordedFuture.IP(val.name && val.name == obj.name)']  # noqa
 
         self.assertIsInstance(resp[0], CommandResults)
         # rules are concatenated
