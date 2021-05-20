@@ -15,14 +15,12 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_ENTRIES = 100
 TIMEOUT = '30'
+BASE_URL = "https://api.security.microsoft.com"
+
 ''' CLIENT CLASS '''
-
-
-# todo Add Microsoft 365 Defender Alerts and add a mapping to it - talk to @Arseny Krupnik about it.
-
 class Client:
     @logger
-    def __init__(self, app_id: str, base_url: str, verify: bool, proxy: bool):
+    def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()

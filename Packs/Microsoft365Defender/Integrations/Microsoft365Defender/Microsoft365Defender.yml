@@ -315,7 +315,7 @@ script:
   subtype: python3
   type: python
 tests:
-- Microsoft 365 Defender - Test
+- No tests
 defaultmapperin: Microsoft 365 Defender - Incoming Mapper
 fromversion: 5.5.0
 beta: true
