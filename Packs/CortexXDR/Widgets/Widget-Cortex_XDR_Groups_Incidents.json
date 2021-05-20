@@ -1,0 +1,42 @@
+{
+    "sortValues": null,
+    "size": 0,
+    "dataType": "scripts",
+    "itemVersion": "",
+    "params": {
+        "returnWidgetType": "incidents",
+        "tableColumns": []
+    },
+    "query": "DBotGroupXDRIncidents",
+    "modified": "2021-05-20T11:37:39.727893798Z",
+    "shouldCommit": false,
+    "fromServerVersion": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "name": "Cortex XDR Grouping - Incidents",
+    "vcShouldKeepItemLegacyProdMachine": false,
+    "dateRange": {
+        "period": {
+            "byFrom": "days",
+            "fromValue": null
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "commitMessage": "",
+    "isPredefined": false,
+    "vcShouldIgnore": false,
+    "packID": "",
+    "version": 1,
+    "toServerVersion": "",
+    "id": "c89bc765-50a9-479f-88e5-d256e09788c5",
+    "category": "",
+    "sort": null,
+    "prevName": "Cortex XDR Grouping - Incidents",
+    "widgetType": "text",
+    "customCalculation": {
+        "operation": "count",
+        "fieldName": "",
+        "expression": ""
+    }
+}
