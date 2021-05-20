@@ -876,7 +876,10 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[D
 
     def get_assets_for_ips_batch(b: List):
         filter_query = ' or '.join([f'interfaces contains ip_addresses contains value="{ip}"' for ip in b])
-        return client.assets_list(filter_=filter_query)
+        try:
+            return client.assets_list(filter_=filter_query)
+        except Exception as e:
+            raise DemistoException(f'Error occurred during asset enrichment. Query: {filter_query}') from e
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
