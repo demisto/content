@@ -49,8 +49,8 @@
     else
       echo "installing venv"
       NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
+      venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
     fi
-  - venv/bin/pip3 install -r .circleci/build-requirements.txt >> $ARTIFACTS_FOLDER/logs/installations.log 2>&1
   - source ./venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
