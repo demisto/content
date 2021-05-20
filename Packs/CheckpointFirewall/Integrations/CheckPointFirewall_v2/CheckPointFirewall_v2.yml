@@ -2,7 +2,7 @@ commonfields:
   id: CheckPointFirewall_v2
   version: -1
 name: CheckPointFirewall_v2
-display: Check Point Firewall v2
+display: CheckPoint Firewall v2
 category: IT Services
 description: Use this integration to read information and send commands to the Check
   Point Firewall server.
