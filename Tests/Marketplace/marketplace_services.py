@@ -331,7 +331,44 @@ class Pack(object):
             return pack_versions[0].vstring
 
     @staticmethod
-    def _get_all_pack_images(pack_integration_images, display_dependencies_images, dependencies_data):
+    def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
+                                    pack_dependencies_by_download_count: list):
+        """ By Issue #32038
+        1. Sort pack integration images by alphabetical order
+        2. Sort pack dependencies by download count
+        Pack integration images are shown before pack dependencies integration images
+
+        Args:
+            pack_integration_images (list): list of pack integration images
+            pack_dependencies_integration_images_dict: a mapping of pack dependency name to its integration images
+            pack_dependencies_by_download_count: a list of pack dependencies sorted by download count
+
+        Returns:
+            list: list of sorted integration images
+
+        """
+
+        def sort_by_name(integration_image: dict):
+            return integration_image.get('name', '')
+
+        # sort packs integration images
+        pack_integration_images = sorted(pack_integration_images, key=sort_by_name)
+
+        # sort pack dependencies integration images
+        all_dep_int_imgs = pack_integration_images
+        for dep_pack_name in pack_dependencies_by_download_count:
+            if dep_pack_name in pack_dependencies_integration_images_dict:
+                logging.info(f'Adding {dep_pack_name} to deps int imgs')
+                dep_int_imgs = sorted(pack_dependencies_integration_images_dict[dep_pack_name], key=sort_by_name)
+                for dep_int_img in dep_int_imgs:
+                    if dep_int_img not in all_dep_int_imgs:  # avoid duplicates
+                        all_dep_int_imgs.append(dep_int_img)
+
+        return all_dep_int_imgs
+
+    @staticmethod
+    def _get_all_pack_images(pack_integration_images, display_dependencies_images, dependencies_data,
+                             pack_dependencies_by_download_count):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
 
@@ -339,31 +376,34 @@ class Pack(object):
              pack_integration_images (list): list of uploaded to gcs integration images and it paths in gcs.
              display_dependencies_images (list): list of pack names of additional dependencies images to display.
              dependencies_data (dict): all level dependencies data.
+             pack_dependencies_by_download_count (list): list of pack names that are dependencies of the given pack
+            sorted by download count.
 
         Returns:
             list: collection of integration display name and it's path in gcs.
 
         """
-        additional_dependencies_data = {k: v for (k, v) in dependencies_data.items()
-                                        if k in display_dependencies_images}
+        dependencies_integration_images_dict = {}
+        additional_dependencies_data = {k: v for k, v in dependencies_data.items() if k in display_dependencies_images}
 
         for dependency_data in additional_dependencies_data.values():
-            dependency_integration_images = dependency_data.get('integrations', [])
+            for dep_int_img in dependency_data.get('integrations', []):
+                dep_int_img_gcs_path = dep_int_img.get('imagePath', '')  # image public url
+                dep_int_img['name'] = Pack.remove_contrib_suffix_from_name(dep_int_img.get('name', ''))
+                dep_pack_name = os.path.basename(os.path.dirname(dep_int_img_gcs_path))
 
-            for dependency_integration in dependency_integration_images:
-                dependency_integration_gcs_path = dependency_integration.get('imagePath', '')  # image public url
-                dependency_integration['name'] = Pack.remove_contrib_suffix_from_name(
-                    dependency_integration.get('name', ''))
-                dependency_pack_name = os.path.basename(
-                    os.path.dirname(dependency_integration_gcs_path))  # extract pack name from public url
+                if dep_pack_name not in display_dependencies_images:
+                    continue  # skip if integration image is not part of displayed images of the given pack
 
-                if dependency_pack_name not in display_dependencies_images:
-                    continue  # skip if integration image is not part of displayed pack
+                if dep_int_img not in pack_integration_images:  # avoid duplicates in list
+                    if dep_pack_name in dependencies_integration_images_dict:
+                        dependencies_integration_images_dict[dep_pack_name].append(dep_int_img)
+                    else:
+                        dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
 
-                if dependency_integration not in pack_integration_images:  # avoid duplicates in list
-                    pack_integration_images.append(dependency_integration)
-
-        return pack_integration_images
+        return Pack.organize_integration_images(
+            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
+        )
 
     def is_feed_pack(self, yaml_content, yaml_type):
         """
@@ -1579,6 +1619,11 @@ class Pack(object):
             dict: parsed pack metadata.
 
         """
+        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
+        displayed_dependencies = user_metadata.get('displayedImages', [])
+        trending_packs = None
+        pack_dependencies_by_download_count = displayed_dependencies
+
         # ===== Pack Regular Attributes =====
         self._support_type = user_metadata.get('support', Metadata.XSOAR_SUPPORT)
         self._support_details = self._create_support_section(
@@ -1598,33 +1643,36 @@ class Pack(object):
         self._dependencies = self._parse_pack_dependencies(user_metadata.get('dependencies', {}), dependencies_data)
 
         # ===== Pack Private Attributes =====
-        self._is_private_pack = user_metadata.get('partnerId', False)
-        self._is_premium = True if self._is_private_pack else False
-        self._preview_only = True if self._is_private_pack else False
+        self._is_private_pack = 'partnerId' in user_metadata
+        self._is_premium = self._is_private_pack
+        self._preview_only = get_valid_bool(user_metadata.get('previewOnly', False))
         self._price = convert_price(pack_id=self._pack_name, price_value_input=user_metadata.get('price'))
         if self._is_private_pack:
             self._vendor_id = user_metadata.get('vendorId', "")
             self._partner_id = user_metadata.get('partnerId', "")
             self._partner_name = user_metadata.get('partnerName', "")
             self._content_commit_hash = user_metadata.get('contentCommitHash', "")
+            # Currently all content packs are legacy.
+            # Since premium packs cannot be legacy, we directly set this attribute to false.
+            self._legacy = False
 
         # ===== Pack Statistics Attributes =====
-        landing_page_sections = mp_statistics.StatisticsHandler.get_landing_page_sections()
-        trending_packs = None
-
         if not self._is_private_pack and statistics_handler:  # Public Content case
             self._pack_statistics_handler = mp_statistics.PackStatisticsHandler(
-                self._pack_name, statistics_handler.packs_statistics_df, index_folder_path
+                self._pack_name, statistics_handler.packs_statistics_df, statistics_handler.packs_download_count_desc,
+                displayed_dependencies
             )
             self._downloads_count = self._pack_statistics_handler.download_count
             trending_packs = statistics_handler.trending_packs
+            pack_dependencies_by_download_count = self._pack_statistics_handler.displayed_dependencies_sorted
 
         self._tags = self._collect_pack_tags(user_metadata, landing_page_sections, trending_packs)
         self._search_rank = mp_statistics.PackStatisticsHandler.calculate_search_rank(
             tags=self._tags, certification=self._certification, content_items=self._content_items
         )
         self._related_integration_images = self._get_all_pack_images(
-            self._displayed_integration_images, user_metadata.get('displayedImages', []), dependencies_data
+            self._displayed_integration_images, displayed_dependencies, dependencies_data,
+            pack_dependencies_by_download_count
         )
 
     def format_metadata(self, user_metadata, index_folder_path, packs_dependencies_mapping, build_number, commit_hash,

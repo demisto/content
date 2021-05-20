@@ -1,0 +1,2 @@
+[file:AWS_DynamoDB.yml]
+ignore=BA108,BA109
