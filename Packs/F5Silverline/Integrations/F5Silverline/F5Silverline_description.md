@@ -8,4 +8,4 @@ To configure an instance of F5 Silverline, you need to obtain the following info
 ## Get your API Key
 1. In F5 Silverline portal, go to **Config** > **API Tokens** .
 2. If you already have an API key you can find it there.
-3. If you do not have an API Client, generate one.
+3. If you do not have an API Key, generate one by clicking the**Add** button.
