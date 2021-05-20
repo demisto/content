@@ -180,7 +180,24 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
+        # test client and auth
         client.req('GET', 'sec/v1/insights', {})
+
+        # test fetch_incidents command
+        first_fetch_time = arg_to_datetime(
+            arg=demisto.params().get('first_fetch', '1 day'),
+            arg_name='First fetch time'
+        )
+        first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
+        # Using assert as a type guard (since first_fetch_time is always an int when required=True)
+        assert isinstance(first_fetch_timestamp, int)
+        fetch_incidents(
+            client=client,
+            max_results=20,
+            last_run={},  # getLastRun() gets the last run dict
+            first_fetch_time=first_fetch_timestamp,
+            fetch_query=''  # defaults to status:in("new", "inprogress")
+        )
         message = 'ok'
     except DemistoException as e:
         if 'Unauthorized' in str(e):
