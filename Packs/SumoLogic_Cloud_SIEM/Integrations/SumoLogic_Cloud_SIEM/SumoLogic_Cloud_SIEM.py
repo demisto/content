@@ -69,7 +69,7 @@ def add_to_query(q):
 
 def arg_time_query_to_q(q, argval, timefield):
     '''
-    Convert last-seen argument to querystring
+    Convert created argument to querystring
     '''
     if not argval or argval == 'All time':
         return q
@@ -188,9 +188,9 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get insight details
     '''
-    insight_id = args.get('insight-id')
+    insight_id = args.get('insight_id')
     if not insight_id:
-        raise ValueError('insight-id not specified')
+        raise ValueError('insight_id not specified')
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), {'exclude': 'signals.allRecords'})
     insight = insight_signal_to_readable(resp_json['data'])
@@ -211,7 +211,7 @@ def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults
     '''
     Get comments for insight
     '''
-    insight_id = args.get('insight-id')
+    insight_id = args.get('insight_id')
     resp_json = client.req('GET', 'sec/v1/insights/{}/comments'.format(insight_id))
     comments = [{'Id': c['id'], 'Body':c['body'], 'Author': c['author']['username'],
                  'Timestamp': c['timestamp'], 'InsightId': insight_id} for c in resp_json['data']['comments']]
@@ -230,9 +230,9 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get signal details
     '''
-    signal_id = args.get('signal-id', None)
+    signal_id = args.get('signal_id', None)
     if not signal_id:
-        raise ValueError('signal-id not specified')
+        raise ValueError('signal_id not specified')
 
     resp_json = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
     signal = resp_json['data']
@@ -254,9 +254,9 @@ def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Get entity details
     '''
-    entity_id = args.get('entity-id', None)
+    entity_id = args.get('entity_id', None)
     if not entity_id:
-        raise ValueError('entity-id not specified')
+        raise ValueError('entity_id not specified')
 
     resp_json = client.req('GET', 'sec/v1/entities/{}'.format(entity_id), {'expand': 'inventory'})
     entity = entity_to_readable(resp_json['data'])
@@ -407,7 +407,7 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     Provide "reason" arg when closing an Insight with status=closed.
     '''
-    insight_id = args.get('insight-id')
+    insight_id = args.get('insight_id')
     reqbody = {}
     reqbody['status'] = args.get('status')
     if args.get('status') == 'closed' and args.get('resolution'):
@@ -466,7 +466,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''
     Add to match list
     '''
-    match_list_id = args.get('match-list-id')
+    match_list_id = args.get('match_list_id')
     item = {}
     item['active'] = args.get('active')
     item['description'] = args.get('description')
@@ -568,7 +568,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
     '''
     Add Indicator to a Threat Intel Source
     '''
-    threat_intel_source_id = args.get('threat-intel-source-id')
+    threat_intel_source_id = args.get('threat_intel_source_id')
     item = {}
     item['active'] = args.get('active')
     item['description'] = args.get('description')

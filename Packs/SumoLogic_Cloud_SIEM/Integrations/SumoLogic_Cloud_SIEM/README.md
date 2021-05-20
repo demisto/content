@@ -1,5 +1,5 @@
 Freeing the analyst with autonomous decisions
-This integration was integrated and tested with version 1.0.0 of SumoLogicSEC
+This integration was integrated and tested with version 6.1.0 of SumoLogicSEC
 ## Configure SumoLogicSEC on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -34,14 +34,41 @@ Get Insight details for a specific Insight ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight-id | The insight to retrieve details for. | Required | 
+| insight_id | The insight to retrieve details for. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Insight.Id | unknown | The insight ID | 
+| SumoLogic.Sec.Insight.Assignee | string | User or team assigned to the Insight | 
+| SumoLogic.Sec.Insight.Closed | Date | Closed date | 
+| SumoLogic.Sec.Insight.ClosedBy | String | Closed by user | 
+| SumoLogic.Sec.Insight.Created | Date | Created date | 
+| SumoLogic.Sec.Insight.Description | String | Description of the Insight | 
+| SumoLogic.Sec.Insight.Entity | String | Entity name associated with the Insight | 
+| SumoLogic.Sec.Insight.Id | String | The ID of the Insight | 
+| SumoLogic.Sec.Insight.LastUpdated | Date | The time the Insight was last updated | 
+| SumoLogic.Sec.Insight.LastUpdatedBy | string | The last user to update the Insight | 
+| SumoLogic.Sec.Insight.Name | String | The name of the Insight | 
+| SumoLogic.Sec.Insight.ReadableId | String | The ID of the Insight in readable form | 
+| SumoLogic.Sec.Insight.Resolution | String | Resolution for closed Insight | 
+| SumoLogic.Sec.Insight.Severity | String | The severity of the Insight | 
+| SumoLogic.Sec.Insight.Signals.contentType | String | Type of content that triggered the Signal | 
+| SumoLogic.Sec.Insight.Signals.description | String | Description of the Signal | 
+| SumoLogic.Sec.Insight.Signals.id | String | The ID of the Signal | 
+| SumoLogic.Sec.Insight.Signals.name | String | The name of the Signal | 
+| SumoLogic.Sec.Insight.Signals.recordCount | Number | Number of records associated with the Signal | 
+| SumoLogic.Sec.Insight.Signals.ruleId | String | Rule ID associated with the Signal | 
+| SumoLogic.Sec.Insight.Signals.severity | Number | The severity of the Signal | 
+| SumoLogic.Sec.Insight.Signals.stage | String | The stage of the Signal | 
+| SumoLogic.Sec.Insight.Signals.timestamp | Date | Signal timestamp | 
+| SumoLogic.Sec.Insight.Source | String | The source of the Insight | 
+| SumoLogic.Sec.Insight.Status | String | The status of the Insight | 
+| SumoLogic.Sec.Insight.TimeToDetection | Number | Insight time to detection | 
+| SumoLogic.Sec.Insight.TimeToRemediation | Number | Insight time to remediation | 
+| SumoLogic.Sec.Insight.TimeToResponse | Number | Insight time to response | 
+| SumoLogic.Sec.Insight.Timestamp | Date | Insight timestamp | 
 
 
 #### Command Example
@@ -67,12 +94,19 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight-id | The insight ID for which to retrieve comments. . | Required | 
+| insight_id | The insight ID for which to retrieve comments. | Required | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.Insight.CommentList..Id | String | ID of comment | 
+| SumoLogic.Sec.Insight.CommentList..Body | String | Comment contents | 
+| SumoLogic.Sec.Insight.CommentList..Author | String | User that created the comment | 
+| SumoLogic.Sec.Insight.CommentList..Timestamp | Date | Comment created timestamp | 
+| SumoLogic.Sec.Insight.CommentList..InsightId | String | The ID of the Insight | 
+
 
 #### Command Example
 `!sumologic-sec-insight-get-comments insight-id=INSIGHT-116`
@@ -97,12 +131,25 @@ Get Signal details for a specific Signal ID. Signal details command references s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| signal-id | The signal to retrieve details for. | Required | 
+| signal_id | The signal to retrieve details for. | Required | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.Signal.ContentType | String | Type of content that triggered the Signal | 
+| SumoLogic.Sec.Signal.Description | String | Description of the Signal | 
+| SumoLogic.Sec.Signal.Entity | String | Entity name associated with the Signal | 
+| SumoLogic.Sec.Signal.Id | String | The ID of the Signal | 
+| SumoLogic.Sec.Signal.Name | String | The name of the Signal | 
+| SumoLogic.Sec.Signal.RecordCount | Number | Number of records associated with the Signal | 
+| SumoLogic.Sec.Signal.RuleId | String | Rule ID associated with the Signal | 
+| SumoLogic.Sec.Signal.Severity | Number | The severity of the Signal | 
+| SumoLogic.Sec.Signal.Stage | String | The stage of the Signal | 
+| SumoLogic.Sec.Signal.Suppressed | Boolean | Whether or not the Signal was suppressed | 
+| SumoLogic.Sec.Signal.Timestamp | Date | Signal timestamp | 
+
 
 #### Command Example
 `!sumologic-sec-signal-get-details signal-id=e0e7096b-2f91-5b72-b1a2-db48ce882dfc`
@@ -112,6 +159,7 @@ Signal Details:
 |Id|Name|RuleId|Description|Severity|ContentType|Timestamp|Entity
 |---|---|---|---|---|---|---|---|
 | e0e7096b-2f91-5b72-b1a2-db48ce882dfc | Potential malicious JVM download | LEGACY-S00062 | A document was downloaded and opened followed by a file download using a Java user-agent. | 4 | RULE | 2021-02-18T22:04:08.230000 | 1.2.3.4
+
 
 
 ### sumologic-sec-entity-get-details
@@ -131,7 +179,18 @@ Get entity details for a specific entity ID
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.Entity.ActivityScore | Number | Entity Activity Score | 
+| SumoLogic.Sec.Entity.FirstSeen | Date | When the Entity was first seen | 
+| SumoLogic.Sec.Entity.Hostname | String | Entity hostname | 
+| SumoLogic.Sec.Entity.Id | String | Entity ID | 
+| SumoLogic.Sec.Entity.IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogic.Sec.Entity.LastSeen | Date | When the Entity was last seen | 
+| SumoLogic.Sec.Entity.Name | String | The Entity name | 
+| SumoLogic.Sec.Entity.OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 
+| SumoLogic.Sec.Entity.InventoryData | Boolean | Whether or not this Entity was ingested from inventory e.g. Active Directory | 
+
 
 #### Command Example
 `!sumologic-sec-entity-get-details entity-id=_hostname-win10--admin.obfuscated`
@@ -156,14 +215,47 @@ Search insights using available filters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query string to search. | Optional | 
+| query | Use a query string to search, see API documentation for more details. | Optional | 
+| created | When the insight was created. Defaults to 'All time' if no time arguments are specified. Possible values are: All time, Last week, Last 48 hours, Last 24 hours. | Optional | 
+| status | Comma separated list of values from the options: new,inprogress,closed. | Optional | 
+| asignee | User assigned to Insights. | Optional | 
 | offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional | 
 | limit | The maximum number of items to return. Default is 10. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.InsightList..Assignee | String | User or team assigned to the Insight | 
+| SumoLogic.Sec.InsightList..Closed | Date | Closed date | 
+| SumoLogic.Sec.InsightList..ClosedBy | String | Closed by user | 
+| SumoLogic.Sec.InsightList..Created | Date | Created date | 
+| SumoLogic.Sec.InsightList..Description | String | Description of the Insight | 
+| SumoLogic.Sec.InsightList..Entity | String | Entity name associated with the Insight | 
+| SumoLogic.Sec.InsightList..Id | String | The ID of the Insight | 
+| SumoLogic.Sec.InsightList..LastUpdated | Date | The time the Insight was last updated | 
+| SumoLogic.Sec.InsightList..LastUpdatedBy | String | The last user to update the Insight | 
+| SumoLogic.Sec.InsightList..Name | String | The name of the Insight | 
+| SumoLogic.Sec.InsightList..ReadableId | String | The ID of the Insight in readable form | 
+| SumoLogic.Sec.InsightList..Resolution | String | Resolution for closed Insight | 
+| SumoLogic.Sec.InsightList..Severity | String | The severity of the Insight | 
+| SumoLogic.Sec.InsightList..Signals.contentType | String | Type of content that triggered the Signal | 
+| SumoLogic.Sec.InsightList..Signals.description | String | Description of the Signal | 
+| SumoLogic.Sec.InsightList..Signals.id | String | The ID of the Signal | 
+| SumoLogic.Sec.InsightList..Signals.name | String | The name of the Signal | 
+| SumoLogic.Sec.InsightList..Signals.recordCount | Number | Number of records associated with the Signal | 
+| SumoLogic.Sec.InsightList..Signals.ruleId | String | Rule ID associated with the Signal | 
+| SumoLogic.Sec.InsightList..Signals.severity | Number | The severity of the Signal | 
+| SumoLogic.Sec.InsightList..Signals.stage | String | The stage of the Signal | 
+| SumoLogic.Sec.InsightList..Signals.timestamp | Date | Signal timestamp | 
+| SumoLogic.Sec.InsightList..Source | String | The source of the Insight | 
+| SumoLogic.Sec.InsightList..Status | String | The status of the Insight | 
+| SumoLogic.Sec.InsightList..TimeToDetection | Number | Insight time to detection | 
+| SumoLogic.Sec.InsightList..TimeToRemediation | Number | Insight time to remediation | 
+| SumoLogic.Sec.InsightList..TimeToResponse | Number | Insight time to response | 
+| SumoLogic.Sec.InsightList..Timestamp | Date | Insight timestamp | 
+
 
 #### Command Example
 `!sumologic-sec-insight-search query="timestamp:>\"2021-02-01T05:00:00+00:00\" status:\"closed\" AND severity:>\"MEDIUM\"" limit=3`
@@ -190,14 +282,29 @@ Search signals using available filters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query string to search. | Optional | 
+| query | Use a query string to search, see API documentation for more details. | Optional | 
+| created | When the Signal was created. Defaults to 'All time' if no time arguments are specified. Possible values are: All time, Last week, Last 48 hours, Last 24 hours. Default is All time. | Optional | 
+| contentType | Content type associated with the signals. Options: ANOMALY, DEFAULT, THREATINTEL, RULE. Possible values are: ANOMALY, DEFAULT, THREATINTEL, RULE. | Optional | 
 | offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional | 
 | limit | The maximum number of items to return. Default is 10. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.SignalList..ContentType | String | Type of content that triggered the Signal | 
+| SumoLogic.Sec.SignalList..Description | String | Description of the Signal | 
+| SumoLogic.Sec.SignalList..Entity | String | Entity name associated with the Signal | 
+| SumoLogic.Sec.SignalList..Id | String | The ID of the Signal | 
+| SumoLogic.Sec.SignalList..Name | String | The name of the Signal | 
+| SumoLogic.Sec.SignalList..RecordCount | Number | Number of records associated with the Signal | 
+| SumoLogic.Sec.SignalList..RuleId | String | Rule ID associated with the Signal | 
+| SumoLogic.Sec.SignalList..Severity | Number | The severity of the Signal | 
+| SumoLogic.Sec.SignalList..Stage | String | The stage of the Signal | 
+| SumoLogic.Sec.SignalList..Suppressed | Boolean | Whether or not the Signal was suppressed | 
+| SumoLogic.Sec.SignalList..Timestamp | Date | Signal timestamp | 
+
 
 #### Command Example
 `!sumologic-sec-signal-search query="timestamp:NOW-7D..NOW name:contains(\"Internal\")"`
@@ -207,6 +314,7 @@ Signals:
 |Id|Name|Entity|RuleId|Description|Severity|Stage|Timestamp|ContentType|Tags|
 |---|---|---|---|---|---|---|---|---|---|
 | b50fd570-341b-576d-85b5-8b5cd17c0aee | IP Address Scan - Internal | 1.2.3.4 | LEGACY-S00050 | A scan of IP addresses | 3 | Discovery | 2021-04-22T04:08:13.514000 | RULE | _mitreAttackTactic:TA0007,<br>_mitreAttackTactic:TA0043,<br>_mitreAttackTechnique:T1046,<br>_mitreAttackTechnique:T1595 |
+
 
 
 ### sumologic-sec-entity-search
@@ -221,14 +329,34 @@ Search entities using the available filters
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query string to search. | Optional | 
+| query | Use a query string to search, see API documentation for more details. | Optional | 
+| ip | IP Address to search for e.g. 1.2.3.4. | Optional | 
+| hostname | Hostname to search for e.g. host.example.com. | Optional | 
+| username | Username to search for e.g. admin. | Optional | 
+| type | Entity type to search for. Options: username, hostname, ip, mac. Possible values are: username, hostname, ip, mac. | Optional | 
+| whitelisted | Is the Entity whitelisted? true/false. Possible values are: true, false. | Optional | 
+| tag | Tag contains value. | Optional | 
 | offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional | 
 | limit | The maximum number of items to return. Default is 10. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.EntityList..ActivityScore | Number | Entity Activity Score | 
+| SumoLogic.Sec.EntityList..FirstSeen | Date | When the Entity was first seen | 
+| SumoLogic.Sec.EntityList..Id | String | Entity ID | 
+| SumoLogic.Sec.EntityList..IpHostname | String | Hostname associated with IP Entity | 
+| SumoLogic.Sec.EntityList..IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogic.Sec.EntityList..LastSeen | Date | When the Entity was last seen | 
+| SumoLogic.Sec.EntityList..Name | String | The Entity name | 
+| SumoLogic.Sec.EntityList..OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 
+| SumoLogic.Sec.EntityList..InventoryData | Boolean | Whether or not this Entity was ingested from inventory e.g. Active Directory | 
+| SumoLogic.Sec.EntityList..Hostname | String | Entity hostname | 
+| SumoLogic.Sec.EntityList..Department | String | Username Entity department | 
+| SumoLogic.Sec.EntityList..EmployeeId | String | Username Entity employee ID | 
+
 
 #### Command Example
 `!sumologic-sec-entity-search query="type:\"ip\" activityScore:>=3"`
@@ -253,14 +381,44 @@ Change status of Insight
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight-id | The insight to change status for. | Required | 
+| insight_id | The insight to change status for. | Required | 
 | status | The desired Insight status. Possible values are: new, inprogress, closed. Default is in-progress. | Optional | 
-| resolution | Resolution for closing Insight. Valid values are: "Resolved", "False Positive", "No Action", "Duplicate". Possible values are: Resolved, False_Positive, No_Action, Duplicate. Default is Resolved. | Optional | 
+| resolution | Resolution for closing Insight. Valid values are: "Resolved", "False Positive", "No Action", "Duplicate". Possible values are: Resolved, False Positive, No Action, Duplicate. Default is Resolved. | Optional | 
 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.Insight.Assignee | String | User or team assigned to the Insight | 
+| SumoLogic.Sec.Insight.Closed | Date | Closed date | 
+| SumoLogic.Sec.Insight.ClosedBy | String | Closed by user | 
+| SumoLogic.Sec.Insight.Created | Date | Created date | 
+| SumoLogic.Sec.Insight.Description | String | Description of the Insight | 
+| SumoLogic.Sec.Insight.Entity | String | Entity name associated with the Insight | 
+| SumoLogic.Sec.Insight.Id | String | The ID of the Insight | 
+| SumoLogic.Sec.Insight.LastUpdated | Date | The time the Insight was last updated | 
+| SumoLogic.Sec.Insight.LastUpdatedBy | String | The last user to update the Insight | 
+| SumoLogic.Sec.Insight.Name | String | The name of the Insight | 
+| SumoLogic.Sec.Insight.ReadableId | String | The ID of the Insight in readable form | 
+| SumoLogic.Sec.Insight.Resolution | String | Resolution for closed Insight | 
+| SumoLogic.Sec.Insight.Severity | String | The severity of the Insight | 
+| SumoLogic.Sec.Insight.Signals.contentType | String | Type of content that triggered the Signal | 
+| SumoLogic.Sec.Insight.Signals.description | String | Description of the Signal | 
+| SumoLogic.Sec.Insight.Signals.id | String | The ID of the Signal | 
+| SumoLogic.Sec.Insight.Signals.name | String | The name of the Signal | 
+| SumoLogic.Sec.Insight.Signals.recordCount | Number | Number of records associated with the Signal | 
+| SumoLogic.Sec.Insight.Signals.ruleId | String | Rule ID associated with the Signal | 
+| SumoLogic.Sec.Insight.Signals.severity | Number | The severity of the Signal | 
+| SumoLogic.Sec.Insight.Signals.stage | String | The stage of the Signal | 
+| SumoLogic.Sec.Insight.Signals.timestamp | Date | Signal timestamp | 
+| SumoLogic.Sec.Insight.Source | String | The source of the Insight | 
+| SumoLogic.Sec.Insight.Status | String | The status of the Insight | 
+| SumoLogic.Sec.Insight.TimeToDetection | Number | Insight time to detection | 
+| SumoLogic.Sec.Insight.TimeToRemediation | Number | Insight time to remediation | 
+| SumoLogic.Sec.Insight.TimeToResponse | Number | Insight time to response | 
+| SumoLogic.Sec.Insight.Timestamp | Date | Insight timestamp | 
+
 
 #### Command Example
 `!sumologic-sec-insight-set-status insight-id=INSIGHT-116 status=closed resolution="No Action"`
@@ -270,6 +428,7 @@ Insight Details:
 |Id|ReadableId|Name|Action|Status|Assignee|Description|LastUpdated|LastUpdatedBy|Severity|Closed|ClosedBy|Timestamp|Entity|Resolution|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | c6c97d84-983d-303e-a03b-86f53d657fc8 | INSIGHT-116 | Lateral Movement with Discovery and Credential Access |  | Closed |  | Initial Access, Lateral Movement, Discovery, Initial Access, Credential Access | 2021-05-13T01:28:32.648352 |  | HIGH | 2021-05-13T01:28:32.580039 | obfuscated@email.com | 2021-02-18T22:04:08.330000 | 1.2.3.4 | No Action |
+
 
 
 ### sumologic-sec-match-list-get
@@ -292,7 +451,18 @@ Get match lists
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.MatchLists..Created | String | When the Match List was created | 
+| SumoLogic.Sec.MatchLists..CreatedBy | String | User that created the Match List | 
+| SumoLogic.Sec.MatchLists..DefaultTtl | Number | Default TTL for entries in the Match List | 
+| SumoLogic.Sec.MatchLists..Description | String | Description of the Match List | 
+| SumoLogic.Sec.MatchLists..Id | String | ID of the Match List | 
+| SumoLogic.Sec.MatchLists..LastUpdated | String | When the Match List was last updated | 
+| SumoLogic.Sec.MatchLists..LastUpdatedBy | String | The last user to update the Match List | 
+| SumoLogic.Sec.MatchLists..Name | String | Name of Match List | 
+| SumoLogic.Sec.MatchLists..TargetColumn | String | Match List Target Column | 
+
 
 #### Command Example
 `!sumologic-sec-match-list-get limit=3`
@@ -319,7 +489,7 @@ Add item to match list
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| match-list-id | ID of match list. | Required | 
+| match_list_id | ID of match list. | Required | 
 | active | Item active or disabled. | Required | 
 | description | Description of match list item. | Required | 
 | expiration | Expiration of match list item, e.g. "2021-03-25T23:52:23.508Z". | Required | 
@@ -328,7 +498,11 @@ Add item to match list
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.UpdateResult.Result | String | Result \(Success or Failed\) | 
+| SumoLogic.Sec.UpdateResult.Server response | Boolean | Server response \(True or False\) | 
+
 
 #### Command Example
 `!sumologic-sec-match-list-update match-list-id=166 description="My description" expiration=2021-04-25T22:36:10.925Z value="10.20.30.40" active=true`
@@ -353,7 +527,7 @@ Search Threat Intel Indicators
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| q | A query string used to filter results. | Optional | 
+| q | Use a query string to search, see API documentation for more details. | Optional | 
 | value | The value to search for. | Required | 
 | offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional | 
 | limit | The numbers of items to return. Default is 10. | Optional | 
@@ -362,7 +536,17 @@ Search Threat Intel Indicators
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.ThreatIntelIndicators..Active | Boolean | Whether or not the Threat Intel Indicator is Active | 
+| SumoLogic.Sec.ThreatIntelIndicators..Expiration | Date | Date and time the Threat Intel Indicator is set to expire | 
+| SumoLogic.Sec.ThreatIntelIndicators..Id | String | ID of Threat Intel Indicator | 
+| SumoLogic.Sec.ThreatIntelIndicators..Meta.created.username | String | User that created the Threat Intel Indicator | 
+| SumoLogic.Sec.ThreatIntelIndicators..Meta.created.when | Date | When the Threat Intel Indicator was created | 
+| SumoLogic.Sec.ThreatIntelIndicators..Meta.description | String | Description of Threat Intel Indicator | 
+| SumoLogic.Sec.ThreatIntelIndicators..Meta.updated | Date | When the Threat Intel Indicator was last updated | 
+| SumoLogic.Sec.ThreatIntelIndicators..Value | String | Value of Threat Intel Indicator | 
+
 
 #### Command Example
 `!sumologic-sec-threat-intel-search-indicators value=1.2.3.4 sourceIds=54`
@@ -395,7 +579,17 @@ Get Threat Intel Sources
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.ThreatIntelSources..Created | String | When the Threat Intel Source was created | 
+| SumoLogic.Sec.ThreatIntelSources..CreatedBy | String | User that created the Threat Intel Source | 
+| SumoLogic.Sec.ThreatIntelSources..Description | String | Description of Threat Intel Source | 
+| SumoLogic.Sec.ThreatIntelSources..Id | String | ID of Threat Intel Source | 
+| SumoLogic.Sec.ThreatIntelSources..LastUpdated | String | When the Threat Intel Source was last updated | 
+| SumoLogic.Sec.ThreatIntelSources..LastUpdatedBy | String | User that last updated the Threat Intel Source | 
+| SumoLogic.Sec.ThreatIntelSources..Name | String | Name of Threat Intel Source | 
+| SumoLogic.Sec.ThreatIntelSources..SourceType | String | Source type of Threat Intel Source | 
+
 
 #### Command Example
 `!sumologic-sec-threat-intel-get-sources limit=3`
@@ -431,7 +625,11 @@ Add Threat Intel Indicator to Threat Intel Source
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SumoLogic.Sec.UpdateResult.Result | String | Result \(Success or Failed\) | 
+| SumoLogic.Sec.UpdateResult.Server response | Boolean | Server response \(True or False\) | 
+
 
 #### Command Example
 `!sumologic-sec-threat-intel-update-source threat-intel-source-id=54 active=true value=1.2.3.4 description=test expiration=2021-04-29T00:00:00.000Z`
