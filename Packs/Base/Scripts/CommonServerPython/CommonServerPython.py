@@ -5325,6 +5325,60 @@ class EntityRelationship:
         return indicator_relationship_context
 
 
+# -------------------------------- Threat Intel Objects ----------------------------------- #
+
+class ThreatIntel:
+    """XSOAR Threat Intel Objects"""
+
+    class ObjectsNames(object):
+        """
+        Enum: Threat Intel Objects names.
+        """
+        CAMPAIGN = 'Campaign'
+        ATTACK_PATTERN = 'Attack Pattern'
+        REPORT = 'Report'
+        MALWARE = 'Malware'
+        COURSE_OF_ACTION = 'Course of Action'
+        INTRUSION_SET = 'Intrusion Set'
+        TOOL = 'Tool'
+
+    class ObjectsScore(object):
+        """
+        Enum: Threat Intel Objects Score.
+        """
+        CAMPAIGN = 3
+        ATTACK_PATTERN = 2
+        REPORT = 3
+        MALWARE = 3
+        COURSE_OF_ACTION = 0
+        INTRUSION_SET = 3
+        TOOL = 2
+
+    class KillChainPhases(object):
+        """
+        Enum: Kill Chain Phases names.
+        """
+        BUILD_CAPABILITIES = "Build Capabilities"
+        PRIVILEGE_ESCALATION = "Privilege Escalation"
+        ADVERSARY_OPSEC = "Adversary Opsec"
+        CREDENTIAL_ACCESS = "Credential Access"
+        EXFILTRATION = "Exfiltration"
+        LATERAL_MOVEMENT = "Lateral Movement"
+        DEFENSE_EVASION = "Defense Evasion"
+        PERSISTENCE = "Persistence"
+        COLLECTION = "Collection"
+        IMPACT = "Impact"
+        INITIAL_ACCESS = "Initial Access"
+        DISCOVERY = "Discovery"
+        EXECUTION = "Execution"
+        INSTALLATION = "Installation"
+        DELIVERY = "Delivery"
+        WEAPONIZATION = "Weaponization"
+        ACT_ON_OBJECTIVES = "Actions on Objectives"
+        COMMAND_AND_CONTROL = "Command \u0026 Control"
+
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
