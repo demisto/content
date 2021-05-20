@@ -145,52 +145,52 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
     zipped_packs = []
-    src_path = 'gs://marketplace-dist-dev/' + gcp_path
-    gs_cmd = f'gsutil -m cp -r {src_path} {destination_path}'
-    try:
-        subprocess.Popen(gs_cmd)
-    except Exception as e:
-        logging.critical(f"Failed to run gsutil command, Error:{e}")
-        sys.exit(1)
-
-    # with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
-    #     for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
-    #         if pack.name in IGNORED_FILES:
-    #             continue
-    #
-    #         if gcp_path == BUILD_GCP_PATH:
-    #             pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
-    #         else:
-    #             pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
-    #
-    #         if not branch_name or not circle_build:
-    #             pack_prefix = pack_prefix.replace('/builds/content', '')
-    #
-    #         # Search for the pack in the bucket
-    #         blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
-    #         if blobs:
-    #             blob = get_latest_pack_zip_from_blob(pack.name, blobs)
-    #             if not blob:
-    #                 logging.warning(f'Failed to get the zip of the pack {pack.name} from GCP')
-    #                 continue
-    #             download_path = os.path.join(destination_path, f"{pack.name}.zip")
-    #             zipped_packs.append({pack.name: download_path})
-    #             logging.info(f'Downloading pack from GCP: {pack.name}')
-    #             executor_submit(executor, download_path, blob)
-    #             sleep(1)
-    #             if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
-    #                 logging.info(f"Copying pack from {download_path} to /home/runner/work/content-private/"
-    #                              f"content-private/content/artifacts/packs/{pack.name}.zip")
-    #                 shutil.copy(download_path,
-    #                             f'/home/runner/work/content-private/content-private/content/artifacts/'
-    #                             f'packs/{pack.name}.zip')
-    #         else:
-    #             logging.warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
-    #
-    # if not zipped_packs:
-    #     logging.critical('Did not find any pack to download from GCP.')
+    # src_path = 'gs://marketplace-dist-dev/' + gcp_path
+    # gs_cmd = f'gsutil -m cp -r {src_path} {destination_path}'
+    # try:
+    #     subprocess.Popen(gs_cmd)
+    # except Exception as e:
+    #     logging.critical(f"Failed to run gsutil command, Error:{e}")
     #     sys.exit(1)
-    # return zipped_packs
+
+    with ThreadPoolExecutor(max_workers=MAX_THREADS) as executor:
+        for pack in os.scandir(PACKS_FULL_PATH):  # Get all the pack names
+            if pack.name in IGNORED_FILES:
+                continue
+
+            if gcp_path == BUILD_GCP_PATH:
+                pack_prefix = os.path.join(gcp_path, branch_name, circle_build, 'content', 'packs', pack.name)
+            else:
+                pack_prefix = os.path.join(gcp_path, branch_name, circle_build, pack.name)
+
+            if not branch_name or not circle_build:
+                pack_prefix = pack_prefix.replace('/builds/content', '')
+
+            # Search for the pack in the bucket
+            blobs = list(storage_bucket.list_blobs(prefix=pack_prefix))
+            if blobs:
+                blob = get_latest_pack_zip_from_blob(pack.name, blobs)
+                if not blob:
+                    logging.warning(f'Failed to get the zip of the pack {pack.name} from GCP')
+                    continue
+                download_path = os.path.join(destination_path, f"{pack.name}.zip")
+                zipped_packs.append({pack.name: download_path})
+                logging.info(f'Downloading pack from GCP: {pack.name}')
+                executor_submit(executor, download_path, blob)
+                sleep(1)
+                if os.path.exists('/home/runner/work/content-private/content-private/content/artifacts/'):
+                    logging.info(f"Copying pack from {download_path} to /home/runner/work/content-private/"
+                                 f"content-private/content/artifacts/packs/{pack.name}.zip")
+                    shutil.copy(download_path,
+                                f'/home/runner/work/content-private/content-private/content/artifacts/'
+                                f'packs/{pack.name}.zip')
+            else:
+                logging.warning(f'Did not find a pack to download with the prefix: {pack_prefix}')
+
+    if not zipped_packs:
+        logging.critical('Did not find any pack to download from GCP.')
+        sys.exit(1)
+    return zipped_packs
 
 
 def executor_submit(executor, download_path, blob):
@@ -269,12 +269,12 @@ def main():
     success = True
     try:
         print("2.dest path is" + zip_path)
-        download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
+        zipped_packs = download_packs_from_gcp(storage_bucket, gcp_path, zip_path, circle_build, branch_name)
     except Exception:
         logging.exception('Failed downloading packs')
         success = False
 
-    zipped_packs = get_zipped_packs_names(zip_path)
+    # zipped_packs = get_zipped_packs_names(zip_path)
 
     if remove_test_playbooks:
         try:
