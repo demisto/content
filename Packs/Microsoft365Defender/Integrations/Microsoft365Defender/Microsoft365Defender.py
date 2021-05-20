@@ -18,6 +18,8 @@ TIMEOUT = '30'
 BASE_URL = "https://api.security.microsoft.com"
 
 ''' CLIENT CLASS '''
+
+
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL):
