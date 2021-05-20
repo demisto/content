@@ -7,7 +7,7 @@ import json
 import requests
 import socket
 import traceback
-from collections import Callable
+from typing import Callable, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -1331,7 +1331,7 @@ def top_tags_search_command(args):
     )
 
 
-def top_tags_results_command(args) -> (List[CommandResults], str):
+def top_tags_results_command(args) -> Tuple[CommandResults, str]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
