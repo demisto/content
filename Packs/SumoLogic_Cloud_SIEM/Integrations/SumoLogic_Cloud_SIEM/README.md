@@ -313,7 +313,7 @@ Search signals using available filters
 Signals:
 |Id|Name|Entity|RuleId|Description|Severity|Stage|Timestamp|ContentType|Tags|
 |---|---|---|---|---|---|---|---|---|---|
-| b50fd570-341b-576d-85b5-8b5cd17c0aee | IP Address Scan - Internal | 1.2.3.4 | LEGACY-S00050 | A scan of IP addresses | 3 | Discovery | 2021-04-22T04:08:13.514000 | RULE | _mitreAttackTactic:TA0007,<br>_mitreAttackTactic:TA0043,<br>_mitreAttackTechnique:T1046,<br>_mitreAttackTechnique:T1595 |
+| b50fd570-341b-576d-85b5-8b5cd17c0aee | IP Address Scan - Internal | 1.2.3.4 | LEGACY-S00050 | A scan of IP addresses | 3 | Discovery | 2021-04-22T04:08:13.514000 | RULE | _mitreAttackTactic:TA0007,<br/>_mitreAttackTactic:TA0043,<br/>_mitreAttackTechnique:T1046,<br/>_mitreAttackTechnique:T1595 |
 
 
 
