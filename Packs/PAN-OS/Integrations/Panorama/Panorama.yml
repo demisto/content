@@ -17,7 +17,7 @@ configuration:
   required: true
   type: 4
 - additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select
-    the desired Device Group
+    the desired Device Groups
   display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
