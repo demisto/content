@@ -20,16 +20,31 @@ MAX_INCIDENTS_TO_FETCH = 25
 
 class Client(BaseClient):
 
-    def fetch_command_result(self, url_suffix, params):
+    def fetch_command_result(self, url_suffix, params, post_url):
         incidents: List = list()
         try:
+            if post_url is None:
+                method = 'GET'
+            else:
+                method = 'POST'
+                params = None
             r = self._http_request(
-                method='GET',
+                method=method,
                 url_suffix=url_suffix,
+                data=post_url,
                 params=params
             )
-            if len(r) > 0:
-                incidents.extend(r)
+            json_array = []
+            if isinstance(r, dict):
+                try:
+                    json_array.append(r)
+                except ValueError:
+                    demisto.error("data was not valid JSON")
+                if len(json_array) > 0:
+                    incidents.extend(json_array)
+            else:
+                if len(r) > 0:
+                    incidents.extend(r)
         except Exception:
             demisto.error("Unable to fetch command result" + traceback.format_exc())
         return incidents
@@ -83,9 +98,9 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
 ''' COMMAND FUNCTIONS '''
 
 
-def fetch_record_command(client: Client, url_suffix, prefix, key, params):
+def fetch_record_command(client: Client, url_suffix, prefix, key, params, post_url=None):
     incidents: List = list()
-    r = client.fetch_command_result(url_suffix, params)
+    r = client.fetch_command_result(url_suffix, params, post_url)
     incidents.extend(r)
     results = CommandResults(
         outputs_prefix=prefix,
@@ -96,7 +111,12 @@ def fetch_record_command(client: Client, url_suffix, prefix, key, params):
 
 
 def fetch_records(client: Client, url_suffix, prefix, key, params):
-    results = fetch_record_command(client, url_suffix, prefix, key, params)
+    results = fetch_record_command(client, url_suffix, prefix, key, params, None)
+    return_results(results)
+
+
+def fetch_post_records(client: Client, url_suffix, prefix, key, params, post_url):
+    results = fetch_record_command(client, url_suffix, prefix, key, params, post_url)
     return_results(results)
 
 
@@ -127,7 +147,7 @@ def fetch_incidents_open_cases(client: Client, max_results: int, last_run: Dict[
     isContinue = True
     while isContinue:
         params = {'page': page, 'max': max_results}
-        case_data = client.fetch_command_result(case_url, params)
+        case_data = client.fetch_command_result(case_url, params, None)
         if len(case_data) < max_results:
             isContinue = False
         else:
@@ -166,7 +186,7 @@ def fetch_incidents_high_risk_users(client: Client, max_results: int, last_run: 
     isContinue = True
     while isContinue:
         params = {'page': page, 'max': max_results}
-        users_data = client.fetch_command_result(high_risk_user_url, params)
+        users_data = client.fetch_command_result(high_risk_user_url, params, None)
         if len(users_data) < max_results:
             isContinue = False
         else:
@@ -303,6 +323,30 @@ def main() -> None:
         elif demisto.command() == 'gra-user-anomalies':
             anomaly_url = '/users/' + demisto.args().get('employee_id') + '/anomalies/'
             fetch_records(client, anomaly_url, 'Gra.User.Anomalies', 'anomaly_name', params)
+
+        elif demisto.command() == 'gra-case-action':
+            cases_url = '/cases/' + demisto.args().get('action')
+            if demisto.args().get('action') == 'riskManageCase':
+                post_url = '{"caseId":' + demisto.args().get('caseId') + ',"subOption":"' + \
+                           demisto.args().get('subOption') + '","caseComment":"' + demisto.args().get('caseComment') +\
+                           '","riskAcceptDate":"' + demisto.args().get('riskAcceptDate') + '"}'
+            else:
+                post_url = '{"caseId":' + demisto.args().get('caseId') + ',"subOption":"' + \
+                    demisto.args().get('subOption') + '","caseComment":"' + demisto.args().get('caseComment') + '"}'
+            fetch_post_records(client, cases_url, 'Gra.Case.Action', 'caseId', params, post_url)
+
+        elif demisto.command() == 'gra-case-action-anomaly':
+            cases_url = '/cases/' + demisto.args().get('action')
+            if demisto.args().get('action') == 'riskAcceptCaseAnomaly':
+                post_url = '{"caseId":' + demisto.args().get('caseId') + ',"anomalyNames":' + \
+                           demisto.args().get('anomalyNames') + ',"subOption":"' + demisto.args().get('subOption') +\
+                           '","caseComment":"' + demisto.args().get('caseComment') + '","riskAcceptDate":"' + \
+                           demisto.args().get('riskAcceptDate') + '"}'
+            else:
+                post_url = '{"caseId":' + demisto.args().get('caseId') + ',"anomalyNames":"' + \
+                           demisto.args().get('anomalyNames') + '","subOption":"' + demisto.args().get('subOption') + \
+                           '","caseComment":"' + demisto.args().get('caseComment') + '"}'
+            fetch_post_records(client, cases_url, 'Gra.Cases.Action.Anomaly', 'caseId', params, post_url)
 
     # Log exceptions and return errors
     except Exception as e:

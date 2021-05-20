@@ -64,6 +64,7 @@ Retrieve List of All Users (Identities)
 | Gra.Users.title | String | Users title. | 
 | Gra.Users.joiningDate | String | Joining Date. | 
 | Gra.Users.exitDate | String | Exit Date. | 
+| Gra.Users.userRisk | String | User Risk. | 
 
 
 
@@ -657,6 +658,7 @@ get details of the user.
 | Gra.User.title | String |  Title. | 
 | Gra.User.joiningDate | String |  Joining Date. | 
 | Gra.User.profilePicturePath | String |  Profile Picture Path. | 
+| Gra.User.exitDate | Date |  Exit Date. | 
 
 
 #### Command Example
@@ -722,6 +724,22 @@ get details of the user.
 | Gra.Highrisk.Users.is_reassigned | String | Is Reassigned . | 
 | Gra.Highrisk.Users.risk_score | String | Risk Score . | 
 | Gra.Highrisk.Users.updated_on | Date | Updated On . | 
+| Gra.Highrisk.Users.exitDate | Date | Exit Date . | 
+| Gra.Highrisk.Users.created_on | Date | Created On . | 
+| Gra.Highrisk.Users.joiningDate | Date | Joining Date . | 
+| Gra.Highrisk.Users.manager | String | Manager . | 
+| Gra.Highrisk.Users.employeeId | String | Employee Id . | 
+| Gra.Highrisk.Users.firstName | String | First Name . | 
+| Gra.Highrisk.Users.middleName | String | Middle Name . | 
+| Gra.Highrisk.Users.lastName | String | Last Name . | 
+| Gra.Highrisk.Users.location | String | Location . | 
+| Gra.Highrisk.Users.title | String | Title . | 
+| Gra.Highrisk.Users.userRisk | Number | User Risk . | 
+| Gra.Highrisk.Users.riskScore | Number | Risk Score . | 
+| Gra.Highrisk.Users.description | String | Description . | 
+| Gra.Highrisk.Users.is_orphan | String | Is Orphan . | 
+| Gra.Highrisk.Users.phone | String | Phone . | 
+| Gra.Highrisk.Users.email | String | Email . | 
 
 
 #### Command Example
@@ -840,6 +858,89 @@ get details of the user.
    {
       "anomaly_name":"SOD_role_13oct"
    }
+]
+```
+
+#### Human Readable Output
+
+
+### gra-case-action
+***
+Closing a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
+
+#### Base Command
+
+`gra-case-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action | Required | 
+| caseId | Case ID | Required | 
+| subOption | Sub Option | Required | 
+| caseComment | Case Comment | Required | 
+| riskAcceptDate | Risk Accept Date (applicable only in case of closing a case as Risk Managed) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Case.Action.Message | String | Message  | 
+
+
+#### Command Example
+```!gra-case-action action=modelReviewCase caseId=5 subOption="Tuning Required" caseComment="This is Completed"```
+
+#### Context Example
+```
+[
+  {
+    "Message": "1 Anomalies in this case closed successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-case-action-anomaly
+***
+Closing an anomaly or anomalies within a case and updating the anomaly status as Closed / Risk Managed / Model Reviewed.
+
+#### Base Command
+
+`gra-case-action-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action | Required | 
+| caseId | Case ID | Required | 
+| anomalyNames | Anomaly Names | Required | 
+| subOption | Sub Option | Required | 
+| caseComment | Case Comment | Required | 
+| riskAcceptDate | Risk Accept Date (applicable only in case of closing a case as Risk Managed) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Case.Action.Anomaly.Message | String | Message  | 
+| Gra.Case.Action.Anomaly.Anomaly Name | String | Anomaly Name | 
+
+
+#### Command Example
+```!gra-case-action-anomaly action=modelReviewCaseAnomaly caseId=5 anomalyNames=anomalyName1 subOption="Tuning Required" caseComment="This is Completed"```
+
+#### Context Example
+```
+[
+  {
+    "Message": {
+      "anomalyName1": "Anomaly risk accepted successfully."
+    }
+  }
 ]
 ```
 
