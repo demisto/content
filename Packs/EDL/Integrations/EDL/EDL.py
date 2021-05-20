@@ -21,6 +21,7 @@ import urllib3
 from datetime import datetime, timezone
 import dateparser
 import os
+import traceback
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -680,16 +681,11 @@ def create_nginx_server_conf(file_path: str, port: int, params: Dict):
 
 def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
     create_nginx_server_conf(NGINX_SERVER_CONF_FILE, port, params)
-    nginx_global_directives = ['daemon off']
+    nginx_global_directives = 'daemon off;'
     global_directives_conf = params.get('nginx_global_directives')
     if global_directives_conf:
-        nginx_global_directives.extend(global_directives_conf.split(';'))
-    directive_args = []
-    for directive in nginx_global_directives:
-        directive = directive.strip()
-        if directive:
-            directive_args.append('-g')
-            directive_args.append(directive + ';')
+        nginx_global_directives = f'{nginx_global_directives} {global_directives_conf}'
+    directive_args = ['-g', nginx_global_directives]
     # we first do a test that all config is good and log it
     try:
         nginx_test_command = ['nginx', '-T']
@@ -701,7 +697,9 @@ def start_nginx_server(port: int, params: Dict) -> subprocess.Popen:
         raise ValueError(f"Failed testing nginx conf. Return code: {err.returncode}. Output: {err.output}")
     nginx_command = ['nginx']
     nginx_command.extend(directive_args)
-    return subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    res = subprocess.Popen(nginx_command, text=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    demisto.info(f'done starting nginx with pid: {res.pid}')
+    return res
 
 
 def nginx_log_process(nginx_process: subprocess.Popen):
@@ -710,6 +708,20 @@ def nginx_log_process(nginx_process: subprocess.Popen):
         old_error = NGINX_SERVER_ERROR_LOG + '.old'
         log_access = False
         log_error = False
+        # first check if one of the logs are missing. This may happen on rare ocations that we renamed and deleted the file
+        # before nginx completed the role over of the logs
+        missing_log = False
+        if not os.path.isfile(NGINX_SERVER_ACCESS_LOG):
+            missing_log = True
+            demisto.info(f'Missing access log: {NGINX_SERVER_ACCESS_LOG}. Will send roll signal to nginx.')
+        if not os.path.isfile(NGINX_SERVER_ERROR_LOG):
+            missing_log = True
+            demisto.info(f'Missing error log: {NGINX_SERVER_ERROR_LOG}. Will send roll signal to nginx.')
+        if missing_log:
+            nginx_process.send_signal(int(SIGUSR1))
+            demisto.info(f'Done sending roll signal to nginx (pid: {nginx_process.pid}) after detecting missing log file.'
+                         ' Will skip this iteration.')
+            return
         if os.path.getsize(NGINX_SERVER_ACCESS_LOG):
             log_access = True
             os.rename(NGINX_SERVER_ACCESS_LOG, old_access)
@@ -719,7 +731,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
         if log_access or log_error:
             # nginx rolls the logs when getting sigusr1
             nginx_process.send_signal(int(SIGUSR1))
-            gevent.sleep(0.2)  # sleep 0.2 to let nginx complete the roll
+            gevent.sleep(0.5)  # sleep 0.5 to let nginx complete the roll
         if log_access:
             with open(old_access, 'rt') as f:
                 start = 1
@@ -737,7 +749,7 @@ def nginx_log_process(nginx_process: subprocess.Popen):
                     start = end
             os.unlink(old_error)
     except Exception as e:
-        demisto.error(f'Failed nginx log processing: {e}')
+        demisto.error(f'Failed nginx log processing: {e}. Exception: {traceback.format_exc()}')
 
 
 def nginx_log_monitor_loop(nginx_process: subprocess.Popen):
@@ -810,7 +822,7 @@ def run_long_running(params: Dict, is_test: bool = False):
             nginx_log_monitor = gevent.spawn(nginx_log_monitor_loop, nginx_process)
             server.serve_forever()
     except Exception as e:
-        demisto.error(f'An error occurred: {str(e)}')
+        demisto.error(f'An error occurred: {str(e)}. Exception: {traceback.format_exc()}')
         raise ValueError(str(e))
     finally:
         if nginx_process:

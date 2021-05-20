@@ -386,7 +386,7 @@ def test_nginx_start_fail_directive(nginx_cleanup):
     """
     import EDL as edl
     try:
-        edl.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test'})
+        edl.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test;'})
         pytest.fail('nginx start should fail')
     except ValueError as e:
         assert 'bad_directive' in str(e)
