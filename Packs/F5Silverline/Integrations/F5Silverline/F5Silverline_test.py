@@ -15,9 +15,9 @@ def util_load_json(path):
 
 IP_ADDRESSES_TO_ADD = [
     ({'list_type': 'denylist', 'IP': '1.2.3.4'}, "IP object with IP address: 1.2.3.4 "
-                                                 "created successfully to the denylist list."),
+                                                 "added successfully into the denylist list."),
     ({'list_type': 'allowlist', 'IP': '1.2.3.4', 'note': "test"},
-     "IP object with IP address: 1.2.3.4 created successfully to the allowlist list."),
+     "IP object with IP address: 1.2.3.4 added successfully into the allowlist list."),
 ]
 
 IP_ADDRESSES_TO_DELETE = [
