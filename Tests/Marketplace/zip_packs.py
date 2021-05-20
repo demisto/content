@@ -146,7 +146,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     """
     zipped_packs = []
     src_path = 'gs://marketplace-dist-dev/' + gcp_path
-    gs_cmd = f'gsutil cp -r -m {src_path} {destination_path}'
+    gs_cmd = f'gsutil -m cp -r {src_path} {destination_path}'
     try:
         subprocess.Popen(gs_cmd)
     except Exception as e:
