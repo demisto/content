@@ -1,24 +1,24 @@
 {
-    "sortValues": null,
-    "size": 0,
-    "dataType": "scripts",
-    "itemVersion": "",
-    "params": {},
-    "query": "DBotGroupXDRIncidents",
-    "modified": "2021-05-20T13:40:36.181876171Z",
-    "shouldCommit": true,
-    "sequenceNumber": 16475647,
-    "fromServerVersion": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "name": "Cortex XDR Groups - Scatter",
-    "primaryTerm": 5,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "dateRange": {
-        "period": {
-            "byFrom": "days",
-            "fromValue": null
+  "sortValues": null,
+  "size": 0,
+  "dataType": "scripts",
+  "itemVersion": "",
+  "params": {},
+  "query": "DBotGroupXDRIncidents",
+  "modified": "2021-05-20T13:40:36.181876171Z",
+  "shouldCommit": true,
+  "sequenceNumber": 16475647,
+  "fromServerVersion": "6.2.0",
+  "propagationLabels": [
+    "all"
+  ],
+  "name": "Cortex XDR Groups - Scatter",
+  "primaryTerm": 5,
+  "vcShouldKeepItemLegacyProdMachine": false,
+  "dateRange": {
+    "period": {
+      "byFrom": "days",
+      "fromValue": null
         },
         "fromDateLicense": "0001-01-01T00:00:00Z"
     },

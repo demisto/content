@@ -10,7 +10,7 @@
     "query": "DBotGroupXDRIncidents",
     "modified": "2021-05-12T19:45:01.180666801Z",
     "shouldCommit": false,
-    "fromServerVersion": "",
+    "fromServerVersion": "6.2.0",
     "propagationLabels": [
         "all"
     ],
