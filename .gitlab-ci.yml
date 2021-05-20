@@ -15,6 +15,7 @@ stages:
 
 
 variables:
+  FORCE_COLOR: 1
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
   SLACK_CHANNEL: "dmst-content-team"
