@@ -35,6 +35,56 @@ demisto-sdk-nightly:run-validations:
     SLACK_ONLY_IF: "true"
 
 
+demisto_sdk_nightly:check_idset_dependent_commands:
+  extends: 
+    - .default-job-settings
+    - .sdk-nightly-schedule-rule
+  stage: unittests-and-validations
+  inherit:
+    variables: true
+  variables:
+    DEMISTO_SDK_NIGHTLY: "true"
+    IS_NIGHTLY: "false"
+    SLACK_TEST_TYPE: "sdk_failed_steps"
+    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+    SLACK_ONLY_IF: "true"
+  script:
+    - section_start "Secrets Detection" --collapsed
+    - demisto-sdk secrets --post-commit --ignore-entropy
+    - section_end "Secrets Detection"
+    - section_start "Update Conf" --collapsed
+    - python3 ./Tests/scripts/update_conf_json.py >> $ARTIFACTS_FOLDER/logs/update_conf_json.log 2>&1
+    - cp ./Tests/conf.json $ARTIFACTS_FOLDER
+    - section_end "Update Conf"
+    - !reference [.create-id-set]
+    - section_start "Activate GCloud Service Account" --collapsed
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - echo "successfully activated google cloud service account"
+    - section_end "Activate GCloud Service Account"
+    - section_start "Download private ID set" --collapsed
+    - gsutil cp gs://marketplace-dist/content/private_id_set.json $ARTIFACTS_FOLDER/unified_id_set.json
+    - echo "successfully downloaded private ID set"
+    - section_end "Download private ID set"
+    - gcloud auth revoke >> $ARTIFACTS_FOLDER/logs/auths.log 2>&1
+    - section_start "Merge public and private ID sets" --collapsed
+    - demisto-sdk merge-id-sets -i1 $ARTIFACTS_FOLDER/id_set.json -i2 $ARTIFACTS_FOLDER/unified_id_set.json -o $ARTIFACTS_FOLDER/unified_id_set.json
+    - echo "successfully merged public and private ID sets"
+    - section_end "Merge public and private ID sets"
+    - section_start "Build Content Descriptor" --collapsed
+    - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
+    - cp content-descriptor.json $ARTIFACTS_FOLDER
+    - section_end "Build Content Descriptor"
+    - section_start "Common Server Documentation" --collapsed
+    - ./Documentation/commonServerDocs.sh
+    - section_end "Common Server Documentation"
+    - section_start "Collect Test List and Content Packs" --collapsed
+    - python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY
+    - section_end "Collect Test List and Content Packs"
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - python3 ./Tests/Marketplace/packs_dependencies.py -i $ARTIFACTS_FOLDER/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
+
+
 demisto-sdk-nightly:create-instance:
   extends: 
     - .default-job-settings
