@@ -29,7 +29,7 @@ def show_incidents_in_cluster(model_name, query, display_fields):
     data = res[0]['Contents']['data']
     id_to_cluster = {}
     id_to_cluster_name = {}
-    incidents = []
+    incidents = []  # type: ignore
     for row in data:
         if row['pivot'] in query.split(" "):
             incidents_in_cluster = json.loads(row['incidents'])
