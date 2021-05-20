@@ -13,7 +13,7 @@ vcShouldKeepItemLegacyProdMachine: false
 name: CheckPointFirewall_v2
 display: CheckPointFirewall_v2
 category: IT Services
-description: Read information and to send commands to the Check Point Firewall server.
+description: Use this integration to read information and send commands to the Check Point Firewall server.
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)
   name: server
