@@ -36,7 +36,7 @@ def show_incidents_in_cluster(model_name, query, display_fields):
             incidents += incidents_in_cluster
             for inc in incidents_in_cluster:
                 id_to_cluster[inc['id']] = re.sub('\D', '', row['pivot'])
-                id_to_cluster_name[inc['id']] = row['name']
+                id_to_cluster_name[inc['id']] = row.get('name')
 
     incidents_to_show = []
     for inc in incidents:
@@ -44,8 +44,8 @@ def show_incidents_in_cluster(model_name, query, display_fields):
         incident_to_show['Id'] = "[{0}](#/Details/{0})".format(inc['id'])
         incident_to_show['Name'] = incident_to_show['name'].replace("#", "")
         incident_to_show['Created'] = incident_to_show['created'][:incident_to_show['created'].find(".")]
-        incident_to_show['Group id'] = id_to_cluster[inc['id']]
-        incident_to_show['Group name'] = id_to_cluster_name[inc['id']]
+        incident_to_show['Group id'] = id_to_cluster.get(inc['id'])
+        incident_to_show['Group name'] = id_to_cluster_name.get(inc['id'])
         incidents_to_show.append(incident_to_show)
 
     headers = BASE_INCIDENT_COLUMNS + [x for x in display_fields if x not in BASE_INCIDENT_COLUMNS]
