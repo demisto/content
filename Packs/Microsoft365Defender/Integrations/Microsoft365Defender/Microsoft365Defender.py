@@ -480,10 +480,10 @@ def microsoft_365_defender_advanced_hunting_command(client: Client, args: Dict) 
 
     """
     query = args.get('query', '')
-    limit = arg_to_number(args.get('limit', '-1')) # type: ignore
+    limit = arg_to_number(args.get('limit', '-1'))
     timeout = arg_to_number(args.get('timeout'))
 
-    query = _query_set_limit(query, limit)
+    query = _query_set_limit(query, limit) # type: ignore
 
     response = client.advanced_hunting(query=query, timeout=timeout)
     results = response.get('Results')
