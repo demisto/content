@@ -406,11 +406,17 @@ class FeedIndicatorType(object):
 # -------------------------------- Threat Intel Objects ----------------------------------- #
 
 class ThreatIntel:
-    """XSOAR Threat Intel Objects"""
+    """
+    XSOAR Threat Intel Objects
+    :return: None
+    :rtype: ``None``
+    """
 
     class ObjectsNames(object):
         """
         Enum: Threat Intel Objects names.
+        :return: None
+        :rtype: ``None``
         """
         CAMPAIGN = 'Campaign'
         ATTACK_PATTERN = 'Attack Pattern'
@@ -423,6 +429,8 @@ class ThreatIntel:
     class ObjectsScore(object):
         """
         Enum: Threat Intel Objects Score.
+        :return: None
+        :rtype: ``None``
         """
         CAMPAIGN = 3
         ATTACK_PATTERN = 2
@@ -435,6 +443,8 @@ class ThreatIntel:
     class KillChainPhases(object):
         """
         Enum: Kill Chain Phases names.
+        :return: None
+        :rtype: ``None``
         """
         BUILD_CAPABILITIES = "Build Capabilities"
         PRIVILEGE_ESCALATION = "Privilege Escalation"
