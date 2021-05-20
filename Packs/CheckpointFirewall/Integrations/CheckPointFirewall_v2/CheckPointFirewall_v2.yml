@@ -1,19 +1,11 @@
 commonfields:
   id: CheckPointFirewall_v2
   version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: ""
-    fromServerVersion: ""
-    toServerVersion: ""
-    propagationLabels:
-    - all
-vcShouldKeepItemLegacyProdMachine: false
 name: CheckPointFirewall_v2
-display: CheckPointFirewall_v2
+display: CheckPointFirewall v2
 category: IT Services
-description: Use this integration to read information and send commands to the Check Point Firewall server.
+description: Use this integration to read information and send commands to the Check
+  Point Firewall server.
 configuration:
 - display: Server URL (e.g. example.net or 8.8.8.8)
   name: server
@@ -211,7 +203,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore errors when applying the updates. Can be "True" 
+      description: Whether to ignore errors when applying the updates. Can be "True"
         or "False". Default is "False".
       defaultValue: "false"
     - name: groups
@@ -1592,7 +1584,9 @@ script:
       description: The UID of the revision.
       type: String
     description: Retrieve the details of Checkpoint packages.
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.5.20070
   runonce: false
   subtype: python3
-sourcemoduleid: CheckPointFirewall_v2
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
