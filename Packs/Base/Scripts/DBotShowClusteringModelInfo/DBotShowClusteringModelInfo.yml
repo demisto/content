@@ -50,3 +50,4 @@ tags:
   - widget
 timeout: '0'
 type: python
+fromversion: 6.2.0
