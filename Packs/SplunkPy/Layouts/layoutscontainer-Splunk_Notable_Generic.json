@@ -415,15 +415,6 @@
                                 "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "comments",
-                                "height": 22,
-                                "id": "fb13b500-b7d2-11eb-9285-552a5a3053e9",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxH": null,

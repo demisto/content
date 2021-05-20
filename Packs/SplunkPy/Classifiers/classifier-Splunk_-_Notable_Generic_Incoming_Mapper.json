@@ -39,10 +39,6 @@
                     "complex": null,
                     "simple": "owner"
                 },
-                "Comments": {
-                    "complex": null,
-                    "simple": "comment"
-                },
                 "Dsts": {
                     "complex": null,
                     "simple": "dest"

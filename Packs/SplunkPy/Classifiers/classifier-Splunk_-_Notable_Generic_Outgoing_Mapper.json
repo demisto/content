@@ -15,10 +15,6 @@
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "comment": {
-                    "complex": null,
-                    "simple": "comments"
-                },
                 "severity": {
                     "complex": null,
                     "simple": "severity"
