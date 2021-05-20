@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block Endpoint - Carbon Black Response V2
-description: Carbon Black Response - isolate an endpoint, given a hostname.
+description: Carbon Black Response - isolates an endpoint for a given hostname.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,7 +41,7 @@ tasks:
       id: 8d840b85-2255-4771-8047-1cffd0133d56
       version: -1
       name: Get host information from Carbon Black Enterprise Response
-      description: Display information about the given sensor
+      description: Display information about the given sensor.
       script: '|||cb-sensor-info'
       type: regular
       iscommand: true
@@ -77,7 +77,7 @@ tasks:
       id: 8a7b3b07-16d1-4953-897b-dde82b8153f3
       version: -1
       name: Isolate endpoint
-      description: Isolate the endpoint from the network
+      description: Isolate the endpoint from the network.
       script: '|||cb-quarantine-device'
       type: regular
       iscommand: true
@@ -135,7 +135,7 @@ tasks:
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -170,7 +170,7 @@ tasks:
     task:
       id: 179cbf36-32ef-47d3-8d77-2bac9a797283
       version: -1
-      name: 'Is the endpoint ready for Isolation? '
+      name: 'Is the endpoint ready for isolation? '
       type: condition
       iscommand: false
       brand: ""
@@ -229,13 +229,13 @@ inputs:
 - key: Sensor_id
   value: {}
   required: false
-  description: The sensor id of the endpoint.
+  description: The sensor ID of the endpoint.
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
-  description: Carbon Black Response Sensors ids that has been isolated.
+  description: Carbon Black Response Sensors IDs that are isolated.
 - contextPath: Endpoint
-  description: The isolated enpoint.
+  description: The isolated endpoint.
 - contextPath: CbResponse.Sensors.Status
   description: Sensor status.
   type: unknown
