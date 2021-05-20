@@ -31,7 +31,7 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| File | The file sample object, | unknown |
+| File | The file sample object. | unknown |
 
 ## Playbook Image
 ---
