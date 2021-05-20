@@ -2,7 +2,7 @@
 
 """
 from datetime import datetime
-from typing import Any, Dict, Tuple, cast
+from typing import List, Any, Dict, Tuple, cast
 from CommonServerPython import *  # noqa: F401
 
 import traceback
@@ -599,6 +599,11 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
+
+    # track last_fetch_ids to handle insights with the same timestamp
+    last_fetch_ids: List[str] = cast(List[str], last_run.get('last_fetch_ids', []))
+    current_fetch_ids: List[str] = []
+
     # Handle first fetch time
     if last_fetch is None:
         # if missing, use what provided via first_fetch_time
@@ -614,7 +619,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     # Each incident is a dict with a string as a key
     incidents: List[Dict[str, Any]] = []
 
-    q = 'timestamp:>{}'.format(latest_created_time)
+    q = 'timestamp:>={}'.format(latest_created_time)
     if fetch_query:
         q += ' ' + fetch_query
     else:
@@ -630,7 +635,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the API response
         insight_timestamp = a.get('timestamp')
-        if insight_timestamp:
+        insight_id = a.get('id')
+        if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
             try:
                 incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
             except ValueError:
@@ -639,25 +645,32 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
             incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
             incident_created_time_ms = incident_created_time * 1000
 
-            # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
+            # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
             if last_fetch:
-                if incident_created_time <= last_fetch:
+                if incident_created_time < last_fetch:
                     continue
 
             incidents.append({
-                'name': a.get('name', 'No name') + ' - ' + a.get('id'),
+                'name': a.get('name', 'No name') + ' - ' + insight_id,
                 'occurred': timestamp_to_datestring(incident_created_time_ms),
                 'details': a.get('description'),
                 'severity': translate_severity(a.get('severity')),
                 'rawJSON': json.dumps(a)
             })
+            current_fetch_ids.append(insight_id)
 
             # Update last run and add incident if the incident is newer than last fetch
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time}
+    # Save the next_run as a dict with the last_fetch and last_fetch_ids keys to be stored
+    next_run = cast(
+        Dict[str, Any],
+        {
+            'last_fetch': latest_created_time,
+            'last_fetch_ids': current_fetch_ids if len(current_fetch_ids) > 0 else last_fetch_ids
+        }
+    )
     return next_run, incidents
 
 
