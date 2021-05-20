@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 1320,
-          "y": 1480
+          "y": 1920
         }
       }
     note: false
@@ -106,10 +106,10 @@ tasks:
     quietmode: 0
   "99":
     id: "99"
-    taskid: 8f89c37b-d5fc-4a9f-816e-aff8e799537d
+    taskid: 6df00a2f-2ec0-48f9-885e-d82c9d0b41a0
     type: regular
     task:
-      id: 8f89c37b-d5fc-4a9f-816e-aff8e799537d
+      id: 6df00a2f-2ec0-48f9-885e-d82c9d0b41a0
       version: -1
       name: Create new PCAP file with filter
       description: |-
@@ -125,18 +125,14 @@ tasks:
       '#none#':
       - "102"
     scriptarguments:
-      convs_to_display: {}
-      custom_regex: {}
       entry_id:
         simple: ${inputs.PcapFileEntryID}
       extract_ips:
         simple: "True"
-      extract_strings: {}
       filtered_file_name:
         simple: filtered.pcap
       pcap_filter:
         simple: ${inputs.PcapFilter}
-      protocol_output: {}
       rsa_decrypt_key_entry_id:
         simple: ${inputs.RsaDecryptKeyEntryID}
       wpa_password:
@@ -145,7 +141,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 490,
           "y": 270
         }
       }
@@ -183,7 +179,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 750,
+          "x": 740,
           "y": 100
         }
       }
@@ -194,26 +190,27 @@ tasks:
     quietmode: 0
   "101":
     id: "101"
-    taskid: 04110f5e-a4db-43b3-810c-7f734450d979
+    taskid: 81f8c86a-a72a-401f-842b-e667a6100c7c
     type: regular
     task:
-      id: 04110f5e-a4db-43b3-810c-7f734450d979
+      id: 81f8c86a-a72a-401f-842b-e667a6100c7c
       version: -1
       name: Carve files from unfiltered PCAP
       description: This automation extracts all possible files from a PCAP file.
+      tags:
+      - carved_pcap_file
       scriptName: PcapFileExtractor
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "106"
+      - "109"
     scriptarguments:
       entry_id:
         simple: ${inputs.PcapFileEntryID}
       extensions:
         simple: ${inputs.FileExtensionFilter}
-      extensions_inclusive_or_exclusive: {}
       inclusive_or_exclusive:
         simple: ${inputs.FileTypeFilter}
       limit:
@@ -222,7 +219,6 @@ tasks:
         simple: ${inputs.RsaDecryptKeyEntryID}
       types:
         simple: ${inputs.FileTypeFilter}
-      types_inclusive_or_exclusive: {}
       wpa_password:
         simple: ${inputs.WpaPassword}
     separatecontext: false
@@ -240,20 +236,22 @@ tasks:
     quietmode: 0
   "102":
     id: "102"
-    taskid: f27c665e-4094-4374-830d-2b711b336baa
+    taskid: b2f4144b-6457-475a-8e03-5b18fb7cbe08
     type: regular
     task:
-      id: f27c665e-4094-4374-830d-2b711b336baa
+      id: b2f4144b-6457-475a-8e03-5b18fb7cbe08
       version: -1
       name: Carve files from filtered PCAP
       description: This automation extracts all possible files from a PCAP file.
+      tags:
+      - carved_pcap_file
       scriptName: PcapFileExtractor
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "106"
+      - "109"
     scriptarguments:
       entry_id:
         complex:
@@ -270,7 +268,6 @@ tasks:
           accessor: EntryID
       extensions:
         simple: ${inputs.FileExtensionFilter}
-      extensions_inclusive_or_exclusive: {}
       inclusive_or_exclusive:
         simple: ${inputs.FilterType}
       limit:
@@ -279,14 +276,13 @@ tasks:
         simple: ${inputs.RsaDecryptKeyEntryID}
       types:
         simple: ${inputs.FileTypeFilter}
-      types_inclusive_or_exclusive: {}
       wpa_password:
         simple: ${inputs.WpaPassword}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
+          "x": 490,
           "y": 470
         }
       }
@@ -358,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 1310
+          "x": 790,
+          "y": 1740
         }
       }
     note: false
@@ -400,7 +396,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 980
+          "y": 1400
         }
       }
     note: false
@@ -410,10 +406,10 @@ tasks:
     quietmode: 0
   "106":
     id: "106"
-    taskid: 767cea00-0774-4f69-8163-a3d91489dd8c
+    taskid: 63bfd363-2b83-4111-8f5f-35f33b665c8d
     type: regular
     task:
-      id: 767cea00-0774-4f69-8163-a3d91489dd8c
+      id: 63bfd363-2b83-4111-8f5f-35f33b665c8d
       version: -1
       name: Enrich extracted files
       description: Get a quick indicator of the risk associated with a file.
@@ -425,22 +421,21 @@ tasks:
       '#none#':
       - "108"
     scriptarguments:
+      execution-timeout:
+        simple: "30"
       file:
         complex:
           root: PcapExtractedFiles
           accessor: FileSHA256
           transformers:
           - operator: uniq
-      long: {}
-      retries: {}
-      threshold: {}
-      wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 990,
-          "y": 650
+          "y": 960
         }
       }
     note: false
@@ -450,10 +445,10 @@ tasks:
     quietmode: 0
   "107":
     id: "107"
-    taskid: 2517ebdf-87bc-461c-8321-88df32da7768
+    taskid: d6a3868a-a875-46c6-81b0-316e7e46756c
     type: regular
     task:
-      id: 2517ebdf-87bc-461c-8321-88df32da7768
+      id: d6a3868a-a875-46c6-81b0-316e7e46756c
       version: -1
       name: Set SHA256 to check
       description: Sets a value into the context with the given context key
@@ -469,7 +464,6 @@ tasks:
         simple: "true"
       key:
         simple: Sha256ToCheck
-      stringify: {}
       value:
         complex:
           root: DBotScore
@@ -506,8 +500,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 830,
-          "y": 1170
+          "x": 790,
+          "y": 1570
         }
       }
     note: false
@@ -517,10 +511,10 @@ tasks:
     quietmode: 0
   "108":
     id: "108"
-    taskid: 71e12c67-92b4-444c-83a1-1648bb1eac34
+    taskid: 1fa894ad-c94c-41a5-8525-9918e807ab45
     type: condition
     task:
-      id: 71e12c67-92b4-444c-83a1-1648bb1eac34
+      id: 1fa894ad-c94c-41a5-8525-9918e807ab45
       version: -1
       name: Auto detonate files?
       type: condition
@@ -539,16 +533,18 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.AutoDetonateFiles
+              complex:
+                root: inputs.AutoDetonateFiles
             iscontext: true
           right:
             value:
               simple: "True"
+          ignorecase: true
     view: |-
       {
         "position": {
           "x": 990,
-          "y": 820
+          "y": 1160
         }
       }
     note: false
@@ -556,15 +552,64 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "109":
+    id: "109"
+    taskid: 55096f3d-649a-4fae-8b96-fcfdba886bf1
+    type: condition
+    task:
+      id: 55096f3d-649a-4fae-8b96-fcfdba886bf1
+      version: -1
+      name: Auto enrich files?
+      description: Checks whether to enrich the files extracted from the PCAP automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoEnrichFiles
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "105_56_#default#": 0.28,
+      "108_105_yes": 0.52,
+      "108_56_#default#": 0.17,
+      "109_106_yes": 0.51,
+      "109_56_#default#": 0.12,
+      "2_56_#default#": 0.1
+    },
     "paper": {
       "dimensions": {
-        "height": 1765,
-        "width": 1260,
-        "x": 440,
+        "height": 2205,
+        "width": 1210,
+        "x": 490,
         "y": -220
       }
     }
@@ -687,7 +732,14 @@ inputs:
     simple: "True"
   required: false
   description: This input specifies whether to detonate files extracted from the PCAP.
-    The default value is True, any other value will be considered as false.
+    The default value is True. Any other value will be considered as false.
+  playbookInputQuery:
+- key: AutoEnrichFiles
+  value:
+    simple: "True"
+  required: false
+  description: This input specifies whether to enrich files extracted from the PCAP.
+    The default value is True. Any other value will be considered as false.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore
@@ -699,6 +751,39 @@ outputs:
 - contextPath: File.Malicious
   description: The File malicious description
   type: string
-fromversion: 5.0.0
+- contextPath: File.Size
+  description: The file size.
+  type: string
+- contextPath: File.MD5
+  description: The file MD5 hash.
+  type: string
+- contextPath: File.SHA1
+  description: The file SHA1 hash.
+  type: string
+- contextPath: File.SHA256
+  description: The file SHA256 hash.
+  type: string
+- contextPath: File.SHA512
+  description: The file SHA512 hash.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.SSDeep
+  description: The file SSDeep.
+  type: string
+- contextPath: File.EntryID
+  description: The file entry ID.
+  type: string
+- contextPath: File.Info
+  description: The file information.
+  type: string
+- contextPath: File.Type
+  description: The file type.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
 tests:
 - PCAP File Carving Test
+fromversion: 5.0.0
