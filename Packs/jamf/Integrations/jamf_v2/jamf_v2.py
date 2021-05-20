@@ -99,13 +99,13 @@ class Client(BaseClient):
                        '</computer_command>'
 
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response', error_handler=self._computer_lock_error_handler)
+                                 resp_type='response', error_handler=self._computer_lock_erase_error_handler)
 
         json_res = json.loads(xml2json(res.content))
         return json_res
 
     @staticmethod
-    def _computer_lock_error_handler(res):
+    def _computer_lock_erase_error_handler(res):
         err_msg = str(BeautifulSoup(res.text).body.text)
         if res.status_code == 400 and 'Unable to match computer' in res.text:
             raise DemistoException(f"ID doesn't exist. Origin error from server: {err_msg}")
@@ -136,9 +136,7 @@ class Client(BaseClient):
                        '</computer_command>'
 
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response')
-        if res.status_code < 200 or res.status_code >= 300:
-            return_error('Failed to erase the computer')
+                                 resp_type='response', error_handler=self._computer_lock_erase_error_handler)
 
         raw_action = json.loads(xml2json(res.content))
         return raw_action
@@ -180,11 +178,14 @@ class Client(BaseClient):
 
         uri = '/mobiledevices'
         if mobile_id:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{id}', headers=GET_HEADERS)
+            res = self._http_request(method='GET', url_suffix=f'{uri}/id/{id}', headers=GET_HEADERS,
+                                     error_handler=self._generic_error_handler)
         elif match:
-            res = self._http_request(method='GET', url_suffix=f'{uri}/match/{match}', headers=GET_HEADERS)
+            res = self._http_request(method='GET', url_suffix=f'{uri}/match/{match}', headers=GET_HEADERS,
+                                     error_handler=self._generic_error_handler)
         else:
-            res = self._http_request(method='GET', url_suffix=f'{uri}', headers=GET_HEADERS)
+            res = self._http_request(method='GET', url_suffix=f'{uri}', headers=GET_HEADERS,
+                                     error_handler=self._generic_error_handler)
 
         return res
 
@@ -227,6 +228,14 @@ class Client(BaseClient):
 
         return res
 
+    @staticmethod
+    def _mobile_lost_erase_error_handler(res):
+        err_msg = str(BeautifulSoup(res.text).body.text)
+        if res.status_code == 400 and 'Unable to match mobile device' in res.text:
+            raise DemistoException(f"Unable to match mobile device. Origin error from server: {err_msg}")
+        if res.status_code == 400 and 'not support lost mode' in res.text:
+            raise DemistoException(f"The device does not support lost mode. Origin error from server: {err_msg}")
+
     def mobile_device_lost_request(self, mobile_id: str, lost_message: str = None):
         """Lock computer.
         Args:
@@ -251,9 +260,7 @@ class Client(BaseClient):
                        '</mobile_device_command>'
 
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response')
-        if res.status_code < 200 or res.status_code >= 300:
-            return_error('Enable Lost Mode failed')
+                                 resp_type='response', error_handler=self._mobile_lost_erase_error_handler)
 
         raw_action = json.loads(xml2json(res.content))
         return raw_action
@@ -285,9 +292,7 @@ class Client(BaseClient):
                        '</mobile_device_command>'
 
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
-                                 resp_type='response')
-        if res.status_code < 200 or res.status_code >= 300:
-            return_error('Failed to erase mobile device')
+                                 resp_type='response', self._mobile_lost_erase_error_handler)
 
         raw_action = json.loads(xml2json(res.content))
         return raw_action
