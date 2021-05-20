@@ -41,7 +41,7 @@ class Client(BaseClient):
             json_data=json_data,
             url_suffix=url_suffix,
             resp_type='json'
-        )
+        ).get('data')
         return r
 
 
@@ -100,6 +100,9 @@ def insight_signal_to_readable(obj):
     '''
     Readable json output from insight/signal object
     '''
+    if obj is None:
+        return {}
+
     # Capitalize fields
     cap_obj = {(k[0].capitalize() + k[1:]): v for k, v in obj.items()}
 
@@ -131,6 +134,9 @@ def entity_to_readable(obj):
     '''
     Readable json output from entity object
     '''
+    if obj is None:
+        return {}
+
     # Capitalize fields
     cap_obj = {(k[0].capitalize() + k[1:]): v for k, v in obj.items()}
 
@@ -193,7 +199,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise ValueError('insight_id not specified')
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), {'exclude': 'signals.allRecords'})
-    insight = insight_signal_to_readable(resp_json['data'])
+    insight = insight_signal_to_readable(resp_json)
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
@@ -213,8 +219,8 @@ def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults
     '''
     insight_id = args.get('insight_id')
     resp_json = client.req('GET', 'sec/v1/insights/{}/comments'.format(insight_id))
-    comments = [{'Id': c['id'], 'Body':c['body'], 'Author': c['author']['username'],
-                 'Timestamp': c['timestamp'], 'InsightId': insight_id} for c in resp_json['data']['comments']]
+    comments = [{'Id': c.get('id'), 'Body': c.get('body'), 'Author': c.get('author').get('username'),
+                 'Timestamp': c.get('timestamp'), 'InsightId': insight_id} for c in resp_json.get('comments')]
     readable_output = tableToMarkdown('Insight Comments:', comments, [
                                       'Id', 'InsightId', 'Author', 'Body', 'LastUpdated', 'Timestamp'])
 
@@ -234,8 +240,7 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if not signal_id:
         raise ValueError('signal_id not specified')
 
-    resp_json = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
-    signal = resp_json['data']
+    signal = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
     signal.pop('allRecords', None)  # don't need to display records from signal
     signal = insight_signal_to_readable(signal)
     readable_output = tableToMarkdown(
@@ -259,7 +264,7 @@ def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
         raise ValueError('entity_id not specified')
 
     resp_json = client.req('GET', 'sec/v1/entities/{}'.format(entity_id), {'expand': 'inventory'})
-    entity = entity_to_readable(resp_json['data'])
+    entity = entity_to_readable(resp_json)
     readable_output = tableToMarkdown(
         'Entity Details:', [entity],
         ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'])
@@ -325,7 +330,7 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/insights', query)
     insights = []
-    for insight in resp_json['data']['objects']:
+    for insight in resp_json.get('objects'):
         insights.append(insight_signal_to_readable(insight))
 
     readable_output = tableToMarkdown(
@@ -356,7 +361,7 @@ def entity_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/entities', query)
     entities = []
-    for entity in resp_json['data']['objects']:
+    for entity in resp_json.get('objects'):
         entities.append(entity_to_readable(entity))
 
     readable_output = tableToMarkdown(
@@ -385,7 +390,7 @@ def signal_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/signals', query)
     signals = []
-    for signal in resp_json['data']['objects']:
+    for signal in resp_json.get('objects'):
         signal.pop('allRecords', None)  # don't need to display records from signal
         signals.append(insight_signal_to_readable(signal))
 
@@ -416,12 +421,10 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('PUT', 'sec/v1/insights/{}/status'.format(insight_id), None, reqbody)
 
-    insight = resp_json['data']
-    # remove allRecords from signals
-    for s in insight['signals']:
+    for s in resp_json.get('signals'):
         s.pop('allRecords', None)
 
-    insight = insight_signal_to_readable(insight)
+    insight = insight_signal_to_readable(resp_json)
 
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
@@ -448,7 +451,7 @@ def match_list_get(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/match-lists', query)
     match_lists = []
-    for match_list in resp_json['data']['objects']:
+    for match_list in resp_json.get('objects'):
         cap_match_list = {(k[0].capitalize() + k[1:]): v for k, v in match_list.items()}
         match_lists.append(cap_match_list)
     readable_output = tableToMarkdown('Match lists:', match_lists, headers=['Id', 'Name', 'TargetColumn', 'DefaultTtl'])
@@ -474,7 +477,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
     item['value'] = args.get('value')
 
     resp_json = client.req('POST', 'sec/v1/match-lists/{}/items'.format(match_list_id), None, {'items': [item]})
-    result = {'Result': 'Success' if resp_json['data'] is True else 'Failed', 'Server response': resp_json['data']}
+    result = {'Result': 'Success' if resp_json is True else 'Failed', 'Server response': resp_json}
     readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
 
     return CommandResults(
@@ -522,7 +525,7 @@ def threat_intel_search_indicators(client: Client, args: Dict[str, Any]) -> Comm
 
     resp_json = client.req('GET', 'sec/v1/threat-intel-indicators', query)
     indicators = []
-    for indicator in resp_json['data']['objects']:
+    for indicator in resp_json.get('objects'):
         cap_indicator = {(k[0].capitalize() + k[1:]): v for k, v in indicator.items()}
         indicators.append(cap_indicator)
 
@@ -549,7 +552,7 @@ def threat_intel_get_sources(client: Client, args: Dict[str, Any]) -> CommandRes
 
     resp_json = client.req('GET', 'sec/v1/threat-intel-sources', query)
     threat_intel_sources = []
-    for threat_intel_source in resp_json['data']['objects']:
+    for threat_intel_source in resp_json.get('objects'):
         cap_threat_intel_source = {(k[0].capitalize() + k[1:]): v for k, v in threat_intel_source.items()}
         threat_intel_sources.append(cap_threat_intel_source)
     readable_output = tableToMarkdown('Threat intel sources:', threat_intel_sources,
@@ -577,7 +580,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
 
     resp_json = client.req('POST', 'sec/v1/threat-intel-sources/{}/items'.format(threat_intel_source_id),
                            None, {'indicators': [item]})
-    result = {'Result': 'Success' if resp_json['data'] else 'Failed', 'Server response': resp_json['data']}
+    result = {'Result': 'Success' if resp_json is True else 'Failed', 'Server response': resp_json}
     readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
 
     return CommandResults(
@@ -622,7 +625,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     query['limit'] = str(max_results)
     resp_json = client.req('GET', 'sec/v1/insights', query)
     incidents = []
-    for a in resp_json['data']['objects']:
+    for a in resp_json.get('objects'):
 
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the API response
