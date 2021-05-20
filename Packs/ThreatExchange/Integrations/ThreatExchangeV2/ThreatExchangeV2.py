@@ -630,7 +630,6 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
             raw_response = client.domain(domain, since, until, limit)
         except Exception as exception:
             # If anything happens, handle like there are no results
-            error_occurred = True
             err_msg = f'Could not process domain: "{domain}"\n {str(exception)}'
             demisto.debug(err_msg)
             raw_response = {}
