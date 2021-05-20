@@ -38,6 +38,7 @@ class Client(BaseClient):
         """
         demisto.debug(f'current request is: method={method}, body={body}, url suffix={url_suffix},'
                       f'params={params}, resp_type={resp_type}')
+
         return self._http_request(method=method, json_data=body, url_suffix=url_suffix, params=params,
                                   headers=self._headers, resp_type=resp_type)
 
@@ -78,22 +79,41 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
     Note: Human readable appears only if the HTTP request did not fail.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
     """
-    list_type = args.get('list_type')
+    list_type = args['list_type']
+    ip_address = args['IP']
     list_target = args.get('list_target', 'proxy-routed')
-    ip_address = args.get('IP')
     mask = args.get('mask', '32')
     duration = int(args.get('duration', 0))
     note = args.get('note', "")
     tags = argToList(args.get('tags', []))
     url_suffix = f'{list_type}/ip_objects'
 
-    body = {"list_target": list_target, "data": {"id": "", "type": "ip_objects",
-                                                 "attributes": {"mask": mask, "ip": ip_address, "duration": duration},
-                                                 "meta": {"note": note, "tags": tags}}}
+    body = define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags)
 
-    human_readable = f"IP object with IP address: {ip_address} created successfully to the {list_type} list."
     client.request_ip_objects(body=body, method='POST', url_suffix=url_suffix, params={}, resp_type='content')
+    human_readable = f"IP object with IP address: {ip_address} added successfully into the {list_type} list."
     return CommandResults(readable_output=human_readable)
+
+
+def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags):
+    return \
+        {
+            "list_target": list_target,
+            "data":
+                {
+                    "id": "",
+                    "type": "ip_objects",
+                    "attributes": {
+                        "mask": mask,
+                        "ip": ip_address,
+                        "duration": duration
+                    },
+                    "meta": {
+                        "note": note,
+                        "tags": tags
+                    }
+                }
+        }
 
 
 def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -102,9 +122,10 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Note: Human readable appears only if the HTTP request did not fail.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (DELETE section)
     """
-    list_type = args.get('list_type')
-    object_id = args.get('object_id')
+    list_type = args['list_type']
+    object_id = args['object_id']
     url_suffix = f'{list_type}/ip_objects/{object_id}'
+
     client.request_ip_objects(body={}, method='DELETE', url_suffix=url_suffix, params={}, resp_type='content')
     human_readable = f"IP object with ID: {object_id} deleted successfully from the {list_type} list."
     return CommandResults(readable_output=human_readable)
@@ -117,7 +138,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     the given list_type will be displayed.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (GET section)
     """
-    list_type = args.get('list_type')
+    list_type = args['list_type']
     object_ids = argToList(args.get('object_id'))
     page_number = args.get('page_number')
     page_size = args.get('page_size')
@@ -160,8 +181,7 @@ def get_ip_objects_by_ids(client: Client, object_ids: list, list_type: str, para
     human_results = []
     outputs = []
     for object_id in object_ids:
-        url_suffix = f'{list_type}/ip_objects'
-        url_suffix = '/'.join([url_suffix, object_id])
+        url_suffix = f'{list_type}/ip_objects/{object_id}'
         res = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params=params)
         outputs.append(res.get('data'))
         human_results.append(parse_get_ip_object_list_results(res)[0])
@@ -210,6 +230,7 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
+
         args = demisto.args()
 
         if demisto.command() == 'test-module':

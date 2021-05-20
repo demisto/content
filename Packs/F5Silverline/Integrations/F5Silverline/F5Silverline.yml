@@ -34,7 +34,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The dynamic lists type of threatening IP addresses. The type can
-        be one of allowlist or denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal.
+        be one of allowlist or denylist. Note - Allowlists named DDOS IP Allowlists in F5 Silveline portal.
       isArray: false
       name: list_type
       predefined:
@@ -115,7 +115,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The dynamic lists type of threatening IP addresses. The type can
-        be one of allowlist or denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal.
+        be one of allowlist or denylist. Note - Allowlists named DDOS IP Allowlists in F5 Silveline portal.
       isArray: false
       name: list_type
       predefined:
@@ -182,7 +182,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The dynamic lists type of threatening IP addresses. The type can
-        be one of allowlist or denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal.
+        be one of allowlist or denylist. Note - Allowlists named DDOS IP Allowlists in F5 Silveline portal.
       isArray: false
       name: list_type
       predefined:
