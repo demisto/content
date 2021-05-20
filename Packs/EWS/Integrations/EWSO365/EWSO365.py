@@ -1491,7 +1491,7 @@ def get_items_from_folder(
         "receivedBy",
         "author",
         "toRecipients",
-        "id",
+        "itemId",
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
@@ -2293,6 +2293,7 @@ def sub_main():
 
         # special outputs commands
         elif command in special_output_commands:
+            merit = command
             demisto.results(special_output_commands[command](client, **args))  # type: ignore[operator]
 
         # normal commands
