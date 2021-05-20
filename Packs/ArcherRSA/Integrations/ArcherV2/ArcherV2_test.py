@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import pytest
 from CommonServerPython import DemistoException
@@ -576,7 +576,8 @@ class TestArcherV2:
         )
         mocker.patch.object(client, 'search_records', return_value=([record], {}))
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
-        assert last_fetch == next_fetch
+        assert last_fetch != next_fetch
+        assert next_fetch == last_fetch + timedelta(seconds=1)
         assert not incidents, 'Should not get new incidents.'
 
     def test_fetch_got_exact_same_time(self, mocker):
@@ -605,7 +606,8 @@ class TestArcherV2:
         )
         mocker.patch.object(client, 'search_records', return_value=([record], {}))
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
-        assert last_fetch == next_fetch
+        assert last_fetch != next_fetch
+        assert next_fetch == last_fetch + timedelta(seconds=1)
         assert not incidents, 'Should not get new incidents.'
 
     def test_same_record_returned_in_two_fetches(self, mocker):
