@@ -14,6 +14,7 @@ import socket
 import sys
 import time
 import traceback
+from functools import reduce
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -544,10 +545,8 @@ def skip_cert_verification():
         if k in os.environ:
             del os.environ[k]
 
-
-def urljoin(url, suffix=""):
-    """
-        Will join url and its suffix
+def urljoin(*args, **kwargs):
+    """Gets arguments to join as url
 
         Example:
         "https://google.com/", "/"   => "https://google.com/"
@@ -556,24 +555,18 @@ def urljoin(url, suffix=""):
         "https://google.com", "/api"  => "https://google.com/api"
         "https://google.com/", "api"  => "https://google.com/api"
         "https://google.com/", "/api" => "https://google.com/api"
+        "https://google.com/", "/api", "v1" => "https://google.com/api/v1"
 
-        :type url: ``string``
-        :param url: URL string (required)
-
-        :type suffix: ``string``
-        :param suffix: the second part of the url
+        :type args: ``string``
+        :param args: URL string (required)
 
         :rtype: ``string``
         :return: Full joined url
     """
-    if url[-1:] != "/":
-        url = url + "/"
-
-    if suffix.startswith("/"):
-        suffix = suffix[1:]
-        return url + suffix
-
-    return url + suffix
+    if kwargs.get('suffix'):  # Preserves BC with old urljoin function signature urljoin(url, suffix)
+        args = list(args)
+        args.append(kwargs['suffix'])
+    return reduce(lambda a, b: str(a).rstrip('/') + '/' + str(b).lstrip('/'), args).rstrip("/")
 
 
 def positiveUrl(entry):
