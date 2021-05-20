@@ -159,7 +159,8 @@ class Client(BaseClient):
     def get_batches_from_file(self, limit):
 
         file_stream = open("response.txt", 'rt')
-        next(file_stream)  # remove the headers from the csv file.
+        columns = file_stream.readline()  # get the headers from the csv file.
+        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
 
         batch_size = limit if limit else BATCH_SIZE
         while True:
@@ -171,7 +172,7 @@ class Client(BaseClient):
                 os.remove("response.txt")
                 return
 
-            yield csv.DictReader(feed_batch, fieldnames=["Name", "Risk", "RiskString", "EvidenceDetails"])
+            yield csv.DictReader(feed_batch, fieldnames=columns)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
