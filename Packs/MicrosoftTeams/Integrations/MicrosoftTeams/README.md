@@ -500,7 +500,7 @@ You can send the message `help` in order to see the supported commands:
 
 4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
 
-   ![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/cache.png)
+   <img height="75" src="./doc_files/cache.png" />
 
    Make sure to remove the bot from the team before clearing the integration cache, and add it back after done.
 
