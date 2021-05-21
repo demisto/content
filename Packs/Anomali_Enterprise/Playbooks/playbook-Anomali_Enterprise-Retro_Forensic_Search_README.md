@@ -1,4 +1,4 @@
-Initiates a Forensic Search on IOCs in Anomali Enterprise.
+Initiates a Forensic Search on IOCs in Anomali Match.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * GenericPolling
 
 ### Integrations
-* Anomali_Enterprise
+* Anomali Match
 
 ### Scripts
 This playbook does not use any scripts.

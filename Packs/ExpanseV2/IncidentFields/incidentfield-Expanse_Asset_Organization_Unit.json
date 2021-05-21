@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Expanse Issue"
+    ],
+    "caseInsensitive": true,
+    "cliName": "expanseassetorganizationunit",
+    "closeForm": false,
+    "content": true,
+    "description": "Organization Unit this asset belongs to",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_expanseassetorganizationunit",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Expanse Asset Organization Unit",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

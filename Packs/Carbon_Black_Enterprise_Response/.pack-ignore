@@ -12,3 +12,9 @@ ignore=BA101
 
 [file:integration-Carbon_Black_Enterprise_Response.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM102,RM104
+
+[file:CBLiveGetFile_V2.yml]
+ignore=BA108,BA109

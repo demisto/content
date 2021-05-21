@@ -194,6 +194,8 @@ Updates a single incident in Azure Sentinel.
 | description | Description of the incident. | Optional | 
 | severity | The incident severity. | Optional | 
 | status | The incident status. | Optional | 
+| classification | The reason the incident was closed. Required when updating the status to Closed. Possible values are:  BenignPositive, FalsePositive, TruePositive, Undetermined | Optional | 
+| classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are:  InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected | Optional | 
 
 
 ##### Context Output

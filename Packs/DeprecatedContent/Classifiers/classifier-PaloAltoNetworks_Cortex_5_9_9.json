@@ -119,15 +119,6 @@
 					},
 					"simple": ""
 				},
-				"Involved Users": {
-					"complex": {
-						"accessor": "userName",
-						"filters": [],
-						"root": "endPointHeader",
-						"transformers": []
-					},
-					"simple": ""
-				},
 				"PID": {
 					"complex": {
 						"accessor": "processes.pid",

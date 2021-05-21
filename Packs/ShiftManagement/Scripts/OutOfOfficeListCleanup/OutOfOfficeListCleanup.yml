@@ -1,0 +1,23 @@
+commonfields:
+  id: OutOfOfficeListCleanup
+  version: -1
+name: OutOfOfficeListCleanup
+script: ''
+type: python
+tags:
+- ooo
+- Shift Management
+comment: Removes any users from the out-of-office list whose 'off until day' is in the past.
+enabled: true
+args:
+- name: listname
+  description: The name of the out-of-office list. Default is "OOO List".
+  defaultValue: OOO List
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -137,6 +137,7 @@ configuration:
   - AzureContainerRegistry
   - AzureCosmosDB
   - AzureDataLake
+  - AzureDevOps
   - AzureEventHub
   - AzureFrontDoor
   - AzureIdentity

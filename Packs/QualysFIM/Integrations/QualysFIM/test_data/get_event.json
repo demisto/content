@@ -1,0 +1,110 @@
+{
+  "dateTime": "2021-01-20T00:09:00.833+0000",
+  "fullPath": "\\Device\\HarddiskVolume3\\Windows\\System32\\sru\\SRUtmp.log",
+  "severity": 4,
+  "profiles": [
+    {
+      "name": "test_01",
+      "rules": [
+        {
+          "severity": 4,
+          "number": 1,
+          "name": "System32",
+          "description": "",
+          "section": "None",
+          "id": "bd760834-5bce-41ab-9ab4-47d8da94a145",
+          "type": "directory"
+        }
+      ],
+      "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
+      "type": "WINDOWS",
+      "category": {
+        "name": "PCI",
+        "id": "2dab5022-2fdd-11e7-93ae-92361f002671"
+      }
+    }
+  ],
+  "type": "File",
+  "changedAttributes": "None",
+  "platform": "WINDOWS",
+  "oldContent": "None",
+  "processedTime": "2021-01-20T00:13:27.782+0000",
+  "actor": {
+    "process": "svchost.exe",
+    "processID": 4900,
+    "imagePath": "\\Device\\HarddiskVolume3\\Windows\\System32\\svchost.exe",
+    "userName": "nt authority\\local service",
+    "userID": "S-1-5-19"
+  },
+  "newContent": "None",
+  "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+  "name": "SRUtmp.log",
+  "action": "Content",
+  "id": "b920cf74-5ce4-33d0-81a7-dca2580bd71b",
+  "asset": {
+    "agentId": "b1caea93-0d21-4343-801c-92009f036c79",
+    "interfaces": [
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "04:33:C2:64:45:B5",
+        "address": "10.0.0.12",
+        "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
+      },
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "02:50:41:00:00:01",
+        "address": "1.1.1.1",
+        "interfaceName": "PANGP Virtual Ethernet Adapter"
+      },
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "00:15:5D:C0:4C:18",
+        "address": "1.1.1.1",
+        "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
+      },
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "00:15:5D:3A:3D:97",
+        "address": "1.1.1.1",
+        "interfaceName": "Hyper-V Virtual Ethernet Adapter"
+      },
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "00:15:5D:3A:3D:97",
+        "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+        "interfaceName": "Hyper-V Virtual Ethernet Adapter"
+      },
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "00:15:5D:C0:4C:18",
+        "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+        "interfaceName": "Hyper-V Virtual Ethernet Adapter #2"
+      },
+      {
+        "hostname": "DESKTOP-F16FQS2",
+        "macAddress": "04:33:C2:64:45:B5",
+        "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+        "interfaceName": "Intel(R) Dual Band Wireless-AC 8265"
+      }
+    ],
+    "lastCheckedIn": "2021-01-19T18:00:32.000Z",
+    "created": "2021-01-10T11:58:40.980+0000",
+    "hostId": "15855913",
+    "operatingSystem": "Microsoft Windows 10 Pro 10.0.18363 64-bit N/A Build 18363",
+    "tags": [
+      "78721806"
+    ],
+    "assetType": "HOST",
+    "system": {
+      "lastBoot": "2021-01-19T18:00:32.000Z"
+    },
+    "ec2": "None",
+    "lastLoggedOnUser": ".\\Gill",
+    "netbiosName": "DESKTOP-F16FQS2",
+    "name": "DESKTOP-F16FQS2",
+    "agentVersion": "4.0.0.411",
+    "updated": "2021-01-10T11:58:40.980+0000"
+  },
+  "incidentId": "00581ca6-2040-4e51-bc79-ae3ac857b476",
+  "class": "Disk"
+}

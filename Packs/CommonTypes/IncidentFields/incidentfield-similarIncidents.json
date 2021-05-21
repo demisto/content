@@ -1,0 +1,30 @@
+{
+    "id": "incident_similarincidents",
+    "version": -1,
+    "modified": "2021-01-06T17:25:01.09660413Z",
+    "name": "similarIncidents",
+    "ownerOnly": false,
+    "cliName": "similarincidents",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "''"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

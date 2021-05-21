@@ -1,0 +1,5 @@
+[file:pack_metadata.json]
+ignore=PA125
+
+[file:iDefense_v2.yml]
+ignore=BA108,BA109

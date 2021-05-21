@@ -128,7 +128,8 @@ script:
 
 
     function createAlertsURL(follow) {
-        return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all';
+        var severity = getSeverityThereshold();
+        return SERVER + API_PATH_ALERTS + '?follow=' + follow + '&threats=all&minSeverity=' + severity;
     }
 
 

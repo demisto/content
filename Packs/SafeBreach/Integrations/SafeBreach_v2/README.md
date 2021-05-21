@@ -1,5 +1,5 @@
 SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
-This integration was integrated and tested with version xx of SafeBreach v2
+
 
 ## Configure SafeBreach for Cortex XSOAR Integration
 
@@ -21,7 +21,7 @@ Add a new one by typing: **config apikeys add --name <key_name>**
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| SafeBreach Managment URL | For example, https://yourorg.safebreach.com | True |
+| SafeBreach Managment URL | For example, `https://yourorg.safebreach.com` | True |
 | Account ID | Obtained with "config accounts" SafeBreach command | True |
 | API Key | Generated with "config apikeys add" SafeBreach command | True |
 | Insight Category | Network Access,Network Inspection,Endpoint,Email,Web,Data Leak | False |

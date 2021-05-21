@@ -54,7 +54,7 @@ Download email message by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Email message ID to download. | Required |  
+| message_id | The GUID of the email message to download. | Required |  
 
 
 ##### Context Output

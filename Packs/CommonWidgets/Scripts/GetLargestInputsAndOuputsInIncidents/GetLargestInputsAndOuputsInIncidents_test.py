@@ -28,7 +28,7 @@ largest_input = {
     'TaskID': '[10](https://test-address:8443/#/WorkPlan/1/10)',
     'TaskName': 'Extract indicators from incident again',
     'Name': 'text',
-    'Size(MB)': 11.44,
+    'Size(MB)': 0.011171875,
     'InputOrOutput': 'Input'
 }
 
@@ -37,7 +37,7 @@ largest_output = {
     'TaskID': '[200](https://test-address:8443/#/WorkPlan/1/200)',
     'TaskName': 'Malware Investigation 2',
     'Name': 'IP',
-    'Size(MB)': 200.692,
+    'Size(MB)': 0.19598828125,
     'InputOrOutput': 'Output'
 }
 

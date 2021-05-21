@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>IronDefense gives users the ability to rate alerts, update alert statuses, add comments to alerts, and to report observed bad activity. This integration was integrated and tested with version xx of IronDefense</p>
+<p>IronDefense gives users the ability to rate alerts, update alert statuses, add comments to alerts, and to report observed bad activity.</p>
 <p> </p>
 <h2>Configure IronDefense on XSOAR</h2>
 <ol>

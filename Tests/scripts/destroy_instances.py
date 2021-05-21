@@ -1,9 +1,11 @@
-import sys
-import os
 import json
-import subprocess
 import logging
+import os
+import subprocess
+import sys
+
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
+
 from Tests.scripts.utils.log_util import install_logging
 
 

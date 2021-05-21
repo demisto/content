@@ -56,7 +56,7 @@ def main():
     fields_names_to_populate = ['tagField', 'emailsubject', 'emailbody', "emailbodyhtml"]
     fields_to_populate = [get_incidents_by_query_args.get(x, None) for x in fields_names_to_populate]
     fields_to_populate = [x for x in fields_to_populate if x is not None]
-    get_incidents_by_query_args['populateFileds'] = ','.join(fields_to_populate)
+    get_incidents_by_query_args['populateFields'] = ','.join(fields_to_populate)
     get_incidents_by_query_args = build_query_in_reepect_to_phishing_labels(get_incidents_by_query_args)
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
     if is_error(res):
@@ -65,7 +65,7 @@ def main():
 
     text_pre_process_args = copy.deepcopy(d_args)
     text_pre_process_args['inputType'] = 'json_b64_string'
-    text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8'))
+    text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8')).decode('ascii')
     text_pre_process_args['preProcessType'] = 'nlp'
     email_body_fields = [text_pre_process_args.get("emailbody"), text_pre_process_args.get("emailbodyhtml")]
     email_body = "|".join([x for x in email_body_fields if x])
@@ -80,7 +80,7 @@ def main():
     demisto.results(res)
     train_model_args = copy.deepcopy(d_args)
     train_model_args['inputType'] = 'json_b64_string'
-    train_model_args['input'] = base64.b64encode(processed_text_data.encode('utf-8'))
+    train_model_args['input'] = base64.b64encode(processed_text_data.encode('utf-8')).decode('ascii')
     train_model_args['overrideExistingModel'] = 'true'
     res = demisto.executeCommand("DBotTrainTextClassifierV2", train_model_args)
     demisto.results(res)

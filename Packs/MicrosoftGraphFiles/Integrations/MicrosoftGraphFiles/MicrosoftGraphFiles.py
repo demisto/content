@@ -270,7 +270,7 @@ class MsGraphClient:
         Create a new folder in a Drive with a specified parent item or path.
         :param object_type: ms graph resource.
         :param object_type_id: the selected object type id.
-        :param parent_id: an ID of the Drive to upload the folder to.
+        :param parent_id: an ID of the parent to upload the folder to.
         :param folder_name: folder name
         :return: graph api raw response
         """

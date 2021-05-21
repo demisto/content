@@ -1,0 +1,53 @@
+{
+    "version": 1,
+    "status": "ok",
+    "code": 200,
+    "offset": 0,
+    "count": 4,
+    "alert_events": [
+        {
+            "alert_definition_name": "SystemAlert",
+            "created_at": "2020-11-09T15:45:34Z",
+            "id": 536416201,
+            "notified_original_recipients": false,
+            "summary": false,
+            "updated_at": "2020-11-09T15:45:34Z",
+            "admin_recipients": [],
+            "policy_action": "none",
+            "policy_enabled": true
+        },
+        {
+            "alert_definition_name": "SystemAlert",
+            "created_at": "2020-11-09T10:52:10Z",
+            "id": 536216348,
+            "notified_original_recipients": false,
+            "summary": false,
+            "updated_at": "2020-11-09T10:52:10Z",
+            "admin_recipients": [],
+            "policy_action": "none",
+            "policy_enabled": true
+        },
+        {
+            "alert_definition_name": "SystemAlert",
+            "created_at": "2020-11-09T09:44:22Z",
+            "id": 536196281,
+            "notified_original_recipients": false,
+            "summary": false,
+            "updated_at": "2020-11-09T09:44:22Z",
+            "admin_recipients": [],
+            "policy_action": "none",
+            "policy_enabled": true
+        },
+        {
+            "alert_definition_name": "SystemAlert",
+            "created_at": "2020-11-09T07:18:46Z",
+            "id": 536145971,
+            "notified_original_recipients": false,
+            "summary": false,
+            "updated_at": "2020-11-09T07:18:46Z",
+            "admin_recipients": [],
+            "policy_action": "none",
+            "policy_enabled": true
+        }
+    ]
+}

@@ -47,7 +47,7 @@ configuration:
   required: false
   type: 15
 - defaultvalue: LOG_INFO
-  display: Log priority to send
+  display: Log level to send
   name: priority
   options:
   - LOG_DEBUG
@@ -210,7 +210,7 @@ script:
     description: Sends a message to Syslog.
     execution: false
     name: syslog-send
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false

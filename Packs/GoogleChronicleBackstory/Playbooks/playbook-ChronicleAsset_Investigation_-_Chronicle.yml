@@ -1,0 +1,761 @@
+id: ChronicleAsset Investigation - Chronicle
+version: -1
+name: ChronicleAsset Investigation - Chronicle
+description: This playbook receives indicators from its parent playbook, performs
+  enrichment and investigation for each one of them, provides an opportunity to isolate
+  and block the hostname or IP address associated with the current indicator, and
+  gives out a list of isolated and blocked entities. This playbook also lists 
+  the events fetched for the asset identifier information associated with the indicator.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3221f189-68a5-4f55-8c53-67dd82ca4cc8
+    type: start
+    task:
+      id: 3221f189-68a5-4f55-8c53-67dd82ca4cc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "69"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3060,
+          "y": -1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 16fdaa3a-a045-46c3-80d5-9e6942a0f1a3
+    type: title
+    task:
+      id: 16fdaa3a-a045-46c3-80d5-9e6942a0f1a3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3060,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 9e5e2e78-def2-408e-8178-4e18eea5d8bb
+    type: regular
+    task:
+      id: 9e5e2e78-def2-408e-8178-4e18eea5d8bb
+      version: -1
+      name: Clear previous indicator data from the context
+      description: Deletes the "FoundIndicators" field from the context to clear the
+        data of the previous indicator.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: FoundIndicators
+      keysToKeep: {}
+      subplaybook:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3060,
+          "y": -1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: f92b073f-f73d-42be-8d1d-46c139ba10ba
+    type: regular
+    task:
+      id: f92b073f-f73d-42be-8d1d-46c139ba10ba
+      version: -1
+      name: Clear the list of events associated with the previous indicator from the
+        context
+      description: Deletes the "GoogleChronicleBackstory.Events" field from the context
+        to clear the events associated with the previous indicator from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GoogleChronicleBackstory.Events
+      keysToKeep: {}
+      subplaybook:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3060,
+          "y": -1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: d58e6261-2f7e-42d7-8992-7aab2af9507a
+    type: regular
+    task:
+      id: d58e6261-2f7e-42d7-8992-7aab2af9507a
+      version: -1
+      name: Search ChronicleAsset indicator
+      description: Searches for the indicator associated with the Chronicle asset
+        value passed as an input to this playbook.
+      scriptName: SixgillSearchIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      query:
+        simple: type:ChronicleAsset and value:${inputs.chronicleasset_value}
+      size:
+        simple: "1"
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3060,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "72":
+    id: "72"
+    taskid: 10ab89bd-ace7-4ac9-8bb6-16efa80c9f9c
+    type: condition
+    task:
+      id: 10ab89bd-ace7-4ac9-8bb6-16efa80c9f9c
+      version: -1
+      name: Is Chronicle Asset Identifier information present?
+      description: Checks if there is any asset identifier information associated
+        with the current ChronicleAsset indicator.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "76"
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                accessor: CustomFields.chronicleassethostname
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                accessor: CustomFields.chronicleassetip
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                accessor: CustomFields.chronicleassetmac
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                accessor: CustomFields.chronicleassetproductid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3060,
+          "y": -920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "73":
+    id: "73"
+    taskid: a274897e-f35d-4c00-8278-5579c2612cb9
+    type: playbook
+    task:
+      id: a274897e-f35d-4c00-8278-5579c2612cb9
+      version: -1
+      name: List Device Events - Chronicle
+      description: |-
+        This playbook receives Chronicle asset identifier information and gives out a list of events related to each one of them.
+        Supported integration: Chronicle
+      playbookName: List Device Events - Chronicle
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      chronicleasset_hostname:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.chronicleassethostname
+      chronicleasset_ip:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.chronicleassetip
+      chronicleasset_mac:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.chronicleassetmac
+      chronicleasset_product_id:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.chronicleassetproductid
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -3290,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "74":
+    id: "74"
+    taskid: e59bf3b8-ca2a-4c3a-8c45-ecc4b67af4e0
+    type: condition
+    task:
+      id: e59bf3b8-ca2a-4c3a-8c45-ecc4b67af4e0
+      version: -1
+      name: Is there an event?
+      description: Checks if an event is returned from the sub-playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "75"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleChronicleBackstory
+                accessor: Events
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3290,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "75":
+    id: "75"
+    taskid: 56265e32-3ad6-4d60-852b-fb75e5ad0208
+    type: regular
+    task:
+      id: 56265e32-3ad6-4d60-852b-fb75e5ad0208
+      version: -1
+      name: Save fetched events in ChronicleAsset Events field
+      description: Sets the list of fetched events in the ChronicleAsset Events field
+        of the indicator.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassetsummary:
+        complex:
+          root: GoogleChronicleBackstory
+          accessor: Events
+          transformers:
+          - operator: ConvertKeysToTableFieldFormat
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chroniclepotentiallyblockedip: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3290,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "76":
+    id: "76"
+    taskid: 41c8c1c3-3adf-4928-8b3a-3be4b021dde1
+    type: title
+    task:
+      id: 41c8c1c3-3adf-4928-8b3a-3be4b021dde1
+      version: -1
+      name: Fetch list of events associated with the asset identifiers
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3290,
+          "y": -750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 262f9648-0781-4b0a-8770-77cd91413168
+    type: playbook
+    task:
+      id: 262f9648-0781-4b0a-8770-77cd91413168
+      version: -1
+      name: Hostname And IP Address Investigation And Remediation - Chronicle
+      description: |-
+        This playbook receives the ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the hostname or IP address associated with the current indicator, and gives out a list of isolated and blocked entities.
+      playbookName: Hostname And IP Address Investigation And Remediation - Chronicle
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      auto_block_entities:
+        complex:
+          root: incident
+          accessor: chronicleautoblockentities
+      chronicleasset_hostname:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.chronicleassethostname
+      chronicleasset_ip:
+        complex:
+          root: FoundIndicators
+          accessor: CustomFields.chronicleassetip
+      chronicleasset_support_contact:
+        complex:
+          root: incident
+          accessor: chronicleassetsupportcontact
+      chronicleasset_value:
+        complex:
+          root: inputs.chronicleasset_value
+      skip_entity_isolation:
+        complex:
+          root: incident
+          accessor: chronicleskipentityisolation
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 67a3bd51-b6ef-46ad-8237-c53ff1f493a1
+    type: condition
+    task:
+      id: 67a3bd51-b6ef-46ad-8237-c53ff1f493a1
+      version: -1
+      name: Is there a hostname or an IP address associated with the ChronicleAsset?
+      description: Checks if there is any hostname or IP address associated with the
+        current ChronicleAsset indicator.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                accessor: CustomFields.chronicleassethostname
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                accessor: CustomFields.chronicleassetip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: a5430fc6-70af-492c-8b10-ff0a26010e26
+    type: title
+    task:
+      id: a5430fc6-70af-492c-8b10-ff0a26010e26
+      version: -1
+      name: Hostname and IP Address Enrichment and Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": -750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "72_2_#default#": 0.1,
+      "74_2_#default#": 0.47,
+      "78_2_#default#": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1425,
+        "width": 830,
+        "x": -3290,
+        "y": -1490
+      }
+    }
+  }
+inputs:
+- key: chronicleasset_value
+  value: {}
+  required: true
+  description: The value of the ChronicleAsset indicator.
+  playbookInputQuery:
+- key: chronicleasset_support_contact
+  value:
+    complex:
+      root: incident
+      accessor: chronicleassetsupportcontact
+  required: false
+  description: The support email address for the Chronicle asset.
+  playbookInputQuery:
+- key: auto_block_entities
+  value:
+    complex:
+      root: incident
+      accessor: chronicleautoblockentities
+  required: false
+  description: Autoblock the detected suspicious IP address(es). You can manually set this
+    as 'Yes' or 'No' here or you can set it in a 
+    'Chronicle Auto Block Entities' custom incident field.
+  playbookInputQuery:
+- key: skip_entity_isolation
+  value:
+    complex:
+      root: incident
+      accessor: chronicleskipentityisolation
+  required: false
+  description: Skip the isolation of entities. You can manually set this as 'Yes' or 'No' 
+    here or you can set it in a 'Chronicle Skip Entity Isolation' custom incident field.
+  playbookInputQuery:
+outputs:
+- contextPath: IsolatedEntities
+  description: List of the isolated entities.
+- contextPath: PotentiallyBlockedIPs
+  description: List of potentially blocked IP Addresses.
+  type: unknown
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

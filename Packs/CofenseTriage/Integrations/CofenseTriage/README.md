@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Cofense Triage to enable superusers to programmatically extract data from Cofense Triage in JSON format.<br> This integration was tested with Cofense Triage version 1.14.0.</p>
+<p>Deprecated. Use the Cofense Triage v2 integration instead.</p>
 <h2>Configure Cofense Triage on Demisto</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>

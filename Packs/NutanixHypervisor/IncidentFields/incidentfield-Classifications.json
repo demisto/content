@@ -1,0 +1,30 @@
+{
+    "id": "incident_classifications",
+    "version": -1,
+    "modified": "2021-01-13T12:56:49.002803Z",
+    "name": "Classifications",
+    "ownerOnly": false,
+    "cliName": "classifications",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Nutanix Hypervisor Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

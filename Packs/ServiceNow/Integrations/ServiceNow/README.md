@@ -1,7 +1,5 @@
 <!-- HTML_DOC -->
-<p>Demisto interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:</p>
-<p>View, create, update or delete a ServiceNow ticket directly from the Demisto CLI and enrich it with Demisto data.<br>View, create, update and delete records from any ServiceNow table.<br>Query ServiceNow data with the ServiceNow query syntax.</p>
-<p>Please refer to ServiceNow documentation for additional information. We especially recommend the Operators available for filters and queries page: <a href="https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html" rel="nofollow">https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html</a></p>
+<p>Deprecated. Use the ServiceNow v2 integration instead.</p>
 <p>This integration was integrated and tested with the London version of ServiceNow.</p>
 <h2>Use cases</h2>
 <ol>
@@ -15,7 +13,7 @@
 <h2>Configure ServiceNow on Demisto</h2>
 <p>To use ServiceNow on Demisto, ensure your user account has the rest_api_explorer and web_service_admin roles. These roles are required to make API calls. However, they may not suffice for viewing records in some tables. Please make sure you have the correct role so you have permissions to work with the relevant table.</p>
 <ol>
-<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
+<li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers `&` Services</strong>.</li>
 <li>Search for ServiceNow.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>

@@ -1,8 +1,4 @@
-from typing import Optional
-
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
@@ -17,7 +13,9 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
-API_KEY = PARAMS.get('api_key')
+
+API_KEY = AutoFocusKeyRetriever(PARAMS.get('api_key')).key
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = 'https://autofocus.paloaltonetworks.com'
 # Should we use SSL
@@ -1121,12 +1119,21 @@ def search_sessions_command():
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    from_time = args.get('time_after')
+    to_time = args.get('time_before')
+    time_range = args.get('time_range')
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+
+    if time_range:
+        if from_time or to_time:
+            return_error("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
+                         "arguments.")
+        else:
+            from_time, to_time = time_range.split(',')
+
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
@@ -1304,7 +1311,7 @@ def top_tags_results_command():
     })
 
 
-def search_ip_command(ip):
+def search_ip_command(ip, reliability):
     indicator_type = 'IP'
     ip_list = argToList(ip)
 
@@ -1323,12 +1330,15 @@ def search_ip_command(ip):
             indicator=ip_address,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         ip = Common.IP(
             ip=ip_address,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1356,56 +1366,65 @@ def search_ip_command(ip):
     return command_results
 
 
-def search_domain_command(args):
+def search_domain_command(domain, reliability):
     indicator_type = 'Domain'
-    domain_name_list = argToList(args.get('domain'))
+    domain_name_list = argToList(domain)
 
     command_results = []
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
         indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
-
-        dbot_score = Common.DBotScore(
-            indicator=domain_name,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        domain = Common.Domain(
-            domain=domain_name,
-            dbot_score=dbot_score,
-            creation_date=indicator.get('whoisDomainCreationDate'),
-            expiration_date=indicator.get('whoisDomainExpireDate'),
-            updated_date=indicator.get('whoisDomainUpdateDate'),
-
-            admin_email=indicator.get('whoisAdminEmail'),
-            admin_name=indicator.get('whoisAdminName'),
-
-            registrar_name=indicator.get('whoisRegistrar'),
-
-            registrant_name=indicator.get('whoisRegistrant')
-        )
-
-        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        # create human readable markdown for ip
-        tags = autofocus_domain_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
-        if tags:
-            indicators_data = autofocus_domain_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
+        if indicator:
+            raw_tags = raw_res.get('tags')
+            score = calculate_dbot_score(indicator, indicator_type)
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=score,
+                reliability=reliability
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score,
+                creation_date=indicator.get('whoisDomainCreationDate'),
+                expiration_date=indicator.get('whoisDomainExpireDate'),
+                updated_date=indicator.get('whoisDomainUpdateDate'),
+                admin_email=indicator.get('whoisAdminEmail'),
+                admin_name=indicator.get('whoisAdminName'),
+                admin_country=indicator.get('whoisAdminCountry'),
+                registrar_name=indicator.get('whoisRegistrar'),
+                registrant_name=indicator.get('whoisRegistrant'),
+                malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+                tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
+            )
+            autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+            # create human readable markdown for ip
+            tags = autofocus_domain_output.get('Tags')
+            table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
+            if tags:
+                indicators_data = autofocus_domain_output.copy()
+                del indicators_data['Tags']
+                md = tableToMarkdown(table_name, indicators_data)
+                md += tableToMarkdown('Indicator Tags:', tags)
+            else:
+                md = tableToMarkdown(table_name, autofocus_domain_output)
         else:
-            md = tableToMarkdown(table_name, autofocus_domain_output)
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=0,
+                reliability=reliability
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score
+            )
+            md = f'### The Domain indicator: {domain_name} was not found in AutoFocus'
+            autofocus_domain_output = {'IndicatorValue': domain_name}
 
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.Domain',
@@ -1415,11 +1434,10 @@ def search_domain_command(args):
             raw_response=raw_res,
             indicator=domain
         ))
-
     return command_results
 
 
-def search_url_command(url):
+def search_url_command(url, reliability):
     indicator_type = 'URL'
     url_list = argToList(url)
 
@@ -1440,12 +1458,15 @@ def search_url_command(url):
             indicator=url_name,
             indicator_type=DBotScoreType.URL,
             integration_name=VENDOR_NAME,
-            score=score
+            score=score,
+            reliability=reliability
         )
 
         url = Common.URL(
             url=url_name,
-            dbot_score=dbot_score
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags)
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1464,7 +1485,6 @@ def search_url_command(url):
             outputs_prefix='AutoFocus.URL',
             outputs_key_field='IndicatorValue',
             outputs=autofocus_url_output,
-
             readable_output=md,
             raw_response=raw_res,
             indicator=url
@@ -1473,7 +1493,7 @@ def search_url_command(url):
     return command_results
 
 
-def search_file_command(file):
+def search_file_command(file, reliability):
     indicator_type = 'File'
     file_list = argToList(file)
 
@@ -1492,12 +1512,8 @@ def search_file_command(file):
             indicator=sha256,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        file = Common.File(
-            sha256=sha256,
-            dbot_score=dbot_score
+            score=score,
+            reliability=reliability
         )
 
         autofocus_file_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1512,6 +1528,13 @@ def search_file_command(file):
         else:
             md = tableToMarkdown(table_name, autofocus_file_output)
 
+        file = Common.File(
+            sha256=sha256,
+            dbot_score=dbot_score,
+            malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
+            tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
+        )
+
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.File',
             outputs_key_field='IndicatorValue',
@@ -1523,6 +1546,42 @@ def search_file_command(file):
         ))
 
     return command_results
+
+
+def get_tags_for_generic_context(tags: Optional[list]):
+    if not tags:
+        return None
+    results = []
+    keys = ['TagGroups', 'Aliases', 'PublicTagName', 'TagName']
+    sub_keys = ['TagGroupName']
+    for item in tags:
+        generic_context_tags = {key: item.get(key) for key in keys}
+        generic_context_tags['tagGroups'] = {key: item.get(key) for key in sub_keys}
+        results.append(remove_empty_elements(generic_context_tags))
+    return results
+
+
+def get_tags_for_tags_and_malware_family_fields(tags: Optional[list], is_malware_family=False):
+    """get specific tags for the tgas and malware_family fields
+    Args
+        tags (Optional[list]): tags from the response
+        is_malware_family (bool): indicating whether it is for the malware_family field
+    return:
+        List[str]: list of tags without duplicates and empty elements
+    """
+    if not tags:
+        return None
+    results = []
+    for item in tags:
+        results.append(item.get('tag_name'))
+        results.append(item.get('public_tag_name'))
+        for alias in item.get('aliases', []):
+            results.append(alias)
+        if not is_malware_family:
+            for group in item.get('tagGroups', [{}]):
+                results.append(group.get('tag_group_name'))
+    # Returns a list without duplicates and empty elements
+    return list(set(filter(None, results)))
 
 
 def get_export_list_command(args):
@@ -1613,13 +1672,19 @@ def get_export_list_command(args):
 
 def main():
     demisto.debug('Command being called is %s' % (demisto.command()))
+    reliability = PARAMS.get('integrationReliability', 'B - Usually reliable')
+
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        Exception("AutoFocus error: Please provide a valid value for the Source Reliability parameter")
 
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
         active_command = demisto.command()
-
         args = {k: v for (k, v) in demisto.args().items() if v}
+        args['reliability'] = reliability
         if active_command == 'test-module':
             # This is the call made when pressing the integration test button.
             test_module()
@@ -1647,7 +1712,7 @@ def main():
         elif active_command == 'ip':
             return_results(search_ip_command(**args))
         elif active_command == 'domain':
-            return_results(search_domain_command(args))
+            return_results(search_domain_command(**args))
         elif active_command == 'url':
             return_results(search_url_command(**args))
         elif active_command == 'file':

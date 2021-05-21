@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "NCSC CAF Assessment"
+ ],
+ "caseInsensitive": true,
+ "cliName": "cafdemail",
+ "closeForm": false,
+ "content": true,
+ "description": "Enter the e-mail address of the person responsible for answering questions related to \"Minimising the impact of cyber security incidents\"",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_cafdemail",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "CAF D Email",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

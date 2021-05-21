@@ -141,6 +141,27 @@ class Client(BaseClient):
 
         return indicator_metadata
 
+    @staticmethod
+    def filter_and_aggregate_values(address_list: List) -> List:
+        """For each indicator value from the given list we aggregate the all the different keys found.
+
+        Args:
+            address_list (List): list of indicator objects containing objects with duplicate values.
+
+        Returns:
+            List. List of filtered indicator objects (no indicator value appear twice) and aggregated data
+        """
+        indicator_objects: dict = {}
+        for item_to_search in address_list:
+            current_value = item_to_search.get('value')
+            ind_obj = indicator_objects.get(current_value)
+            if ind_obj:
+                indicator_objects[current_value].update(item_to_search)
+            else:
+                indicator_objects[current_value] = item_to_search
+
+        return [value for value in indicator_objects.values()]
+
     def extract_indicators_from_values_dict(self, values_from_file: Dict) -> List:
         """Builds a list of all IP indicators in the input dict.
 
@@ -180,8 +201,7 @@ class Client(BaseClient):
                                             azure_platform=indicator_metadata['platform'],
                                             azure_system_service=indicator_metadata['system_service'])
                 )
-
-        return results
+        return self.filter_and_aggregate_values(results)
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -331,7 +351,6 @@ def main():
             return_outputs(*get_indicators_command(client, feedTags, tlp_color))
         elif command == 'fetch-indicators':
             indicators, _ = fetch_indicators_command(client, feedTags, tlp_color)
-
             for single_batch in batch(indicators, batch_size=2000):
                 demisto.createIndicators(single_batch)
 

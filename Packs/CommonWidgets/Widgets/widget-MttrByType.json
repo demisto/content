@@ -27,5 +27,5 @@
    "type"
   ]
  },
- "description": "Shows changes in Mean Time to Resolution, over time, while differentiating between incident types."
+ "description": "Shows changes in Mean Time to Resolution (in hours), over time, while differentiating between incident types."
 }

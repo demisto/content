@@ -62,7 +62,7 @@ script:
     var TOKEN = params.token;
 
 
-    function sendRequest(method, api) {
+    function sendRequest(method, api, stringifyData) {
         var requestUrl = BASE_URL + api;
         var result = http(
             requestUrl,
@@ -84,6 +84,12 @@ script:
         }
         var body;
         try {
+            // if fetching incidents, stringify long numbers to not round down long ids, e.g:
+            // "dlp_incident_id":3747385551915191779 --> "dlp_incident_id":"3747385551915191779"
+            if (stringifyData) {
+                stringifyBody = result.Body.replace(/([\[:])?(\d{11,})([,\}\]])/g, "$1\"$2\"$3");
+                return JSON.parse(stringifyBody)
+            }
             body = JSON.parse(result.Body);
         } catch (ex) {
             throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
@@ -162,7 +168,7 @@ script:
     }
 
 
-    function getAlerts() {
+    function getAlerts(stringifyData) {
         var queryArgs = {
             token: TOKEN,
             type: encodeURIComponent(args.type)
@@ -187,13 +193,13 @@ script:
 
         var cmdUrl = 'alerts' + encodeToURLQuery(queryArgs);
         logInfo('Getting/Fetching Netskope Alerts (to be incidents) with ' + String(cmdUrl));
-        var result = sendRequest('GET', cmdUrl);
+        var result = sendRequest('GET', cmdUrl, stringifyData);
         return result;
     }
 
 
     function getAlertsCommand() {
-        result = getAlerts()
+        result = getAlerts(false)
         var retArray = [];
         result.data.forEach(function(arrayItem) {
             var id = arrayItem._id;
@@ -295,7 +301,7 @@ script:
         args.type = "";
         args.starttime = last_run.toString();
         args.endtime = now().toString();
-        alerts = getAlerts().data;
+        alerts = getAlerts(true).data;
         var incidents = [];
         var latestIncidedentTimeString = null;
         var latestIncidedentTimeInt = null;

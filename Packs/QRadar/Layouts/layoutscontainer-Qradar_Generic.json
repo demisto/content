@@ -587,7 +587,16 @@
         "index": 2,
         "sectionItemType": "field",
         "startCol": 0
-       }
+       },
+       {
+		"endCol": 2,
+		"fieldId": "usernames",
+		"height": 22,
+		"id": "aabaf2a0-3797-11eb-a84c-0143507d14c1",
+		"index": 3,
+		"sectionItemType": "field",
+		"startCol": 0
+		}
       ],
       "maxH": null,
       "maxW": 1,

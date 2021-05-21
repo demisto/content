@@ -211,10 +211,29 @@ def test_main(mocker):
     from PreprocessEmail import main
     incident = util_load_json('test_data/get_incident_details_result.json')
     mocker.patch.object(demisto, 'incident', return_value=incident)
+    mocker.patch.object(PreprocessEmail, 'get_email_related_incident_id', return_value='123')
     mocker.patch.object(PreprocessEmail, 'get_incident_by_query',
-                        return_value=util_load_json('test_data/email_related_incident_response.json'))
+                        return_value=[util_load_json('test_data/email_related_incident_response.json')])
     mocker.patch.object(PreprocessEmail, 'get_attachments_using_instance')
     mocker.patch.object(PreprocessEmail, 'get_incident_related_files', return_value=FILES)
     mocker.patch.object(demisto, 'results')
     main()
     assert not demisto.results.call_args[0][0]
+
+
+def test_get_email_related_incident_id(mocker):
+    """
+        Given
+        - Multiple incidents with the same identifying code
+        When
+        - Making a query for all incidents with a certain identifying code but with different subjects
+        Then
+        - Validate that the correct incident is returned (the one with the matching subject)
+    """
+    import PreprocessEmail
+    from PreprocessEmail import get_email_related_incident_id
+    mocker.patch.object(PreprocessEmail, 'get_incident_by_query',
+                        return_value=[{'emailsubject': 'subject 1', 'id': '1'},
+                                      {'emailsubject': 'subject 2', 'id': '2'}])
+    id = get_email_related_incident_id('12345678', 'subject 2')
+    assert id == '2'

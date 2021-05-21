@@ -41,10 +41,10 @@ List critical assets at risk from an entity and the complexity of the attack
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| entityId | String | XMCyber Entity ID | 
-| XMCyber.criticalAssetsAtRiskList.name | String | Compromising Techinique Name | 
-| XMCyber.criticalAssetsAtRiskList.average | Number | Average attack complexity | 
-| XMCyber.criticalAssetsAtRiskList.minimum | Number | Minimum attack complexity | 
+| XMCyber.Entity.id | String | XMCyber Entity ID | 
+| XMCyber.Entity.criticalAssetsAtRiskList.name | String | Compromising Techinique Name | 
+| XMCyber.Entity.criticalAssetsAtRiskList.average | Number | Average attack complexity | 
+| XMCyber.Entity.criticalAssetsAtRiskList.minimum | Number | Minimum attack complexity | 
 
 
 #### Command Example
@@ -275,9 +275,9 @@ List all entities at risk from an entity and the complexity of the attack
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| entityId | String | XMCyber Entity ID | 
-| XMCyber.entitiesAtRiskList.name | String | Compromising Techinique Name | 
-| XMCyber.entitiesAtRiskList.technique | String | The attack technique which compromised the entity | 
+| XMCyber.Entity.id | String | XMCyber Entity ID | 
+| XMCyber.Entity.entitiesAtRiskList.name | String | Compromising Techinique Name | 
+| XMCyber.Entity.entitiesAtRiskList.technique | String | The attack technique which compromised the entity | 
 
 
 #### Command Example
@@ -329,7 +329,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| XMCyber.IsVersion.valid | Boolean | Flag that indicates if the version is valid | 
+| XMCyber.Version.valid | Boolean | Flag that indicates if the version is valid | 
 
 
 #### Command Example
@@ -421,7 +421,7 @@ Return data on Entity by IP from XM Cyber
 | entityId | String | XMCyber Entity ID | 
 | name | String | Entity Name | 
 | isAsset | Boolean | Is Entity a Critical Asset | 
-| affectedEntities | Number | Number of unique entities at risk from this entity | 
+| XMCyber.Entity.affectedEntities | Number | Number of unique entities at risk from this entity | 
 | averageComplexity | Number | Average complexity to compromise this entity | 
 | criticalAssetsAtRisk | Number | Number of unique critical assets at risk from this entity | 
 | averageComplexityLevel | String | Level of the average complexity to compromise this entity | 

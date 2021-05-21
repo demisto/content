@@ -8,11 +8,11 @@ configuration:
   name: api_url
   required: true
   type: 0
-- display: client_id
+- display: Client ID
   name: client_id
   required: true
   type: 0
-- display: client_secret
+- display: Client Secret
   name: client_secret
   required: true
   type: 0
@@ -899,7 +899,7 @@ script:
     - contextPath: CVE.Description
       description: A description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false

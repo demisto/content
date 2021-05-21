@@ -23,7 +23,10 @@ The mirroring instance in the first tenant contains a new incident type, called 
 | query | Fetch only incidents that match the query | False |
 | first_fetch | First fetch time | False |
 | categories | Entry Categories | False |
-| tags | Entry tags | False |
+| tags | Incoming Entry tags | False |
+| mirror_tag | Outgoing Entry Tag | False |
+| mirror_identically | Mirror to identical incident type | False |
+| disable_from_same_integration | Disable mirroring for incidents came from this integration | False |
 
 4. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 

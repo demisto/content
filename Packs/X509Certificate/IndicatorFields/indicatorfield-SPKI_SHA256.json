@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Certificate"
+    ],
+    "caseInsensitive": true,
+    "cliName": "spkisha256",
+    "closeForm": false,
+    "content": true,
+    "description": "SHA256 fingerprint of Subject Public Key Info",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_spkisha256",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SPKI SHA256",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

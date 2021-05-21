@@ -34,15 +34,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '1':
-    id: '1'
-    taskid: 319e7be3-5939-4436-8602-ba05fc455e4c
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4cfa2898-da16-4d61-839a-cc66e5492541
     type: condition
     task:
-      id: 319e7be3-5939-4436-8602-ba05fc455e4c
+      id: 4cfa2898-da16-4d61-839a-cc66e5492541
       version: -1
       name: Is there a CVE to enrich?
-      description: Verify that the playbook input includes at least one CVE ID to enrich.
+      description: Verify that the playbook input includes at least one CVE ID to
+        enrich.
       type: condition
       iscommand: false
       brand: ''
@@ -59,7 +62,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.CVE
+                root: inputs.cve_id
             iscontext: true
     view: |-
       {
@@ -151,12 +154,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '5':
-    id: '5'
-    taskid: ae11f65b-3e73-4065-8166-5a3818dde6bd
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
     type: condition
     task:
-      id: ae11f65b-3e73-4065-8166-5a3818dde6bd
+      id: 8f3572d2-dbfc-4c4b-82af-94d06b99e727
       version: -1
       name: Is "CVE Search" integration enabled?
       description: Verify that there's a valid instance of "CVE Search" enabled.
@@ -178,7 +183,7 @@ tasks:
               complex:
                 root: modules
                 filters:
-                - - operator: isEqualString
+                - - operator: containsGeneral
                     left:
                       value:
                         simple: modules.brand
@@ -208,16 +213,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '6':
-    id: '6'
-    taskid: ae5e6097-bb43-44ed-8ede-cb2f37e4ea1b
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
     type: regular
     task:
-      id: ae5e6097-bb43-44ed-8ede-cb2f37e4ea1b
+      id: c08adb3a-b8c3-4a9b-8290-2f6dcda45d88
       version: -1
       name: Get CVE info from "CVE Search"
-      description: Retrieve CVE information from "CVE Search".
-      script: CVE Search|||cve-search
+      description: Returns CVE information by CVE ID.
+      script: '|||cve'
       type: regular
       iscommand: true
       brand: CVE Search
@@ -225,10 +232,9 @@ tasks:
       '#none#':
       - '2'
     scriptarguments:
-      cveId:
+      cve_id:
         complex:
-          root: inputs.CVE
-          accessor: ID
+          root: inputs.cve_id
     continueonerror: true
     separatecontext: false
     view: |-
@@ -301,12 +307,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '12':
-    id: '12'
-    taskid: 409dbd49-0b30-4328-8985-b72d07f2e5f5
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: bee9dcb2-a07f-4362-8e17-df1458d42051
     type: regular
     task:
-      id: 409dbd49-0b30-4328-8985-b72d07f2e5f5
+      id: bee9dcb2-a07f-4362-8e17-df1458d42051
       version: -1
       name: VulnDB - Get vulnerability details by CVE
       description: Returns full details about vulnerabilities, by CVE ID.

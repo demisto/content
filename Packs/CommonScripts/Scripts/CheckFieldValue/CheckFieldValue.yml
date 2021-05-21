@@ -47,7 +47,7 @@ tags:
 - polling
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.11789
+dockerimage: demisto/python3:3.9.1.15759
 runas: DBotWeakRole
 runonce: false
 tests:

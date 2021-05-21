@@ -5,8 +5,8 @@ FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument
 
 
 def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-               entry_id_list, email_latest_message):
-    """Send email reply.
+               entry_id_list, email_latest_message, email_code):
+    """Send email reply.-
     Args:
         incident_id: The incident ID.
         email_subject: The email subject.
@@ -17,9 +17,10 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         reply_html_body: The email html body.
         entry_id_list: The files entry ids list.
         email_latest_message: The latest message ID in the email thread to reply to.
+        email_code: The random code that was generated when the incident was created.
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    reply_html_body, entry_id_list, email_latest_message)
+                                    reply_html_body, entry_id_list, email_latest_message, email_code)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
@@ -33,9 +34,9 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                      entry_id_list, email_latest_message):
-    if f'#{incident_id}' not in email_subject:
-        subject_with_id = f"#{incident_id} {email_subject}"
+                      entry_id_list, email_latest_message, email_code):
+    if f'<{email_code}' not in email_subject:
+        subject_with_id = f"<{email_code}> {email_subject}"
 
         # setting the email's subject for gmail adjustments
         try:
@@ -152,7 +153,7 @@ def get_reply_body(notes, incident_id, attachments):
         for note in notes:
             note_user = note['Metadata']['user']
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
-            user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name'])
+            user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
             reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
             if attachments:
                 attachment_names = [attachment.get('name') for attachment in attachments]
@@ -211,6 +212,7 @@ def main():
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
     email_latest_message = custom_fields.get('emaillatestmessage')
+    email_code = custom_fields.get('emailgeneratedcode')
     email_to_str = get_email_recipients(email_to, email_from, service_mail)
     files = args.get('files', {})
     attachments = args.get('attachment', {})
@@ -221,7 +223,7 @@ def main():
         reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
         result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
-                            reply_html_body, entry_id_list, email_latest_message)
+                            reply_html_body, entry_id_list, email_latest_message, email_code)
         demisto.results(result)
     except Exception as error:
         return_error(str(error), error)

@@ -29,8 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. cve-latest
 ---
 Retruns the latest updated CVEs.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `cve-latest`

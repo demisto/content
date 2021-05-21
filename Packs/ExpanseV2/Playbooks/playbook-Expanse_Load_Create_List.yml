@@ -1,0 +1,306 @@
+id: Expanse Load-Create List
+version: -1
+name: Expanse Load-Create List
+description: |
+  Subplaybook to support Expanse Handle Incident playbook.
+  Load a list to be used in Expanse playbook.
+  Create the list if it does not exist.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fb25ef07-66ee-4752-857c-fc5357c3d3c0
+    type: start
+    task:
+      id: fb25ef07-66ee-4752-857c-fc5357c3d3c0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5d981e49-dca5-49ca-88c1-c81fe74e6b7c
+    type: condition
+    task:
+      id: 5d981e49-dca5-49ca-88c1-c81fe74e6b7c
+      version: -1
+      name: List Exists?
+      description: Check if list exist in demisto lists.
+      scriptName: IsListExist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "YES":
+      - "2"
+    scriptarguments:
+      listName:
+        simple: ${inputs.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a10ccb67-3c4d-4d93-8f8e-347a7fed3ed2
+    type: regular
+    task:
+      id: a10ccb67-3c4d-4d93-8f8e-347a7fed3ed2
+      version: -1
+      name: Load List
+      description: commands.local.cmd.list.get
+      script: Builtin|||getList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: ListText=.
+      listName:
+        simple: ${inputs.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b49935a1-6c41-4a45-8ab6-0237a1bb252a
+    type: regular
+    task:
+      id: b49935a1-6c41-4a45-8ab6-0237a1bb252a
+      version: -1
+      name: Create List
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      listData:
+        simple: '{}'
+      listName:
+        simple: ${inputs.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: fe3567cd-6f29-4922-8f74-b55d77a7bec9
+    type: regular
+    task:
+      id: fe3567cd-6f29-4922-8f74-b55d77a7bec9
+      version: -1
+      name: Set Context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ParsedList
+      stringify: {}
+      value:
+        complex:
+          root: ListText
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '{}'
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 6011b442-e0f9-41b1-8134-03b0341a5037
+    type: condition
+    task:
+      id: 6011b442-e0f9-41b1-8134-03b0341a5037
+      version: -1
+      name: Is List Empty?
+      description: Check if list is empty.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: ListText
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 004d92d9-a2fd-42aa-816c-b49d20f0bb24
+    type: title
+    task:
+      id: 004d92d9-a2fd-42aa-816c-b49d20f0bb24
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 62dda88b-b3a5-44c2-8fba-30516903d664
+    type: regular
+    task:
+      id: 62dda88b-b3a5-44c2-8fba-30516903d664
+      version: -1
+      name: Set Empty List
+      description: commands.local.cmd.list.set
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      listData:
+        simple: '{}'
+      listName:
+        simple: ${inputs.ListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1385,
+        "width": 780,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ListName
+  value: {}
+  required: true
+  description: Name of the list to load. List will be created if it does not exist/empty.
+  playbookInputQuery:
+outputs:
+- contextPath: ParsedList
+  description: Contents of parsed list.
+  type: unknown
+tests:
+- No tests
+fromversion: 6.0.0

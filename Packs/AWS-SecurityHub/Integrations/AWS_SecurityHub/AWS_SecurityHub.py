@@ -530,7 +530,8 @@ def aws_session(config,
     if kwargs and not AWS_ACCESS_KEY_ID:
 
         if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
+            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
+                                      region_name=AWS_DEFAULT_REGION)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(
@@ -706,8 +707,9 @@ def get_findings_command(client, args):
     response = client.get_findings(**kwargs)
     next_token = response.get('NextToken')
     while next_token:
+        kwargs['NextToken'] = next_token
         findings.extend(response.get('Findings'))
-        response = client.get_findings(NextToken=next_token)
+        response = client.get_findings(**kwargs)
         next_token = response.get('NextToken')
     outputs = {'AWS-SecurityHub.Findings(val.Id === obj.Id)': findings}
     table_header = 'AWS SecurityHub GetFindings'

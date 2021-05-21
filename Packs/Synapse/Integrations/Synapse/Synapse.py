@@ -1,26 +1,21 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import json
-import pytz
 import asyncio
-import aiohttp
-import urllib3
 import ipaddress
+import json
 import traceback
-from aiohttp import TCPConnector
 
+import aiohttp
+import pytz
+import urllib3
+from CommonServerPython import *
+from aiohttp import TCPConnector
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
-
 
 DATE_FORMAT = '%Y/%m/%d %H:%M:%S %Z'
 TIMEZONE = demisto.params().get('timezone', None)
-
 
 ''' CLIENT '''
 
@@ -164,8 +159,8 @@ class Client(BaseClient):
         my_query = f'{data} | limit {limit}'
         nodes = []  # Nodes to return
         async with aiohttp.ClientSession(
-            connector=TCPConnector(ssl=self._verify),
-            trust_env=self.proxy
+                connector=TCPConnector(ssl=self._verify),
+                trust_env=self.proxy
         ) as sess:
             address = urljoin(self._base_url, '/storm')
             query = {'query': my_query}
@@ -366,14 +361,10 @@ def test_module(client):
     return 'ok'
 
 
-def ip_reputation_command(client, args, good_tag, bad_tag):
+def ip_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResults]:
     """
     Returns IP Reputation for a list of IPs.
     """
-
-    ip_standard_list = []
-    ip_data_list = []
-
     ips = argToList(args.get('ip'))
     if len(ips) == 0:
         raise ValueError('IP(s) not specified')
@@ -382,6 +373,7 @@ def ip_reputation_command(client, args, good_tag, bad_tag):
         if not re.match(ipv4Regex, ip):
             raise ValueError(f'Value "{ip}" is not a valid IP address.')
 
+    command_results: List[CommandResults] = []
     for ip in ips:
         query = f'inet:ipv4={ip}'
         data = asyncio.run(client.synapse_get_nodes(query))
@@ -417,34 +409,26 @@ def ip_reputation_command(client, args, good_tag, bad_tag):
             dbot_score=dbot_score
         )
 
-        ip_standard_list.append(ip_standard_context)
-        ip_data_list.append(ip_data)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('IP Details', ip_data),
+            outputs_prefix='Synapse.IP',
+            outputs_key_field='ip',
+            outputs=ip_data,
+            indicator=ip_standard_context
+        ))
 
-    readable_output = tableToMarkdown('IP List', ip_data_list)
-
-    results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Synapse.IP',
-        outputs_key_field='ip',
-        outputs=ip_data_list,
-        indicators=ip_standard_list
-    )
-
-    return results
+    return command_results
 
 
-def domain_reputation_command(client, args, good_tag, bad_tag):
+def domain_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResults]:
     """
     Returns Domain Reputation for a list of Domains.
     """
-
-    domain_standard_list = []
-    domain_data_list = []
-
     domains = argToList(args.get('domain'))
     if len(domains) == 0:
         raise ValueError('Domain(s) not specified')
 
+    command_results: List[CommandResults] = []
     for domain in domains:
         query = f'inet:fqdn={domain}'
         data = asyncio.run(client.synapse_get_nodes(query))
@@ -480,30 +464,21 @@ def domain_reputation_command(client, args, good_tag, bad_tag):
             dbot_score=dbot_score
         )
 
-        domain_standard_list.append(domain_standard_context)
-        domain_data_list.append(domain_data)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('Domain Details', domain_data),
+            outputs_prefix='Synapse.Domain',
+            outputs_key_field='domain',
+            outputs=domain_data,
+            indicator=domain_standard_context
+        ))
 
-    readable_output = tableToMarkdown('Domain List', domain_data_list)
-
-    results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Synapse.Domain',
-        outputs_key_field='domain',
-        outputs=domain_data_list,
-        indicators=domain_standard_list
-    )
-
-    return results
+    return command_results
 
 
-def url_reputation_command(client, args, good_tag, bad_tag):
+def url_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResults]:
     """
     Returns URL Reputation for a list of URLs.
     """
-
-    url_standard_list = []
-    url_data_list = []
-
     urls = argToList(args.get('url'))
     if len(urls) == 0:
         raise ValueError('URL(s) not specified')
@@ -512,6 +487,7 @@ def url_reputation_command(client, args, good_tag, bad_tag):
         if not re.match(urlRegex, url):
             raise ValueError(f'Value "{url}" is not a valid URL address.')
 
+    command_results: List[CommandResults] = []
     for url in urls:
         query = f'inet:url={url}'
         data = asyncio.run(client.synapse_get_nodes(query))
@@ -547,34 +523,26 @@ def url_reputation_command(client, args, good_tag, bad_tag):
             dbot_score=dbot_score
         )
 
-        url_standard_list.append(url_standard_context)
-        url_data_list.append(url_data)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('URL Details', url_data),
+            outputs_prefix='Synapse.URL',
+            outputs_key_field='url',
+            outputs=url_data,
+            indicator=url_standard_context
+        ))
 
-    readable_output = tableToMarkdown('URL List', url_data_list)
-
-    results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Synapse.URL',
-        outputs_key_field='url',
-        outputs=url_data_list,
-        indicators=url_standard_list
-    )
-
-    return results
+    return command_results
 
 
-def file_reputation_command(client, args, good_tag, bad_tag):
+def file_reputation_command(client, args, good_tag, bad_tag) -> List[CommandResults]:
     """
     Returns File Reputation for a list of hashes (MD5, SHA1, or SHA256).
     """
-
-    file_standard_list = []
-    file_data_list = []
-
     files = argToList(args.get('file'))
     if len(files) == 0:
         raise ValueError('File(s) not specified')
 
+    command_results: List[CommandResults] = []
     for file in files:
         file_query = file_regex_helper(file)
         data = asyncio.run(client.synapse_get_nodes(file_query))
@@ -611,20 +579,15 @@ def file_reputation_command(client, args, good_tag, bad_tag):
             dbot_score=dbot_score
         )
 
-        file_standard_list.append(file_standard_context)
-        file_data_list.append(file_data)
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown('File Details', file_data),
+            outputs_prefix='Synapse.File',
+            outputs_key_field='hash',
+            outputs=file_data,
+            indicator=file_standard_context
+        ))
 
-    readable_output = tableToMarkdown('File List', file_data_list)
-
-    results = CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Synapse.File',
-        outputs_key_field='hash',
-        outputs=file_data_list,
-        indicators=file_standard_list
-    )
-
-    return results
+    return command_results
 
 
 def storm_query_command(client, args):
@@ -937,7 +900,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

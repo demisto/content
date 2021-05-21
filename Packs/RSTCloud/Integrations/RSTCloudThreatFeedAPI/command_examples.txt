@@ -1,0 +1,5 @@
+!ip ip=1.32.54.12 threshold=50
+!domain domain="02.xn--kprv2p5ncce060cgo9d.cc" threshold=40
+!url url="https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc"threshold=30
+!rst-submit-fp ioc="thisisnotamaliciousdomain.com" description="a decent website"
+!rst-submit-new ioc="thisisamaliciouswebsite.com" description="a user downloaded a trojan"

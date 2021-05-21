@@ -1,0 +1,31 @@
+{
+  "common_empty_value": "",
+  "common_null_value": null,
+  "common_array_of_strings": [
+    "One",
+    "Two"
+  ],
+  "ios_Key_With_Spaces": "",
+  "common_with_dot_in_value": ".",
+  "common_with_space_in_value": " value ",
+  "common_CamelCaseKey": "",
+  "common_nestedDictionary": {
+    "common_sample": "Sample"
+  },
+  "common_TwoLayerNestedDictionary": {
+    "common_sample": {
+      "common_sample": "Sample"
+    }
+  },
+  "common_emptyNestedDict": {
+  },
+  "common_emptyArray": [],
+  "common_nestedArrayOfDictionary": [
+    {
+      "common_sample": "Sample"
+    },
+    {
+      "common_sample": "Sample Two"
+    }
+  ]
+}

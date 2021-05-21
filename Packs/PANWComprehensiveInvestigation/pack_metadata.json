@@ -2,7 +2,7 @@
     "name": "PANW Comprehensive Investigation",
     "description": "Are you a Palo Alto Networks customer? We have just the content pack to help you orchestrate incident response across Palo Alto Networks products.",
     "support": "xsoar",
-    "currentVersion": "1.3.4",
+    "currentVersion": "1.3.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,57 +17,53 @@
     ],
     "keywords": [],
     "dependencies": {
-        "Palo_Alto_Networks_WildFire": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks WildFire"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
         "Traps": {
             "mandatory": false,
             "display_name": "Palo Alto Networks Traps"
         },
-        "DemistoRESTAPI": {
+        "Palo_Alto_Networks_WildFire": {
             "mandatory": false,
-            "display_name": "Demisto REST API"
-        },
-        "PaloAltoNetworks_PAN_OS_EDL_Management": {
-            "mandatory": false,
-            "display_name": "Palo Alto Networks PAN-OS EDL Management"
-        },
-        "PAN-OS": {
-            "mandatory": false,
-            "display_name": "PAN-OS"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
+            "display_name": "Palo Alto Networks WildFire"
         },
         "CortexXDR": {
             "mandatory": false,
             "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
         },
-        "AutoFocus": {
+        "Active_Directory_Query": {
             "mandatory": false,
-            "display_name": "AutoFocus"
-        },
-        "Malware": {
-            "mandatory": true,
-            "display_name": "Malware"
+            "display_name": "Active Directory Query"
         },
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"
         },
+        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
         "CortexDataLake": {
             "mandatory": false,
             "display_name": "Cortex Data Lake"
         },
-        "Active_Directory_Query": {
-            "mandatory": false,
-            "display_name": "Active Directory Query"
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Malware": {
+            "mandatory": true,
+            "display_name": "Malware"
         }
     }
 }

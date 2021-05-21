@@ -1,5 +1,10 @@
 This is the Palo Alto Networks IoT integration (previously Zingbox).
-This integration was integrated and tested with the Banff release of Palo Alto Networks IoT
+This integration was integrated and tested with the Banff release of Palo Alto Networks IoT.
+
+## Get your Palo Alto Networks IoT Access Keys
+This integration requires that API access be configured.
+To obtain the **Access Key ID** and **Secret Access Key**, refer to the [Palo Alto Networks IoT API User Guide](https://docs.paloaltonetworks.com/iot/iot-security-api-reference/iot-security-api-overview/get-started-with-the-iot-security-api.html).
+
 ## Configure Palo Alto Networks IoT on Cortex XSOAR
 
 1. Navigate to **Settings** &gt; **Integrations** &gt; **Servers & Services**.

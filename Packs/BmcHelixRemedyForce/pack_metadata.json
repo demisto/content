@@ -2,7 +2,7 @@
     "name": "Bmc Helix Remedyforce",
     "description": "Integration of BMC Helix Remedyforce with Cortex XSOAR. BMC Helix Remedyforce integration allows customers to create/update service requests and incidents. It also allows to update status, resolve service requests and incidents with customer notes. This integration exposes standard ticketing capabilities that can be utilized as part of automation & orchestration.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

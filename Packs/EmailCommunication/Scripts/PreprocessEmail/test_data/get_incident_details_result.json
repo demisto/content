@@ -27,7 +27,7 @@
         "emailreplyto": "Dreply.prod.outlook.com",
         "emailreturnpath": "johndoepanetworks@gmail.com",
         "emailsize": 470285,
-        "emailsubject": "Re: #119 multiple To's",
+        "emailsubject": "Re: <12345678> multiple To's",
         "emailto": "avishai@demistodev.onmicrosoft.com",
         "emailtocount": "1",
         "remediationsla": {

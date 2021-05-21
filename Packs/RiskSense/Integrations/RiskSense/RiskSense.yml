@@ -637,7 +637,7 @@ script:
       description: The maximum number of records to fetch in one page.
       defaultValue: 10
     - name: sort_by
-      default: true
+      default: false
       auto: PREDEFINED
       predefined:
       - Title
@@ -648,7 +648,7 @@ script:
         records.
       defaultValue: severity
     - name: sort_direction
-      default: true
+      default: false
       auto: PREDEFINED
       predefined:
       - Ascending
@@ -1182,12 +1182,12 @@ script:
       description: The exclude flag that determines whether the returned records matches
         filter criteria or not. The default is "false".
     - name: page
-      default: true
+      default: false
       description: The index of the page. The index is a numeric value and starting
         with 0.
       defaultValue: 0
     - name: size
-      default: true
+      default: false
       description: The maximum number of records to fetch in one page.
       defaultValue: 10
     - name: sort_by
@@ -2082,7 +2082,7 @@ script:
       type: String
     description: Apply the new or existing tag to the asset, creates a new tag if
       it does not exist in RiskSense.
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   longRunning: false
   longRunningPort: false

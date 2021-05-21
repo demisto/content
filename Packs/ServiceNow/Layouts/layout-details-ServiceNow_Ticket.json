@@ -522,15 +522,6 @@
        },
        {
         "endCol": 2,
-        "fieldId": "childincidentscount",
-        "height": 22,
-        "id": "457cfca0-c9a4-11ea-9075-c575f8e27f6d",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "servicenowcategory",
         "height": 22,
         "id": "a35ffad0-c9a3-11ea-9075-c575f8e27f6d",

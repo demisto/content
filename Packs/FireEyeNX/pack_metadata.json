@@ -1,17 +1,17 @@
 {
-  "name": "FireEyeNX",
-  "description": "FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by  accurately detecting and immediately stopping advanced, targeted and other evasive attacks hiding in Internet traffic.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "githubUser": "crestdatasystems",
-  "created": "2020-07-02T11:31:04Z",
-  "categories": [
-    "Network Security"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "FireEyeNX",
+    "description": "FireEye Network Security is an effective cyber threat protection solution that helps organizations minimize the risk of costly breaches by  accurately detecting and immediately stopping advanced, targeted and other evasive attacks hiding in Internet traffic.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "githubUser": "crestdatasystems",
+    "created": "2020-07-02T11:31:04Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

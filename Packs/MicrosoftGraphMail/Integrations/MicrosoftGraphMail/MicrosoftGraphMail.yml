@@ -92,6 +92,12 @@ script:
       name: search
       required: false
       secret: false
+    - defaultValue: 20
+      description: 'Limit emails to fetch in one request'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     - default: true
       defaultValue: '1'
       description: The number of pages of emails to return (maximum is 10 emails per
@@ -101,7 +107,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the properties of returned emails.
+    description: Gets the properties of returned emails. Typically shows partial results,
+      use the "page_size" and "pages_to_pull" arguments to get all results.
     execution: false
     name: msgraph-mail-list-emails
     outputs:
@@ -167,6 +174,10 @@ script:
       type: String
     - contextPath: MSGraphMail.UserID
       description: The ID of the user.
+      type: String
+    - contextPath: MSGraphMail.NextPage
+      description: A token to pass to the next list command to retrieve additional
+        results.
       type: String
   - arguments:
     - default: false
@@ -1017,7 +1028,100 @@ script:
     description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
-  dockerimage: demisto/crypto:1.0.0.12979
+  - arguments:
+    - default: false
+      description: A CSV list of email addresses for the 'to' field.
+      isArray: true
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: The contents (body) of the email to be sent.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Subject for the email to be sent.
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - name: inReplyTo
+      required: true
+      secret: false
+      description: ID of the item to reply to.
+    - default: false
+      description: 'A CSV list of War Room entry IDs that contain files, and are used
+        to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of email addresses for the 'cc' field.
+      isArray: true
+      name: cc
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of email addresses for the 'bcc' field.
+      isArray: true
+      name: bcc
+      required: false
+      secret: false
+    - default: false
+      description: HTML formatted content (body) of the email to be sent. This argument
+        overrides the "body" argument.
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
+      isArray: true
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of CIDs to embed attachments within the email itself.
+      isArray: true
+      name: attachCIDs
+      required: false
+      secret: false
+    - default: false
+      description: Email address of the sender.
+      name: from
+      required: false
+      secret: false
+    deprecated: false
+    description: Replies to an email using Graph Mail.
+    execution: false
+    name: reply-mail
+    outputs:
+    - contextPath: MicrosoftGraph.SentMail.body
+      description: The body of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.bodyPreview
+      description: The body preview of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.subject
+      description: The subject of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.toRecipients
+      description: The 'To' recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.ccRecipients
+      description: The CC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.bccRecipients
+      description: The BCC recipients of the email.
+      type: String
+    - contextPath: MicrosoftGraph.SentMail.ID
+      description: The immutable ID of the message.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: true
   longRunning: false

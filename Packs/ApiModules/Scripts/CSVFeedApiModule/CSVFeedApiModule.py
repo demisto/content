@@ -42,6 +42,9 @@ class Client(BaseClient):
                 * regex_string_extractor will extract the first match from the value_from_feed,
                 Use None to get the full value of the field.
                 * string_formatter will format the data in your preferred way, Use None to get the extracted field.
+            3. 'indicator_field': ('value_from_feed', 'field_mapper_function')
+                * field_mapper_function will accept as an argument 'value_from_feed' and return the data
+                in your preferred way.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
@@ -80,7 +83,7 @@ class Client(BaseClient):
         else:
             password = credentials.get('password', '')
             auth = None
-            if username is not None and password is not None:
+            if username and password:
                 auth = (username, password)
 
         super().__init__(base_url=url, proxy=proxy, verify=not insecure, auth=auth)
@@ -139,9 +142,30 @@ class Client(BaseClient):
 
             try:
                 r = _session.send(prepreq, **kwargs)
-            except requests.ConnectionError:
-                raise requests.ConnectionError('Failed to establish a new connection.'
-                                               ' Please make sure your URL is valid.')
+            except requests.exceptions.ConnectTimeout as exception:
+                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                          ' is incorrect or that the Server is not accessible from your host.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.SSLError as exception:
+                # in case the "Trust any certificate" is already checked
+                if not self._verify:
+                    raise
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                          ' the integration configuration.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ProxyError as exception:
+                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                          ' selected, try clearing the checkbox.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ConnectionError as exception:
+                # Get originating Exception in Exception chain
+                error_class = str(exception.__class__)
+                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+                err_msg = 'Verify that the server URL parameter' \
+                          ' is correct and that you have access to the server from your host.' \
+                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                    .format(err_type, exception.errno, exception.strerror)
+                raise DemistoException(err_msg, exception)
             try:
                 r.raise_for_status()
             except Exception:
@@ -151,8 +175,10 @@ class Client(BaseClient):
             response = self.get_feed_content_divided_to_lines(url, r)
             if self.feed_url_to_config:
                 fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
+                skip_first_line = self.feed_url_to_config.get(url, {}).get('skip_first_line', False)
             else:
                 fieldnames = self.fieldnames
+                skip_first_line = False
             if self.ignore_regex is not None:
                 response = filter(  # type: ignore
                     lambda x: self.ignore_regex.match(x) is None,  # type: ignore
@@ -164,6 +190,9 @@ class Client(BaseClient):
                 fieldnames=fieldnames,
                 **self.dialect
             )
+
+            if skip_first_line:
+                next(csvreader)
 
             results.append({url: csvreader})
 
@@ -230,9 +259,15 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     for key, field in mapping.items():
         regex_extractor = None
         formatter_string = None
+        field_mapper_function = None
 
-        if isinstance(field, tuple):
+        # case 'value_from_feed', regex_string_extractor, string_formatter
+        if isinstance(field, tuple) and len(field) == 3:
             field, regex_extractor, formatter_string = field
+
+        # case 'value_from_feed', 'field_mapper_function'
+        elif isinstance(field, tuple) and len(field) == 2:
+            field, field_mapper_function = field
 
         if not raw_json.get(field):  # type: ignore
             continue
@@ -245,7 +280,9 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
             except Exception:
                 field_value = raw_json[field]  # type: ignore
 
-        fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
+        field_value = formatter_string.format(field_value) if formatter_string else field_value
+        field_value = field_mapper_function(field_value) if field_mapper_function else field_value
+        fields_mapping[key] = field_value
 
         if key in ['firstseenbysource', 'lastseenbysource']:
             fields_mapping[key] = date_format_parsing(fields_mapping[key])
@@ -253,8 +290,10 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0,
+                             create_relationships: bool = False, **kwargs):
     iterator = client.build_iterator(**kwargs)
+    relationships_of_indicator = []
     indicators = []
     config = client.feed_url_to_config or {}
     for url_to_reader in iterator:
@@ -262,7 +301,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
             mapping = config.get(url, {}).get('mapping', {})
             for item in reader:
                 raw_json = dict(item)
-                value = item.get(client.value_field)
+                fields_mapping = create_fields_mapping(raw_json, mapping) if mapping else {}
+                value = item.get(client.value_field) or fields_mapping.get('Value')
                 if not value and len(item) > 1:
                     value = next(iter(item.values()))
                 if value:
@@ -271,11 +311,24 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
+                    # if relationships param is True and also the url returns relationships
+                    if create_relationships and config.get(url, {}).get('relationship_name'):
+                        if fields_mapping.get('relationship_entity_b'):
+                            relationships_lst = EntityRelationship(
+                                name=config.get(url, {}).get('relationship_name'),
+                                entity_a=value,
+                                entity_a_type=indicator_type,
+                                entity_b=fields_mapping.get('relationship_entity_b'),
+                                entity_b_type=config.get(url, {}).get('relationship_entity_b_type'),
+                            )
+                            relationships_of_indicator = [relationships_lst.to_indicator()]
+
                     indicator = {
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
+                        'fields': fields_mapping,
+                        'relationships': relationships_of_indicator,
                     }
                     indicator['fields']['tags'] = client.tags
 
@@ -299,7 +352,8 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     except ValueError:
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit)
+    relationships = demisto.params().get('create_relationships', False)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -327,6 +381,7 @@ def feed_main(feed_name, params=None, prefix=''):
                 params.get('indicator_type'),
                 params.get('auto_detect_type'),
                 params.get('limit'),
+                params.get('create_relationships')
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):

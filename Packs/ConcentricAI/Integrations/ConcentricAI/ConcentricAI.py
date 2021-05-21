@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict
 
 import urllib3
 from CommonServerPython import *
@@ -23,7 +23,7 @@ VERIFY_CERT: bool
 PROXY: bool
 TENANT_ID: str
 USERNAME: str
-QUERY_HEADERS: dict
+QUERY_HEADERS = None
 COOKIE: str
 LAST_FETCH = None
 RISK_RULES: dict
@@ -31,6 +31,7 @@ SCROLL_ID_INCIDENT: str
 SCROLL_ID_FILE: str
 SCROLL_ID_USER_DETAIL: str
 MAX_INCIDENTS_TO_FETCH: int
+URL: str
 
 
 def encoding(username, password):
@@ -76,12 +77,13 @@ def initialise_scrolls_and_rules():
 
 def initialize_global_values():
 
-    global MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS, QUERY_HEADERS,\
+    global URL, MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS,\
         CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, DOMAIN, AUTHORIZATION
 
     CLIENT_ID = demisto.getParam('client_id')
     CLIENT_SECRET = demisto.getParam('client_secret')
     DOMAIN = demisto.getParam('domain')
+    URL = urljoin(demisto.getParam('url'))
     AUTHORIZATION = "Basic " + encoding(CLIENT_ID, CLIENT_SECRET)
     AUTH_HEADERS = get_headers_for_login()
     initialise_scrolls_and_rules()
@@ -103,7 +105,6 @@ This is the client class that will have all the client login calls.
 
 
 class LoginClient(BaseClient):
-
     def fetch_api_token(self):
         res = self._http_request(
             method='GET',
@@ -132,6 +133,7 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull incidents', e)
@@ -147,6 +149,7 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull risk-rules', e)
@@ -157,7 +160,7 @@ class QueryClient(BaseClient):
         payload = {
             "query": "{ allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"path\\\"},"
             " [\\\"" + path + "\\\"]] }]}\" pagination: { currentPage: 1 pageSize: 500 } "
-            "_scroll_id: \"" + SCROLL_ID_FILE + "\") { allContents {rows { retrieved_class  ccc_class  name "
+            "_scroll_id: \"" + SCROLL_ID_FILE + "\") { allContents {rows { cid retrieved_class  ccc_class  name "
             "ownerDetails { name} category subcategory service type dropped dropped_reason created_at "
             "modified_at duplicate near_duplicate misclass size  path  url  entity_person entity_org  "
             "entity_email entity_bank_account  entity_credit_card  entity_date_of_birth entity_driving_license "
@@ -170,9 +173,26 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file-information', e)
+        return res
+
+    def get_file_sharing_details(self, loginClient: LoginClient, cid: str):
+        payload = {
+            "query": "{\n  allContents(filter: \"{\\\"and\\\": [{\\\"in\\\": [ { \\\"var\\\": \\\"cid\\\"},"
+            " [\\\"" + cid + "\\\"]]}]}\", augment: {tables: [\"entitlement\"]}) {\n  augment\n  } \n}\n"
+        }
+        try:
+            res = callAPI(self, payload, loginClient)
+        except Exception as e:
+            if str(e) == 'Error in API call [401] - Unauthorized\n':
+                fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
+                res = callAPI(self, payload, loginClient)
+            else:
+                raise Exception('Failed to pull file sharing details', e)
         return res
 
     def get_users_overview(self, loginClient: LoginClient, max_users: str):
@@ -186,6 +206,7 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull users-overview', e)
@@ -206,6 +227,7 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull users-overview', e)
@@ -223,6 +245,7 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
+                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file-names', e)
@@ -239,7 +262,7 @@ def convert_to_demisto_severity(severity: str) -> int:
     }[severity]
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg, arg_name: str, required: bool = False) -> Optional[int]:
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
@@ -254,11 +277,14 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
 
 
 def fetch_token(client: LoginClient):
-    token = client.fetch_api_token()
-    global COOKIE
-    COOKIE = 'accessToken=' + token
-    global QUERY_HEADERS
-    QUERY_HEADERS = get_headers_for_query()
+    try:
+        token = client.fetch_api_token()
+        global COOKIE
+        COOKIE = 'accessToken=' + token
+        global QUERY_HEADERS
+        QUERY_HEADERS = get_headers_for_query()
+    except Exception as e:
+        raise Exception('Failed to fetch token', e)
 
 
 def get_rule_names(risk_id: List, risk_rules: dict):
@@ -341,6 +367,20 @@ def transform_user_details(answer):
     return target
 
 
+def get_file_360_link(cid: str):
+    global URL
+    url = URL
+    p1 = url.find("api")
+    p2 = url.find("-")
+    length = len(url)
+    if(p1 < 0 or p2 < 0):
+        return None
+    else:
+        link = url[0:p1] + url[p2 + 1:length]
+        link = link + "file360?cid=" + cid
+        return link
+
+
 def transform_file_information(target: dict, risk_dict: dict, queryClient: QueryClient, loginClient: LoginClient):
 
     if target['risk_id'] is not None:
@@ -358,6 +398,9 @@ def transform_file_information(target: dict, risk_dict: dict, queryClient: Query
     if 'ownerDetails' in target:
         if target['ownerDetails'] is not None:
             target['ownerDetails'] = target['ownerDetails']['name']
+    if 'cid' in target:
+        if target['cid'] is not None:
+            target['file360-link'] = get_file_360_link(target['cid'])
     if 'near_duplicate_contrib_cids' in target:
         if target['near_duplicate_contrib_cids'] is not None:
             file_names: list = []
@@ -372,13 +415,28 @@ def transform_file_information(target: dict, risk_dict: dict, queryClient: Query
     return target
 
 
+def transform_file_permissions(answer):
+    target = {}
+    if 'type' in answer and answer['type'] is not None:
+        target['type'] = answer['type']
+    if 'user_name' in answer and answer['user_name'] is not None:
+        target['user_name'] = answer['user_name']
+    if 'user_id' in answer and answer['user_id'] is not None:
+        target['user_id'] = answer['user_id']
+    return target
+
+
 def test_module(client: LoginClient):
-    token = client.fetch_api_token()
-    if token:
-        return 'ok'
+    try:
+        token = client.fetch_api_token()
+        if token:
+            return 'ok'
+    except Exception as e:
+        raise Exception('Test Failure', e)
 
 
-def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int], max_results: int, fetch_time):
+def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int],
+                    max_results: int, fetch_time):
     global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)
     scroll_id = last_run.get('scroll_id', None)
@@ -488,8 +546,24 @@ def fetch_file_information(loginClient: LoginClient, queryClient: QueryClient, p
     )
 
 
-def get_users_overview(loginClient: LoginClient, queryClient: QueryClient, max_users: int):
+def get_file_sharing_details(loginClient: LoginClient, queryClient: QueryClient, cid: str):
+    res = queryClient.get_file_sharing_details(loginClient, cid)
+    answers = res['data']['allContents']['augment']['entitlement']
+    results = []
+    for answer in answers:
+        target = transform_file_permissions(answer)
+        results.append(target)
 
+    readable_output = tableToMarkdown('File Sharing', results)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='ConcentricAI.FileSharingInfo',
+        outputs_key_field='info',
+        outputs=results
+    )
+
+
+def get_users_overview(loginClient: LoginClient, queryClient: QueryClient, max_users: int):
     res = queryClient.get_users_overview(loginClient, str(max_users))
     answers = res['data']['allContents']['aggregations']
     result = filter_user_information(answers)
@@ -529,9 +603,8 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
         target = transform_user_details(answer)
         results.append(target)
 
-    # do some error handling here.
     if results == []:
-        return_error(f'No Results found for this user while executing {demisto.command()} command')
+        return_results(f'No Results found for this user while executing {demisto.command()} command')
 
     readable_output = tableToMarkdown('Users Details', results)
     return CommandResults(
@@ -543,7 +616,6 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
 
 
 def main() -> None:
-
     initialize_global_values()
     headers = AUTH_HEADERS
     base_url = urljoin(demisto.params()['url'])
@@ -555,8 +627,11 @@ def main() -> None:
         verify=verify_certificate,
         headers=headers,
         proxy=proxy)
-    fetch_token(loginClient)
+
     global QUERY_HEADERS
+    if QUERY_HEADERS is None:
+        fetch_token(loginClient)
+
     queryClient = QueryClient(
         base_url=base_url,
         headers=QUERY_HEADERS,
@@ -591,6 +666,12 @@ def main() -> None:
             path = demisto.getArg('path')
             name = demisto.getArg('file-name')
             result = fetch_file_information(loginClient, queryClient, path, name)
+            return_results(result)
+
+        # this will get file sharing details based on cid.
+        elif demisto.command() == 'concentricai-get-file-sharing-details':
+            cid = demisto.getArg('cid')
+            result = get_file_sharing_details(loginClient, queryClient, cid)
             return_results(result)
 
         # this will fetch all information about users-overview.

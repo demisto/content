@@ -1,0 +1,39 @@
+{
+    "id": "indicator_abusetype",
+    "version": -1,
+    "modified": "2020-12-28T12:27:40.291009Z",
+    "name": "Abuse Type",
+    "ownerOnly": false,
+    "cliName": "abusetype",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "",
+        "ransomware",
+        "darknet market",
+        "bitcoin tumbler",
+        "blackmail scam",
+        "sextortion",
+        "other"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "Cryptocurrency Address"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

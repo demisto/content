@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Expanse Issue",
+    "description": "",
+    "feed": false,
+    "id": "ExpanseV2",
+    "keyTypeMap": {
+        "Low": "Expanse Issue",
+        "Medium": "Expanse Issue",
+        "High": "Expanse Issue",
+        "Critical": "Expanse Issue"        
+    },
+    "name": "ExpanseV2 - Classifier",
+	"transformer": {
+		"complex": null,
+		"simple": "priority"
+	},
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

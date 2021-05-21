@@ -1,0 +1,62 @@
+{
+  "asn": "",
+  "can_add_public_tags": true,
+  "confidence": 50,
+  "country": null,
+  "created_by": null,
+  "created_ts": "2020-11-12T10:00:34.398Z",
+  "description": null,
+  "expiration_ts": "2017-01-26T00:00:00.000Z",
+  "feed_id": 0,
+  "id": 191431508,
+  "import_session_id": null,
+  "import_source": null,
+  "ip": null,
+  "is_anonymous": false,
+  "is_editable": true,
+  "is_public": false,
+  "itype": "apt_md5",
+  "latitude": null,
+  "longitude": null,
+  "meta": {
+    "detail": "phish-target,victim-hi-tech",
+    "detail2": "imported by user 202",
+    "severity": "medium"
+  },
+  "modified_ts": "2020-11-12T10:00:34.398Z",
+  "org": "",
+  "owner_organization_id": 88,
+  "rdns": null,
+  "resource_uri": "/api/v2/intelligence/191431508/",
+  "retina_confidence": -1,
+  "sort": [
+    1605175234398
+  ],
+  "source": "Demisto",
+  "source_created": null,
+  "source_modified": null,
+  "source_reported_confidence": 50,
+  "status": "active",
+  "subtype": "SHA256",
+  "tags": [
+    {
+      "id": "4wq",
+      "name": "phish-target",
+      "org_id": "88"
+    },
+    {
+      "id": "ezn",
+      "name": "victim-hi-tech",
+      "org_id": "88"
+    }
+  ],
+  "threat_type": "apt",
+  "threatscore": 43,
+  "tlp": null,
+  "trusted_circle_ids": null,
+  "type": "md5",
+  "update_id": 387400813,
+  "uuid": "9f0e0677-6e70-4453-a9ed-0a081922d57d",
+  "value": "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1",
+  "workgroups": []
+}

@@ -56,7 +56,7 @@ def get_timestamp_first_fetch(last_fetch):
     Returns:
         (num).The formatted timestamp
     """
-    # this theorticly shouldn't happen but just in case
+    # this theoretically shouldn't happen but just in case
     if str(last_fetch).isdigit():
         return int(last_fetch)
 
@@ -464,8 +464,9 @@ def incident_label_maker(source):
         (list).The labels.
     """
     labels = []
-    for field in source.keys():
-        labels.append({'type': str(field), 'value': str(source.get(field))})
+    for field, value in source.items():
+        encoded_value = value if isinstance(value, str) else json.dumps(value)
+        labels.append({'type': str(field), 'value': encoded_value})
 
     return labels
 

@@ -1,7 +1,9 @@
-from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
+import os
+
 import pytest
 import sqlalchemy
-import os
+
+from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
 
 class ResultMock:
@@ -239,3 +241,12 @@ def test_mysql_integration():
     client = Client(dialect, host, 'root', 'password', generate_default_port_by_dialect(dialect), 'mysql', "", False, True)
     res = client.sql_query_execute_request('show processlist', {})
     assert len(res) >= 1
+
+
+@pytest.mark.parametrize('connect_parameters, dialect, expected_response', [
+    ('arg1=value1&arg2=value2', 'MySQL', {'arg1': 'value1', 'arg2': 'value2'}),
+    ('arg1=value1&arg2=value2', 'Microsoft SQL Server', {'arg1': 'value1', 'arg2': 'value2', 'driver': 'FreeTDS'}),
+    ('arg1=value1&arg2=value2', 'Microsoft SQL Server - MS ODBC Driver',
+     {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 17 for SQL Server'})])
+def test_parse_connect_parameters(connect_parameters, dialect, expected_response):
+    assert Client.parse_connect_parameters(connect_parameters, dialect) == expected_response

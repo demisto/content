@@ -1,0 +1,61 @@
+{
+    "description": "The mapper for the CCTV incident type",
+    "feed": false,
+    "id": "UnifiVideo-mapper",
+    "mapping": {
+        "CCTV": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "UnifiVideo Camera Name": {
+                    "complex": null,
+                    "simple": "camera_name"
+                },
+                "UnifiVideo End Time": {
+                    "complex": null,
+                    "simple": "stop_time"
+                },
+                "UnifiVideo Start Time": {
+                    "complex": null,
+                    "simple": "start_time"
+                },
+                "UnifiVideo Ubnt ID": {
+                    "complex": null,
+                    "simple": "ubnt_id"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "event"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "${event} - ${camera_name}"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "UnifiVideo Camera Name": {
+                    "complex": null,
+                    "simple": "camera_name"
+                },
+                "UnifiVideo End Time": {
+                    "complex": null,
+                    "simple": "stop_time"
+                },
+                "UnifiVideo Start Time": {
+                    "complex": null,
+                    "simple": "start_time"
+                },
+                "UnifiVideo Ubnt ID": {
+                    "complex": null,
+                    "simple": "ubnt_id"
+                }
+            }
+        }
+    },
+    "name": "UnifiVideo_mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

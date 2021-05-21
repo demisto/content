@@ -1,0 +1,157 @@
+category: Network Security
+commonfields:
+  id: Palo Alto Networks IoT 3rd Party
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Customer ID
+  name: Customer ID
+  required: true
+  type: 0
+- display: Access Key
+  name: Access Key
+  required: true
+  type: 4
+- display: Key ID
+  name: Key ID
+  required: true
+  type: 4
+description: Base Integration for Palo Alto IoT third party integrations. This integration
+  communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities and devices.
+display: Palo Alto Networks IoT 3rd Party
+name: Palo Alto Networks IoT 3rd Party
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Asset.
+      name: asset_type
+      predefined:
+      - device
+      - alert
+      - vulnerability
+      required: true
+    - description: 'Increment time (in minutes) for which to return input type assets that modified or discovered. For example, if Increment Time = 15 mins, will
+        return input type assets modified or discovered within the last 15 minutes.
+        A Null value will return the full inventory. The maximum input type assets per call is 1,000.'
+      name: increment_time
+    - description: 'Offset for paging. By default, a Null value will accumulate all results.'
+      name: offset
+      required: false
+    - description: 'Page size for paging. By default, a Null value will accumulate all
+        results.'  
+      name: page_length
+      required: false
+    description: Returns a list of assets for the specified asset type.
+    name: panw-iot-3rd-party-get-asset-list
+    outputs:
+    - contextPath: PanwIot3rdParty.Devices
+      description: List of devices.
+    - contextPath: PanwIot3rdParty.Alerts
+      description: List of Alerts.
+    - contextPath: PanwIot3rdParty.Vulnerabilities
+      description: List of Vulnerabilities.
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of asset. Can be "device", "alert", or "vulnerability".
+      name: asset_type
+      predefined:
+      - device
+      - alert
+      - vulnerability
+      required: true
+    - description: Asset ID. MacAddress for device, zb_ticketid for alert and vulnerability.
+      name: asset_id
+      required: true
+    description: Returns details for the passed asset ID. Can be an alert-id, vulnerability-id, mac-address.
+    name: panw-iot-3rd-party-get-single-asset
+    outputs:
+    - contextPath: PanwIot3rdParty.SingleAsset
+      description: Asset details.
+  - arguments:
+    - auto: PREDEFINED
+      description: Message status to report to PANW IoT Cloud. Can be "error", "success", or "disabled".
+      name: status
+      predefined:
+      - error
+      - success
+      - disabled
+      required: true
+    - description: The message to send to PANW IoT Cloud.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Name of PANW IoT 3rd Party integration. Can be "siem", "ise", or "sericenow".
+      name: integration_name
+      predefined:
+      - siem
+      - ise
+      - servicenow
+      required: true
+    - description: Name of the playbook.
+      name: playbook_name
+      required: true
+    - auto: PREDEFINED
+      description: Type of asset associated with the status report. Can be "device", "alert", or "vulnerability".
+      name: asset_type
+      predefined:
+      - device
+      - alert
+      - vulnerability
+      required: true
+    description: Sends a status message to PANW IOT cloud.
+    name: panw-iot-3rd-party-report-status-to-panw
+  - arguments:
+    - auto: PREDEFINED
+      description: Input asset type. Can be "device", "alert", or "vulnerability".
+      name: asset_type
+      predefined:
+      - device
+      - alert
+      - vulnerability
+      required: true
+    - auto: PREDEFINED
+      description: The output format to convert the asset to. Can be "CiscoISECustomAttributes", "SIEM", or "ServiceNow".
+      name: output_format
+      predefined:
+      - CiscoISECustomAttributes
+      - SIEM
+      - ServiceNow
+      required: true
+    - description: A comma-separated list of input assets.
+      isArray: true
+      name: asset_list
+    - description: ServiceNow ID and deviceid mapping.
+      isArray: true
+      name: servicenow_map
+    - description: Incident triggered by PANW IoT cloud API.
+      name: incident
+    description: Converts the passed asset (alert, device, or vulnerability) to a 3rd party
+      data format.
+    name: panw-iot-3rd-party-convert-assets-to-external-format
+    outputs:
+    - contextPath: PanwIot3rdParty.VulnerabilityCEFSyslogs
+      description: List of CEF formatted vulnerability syslogs for the SIEM.
+    - contextPath: PanwIot3rdParty.AlertCEFSyslogs
+      description: List of CEF formatted alert syslogs for the SIEM.
+    - contextPath: PanwIot3rdParty.DeviceCEFSyslogs
+      description: List CEF formatted device syslogs for the SIEM.
+    - contextPath: PanwIot3rdParty.CiscoISEAttributes
+      description: List of Cisco ISE attribute dicts/maps.
+    - contextPath: PanwIot3rdParty.AlertServiceNow
+      description: Single SN formatted alert string.
+    - contextPath: PanwIot3rdParty.VulnerabilityServiceNow
+      description: Single SN formatted vulnerability string.
+    - contextPath: PanwIot3rdParty.DeviceServiceNow
+      description: List of upsert ready formatted devices for SN.
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

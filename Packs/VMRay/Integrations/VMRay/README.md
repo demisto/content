@@ -1,6 +1,5 @@
 <!-- HTML_DOC -->
 <div class="cl-preview-section">
-<p>This integration was integrated and tested with version xx of vmray</p>
 </div>
 <div class="cl-preview-section">
 <h2 id="vmray-playbook">VMRay Playbook</h2>

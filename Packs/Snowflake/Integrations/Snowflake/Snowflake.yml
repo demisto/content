@@ -47,7 +47,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉‎                                                                                  Fetch query to retrieve new incidents. This field is mandatory when 'Fetches incidents' is set to true.
+- display: Fetch query to retrieve new incidents. This field is mandatory when 'Fetches incidents' is set to true.
   name: fetch_query
   required: false
   type: 0
@@ -109,7 +109,7 @@ script:
       name: role
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '100'
       description: The number of rows to retrieve.
       isArray: false
@@ -174,7 +174,7 @@ script:
     description: Makes a DML change in the database.
     execution: true
     name: snowflake-update
-  dockerimage: demisto/snowflake:1.0.0.211
+  dockerimage: demisto/snowflake:1.0.0.2505
   isfetch: true
   runonce: false
   script: '-'

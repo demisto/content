@@ -299,27 +299,31 @@ def test_asset_connections_success(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_connections_command
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_connections_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_connections_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('success')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('./TestData/asset_connections_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_connections_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/asset_connections_hr.md') as f:
+    with open('test_data/asset_connections_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_connections_command(client, args={'name': 'dummy', 'type': 'ASN', 'global': 'true',
                                                      'size': 2})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[1].raw_response == expected_res
+    assert result[1].outputs == expected_custom_ec[0]
+    assert result[2].outputs == expected_custom_ec[1]
+    assert result[3].outputs == expected_custom_ec[2]
+    assert result[4].outputs == expected_custom_ec[3]
+    for res in result:
+        assert res.readable_output in expected_hr
+    assert result[1].outputs_key_field == 'uuid'
+    assert result[1].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -331,7 +335,7 @@ def test_asset_connections_no_record_found(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_connections_command
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_connections_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_connections_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -404,16 +408,16 @@ def test_asset_changes_summary_success(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_summary_command
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('./TestData/asset_changes_summary_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/asset_changes_summary_hr.md') as f:
+    with open('test_data/asset_changes_summary_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_summary_command(client, args={'date': '2020-05-12', 'range': '7', 'tag': 'Dummy',
@@ -438,7 +442,7 @@ def test_asset_changes_summary_deep_link_with_only_date(client):
     }
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
@@ -458,7 +462,7 @@ def test_asset_changes_summary_deep_link_with_only_range(client):
     }
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_summary_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_summary_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
 
     deep_link = prepare_deep_link_for_asset_changes_summary(resp, args['date'], args['range'])
@@ -526,28 +530,28 @@ def test_asset_changes_success_asset_type(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successAssetType')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('./TestData/asset_changes_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_custom_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successAssetType')
 
     # Fetching expected human readable from file
-    with open('./TestData/asset_changes_hr.md') as f:
+    with open('test_data/asset_changes_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_command(client, args={'range': '30', 'type': 'DOMAIN', 'organization': 'dummy',
                                                  'measure': 'Added', 'size': 1})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ['name', 'type']
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ['name', 'type']
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -558,28 +562,28 @@ def test_asset_changes_success_asset_detail_type(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('successAssetDetailType')
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('./TestData/asset_changes_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_custom_ec.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_custom_ec = json_file.get('successAssetDetailType')
 
     # Fetching expected human readable from file
-    with open('./TestData/asset_changes_resource_hr.md') as f:
+    with open('test_data/asset_changes_resource_hr.md') as f:
         expected_hr = f.read()
 
     result = asset_changes_command(client, args={'type': 'SELF_HOSTED_RESOURCE', 'range': '1', 'measure': 'Added',
                                                  'size': 200})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == ['id', 'resource']
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == ['id', 'resource']
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.AssetChanges'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -591,7 +595,7 @@ def test_asset_changes_no_record_found(mocker_http_request, client):
     from RiskIQDigitalFootprint import asset_changes_command
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         json_file = json.load(f)
     expected_res = json_file.get('zeroRecords')
     mocker_http_request.return_value = expected_res
@@ -614,7 +618,7 @@ def test_asset_changes_deep_link_with_only_date(client):
     }
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
     resp = resp.get('successAssetType')
 
@@ -639,7 +643,7 @@ def test_asset_changes_deep_link_with_date_and_range(client):
     }
 
     # Fetching expected raw response from file
-    with open('./TestData/asset_changes_resp.json', encoding='utf-8') as f:
+    with open('test_data/asset_changes_resp.json', encoding='utf-8') as f:
         resp = json.load(f)
     resp = resp.get('successAssetType')
 
@@ -781,26 +785,26 @@ def test_get_asset_success_for_domain(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_domain_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_domain_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_domain_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_domain_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_domain_hr.md') as f:
+    with open('test_data/get_asset_domain_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '42696470-7b2a-617b-2f5e-ab674438e4f5', 'global': 'true',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -811,25 +815,25 @@ def test_get_asset_success_for_host(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_host_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_host_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_host_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_host_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_host_hr.md') as f:
+    with open('test_data/get_asset_host_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': 'dffa643e-7d39-4687-d35d-f37a217f339c', 'global': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -840,25 +844,25 @@ def test_get_asset_success_for_ip_address(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_ip_address_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_address_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_ip_address_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_address_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_ip_address_hr.md') as f:
+    with open('test_data/get_asset_ip_address_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '72ca2677-2276-90cc-048a-546ebed63e2f'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -869,25 +873,25 @@ def test_get_asset_success_for_ip_block(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_ip_block_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_block_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_ip_block_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ip_block_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_ip_block_hr.md') as f:
+    with open('test_data/get_asset_ip_block_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '92b3f425-d5ba-385a-f10c-6c6678d6369f'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -898,25 +902,25 @@ def test_get_asset_success_for_as(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_as_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_as_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_as_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_as_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_as_hr.md') as f:
+    with open('test_data/get_asset_as_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '9ca2cd53-af69-cbca-f398-e891ecf413d3'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -927,25 +931,25 @@ def test_get_asset_success_for_page(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_page_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_page_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_page_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_page_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_page_hr.md') as f:
+    with open('test_data/get_asset_page_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': '8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -956,25 +960,25 @@ def test_get_asset_success_for_ssl_cert(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_ssl_cert_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ssl_cert_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_ssl_cert_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_ssl_cert_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_ssl_cert_hr.md') as f:
+    with open('test_data/get_asset_ssl_cert_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -985,25 +989,25 @@ def test_get_asset_success_for_contact(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_contact_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_contact_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_contact_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_contact_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_contact_hr.md') as f:
+    with open('test_data/get_asset_contact_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'uuid': 'd02ea1d1-7129-094a-50b0-3b285798d28d'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1014,26 +1018,26 @@ def test_get_asset_by_name_and_type_success_for_host(mocker_http_request, client
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_by_name_host_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_host_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_by_name_host_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_host_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_by_name_host_hr.md') as f:
+    with open('test_data/get_asset_by_name_host_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': 'www.dummy.com', 'type': 'HOST', 'global': 'true',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1044,26 +1048,26 @@ def test_get_asset_by_name_and_type_success_for_ip_address(mocker_http_request, 
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_by_name_ip_address_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_ip_address_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_by_name_ip_address_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_ip_address_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_by_name_ip_address_hr.md') as f:
+    with open('test_data/get_asset_by_name_ip_address_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': 'dummy.ip', 'type': 'IP_ADDRESS',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 @patch('RiskIQDigitalFootprint.Client.http_request')
@@ -1074,26 +1078,26 @@ def test_get_asset_by_name_and_type_success_for_as(mocker_http_request, client):
     from RiskIQDigitalFootprint import get_asset_command
 
     # Fetching expected raw response from file
-    with open('TestData/get_asset_by_name_as_resp.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_as_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res
 
     # Fetching expected entry context details from file
-    with open('TestData/get_asset_by_name_as_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/get_asset_by_name_as_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
 
     # Fetching expected human readable from file
-    with open('./TestData/get_asset_by_name_as_hr.md') as f:
+    with open('test_data/get_asset_by_name_as_hr.md') as f:
         expected_hr = f.read()
 
     result = get_asset_command(client, args={'name': '63245', 'type': 'ASN',
                                              'recent': 'true'})
 
-    assert result.raw_response == expected_res
-    assert result.outputs == expected_custom_ec
-    assert result.readable_output == expected_hr
-    assert result.outputs_key_field == 'uuid'
-    assert result.outputs_prefix == 'RiskIQDigitalFootprint.Asset'
+    assert result[0].raw_response == expected_res
+    assert result[0].outputs == expected_custom_ec
+    assert result[0].readable_output == expected_hr
+    assert result[0].outputs_key_field == 'uuid'
+    assert result[0].outputs_prefix == 'RiskIQDigitalFootprint.Asset'
 
 
 def test_get_asset_invalid_global(client):
@@ -1192,12 +1196,12 @@ def test_add_asset_success_for_single_asset(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
@@ -1221,17 +1225,17 @@ def test_add_asset_success_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1251,17 +1255,17 @@ def test_add_asset_failed_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskFailed']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['failed']
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1281,17 +1285,17 @@ def test_add_asset_incomplete_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskIncomplete']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['incomplete']
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1312,17 +1316,17 @@ def test_add_asset_warning_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import add_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskWarning']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['warning']
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = add_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1343,12 +1347,12 @@ def test_update_asset_success_for_single_asset(mocker_http_request, client):
     from RiskIQDigitalFootprint import update_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
@@ -1371,17 +1375,17 @@ def test_update_asset_success_for_asset_json(mocker_http_request, client):
     from RiskIQDigitalFootprint import update_assets_command
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskComplete']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['success']
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     result = update_assets_command(client, args={'asset_json': asset_json_arg})
@@ -1674,7 +1678,7 @@ def test_add_and_update_asset_required_keys_in_asset_json(client):
 
 
 def task_status(client, resp):
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     task_resp = expected_res['taskRunning']
     return task_resp
@@ -1688,17 +1692,17 @@ def test_add_asset_success_for_asset_json_retries(mocker_http_request, client, m
     import RiskIQDigitalFootprint
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_resp.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_resp.json', encoding='utf-8') as f:
         expected_res = json.load(f)
     mocker_http_request.return_value = expected_res['taskRunning']
 
     # Fetching expected entry context details from file
-    with open('TestData/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_custom_ec.json', encoding='utf-8') as f:
         expected_custom_ec = json.load(f)
     expected_custom_ec = expected_custom_ec['running']
 
     # Fetching expected raw response from file
-    with open('TestData/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
+    with open('test_data/add_and_update_assets_asset_json.json', encoding='utf-8') as f:
         asset_json_arg = json.load(f)
 
     mocker.patch.object(RiskIQDigitalFootprint, 'check_task_status', side_effect=task_status)
