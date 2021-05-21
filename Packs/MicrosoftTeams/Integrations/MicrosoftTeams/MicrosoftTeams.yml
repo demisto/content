@@ -352,6 +352,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  resetContext: true
 tests:
 - No test
 fromversion: 5.0.0
