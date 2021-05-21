@@ -21,7 +21,6 @@ class Email(object):
             include_raw_body: Whether to include the raw body of the mail in the incident's body
             save_file: Whether to save the .eml file of the incident's mail
         """
-        message_bytes = message_bytes.replace(b'\\', b'/')
         email_object = parse_from_bytes(message_bytes)
         self.id = id_
         self.mail_bytes = message_bytes
