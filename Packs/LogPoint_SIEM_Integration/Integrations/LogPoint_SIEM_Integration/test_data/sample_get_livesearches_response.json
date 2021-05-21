@@ -1,0 +1,33 @@
+{
+    "success": true,
+    "livesearches": [
+        {
+            "generated_by": "alert",
+            "searchname": "Memory greater than 86",
+            "description": "",
+            "flush_on_trigger": false,
+            "query": "\"use\"> 86 col_type=filesystem ",
+            "query_info": {
+                "fieldsToExtract": [
+                    "use",
+                    "col_type"
+                ],
+                "aliases": [],
+                "success": true,
+                "query_filter": "\"use\"> 86 col_type=filesystem",
+                "columns": [],
+                "query_type": "simple",
+                "lucene_query": "(_num_use:{86 TO *} AND col_type:filesystem)",
+                "grouping": []
+            },
+            "timerange_day": 0,
+            "timerange_hour": 1,
+            "timerange_minute": 0,
+            "timerange_second": 0,
+            "limit": 25,
+            "tid": "",
+            "vid": "",
+            "life_id": "c4e38a6fe8226ec0975ee5ed935a733003bd1f11"
+        }
+    ]
+}

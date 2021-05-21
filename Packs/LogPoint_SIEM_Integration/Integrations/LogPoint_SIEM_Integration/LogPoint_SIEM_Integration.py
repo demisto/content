@@ -227,6 +227,127 @@ class Client(BaseClient):
             data=data
         )
 
+    def get_users_preference(self):
+        """
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "type": "user_preference"
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getalloweddata',
+            data=data
+        )
+
+    def get_logpoints(self):
+        """
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "type": "loginspects"
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getalloweddata',
+            data=data
+        )
+
+    def get_repos(self):
+        """
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "type": "logpoint_repos"
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getalloweddata',
+            data=data
+        )
+
+    def get_devices(self):
+        """
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "type": "devices"
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getalloweddata',
+            data=data
+        )
+
+    def get_livesearches(self):
+        """
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "type": "livesearches"
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getalloweddata',
+            data=data
+        )
+
+    def get_search_id(self, query, time_range, limit=100, repos=[]):
+        """
+        :param query: LogPoint search query
+
+        :param time_range: Time range: Eg. Last 5 minutes, Last 1 day etc.
+
+        :param limit: Number of search results to fetch
+
+        :param repos: LogPoint repos from where logs should be fetched
+
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "requestData": json.dumps({
+                "query": query,
+                "time_range": time_range,
+                "limit": limit,
+                "repos": repos
+            })
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getsearchlogs',
+            data=data
+        )
+
+    def get_search_results(self, search_id):
+        """
+        :param search_id: Search id obtained from get_search_id() method
+        :return: dict containing response from API call
+        """
+        data = {
+            "username": self.username,
+            "secret_key": self.apikey,
+            "requestData": json.dumps({
+                "search_id": search_id
+            })
+        }
+        return self._http_request(
+            method='POST',
+            url_suffix='/getsearchlogs',
+            data=data
+        )
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -467,6 +588,115 @@ def get_users_command(client):
     )
 
 
+def get_users_preference_command(client):
+    result = client.get_users_preference()
+    if not result.get('success'):
+        raise DemistoException(result['message'])
+    del result['success']
+    table_header = list(result.keys())
+    display_title = "User's Preference"
+    markdown = tableToMarkdown(display_title, result, headers=table_header)
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.User.Preference',
+        outputs=result
+    )
+
+
+def get_logpoints_command(client):
+    result = client.get_logpoints()
+    if not result.get('success'):
+        raise DemistoException(result['message'])
+    table_header = []
+    display_title = "LogPoints"
+    allowed_loginspects = result.get('allowed_loginspects')
+    if allowed_loginspects and len(allowed_loginspects) > 0:
+        table_header = list(allowed_loginspects[0].keys())
+    markdown = tableToMarkdown(display_title, allowed_loginspects, headers=table_header)
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.LogPoints',
+        outputs_key_field='ip',
+        outputs=allowed_loginspects
+    )
+
+
+def get_repos_command(client):
+    result = client.get_repos()
+    if not result.get('success'):
+        raise DemistoException(result['message'])
+    table_header = []
+    display_title = "LogPoint Repos"
+    allowed_repos = result.get('allowed_repos')
+    if allowed_repos and len(allowed_repos) > 0:
+        table_header = list(allowed_repos[0].keys())
+    markdown = tableToMarkdown(display_title, allowed_repos, headers=table_header)
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.Repos',
+        outputs_key_field='repo',
+        outputs=allowed_repos
+    )
+
+
+def get_devices_command(client):
+    result = client.get_devices()
+    if not result.get('success'):
+        raise DemistoException(result['message'])
+    table_header = []
+    display_title = "Devices"
+    allowed_devices = result.get('allowed_devices')
+    if allowed_devices and len(allowed_devices) > 0:
+        table_header = list(allowed_devices[0].keys())
+    markdown = tableToMarkdown(display_title, allowed_devices, headers=table_header)
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.Devices',
+        outputs=allowed_devices
+    )
+
+
+def get_livesearches_command(client):
+    result = client.get_livesearches()
+    if not result.get('success'):
+        raise DemistoException(result['message'])
+    display_title = "Live Searches"
+    livesearches = result.get('livesearches')
+    markdown = tableToMarkdown(display_title, livesearches, headers=None)
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.LiveSearches',
+        outputs=livesearches
+    )
+
+
+def search_logs_command(client, args):
+    query = args.get('query')
+    time_range = args.get('time_range') if args.get('time_range') else 'Last 5 minutes'
+    limit = args.get('limit') if args.get('limit') else 100
+    repos = argToList(args.get('repos')) if args.get('repos') else []
+    if limit:
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
+    result = client.get_search_id(query, time_range, limit, repos)
+    if not result.get('success'):
+        raise DemistoException(result['message'])
+    search_id = result.get('search_id')
+    search_result = client.get_search_results(search_id)
+    if not search_result.get('success'):
+        raise DemistoException(search_result['message'])
+    rows = search_result.get('rows', [])
+    display_title = f"Found {len(rows)} logs"
+    markdown = tableToMarkdown(display_title, rows, headers=None)
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.SearchLogs',
+        outputs=rows
+    )
+
+
 def fetch_incidents(client, first_fetch, max_fetch):
     """
     This function retrieves new incidents every interval (default is 1 minute).
@@ -481,7 +711,7 @@ def fetch_incidents(client, first_fetch, max_fetch):
             last_run = datetime.timestamp(datetime.utcnow() - timedelta(days=1))
     result = client.get_incidents(last_run, now)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(f"ERROR: {result['message']}; last_run: {last_run}; now: {now}")
     lp_incidents = result.get('incidents')
     incidents = []
     if len(lp_incidents) > max_fetch:
@@ -528,10 +758,29 @@ def main():
     max_fetch = params.get('max_fetch')
     max_fetch = int(params.get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 50
     max_fetch = max(min(200, max_fetch), 1)
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    demisto.debug(f"Command being called is {demisto.command()}")
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
+    incident_commands = [
+        'test-module',
+        'lp-get-incidents',
+        'lp-get-incident-data',
+        'lp-get-incident-states',
+        'lp-add-incident-comment',
+        'lp-assign-incidents',
+        'lp-resolve-incidents',
+        'lp-close-incidents',
+        'lp-reopen-incidents',
+        'lp-get-users',
+        'fetch-incidents'
+    ]
+    if command in incident_commands:
+        headers = {
+            'Content-Type': 'application/json'
+        }
+    else:
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
     try:
         client = Client(
             base_url=base_url,
@@ -541,31 +790,43 @@ def main():
             username=username,
             apikey=apikey)
         args = demisto.args()
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             return_results(test_module(client, params.get('max_fetch')))
-        elif demisto.command() == 'lp-get-incidents':
+        elif command == 'lp-get-incidents':
             return_results(get_incidents_command(client, args))
-        elif demisto.command() == 'lp-get-incident-data':
+        elif command == 'lp-get-incident-data':
             return_results(get_incident_data_command(client, args))
-        elif demisto.command() == 'lp-get-incident-states':
+        elif command == 'lp-get-incident-states':
             return_results(get_incident_states_command(client, args))
-        elif demisto.command() == 'lp-add-incident-comment':
+        elif command == 'lp-add-incident-comment':
             return_results(add_incident_comment_command(client, args))
-        elif demisto.command() == 'lp-assign-incidents':
+        elif command == 'lp-assign-incidents':
             return_results(assign_incidents_command(client, args))
-        elif demisto.command() == 'lp-resolve-incidents':
+        elif command == 'lp-resolve-incidents':
             return_results(resolve_incidents_command(client, args))
-        elif demisto.command() == 'lp-close-incidents':
+        elif command == 'lp-close-incidents':
             return_results(close_incidents_command(client, args))
-        elif demisto.command() == 'lp-reopen-incidents':
+        elif command == 'lp-reopen-incidents':
             return_results(reopen_incidents_command(client, args))
-        elif demisto.command() == 'lp-get-users':
+        elif command == 'lp-get-users':
             return_results(get_users_command(client))
-        elif demisto.command() == 'fetch-incidents':
+        elif command == 'lp-get-users-preference':
+            return_results(get_users_preference_command(client))
+        elif command == 'lp-get-logpoints':
+            return_results(get_logpoints_command(client))
+        elif command == 'lp-get-repos':
+            return_results(get_repos_command(client))
+        elif command == 'lp-get-devices':
+            return_results(get_devices_command(client))
+        elif command == 'lp-get-livesearches':
+            return_results(get_livesearches_command(client))
+        elif command == 'lp-search-logs':
+            return_results(search_logs_command(client, args))
+        elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents(client, first_fetch, max_fetch))
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(err)}")
+        return_error(f"Failed to execute {command} command. Error: {str(err)}")
 
 
 ''' ENTRY POINT '''

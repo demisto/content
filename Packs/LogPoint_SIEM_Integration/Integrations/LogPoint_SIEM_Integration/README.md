@@ -1,4 +1,4 @@
-Use this Content Pack to fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
+Use this Content Pack to search logs, fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
 This integration was integrated and tested with version 6.7.4 of LogPoint.
 
 ## Use Cases
@@ -6,7 +6,8 @@ This integration was integrated and tested with version 6.7.4 of LogPoint.
 * Retrieve incidents using available filters.
 * Get data of particular incidents, their state, user, and user groups.
 * Resolve, Close, Re-open, Re-assign, and add comments to the incidents.
-* Act accordingly to the incidents using LogPoint provided and/or custom playbooks.
+* Act accordingly to the incidents using LogPoint provided or custom playbooks.
+* Use commands to get logs from LogPoint’s devices and repos
 
 ## Configure LogPoint on Cortex XSOAR
 
@@ -765,4 +766,327 @@ There are no input arguments for this command.
 >|---|---|---|
 >| 5bebd9fdd8aaa42840edc853 | admin | {'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
 >| 5fd9d95769d3a4ea5684fccf | sbs | {'id': '5bebd9fdd8aaa42840edc850', 'name': 'User Account Administrator'},<br/>{'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
+
+### lp-get-users-preference
+***
+Get LogPoint user's preference like timezone, date format etc.
+
+
+#### Base Command
+
+`lp-get-users-preference`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.User.Preference.timezone | String | LogPoint User's timezone | 
+| LogPoint.User.Preference.date_format | String | LogPoint User's Date format | 
+| LogPoint.User.Preference.hour_format | String | LogPoint User's hour format | 
+
+
+#### Command Example
+```!lp-get-users-preference```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "User": {
+            "Preference": {
+                "date_format": "%Y/%m/%d",
+                "hour_format": "24 Hour",
+                "timezone": "UTC"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### User's Preference
+>|timezone|date_format|hour_format|
+>|---|---|---|
+>| UTC | %Y/%m/%d | 24 Hour |
+
+
+### lp-get-logpoints
+***
+Get user's LogPoints.
+
+
+#### Base Command
+
+`lp-get-logpoints`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.LogPoints.name | String | LogPoint Name | 
+| LogPoint.LogPoints.ip | String | LogPoint's IP | 
+
+
+#### Command Example
+```!lp-get-logpoints```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "LogPoints": {
+            "ip": "127.0.0.1",
+            "name": "LogPoint"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### LogPoints
+>|name|ip|
+>|---|---|
+>| LogPoint | 127.0.0.1 |
+
+
+### lp-get-repos
+***
+Get the list of LogPoint repos that can be accessed by the user.
+
+
+#### Base Command
+
+`lp-get-repos`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.Repos.repo | String | LogPoint repo name | 
+| LogPoint.Repos.address | String | LogPoint repo address | 
+
+
+#### Command Example
+```!lp-get-repos```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "Repos": [
+            {
+                "address": "127.0.0.1:5504/default",
+                "repo": "default"
+            },
+            {
+                "address": "127.0.0.1:5504/_logpoint",
+                "repo": "_logpoint"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### LogPoint Repos
+>|repo|address|
+>|---|---|
+>| default | 127.0.0.1:5504/default |
+>| _logpoint | 127.0.0.1:5504/_logpoint |
+
+
+
+### lp-get-devices
+***
+Get devices associated with the LogPoint.
+
+
+#### Base Command
+
+`lp-get-devices`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.Devices | String | Devices in LogPoint. | 
+
+
+#### Command Example
+```!lp-get-devices```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "Devices": [
+            {
+                "127.0.0.1/192.168.1.20": "Windows Server",
+                "127.0.0.1/127.0.0.1": "localhost",
+                "127.0.0.1/::1": "localhost"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Devices
+>|127.0.0.1/127.0.0.1|127.0.0.1/::1|127.0.0.1/192.168.1.20|
+>|---|---|---|
+>| localhost | localhost | Windows Server|
+
+
+### lp-get-livesearches
+***
+Get live searches.
+
+
+#### Base Command
+
+`lp-get-livesearches`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.LiveSearches.generated_by | String | Generated by | 
+| LogPoint.LiveSearches.searchname | String | Search name | 
+| LogPoint.LiveSearches.description | String | Description | 
+| LogPoint.LiveSearches.query | String | Query | 
+
+
+#### Command Example
+```!lp-get-livesearches```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "LiveSearches": [
+            {
+                "description": "",
+                "flush_on_trigger": false,
+                "generated_by": "alert",
+                "life_id": "c4e38a6fe8226ec0975ee5ed935a733003bd1f11",
+                "limit": 25,
+                "query": "\"use\"> 86 col_type=filesystem ",
+                "query_info": {
+                    "aliases": [],
+                    "columns": [],
+                    "fieldsToExtract": [
+                        "use",
+                        "col_type"
+                    ],
+                    "grouping": [],
+                    "lucene_query": "(_num_use:{86 TO *} AND col_type:filesystem)",
+                    "query_filter": "\"use\"> 86 col_type=filesystem",
+                    "query_type": "simple",
+                    "success": true
+                },
+                "searchname": "Memory greater than 86",
+                "tid": "",
+                "timerange_day": 0,
+                "timerange_hour": 1,
+                "timerange_minute": 0,
+                "timerange_second": 0,
+                "vid": ""
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Live Searches
+>|description|flush_on_trigger|generated_by|life_id|limit|query|query_info|searchname|tid|timerange_day|timerange_hour|timerange_minute|timerange_second|vid|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>|  | false | alert | c4e38a6fe8226ec0975ee5ed935a733003bd1f11 | 25 | "use"> 86 col_type=filesystem  | fieldsToExtract: use,<br/>col_type<br/>aliases: <br/>success: true<br/>query_filter: "use"> 86 col_type=filesystem<br/>columns: <br/>query_type: simple<br/>lucene_query: (_num_use:{86 TO *} AND col_type:filesystem)<br/>grouping:  | Memory greater than 86 |  | 0 | 1 | 0 | 0 |  |
+
+
+### lp-search-logs
+***
+Search logs in LogPoint.
+
+
+#### Base Command
+
+`lp-search-logs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | LogPoint Search Query. | Required | 
+| time_range | Time range, For example: Last 30 minutes, Last 7 days etc. If not provided, it will use 'Last 5 minutes' as a time range by default. Default is Last 5 minutes. | Optional | 
+| limit | Number of logs to fetch. If not provided, first 100 logs will be displayed. Default is 100. | Optional | 
+| repos | LogPoint repo from which logs are to be fetched. If not provided, it will display logs from all repos. Multiple repo name can be provided by separating them with comma. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.SearchLogs | String | Search results | 
+
+
+#### Command Example
+```!lp-search-logs query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "SearchLogs": [
+            {
+                "_group": [
+                    "office365"
+                ],
+                "_type_ip": "",
+                "_type_num": " count()",
+                "_type_str": " col_type count()",
+                "col_type": "office365",
+                "count()": 206
+            },
+            {
+                "_group": [
+                    "filesystem"
+                ],
+                "_type_ip": "",
+                "_type_num": " count()",
+                "_type_str": " col_type count()",
+                "col_type": "filesystem",
+                "count()": 2304
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Found 2 logs
+>|_group|_type_ip|_type_num|_type_str|col_type|count()|
+>|---|---|---|---|---|---|
+>| office365 |  |  count() |  col_type count() | office365 | 206 |
+>| filesystem |  |  count() |  col_type count() | filesystem | 2304 |
 
