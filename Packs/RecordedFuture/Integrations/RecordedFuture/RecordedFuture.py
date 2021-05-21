@@ -1134,7 +1134,8 @@ def get_alert_single_command(client: Client, _id: str) -> CommandResults:
             return entity_formatting(data)
         return document_formatting(data)
     except Exception:
-        msg = 'This alert rule currently does not support a human readable format, please let us know if you want it to be supported'
+        msg = 'This alert rule currently does not support a human readable format, ' \
+              'please let us know if you want it to be supported'
         return CommandResults(
             outputs_prefix="",
             outputs={},
