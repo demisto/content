@@ -36,8 +36,7 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     from FreshDesk import fetch_incidents
     raw_response = util_load_json('test_data/first_page_incindents_respone.json')
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2021-05-01-04:58:18',
-                                                             'last_created_incident_timestamp': 1619834298000})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
     requests_mock.get('https://MOCK_URL/api/v2/tickets',
@@ -47,7 +46,7 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 10
     # 1620826211000 was taken according to the AWS machine timestamp
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826211000}
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815411000, 'last_incident_id': 38}
 
 
 def test_fetch_incidents_with_pagination(mocker, requests_mock):
@@ -70,17 +69,28 @@ def test_fetch_incidents_with_pagination(mocker, requests_mock):
     raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
     raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={'time': '2021-05-01-04:58:18',
-                                                             'last_created_incident_timestamp': 1619834298000})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
-    requests_mock.get('https://MOCK_URL/api/v2/tickets',
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T04:58:18',
                       json=raw_response_first)
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?page=2',
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T04:58:18&page=2',
                       json=raw_response_second)
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?page=3',
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T04:58:18&page=3',
                       json=[])
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 14
     # 1620826215000 was taken according to the AWS machine timestamp
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826215000}
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815415000, 'last_incident_id': 42}
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1620815415000,
+                                                             'last_incident_id': 42})
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-12T13:30:15',
+                      json=raw_response_second[2:])
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-12T13:30:15&page=2',
+                      json=[])
+    fetch_incidents()
+    assert len(demisto.incidents.call_args_list[0][0][0]) == 6
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815421000, 'last_incident_id': 48}
+

@@ -43,15 +43,13 @@ HEADERS = {
 # Headers to be used when making a request to POST a multi-part encoded file
 MULTIPART_HEADERS = {'Accept': 'application/json'}
 
-# Amount of results returned per-page/per-api-call the maximum is 100 and minimum 50
+# Amount of results returned per fetch (default 50)
 MAX_INCIDENTS = int(PARAMS.get('maxFetch', 50))
 
-if MAX_INCIDENTS >= 100:
-    PER_PAGE = 100
-elif MAX_INCIDENTS <= 50:
-    PER_PAGE = 50
-else:
-    PER_PAGE = MAX_INCIDENTS
+# Default amount of results returned per-page/per-api-call when the
+# fd-search-tickets command's results that match the command's specified
+# filter criteria exceeds 30
+PER_PAGE = 30
 
 # The API response ticket attributes that will be included
 # in most command's context outputs
@@ -216,6 +214,9 @@ def handle_search_tickets_pagination(args, response, limit=-1):
     parameter: (dict) response
         The initial json response from making an API call in the search_tickets function
 
+    parameter: (int) limit
+        Stops the pagination as soon as the number of tickets exceeds the limit (default -1 for no limit)
+
     returns:
         All Ticket Objects
     """
@@ -242,7 +243,7 @@ def handle_search_tickets_pagination(args, response, limit=-1):
         next_page = tickets
         while next_page and page <= max_pages:
             # Stop pagination if limit is defined and we exceeded it
-            if 0 < limit < len(tickets):
+            if 0 < limit <= len(tickets):
                 break
             page += 1
             args['page'] = page
@@ -391,7 +392,7 @@ def ticket_to_incident(ticket):
     # Incident Title
     incident['name'] = 'Freshdesk Ticket: "{}"'.format(ticket.get('subject'))
     # Incident occurrence time - the ticket's creation time
-    incident['occurred'] = ticket.get('created_at')
+    incident['occurred'] = ticket.get('updated_at')
     # The raw response from the service, providing full info regarding the item
     incident['rawJSON'] = json.dumps(ticket)
     return incident
@@ -783,31 +784,42 @@ def test_module():
 
 
 def fetch_incidents():
+    # FreshDesk API supports maximum of 100 tickets per page so if user asked for more, pagination is needed.
+    if MAX_INCIDENTS >= 100:
+        per_page = 100
+    elif MAX_INCIDENTS <= 50:
+        per_page = 50
+    else:
+        per_page = MAX_INCIDENTS
+
     # demisto.getLastRun() will returns an obj with the previous run in it.
     last_run = demisto.getLastRun()
-    # Get the last fetch time, if exists
+    # Get the last fetch time and last id fetched if exist
     last_fetch = last_run.get('last_created_incident_timestamp')
-
+    last_incident_id = last_run.get('last_incident_id', -1)
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
-    args = {'updated_since': updated_since, 'order_type': 'asc', 'per_page': PER_PAGE}
+    updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%S')
+    args = {'updated_since': updated_since, 'order_type': 'asc', 'per_page': per_page}
 
     response = search_tickets(args)  # page 1
-    tickets = handle_search_tickets_pagination(args, response, limit=MAX_INCIDENTS)
+    tickets = handle_search_tickets_pagination(args, response, limit=MAX_INCIDENTS) # handle pagination until user's limit
     # convert the ticket/events to demisto incidents
     incidents = []
-    tickets = tickets[:MAX_INCIDENTS] if tickets else []
     for ticket in tickets:
         incident = ticket_to_incident(ticket)
+        incident_id = ticket.get('id')
         incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_date > last_fetch:
+        # Update last run and add incident if the incident is newer than last fetch and was not fetched before
+        if incident_date >= last_fetch and incident_id > last_incident_id:
             last_fetch = incident_date
             incidents.append(incident)
+            last_incident_id = incident_id
+        if len(incidents) == MAX_INCIDENTS:
+            break
 
-    demisto.setLastRun({'last_created_incident_timestamp': last_fetch})
+    demisto.setLastRun({'last_created_incident_timestamp': last_fetch, 'last_incident_id': last_incident_id})
     demisto.incidents(incidents)
 
 
@@ -1131,6 +1143,9 @@ def search_tickets(args):
     updated_since = args.get('updated_since')
     if updated_since:
         url_params['updated_since'] = updated_since
+    per_page = args.get('per_page')
+    if per_page:
+        url_params['per_page'] = per_page
 
     # Sort By
     order_by = args.get('order_by')
@@ -1168,7 +1183,6 @@ def search_tickets(args):
         url_params['page'] = page
 
     # Make request and get raw response
-    url_params['per_page'] = args.get('per_page')
     response = http_request('GET', endpoint_url, params=url_params)
     return response
 
