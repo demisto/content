@@ -804,7 +804,8 @@ def fetch_incidents():
     args = {'updated_since': updated_since, 'order_type': 'asc', 'per_page': per_page}
 
     response = search_tickets(args)  # page 1
-    tickets = handle_search_tickets_pagination(args, response, limit=MAX_INCIDENTS) # handle pagination until user's limit
+    # handle pagination until user's limit
+    tickets = handle_search_tickets_pagination(args, response, limit=MAX_INCIDENTS)
     # convert the ticket/events to demisto incidents
     incidents = []
     for ticket in tickets:

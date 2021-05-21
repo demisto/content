@@ -46,7 +46,8 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 10
     # 1620826211000 was taken according to the AWS machine timestamp
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815411000, 'last_incident_id': 38}
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815411000,
+                                                          'last_incident_id': 38}
 
 
 def test_fetch_incidents_with_pagination(mocker, requests_mock):
@@ -81,7 +82,8 @@ def test_fetch_incidents_with_pagination(mocker, requests_mock):
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 14
     # 1620826215000 was taken according to the AWS machine timestamp
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815415000, 'last_incident_id': 42}
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815415000,
+                                                          'last_incident_id': 42}
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1620815415000,
                                                              'last_incident_id': 42})
     mocker.patch.object(demisto, 'setLastRun')
@@ -92,5 +94,5 @@ def test_fetch_incidents_with_pagination(mocker, requests_mock):
                       json=[])
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 6
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815421000, 'last_incident_id': 48}
-
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620815421000,
+                                                          'last_incident_id': 48}
