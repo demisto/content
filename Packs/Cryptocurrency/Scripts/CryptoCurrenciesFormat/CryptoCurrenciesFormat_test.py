@@ -30,7 +30,7 @@ def test_verify_is_bitcoin(bitcoin_address, expected_output):
 
 ARGS = {
     'input': '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i,1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9,1ANNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'}
-EXPECTED_RESULTS = ['bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9']
+EXPECTED_RESULTS = ['bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9']
 
 
 def test_main(mocker):

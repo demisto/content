@@ -1,0 +1,647 @@
+{
+    "data": {
+        "policyObj": {
+            "id": "31f0334d-94d9-5fb3-98b0-297fecd3aba7",
+            "snapshotFid": "31f0334d-94d9-5fb3-98b0-297fecd3aba7",
+            "snapshotTimestamp": 1608822464050,
+            "osType": "WINDOWS",
+            "shareType": "UNKNOWN_SHARE_TYPE",
+            "objectStatus": {
+                "policyStatuses": [
+                    {
+                        "status": "UP_TO_DATE"
+                    },
+                    {
+                        "status": "UP_TO_DATE"
+                    },
+                    {
+                        "status": "UP_TO_DATE"
+                    },
+                    {
+                        "status": "UP_TO_DATE"
+                    },
+                    {
+                        "status": "UP_TO_DATE"
+                    },
+                    {
+                        "status": "UP_TO_DATE"
+                    },
+                    {
+                        "status": "UP_TO_DATE"
+                    }
+                ],
+                "latestSnapshotResult": {
+                    "snapshotTime": 1608822464050,
+                    "snapshotFid": "31f0334d-94d9-5fb3-98b0-297fecd3aba7"
+                }
+            },
+            "rootFileResult": {
+                "hits": {
+                    "totalHits": 54980,
+                    "violations": 54980,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "analyzerGroupResults": [
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "2a620269-89a6-43a8-be4f-d52a408f8d55",
+                            "name": "CCPA"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 11306,
+                                    "violations": 11306,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "9da675b3-944b-5da3-a2da-ed149d300075",
+                                    "name": "US/UK Passport",
+                                    "analyzerType": "PASSPORT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 5,
+                                    "violations": 5,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f",
+                                    "name": "US Bank Acct",
+                                    "analyzerType": "US_BANK_ACCT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 7971,
+                                    "violations": 7971,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "03b3dc9e-81c1-561c-8235-17cf2fc1c729",
+                                    "name": "US ITIN",
+                                    "analyzerType": "US_ITIN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 9747,
+                                    "violations": 9747,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "d5ce3ae5-f530-562a-85b1-4a84264a350a",
+                                    "name": "US SSN",
+                                    "analyzerType": "US_SSN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 3,
+                                    "violations": 3,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "a31b5da8-4c4e-5d5e-ad14-66e2e841174f",
+                                    "name": "California DL",
+                                    "analyzerType": "US_CA_DL"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 29032,
+                            "violations": 29032,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "2bbaf260-f893-42db-9f0e-02c790bb074f",
+                            "name": "HIPAA"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 11306,
+                                    "violations": 11306,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "9da675b3-944b-5da3-a2da-ed149d300075",
+                                    "name": "US/UK Passport",
+                                    "analyzerType": "PASSPORT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 200,
+                                    "violations": 200,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "18665533-c28c-5a40-b747-4b6508fecdfa",
+                                    "name": "US NPI",
+                                    "analyzerType": "US_HEALTHCARE_NPI"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 7971,
+                                    "violations": 7971,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "03b3dc9e-81c1-561c-8235-17cf2fc1c729",
+                                    "name": "US ITIN",
+                                    "analyzerType": "US_ITIN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 9747,
+                                    "violations": 9747,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "d5ce3ae5-f530-562a-85b1-4a84264a350a",
+                                    "name": "US SSN",
+                                    "analyzerType": "US_SSN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 200,
+                                    "violations": 200,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "6bcc8e4e-0ec9-5538-b91d-a506dac47ec6",
+                                    "name": "US DEA",
+                                    "analyzerType": "DEA_NUMBER"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 29424,
+                            "violations": 29424,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "4835162a-e914-436d-b3ba-0fbeba11aa27",
+                            "name": "U.S. Financials"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 2168,
+                                    "violations": 2168,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "ed30dfa0-334f-55ff-a1b7-03b6bdd7849b",
+                                    "name": "Credit Card",
+                                    "analyzerType": "CREDIT_CARD"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 5,
+                                    "violations": 5,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f",
+                                    "name": "US Bank Acct",
+                                    "analyzerType": "US_BANK_ACCT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 1,
+                                    "violations": 1,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "bb9a929b-3f29-5d3f-a768-de74e8ee5a9c",
+                                    "name": "CUSIP",
+                                    "analyzerType": "CUSIP_NUMBER"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 2174,
+                            "violations": 2174,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "68d31f60-ebc3-4371-a920-db485b604de5",
+                            "name": "PCI DSS"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 2168,
+                                    "violations": 2168,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "ed30dfa0-334f-55ff-a1b7-03b6bdd7849b",
+                                    "name": "Credit Card",
+                                    "analyzerType": "CREDIT_CARD"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 2168,
+                            "violations": 2168,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "a3c422b8-5c37-492e-83ff-228d09b69b2c",
+                            "name": "U.S. PII"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 11306,
+                                    "violations": 11306,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "9da675b3-944b-5da3-a2da-ed149d300075",
+                                    "name": "US/UK Passport",
+                                    "analyzerType": "PASSPORT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 7971,
+                                    "violations": 7971,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "03b3dc9e-81c1-561c-8235-17cf2fc1c729",
+                                    "name": "US ITIN",
+                                    "analyzerType": "US_ITIN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 9747,
+                                    "violations": 9747,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "d5ce3ae5-f530-562a-85b1-4a84264a350a",
+                                    "name": "US SSN",
+                                    "analyzerType": "US_SSN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 4530,
+                                    "violations": 4530,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "fe2ee863-915d-5278-b12c-0729583ac192",
+                                    "name": "US VIN",
+                                    "analyzerType": "US_VIN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 5613,
+                                    "violations": 5613,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "dfa761a4-af95-58a7-a155-5d5149511d7c",
+                                    "name": "US EIN",
+                                    "analyzerType": "EIN"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 39167,
+                            "violations": 39167,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "cf03aaeb-275b-40cf-8180-de95dd4293dc",
+                            "name": "GLBA"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 2168,
+                                    "violations": 2168,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "ed30dfa0-334f-55ff-a1b7-03b6bdd7849b",
+                                    "name": "Credit Card",
+                                    "analyzerType": "CREDIT_CARD"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 5,
+                                    "violations": 5,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "3e60a612-3e97-5f03-b3a1-cfb7a6a67e8f",
+                                    "name": "US Bank Acct",
+                                    "analyzerType": "US_BANK_ACCT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 7971,
+                                    "violations": 7971,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "03b3dc9e-81c1-561c-8235-17cf2fc1c729",
+                                    "name": "US ITIN",
+                                    "analyzerType": "US_ITIN"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 9747,
+                                    "violations": 9747,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "d5ce3ae5-f530-562a-85b1-4a84264a350a",
+                                    "name": "US SSN",
+                                    "analyzerType": "US_SSN"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 19891,
+                            "violations": 19891,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    },
+                    {
+                        "analyzerGroup": {
+                            "groupType": "CUSTOM",
+                            "id": "f69f1d37-81f2-4f87-a948-6a53f1d5bd7c",
+                            "name": "UK PII"
+                        },
+                        "analyzerResults": [
+                            {
+                                "hits": {
+                                    "totalHits": 11306,
+                                    "violations": 11306,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "9da675b3-944b-5da3-a2da-ed149d300075",
+                                    "name": "US/UK Passport",
+                                    "analyzerType": "PASSPORT"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 402,
+                                    "violations": 402,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "f22cdb36-e036-5e71-9eb9-5c22cccb8147",
+                                    "name": "UK NHS",
+                                    "analyzerType": "UK_NHS"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 405,
+                                    "violations": 405,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "165a31e5-6753-5fe2-86d8-2f2517791daf",
+                                    "name": "UK UTR",
+                                    "analyzerType": "UK_UTR"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 5090,
+                                    "violations": 5090,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "f9510f6e-28d0-5794-8959-e1a2e4f15eab",
+                                    "name": "UK DL",
+                                    "analyzerType": "UK_DL"
+                                }
+                            },
+                            {
+                                "hits": {
+                                    "totalHits": 7339,
+                                    "violations": 7339,
+                                    "permittedHits": 0
+                                },
+                                "analyzer": {
+                                    "id": "9083dc4f-afe8-5eb0-9076-91ffada7a6bf",
+                                    "name": "UK NINO",
+                                    "analyzerType": "UK_NINO"
+                                }
+                            }
+                        ],
+                        "hits": {
+                            "totalHits": 24542,
+                            "violations": 24542,
+                            "permittedHits": 0,
+                            "violationsDelta": 0,
+                            "totalHitsDelta": 0
+                        }
+                    }
+                ],
+                "filesWithHits": {
+                    "totalHits": 877,
+                    "violations": 877,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "openAccessFiles": {
+                    "totalHits": 754,
+                    "violations": 754,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "openAccessFolders": {
+                    "totalHits": 998,
+                    "violations": 998,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "openAccessFilesWithHits": {
+                    "totalHits": 0,
+                    "violations": 0,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "staleFiles": {
+                    "totalHits": 203961,
+                    "violations": 203961,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "staleFilesWithHits": {
+                    "totalHits": 805,
+                    "violations": 805,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                },
+                "openAccessStaleFiles": {
+                    "totalHits": 664,
+                    "violations": 664,
+                    "permittedHits": 0,
+                    "violationsDelta": 0,
+                    "totalHitsDelta": 0
+                }
+            },
+            "snappable": {
+                "id": "1ffb43fd-99b2-55da-9954-ccc3256cd1e5",
+                "name": "sh1-sonar-02",
+                "objectType": "VmwareVirtualMachine",
+                "slaAssignment": "Derived",
+                "logicalPath": [
+                    {
+                        "name": "Sonar Demo",
+                        "objectType": "VSphereFolder"
+                    },
+                    {
+                        "name": "vm",
+                        "objectType": "VSphereFolder"
+                    },
+                    {
+                        "name": "Shared-1 Datacenter",
+                        "objectType": "VSphereDatacenter"
+                    },
+                    {
+                        "name": "shrd1-vcsa.rubrikdemo.com",
+                        "objectType": "VSphereVCenter"
+                    }
+                ],
+                "physicalPath": [
+                    {
+                        "name": "shrd1-esx03.rubrikdemo.com",
+                        "objectType": "VSphereHost"
+                    },
+                    {
+                        "name": "Shared-1 Cluster",
+                        "objectType": "VSphereComputeCluster"
+                    },
+                    {
+                        "name": "Shared-1 Datacenter",
+                        "objectType": "VSphereDatacenter"
+                    },
+                    {
+                        "name": "shrd1-vcsa.rubrikdemo.com",
+                        "objectType": "VSphereVCenter"
+                    }
+                ],
+                "effectiveSlaDomain": {
+                    "id": "27ff96fb-ca83-51dc-9bf5-8312a318701c",
+                    "name": "Gold"
+                },
+                "cluster": {
+                    "id": "9f5b9f6c-57a1-4e17-b48c-a610ba1bf979",
+                    "name": "shrd1-rbk01",
+                    "version": "5.2.2-p3-9927",
+                    "clusterNodeConnection": {
+                        "nodes": [
+                            {
+                                "ipAddress": "8.8.8.8"
+                            }
+                        ]
+                    },
+                    "datagovPreviewerConfig": {
+                        "enabled": true
+                    }
+                },
+                "cdmId": "7644cc5f-f718-4177-8630-1fe4428fa1c6-vm-119613"
+            },
+            "policySummaries": [
+                {
+                    "id": "2a620269-89a6-43a8-be4f-d52a408f8d55",
+                    "name": "CCPA",
+                    "colorEnum": "COLOR_012"
+                },
+                {
+                    "id": "2bbaf260-f893-42db-9f0e-02c790bb074f",
+                    "name": "HIPAA",
+                    "colorEnum": "COLOR_002"
+                },
+                {
+                    "id": "4835162a-e914-436d-b3ba-0fbeba11aa27",
+                    "name": "U.S. Financials",
+                    "colorEnum": "COLOR_005"
+                },
+                {
+                    "id": "68d31f60-ebc3-4371-a920-db485b604de5",
+                    "name": "PCI DSS",
+                    "colorEnum": "COLOR_001"
+                },
+                {
+                    "id": "a3c422b8-5c37-492e-83ff-228d09b69b2c",
+                    "name": "U.S. PII",
+                    "colorEnum": "COLOR_004"
+                },
+                {
+                    "id": "cf03aaeb-275b-40cf-8180-de95dd4293dc",
+                    "name": "GLBA",
+                    "colorEnum": "COLOR_003"
+                },
+                {
+                    "id": "f69f1d37-81f2-4f87-a948-6a53f1d5bd7c",
+                    "name": "UK PII",
+                    "colorEnum": "COLOR_011"
+                }
+            ]
+        }
+    }
+}

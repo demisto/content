@@ -8,8 +8,8 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
     for i, val in enumerate(ids):
         ids[i] = str(ids[i])
 
-    args_names = [name.strip() for name in argToList(additional_arg_names)]
-    args_values = [value.strip() for value in argToList(additional_arg_values)]
+    args_names = [str(name).strip() for name in argToList(additional_arg_names)]
+    args_values = [str(value).strip() for value in argToList(additional_arg_values)]
 
     if len(args_names) != len(args_values):
         raise ValueError('arg names and arg values lists does not match, please check your inputs:\n'
@@ -26,10 +26,17 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
 def main(args):
     try:
         encoded_id = args.get('ids').encode('utf-8') if type(args.get('ids')) != int else args.get('ids')
+
+        additional_polling_command_arg_names = args.get('additionalPollingCommandArgNames').encode('utf-8') if type(
+            args.get('additionalPollingCommandArgNames')) != int else args.get('additionalPollingCommandArgNames')
+
+        additional_polling_command_arg_values = args.get('additionalPollingCommandArgValues').encode('utf-8') if type(
+            args.get('additionalPollingCommandArgValues')) != int else args.get('additionalPollingCommandArgValues')
+
         args = prepare_arg_dict(args.get('pollingCommandArgName'),
                                 encoded_id,
-                                args.get('additionalPollingCommandArgNames'),
-                                args.get('additionalPollingCommandArgValues'),
+                                additional_polling_command_arg_names,
+                                additional_polling_command_arg_values,
                                 )
 
         demisto.results(demisto.executeCommand(demisto.getArg('pollingCommand'), args))

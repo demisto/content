@@ -70,8 +70,10 @@ tasks:
       iscommand: false
       brand: ""
     scriptarguments:
+      retry-count:
+        simple: "2"
       scan-id:
-        simple: "7"
+        simple: "16"
       targets: {}
     separatecontext: true
     loop:

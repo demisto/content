@@ -387,7 +387,15 @@ def search_incidents_command(client: Client, args: Dict[str, Any]) -> CommandRes
     if not incidents:
         incidents = []
 
+    columns = args.get('columns')
+    if columns != 'all':
+        columns = argToList(columns)
+        human_readable = tableToMarkdown('Search Results:', incidents, columns)
+    else:
+        human_readable = tableToMarkdown('Search Results:', incidents)
+
     return CommandResults(
+        readable_output=human_readable,
         outputs_prefix='XSOAR.Incident',
         outputs_key_field='id',
         outputs=incidents

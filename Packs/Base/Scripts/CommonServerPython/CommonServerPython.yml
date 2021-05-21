@@ -20,4 +20,5 @@ alt_dockerimages: # used for unit testing
 tests:
 - TestCommonPython
 - Test-debug-mode
+- Test-CreateDBotScore-With-Reliability
 fromversion: 5.0.0

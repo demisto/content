@@ -1,5 +1,7 @@
 id: Handle Expanse Incident
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Handle Expanse Incident
 description: |-
   Main Playbook to Handle Expanse Incidents.
@@ -1122,13 +1124,8 @@ tasks:
       id: 48a88295-5fe8-4219-8bd2-61250b300ef0
       version: -1
       name: Expanse Attribution
-      description: >
-        Subplaybook for Handle Expanse Incident playbooks.
-        Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue
-        Protocol
-        hunts for internal activity related to the detected service.
-        The playbook looks for logs on Splunk, Cortex Data Lake and Panorama.
-        Returns a list of potential owner BUs, owner Users, Device and Notes.
+      description: |
+        Subplaybook for Handle Expanse Incident playbooks. Given an Expanse Issue IP, Issue Provider, Issue Domain, Issue Port and Issue Protocol hunts for internal activity related to the detected service. The playbook looks for logs on Splunk, Cortex Data Lake and Panorama. Returns a list of potential owner BUs, owner Users, Device and Notes.
       playbookName: Expanse Attribution
       type: playbook
       iscommand: false
@@ -4400,7 +4397,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -1650
+          "y": -1490
         }
       }
     note: false
@@ -4449,7 +4446,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -1490
+          "y": -1310
         }
       }
     note: false
@@ -5922,7 +5919,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "122"
+      - "208"
     separatecontext: false
     view: |-
       {
@@ -7349,6 +7346,46 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "208":
+    id: "208"
+    taskid: 987cf091-980a-497b-8aac-5e8b9e89a04b
+    type: condition
+    task:
+      id: 987cf091-980a-497b-8aac-5e8b9e89a04b
+      version: -1
+      name: Are there Expanse Asset Tags?
+      description: Check whether there are any Expanse Asset Tags.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "122"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.expanseasset
+                accessor: tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 view: |-
   {
@@ -7361,6 +7398,7 @@ view: |-
       "176_29_#default#": 0.25,
       "177_178_#default#": 0.62,
       "1_3_#default#": 0.2,
+      "208_28_#default#": 0.32,
       "26_23_Panorama": 0.65,
       "26_27_#default#": 0.62,
       "36_147_#default#": 0.46,
@@ -7479,7 +7517,7 @@ inputs:
   playbookInputQuery:
 - key: NumberOfDaysInThePast
   value:
-    simple: "7"
+    simple: "75"
   required: false
   description: How many days to go back in time when searching logs
   playbookInputQuery:

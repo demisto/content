@@ -56,6 +56,13 @@ MOCK_IP_RESP = {
         "country": "United States",
         "countrycode": "US"
     },
+    "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": {
+        "Indicator": "8.8.8.8",
+        "Type": "ip",
+        "Vendor": "XFE",
+        "Score": 1,
+        "Reliability": "C - Fairly reliable"
+    },
     "score": 1,
     "reason": "Regional Internet Registry",
     "reasonDescription": "One of the five RIRs announced a (new) location mapping of the IP.",
@@ -96,6 +103,13 @@ MOCK_URL_RESP = {
             }
         }
     ],
+    "DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)": {
+        "Indicator": "https://www.google.com",
+        "Type": "url",
+        "Vendor": "XFE",
+        "Score": 1,
+        "Reliability": "C - Fairly reliable"
+    },
     "tags": []
 }
 
@@ -359,6 +373,7 @@ def test_ip(requests_mock):
     _, outputs, _ = ip_command(client, args)
 
     assert outputs[outputPaths['ip']][0]['Address'] == MOCK_IP
+    assert outputs[DBOT_SCORE_KEY][0] == MOCK_IP_RESP[DBOT_SCORE_KEY]
 
 
 def test_url(requests_mock):
@@ -371,6 +386,7 @@ def test_url(requests_mock):
     _, outputs, _ = url_command(client, args)
 
     assert outputs[outputPaths['url']][0]['Data'] == MOCK_URL
+    assert outputs[DBOT_SCORE_KEY][0] == MOCK_URL_RESP[DBOT_SCORE_KEY]
 
 
 def test_get_cve(requests_mock):
@@ -386,6 +402,7 @@ def test_get_cve(requests_mock):
     assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_CVE, 'The indicator is not matched'
     assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'cve', 'The indicator type should be cve'
     assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[DBOT_SCORE_KEY][0]['Reliability'] == 'C - Fairly reliable'
 
 
 def test_cve_latest(requests_mock):
@@ -397,17 +414,47 @@ def test_cve_latest(requests_mock):
 
 
 def test_file(requests_mock):
+    """
+     Given:
+         - A hash.
+     When:
+         - When running the file command.
+     Then:
+         - Validate that the file outputs are created properly
+         - Validate that the DbotScore outputs are created properly
+     """
+    dbot_score_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&' \
+                     ' val.Vendor == obj.Vendor && val.Type == obj.Type)'
     requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
 
     client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
-    _, outputs, _ = file_command(client, {'file': MOCK_HASH})
-
+    outputs = file_command(client, {'file': MOCK_HASH})[0].to_context()['EntryContext']
     file_key = next(filter(lambda k: 'File' in k, outputs.keys()), 'File')
 
     assert outputs[file_key][0].get('MD5', '') == MOCK_HASH, 'The indicator value is wrong'
-    assert outputs[DBOT_SCORE_KEY][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
-    assert outputs[DBOT_SCORE_KEY][0]['Type'] == 'file', 'The indicator type should be file'
-    assert 1 <= outputs[DBOT_SCORE_KEY][0]['Score'] <= 3, 'Invalid indicator score range'
+    assert outputs[dbot_score_key][0]['Indicator'] == MOCK_HASH, 'The indicator is not matched'
+    assert outputs[dbot_score_key][0]['Type'] == 'file', 'The indicator type should be file'
+    assert 1 <= outputs[dbot_score_key][0]['Score'] <= 3, 'Invalid indicator score range'
+
+
+def test_file_connections(requests_mock):
+    """
+     Given:
+         - A hash.
+     When:
+         - When running the file command.
+     Then:
+         - Validate that the relationships are crated correctly
+     """
+    requests_mock.get(f'{MOCK_BASE_URL}/malware/{MOCK_HASH}', json=MOCK_HASH_RESP)
+
+    client = Client(MOCK_BASE_URL, MOCK_API_KEY, MOCK_PASSWORD, True, False)
+    relations = file_command(client, {'file': MOCK_HASH})[0].relationships[0].to_context()
+    assert relations.get('Relationship') == 'related-to'
+    assert relations.get('EntityA') == MOCK_HASH
+    assert relations.get('EntityAType') == 'File'
+    assert relations.get('EntityB') == 'badur'
+    assert relations.get('EntityBType') == 'STIX Malware'
 
 
 def test_whois(requests_mock):

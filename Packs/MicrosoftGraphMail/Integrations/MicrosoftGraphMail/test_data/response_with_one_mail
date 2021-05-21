@@ -1,0 +1,59 @@
+{
+    "@odata.context": "odata-context",
+    "@odata.nextLink": "odata-nextlink",
+    "value": [
+    {
+        "@odata.etag": "W/\"\"",
+        "id": "-qAAA=",
+        "createdDateTime": "2019-04-16T19:40:00Z",
+        "lastModifiedDateTime": "2019-04-16T19:40:02Z",
+        "changeKey": "",
+        "categories": [],
+        "receivedDateTime": "2019-04-16T19:40:01Z",
+        "sentDateTime": "2019-04-16T19:40:01Z",
+        "hasAttachments": false,
+        "internetMessageId": "",
+        "subject": "Playbook has stopped on error for Legal Hold #` (#2231)",
+        "bodyPreview": "Incident playbook task \"Parse Legal Hold CSV File\" stopped on error.\nIncident Id: #2231\nIncident Name: Legal Hold #`\nIncident SLA: 26 Apr 19, 19:13 UTC\nIncident Severity: Unknown\n\nTask: #1\nTask Name: Parse Legal Hold CSV File\nTask SLA: N\\A\n\nView it on htt",
+        "importance": "normal",
+        "parentFolderId": "",
+        "conversationId": "",
+        "isDeliveryReceiptRequested": false,
+        "isReadReceiptRequested": false,
+        "isRead": true,
+        "isDraft": false,
+        "webLink": "",
+        "inferenceClassification": "focused",
+        "body": {
+          "contentType": "text",
+          "content": "Incident playbook task \"Parse Legal Hold CSV File\" stopped on error.\nIncident Id: #2231\nIncident Name: Legal Hold #`\nIncident SLA: 26 Apr 19, 19:13 UTC\nIncident Severity: Unknown\n\nTask: #1\nTask Name: Parse Legal Hold CSV File\nTask SLA: N\\A\n\nView it on Plan/2231/1"
+        },
+        "sender": {
+          "emailAddress": {
+            "name": "User Test",
+            "address": "user@example.com"
+          }
+        },
+        "from": {
+          "emailAddress": {
+            "name": "User Test",
+            "address": "user@example.com"
+          }
+        },
+        "toRecipients": [
+          {
+            "emailAddress": {
+              "name": "mayb@queen.com",
+              "address": "mayb@queen.com"
+            }
+          }
+        ],
+        "ccRecipients": [],
+        "bccRecipients": [],
+        "replyTo": [],
+        "flag": {
+          "flagStatus": "notFlagged"
+        }
+      }
+    ]
+}

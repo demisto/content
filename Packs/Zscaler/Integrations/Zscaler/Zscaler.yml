@@ -69,7 +69,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: Whether there are multiple URLs in the 'url' argument. If a URL
         contains commas, set this argument to 'false' and enter the single URL as
@@ -105,16 +105,16 @@ script:
       description: For malicious URLs, the reason the vendor tagged the URL as malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The URL that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The URL type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor that calculated the DBot score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: number
   - arguments:
     - default: true
@@ -148,16 +148,16 @@ script:
         address as malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The IP address that was tested.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The IP address type.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: number
   - arguments:
     - default: true

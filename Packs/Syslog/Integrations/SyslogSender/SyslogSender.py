@@ -133,7 +133,7 @@ def init_manager(params: dict) -> SyslogManager:
     port = int(params.get('port', 514))
     protocol = params.get('protocol', UDP).lower()
     facility = FACILITY_DICT.get(params.get('facility', 'LOG_SYSLOG'), SysLogHandler.LOG_SYSLOG)
-    logging_level = LOGGING_LEVEL_DICT.get(params.get('logging_level', 'LOG_INFO'), INFO)
+    logging_level = LOGGING_LEVEL_DICT.get(params.get('priority', 'LOG_INFO'), INFO)
 
     if not address:
         raise ValueError('A Syslog server address must be provided.')
@@ -193,7 +193,7 @@ def syslog_send_notification(manager: SyslogManager, min_severity: int):
     message = demisto.args().get('message', '')
     entry = demisto.args().get('entry')
     ignore_add_url = demisto.args().get('ignoreAddURL', False)
-    log_level = demisto.args().get('log_level', 'INFO')
+    log_level = demisto.args().get('level', 'INFO')
     severity = demisto.args().get('severity')  # From server
     message_type = demisto.args().get('messageType', '')  # From server
 
@@ -244,7 +244,7 @@ def syslog_send_notification(manager: SyslogManager, min_severity: int):
 
 def syslog_send(manager):
     message = demisto.args().get('message', '')
-    log_level = demisto.args().get('log_level', 'INFO')
+    log_level = demisto.args().get('level', 'INFO')
 
     send_log(manager, message, log_level)
 

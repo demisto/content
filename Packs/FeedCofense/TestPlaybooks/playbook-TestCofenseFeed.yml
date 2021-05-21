@@ -10,11 +10,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "63"
+    taskid: 499eca7e-30ef-480f-805a-84985ed1af20
     type: start
     task:
       elasticcommonfields: {}
-      id: "63"
+      id: 499eca7e-30ef-480f-805a-84985ed1af20
       version: -1
       name: ""
       iscommand: false
@@ -37,11 +37,11 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: "64"
+    taskid: 428445be-1dae-47e6-b039-1052076b71b8
     type: regular
     task:
       elasticcommonfields: {}
-      id: "64"
+      id: 428445be-1dae-47e6-b039-1052076b71b8
       version: -1
       name: get-indicators
       description: Get indicators
@@ -71,11 +71,11 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: "66"
+    taskid: f2d4afde-98fd-4e11-a001-8e9785cf01ce
     type: title
     task:
       elasticcommonfields: {}
-      id: "66"
+      id: f2d4afde-98fd-4e11-a001-8e9785cf01ce
       version: -1
       name: Done
       type: title
@@ -96,11 +96,11 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: "62"
+    taskid: 7e330b0a-42f6-4f4b-b7a9-af2586ad5971
     type: regular
     task:
       elasticcommonfields: {}
-      id: "62"
+      id: 7e330b0a-42f6-4f4b-b7a9-af2586ad5971
       version: -1
       name: Delete Context
       description: Delete field from context

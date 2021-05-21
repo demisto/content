@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
+from IAMApiModule import *
 import traceback
-
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ERROR_CODES_TO_SKIP = [

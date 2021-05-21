@@ -214,6 +214,7 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
         request_data = json.loads(custom_filter)
     else:
         request_data = args_to_filter(arguments)
+    request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
     return request_data, url_suffix
 
 
@@ -321,17 +322,21 @@ def list_alerts_command(client: Client, args: dict):
     arguments = assign_params(**args)
     request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, alert_id)
     alerts_response_data = client.list_alerts(url_suffix, request_data)
-    list_alert = alerts_response_data.get('data') if alerts_response_data.get('data') else [alerts_response_data]
-    alerts = arrange_alerts_by_incident_type(list_alert)
-    alerts = arrange_alerts_descriptions(alerts)
-    alerts = set_alerts_is_open(alerts)
-    human_readable = alerts_to_human_readable(alerts)
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
-        outputs_key_field='_id',
-        outputs=alerts
-    )
+    list_alert = alerts_response_data.get('data') if 'data' in alerts_response_data.keys() else [alerts_response_data]
+    if list_alert:  # organize the output
+        alerts = arrange_alerts_by_incident_type(list_alert)
+        alerts = arrange_alerts_descriptions(alerts)
+        alerts = set_alerts_is_open(alerts)
+        human_readable = alerts_to_human_readable(alerts)
+        return CommandResults(
+            readable_output=human_readable,
+            outputs_prefix='MicrosoftCloudAppSecurity.Alerts',
+            outputs_key_field='_id',
+            outputs=alerts
+        )
+    else:
+        human_readable = f"No alerts found for the given filter: {custom_filter}."
+        return CommandResults(readable_output=human_readable)
 
 
 def bulk_dismiss_alert_command(client: Client, args: dict):
@@ -493,7 +498,7 @@ def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[
     if last_fetch is None:
         if not first_fetch:
             first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
         # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
         first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
         return first_fetch_time

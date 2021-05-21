@@ -1,0 +1,2 @@
+!opencti-get-indicators limit=2 indicator_types="IP"
+!opencti-reset-fetch-indicators

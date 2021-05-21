@@ -1,7 +1,8 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
     disable_user_command, get_mapping_fields_command, get_app_user_assignment_command, fetch_incidents
-from CommonServerPython import IAMErrors, IAMUserProfile, IAMActions, EntryType
+from IAMApiModule import *
+from CommonServerPython import EntryType
 
 
 OKTA_USER_OUTPUT = {
@@ -144,6 +145,7 @@ def test_create_user_command__success(mocker):
     mocker.patch.object(client, 'get_user', return_value=None)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
+    mocker.patch.object(client, 'activate_user', return_value=None)
 
     user_profile = create_user_command(client, args, 'mapper_out',
                                        is_command_enabled=True, is_update_user_enabled=True)
@@ -211,6 +213,7 @@ def test_update_user_command__non_existing_user(mocker):
     mocker.patch.object(client, 'get_user', return_value=None)
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=OKTA_USER_OUTPUT)
+    mocker.patch.object(client, 'activate_user', return_value=None)
 
     user_profile = update_user_command(client, args, 'mapper_out', is_command_enabled=True,
                                        is_create_user_enabled=True, create_if_not_exists=True)
@@ -339,7 +342,7 @@ def test_get_mapping_fields_command(mocker):
     mocker.patch.object(client, 'get_okta_fields', return_value={'field1': 'description1', 'field2': 'description2'})
 
     mapping_response = get_mapping_fields_command(client)
-    mapping = mapping_response.extract_mapping()[0]
+    mapping = mapping_response.extract_mapping()
 
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'description1'
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'description2'

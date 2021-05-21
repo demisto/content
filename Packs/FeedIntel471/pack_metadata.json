@@ -1,0 +1,18 @@
+{
+    "name": "Intel471 Feed",
+    "description": "This content pack fetches actor and malware related indicators from Intel 471.",
+    "support": "partner",
+    "currentVersion": "1.2.1",
+    "author": "Intel 471",
+    "url": "https://www.intel471.com",
+    "email": "support@intel471.com",
+    "created": "2020-12-16T08:40:39Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence"
+    ],
+    "useCases": [],
+    "keywords": []
+}

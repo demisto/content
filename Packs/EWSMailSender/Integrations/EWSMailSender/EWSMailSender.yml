@@ -4,14 +4,17 @@ commonfields:
 name: EWS Mail Sender
 display: EWS Mail Sender
 category: Messaging
-description: Exchange Web Services and Office 365 Email sender
+description: 'Exchange Web Services mail sender. Note: this integration supports Office
+  365 basic authentication only. If you are using Office 365, we recommend using the
+  EWS O365 Integration instead, which supports modern authentication (oauth2).'
 configuration:
 - display: Exchange URL or Server IP address
   name: ewsServer
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: 'Authentication: Email address (for Office 365) or DOMAIN\USERNAME (e.g. DEMISTO.INT\admin)'
+- display: 'Authentication: Email address (for Office 365) or DOMAIN\USERNAME (e.g.
+    DEMISTO.INT\admin)'
   name: credentials
   defaultvalue: ""
   type: 9
@@ -68,12 +71,15 @@ script:
     - name: body
       description: The contents (body) of the email to send.
     - name: htmlBody
-      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+      description: HTML formatted content (body) of the email to be sent. This argument
+        overrides the "body" argument.
     - name: attachIDs
-      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      description: 'A CSV list of War Room entry IDs that contain files, and are used
+        to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
     - name: attachNames
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+      description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
       isArray: true
     - name: attachCIDs
       description: A CSV list of CIDs to embed attachments within the email itself.
@@ -96,18 +102,21 @@ script:
     - name: body
       description: The contents (body) of the email to be sent.
     - name: htmlBody
-      description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
+      description: HTML formatted content (body) of the email to be sent. This argument
+        overrides the "body" argument.
     - name: attachIDs
-      description: 'A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      description: 'A CSV list of War Room entry IDs that contain files, and are used
+        to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
       isArray: true
     - name: attachNames
-      description: A CSV list of names of attachments to send. Should be the same number of elements as attachIDs.
+      description: A CSV list of names of attachments to send. Should be the same
+        number of elements as attachIDs.
       isArray: true
     - name: attachCIDs
       description: A CSV list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py2-exchangelib:1.0.0.13559
+  dockerimage: demisto/py2-exchangelib:1.0.0.15963
 tests:
 - "EWS Mail Sender Test"
 - "EWS Mail Sender Test 2"

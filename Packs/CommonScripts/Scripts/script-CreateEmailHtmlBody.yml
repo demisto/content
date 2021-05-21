@@ -103,23 +103,23 @@ args:
 - name: listTemplate
   required: true
   default: true
-  description: The list where the template is stored
+  description: The list where the template is stored.
 - name: key
   required: true
-  description: Context key to store the HTML body
+  description: Context key to store the HTML body.
 - name: object
-  description: Values object provided as stringified JSON
+  description: Values object provided as stringified JSON.
   isArray: true
 - name: removeNotFound
   auto: PREDEFINED
   predefined:
   - "yes"
   - "no"
-  description: if true, replace path not found with empty string, otherwise leave as is
+  description: If true, replace path not found with empty string.
   defaultValue: "no"
 outputs:
 - contextPath: htmlBody
-  description: HTML Body
+  description: HTML Body.
 scripttarget: 0
 runonce: false
 tests:

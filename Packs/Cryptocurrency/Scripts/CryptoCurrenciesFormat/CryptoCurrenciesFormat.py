@@ -28,7 +28,7 @@ def verify_is_bitcoin(address) -> Union[bytes, bool]:
 def main():
     address_list = argToList(demisto.args().get('input'))
 
-    list_results = [f'bitcoin-{address}' for address in address_list if verify_is_bitcoin(address)]
+    list_results = [f'bitcoin:{address}' for address in address_list if verify_is_bitcoin(address)]
 
     if list_results:
         demisto.results(list_results)

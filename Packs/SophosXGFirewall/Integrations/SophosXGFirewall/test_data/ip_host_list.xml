@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <IPHost transactionid="">
+    <Name>##ALL_RW</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>##ALL_IPSEC_RW</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>##ALL_SSLVPN_RW</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>##ALL_RW6</Name>
+    <IPFamily>IPv6</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>##ALL_SSLVPN_RW6</Name>
+    <IPFamily>IPv6</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>##ALL_IPSEC_RW6</Name>
+    <IPFamily>IPv6</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>#Port1</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>fgfg</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>IP</HostType>
+    <IPAddress>1.1.1.1</IPAddress>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>#Port2</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>System Host</HostType>
+  </IPHost>
+  <IPHost transactionid="">
+    <Name>iphost1</Name>
+    <IPFamily>IPv4</IPFamily>
+    <HostType>IP</HostType>
+    <HostGroupList>
+      <HostGroup>ip_hosts</HostGroup>
+    </HostGroupList>
+    <IPAddress>2.2.2.2</IPAddress>
+  </IPHost>
+</Response>

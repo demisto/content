@@ -2,8 +2,9 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'false'
-  description: If "true" will return all users, including users that are Out Of Office.
-    If "false", will return all users that are not Out Of Office. Default is "false".
+  description: Whether to retrieve all users, including users who are out of the office.
+    If "true" will retrieve all users. If "false", will only retrieve users who are
+    not out of office. Default is "false".
   isArray: false
   name: include_OOO_users
   predefined:
@@ -11,7 +12,14 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Retrieves users that are currently on-call (on shift).
+- default: false
+  defaultValue: OOO List
+  description: The name of the out-of-office XSOAR list. Default is "OOO List".
+  isArray: false
+  name: listname
+  required: false
+  secret: false
+comment: Retrieves users who are currently on call.
 commonfields:
   id: GetUsersOnCall
   version: -1
@@ -25,5 +33,5 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.1.15759
 fromversion: 5.5.0

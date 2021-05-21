@@ -408,6 +408,7 @@ exampleDemistoUrls = {
     "warRoom": "https://test-address:8443/#/WarRoom/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
+exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
 
@@ -814,6 +815,19 @@ def demistoUrls():
     return exampleDemistoUrls
 
 
+def getAutoFocusApiKey():
+    """Retrieves the AutoFocus API Key related to this Cortex XSOAR License.
+    You can use this API Key in all AutoFocus integrations and Feeds.
+    This command is not available on tenants.
+
+
+    Returns:
+      str: String containing the API Key
+
+    """
+    return exampleAutoFocusApiKey
+
+
 def dt(obj=None, trnsfrm=None):
     """Extracts field from object using DT language syntax
 
@@ -988,7 +1002,8 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
+                     populateFields=None):
     """Searches for indicators according to given query
 
     Args:
@@ -999,6 +1014,7 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
       searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
+      populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
       dict: Object contains the search results
@@ -1043,4 +1059,61 @@ def getModules():
 
 
 def get_incidents():
+    return {}
+
+
+def internalHttpRequest(method, uri, body=None):
+    """Run an internal HTTP request to the XSOAR server. The request runs with the permissions of the
+    executing user, when a command is being executed manually (such as via the War Room or when browsing a widget).
+    When run via a playbook, will run with a readonly user with limited permissions isolated to the current incident only.
+    Available for both Integrations and Scripts starting from Server version 6.1.
+
+    Args:
+        method (str): HTTP method such as: GET or POST
+        uri (str): Server uri to request. For example: "/contentpacks/marketplace/HelloWorld".
+        body Optional[str]: Optional body for a POST request. Defaults to None.
+
+    Returns:
+        dict: dict cotainnig the following fields:
+        * statusCode (int): HTTP status code such as 200
+        * status (str): HTTP status line such as: "200 OK"
+        * body (str): response body
+        * headers (dict): dict of headers. Each key is a header name with an array of values.
+          For example: `"headers": {"Content-Type": ["text/plain; charset=utf-8"]}`
+    """
+    return {
+        "statusCode": 404,
+        "status": "404 Not Found",
+        "body": "This is a mock. Your request was not found.",
+        "headers": {
+            "X-Xss-Protection": [
+                "1; mode=block"
+            ],
+            "X-Content-Type-Options": [
+                "nosniff"
+            ],
+            "Strict-Transport-Security": [
+                "max-age=10886400000000000; includeSubDomains"
+            ],
+            "Date": [
+                "Wed, 27 Jan 2021 17:11:16 GMT"
+            ],
+            "X-Frame-Options": [
+                "DENY"
+            ],
+            "Content-Type": [
+                "text/plain; charset=utf-8"
+            ]
+        },
+    }
+
+
+def parentEntry():
+    """
+    Retrieves information regarding the war room entry from which the method runs
+
+    Returns:
+      dict: information regarding the current war room entry
+
+    """
     return {}

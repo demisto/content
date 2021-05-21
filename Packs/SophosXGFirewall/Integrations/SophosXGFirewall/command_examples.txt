@@ -1,0 +1,52 @@
+!sophos-firewall-rule-list start=0 end=6
+!sophos-firewall-rule-add name=user_rule action=Accept ip_family=IPv4 log_traffic=Disable policy_type=User position=bottom match_identity=Enable show_captive_portal=Enable destination_zones=LAN members="Guest Group"
+!sophos-firewall-rule-add name=network_rule action=Accept ip_family=IPv4 log_traffic=Disable policy_type=Network  destination_zones=LAN source_zones=VPN position=bottom
+!sophos-firewall-rule-update name=user_rule log_traffic=Enable source_zones=LAN
+!sophos-firewall-rule-update name=network_rule log_traffic=Enable source_zones=WAN
+!sophos-firewall-rule-get name=user_rule
+!sophos-firewall-rule-get name=network_rule
+!sophos-firewall-rule-group-list start=0 end=6
+!sophos-firewall-rule-group-add name=rulegroup policy_type="User/network rule" rules=user_rule,network_rule
+!sophos-firewall-rule-group-update name=rulegroup description="rulegroup for user/network rules"
+!sophos-firewall-rule-group-get name=rulegroup
+!sophos-firewall-rule-group-delete name=rulegroup
+!sophos-firewall-rule-delete name=user_rule
+!sophos-firewall-rule-delete name=network_rule
+!sophos-firewall-url-group-list start=0 end=6
+!sophos-firewall-url-group-add name=urlgroup urls=www.example.com
+!sophos-firewall-url-group-update name=urlgroup urls=www.another-example.com
+!sophos-firewall-url-group-get name=urlgroup
+!sophos-firewall-url-group-delete name=urlgroup
+!sophos-firewall-ip-host-list start=0 end=6
+!sophos-firewall-ip-host-add name=iphost host_type=IP ip_address=1.1.1.1
+!sophos-firewall-ip-host-update name=iphost ip_address=2.2.2.2
+!sophos-firewall-ip-host-get name=iphost
+!sophos-firewall-ip-host-group-list start=0 end=6
+!sophos-firewall-ip-host-group-add name=iphostgroup
+!sophos-firewall-ip-host-group-update name=iphostgroup hosts=iphost
+!sophos-firewall-ip-host-group-get name=iphostgroup
+!sophos-firewall-ip-host-group-delete name=iphostgroup
+!sophos-firewall-ip-host-delete name=iphost
+!sophos-firewall-services-list start=0 end=6
+!sophos-firewall-services-add name=service service_type=IP protocol_name="Compaq-Peer"
+!sophos-firewall-services-update name=service service_type=IP protocol_name=AH
+!sophos-firewall-services-get name=service
+!sophos-firewall-services-delete name=service
+!sophos-firewall-app-policy-list start=0 end=6
+!sophos-firewall-app-policy-add name=apppolicy
+!sophos-firewall-app-policy-update name=apppolicy description="Description for app policy object"
+!sophos-firewall-app-policy-get name=apppolicy
+!sophos-firewall-app-policy-delete name=apppolicy
+!sophos-firewall-app-category-list start=0 end=6
+!sophos-firewall-app-category-get name=Gaming
+!sophos-firewall-app-category-update name=Gaming qos_policy=policy
+!sophos-firewall-web-filter-list start=0 end=6
+!sophos-firewall-web-filter-add name=webfilter default_action=Allow enable_reporting=Enable download_file_size_restriction=300 download_file_size_restriction_enabled=1 enforce_image_licensing=1 enforce_safe_search=1 goog_app_domain_list=gmail.com goog_app_domain_list_enabled=1 http_action=Allow https_action=Allow schedule="All Time on Sunday" youtube_filter_enabled=1 youtube_filter_is_strict=1 ccl_rule_enabled=0 follow_http_action=1 policy_rule_enabled=0 url_group_names="Blocked URLs for Default Policy"
+!sophos-firewall-web-filter-update name=webfilter default_action=Allow enable_reporting=Enable download_file_size_restriction=300 download_file_size_restriction_enabled=1 enforce_image_licensing=0 enforce_safe_search=1 goog_app_domain_list=gmail.com goog_app_domain_list_enabled=1 http_action=Allow https_action=Allow schedule="All Time on Sunday" youtube_filter_enabled=1 youtube_filter_is_strict=0 ccl_rule_enabled=0 follow_http_action=0 policy_rule_enabled=0 url_group_names=1 description="Description for web filter"
+!sophos-firewall-web-filter-get name=webfilter
+!sophos-firewall-web-filter-delete name=webfilter
+!sophos-firewall-user-list start=0 end=6
+!sophos-firewall-user-add name=user username=user password=1234 email=user@mail.com
+!sophos-firewall-user-update name=user username=user description="Description for the user"
+!sophos-firewall-user-get name=user
+!sophos-firewall-user-delete name=user

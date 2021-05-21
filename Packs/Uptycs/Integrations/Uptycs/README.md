@@ -40,7 +40,7 @@ In order to create an instance of the integration, you need to download a user A
     * __API key__
     * __API secret__
     * __API domain__: the domain found in your API key file as well as the Top Level Domain for your Uptycs stack (example: if your Uptycs' stack URL is "mystack.uptycs.io" then your API key file will say "mystack" in the domain field.  You would then put "mystack.uptycs.io" in the API domain field when configuring your integration instance).
-    * __API customer_id__
+    * __API Customer ID__
     * __Fetch incidents__
     * __Incident type__
     * __Trust any certificate (unsecure)__

@@ -29,7 +29,8 @@ args:
   defaultValue: src,src_ip
   isArray: true
 - name: internal_ip_networks
-  description: Comma separated list of IPv4 Networks to be considered internal (default to RFC private networks).
+  description: Comma separated list of IPv4 Networks to be considered internal (default
+    to RFC private networks).
   defaultValue: ""
   isArray: true
 outputs:
@@ -57,5 +58,7 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.9.1.14969
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

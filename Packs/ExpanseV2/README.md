@@ -3,7 +3,7 @@ The Expanse Content Pack for Cortex XSOAR provides full coverage of the Expander
 Through a powerful set of Playbooks, analysts can correlate the discovered information with data provided from internal security systems (such as Palo Alto Networks Cortex Data Lake, Prisma Cloud and Panorama, Active Directory, Splunk SIEM, etc.) to help pinpoint the right owners of assets and automate remediation.
 
 ##### What does this pack do?
-- Provides the **Expanse v2** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update Issues and Assets in Expanse.
+- Provides the **Expanse v2** integration (for Expanse Expander and Behavior), which allows XSOAR to collect Expanse Issues and bi-directionally mirror them. Several commands are available to search, tag, and update Issues and Assets in Expanse. The integration also supports the Services API.
 - Provides a feed integration named **Expanse Expander Feed**, which is compatible with the Cortex XSOAR Threat Intel Management capabilities to retrieve and store discovered assets (IPs, IP Ranges, Domains, Certificates) in Cortex XSOAR for analysis and correlation.
 - Provides an **Expanse Issue** Incident Type with dedicated fields and layouts.
 - Provides a rich set of Playbooks and Subplaybooks that handle the investigation and remediation of Expanse Issues.
@@ -30,3 +30,7 @@ Through a powerful set of Playbooks, analysts can correlate the discovered infor
 - **Handle Expanse Incident - Remediation**: An excerpt of the remediation stage of the main playbook. Note the different branches handling notifications, automatic network remediation and follow up Shadow IT investigation if the asset is marked as Shadow IT by the incident assignee.
 
     ![Handle Expanse Incident Remediation](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident_Remediation.png)
+
+##### Video
+
+[![Expanse and Cortex XSOAR](https://img.youtube.com/vi/I3Vj-f5VGMk/0.jpg)](https://www.youtube.com/watch?v=I3Vj-f5VGMk "Expanse and Cortex XSOAR")

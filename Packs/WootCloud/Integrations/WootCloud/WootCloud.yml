@@ -62,31 +62,34 @@ script:
       - name: date_range
         description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
         isArray: false
-        default: true
+        default: false
         required: true
         secret: false
       - name: severity
         description: severity with values of 'notice', 'warning', 'critical'
         isArray: false
-        default: true
+        default: false
+        defaultValue:
         required: false
         secret: false
       - name: skip
-        description: 'integer value for pagination. Default value: 0'
+        description: 'Integer value for pagination. Default value is 0.'
         isArray: false
-        default: true
+        default: false
+        defaultValue: 0
         required: false
         secret: false
       - name: limit
         description: 'Integer value for pagination. Default value: 10. Max Value: 500'
         isArray: false
-        default: true
+        default: false
+        defaultValue: 10
         required: false
         secret: false
       - name: site_id
         description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region)
         isArray: false
-        default: true
+        default: false
         required: false
         secret: false
       outputs:
@@ -319,31 +322,33 @@ script:
       - name: date_range
         description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
         isArray: false
-        default: true
+        default: false
         required: true
         secret: false
       - name: severity
         description: severity with values of 'notice', 'warning', 'critical'
         isArray: false
-        default: true
+        default: false
         required: false
         secret: false
       - name: skip
-        description: 'integer value for pagination. Default value: 0'
+        description: 'Integer value for pagination. Default value is 0.'
         isArray: false
-        default: true
+        default: false
+        defaultValue: 0
         required: false
         secret: false
       - name: limit
         description: 'Integer value for pagination. Default value: 10. Max Value: 500'
         isArray: false
-        default: true
+        default: false
+        defaultValue: 10
         required: false
         secret: false
       - name: site_id
         description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region)
         isArray: false
-        default: true
+        default: false
         required: false
         secret: false
       outputs:
@@ -423,31 +428,33 @@ script:
       - name: date_range
         description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
         isArray: false
-        default: true
+        default: false
         required: true
         secret: false
       - name: severity
         description: severity with values of 'info, ''notice', 'warning', 'critical'
         isArray: false
-        default: true
+        default: false
         required: false
         secret: false
       - name: skip
         description: 'integer value for pagination. Default value: 0'
         isArray: false
-        default: true
+        default: false
+        defaultValue: 0
         required: false
         secret: false
       - name: limit
         description: 'Integer value for pagination. Default value: 10. Max Value: 500'
         isArray: false
-        default: true
+        default: false
+        defaultValue: 10
         required: false
         secret: false
       - name: site_id
         description: Array of site ids. Only entered if you want results for a particular site(s) (building, city, region)
         isArray: false
-        default: true
+        default: false
         required: false
         secret: false
       outputs:
@@ -989,11 +996,13 @@ script:
       - contextPath: WootCloud.AnomalyAlert.connections.connection_count
         description: 'connections connection count'
         type: Number
+  feed: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.0.0

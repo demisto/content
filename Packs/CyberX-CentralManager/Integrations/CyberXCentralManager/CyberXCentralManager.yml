@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: 127.0.0.1
-  display: (IP/DNS)
+  display: IP/DNS
   name: Server
   required: true
   type: 0
@@ -40,7 +40,7 @@ script:
       required: true
     description: Updating the alert
     name: cyberx-update-alert
-  dockerimage: demisto/python3-deb:3.8.6.12176
+  dockerimage: demisto/python3-deb:3.9.1.15758
   runonce: false
   script: ''
   subtype: python3

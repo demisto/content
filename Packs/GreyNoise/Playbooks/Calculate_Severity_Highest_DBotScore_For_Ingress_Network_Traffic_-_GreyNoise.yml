@@ -1,0 +1,609 @@
+id: Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise
+version: -1
+name: Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise
+description: Playbook to calculate the severity based on GreyNoise
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5e6d85ca-b952-45ad-8c44-4922c8d96b0b
+    type: start
+    task:
+      id: 5e6d85ca-b952-45ad-8c44-4922c8d96b0b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0be25a31-41d7-4843-8d9e-dade2bdf30cb
+    type: condition
+    task:
+      id: 0be25a31-41d7-4843-8d9e-dade2bdf30cb
+      version: -1
+      name: Is there a DBotScore?
+      description: Checks if there is a DbotScore object in the context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.DBotScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: bf46a671-b813-4c75-86f5-00be8cebb4d1
+    type: regular
+    task:
+      id: bf46a671-b813-4c75-86f5-00be8cebb4d1
+      version: -1
+      name: Get DBotScore
+      description: Sets DbotScore in context if vendor is GreyNoise.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: DBotScore
+      stringify: {}
+      value:
+        complex:
+          root: inputs.DBotScore
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: inputs.DBotScore.Vendor
+                iscontext: true
+              right:
+                value:
+                  simple: GreyNoise
+              ignorecase: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a06091da-7067-4003-8436-e52d5859cf6a
+    type: condition
+    task:
+      id: a06091da-7067-4003-8436-e52d5859cf6a
+      version: -1
+      name: Evaluate severity based on GreyNoise
+      description: Evaluates the severity of the DBotScore context based on different
+        conditions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      High:
+      - "9"
+      Informational:
+      - "12"
+      Low:
+      - "7"
+      Medium:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: High
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP.seen
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.seen
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "false"
+                    ignorecase: true
+            iscontext: true
+    - label: Medium
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP.seen
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.seen
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP.classification
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.classification
+                      iscontext: true
+                    right:
+                      value:
+                        simple: malicious
+            iscontext: true
+    - label: Low
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.seen
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+                    ignorecase: true
+                accessor: seen
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP.classification
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.classification
+                      iscontext: true
+                    right:
+                      value:
+                        simple: unknown
+                    ignorecase: true
+            iscontext: true
+    - label: Informational
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP.seen
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.seen
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "true"
+                    ignorecase: true
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GreyNoise.IP.classification
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: GreyNoise.IP.classification
+                      iscontext: true
+                    right:
+                      value:
+                        simple: benign
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d3dc82d3-79f6-4af1-8753-b8ad3e903b1b
+    type: title
+    task:
+      id: d3dc82d3-79f6-4af1-8753-b8ad3e903b1b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 13f8c2bf-ffef-4da5-8056-860a72cebcb3
+    type: title
+    task:
+      id: 13f8c2bf-ffef-4da5-8056-860a72cebcb3
+      version: -1
+      name: No DBotScore
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 5b96199d-7529-4889-8193-f0e4322c40b7
+    type: regular
+    task:
+      id: 5b96199d-7529-4889-8193-f0e4322c40b7
+      version: -1
+      name: Set severity to Unknown
+      description: Set a Severity to 'Unknown'.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      stringify: {}
+      value:
+        simple: Unknown
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8625b5f5-cbe4-4300-8bea-82c5b811cd47
+    type: regular
+    task:
+      id: 8625b5f5-cbe4-4300-8bea-82c5b811cd47
+      version: -1
+      name: Set severity to Low
+      description: Set a Severity to 'Low'.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      stringify: {}
+      value:
+        simple: Low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9e629b48-0629-4503-891d-33fe08e5ac6a
+    type: regular
+    task:
+      id: 9e629b48-0629-4503-891d-33fe08e5ac6a
+      version: -1
+      name: Set severity to Medium
+      description: Set a Severity to 'Medium'.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      stringify: {}
+      value:
+        simple: Medium
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 93e25fe7-88a4-48ab-8c95-4e76faf04f49
+    type: regular
+    task:
+      id: 93e25fe7-88a4-48ab-8c95-4e76faf04f49
+      version: -1
+      name: Set severity to High
+      description: Set a Severity to 'High'.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      stringify: {}
+      value:
+        simple: High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 4109eaf0-8d07-4af9-8c77-6b2102a810f5
+    type: condition
+    task:
+      id: 4109eaf0-8d07-4af9-8c77-6b2102a810f5
+      version: -1
+      name: Is GreyNoise enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "11"
+    scriptarguments:
+      brandname:
+        simple: GreyNoise
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d924160d-44cd-47b7-8a99-e296a110b3c5
+    type: regular
+    task:
+      id: d924160d-44cd-47b7-8a99-e296a110b3c5
+      version: -1
+      name: Get IP information from GreyNoise
+      description: Runs reputation on IPs.
+      script: GreyNoise|||ip
+      type: regular
+      iscommand: true
+      brand: GreyNoise
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        complex:
+          root: DBotScore
+          accessor: Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: abf496d8-d722-4f80-8d04-15527359c890
+    type: regular
+    task:
+      id: abf496d8-d722-4f80-8d04-15527359c890
+      version: -1
+      name: Set severity to Informational
+      description: Set a Severity to 'Low'.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Severities.DBotScoreSeverity
+      stringify: {}
+      value:
+        simple: Informational
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_7_Low": 0.46,
+      "3_8_Medium": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1505,
+        "width": 2110,
+        "x": 220,
+        "y": -60
+      }
+    }
+  }
+inputs:
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: Array of all indicators associated with the incident.
+  playbookInputQuery:
+outputs:
+- contextPath: Severities.DBotScoreSeverity
+  description: The severity level of the incident identified and set in the Calculate
+    Severity By GreyNoise Highest DBotScore playbook.
+  type: unknown
+quiet: true
+tests:
+- No tests
+fromversion: 5.0.0

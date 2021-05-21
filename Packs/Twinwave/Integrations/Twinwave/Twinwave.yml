@@ -47,7 +47,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Stealth mode cybersecurity startup
+description: TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
 display: Twinwave
 name: Twinwave
 script:
@@ -270,7 +270,7 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL
       type: Unknown
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: true
   runonce: false
   script: ''

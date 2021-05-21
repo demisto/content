@@ -1,0 +1,17 @@
+args:
+- description: The country code, like US or IS.
+  name: value
+  required: true
+comment: Translates a country code provided by Cyren products to a full country name (English). Uses ISO 3166-1 alpha-2 for the lookup.
+commonfields:
+  id: CyrenCountryLookup
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: CyrenCountryLookup
+script: '-'
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 6.0.0

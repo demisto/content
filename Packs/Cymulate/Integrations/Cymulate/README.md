@@ -6,7 +6,7 @@
 2. Search for Cymulate.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
-    * __x-token__
+    * __X-token__
     * __Fetch incidents__
     * __Incident type__
     * __Show only 'penatrated' incidents__

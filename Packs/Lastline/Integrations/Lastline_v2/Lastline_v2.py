@@ -23,9 +23,10 @@ class Client(BaseClient):
     SHA256_LEN = 64
     DEFAULT_THRESHOLD = 70
 
-    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False, credentials: Dict = None):
+    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False,
+                 credentials: Dict = None, threshold=None):
         self.command_params = api_params
-
+        self.threshold = threshold if threshold else Client.DEFAULT_THRESHOLD
         if credentials:
             self.credentials = {'username': credentials.get('identifier'), 'password': credentials.get('password')}
         else:
@@ -46,7 +47,7 @@ class Client(BaseClient):
             hash_type = hash_type_checker(arg)
             self.command_params[hash_type] = arg
             temp_result = self.http_request('/analysis/submit/file')
-            temp_human_readable, temp_context_entry = report_generator(temp_result)
+            temp_human_readable, temp_context_entry = report_generator(temp_result, self.threshold)
             human_readable += f'\n{temp_human_readable}'
             context_entry['Lastline'].append(temp_context_entry.get('Lastline'))
             context_entry['File'].append(temp_context_entry.get('File'))
@@ -57,7 +58,7 @@ class Client(BaseClient):
 
     def check_status(self):
         result = self.http_request('/analysis/get')
-        human_readable, context_entry = report_generator(result)
+        human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
 
     def get_report(self):
@@ -65,7 +66,7 @@ class Client(BaseClient):
         if 'data' in result and 'score' not in result['data']:
             uuid = self.command_params.get('uuid')
             raise DemistoException(f'task {uuid} is not ready')
-        human_readable, context_entry = report_generator(result)
+        human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
 
     def get_task_list(self):
@@ -96,12 +97,12 @@ class Client(BaseClient):
         self.command_params['md5'] = file_hash(file_params.get('path'))
         result = self.http_request('/analysis/submit/file',
                                    file_to_upload=file_params.get('path'))
-        human_readable, context_entry = report_generator(result)
+        human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
 
     def upload_url(self):
         result = self.http_request('/analysis/submit/url')
-        human_readable, context_entry = report_generator(result)
+        human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
 
     def test_module_command(self):
@@ -312,6 +313,7 @@ def main():
         'api_token': params.get('api_token')
     }
     api_params.update(demisto.args())
+    threshold = int(api_params.get('threshold', params.get('threshold', 70)))
 
     if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
@@ -320,7 +322,7 @@ def main():
         raise DemistoException('Please fill the credentials in the integration params'
                                ' - api key and token or username and password')
 
-    client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy, credentials=credentials)
+    client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy, credentials=credentials, threshold=threshold)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 

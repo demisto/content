@@ -1,0 +1,30 @@
+{
+ "id": "incident_cymulateattacktype",
+ "version": -1,
+ "modified": "2021-02-22T22:03:22.955313724+02:00",
+ "name": "Cymulate Attack Type",
+ "ownerOnly": false,
+ "cliName": "cymulateattacktype",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Cymulate"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

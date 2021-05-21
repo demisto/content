@@ -1,14 +1,54 @@
 {
     "name": "Shift Management",
-    "description": "Shift management related content",
+    "description": "This pack's purpose is to provide a single interface for all those essential elements of Shift management and handover in one place.",
     "support": "xsoar",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-01T08:30:00Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [],
-    "keywords": []
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [
+        "Incident Handling"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
+    "keywords": [
+        "Shift management",
+        "Handover",
+        "Assign",
+        "Reassign"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Zoom": {
+            "mandatory": false,
+            "display_name": "Zoom"
+        },
+        "Slack": {
+            "mandatory": false,
+            "display_name": "Slack"
+        },
+        "MicrosoftTeams": {
+            "mandatory": false,
+            "display_name": "MicrosoftTeams"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "CommonTypes",
+        "Zoom",
+        "Slack",
+        "MicrosoftTeams"
+    ]
 }

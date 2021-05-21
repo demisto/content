@@ -1,0 +1,23 @@
+name: Manage Contribution Board - Daily
+on:
+  schedule:
+    - cron:  '0 * * * *'
+jobs:
+  manage_project_board:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
+      - name: Get project manager
+        run: |
+          pip install --upgrade pip
+          pip install https://github.com/demisto/github-automation/archive/ContentFeatureBranch.zip\#egg\=github-automation
+      - name: Manage project
+        run: |
+          github-automation manage -c .github/project_conf/contributions.ini
+        env:
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_BOARD_UPDATE_TOKEN }}	

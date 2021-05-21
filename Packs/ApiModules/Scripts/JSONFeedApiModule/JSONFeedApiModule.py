@@ -3,7 +3,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import jmespath
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Callable
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -13,8 +13,8 @@ class Client:
     def __init__(self, url: str = '', credentials: dict = None,
                  feed_name_to_config: Dict[str, dict] = None, source_name: str = 'JSON',
                  extractor: str = '', indicator: str = 'indicator',
-                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: dict = None,
-                 tlp_color: Optional[str] = None, **_):
+                 insecure: bool = False, cert_file: str = None, key_file: str = None, headers: Union[dict, str] = None,
+                 tlp_color: Optional[str] = None, data: Union[str, dict] = None, **_):
         """
         Implements class for miners of JSON feeds over http/https.
         :param url: URL of the feed.
@@ -28,10 +28,14 @@ class Client:
         Hidden parameters:
         :param: cert_file: client certificate
         :param: key_file: private key of the client certificate
-        :param: headers: Header parameters are optional to specify a user-agent or an api-token
-        Example: headers = {'user-agent': 'my-app/0.0.1'} or Authorization: Bearer
-        (curl -H "Authorization: Bearer " "https://api-url.com/api/v1/iocs?first_seen_since=2016-1-1")
+        :param: headers: Header parameters are optional to specify a user-agent or an api-token.
+            Support also a multiline string where each line contains a header of the format 'Name: Value'
+            Example: headers = {'user-agent': 'my-app/0.0.1'} or "Authorization: Bearer"
+            (curl -H "Authorization: Bearer " "https://api-url.com/api/v1/iocs?first_seen_since=2016-1-1")
         :param tlp_color: Traffic Light Protocol color.
+        :param data: Data to post. If not specified will do a GET request. May also be passed as dict as
+            supported by requests. If passed as a string will set content-type to
+            application/x-www-form-urlencoded if not specified in the headers.
 
          Example:
             Example feed config:
@@ -57,15 +61,13 @@ class Client:
         self.url = url
         self.verify = not insecure
         self.auth: Optional[tuple] = None
-        self.headers = headers
+        self.headers = self.parse_headers(headers)
 
         if credentials:
             username = credentials.get('identifier', '')
             if username.startswith('_header:'):
                 header_name = username.split(':')[1]
                 header_value = credentials.get('password', '')
-                if not self.headers:
-                    self.headers = {}
                 self.headers[header_name] = header_value
             else:
                 password = credentials.get('password', '')
@@ -74,16 +76,57 @@ class Client:
 
         self.cert = (cert_file, key_file) if cert_file and key_file else None
         self.tlp_color = tlp_color
+        self.post_data = data
+
+        if isinstance(self.post_data, str):
+            content_type_header = 'Content-Type'
+            if content_type_header.lower() not in [k.lower() for k in self.headers.keys()]:
+                self.headers[content_type_header] = 'application/x-www-form-urlencoded'
+
+    @staticmethod
+    def parse_headers(headers: Optional[Union[dict, str]]) -> dict:
+        """Parse headers if passed as a string. Support a multiline string where each line contains a header
+        of the format 'Name: Value'
+
+        Args:
+            headers (Optional[Union[dict, str]]): either dict or string to parse
+
+        Returns:
+            dict: returns a headers dict or None
+        """
+        if not headers:
+            return {}
+        if isinstance(headers, str):
+            res = {}
+            for line in headers.splitlines():
+                if line.strip():  # ignore empty lines
+                    key_val = line.split(':', 1)
+                    res[key_val[0].strip()] = key_val[1].strip()
+            return res
+        else:
+            return headers
 
     def build_iterator(self, feed: dict, **kwargs) -> List:
-        r = requests.get(
-            url=feed.get('url', self.url),
-            verify=self.verify,
-            auth=self.auth,
-            cert=self.cert,
-            headers=self.headers,
-            **kwargs
-        )
+        url = feed.get('url', self.url)
+        if not self.post_data:
+            r = requests.get(
+                url=url,
+                verify=self.verify,
+                auth=self.auth,
+                cert=self.cert,
+                headers=self.headers,
+                **kwargs
+            )
+        else:
+            r = requests.post(
+                url=url,
+                data=self.post_data,
+                verify=self.verify,
+                auth=self.auth,
+                cert=self.cert,
+                headers=self.headers,
+                **kwargs
+            )
 
         try:
             r.raise_for_status()
@@ -116,7 +159,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     :param auto_detect: a boolean indicates if we should automatically detect the indicator_type
     :param limit: given only when get-indicators command is running. function will return number indicators as the limit
     """
-    indicators = []
+    indicators: List[dict] = []
     feeds_results = {}
     for feed_name, feed in client.feed_name_to_config.items():
         custom_build_iterator = feed.get('custom_build_iterator')
@@ -130,47 +173,85 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
 
     for service_name, items in feeds_results.items():
         feed_config = client.feed_name_to_config.get(service_name, {})
-        indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
-        indicator_type = feed_config.get('indicator_type', indicator_type)
+        indicator_field = str(feed_config.get('indicator') if feed_config.get('indicator') else 'indicator')
+        indicator_type = str(feed_config.get('indicator_type', indicator_type))
+        use_prefix_flat = bool(feed_config.get('flat_json_with_prefix', False))
+        mapping_function = feed_config.get('mapping_function', indicator_mapping)
+        handle_indicator_function = feed_config.get('handle_indicator_function', handle_indicator)
+
         for item in items:
-            mapping = feed_config.get('mapping')
             if isinstance(item, str):
                 item = {indicator_field: item}
-            indicator_value = item.get(indicator_field)
 
-            current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
-            if not current_indicator_type:
-                continue
+            indicators.extend(
+                handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
+                                          use_prefix_flat, feedTags, auto_detect, mapping_function))
 
-            indicator = {
-                'value': indicator_value,
-                'type': current_indicator_type,
-                'fields': {
-                    'tags': feedTags,
-                }
-            }
-
-            if client.tlp_color:
-                indicator['fields']['trafficlightprotocol'] = client.tlp_color
-
-            attributes = {'source_name': service_name, 'value': indicator_value,
-                          'type': current_indicator_type}
-
-            attributes.update(extract_all_fields_from_indicator(item, indicator_field))
-
-            if mapping:
-                for map_key in mapping:
-                    if map_key in attributes:
-                        indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
-
-            indicator['rawJSON'] = item
-
-            indicators.append(indicator)
-            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
+            if limit and len(indicators) >= limit:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
-
     return indicators
+
+
+def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
+    for map_key in mapping:
+        if map_key in attributes:
+            fields = mapping[map_key].split(".")
+            if len(fields) > 1:
+                if indicator['fields'].get(fields[0]):
+                    indicator['fields'][fields[0]][0].update({fields[1]: attributes.get(map_key)})
+                else:
+                    indicator['fields'][fields[0]] = [{fields[1]: attributes.get(map_key)}]
+            else:
+                indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
+
+
+def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
+                     indicator_type: str, indicator_field: str, use_prefix_flat: bool,
+                     feedTags: list, auto_detect: bool,
+                     mapping_function: Callable = indicator_mapping) -> List[dict]:
+    indicator_list = []
+    mapping = feed_config.get('mapping')
+    take_value_from_flatten = False
+    indicator_value = item.get(indicator_field)
+    if not indicator_value:
+        take_value_from_flatten = True
+    current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
+
+    if not current_indicator_type:
+        demisto.debug(f'Could not determine indicator type for value: {indicator_value} from field: {indicator_field}.'
+                      f' Skipping item: {item}')
+        return []
+
+    indicator = {
+        'type': current_indicator_type,
+        'fields': {
+            'tags': feedTags,
+        }
+    }
+
+    if client.tlp_color:
+        indicator['fields']['trafficlightprotocol'] = client.tlp_color
+
+    attributes = {'source_name': service_name, 'type': current_indicator_type}
+    attributes.update(extract_all_fields_from_indicator(item, indicator_field,
+                                                        flat_with_prefix=use_prefix_flat))
+
+    if take_value_from_flatten:
+        indicator_value = attributes.get(indicator_field)
+    indicator['value'] = indicator_value
+    attributes['value'] = indicator_value
+
+    if mapping:
+        mapping_function(mapping, indicator, attributes)
+
+    if feed_config.get('rawjson_include_indicator_type'):
+        item['_indicator_type'] = current_indicator_type
+
+    indicator['rawJSON'] = item
+
+    indicator_list.append(indicator)
+    return indicator_list
 
 
 def determine_indicator_type(indicator_type, auto_detect, value):
@@ -188,13 +269,12 @@ def determine_indicator_type(indicator_type, auto_detect, value):
     return indicator_type
 
 
-def extract_all_fields_from_indicator(indicator, indicator_key):
+def extract_all_fields_from_indicator(indicator: Dict, indicator_key: str, flat_with_prefix: bool = False) -> Dict:
     """Flattens the JSON object to create one dictionary of values
-
     Args:
         indicator(dict): JSON object that holds indicator full data.
         indicator_key(str): The key that holds the indicator value.
-
+        flat_with_prefix(bool): Indicates whether should add the inner json path as part of the keys in the flatten json
     Returns:
         dict. A dictionary of the fields in the JSON object.
     """
@@ -208,19 +288,26 @@ def extract_all_fields_from_indicator(indicator, indicator_key):
         else:
             fields[key] = value
 
-    def extract(json_element):
+    def extract(json_element, prefix_field="", use_prefix=False):
         if isinstance(json_element, dict):
             for key, value in json_element.items():
                 if value and isinstance(value, dict):
-                    extract(value)
+                    if use_prefix:
+                        extract(value, prefix_field=f"{prefix_field}_{key}" if prefix_field else key,
+                                use_prefix=use_prefix)
+                    else:
+                        extract(value)
                 elif key != indicator_key:
-                    insert_value_to_fields(key, value)
-
+                    if use_prefix:
+                        insert_value_to_fields(f"{prefix_field}_{key}" if prefix_field else key, value)
+                    else:
+                        insert_value_to_fields(key, value)
         elif json_element and indicator_key not in json_element:
             for key, value in json_element:
                 insert_value_to_fields(key, value)
 
-    extract(indicator)
+    extract(indicator, use_prefix=flat_with_prefix)
+
     return fields
 
 

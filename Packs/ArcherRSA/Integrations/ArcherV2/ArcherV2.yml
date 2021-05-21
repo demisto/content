@@ -3,7 +3,7 @@ commonfields:
   id: RSA Archer v2
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1/rsaarcher/)
+- display: Server URL (e.g., https://192.168.0.1/rsaarcher/)
   name: url
   required: true
   type: 0
@@ -53,7 +53,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: List of fields from the application to gets into the incident
+- display: List of fields from the application to get into the incident
   hidden: false
   name: fields_to_fetch
   required: false
@@ -67,7 +67,7 @@ configuration:
   required: false
   type: 8
 description: The RSA Archer GRC Platform provides a common foundation for managing
-  policies, controls, risks, assessments and deficiencies across lines of business.
+  policies, controls, risks, assessments, and deficiencies across lines of business.
 display: RSA Archer v2
 name: RSA Archer v2
 script:
@@ -214,6 +214,12 @@ script:
       name: fieldsToValues
       required: true
       secret: false
+    - default: false
+      description: The Level ID to use to create the record. If empty, the command will take the first level as default.
+      isArray: false
+      name: levelId
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new content record in the given application.
     execution: false
@@ -252,6 +258,12 @@ script:
       isArray: false
       name: contentId
       required: true
+      secret: false
+    - default: false
+      description: The Level ID to use to update the record. If empty, the command will take the first level as default.
+      isArray: false
+      name: levelId
+      required: false
       secret: false
     deprecated: false
     description: Updates an existing content record in the given application.
@@ -325,7 +337,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of the application which we want to upload the file to.
+      description: ID of the application to upload the file to.
       isArray: false
       name: applicationId
       required: false
@@ -489,7 +501,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fields to fetch from the the application.
+      description: Fields to fetch from the application.
       isArray: false
       name: fieldsToGet
       required: false
@@ -505,6 +517,18 @@ script:
       - 'True'
       - 'False'
       required: true
+      secret: false
+    - name: isDescending
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to order by descending order.
+    - default: false
+      description: The Level ID to use for searching. This argument is relevant when fullData is True. If empty, the command will take the first level as default.
+      isArray: false
+      name: levelId
+      required: false
       secret: false
     deprecated: false
     description: Searches for records in the given application.
@@ -542,7 +566,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.4.18682
   feed: false
   isfetch: true
   longRunning: false
