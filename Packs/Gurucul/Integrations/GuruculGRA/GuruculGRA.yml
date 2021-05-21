@@ -875,6 +875,71 @@ script:
       type: string
     description: Closing an anomaly or anomalies within a case and updating the anomaly
       status as Closed / Risk Managed / Model Reviewed.
+  - name: gra-investigate-anomaly-summary
+    arguments:
+    - name: modelName
+      required: true
+      description: Model Name
+    - name: fromDate
+      description: From Date ( yyyy-MM-dd )
+    - name: toDate
+      description: To Date ( yyyy-MM-dd )
+    outputs:
+    - contextPath: Gra.Investigate.Anomaly.Summary.Analytical Features
+      description: Analytical Features
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.Entity Count
+      description: Entity Count
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.Resource Count
+      description: Resource Count
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.Records
+      description: Records
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyBaseline
+      description: Anomaly Baseline
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyLastCatch
+      description: Anomaly Last Catch
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.executionDays
+      description: Execution Days
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.chainDetails
+      description: Chain Details
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.resourceName
+      description: Resource Name
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.type
+      description: Type
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.value
+      description: Value
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalousActivity
+      description: Anomalous Activity
+      type: number
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyName
+      description: Anomaly Name
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.classifier
+      description: Classifier
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyFirstCatch
+      description: Anomaly First Catch
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.anomalyDescription
+      description: Anomaly Description
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.Similar Template Anomalies
+      description: Similar Template Anomalies
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.Entities Flagged
+      description: Entities Flagged
+      type: number
+    description: Retrieve detailed anomaly summary of specified anomaly name.
   dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   runonce: false

@@ -946,3 +946,88 @@ Closing an anomaly or anomalies within a case and updating the anomaly status as
 
 #### Human Readable Output
 
+
+### gra-investigate-anomaly-summary
+***
+Retrieve detailed anomaly summary of specified anomaly name.
+
+#### Base Command
+
+`gra-investigate-anomaly-summary`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| modelName | Model Name | Required | 
+| fromDate | From Date ( yyyy-MM-dd ) | Optional | 
+| toDate | To Date ( yyyy-MM-dd ) | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Investigate.Anomaly.Summary.Analytical Features | String | Analytical Features  | 
+| Gra.Investigate.Anomaly.Summary.Entity Count | String | Entity Count | 
+| Gra.Investigate.Anomaly.Summary.Resource Count | String | Resource Count | 
+| Gra.Investigate.Anomaly.Summary.Records | String | Records | 
+| Gra.Investigate.Anomaly.Summary.anomalyBaseline | String | Anomaly Baseline | 
+| Gra.Investigate.Anomaly.Summary.anomalyLastCatch | String | Anomaly Last Catch | 
+| Gra.Investigate.Anomaly.Summary.executionDays | String | Execution Days | 
+| Gra.Investigate.Anomaly.Summary.chainDetails | String | Chain Details | 
+| Gra.Investigate.Anomaly.Summary.resourceName | String | resourceName | 
+| Gra.Investigate.Anomaly.Summary.type | String | type | 
+| Gra.Investigate.Anomaly.Summary.value | String | value | 
+| Gra.Investigate.Anomaly.Summary.anomalousActivity | Number | anomalousActivity | 
+| Gra.Investigate.Anomaly.Summary.anomalyName | String | anomalyName | 
+| Gra.Investigate.Anomaly.Summary.classifier | String | classifier | 
+| Gra.Investigate.Anomaly.Summary.anomalyFirstCatch | String | anomalyFirstCatch | 
+| Gra.Investigate.Anomaly.Summary.anomalyDescription | String | anomalyDescription | 
+| Gra.Investigate.Anomaly.Summary.Similar Template Anomalies | String | Similar Template Anomalies | 
+| Gra.Investigate.Anomaly.Summary.Entities Flagged | Number | Entities Flagged |  
+
+
+#### Command Example
+```!gra-investigate-anomaly-summary modelName=ModelName```
+
+#### Context Example
+```
+{
+  "Analytical Features": {
+    "eventdesc": 8
+  },
+  "Entity Count": "466",
+  "Resource Count": "4",
+  "Records": {
+    "anomalyBaseline": "Baseline period is not configured.",
+    "anomalyLastCatch": "2020-12-06 10:00:59",
+    "executionDays": "null",
+    "chainDetails": [
+      {
+        "resourceName": "resourceName",
+        "type": "model",
+        "value": "modelName"
+      }
+    ],
+    "anomalousActivity": 0,
+    "anomalyName": "modelName",
+    "classifier": "Categories -> Categories Name, Categories -> Default, Resources -> resourceName",
+    "anomalyFirstCatch": "2020-11-08 12:15:00",
+    "anomalyDescription": "This template can be used to create models using the saved search query."
+  },
+  "Similar Template Anomalies": {
+    "anomaly1": 442,
+    "anomaly2": 4,
+    "anomaly3": 4,
+    "anomaly4": 21,
+    "anomaly5": 8,
+    "anomaly6": 1
+  },
+  "Entities Flagged": 0
+}
+```
+
+#### Human Readable Output
+
+
+

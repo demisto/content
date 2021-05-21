@@ -348,6 +348,15 @@ def main() -> None:
                            '","caseComment":"' + demisto.args().get('caseComment') + '"}'
             fetch_post_records(client, cases_url, 'Gra.Cases.Action.Anomaly', 'caseId', params, post_url)
 
+        elif demisto.command() == 'gra-investigate-anomaly-summary':
+            if demisto.args().get('fromDate') is not None and demisto.args().get('toDate') is not None:
+                investigateAnomaly_url = '/investigateAnomaly/anomalySummary/' + demisto.args().get('modelName') + \
+                                         '?fromDate=' + demisto.args().get('fromDate') + ' 00:00:00&toDate=' +\
+                                         demisto.args().get('toDate') + ' 23:59:59'
+            else:
+                investigateAnomaly_url = '/investigateAnomaly/anomalySummary/' + demisto.args().get('modelName')
+            fetch_records(client, investigateAnomaly_url, 'Gra.Investigate.Anomaly.Summary', 'modelId', params)
+
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
