@@ -1,0 +1,11 @@
+{
+  "id": "detchart",
+  "name": "Confluera Detections Data",
+  "dataType": "scripts",
+  "widgetType": "column",
+  "query": "ConflueraDetectionsData",
+  "version": -1,
+  "description": "Logs detections data ( detection vs risk-contribution )",
+  "isPredefined": true,
+  "fromVersion": "6.0.0"
+}

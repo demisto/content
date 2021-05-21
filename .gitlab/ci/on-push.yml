@@ -7,6 +7,22 @@
   - echo "======= Download configuration ========"
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
 
+trigger-private-build:
+  needs: []
+  stage: unittests-and-validations
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$SKIP_PRIVATE_BUILD == "true"'
+      when: never
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
+    - if: '$NIGHTLY'
+  script:
+    - echo "====Trigger Private Build===="
+    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 create-instances:
   extends:
@@ -76,15 +92,14 @@ create-instances:
         ./Tests/scripts/upload_artifacts.sh
       fi
 
-
 .test_content_on_server_instances_base:
   extends:
     - .default-job-settings
     - .push-rule
   needs: ["create-instances"]
   stage: run-instances
-  dependencies:
-    - create-instances
+  variables:
+    DESTROY_INSTANCES: "true"
   script:
     - *download_demisto_conf
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
@@ -100,20 +115,11 @@ create-instances:
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
-    - exit $EXIT_CODE
-  after_script:
-    - source ./venv/bin/activate
-    - source $BASH_ENV
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
-    - |
-      if [ $INSTANCE_ROLE == "Server Master" ]; then
-        ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ARTIFACTS_FOLDER/env_results.json
-      fi
-    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-
+    - exit $EXIT_CODE
 
 server_5_0:
   extends: .test_content_on_server_instances_base
@@ -142,3 +148,21 @@ server_master:
     - if: '$NIGHTLY'
   variables:
     INSTANCE_ROLE: "Server Master"
+    SLACK_TEST_TYPE: "test_playbooks"
+    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+    SLACK_ONLY_IF: "true"
+
+run-validations:
+  extends:
+    - .run-validations
+    - .push-rule
+
+# Uncomment when docker in docker will work
+# run-unittests-and-lint:
+#   extends:
+#     - .run-unittests-and-lint
+#     - .push-rule
+#   variables:
+#     SLACK_TEST_TYPE: "unittests"
+#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
+#     SLACK_ONLY_IF: $BUCKET_UPLOAD
