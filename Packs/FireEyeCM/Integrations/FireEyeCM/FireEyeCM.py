@@ -27,7 +27,6 @@ class Client(BaseClient):
         resp = self._http_request(method='POST', url_suffix='auth/login', resp_type='response')
         if resp.status_code != 200:
             raise DemistoException(f'Token request failed with status code {resp.status_code}. message: {str(resp)}')
-        # raise DemistoException(str(resp.headers['X-FeApi-Token']))
         return resp.headers['X-FeApi-Token']
 
     @logger
@@ -484,6 +483,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         }
     else:
         next_run = last_run
+    demisto.info(f'{INTEGRATION_NAME} executing fetch with: {str(next_run.get("time"))}')
 
     raw_response = client.get_alerts_request(request_params={
         'start_time': to_fe_datetime_converter(first_fetch),
