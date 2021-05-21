@@ -510,7 +510,7 @@ tasks:
       version: -1
       name: Is the Phishing URL targeting specific Brand?
       description: Analyzes the forensic data to detect brand impersonation attacks. 
-        This script uses the HRMC brand as an example, please modify the attributes 
+        This script uses the HMRC brand as an example, please modify the attributes 
         associated with your company’s brand.
       scriptName: BrandImpersonationDetection
       type: regular
@@ -650,7 +650,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "24"
     separatecontext: false
     view: |-
       {
