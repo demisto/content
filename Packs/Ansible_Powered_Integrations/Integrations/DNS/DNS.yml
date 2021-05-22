@@ -21,6 +21,7 @@ configuration:
   type: 4
 description: Manage DNS records using NSUpdate
 display: DNS
+fromversion: 6.0.0
 name: DNS
 script:
   commands:
@@ -32,7 +33,7 @@ script:
       predefined:
       - present
       - absent
-    - defaultValue: "53"
+    - defaultValue: '53'
       description: Use this TCP port when connecting to `server`.
       name: port
     - auto: PREDEFINED
@@ -47,10 +48,11 @@ script:
       - hmac-sha256
       - hmac-sha384
       - hmac-sha512
-    - description: |-
-        DNS record will be modified on this `zone`.
+    - description: 'DNS record will be modified on this `zone`.
+
         When omitted DNS will be queried to attempt finding the correct zone.
-        Starting with Ansible 2.7 this parameter is optional.
+
+        Starting with Ansible 2.7 this parameter is optional.'
       name: zone
     - description: Sets the DNS record to modify. When zone is omitted this has to
         be absolute (ending with a dot).
@@ -59,7 +61,7 @@ script:
     - defaultValue: A
       description: Sets the record type.
       name: type
-    - defaultValue: "3600"
+    - defaultValue: '3600'
       description: Sets the record TTL.
       name: ttl
     - description: Sets the record value.
@@ -72,13 +74,35 @@ script:
       predefined:
       - tcp
       - udp
-    description: Manage DNS records.
+    description: "Manage DNS records.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nsupdate_module.html"
     name: dns-nsupdate
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+    outputs:
+    - contextPath: DNS.nsupdate.changed
+      description: If module has modified record
+      type: string
+    - contextPath: DNS.nsupdate.record
+      description: DNS record
+      type: string
+    - contextPath: DNS.nsupdate.ttl
+      description: DNS record TTL
+      type: number
+    - contextPath: DNS.nsupdate.type
+      description: DNS record type
+      type: string
+    - contextPath: DNS.nsupdate.value
+      description: DNS record value(s)
+      type: unknown
+    - contextPath: DNS.nsupdate.zone
+      description: DNS record zone
+      type: string
+    - contextPath: DNS.nsupdate.dns_rc
+      description: dnspython return code
+      type: number
+    - contextPath: DNS.nsupdate.dns_rc_str
+      description: dnspython return code (string representation)
+      type: string
+  dockerimage: demisto/ansible-runner:1.0.0.19017
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)

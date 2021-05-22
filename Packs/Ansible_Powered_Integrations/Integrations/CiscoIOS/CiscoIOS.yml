@@ -11,20 +11,21 @@ configuration:
   type: 9
 - additionalinfo: The default port to use if one is not specified in the commands
     `host` argument.
-  defaultvalue: "22"
+  defaultvalue: 22
   display: Default SSH Port
   name: port
   required: true
   type: 0
 - additionalinfo: If multiple hosts are specified in a command, how many hosts should
     be interacted with concurrently.
-  defaultvalue: "4"
+  defaultvalue: '4'
   display: Concurrecy Factor
   name: concurrency
   required: true
   type: 0
 description: Cisco IOS Platform management over SSH
 display: Cisco IOS
+fromversion: 6.0.0
 name: CiscoIOS
 script:
   commands:
@@ -51,7 +52,6 @@ script:
         Requires `state=present`.
       name: text
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specifies whether or not the configuration is present in the current
         devices active running configuration.
@@ -59,8 +59,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage multiline banners on Cisco IOS devices
+    description: "Manage multiline banners on Cisco IOS devices\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html"
     name: ios-banner
+    outputs:
+    - contextPath: CiscoIOS.ios_banner.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -71,22 +76,35 @@ script:
     - description: Specifies the BGP related configuration.
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merge
-      description: |-
-        Specifies the operation to be performed on the BGP process configured on the device.
-        In case of merge, the input configuration will be merged with the existing BGP configuration on the device.
-        In case of replace, if there is a diff between the existing configuration and the input configuration, the existing configuration will be replaced by the input configuration for every option that has the diff.
-        In case of override, all the existing BGP configuration will be removed from the device and replaced with the input configuration.
-        In case of delete the existing BGP configuration will be removed from the device.
+      description: 'Specifies the operation to be performed on the BGP process configured
+        on the device.
+
+        In case of merge, the input configuration will be merged with the existing
+        BGP configuration on the device.
+
+        In case of replace, if there is a diff between the existing configuration
+        and the input configuration, the existing configuration will be replaced by
+        the input configuration for every option that has the diff.
+
+        In case of override, all the existing BGP configuration will be removed from
+        the device and replaced with the input configuration.
+
+        In case of delete the existing BGP configuration will be removed from the
+        device.'
       name: operation
       predefined:
       - merge
       - replace
       - override
       - delete
-    description: Configure global BGP protocol settings on Cisco IOS.
+    description: "Configure global BGP protocol settings on Cisco IOS.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_bgp_module.html"
     name: ios-bgp
+    outputs:
+    - contextPath: CiscoIOS.ios_bgp.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -109,7 +127,6 @@ script:
         fails. See examples.
       name: wait_for
     - auto: PREDEFINED
-      default: false
       defaultValue: all
       description: The `match` argument is used in conjunction with the `wait_for`
         argument to specify the match policy.  Valid values are `all` or `any`.  If
@@ -119,20 +136,29 @@ script:
       predefined:
       - any
       - all
-    - default: false
-      defaultValue: "10"
+    - defaultValue: '10'
       description: Specifies the number of retries a command should by tried before
         it is considered failed. The command is run on the target device every retry
         and evaluated against the `wait_for` conditions.
       name: retries
-    - default: false
-      defaultValue: "1"
+    - defaultValue: '1'
       description: Configures the interval in seconds to wait between retries of the
         command. If the command does not pass the specified conditions, the interval
         indicates how long to wait before trying the command again.
       name: interval
-    description: Run commands on remote devices running Cisco IOS
+    description: "Run commands on remote devices running Cisco IOS\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html"
     name: ios-command
+    outputs:
+    - contextPath: CiscoIOS.ios_command.stdout
+      description: The set of responses from the commands
+      type: unknown
+    - contextPath: CiscoIOS.ios_command.stdout_lines
+      description: The value of stdout split into a list
+      type: unknown
+    - contextPath: CiscoIOS.ios_command.failed_conditions
+      description: The list of conditionals that have failed
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -167,7 +193,6 @@ script:
         set.
       name: after
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the matching of the
         set of commands against the current device config.  If match is set to `line`,
@@ -183,7 +208,6 @@ script:
       - exact
       - none
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the configuration on
         the device. If the replace argument is set to `line` then the modified lines
@@ -194,14 +218,12 @@ script:
       predefined:
       - line
       - block
-    - default: false
-      defaultValue: '@'
+    - defaultValue: '@'
       description: This argument is used when pushing a multiline configuration element
         to the IOS device.  It specifies the character to use as the delimiting character.  This
         only applies to the configuration action.
       name: multiline_delimiter
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: This argument will cause the module to create a full backup of
         the current `running-config` from the remote device before any changes are
         made. If the `backup_options` value is not given, the backup file is written
@@ -216,14 +238,12 @@ script:
         argument allows the implementer to pass in the configuration to use as the
         base config for comparison.
       name: running_config
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: This argument specifies whether or not to collect all defaults
         when getting the remote device running config.  When enabled, the module will
         get the current config by issuing the command `show running-config all`.
       name: defaults
     - auto: PREDEFINED
-      default: false
       defaultValue: never
       description: When changes are made to the device running-configuration, the
         changes are not copied to non-volatile storage by default.  Using this argument
@@ -242,11 +262,19 @@ script:
       - modified
       - changed
     - auto: PREDEFINED
-      description: |-
-        When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources.
-        When this option is configure as `startup`, the module will return the diff of the running-config against the startup-config.
-        When this option is configured as `intended`, the module will return the diff of the running-config against the configuration provided in the `intended_config` argument.
-        When this option is configured as `running`, the module will return the before and after diff of the running-config with respect to any changes made to the device configuration.
+      description: 'When using the `ansible-playbook --diff` command line argument
+        the module can generate diffs against different sources.
+
+        When this option is configure as `startup`, the module will return the diff
+        of the running-config against the startup-config.
+
+        When this option is configured as `intended`, the module will return the diff
+        of the running-config against the configuration provided in the `intended_config`
+        argument.
+
+        When this option is configured as `running`, the module will return the before
+        and after diff of the running-config with respect to any changes made to the
+        device configuration.'
       name: diff_against
       predefined:
       - running
@@ -269,8 +297,31 @@ script:
         to `yes`, if `backup` is set to `no` this option will be silently ignored.
       isArray: true
       name: backup_options
-    description: Manage Cisco IOS configuration sections
+    description: "Manage Cisco IOS configuration sections\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_config_module.html"
     name: ios-config
+    outputs:
+    - contextPath: CiscoIOS.ios_config.updates
+      description: The set of commands that will be pushed to the remote device
+      type: unknown
+    - contextPath: CiscoIOS.ios_config.commands
+      description: The set of commands that will be pushed to the remote device
+      type: unknown
+    - contextPath: CiscoIOS.ios_config.backup_path
+      description: The full path to the backup file
+      type: string
+    - contextPath: CiscoIOS.ios_config.filename
+      description: The name of the backup file
+      type: string
+    - contextPath: CiscoIOS.ios_config.shortname
+      description: The full path to the backup file excluding the timestamp
+      type: string
+    - contextPath: CiscoIOS.ios_config.date
+      description: The date extracted from the backup file name
+      type: string
+    - contextPath: CiscoIOS.ios_config.time
+      description: The time extracted from the backup file name
+      type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -278,13 +329,16 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: '!config'
-      description: |-
-        When supplied, this argument restricts the facts collected to a given subset.
-        Possible values for this argument include `all`, `min`, `hardware`, `config`, and `interfaces`.
+    - defaultValue: '!config'
+      description: 'When supplied, this argument restricts the facts collected to
+        a given subset.
+
+        Possible values for this argument include `all`, `min`, `hardware`, `config`,
+        and `interfaces`.
+
         Specify a list of values to include a larger subset.
-        Use a value with an initial `!` to collect all facts except that subset.
+
+        Use a value with an initial `!` to collect all facts except that subset.'
       name: gather_subset
     - description: When supplied, this argument will restrict the facts collected
         to a given subset. Possible values for this argument include all and the resources
@@ -294,8 +348,79 @@ script:
         'vlans', 'lag_interfaces', 'lacp', 'lacp_interfaces', 'lldp_global', 'lldp_interfaces',
         'l3_interfaces'.
       name: gather_network_resources
-    description: Collect facts from remote devices running Cisco IOS
+    description: "Collect facts from remote devices running Cisco IOS\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html"
     name: ios-facts
+    outputs:
+    - contextPath: CiscoIOS.ios_facts.ansible_net_gather_subset
+      description: The list of fact subsets collected from the device
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_gather_network_resources
+      description: The list of fact for network resource subsets collected from the
+        device
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_model
+      description: The model name returned from the device
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_serialnum
+      description: The serial number of the remote device
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_version
+      description: The operating system version running on the remote device
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_iostype
+      description: The operating system type (IOS or IOS-XE) running on the remote
+        device
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_hostname
+      description: The configured hostname of the device
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_image
+      description: The image file the device is running
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_stacked_models
+      description: The model names of each device in the stack
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_stacked_serialnums
+      description: The serial numbers of each device in the stack
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_api
+      description: The name of the transport
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_python_version
+      description: The Python version Ansible controller is using
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_filesystems
+      description: All file system names available on the device
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_filesystems_info
+      description: A hash of all file systems containing info about each file system
+        (e.g. free and total space)
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_memfree_mb
+      description: The available free memory on the remote device in Mb
+      type: number
+    - contextPath: CiscoIOS.ios_facts.ansible_net_memtotal_mb
+      description: The total memory on the remote device in Mb
+      type: number
+    - contextPath: CiscoIOS.ios_facts.ansible_net_config
+      description: The current active config from the device
+      type: string
+    - contextPath: CiscoIOS.ios_facts.ansible_net_all_ipv4_addresses
+      description: All IPv4 addresses configured on the device
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_all_ipv6_addresses
+      description: All IPv6 addresses configured on the device
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_interfaces
+      description: A hash of all interfaces running on the system
+      type: unknown
+    - contextPath: CiscoIOS.ios_facts.ansible_net_neighbors
+      description: '
+
+        The list of CDP and LLDP neighbors from the remote device. If both, CDP and
+        LLDP neighbor data is present on one port, CDP is preferred.'
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -307,7 +432,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -316,8 +440,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manages interface attributes of Cisco IOS network devices
+    description: "Manages interface attributes of Cisco IOS network devices\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html"
     name: ios-interfaces
+    outputs:
+    - contextPath: CiscoIOS.ios_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_interfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -329,7 +464,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -338,8 +472,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage Layer-2 interface on Cisco IOS devices.
+    description: "Manage Layer-2 interface on Cisco IOS devices.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_l2_interfaces_module.html"
     name: ios-l2-interfaces
+    outputs:
+    - contextPath: CiscoIOS.ios_l2_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_l2_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_l2_interfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -351,7 +496,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -360,8 +504,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage Layer-3 interface on Cisco IOS devices.
+    description: "Manage Layer-3 interface on Cisco IOS devices.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_l3_interfaces_module.html"
     name: ios-l3-interfaces
+    outputs:
+    - contextPath: CiscoIOS.ios_l3_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_l3_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_l3_interfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -373,7 +528,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -381,9 +535,19 @@ script:
       - merged
       - replaced
       - deleted
-    description: Manage Global Link Aggregation Control Protocol (LACP) on Cisco IOS
-      devices.
+    description: "Manage Global Link Aggregation Control Protocol (LACP) on Cisco\
+      \ IOS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_module.html"
     name: ios-lacp
+    outputs:
+    - contextPath: CiscoIOS.ios_lacp.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lacp.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lacp.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -395,7 +559,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -404,9 +567,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage Link Aggregation Control Protocol (LACP) on Cisco IOS devices
-      interface.
+    description: "Manage Link Aggregation Control Protocol (LACP) on Cisco IOS devices\
+      \ interface.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_interfaces_module.html"
     name: ios-lacp-interfaces
+    outputs:
+    - contextPath: CiscoIOS.ios_lacp_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lacp_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lacp_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -418,7 +591,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -427,8 +599,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage Link Aggregation on Cisco IOS devices.
+    description: "Manage Link Aggregation on Cisco IOS devices.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lag_interfaces_module.html"
     name: ios-lag-interfaces
+    outputs:
+    - contextPath: CiscoIOS.ios_lag_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lag_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lag_interfaces.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -444,7 +627,7 @@ script:
       name: mode
       predefined:
       - active
-      - "on"
+      - 'on'
       - passive
       - auto
       - desirable
@@ -453,19 +636,22 @@ script:
     - description: List of link aggregation definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the link aggregation group.
       name: state
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Purge links not defined in the `aggregate` parameter.
       name: purge
-    description: Manage link aggregation groups on Cisco IOS network devices
+    description: "Manage link aggregation groups on Cisco IOS network devices\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_linkagg_module.html"
     name: ios-linkagg
+    outputs:
+    - contextPath: CiscoIOS.ios_linkagg.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -474,7 +660,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the LLDP configuration. If value is `present` lldp will
         be enabled else if it is `absent` it will be disabled.
@@ -482,8 +667,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage LLDP configuration on Cisco IOS network devices.
+    description: "Manage LLDP configuration on Cisco IOS network devices.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_module.html"
     name: ios-lldp
+    outputs:
+    - contextPath: CiscoIOS.ios_lldp.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -495,7 +685,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -503,9 +692,19 @@ script:
       - merged
       - replaced
       - deleted
-    description: Configure and manage Link Layer Discovery Protocol(LLDP) attributes
-      on IOS platforms.
+    description: "Configure and manage Link Layer Discovery Protocol(LLDP) attributes\
+      \ on IOS platforms.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_global_module.html"
     name: ios-lldp-global
+    outputs:
+    - contextPath: CiscoIOS.ios_lldp_global.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lldp_global.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lldp_global.commands
+      description: The set of commands pushed to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -517,7 +716,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -526,9 +724,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage link layer discovery protocol (LLDP) attributes of interfaces
-      on Cisco IOS devices.
+    description: "Manage link layer discovery protocol (LLDP) attributes of interfaces\
+      \ on Cisco IOS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_interfaces_module.html"
     name: ios-lldp-interfaces
+    outputs:
+    - contextPath: CiscoIOS.ios_lldp_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lldp_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_lldp_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -540,25 +748,23 @@ script:
       description: Destination of the logs.
       name: dest
       predefined:
-      - "on"
+      - 'on'
       - host
       - console
       - monitor
       - buffered
       - trap
-    - description: |-
-        The hostname or IP address of the destination.
-        Required when `dest=host`.
+    - description: 'The hostname or IP address of the destination.
+
+        Required when `dest=host`.'
       name: name
-    - default: false
-      defaultValue: "4096"
+    - defaultValue: '4096'
       description: Size of buffer. The acceptable value is in range from 4096 to 4294967295
         bytes.
       name: size
     - description: Set logging facility.
       name: facility
     - auto: PREDEFINED
-      default: false
       defaultValue: debugging
       description: Set logging severity levels.
       name: level
@@ -574,15 +780,19 @@ script:
     - description: List of logging definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the logging configuration.
       name: state
       predefined:
       - present
       - absent
-    description: Manage logging on network devices
+    description: "Manage logging on network devices\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/ios_logging_module.html"
     name: ios-logging
+    outputs:
+    - contextPath: CiscoIOS.ios_logging.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -596,28 +806,30 @@ script:
       name: source_int
     - description: ACL for peer/server access restricition.
       name: acl
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Enable NTP logs. Data type boolean.
       name: logging
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Enable NTP authentication. Data type boolean.
       name: auth
-    - description: md5 NTP authentication key of tye 7.
+    - description: md5 NTP authentication key of type 7.
       name: auth_key
     - description: auth_key id. Data type string
       name: key_id
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages core NTP configuration.
+    description: "Manages core NTP configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/ios_ntp_module.html"
     name: ios-ntp
+    outputs:
+    - contextPath: CiscoIOS.ios_ntp.commands
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -625,8 +837,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "5"
+    - defaultValue: '5'
       description: Number of packets to send.
       name: count
     - description: The IP Address or hostname (resolvable by switch) of the remote
@@ -636,19 +847,34 @@ script:
     - description: The source IP Address.
       name: source
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines if the expected result is success or fail.
       name: state
       predefined:
       - absent
       - present
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: The VRF to use for forwarding.
       name: vrf
-    description: Tests reachability using ping from Cisco IOS network devices
+    description: "Tests reachability using ping from Cisco IOS network devices\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_ping_module.html"
     name: ios-ping
+    outputs:
+    - contextPath: CiscoIOS.ios_ping.commands
+      description: Show the command sent.
+      type: unknown
+    - contextPath: CiscoIOS.ios_ping.packet_loss
+      description: Percentage of packets lost.
+      type: string
+    - contextPath: CiscoIOS.ios_ping.packets_rx
+      description: Packets successfully received.
+      type: number
+    - contextPath: CiscoIOS.ios_ping.packets_tx
+      description: Packets successfully transmitted.
+      type: number
+    - contextPath: CiscoIOS.ios_ping.rtt
+      description: Show RTT stats.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -677,15 +903,19 @@ script:
     - description: List of static route definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the static route configuration.
       name: state
       predefined:
       - present
       - absent
-    description: Manage static IP routes on Cisco IOS network devices
+    description: "Manage static IP routes on Cisco IOS network devices\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_static_route_module.html"
     name: ios-static-route
+    outputs:
+    - contextPath: CiscoIOS.ios_static_route.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -717,7 +947,6 @@ script:
         lookups.  This argument accepts either a list of DNS servers See examples.
       name: name_servers
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the configuration values in the device's current active
         configuration.  When set to `present`, the values should be configured in
@@ -727,8 +956,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage the system attributes on Cisco IOS devices
+    description: "Manage the system attributes on Cisco IOS devices\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_system_module.html"
     name: ios-system
+    outputs:
+    - contextPath: CiscoIOS.ios_system.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -749,7 +983,6 @@ script:
         note that this option is not same as `provider password`.
       name: configured_password
     - auto: PREDEFINED
-      default: false
       defaultValue: always
       description: Since passwords are encrypted in the device running config, this
         argument will instruct the module when to change the password.  When set to
@@ -760,7 +993,6 @@ script:
       - on_create
       - always
     - auto: PREDEFINED
-      default: false
       defaultValue: secret
       description: This argument determines whether a 'password' or 'secret' will
         be configured.
@@ -778,21 +1010,20 @@ script:
         The argument accepts a string value defining the view name. This argument
         does not check if the view has been configured on the device.
       name: view
-    - description: |-
-        Specifies one or more SSH public key(s) to configure for the given username.
-        This argument accepts a valid SSH key value.
+    - description: 'Specifies one or more SSH public key(s) to configure for the given
+        username.
+
+        This argument accepts a valid SSH key value.'
       name: sshkey
     - description: Defines the username without assigning a password. This will allow
         the user to login to the system without being authenticated by a password.
       name: nopassword
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Instructs the module to consider the resource definition absolute.
         It will remove any previously configured usernames on the device with the
         exception of the `admin` user (the current defined set of users).
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Configures the state of the username definition as it relates to
         the device operational configuration. When set to `present`, the username(s)
@@ -802,8 +1033,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage the aggregate of local users on Cisco IOS device
+    description: "Manage the aggregate of local users on Cisco IOS device\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html"
     name: ios-user
+    outputs:
+    - contextPath: CiscoIOS.ios_user.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -815,7 +1051,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -824,8 +1059,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage VLANs on Cisco IOS devices.
+    description: "Manage VLANs on Cisco IOS devices.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/ios_vlans_module.html"
     name: ios-vlans
+    outputs:
+    - contextPath: CiscoIOS.ios_vlans.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoIOS.ios_vlans.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoIOS.ios_vlans.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -858,18 +1104,15 @@ script:
         does not match with the operational state of vrf interfaces on device it will
         result in failure.
       name: associated_interfaces
-    - default: false
-      defaultValue: "10"
+    - defaultValue: '10'
       description: Time in seconds to wait before checking for the operational state
         on remote device.
       name: delay
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Instructs the module to consider the VRF definition absolute.  It
         will remove any previously configured VRFs on the device.
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Configures the state of the VRF definition as it relates to the
         device operational configuration.  When set to `present`, the VRF should be
@@ -906,13 +1149,24 @@ script:
     - description: Adds an import list of extended route target communities in address-family
         configuration submode to the VRF.
       name: route_import_ipv6
-    description: Manage the collection of VRF definitions on Cisco IOS devices
+    description: "Manage the collection of VRF definitions on Cisco IOS devices\n\
+      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_vrf_module.html"
     name: ios-vrf
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+    outputs:
+    - contextPath: CiscoIOS.ios_vrf.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+    - contextPath: CiscoIOS.ios_vrf.start
+      description: The time the job started
+      type: string
+    - contextPath: CiscoIOS.ios_vrf.end
+      description: The time the job ended
+      type: string
+    - contextPath: CiscoIOS.ios_vrf.delta
+      description: The time elapsed to perform all operations
+      type: string
+  dockerimage: demisto/ansible-runner:1.0.0.19017
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)

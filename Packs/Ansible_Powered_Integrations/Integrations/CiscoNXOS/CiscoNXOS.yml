@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: CiscoNX-OS
+  id: CiscoNXOS
   version: -1
 configuration:
 - additionalinfo: The credentials to associate with the instance. SSH keys can be
@@ -11,21 +11,22 @@ configuration:
   type: 9
 - additionalinfo: The default port to use if one is not specified in the commands
     `host` argument.
-  defaultvalue: "22"
+  defaultvalue: 22
   display: Default SSH Port
   name: port
   required: true
   type: 0
 - additionalinfo: If multiple hosts are specified in a command, how many hosts should
     be interacted with concurrently.
-  defaultvalue: "4"
+  defaultvalue: '4'
   display: Concurrecy Factor
   name: concurrency
   required: true
   type: 0
 description: Cisco NX-OS Platform management over SSH
-display: Cisco NX-OS
-name: CiscoNX-OS
+display: Cisco NXOS
+fromversion: 6.0.0
+name: CiscoNXOS
 script:
   commands:
   - arguments:
@@ -49,8 +50,8 @@ script:
         text, 7 encrypted. Type-6 encryption is not supported.
       name: encrypt_type
       predefined:
-      - "0"
-      - "7"
+      - '0'
+      - '7'
     - description: Duration for which a non-reachable AAA server is skipped, in minutes
         or keyword 'default. Range is 1-1440. Device default is 0.
       name: deadtime
@@ -65,15 +66,19 @@ script:
       - enabled
       - disabled
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - default
-    description: Manages AAA server global configuration.
+    description: "Manages AAA server global configuration.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_module.html"
     name: nxos-aaa-server
+    outputs:
+    - contextPath: CiscoNXOS.nxos_aaa_server.commands
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -98,8 +103,8 @@ script:
         text, 7 for encrypted. Type-6 encryption is not supported.
       name: encrypt_type
       predefined:
-      - "0"
-      - "7"
+      - '0'
+      - '7'
     - description: Timeout period for specified host, in seconds or keyword 'default.
         Range is 1-60.
       name: host_timeout
@@ -110,15 +115,33 @@ script:
     - description: Alternate TCP port TACACS Server or keyword 'default'.
       name: tacacs_port
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages AAA server host-specific configuration.
+    description: "Manages AAA server host-specific configuration.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_host_module.html"
     name: nxos-aaa-server-host
+    outputs:
+    - contextPath: CiscoNXOS.nxos_aaa_server_host.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_aaa_server_host.existing
+      description: '
+
+        k/v pairs of existing configuration'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_aaa_server_host.end_state
+      description: k/v pairs of configuration after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_aaa_server_host.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_aaa_server_host.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -261,7 +284,6 @@ script:
       - default
       - ef
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -269,8 +291,13 @@ script:
       - present
       - absent
       - delete_acl
-    description: Manages access list entries for ACLs.
+    description: "Manages access list entries for ACLs.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_acl_module.html"
     name: nxos-acl
+    outputs:
+    - contextPath: CiscoNXOS.nxos_acl.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -292,15 +319,22 @@ script:
       - egress
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages applying ACLs to interfaces.
+    description: "Manages applying ACLs to interfaces.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_acl_interface_module.html"
     name: nxos-acl-interface
+    outputs:
+    - contextPath: CiscoNXOS.nxos_acl_interface.acl_applied_to
+      description: list of interfaces the ACL is applied to
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_acl_interface.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -321,7 +355,6 @@ script:
         Requires `state=present`.
       name: text
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specifies whether or not the configuration is present in the current
         devices active running configuration.
@@ -329,8 +362,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage multiline banners on Cisco NXOS devices
+    description: "Manage multiline banners on Cisco NXOS devices\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html"
     name: nxos-banner
+    outputs:
+    - contextPath: CiscoNXOS.nxos_banner.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -338,53 +376,59 @@ script:
       isArray: true
       name: host
       required: true
-    - description: |-
-        Loopback interface used for echo frames.
-        Valid values are loopback interface name or 'deleted'.
-        Not supported on N5K/N6K
+    - description: 'Loopback interface used for echo frames.
+
+        Valid values are loopback interface name or ''deleted''.
+
+        Not supported on N5K/N6K'
       name: echo_interface
     - description: BFD Echo receive interval in milliseconds.
       name: echo_rx_interval
-    - description: |-
-        BFD interval timer values.
-        Value must be a dict defining values for keys (tx, min_rx, and multiplier)
+    - description: 'BFD interval timer values.
+
+        Value must be a dict defining values for keys (tx, min_rx, and multiplier)'
       isArray: true
       name: interval
     - description: BFD slow rate timer in milliseconds.
       name: slow_timer
-    - description: |-
-        BFD delayed startup timer in seconds.
-        Not supported on N5K/N6K/N7K
+    - description: 'BFD delayed startup timer in seconds.
+
+        Not supported on N5K/N6K/N7K'
       name: startup_timer
     - description: BFD IPv4 session echo receive interval in milliseconds.
       name: ipv4_echo_rx_interval
-    - description: |-
-        BFD IPv4 interval timer values.
-        Value must be a dict defining values for keys (tx, min_rx, and multiplier).
+    - description: 'BFD IPv4 interval timer values.
+
+        Value must be a dict defining values for keys (tx, min_rx, and multiplier).'
       isArray: true
       name: ipv4_interval
     - description: BFD IPv4 slow rate timer in milliseconds.
       name: ipv4_slow_timer
     - description: BFD IPv6 session echo receive interval in milliseconds.
       name: ipv6_echo_rx_interval
-    - description: |-
-        BFD IPv6 interval timer values.
-        Value must be a dict defining values for keys (tx, min_rx, and multiplier).
+    - description: 'BFD IPv6 interval timer values.
+
+        Value must be a dict defining values for keys (tx, min_rx, and multiplier).'
       isArray: true
       name: ipv6_interval
     - description: BFD IPv6 slow rate timer in milliseconds.
       name: ipv6_slow_timer
-    - description: |-
-        BFD fabricpath interval timer values.
-        Value must be a dict defining values for keys (tx, min_rx, and multiplier).
+    - description: 'BFD fabricpath interval timer values.
+
+        Value must be a dict defining values for keys (tx, min_rx, and multiplier).'
       isArray: true
       name: fabricpath_interval
     - description: BFD fabricpath slow rate timer in milliseconds.
       name: fabricpath_slow_timer
     - description: BFD fabricpath control vlan.
       name: fabricpath_vlan
-    description: Bidirectional Forwarding Detection (BFD) global-level configuration
+    description: "Bidirectional Forwarding Detection (BFD) global-level configuration\n\
+      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_global_module.html"
     name: nxos-bfd-global
+    outputs:
+    - contextPath: CiscoNXOS.nxos_bfd_global.cmds
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -396,7 +440,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -405,8 +448,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manages BFD attributes of nxos interfaces.
+    description: "Manages BFD attributes of nxos interfaces.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_interfaces_module.html"
     name: nxos-bfd-interfaces
+    outputs:
+    - contextPath: CiscoNXOS.nxos_bfd_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_bfd_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_bfd_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -541,15 +595,19 @@ script:
     - description: Set BGP keepalive timer.
       name: timer_bgp_keepalive
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages BGP configuration.
+    description: "Manages BGP configuration.\n Further documentation availiable at\
+      \ https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_module.html"
     name: nxos-bgp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_bgp.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -673,15 +731,19 @@ script:
         them to the RIB.
       name: table_map_filter
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages BGP Address-family configuration.
+    description: "Manages BGP Address-family configuration.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_af_module.html"
     name: nxos-bgp-af
+    outputs:
+    - contextPath: CiscoNXOS.nxos_bgp_af.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -693,8 +755,7 @@ script:
         in ASPLAIN or ASDOT notation.
       name: asn
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the VRF. The name 'default' is a valid VRF representing
         the global bgp.
       name: vrf
@@ -705,9 +766,9 @@ script:
     - description: Description of the neighbor.
       name: description
     - auto: PREDEFINED
-      description: |-
-        Enables/Disables BFD for a given neighbor.
-        Dependency: 'feature bfd'
+      description: 'Enables/Disables BFD for a given neighbor.
+
+        Dependency: ''feature bfd'''
       name: bfd
       predefined:
       - enable
@@ -783,15 +844,19 @@ script:
     - description: Specify source interface of BGP session and updates.
       name: update_source
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages BGP neighbors configurations.
+    description: "Manages BGP neighbors configurations.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_module.html"
     name: nxos-bgp-neighbor
+    outputs:
+    - contextPath: CiscoNXOS.nxos_bgp_neighbor.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -803,8 +868,7 @@ script:
         in ASPLAIN or ASDOT notation.
       name: asn
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the VRF. The name 'default' is a valid VRF representing
         the global bgp.
       name: vrf
@@ -936,15 +1000,19 @@ script:
     - description: Weight value. Valid values are an integer value or 'default'.
       name: weight
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages BGP address-family's neighbors configuration.
+    description: "Manages BGP address-family's neighbors configuration.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_af_module.html"
     name: nxos-bgp-neighbor-af
+    outputs:
+    - contextPath: CiscoNXOS.nxos_bgp_neighbor_af.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -952,9 +1020,16 @@ script:
       isArray: true
       name: host
       required: true
-    - description: |-
-        The commands to send to the remote NXOS device.  The resulting output from the command is returned.  If the `wait_for` argument is provided, the module is not returned until the condition is satisfied or the number of retires as expired.
-        The `commands` argument also accepts an alternative form that allows for complex values that specify the command to run and the output format to return.   This can be done on a command by command basis.  The complex argument supports the keywords `command` and `output` where `command` is the command to run and `output` is one of 'text' or 'json'.
+    - description: 'The commands to send to the remote NXOS device.  The resulting
+        output from the command is returned.  If the `wait_for` argument is provided,
+        the module is not returned until the condition is satisfied or the number
+        of retires as expired.
+
+        The `commands` argument also accepts an alternative form that allows for complex
+        values that specify the command to run and the output format to return.   This
+        can be done on a command by command basis.  The complex argument supports
+        the keywords `command` and `output` where `command` is the command to run
+        and `output` is one of ''text'' or ''json''.'
       name: commands
       required: true
     - description: Specifies what to evaluate from the output of the command and what
@@ -962,28 +1037,36 @@ script:
         conditional to be true before moving forward.   If the conditional is not
         true by the configured retries, the task fails.  See examples.
       name: wait_for
-    - default: false
-      defaultValue: all
+    - defaultValue: all
       description: The `match` argument is used in conjunction with the `wait_for`
         argument to specify the match policy.  Valid values are `all` or `any`.  If
         the value is set to `all` then all conditionals in the `wait_for` must be
         satisfied.  If the value is set to `any` then only one of the values must
         be satisfied.
       name: match
-    - default: false
-      defaultValue: "10"
+    - defaultValue: '10'
       description: Specifies the number of retries a command should by tried before
         it is considered failed.  The command is run on the target device every retry
         and evaluated against the `wait_for` conditionals.
       name: retries
-    - default: false
-      defaultValue: "1"
+    - defaultValue: '1'
       description: Configures the interval in seconds to wait between retries of the
         command.  If the command does not pass the specified conditional, the interval
         indicates how to long to wait before trying the command again.
       name: interval
-    description: Run arbitrary command on Cisco NXOS devices
+    description: "Run arbitrary command on Cisco NXOS devices\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html"
     name: nxos-command
+    outputs:
+    - contextPath: CiscoNXOS.nxos_command.stdout
+      description: The set of responses from the commands
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_command.stdout_lines
+      description: The value of stdout split into a list
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_command.failed_conditions
+      description: The list of conditionals that have failed
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1025,7 +1108,6 @@ script:
         set.
       name: after
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the matching of the
         set of commands against the current device config.  If match is set to `line`,
@@ -1041,7 +1123,6 @@ script:
       - exact
       - none
     - auto: PREDEFINED
-      default: false
       defaultValue: line
       description: Instructs the module on the way to perform the configuration on
         the device.  If the replace argument is set to `line` then the modified lines
@@ -1054,8 +1135,7 @@ script:
       - line
       - block
       - config
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: This argument will cause the module to create a full backup of
         the current `running-config` from the remote device before any changes are
         made. If the `backup_options` value is not given, the backup file is written
@@ -1070,15 +1150,13 @@ script:
         argument allows the implementer to pass in the configuration to use as the
         base config for comparison.
       name: running_config
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: The `defaults` argument will influence how the running-config is
         collected from the device.  When the value is set to true, the command used
         to collect the running-config is append with the all keyword.  When the value
         is set to false, the command is issued without the all keyword
       name: defaults
     - auto: PREDEFINED
-      default: false
       defaultValue: never
       description: When changes are made to the device running-configuration, the
         changes are not copied to non-volatile storage by default.  Using this argument
@@ -1097,13 +1175,20 @@ script:
       - modified
       - changed
     - auto: PREDEFINED
-      default: false
       defaultValue: startup
-      description: |-
-        When using the `ansible-playbook --diff` command line argument the module can generate diffs against different sources.
-        When this option is configure as `startup`, the module will return the diff of the running-config against the startup-config.
-        When this option is configured as `intended`, the module will return the diff of the running-config against the configuration provided in the `intended_config` argument.
-        When this option is configured as `running`, the module will return the before and after diff of the running-config with respect to any changes made to the device configuration.
+      description: 'When using the `ansible-playbook --diff` command line argument
+        the module can generate diffs against different sources.
+
+        When this option is configure as `startup`, the module will return the diff
+        of the running-config against the startup-config.
+
+        When this option is configured as `intended`, the module will return the diff
+        of the running-config against the configuration provided in the `intended_config`
+        argument.
+
+        When this option is configured as `running`, the module will return the before
+        and after diff of the running-config with respect to any changes made to the
+        device configuration.'
       name: diff_against
       predefined:
       - startup
@@ -1126,8 +1211,31 @@ script:
         to `True`, if `backup` is set to `false` this option will be silently ignored.
       isArray: true
       name: backup_options
-    description: Manage Cisco NXOS configuration sections
+    description: "Manage Cisco NXOS configuration sections\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_config_module.html"
     name: nxos-config
+    outputs:
+    - contextPath: CiscoNXOS.nxos_config.commands
+      description: The set of commands that will be pushed to the remote device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_config.updates
+      description: The set of commands that will be pushed to the remote device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_config.backup_path
+      description: The full path to the backup file
+      type: string
+    - contextPath: CiscoNXOS.nxos_config.filename
+      description: The name of the backup file
+      type: string
+    - contextPath: CiscoNXOS.nxos_config.shortname
+      description: The full path to the backup file excluding the timestamp
+      type: string
+    - contextPath: CiscoNXOS.nxos_config.date
+      description: The date extracted from the backup file name
+      type: string
+    - contextPath: CiscoNXOS.nxos_config.time
+      description: The time extracted from the backup file name
+      type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1138,8 +1246,13 @@ script:
     - description: EVPN control plane.
       name: nv_overlay_evpn
       required: true
-    description: Handles the EVPN control plane for VXLAN.
+    description: "Handles the EVPN control plane for VXLAN.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_global_module.html"
     name: nxos-evpn-global
+    outputs:
+    - contextPath: CiscoNXOS.nxos_evpn_global.commands
+      description: The set of commands to be sent to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1162,15 +1275,19 @@ script:
     - description: Sets the route-target 'export' extended communities.
       name: route_target_export
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages Cisco EVPN VXLAN Network Identifier (VNI).
+    description: "Manages Cisco EVPN VXLAN Network Identifier (VNI).\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_vni_module.html"
     name: nxos-evpn-vni
+    outputs:
+    - contextPath: CiscoNXOS.nxos_evpn_vni.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1178,8 +1295,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: '!config'
+    - defaultValue: '!config'
       description: When supplied, this argument will restrict the facts collected
         to a given subset.  Possible values for this argument include all, hardware,
         config, legacy, and interfaces.  Can specify a list of values to include a
@@ -1194,8 +1310,92 @@ script:
         'lag_interfaces', 'telemetry', 'vlans', 'lacp', 'lacp_interfaces', 'interfaces',
         'l3_interfaces', 'l2_interfaces', 'lldp_global'.
       name: gather_network_resources
-    description: Gets facts about NX-OS switches
+    description: "Gets facts about NX-OS switches\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html"
     name: nxos-facts
+    outputs:
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_gather_subset
+      description: The list of fact subsets collected from the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_gather_network_resources
+      description: The list of fact for network resource subsets collected from the
+        device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_model
+      description: The model name returned from the device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_serialnum
+      description: The serial number of the remote device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_version
+      description: The operating system version running on the remote device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_hostname
+      description: The configured hostname of the device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_image
+      description: The image file the device is running
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_api
+      description: The name of the transport
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_license_hostid
+      description: The License host id of the device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_python_version
+      description: The Python version Ansible controller is using
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_filesystems
+      description: All file system names available on the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_memfree_mb
+      description: The available free memory on the remote device in Mb
+      type: number
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_memtotal_mb
+      description: The total memory on the remote device in Mb
+      type: number
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_config
+      description: The current active config from the device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_all_ipv4_addresses
+      description: All IPv4 addresses configured on the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_all_ipv6_addresses
+      description: All IPv6 addresses configured on the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_interfaces
+      description: A hash of all interfaces running on the system
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.ansible_net_neighbors
+      description: '
+
+        The list of LLDP and CDP neighbors from the device. If both, CDP and LLDP
+        neighbor data is present on one port, CDP is preferred.'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.fan_info
+      description: A hash of facts about fans in the remote device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.hostname
+      description: The configured hostname of the remote device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.interfaces_list
+      description: The list of interface names on the remote device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.kickstart
+      description: The software version used to boot the system
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.module
+      description: A hash of facts about the modules in a remote device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_facts.platform
+      description: The hardware platform reported by the remote device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.power_supply_info
+      description: A hash of facts about the power supplies in the remote device
+      type: string
+    - contextPath: CiscoNXOS.nxos_facts.vlan_list
+      description: The list of VLAN IDs configured on the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1207,15 +1407,19 @@ script:
       name: feature
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: enabled
       description: Desired state of the feature.
       name: state
       predefined:
       - enabled
       - disabled
-    description: Manage features in NX-OS switches.
+    description: "Manage features in NX-OS switches.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_feature_module.html"
     name: nxos-feature
+    outputs:
+    - contextPath: CiscoNXOS.nxos_feature.commands
+      description: The set of commands to be sent to the remote device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1261,7 +1465,6 @@ script:
       - any_other
       - maintenance
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -1269,8 +1472,19 @@ script:
       - present
       - absent
       required: true
-    description: Trigger a graceful removal or insertion (GIR) of the switch.
+    description: "Trigger a graceful removal or insertion (GIR) of the switch.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_module.html"
     name: nxos-gir
+    outputs:
+    - contextPath: CiscoNXOS.nxos_gir.final_system_mode
+      description: describe the last system mode
+      type: string
+    - contextPath: CiscoNXOS.nxos_gir.updates
+      description: commands sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_gir.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1288,15 +1502,31 @@ script:
       - normal
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Create a maintenance-mode or normal-mode profile for GIR.
+    description: "Create a maintenance-mode or normal-mode profile for GIR.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_profile_management_module.html"
     name: nxos-gir-profile-management
+    outputs:
+    - contextPath: CiscoNXOS.nxos_gir_profile_management.proposed
+      description: list of commands passed into module.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_gir_profile_management.existing
+      description: list of existing profile commands.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_gir_profile_management.end_state
+      description: list of profile entries after module execution.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_gir_profile_management.updates
+      description: commands sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_gir_profile_management.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1311,13 +1541,12 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: false
-      defaultValue: "1"
+      defaultValue: '1'
       description: HSRP version.
       name: version
       predefined:
-      - "1"
-      - "2"
+      - '1'
+      - '2'
     - description: HSRP priority or keyword 'default'.
       name: priority
     - auto: PREDEFINED
@@ -1341,15 +1570,19 @@ script:
       - text
       - md5
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages HSRP configuration on NX-OS switches.
+    description: "Manages HSRP configuration on NX-OS switches.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_hsrp_module.html"
     name: nxos-hsrp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_hsrp.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1366,15 +1599,19 @@ script:
     - description: Restarts the igmp process (using an exec config command).
       name: restart
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
       predefined:
       - present
       - default
-    description: Manages IGMP global configuration.
+    description: "Manages IGMP global configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_module.html"
     name: nxos-igmp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_igmp.updates
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1389,8 +1626,8 @@ script:
       description: IGMP version. It can be 2 or 3 or keyword 'default'.
       name: version
       predefined:
-      - "2"
-      - "3"
+      - '2'
+      - '3'
       - default
     - description: Query interval used when the IGMP process starts up. The range
         is from 1 to 18000 or keyword 'default'. The default is 31.
@@ -1448,12 +1685,10 @@ script:
         the device and if any previous prefix/sources exist, they will be removed.
         Keyword 'default' is also accepted which removes all existing prefix/sources.
       name: oif_ps
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Restart IGMP. This is NOT idempotent as this is action only.
       name: restart
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -1461,8 +1696,25 @@ script:
       - present
       - absent
       - default
-    description: Manages IGMP interface configuration.
+    description: "Manages IGMP interface configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_interface_module.html"
     name: nxos-igmp-interface
+    outputs:
+    - contextPath: CiscoNXOS.nxos_igmp_interface.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_igmp_interface.existing
+      description: k/v pairs of existing igmp_interface configuration
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_igmp_interface.end_state
+      description: k/v pairs of igmp interface configuration after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_igmp_interface.updates
+      description: commands sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_igmp_interface.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1482,15 +1734,19 @@ script:
     - description: Global IGMPv3 Report Suppression and Proxy Reporting.
       name: v3_report_supp
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - default
-    description: Manages IGMP snooping global configuration.
+    description: "Manages IGMP snooping global configuration.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_snooping_module.html"
     name: nxos-igmp-snooping
+    outputs:
+    - contextPath: CiscoNXOS.nxos_igmp_snooping.commands
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1505,21 +1761,30 @@ script:
         Nexus platforms)
       name: kickstart_image_file
     - auto: PREDEFINED
-      default: false
-      defaultValue: "no"
-      description: |-
-        Upgrade using In Service Software Upgrade (ISSU). (Supported on N5k, N7k, N9k platforms)
-        Selecting 'required' or 'yes' means that upgrades will only proceed if the switch is capable of ISSU.
-        Selecting 'desired' means that upgrades will use ISSU if possible but will fall back to disruptive upgrade if needed.
-        Selecting 'no' means do not use ISSU. Forced disruptive.
+      defaultValue: 'no'
+      description: 'Upgrade using In Service Software Upgrade (ISSU). (Supported on
+        N5k, N7k, N9k platforms)
+
+        Selecting ''required'' or ''yes'' means that upgrades will only proceed if
+        the switch is capable of ISSU.
+
+        Selecting ''desired'' means that upgrades will use ISSU if possible but will
+        fall back to disruptive upgrade if needed.
+
+        Selecting ''no'' means do not use ISSU. Forced disruptive.'
       name: issu
       predefined:
       - required
       - desired
-      - "yes"
-      - "no"
-    description: Set boot options like boot, kickstart image and issu.
+      - 'yes'
+      - 'no'
+    description: "Set boot options like boot, kickstart image and issu.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_install_os_module.html"
     name: nxos-install-os
+    outputs:
+    - contextPath: CiscoNXOS.nxos_install_os.install_state
+      description: Boot and install information.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1539,10 +1804,12 @@ script:
       name: area
       required: true
     - auto: PREDEFINED
-      description: |-
-        Enables bfd at interface level. This overrides the bfd variable set at the ospf router level.
-        Valid values are 'enable', 'disable' or 'default'.
-        Dependency: 'feature bfd'
+      description: 'Enables bfd at interface level. This overrides the bfd variable
+        set at the ospf router level.
+
+        Valid values are ''enable'', ''disable'' or ''default''.
+
+        Dependency: ''feature bfd'''
       name: bfd
       predefined:
       - enable
@@ -1592,15 +1859,19 @@ script:
     - description: Specifies the message_digest password. Valid value is a string.
       name: message_digest_password
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages configuration of an OSPF interface instance.
+    description: "Manages configuration of an OSPF interface instance.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_interface_ospf_module.html"
     name: nxos-interface-ospf
+    outputs:
+    - contextPath: CiscoNXOS.nxos_interface_ospf.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1612,7 +1883,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -1621,8 +1891,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manages interface attributes of NX-OS Interfaces
+    description: "Manages interface attributes of NX-OS Interfaces\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html"
     name: nxos-interfaces
+    outputs:
+    - contextPath: CiscoNXOS.nxos_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1634,7 +1915,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1643,8 +1923,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manages Layer-2 Interfaces attributes of NX-OS Interfaces
+    description: "Manages Layer-2 Interfaces attributes of NX-OS Interfaces\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_l2_interfaces_module.html"
     name: nxos-l2-interfaces
+    outputs:
+    - contextPath: CiscoNXOS.nxos_l2_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_l2_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_l2_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1656,7 +1947,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1665,8 +1955,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manages Layer-3 Interfaces attributes of NX-OS Interfaces
+    description: "Manages Layer-3 Interfaces attributes of NX-OS Interfaces\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_l3_interfaces_module.html"
     name: nxos-l3-interfaces
+    outputs:
+    - contextPath: CiscoNXOS.nxos_l3_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_l3_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_l3_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1678,7 +1979,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1686,9 +1986,19 @@ script:
       - merged
       - replaced
       - deleted
-    description: Manage Global Link Aggregation Control Protocol (LACP) on Cisco NX-OS
-      devices.
+    description: "Manage Global Link Aggregation Control Protocol (LACP) on Cisco\
+      \ NX-OS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_module.html"
     name: nxos-lacp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_lacp.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lacp.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lacp.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1700,7 +2010,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1709,9 +2018,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manage Link Aggregation Control Protocol (LACP) attributes of interfaces
-      on Cisco NX-OS devices.
+    description: "Manage Link Aggregation Control Protocol (LACP) attributes of interfaces\
+      \ on Cisco NX-OS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_interfaces_module.html"
     name: nxos-lacp-interfaces
+    outputs:
+    - contextPath: CiscoNXOS.nxos_lacp_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lacp_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lacp_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1723,7 +2042,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -1732,8 +2050,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Manages link aggregation groups of NX-OS Interfaces
+    description: "Manages link aggregation groups of NX-OS Interfaces\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lag_interfaces_module.html"
     name: nxos-lag-interfaces
+    outputs:
+    - contextPath: CiscoNXOS.nxos_lag_interfaces.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lag_interfaces.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lag_interfaces.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1742,7 +2071,6 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the LLDP configuration. If value is `present` lldp will
         be enabled else if it is `absent` it will be disabled.
@@ -1750,8 +2078,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage LLDP configuration on Cisco NXOS network devices.
+    description: "Manage LLDP configuration on Cisco NXOS network devices.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_module.html"
     name: nxos-lldp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_lldp.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1763,7 +2096,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion
       name: state
@@ -1771,9 +2103,19 @@ script:
       - merged
       - replaced
       - deleted
-    description: Configure and manage Link Layer Discovery Protocol(LLDP) attributes
-      on NX-OS platforms.
+    description: "Configure and manage Link Layer Discovery Protocol(LLDP) attributes\
+      \ on NX-OS platforms.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_global_module.html"
     name: nxos-lldp-global
+    outputs:
+    - contextPath: CiscoNXOS.nxos_lldp_global.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lldp_global.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_lldp_global.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1808,7 +2150,6 @@ script:
     - description: List of logging definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the logging configuration.
       name: state
@@ -1847,14 +2188,18 @@ script:
       - microseconds
       - milliseconds
       - seconds
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Remove any switch logging configuration that does not match what
-        has been configured Not supported for ansible_connection local. All nxos-logging
+        has been configured Not supported for ansible_connection local. All nxos_logging
         tasks must use the same ansible_connection type.
       name: purge
-    description: Manage logging on network devices
+    description: "Manage logging on network devices\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_logging_module.html"
     name: nxos-logging
+    outputs:
+    - contextPath: CiscoNXOS.nxos_logging.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1886,15 +2231,33 @@ script:
         fully qualified interface name or keyword 'default'
       name: source_int
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages core NTP configuration.
+    description: "Manages core NTP configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_module.html"
     name: nxos-ntp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_ntp.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_ntp.existing
+      description: '
+
+        k/v pairs of existing ntp server/peer'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_ntp.end_state
+      description: k/v pairs of ntp info after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_ntp.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_ntp.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1907,7 +2270,6 @@ script:
     - description: MD5 String.
       name: md5string
     - auto: PREDEFINED
-      default: false
       defaultValue: text
       description: Whether the given md5string is in cleartext or has been encrypted.
         If in cleartext, the device will encrypt it before storing it.
@@ -1916,30 +2278,33 @@ script:
       - text
       - encrypt
     - auto: PREDEFINED
-      default: false
-      defaultValue: "false"
+      defaultValue: 'false'
       description: Whether the given key is required to be supplied by a time source
         for the device to synchronize to the time source.
       name: trusted_key
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
     - auto: PREDEFINED
       description: Turns NTP authentication on or off.
       name: authentication
       predefined:
-      - "on"
-      - "off"
+      - 'on'
+      - 'off'
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages NTP authentication.
+    description: "Manages NTP authentication.\n Further documentation availiable at\
+      \ https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_auth_module.html"
     name: nxos-ntp-auth
+    outputs:
+    - contextPath: CiscoNXOS.nxos_ntp_auth.commands
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1955,15 +2320,18 @@ script:
     - description: Sets whether NTP logging is enabled on the device.
       name: logging
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages NTP options.
+    description: "Manages NTP options.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_options_module.html"
     name: nxos-ntp-options
+    outputs:
+    - contextPath: CiscoNXOS.nxos_ntp_options.updates
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -1971,34 +2339,29 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "80"
+    - defaultValue: '80'
       description: Configure the port with which the HTTP server will listen on for
         requests.  By default, NXAPI will bind the HTTP service to the standard HTTP
         port 80.  This argument accepts valid port values in the range of 1 to 65535.
       name: http_port
-    - default: false
-      defaultValue: "True"
+    - defaultValue: 'True'
       description: Controls the operating state of the HTTP protocol as one of the
         underlying transports for NXAPI.  By default, NXAPI will enable the HTTP transport
         when the feature is first configured.  To disable the use of the HTTP transport,
         set the value of this argument to False.
       name: http
-    - default: false
-      defaultValue: "443"
+    - defaultValue: '443'
       description: Configure the port with which the HTTPS server will listen on for
         requests.  By default, NXAPI will bind the HTTPS service to the standard HTTPS
         port 443.  This argument accepts valid port values in the range of 1 to 65535.
       name: https_port
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Controls the operating state of the HTTPS protocol as one of the
         underlying transports for NXAPI.  By default, NXAPI will disable the HTTPS
         transport when the feature is first configured.  To enable the use of the
         HTTPS transport, set the value of this argument to True.
       name: https
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: The NXAPI feature provides a web base UI for developers for entering
         commands.  This feature is initially disabled when the NXAPI feature is configured
         for the first time.  When the `sandbox` argument is set to True, the developer
@@ -2006,7 +2369,6 @@ script:
         URL is unavailable. This is supported on NX-OS 7K series.
       name: sandbox
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The `state` argument controls whether or not the NXAPI feature
         is configured on the remote device.  When the value is `present` the NXAPI
@@ -2016,32 +2378,36 @@ script:
       predefined:
       - present
       - absent
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Controls the use of whether strong or weak ciphers are configured.
         By default, this feature is disabled and weak ciphers are configured.  To
         enable the use of strong ciphers, set the value of this argument to True.
       name: ssl_strong_ciphers
-    - default: false
-      defaultValue: "True"
+    - defaultValue: 'True'
       description: Controls the use of the Transport Layer Security version 1.0 is
         configured.  By default, this feature is enabled.  To disable the use of TLSV1.0,
         set the value of this argument to True.
       name: tlsv1_0
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Controls the use of the Transport Layer Security version 1.1 is
         configured.  By default, this feature is disabled.  To enable the use of TLSV1.1,
         set the value of this argument to True.
       name: tlsv1_1
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Controls the use of the Transport Layer Security version 1.2 is
         configured.  By default, this feature is disabled.  To enable the use of TLSV1.2,
         set the value of this argument to True.
       name: tlsv1_2
-    description: Manage NXAPI configuration on an NXOS device.
+    description: "Manage NXAPI configuration on an NXOS device.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_nxapi_module.html"
     name: nxos-nxapi
+    outputs:
+    - contextPath: CiscoNXOS.nxos_nxapi.updates
+      description: '
+
+        Returns the list of commands that need to be pushed into the remote device
+        to satisfy the arguments'
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2053,15 +2419,19 @@ script:
       name: ospf
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages configuration of an ospf instance.
+    description: "Manages configuration of an ospf instance.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_module.html"
     name: nxos-ospf
+    outputs:
+    - contextPath: CiscoNXOS.nxos_ospf.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2069,8 +2439,7 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: Name of the resource instance. Valid value is a string. The name
         'default' is a valid VRF representing the global OSPF.
       name: vrf
@@ -2116,9 +2485,9 @@ script:
         values are an integer, in Mbps, or the keyword 'default'.
       name: auto_cost
     - auto: PREDEFINED
-      description: |-
-        Enables BFD on all OSPF interfaces.
-        Dependency: 'feature bfd'
+      description: 'Enables BFD on all OSPF interfaces.
+
+        Dependency: ''feature bfd'''
       name: bfd
       predefined:
       - enable
@@ -2126,15 +2495,19 @@ script:
     - description: Setting to `yes` will suppress routing update on interface.
       name: passive_interface
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of ospf vrf configuration.
       name: state
       predefined:
       - present
       - absent
-    description: Manages a VRF for an OSPF router.
+    description: "Manages a VRF for an OSPF router.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_vrf_module.html"
     name: nxos-ospf-vrf
+    outputs:
+    - contextPath: CiscoNXOS.nxos_ospf_vrf.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2145,8 +2518,13 @@ script:
     - description: Anycast gateway mac of the switch.
       name: anycast_gateway_mac
       required: true
-    description: Configures anycast gateway MAC of the switch.
+    description: "Configures anycast gateway MAC of the switch.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_overlay_global_module.html"
     name: nxos-overlay-global
+    outputs:
+    - contextPath: CiscoNXOS.nxos_overlay_global.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2155,9 +2533,9 @@ script:
       name: host
       required: true
     - auto: PREDEFINED
-      description: |-
-        Enables BFD on all PIM interfaces.
-        Dependency: 'feature bfd'
+      description: 'Enables BFD on all PIM interfaces.
+
+        Dependency: ''feature bfd'''
       name: bfd
       predefined:
       - enable
@@ -2169,8 +2547,13 @@ script:
         not the same as the `default`, otherwise use the `default` option.
       name: ssm_range
       required: true
-    description: Manages configuration of a PIM instance.
+    description: "Manages configuration of a PIM instance.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_module.html"
     name: nxos-pim
+    outputs:
+    - contextPath: CiscoNXOS.nxos_pim.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2181,15 +2564,16 @@ script:
     - description: Full name of the interface such as Ethernet1/33.
       name: interface
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Enable/disable sparse-mode on the interface.
       name: sparse
     - auto: PREDEFINED
-      description: |-
-        Enables BFD for PIM at the interface level. This overrides the bfd variable set at the pim global level.
-        Valid values are 'enable', 'disable' or 'default'.
-        Dependency: 'feature bfd'
+      description: 'Enables BFD for PIM at the interface level. This overrides the
+        bfd variable set at the pim global level.
+
+        Valid values are ''enable'', ''disable'' or ''default''.
+
+        Dependency: ''feature bfd'''
       name: bfd
       predefined:
       - enable
@@ -2217,8 +2601,7 @@ script:
       predefined:
       - prefix
       - routemap
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Configures interface to be a boundary of a PIM domain.
       name: border
     - description: Configures a neighbor policy for filtering adjacencies.
@@ -2230,15 +2613,19 @@ script:
       - prefix
       - routemap
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
       predefined:
       - present
       - default
-    description: Manages PIM interface configuration.
+    description: "Manages PIM interface configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_interface_module.html"
     name: nxos-pim-interface
+    outputs:
+    - contextPath: CiscoNXOS.nxos_pim_interface.commands
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2261,7 +2648,6 @@ script:
     - description: Group range is treated in PIM bidirectional mode.
       name: bidir
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
@@ -2270,8 +2656,13 @@ script:
       - absent
       - default
       required: true
-    description: Manages configuration of an PIM static RP address instance.
+    description: "Manages configuration of an PIM static RP address instance.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_rp_address_module.html"
     name: nxos-pim-rp-address
+    outputs:
+    - contextPath: CiscoNXOS.nxos_pim_rp_address.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2282,8 +2673,7 @@ script:
     - description: IP address or hostname (resolvable by switch) of remote node.
       name: dest
       required: true
-    - default: false
-      defaultValue: "5"
+    - defaultValue: '5'
       description: Number of packets to send.
       name: count
     - description: Source IP Address or hostname (resolvable by switch)
@@ -2291,15 +2681,31 @@ script:
     - description: Outgoing VRF.
       name: vrf
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines if the expected result is success or fail.
       name: state
       predefined:
       - absent
       - present
-    description: Tests reachability using ping from Nexus switch.
+    description: "Tests reachability using ping from Nexus switch.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_ping_module.html"
     name: nxos-ping
+    outputs:
+    - contextPath: CiscoNXOS.nxos_ping.commands
+      description: Show the command sent
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_ping.rtt
+      description: Show RTT stats
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_ping.packets_rx
+      description: Packets successfully received
+      type: number
+    - contextPath: CiscoNXOS.nxos_ping.packets_tx
+      description: Packets successfully transmitted
+      type: number
+    - contextPath: CiscoNXOS.nxos_ping.packet_loss
+      description: Percentage of packets lost
+      type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2307,12 +2713,15 @@ script:
       isArray: true
       name: host
       required: true
-    - default: false
-      defaultValue: "False"
+    - defaultValue: 'False'
       description: Safeguard boolean. Set to true if you're sure you want to reboot.
       name: confirm
-    description: Reboot a network device.
+    description: "Reboot a network device.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_reboot_module.html"
     name: nxos-reboot
+    outputs:
+    - contextPath: CiscoNXOS.nxos_reboot.rebooted
+      description: Whether the device was instructed to reboot.
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2325,8 +2734,16 @@ script:
     - description: Name of checkpoint file to rollback to. Mutually exclusive with
         checkpoint_file.
       name: rollback_to
-    description: Set a checkpoint or rollback to a checkpoint.
+    description: "Set a checkpoint or rollback to a checkpoint.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_rollback_module.html"
     name: nxos-rollback
+    outputs:
+    - contextPath: CiscoNXOS.nxos_rollback.filename
+      description: The filename of the checkpoint/rollback file.
+      type: string
+    - contextPath: CiscoNXOS.nxos_rollback.status
+      description: Which operation took place and whether it was successful.
+      type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2337,15 +2754,13 @@ script:
     - description: Name of the RPM package.
       name: pkg
       required: true
-    - default: false
-      defaultValue: bootflash
+    - defaultValue: bootflash
       description: The remote file system of the device. If omitted, devices that
         support a file_system parameter will use their default values.
       name: file_system
     - description: List of RPM/patch definitions.
       name: aggregate
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: If the state is present, the rpm will be installed, If the state
         is absent, it will be removed.
@@ -2353,8 +2768,13 @@ script:
       predefined:
       - present
       - absent
-    description: Install patch or feature rpms on Cisco NX-OS devices.
+    description: "Install patch or feature rpms on Cisco NX-OS devices.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_rpm_module.html"
     name: nxos-rpm
+    outputs:
+    - contextPath: CiscoNXOS.nxos_rpm.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2368,8 +2788,13 @@ script:
     - description: The remote file system of the device. If omitted, devices that
         support a file_system parameter will use their default values.
       name: file_system
-    description: Perform SMUs on Cisco NX-OS devices.
+    description: "Perform SMUs on Cisco NX-OS devices.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_smu_module.html"
     name: nxos-smu
+    outputs:
+    - contextPath: CiscoNXOS.nxos_smu.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2418,19 +2843,22 @@ script:
     - description: Specify the tags used to distinguish among row entries, to be used
         when `action=add`.
       name: element_key2
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: Specify to locally store a new created snapshot, to be used when
         `action=create`.
       name: save_snapshot_locally
-    - default: false
-      defaultValue: ./
+    - defaultValue: ./
       description: Specify the path of the file where new created snapshot or snapshots
         comparison will be stored, to be used when `action=create` and `save_snapshot_locally=true`
         or `action=compare`.
       name: path
-    description: Manage snapshots of the running states of selected features.
+    description: "Manage snapshots of the running states of selected features.\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_snapshot_module.html"
     name: nxos-snapshot
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snapshot.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2452,15 +2880,19 @@ script:
     - description: ACL name to filter snmp requests or keyword 'default'.
       name: acl
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages SNMP community configs.
+    description: "Manages SNMP community configs.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_community_module.html"
     name: nxos-snmp-community
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snmp_community.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2472,7 +2904,6 @@ script:
       name: contact
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
@@ -2480,8 +2911,13 @@ script:
       - present
       - absent
       required: true
-    description: Manages SNMP contact info.
+    description: "Manages SNMP contact info.\n Further documentation availiable at\
+      \ https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_contact_module.html"
     name: nxos-snmp-contact
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snmp_contact.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2508,8 +2944,7 @@ script:
       - priv
     - description: Community string or v3 username.
       name: community
-    - default: false
-      defaultValue: "162"
+    - defaultValue: '162'
       description: UDP port number (0-65535).
       name: udp
     - auto: PREDEFINED
@@ -2529,7 +2964,6 @@ script:
         = absent, the interface is removed.
       name: src_intf
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource. If state = present, the host
         is added to the configuration. If only vrf and/or vrf_filter and/or src_intf
@@ -2541,8 +2975,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manages SNMP host configuration.
+    description: "Manages SNMP host configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_host_module.html"
     name: nxos-snmp-host
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snmp_host.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2554,15 +2993,19 @@ script:
       name: location
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages SNMP location information.
+    description: "Manages SNMP location information.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_location_module.html"
     name: nxos-snmp-location
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snmp_location.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2606,15 +3049,18 @@ script:
       - all
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: enabled
       description: Manage the state of the resource.
       name: state
       predefined:
       - enabled
       - disabled
-    description: Manages SNMP traps.
+    description: "Manages SNMP traps.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_traps_module.html"
     name: nxos-snmp-traps
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snmp_traps.commands
+      description: command sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2645,15 +3091,19 @@ script:
     - description: Enables AES-128 bit encryption when using privacy password.
       name: encrypt
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages SNMP users for monitoring.
+    description: "Manages SNMP users for monitoring.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_user_module.html"
     name: nxos-snmp-user
+    outputs:
+    - contextPath: CiscoNXOS.nxos_snmp_user.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2668,8 +3118,7 @@ script:
         must be the fully-qualified interface name.
       name: next_hop
       required: true
-    - default: false
-      defaultValue: default
+    - defaultValue: default
       description: VRF for static route.
       name: vrf
     - description: Route tag value (numeric) or keyword 'default'.
@@ -2686,15 +3135,19 @@ script:
         the device before adding the route.
       name: track
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages static route configuration
+    description: "Manages static route configuration\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_static_route_module.html"
     name: nxos-static-route
+    outputs:
+    - contextPath: CiscoNXOS.nxos_static_route.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2727,7 +3180,6 @@ script:
     - description: Specifies the mtu, must be an integer or keyword 'default'.
       name: system_mtu
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: State of the configuration values in the device's current active
         configuration.  When set to `present`, the values should be configured in
@@ -2737,8 +3189,13 @@ script:
       predefined:
       - present
       - absent
-    description: Manage the system attributes on Cisco NXOS devices
+    description: "Manage the system attributes on Cisco NXOS devices\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_system_module.html"
     name: nxos-system
+    outputs:
+    - contextPath: CiscoNXOS.nxos_system.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2750,7 +3207,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: Final configuration state
       name: state
@@ -2758,8 +3214,19 @@ script:
       - merged
       - replaced
       - deleted
-    description: Telemetry Monitoring Service (TMS) configuration
+    description: "Telemetry Monitoring Service (TMS) configuration\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_telemetry_module.html"
     name: nxos-telemetry
+    outputs:
+    - contextPath: CiscoNXOS.nxos_telemetry.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_telemetry.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_telemetry.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2775,13 +3242,11 @@ script:
       - disabled
     - description: Message time in seconds for UDLD packets or keyword 'default'.
       name: msg_time
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: Ability to reset all ports shut down by UDLD. 'state' parameter
         cannot be 'absent' when this is present.
       name: reset
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource. When set to 'absent', aggressive
         and msg_time are set to their default values.
@@ -2789,8 +3254,27 @@ script:
       predefined:
       - present
       - absent
-    description: Manages UDLD global configuration params.
+    description: "Manages UDLD global configuration params.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_module.html"
     name: nxos-udld
+    outputs:
+    - contextPath: CiscoNXOS.nxos_udld.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld.existing
+      description: '
+
+        k/v pairs of existing udld configuration'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld.end_state
+      description: k/v pairs of udld configuration after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2810,15 +3294,33 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages UDLD interface configuration params.
+    description: "Manages UDLD interface configuration params.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_interface_module.html"
     name: nxos-udld-interface
+    outputs:
+    - contextPath: CiscoNXOS.nxos_udld_interface.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld_interface.existing
+      description: '
+
+        k/v pairs of existing configuration'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld_interface.end_state
+      description: k/v pairs of configuration after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld_interface.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_udld_interface.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2839,7 +3341,6 @@ script:
         Please note that this option is not same as `provider password`.
       name: configured_password
     - auto: PREDEFINED
-      default: false
       defaultValue: always
       description: Since passwords are encrypted in the device running config, this
         argument will instruct the module when to change the password.  When set to
@@ -2857,15 +3358,13 @@ script:
     - description: The `sshkey` argument defines the SSH public key to configure for
         the username.  This argument accepts a valid SSH key value.
       name: sshkey
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: The `purge` argument instructs the module to consider the resource
         definition absolute.  It will remove any previously configured usernames on
         the device with the exception of the `admin` user which cannot be deleted
         per nxos constraints.
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: The `state` argument configures the state of the username definition
         as it relates to the device operational configuration.  When set to `present`,
@@ -2875,8 +3374,22 @@ script:
       predefined:
       - present
       - absent
-    description: Manage the collection of local users on Nexus devices
+    description: "Manage the collection of local users on Nexus devices\n Further\
+      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html"
     name: nxos-user
+    outputs:
+    - contextPath: CiscoNXOS.nxos_user.commands
+      description: The list of configuration mode commands to send to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_user.start
+      description: The time the job started
+      type: string
+    - contextPath: CiscoNXOS.nxos_user.end
+      description: The time the job ended
+      type: string
+    - contextPath: CiscoNXOS.nxos_user.delta
+      description: The time elapsed to perform all operations
+      type: string
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2888,7 +3401,6 @@ script:
       isArray: true
       name: config
     - auto: PREDEFINED
-      default: false
       defaultValue: merged
       description: The state of the configuration after module completion.
       name: state
@@ -2897,8 +3409,19 @@ script:
       - replaced
       - overridden
       - deleted
-    description: Create VLAN and manage VLAN configurations on NX-OS Interfaces
+    description: "Create VLAN and manage VLAN configurations on NX-OS Interfaces\n\
+      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vlans_module.html"
     name: nxos-vlans
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vlans.before
+      description: The configuration as structured data prior to module invocation.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vlans.after
+      description: The configuration as structured data after module completion.
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vlans.commands
+      description: The set of commands pushed to the remote device.
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2915,37 +3438,42 @@ script:
       name: system_priority
     - description: Source IP address used for peer keepalive link
       name: pkl_src
-    - description: |-
-        Destination (remote) IP address used for peer keepalive link
-        pkl_dest is required whenever pkl options are used.
+    - description: 'Destination (remote) IP address used for peer keepalive link
+
+        pkl_dest is required whenever pkl options are used.'
       name: pkl_dest
-    - default: false
-      defaultValue: management
-      description: |-
-        VRF used for peer keepalive link
+    - defaultValue: management
+      description: 'VRF used for peer keepalive link
+
         The VRF must exist on the device before using pkl_vrf.
-        (Note) 'default' is an overloaded term: Default vrf context for pkl_vrf is 'management'; 'pkl_vrf: default' refers to the literal 'default' rib.
+
+        (Note) ''default'' is an overloaded term: Default vrf context for pkl_vrf
+        is ''management''; ''pkl_vrf: default'' refers to the literal ''default''
+        rib.'
       name: pkl_vrf
     - description: Enables/Disables peer gateway
       name: peer_gw
-    - description: |-
-        Enables/Disables auto recovery on platforms that support disable
+    - description: 'Enables/Disables auto recovery on platforms that support disable
+
         timers are not modifiable with this attribute
-        mutually exclusive with auto_recovery_reload_delay
+
+        mutually exclusive with auto_recovery_reload_delay'
       name: auto_recovery
-    - description: |-
-        Manages auto-recovery reload-delay timer in seconds
-        mutually exclusive with auto_recovery
+    - description: 'Manages auto-recovery reload-delay timer in seconds
+
+        mutually exclusive with auto_recovery'
       name: auto_recovery_reload_delay
     - description: manages delay restore command and config value in seconds
       name: delay_restore
-    - description: |-
-        manages delay restore interface-vlan command and config value in seconds
-        not supported on all platforms
+    - description: 'manages delay restore interface-vlan command and config value
+        in seconds
+
+        not supported on all platforms'
       name: delay_restore_interface_vlan
-    - description: |-
-        manages delay restore orphan-port command and config value in seconds
-        not supported on all platforms
+    - description: 'manages delay restore orphan-port command and config value in
+        seconds
+
+        not supported on all platforms'
       name: delay_restore_orphan_port
     - auto: PREDEFINED
       description: Manages desired state of the resource
@@ -2954,8 +3482,13 @@ script:
       - present
       - absent
       required: true
-    description: Manages global VPC configuration
+    description: "Manages global VPC configuration\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_module.html"
     name: nxos-vpc
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vpc.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2971,7 +3504,6 @@ script:
     - description: Set to true/false for peer link config on associated portchannel.
       name: peer_link
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -2979,8 +3511,13 @@ script:
       - present
       - absent
       required: true
-    description: Manages interface VPC configuration
+    description: "Manages interface VPC configuration\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_interface_module.html"
     name: nxos-vpc-interface
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vpc_interface.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -2992,7 +3529,6 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: up
       description: Administrative state of the VRF.
       name: admin_state
@@ -3016,12 +3552,10 @@ script:
       name: associated_interfaces
     - description: List of VRFs definitions.
       name: aggregate
-    - default: false
-      defaultValue: "no"
+    - defaultValue: 'no'
       description: Purge VRFs not defined in the `aggregate` parameter.
       name: purge
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
@@ -3030,13 +3564,17 @@ script:
       - absent
     - description: Description of the VRF or keyword 'default'.
       name: description
-    - default: false
-      defaultValue: "10"
+    - defaultValue: '10'
       description: Time in seconds to wait before checking for the operational state
         on remote device. This wait is applicable for operational state arguments.
       name: delay
-    description: Manages global VRF configuration.
+    description: "Manages global VRF configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_module.html"
     name: nxos-vrf
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vrf.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3058,15 +3596,18 @@ script:
         and export target communities.
       name: route_target_both_auto_evpn
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages VRF AF.
+    description: "Manages VRF AF.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_af_module.html"
     name: nxos-vrf-af
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vrf_af.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3081,15 +3622,19 @@ script:
       name: interface
       required: true
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manages desired state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages interface specific VRF configuration.
+    description: "Manages interface specific VRF configuration.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_interface_module.html"
     name: nxos-vrf-interface
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vrf_interface.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3103,16 +3648,13 @@ script:
     - description: Full name of interface that is being managed for VRRP.
       name: interface
       required: true
-    - default: false
-      defaultValue: "1"
+    - defaultValue: '1'
       description: Time interval between advertisement or 'default' keyword
       name: interval
-    - default: false
-      defaultValue: "100"
+    - defaultValue: '100'
       description: VRRP priority or 'default' keyword
       name: priority
-    - default: false
-      defaultValue: "yes"
+    - defaultValue: 'yes'
       description: Enable/Disable preempt.
       name: preempt
     - description: VRRP virtual IP address or 'default' keyword
@@ -3120,7 +3662,6 @@ script:
     - description: Clear text authentication string or 'default' keyword
       name: authentication
     - auto: PREDEFINED
-      default: false
       defaultValue: shutdown
       description: Used to enable or disable the VRRP process.
       name: admin_state
@@ -3129,15 +3670,19 @@ script:
       - no shutdown
       - default
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Specify desired state of the resource.
       name: state
       predefined:
       - present
       - absent
-    description: Manages VRRP configuration on NX-OS switches.
+    description: "Manages VRRP configuration on NX-OS switches.\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vrrp_module.html"
     name: nxos-vrrp
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vrrp.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3148,8 +3693,27 @@ script:
     - description: VTP domain name.
       name: domain
       required: true
-    description: Manages VTP domain configuration.
+    description: "Manages VTP domain configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_domain_module.html"
     name: nxos-vtp-domain
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vtp_domain.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_domain.existing
+      description: '
+
+        k/v pairs of existing vtp domain'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_domain.end_state
+      description: k/v pairs of vtp domain after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_domain.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_domain.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3160,15 +3724,33 @@ script:
     - description: VTP password
       name: vtp_password
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Manage the state of the resource
       name: state
       predefined:
       - present
       - absent
-    description: Manages VTP password configuration.
+    description: "Manages VTP password configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_password_module.html"
     name: nxos-vtp-password
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vtp_password.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_password.existing
+      description: '
+
+        k/v pairs of existing vtp'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_password.end_state
+      description: k/v pairs of vtp after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_password.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_password.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3180,11 +3762,30 @@ script:
       description: VTP version number.
       name: version
       predefined:
-      - "1"
-      - "2"
+      - '1'
+      - '2'
       required: true
-    description: Manages VTP version configuration.
+    description: "Manages VTP version configuration.\n Further documentation availiable\
+      \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_version_module.html"
     name: nxos-vtp-version
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vtp_version.proposed
+      description: k/v pairs of parameters passed into module
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_version.existing
+      description: '
+
+        k/v pairs of existing vtp'
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_version.end_state
+      description: k/v pairs of vtp after module execution
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_version.updates
+      description: command sent to the device
+      type: unknown
+    - contextPath: CiscoNXOS.nxos_vtp_version.changed
+      description: check to see if a change was made on the device
+      type: boolean
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3220,15 +3821,19 @@ script:
         is available on NX-OS 9K series running 9.2.x or higher.
       name: global_ingress_replication_bgp
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Manages VXLAN Network Virtualization Endpoint (NVE).
+    description: "Manages VXLAN Network Virtualization Endpoint (NVE).\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_module.html"
     name: nxos-vxlan-vtep
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vxlan_vtep.commands
+      description: commands sent to the device
+      type: unknown
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified
         using :PORT. If multiple targets are specified using an array, the integration
@@ -3265,20 +3870,21 @@ script:
         on NX-OS 9K series running 9.2.x or higher.
       name: suppress_arp_disable
     - auto: PREDEFINED
-      default: false
       defaultValue: present
       description: Determines whether the config should be present or not on the device.
       name: state
       predefined:
       - present
       - absent
-    description: Creates a Virtual Network Identifier member (VNI)
+    description: "Creates a Virtual Network Identifier member (VNI)\n Further documentation\
+      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_vni_module.html"
     name: nxos-vxlan-vtep-vni
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+    outputs:
+    - contextPath: CiscoNXOS.nxos_vxlan_vtep_vni.commands
+      description: commands sent to the device
+      type: unknown
+  dockerimage: demisto/ansible-runner:1.0.0.19017
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
-tests:
-- No tests (auto formatted)
