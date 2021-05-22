@@ -1,0 +1,107 @@
+{
+  "data": {
+    "artifacts": [],
+    "assignedTo": "obfuscated@email.com",
+    "assignee": {
+      "displayName": "Firstname Lastname",
+      "username": "obfuscated@email.com"
+    },
+    "closed": "2021-05-21T23:50:19.456104",
+    "closedBy": "obfuscated@email.com",
+    "created": "2021-02-22T16:28:25.139798",
+    "description": "Execution, Privilege Escalation, Persistence, Execution",
+    "entity": {
+      "id": "_ip-1.2.34.5",
+      "ip": {"address": "1.2.34.5"},
+      "ipHostname": null,
+      "name": "1.2.34.5"
+    },
+    "id": "8a77d12e-5905-3401-ae7c-2e17b1fd3060",
+    "lastUpdated": "2021-05-21T23:50:19.557068",
+    "lastUpdatedBy": null,
+    "name": "Privilege Escalation with Persistence and Execution",
+    "readableId": "INSIGHT-221",
+    "relatedEntities": [],
+    "resolution": "Resolved",
+    "severity": "HIGH",
+    "signals": [
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Attackers will often host malicious code on pastebin.com and attempt to download their additional payloads if their initial attack is successful. They will download the post with the raw URI. Generally the malicious content hosted on Pastebin.com is quickly removed automatically by the poster setting an expire time.",
+        "id": "6bc0183e-78ea-5d77-8527-7b94a52fa0cc",
+        "name": "Pastebin Raw URL Resource Request",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "LEGACY-S00058",
+        "severity": 4,
+        "stage": "Execution",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.847000"
+      },
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Attackers will often download a PowerShell script from an external web server to help maintain persistence or to invoke additional functionally on Windows machines. It is not common for internal computers to download PowerShell scripts over HTTP from an external web server, but in some rare cases software like Anti-Virus does perform this behavior.",
+        "id": "99b56182-ea4d-500a-ad78-0c0ec7d754e8",
+        "name": "HTTP External Request to PowerShell Extension",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "LEGACY-S00041",
+        "severity": 5,
+        "stage": "Persistence",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.938000"
+      },
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Attackers may use improper URL checking to inject code that is executed on a server.  This may be used in DoS attacks or to execute commands to elevate privilege.  The attack pattern is similar to Shellshock exploitation.",
+        "id": "4babefbe-6c24-5b35-89de-dcbf75e4619a",
+        "name": "Server-Side Code Injection in URL",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "LEGACY-S00095",
+        "severity": 3,
+        "stage": "Privilege Escalation",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.937000"
+      },
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "The Browser Exploitation Framework (BeEF) is a penetration-testing tool focusing on web browsers. This rule looks for HTTP communication that include the default BeEF cookie, which indicates a hooked browser.",
+        "id": "6b7934ea-3ea7-5359-adc6-597a9620eb81",
+        "name": "Browser Exploitation Framework (BeEF) Hook",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "LEGACY-S00010",
+        "severity": 8,
+        "stage": "Execution",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.959000"
+      }
+    ],
+    "source": "ALGORITHM",
+    "status": {"displayName": "Closed", "name": "closed"},
+    "tags": [],
+    "teamAssignedTo": null,
+    "timeToDetection": 257.292798,
+    "timeToRemediation": 7629714.316306,
+    "timeToResponse": 5011270.922373,
+    "timestamp": "2021-02-22T16:24:07.959000"
+  },
+  "errors": []
+}

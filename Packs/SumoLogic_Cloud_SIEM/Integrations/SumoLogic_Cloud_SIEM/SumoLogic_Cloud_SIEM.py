@@ -161,6 +161,13 @@ def entity_to_readable(obj):
     return cap_obj
 
 
+def get_update_result(resp_json):
+    '''
+    Readable json output from update
+    '''
+    return {'Result': 'Success' if resp_json is True else 'Failed', 'Server response': resp_json}
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -494,7 +501,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
     item['value'] = args.get('value')
 
     resp_json = client.req('POST', 'sec/v1/match-lists/{}/items'.format(match_list_id), None, {'items': [item]})
-    result = {'Result': 'Success' if resp_json is True else 'Failed', 'Server response': resp_json}
+    result = get_update_result(resp_json)
     readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
 
     return CommandResults(
@@ -597,7 +604,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
 
     resp_json = client.req('POST', 'sec/v1/threat-intel-sources/{}/items'.format(threat_intel_source_id),
                            None, {'indicators': [item]})
-    result = {'Result': 'Success' if resp_json is True else 'Failed', 'Server response': resp_json}
+    result = get_update_result(resp_json)
     readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
 
     return CommandResults(
