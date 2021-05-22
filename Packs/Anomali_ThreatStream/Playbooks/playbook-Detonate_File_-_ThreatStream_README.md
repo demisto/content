@@ -26,7 +26,7 @@ This playbook does not use any integrations.
 | SubmissionClassification | The classification of the sandbox submission. | - | - | Optional |
 | PremiumSandbox | Specifies if the premium sandbox should be used for detonation. | - | - | Optional |
 | Tags | A CSV list of tags applied to this sample. | - | - | Optional |
-| Interval | The polling frequency. How often the polling command should run (in minutes). | - | - | Optional |
+| Interval | The polling frequency. How often the polling command should run (in minutes). Maximum is 60 (1 hour). | - | - | Optional |
 | Timeout | The amount of time to wait before a timeout occurs (in minutes). | - | - | Optional |
 
 ## Playbook Outputs

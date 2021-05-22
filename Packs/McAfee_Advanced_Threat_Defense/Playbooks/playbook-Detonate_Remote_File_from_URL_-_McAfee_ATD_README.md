@@ -23,7 +23,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | URL | URL to detonate. | URL.Data | Optional |
-| Interval | Polling frequency - how often the polling command should run \(minutes\) | 1 | Optional |
+| Interval | Polling frequency - how often the polling command should run \(minutes\). Maximum is 60 (1 hour). | 1 | Optional |
 | Timeout | How much time to wait before a timeout occurs \(minutes\) | 15 | Optional |
 
 ## Playbook Outputs

@@ -239,7 +239,7 @@ inputs:
 - key: Interval
   value: {}
   required: true
-  description: Frequency that the polling command will run (minutes).
+  description: Frequency that the polling command will run (minutes). Maximum is 60 (1 hour).
   playbookInputQuery:
 - key: Timeout
   value: {}

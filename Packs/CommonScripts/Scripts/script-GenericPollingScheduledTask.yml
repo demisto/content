@@ -164,7 +164,7 @@ args:
   defaultValue: ids
 - name: interval
   required: true
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (minutes). Maximum is 60 (1 hour).
 - name: timeout
   required: true
   description: How much time to poll before declaring a timeout and resuming the playbook (minutes)

@@ -215,7 +215,7 @@ inputs:
 - key: Interval
   value: {}
   required: true
-  description: Frequency that the polling command will run (minutes).
+  description: Frequency that the polling command will run (minutes). Maximum is 60 (1 hour).
   playbookInputQuery:
 outputs:
 - contextPath: ${ServiceDeskPlus.Request.ClosureInfo.closure_comments}

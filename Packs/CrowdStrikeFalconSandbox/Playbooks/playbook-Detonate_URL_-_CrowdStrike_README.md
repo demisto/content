@@ -23,7 +23,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- | --- |
 | URL | The URL to detonate. | Data | URL | Optional |
 | EnvironmentID | The environment ID to submit the file to. To get all IDs run the `crowdstrike-get-environments` command. | 100 | - | Optional |
-| Interval | The polling frequency. How often the polling command should run (in minutes). | 5 | - | Optional |
+| Interval | The polling frequency. How often the polling command should run (in minutes). Maximum is 60 (1 hour). | 5 | - | Optional |
 | Timeout | How much time to wait before a timeout occurs (in minutes). | 30 | - | Optional |
 
 ## Playbook Outputs

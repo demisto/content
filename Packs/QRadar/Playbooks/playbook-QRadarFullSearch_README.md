@@ -23,7 +23,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |  
 | timeout | The amount of time to wait before a timeout occurs (in minutes). | 600 | Optional |
-| interval | The polling frequency. How often the polling command should run (in minutes). | 1 |Optional |
+| interval | The polling frequency. How often the polling command should run (in minutes). Maximum is 60 (1 hour). | 1 |Optional |
 | query_expression | The query expressions in AQL. | - |Required |
 | range | The range of results to return. For example, 0-20. | - | Optional |
 | headers | The table headers. | - | Optional |

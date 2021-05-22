@@ -222,7 +222,7 @@ inputs:
   value:
     simple: "1"
   required: true
-  description: Frequency that the polling command will run (minutes).
+  description: Frequency that the polling command will run (minutes). Maximum is 60 (1 hour).
 - key: Timeout
   value:
     simple: "10"

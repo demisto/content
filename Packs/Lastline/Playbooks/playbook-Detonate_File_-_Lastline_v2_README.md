@@ -26,7 +26,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
 | File | The file to detonate. The file is taken from the context. | None | File | Optional |
-| Interval | The polling frequency. How often the polling command should run (in minutes). | 1 | - | Optional |
+| Interval | The polling frequency. How often the polling command should run (in minutes). Maximum is 60 (1 hour). | 1 | - | Optional |
 | Timeout | The amount of time to wait before a timeout occurs (in minutes). | 15 |-  | Optional |
 
 ## Playbook Outputs

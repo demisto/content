@@ -286,7 +286,7 @@ inputs:
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (in minutes).
+  description: Polling frequency - how often the polling command should run (in minutes). Maximum is 60 (1 hour).
   playbookInputQuery: null
 - key: range
   value:

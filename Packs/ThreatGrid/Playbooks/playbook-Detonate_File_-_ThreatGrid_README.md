@@ -30,7 +30,7 @@ This playbook does not use any integrations.
 | Private | The sample is marked private if this is present, and set to any value other than false. | - | - | Optional |
 | Source | The string used for identifying the source of the detonation (user defined). | - | - | Optional |
 | Tags | The comma-separated list of tags applied to this sample. | - | - | Optional |
-| Interval | The polling frequency. How often the polling command should run (in minutes). | 1 | - | Optional |
+| Interval | The polling frequency. How often the polling command should run (in minutes). Maximum is 60 (1 hour). | 1 | - | Optional |
 | Timeout | How much time to wait before a timeout occurs (in minutes). | 15 | - | Optional |
 
 ## Playbook Outputs

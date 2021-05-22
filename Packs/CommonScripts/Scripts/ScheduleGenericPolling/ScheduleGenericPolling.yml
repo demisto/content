@@ -29,7 +29,7 @@ args:
     completed once the polling is done.
 - name: interval
   required: true
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (minutes).  Maximum is 60 (1 hour).
   defaultValue: "1"
 - name: timeout
   required: true

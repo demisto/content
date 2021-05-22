@@ -386,7 +386,7 @@ inputs:
 - key: Interval
   value: {}
   required: false
-  description: Polling frequency - how often the polling command should run (minutes).
+  description: Polling frequency - how often the polling command should run (minutes). Maximum is 60 (1 hour).
 - key: Timeout
   value: {}
   required: false

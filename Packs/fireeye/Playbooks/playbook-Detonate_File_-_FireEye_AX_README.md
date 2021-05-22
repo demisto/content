@@ -24,7 +24,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
 | File | The file object of the file to detonate. | None | File | Optional |
-| Interval | The polling frequency. How often the polling command should run (in minutes). | 1 | - | Required |
+| Interval | The polling frequency. How often the polling command should run (in minutes). Maximum is 60 (1 hour). | 1 | - | Required |
 | Timeout | The time to wait before a timeout occurs (in minutes). | 30 | - | Required |
 
 ## Playbook Outputs

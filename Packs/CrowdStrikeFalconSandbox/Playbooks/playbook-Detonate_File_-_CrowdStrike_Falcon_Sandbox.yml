@@ -370,7 +370,7 @@ inputs:
   value:
     simple: "5"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (minutes). Maximum is 60 (1 hour).
 - key: Timeout
   value:
     simple: "30"

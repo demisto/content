@@ -23,7 +23,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | timeout | The amount to wait before a timeout occurs \(in minutes\). | 600 | Optional |
-| interval | Polling frequency - how often the polling command should run \(in minutes\). | 1 | Optional |
+| interval | Polling frequency - how often the polling command should run \(in minutes\). Maximum is 60 (1 hour). | 1 | Optional |
 | range | Range of results to return \(e.g., 0-20\). | 0-20 | Optional |
 | tenant_id | Tenant ID represents the domain on Cisco Stealthwatch. | 102 | Required |
 | time_range |  | 1 month ago | Required |

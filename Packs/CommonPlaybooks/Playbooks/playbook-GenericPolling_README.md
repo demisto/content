@@ -34,7 +34,7 @@ This playbook does not use any commands.
 | Ids | The list of IDs to poll. | - |Required |
 | PollingCommandName | The name of the polling command to run. | - | Required |
 | PollingCommandArgName | The argument name of the polling command. | ids | Required |
-| Interval | The frequency that the polling command will run (in minutes). | 1 |Required |
+| Interval | The frequency that the polling command will run (in minutes). Maximum is 60 (1 hour). | 1 |Required |
 | Timeout | The amount of time in which to poll before declaring a timeout and resuming the playbook (in minutes). | 10 | Required |
 | dt | The DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, for example: WildFire.Report(val.Status!=='Success').SHA256. | - | Required |
 | AdditionalPollingCommandArgNames | The names of additional arguments for the polling command. For example, "arg1,arg2,...". | - | Optional |
