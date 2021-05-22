@@ -810,7 +810,6 @@ Gets ThreatExchange object by ID
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatExchange.Object.id | String | ID of a ThreatExchange object | 
-| ThreatExchange.Object.text | String | Text of a ThreatExchange object | 
 
 
 #### Command Example

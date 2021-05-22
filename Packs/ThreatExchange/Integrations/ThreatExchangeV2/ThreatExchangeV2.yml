@@ -54,6 +54,8 @@ configuration:
   name: insecure
   required: false
   type: 8
+defaultMapperIn: 'null'
+defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Receive threat intelligence about applications, IP addresses, URLs and
   hashes, a service by Facebook
@@ -884,9 +886,6 @@ script:
     outputs:
     - contextPath: ThreatExchange.Object.id
       description: ID of a ThreatExchange object
-      type: String
-    - contextPath: ThreatExchange.Object.text
-      description: Text of a ThreatExchange object
       type: String
   dockerimage: demisto/python3:3.9.5.20070
   feed: false
