@@ -54,8 +54,6 @@ configuration:
   name: insecure
   required: false
   type: 8
-defaultMapperIn: 'null'
-defaultMapperOut: 'null'
 defaultclassifier: 'null'
 description: Receive threat intelligence about applications, IP addresses, URLs and
   hashes, a service by Facebook
