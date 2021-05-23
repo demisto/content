@@ -37,7 +37,7 @@ if [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
 else
   # ====== UPDATING TESTING BUCKET ======
   SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
-  echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
+  echo "Copying production bucket files at: gs://$GCS_PRODUCTION_BUCKET/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
   gsutil -m cp -r "gs://$GCS_PRODUCTION_BUCKET/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing.log" 2>&1
   echo "Finished copying successfully."
   # ====== UPDATING TESTING BUCKET ======
