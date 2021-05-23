@@ -342,7 +342,7 @@ script:
       description: ipv4-address
       type: string
     - contextPath: CheckPoint.Group.members.ipv6-address
-      description: ipv6-address
+      description: Group members IPv6 addresses.
       type: string
     description: Gets full data for the specified group.
   - name: checkpoint-group-add
