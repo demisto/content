@@ -545,7 +545,7 @@ Get all data of a given group
 | CheckPoint.Group.last-modifier | String | indicates the last user modified the object | 
 | CheckPoint.Group.read-only | Boolean | indicates if the object is read only | 
 | CheckPoint.Group.members.ipv4-address | String | Group members IPv4 addresses |
-| CheckPoint.Group.members.ipv6-address | String | ipv6-address |
+| CheckPoint.Group.members.ipv6-address | String | Group members IPv6 addresses |
 
 #### Command Example
 ```!checkpoint-group-get identifier=group_test```
