@@ -5,6 +5,8 @@
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
+  variables:
+    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
 .start_tunnel: &start_tunnel
   - section_start "Start Tunnel"
@@ -42,6 +44,7 @@ create-instances-upload-flow:
     - create-instances
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
+    GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
   rules:
     - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
       when: never # remove this after testing period

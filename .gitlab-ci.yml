@@ -34,7 +34,7 @@ variables:
 # Remove this when https://github.com/demisto/etc/issues/36775 is done.
   SKIP_PRIVATE_BUILD: "true"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
-  GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # change to marketplace-dist this after testing period
+  GCS_PRODUCTION_BUCKET: "marketplace-dist" # change to marketplace-dist this after testing period
 
 
 include:
