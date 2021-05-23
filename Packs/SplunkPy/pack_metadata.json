@@ -37,7 +37,7 @@
         "Identity": {
         "mandatory": true,
         "display_name": "Identity"
-    }
+        }
 
     },
     "displayedImages": [
