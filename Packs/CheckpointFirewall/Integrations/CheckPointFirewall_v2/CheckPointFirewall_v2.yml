@@ -139,7 +139,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore error when adding host
+      description: Whether to ignore errors when adding a host.
       defaultValue: "false"
     outputs:
     - contextPath: CheckPoint.Host.name
