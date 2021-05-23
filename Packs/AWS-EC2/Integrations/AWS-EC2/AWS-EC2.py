@@ -3187,11 +3187,6 @@ def main():
         elif command == 'aws-ec2-release-hosts':
             release_hosts_command(args, aws_client)
 
-    except ResponseParserError as e:
-        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-            error=e))
-        LOG(e.message)
-
     except Exception as e:
         LOG(e.message)
         return_error('Error has occurred in the AWS EC2 Integration: {code}\n {message}'.format(
