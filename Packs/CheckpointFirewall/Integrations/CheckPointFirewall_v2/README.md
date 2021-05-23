@@ -235,7 +235,7 @@ Add new host
 | groups | group identifier. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
 | ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
-| ignore_errors | Whether to ignore error when adding host | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. | Optional |
 #### Context Output
 
 | **Path** | **Type** | **Description** |
