@@ -1,8 +1,8 @@
 #!/bin/bash
 
-DARK_CYAN="\e[38;2;1;189;189m"
+CYAN="\e[0;36m"
 CLEAR="\e[0m"
-SECTION_START="\e[0Ksection_start:$(date +%s):section_id\r\e[0K${DARK_CYAN}section_header${CLEAR}"
+SECTION_START="\e[0Ksection_start:$(date +%s):section_id\r\e[0K${CYAN}section_header${CLEAR}"
 SECTION_END="\e[0Ksection_end:$(date +%s):section_id\r\e[0K"
 
 section_start() {
