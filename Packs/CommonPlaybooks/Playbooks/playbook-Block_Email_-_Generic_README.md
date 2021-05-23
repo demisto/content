@@ -4,7 +4,7 @@ This playbook will block emails at your mail relay integration.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Symantec block Email
+Symantec block Email
 
 ### Integrations
 This playbook does not use any integrations.
@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Block Email - Generic](Insert the link to your image here)
+![Block Email - Generic](https://raw.githubusercontent.com/demisto/content/605f19009e479d6665e545748a777e23b9ec5365/Packs/CommonPlaybooks/doc_files/Block_Email_-_Generic.png)
