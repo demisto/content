@@ -87,7 +87,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CofenseIntelligence.Threat.id
+              simple: CofenseIntelligence.Email.Threats.id
             iscontext: true
     view: |-
       {
@@ -264,7 +264,7 @@ tasks:
           left:
             value:
               complex:
-                root: CofenseIntelligence.Threat
+                root: CofenseIntelligence.URL.Threats
                 accessor: threatType
                 transformers:
                 - operator: LastArrayElement
@@ -379,7 +379,7 @@ tasks:
           left:
             value:
               complex:
-                root: CofenseIntelligence.Threat
+                root: CofenseIntelligence.Threats
                 accessor: id
                 transformers:
                 - operator: LastArrayElement

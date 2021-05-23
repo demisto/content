@@ -272,7 +272,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandR
 
     result = client.threat_search_call(url=url)
     threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': url, 'Threat': threats}
+    outputs = {'Data': url, 'Threats': threats}
     md_data, dbot_score = threats_analysis(threats, indicator=url, threshold=params.get('url_threshold'))
 
     dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
@@ -318,7 +318,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
     # Call the Client function and get the raw response
     result = client.threat_search_call(ip=ip)
     threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': ip, 'Threat': threats}
+    outputs = {'Data': ip, 'Threats': threats}
     dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
                                       integration_name=INTEGRATION_NAME, score=0,
                                       reliability=params.get(RELIABILITY))
@@ -400,7 +400,7 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandRe
     # Call the Client function and get the raw response
     result = client.threat_search_call(file=file)
     threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': file, 'Threat': threats}
+    outputs = {'Data': file, 'Threats': threats}
     dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
                                       integration_name=INTEGRATION_NAME, score=0,
                                       reliability=params.get(RELIABILITY))
@@ -442,11 +442,10 @@ def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
     # Call the Client function and get the raw response
     result = client.threat_search_call(string=string)
     threats = result.get('data', {}).get('threats', [])
-
     md_data = []
     count_threats = 0
-    if threats:
 
+    if threats:
         for threat in threats:
             if threat.get('hasReport'):
                 count_threats += 1
@@ -455,9 +454,9 @@ def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
                     break
 
     return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
+        outputs_prefix=f'{OUTPUT_PREFIX}.Threats',
         outputs_key_field='id',
-        outputs={'CofenseIntelligence': {"String": string, "NumOfThreats": count_threats}},
+        outputs=threats,
         raw_response=result,
         readable_output=tableToMarkdown(name=f'There are {count_threats} threats regarding your string search\n',
                                         t=md_data,

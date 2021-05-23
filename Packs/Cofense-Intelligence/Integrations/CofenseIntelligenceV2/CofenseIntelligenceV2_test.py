@@ -76,11 +76,9 @@ def test_extracted_string(mocker):
     return_value = test_data.get('string_search_response')
     mocker.patch.object(client, 'threat_search_call', return_value=return_value)
     response = extracted_string(client, mock_args)
-
     mock_outputs = test_data.get('mock_outputs')
     mock_readable_outputs = test_data.get('mock_readable')
-
-    assert mock_outputs == response.outputs
+    assert mock_outputs == str(response.outputs)
     assert mock_readable_outputs == response.readable_output
 
 
