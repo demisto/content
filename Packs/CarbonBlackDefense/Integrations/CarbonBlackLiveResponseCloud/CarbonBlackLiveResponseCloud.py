@@ -6,8 +6,10 @@ import ntpath
 import requests
 
 # Disable insecure warnings
-CONNECTION_ERROR_MSG = 'Connection Error: Check your server URL'
-AUTHORIZATION_ERROR_MSG = 'Authorization Error: Check your API Credentials'
+CONNECTION_ERROR_MSG = 'Connection Error - check your server URL'
+AUTHORIZATION_ERROR_MSG = 'Authorization Error - check your API Credentials'
+PROXY_ERROR_MSG = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                  ' selected, try clearing the checkbox.'
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
@@ -61,26 +63,24 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
        :rtype: ``CommandResults``
     """
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
-    dir_content = session.list_directory(directory_path)
-    dir_content = get_limited_results(original_results=dir_content, limit=limit)
+    items = [item for item in session.list_directory(directory_path) if item['filename'] not in IGNORED_FILES_IN_DIR]
+    items, partial_res_msg = get_limited_results(original_results=items, limit=limit)
 
     directories_readable = []
     context_entry_items = []
     headers = ['name', 'type', 'date_modified', 'size']
-    for item in dir_content:
-        file_name = item['filename']
-        if file_name not in IGNORED_FILES_IN_DIR:
-            context_entry_items.append(item)
-            directories_readable.append({
-                'name': item['filename'],
-                'type': 'Directory' if item['attributes'] and 'DIRECTORY' in item['attributes'] else 'File',
-                'date_modified': timestamp_to_datestring(int(item['last_write_time']) * 1000, is_utc=True),
-                'size': item['size']
-            })
+    for item in items:
+        context_entry_items.append(item)
+        directories_readable.append({
+            'name': item['filename'],
+            'type': 'Directory' if item['attributes'] and 'DIRECTORY' in item['attributes'] else 'File',
+            'date_modified': timestamp_to_datestring(int(item['last_write_time']) * 1000, is_utc=True),
+            'size': item['size']
+        })
 
     context_entry = dict(content=context_entry_items, sensor_id=sensor_id, directory_path=directory_path)
 
-    readable_output = tableToMarkdown(f'Directory of {directory_path}',
+    readable_output = tableToMarkdown(f'Directory of {directory_path}{partial_res_msg}',
                                       t=directories_readable,
                                       headers=headers,
                                       headerTransform=string_to_table_header,
@@ -91,7 +91,7 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
         outputs_key_field=['sensor_id', 'directory_path'],
         outputs=context_entry,
         readable_output=readable_output,
-        raw_response=dir_content
+        raw_response=items
     )
 
 
@@ -119,10 +119,10 @@ def list_reg_sub_keys_command(api_client: CBCloudAPI, sensor_id: str, reg_path: 
     if not sub_keys:
         return f'The key: {reg_path} does not contain any sub keys'
 
-    sub_keys = get_limited_results(original_results=sub_keys, limit=limit)
+    sub_keys, partial_res_msg = get_limited_results(original_results=sub_keys, limit=limit)
 
     context_entry = dict(sub_keys=sub_keys, sensor_id=sensor_id, key=reg_path)
-    human_readable = tableToMarkdown(name='Carbon Black Defense Live Response Registry sub keys',
+    human_readable = tableToMarkdown(name=f'Carbon Black Defense Live Response Registry sub keys{partial_res_msg}',
                                      t=sub_keys,
                                      headers=['Sub keys'])
     return CommandResults(
@@ -142,12 +142,12 @@ def get_reg_values_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str
     if not values:
         return f'The key: {reg_path} does not contain any value'
 
-    values = get_limited_results(original_results=values, limit=limit)
+    values, partial_res_msg = get_limited_results(original_results=values, limit=limit)
 
     context_entry = dict(key=reg_path, values=values, sensor_id=sensor_id)
     human_readable = [dict(name=val['value_name'], type=val['value_type'], data=val['value_data']) for val in values]
 
-    readable_output = tableToMarkdown('Carbon Black Defense Live Response Registry key values',
+    readable_output = tableToMarkdown(f'Carbon Black Defense Live Response Registry key values{partial_res_msg}',
                                       human_readable,
                                       headers=['name', 'type', 'data'],
                                       headerTransform=string_to_table_header,
@@ -189,7 +189,7 @@ def list_processes_command(api_client: CBCloudAPI, sensor_id: str, limit: Union[
     if not processes:
         return 'There is no active processes in the remote sensor'
 
-    processes = get_limited_results(original_results=processes, limit=limit)
+    processes, partial_res_msg = get_limited_results(original_results=processes, limit=limit)
 
     headers = ['path', 'pid', 'command_line', 'username']
     processes_readable = [dict(
@@ -199,7 +199,7 @@ def list_processes_command(api_client: CBCloudAPI, sensor_id: str, limit: Union[
         user_name=process['username']) for process in processes]
     context_entry = dict(sensor_id=sensor_id, processes=processes)
 
-    readable_output = tableToMarkdown('Carbon Black Defense Live Response Processes',
+    readable_output = tableToMarkdown(f'Carbon Black Defense Live Response Processes{partial_res_msg}',
                                       headers=headers,
                                       t=processes_readable,
                                       headerTransform=string_to_table_header,
@@ -272,11 +272,13 @@ def command_test_module(api_client: CBCloudAPI) -> str:
     try:
         api_client.api_json_request(method='GET', uri='/integrationServices/v3/cblr/session/')
     except errors.UnauthorizedError:
-        return_error(AUTHORIZATION_ERROR_MSG)
-    except errors.ConnectionError:
-        return_error(CONNECTION_ERROR_MSG)
+        raise DemistoException(AUTHORIZATION_ERROR_MSG)
+    except errors.ConnectionError as e:
+        if 'ProxyError' in str(e):
+            raise DemistoException(PROXY_ERROR_MSG)
+        raise DemistoException(CONNECTION_ERROR_MSG)
     except Exception as e:
-        return_error(f'An error occurred.\n {str(e)}')
+        raise DemistoException(f'An error occurred.\n {str(e)}')
 
     return 'ok'
 
@@ -292,9 +294,10 @@ def delete_reg_key_recursive(session, reg_path: str):
 
 def get_limited_results(original_results, limit):
     limit = arg_to_number(limit)
-    if limit and len(original_results) > limit:
-        return original_results[:limit]
-    return original_results
+    size = len(original_results)
+    if limit and size > limit:
+        return original_results[:limit], f',{limit}/{size} results'
+    return original_results, ''
 
 
 def main():
@@ -326,8 +329,8 @@ def main():
     cb_custom_id = params.get('custom_id')
     cb_org_key = params.get('org_key')
     verify_certificate = not params.get('insecure', True)
-    proxies = handle_proxy()
-    demisto.info(f'proxies:{proxies}')
+    handle_proxy()
+
     command = demisto.command()
     if command not in commands:
         raise NotImplementedError(f'Command: {command} not implemented')
@@ -346,7 +349,6 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        msg = f'Failed to execute {command} command.\nError:\n{str(e)}'
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

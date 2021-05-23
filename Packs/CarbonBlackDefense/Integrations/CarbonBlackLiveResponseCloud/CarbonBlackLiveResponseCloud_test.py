@@ -279,7 +279,7 @@ class TestCommands:
 
         mock_method_in_lr_session(mocker=mocker,
                                   method_name=api_method_to_be_mocked,
-                                  mocked_results=None,
+                                  mocked_results=[],
                                   )
 
         kwargs = commands_with_args[tested_command].copy()
@@ -408,14 +408,13 @@ class TestCommands:
         kwargs = commands_with_args[command_test_module]
         api = kwargs['api_client']
         mocker.patch.object(api, 'api_json_request', side_effect=functools.partial(raise_exception, exception_to_raise))
-        mocked_return_error = mocker.patch('CarbonBlackLiveResponseCloud.return_error')
 
         # run
-        command_test_module(**kwargs)
+        with pytest.raises(DemistoException) as exc_info:
+            command_test_module(**kwargs)
 
         # validate
-        res = mocked_return_error.call_args[0][0]
-        assert res == expected_res
+        assert expected_res in exc_info.value.args[0]
 
     def test_not_implemented_command(self, mocker):
         """

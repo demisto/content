@@ -159,6 +159,7 @@ List the contents of a directory on the remote machine
 | --- | --- | --- |
 | CarbonBlackDefenseLR.Directory.content | Data | list of dicts, each one describing a directory entry | 
 | CarbonBlackDefenseLR.Directory.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.Directory.directory_path | String | The path of the listed directory | 
 
 
 #### Command Example
@@ -565,6 +566,7 @@ Create a new process on the remote machine with the specified command string
 | --- | --- | --- |
 | CarbonBlackDefenseLR.ExecuteProcess.return_value | String | The output of the process | 
 | CarbonBlackDefenseLR.ExecuteProcess.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.ExecuteProcess.command_string | String | The command string used for the create process operation |
 
 
 #### Command Example
@@ -572,10 +574,9 @@ Create a new process on the remote machine with the specified command string
 
 #### Human Readable Output
 
->### Carbon Black Defense Live Response Process Execution Result
->|Process output|
->|---|
->| actually process output|
+>Microsoft Windows [Version 10.0.17763.1935]
+© 2018 Microsoft Corporation. All rights reserved.
+C:\Windows\system32>
 
 ### cbd-lr-memdump
 ***
