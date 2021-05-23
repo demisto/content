@@ -20,8 +20,8 @@ configuration:
   name: domain
   type: 0
   required: false
-- display: username
-  name: username
+- display: Username
+  name: userame
   type: 9
   required: true
 - display: Trust any certificate (not secure)
