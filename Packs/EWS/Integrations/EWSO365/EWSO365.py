@@ -1491,7 +1491,7 @@ def get_items_from_folder(
         "receivedBy",
         "author",
         "toRecipients",
-        "id",
+        "itemId",
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
