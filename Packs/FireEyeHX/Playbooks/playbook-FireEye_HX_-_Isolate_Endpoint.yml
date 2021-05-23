@@ -1,6 +1,6 @@
-id: 'FireEye HX - Isolate Endpoint '
+id: 'FireEye HX - Isolate Endpoint'
 version: -1
-name: 'FireEye HX - Isolate Endpoint '
+name: 'FireEye HX - Isolate Endpoint'
 description: This playbook will auto isolate endpoints by the endpoint ID that was
   provided in the playbook.
 starttaskid: "0"

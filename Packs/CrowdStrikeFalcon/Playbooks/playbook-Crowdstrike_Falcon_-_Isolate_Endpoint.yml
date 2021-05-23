@@ -1,6 +1,6 @@
-id: 'Crowdstrike Falcon - Isolate Endpoint '
+id: 'Crowdstrike Falcon - Isolate Endpoint'
 version: -1
-name: 'Crowdstrike Falcon - Isolate Endpoint '
+name: 'Crowdstrike Falcon - Isolate Endpoint'
 description: This playbook will auto isolate endpoints by the device ID that was provided
   in the playbook.
 starttaskid: "0"
