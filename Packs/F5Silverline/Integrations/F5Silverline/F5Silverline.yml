@@ -53,13 +53,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to return. The first page number is 1.
+      description: Page number to return. The first page number is 1. Note - when giving object_id the page_number will be ignored.
       isArray: false
       name: page_number
       required: false
       secret: false
     - default: false
-      description: Number of results in a page.
+      description: Number of results in a page. Note - when giving object_id the page_size will be ignored.
       isArray: false
       name: page_size
       required: false
