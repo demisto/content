@@ -31,7 +31,6 @@ create-instances:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
     - if: '$NIGHTLY'
     - if: '$INSTANCE_TESTS'
-    - if: '$FORCE_BUCKET_UPLOAD'
   cache:
     policy: pull-push
     when: always
