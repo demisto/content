@@ -1387,7 +1387,7 @@ def search_ip_command(ip, reliability, create_relationships):
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
             tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=relationships
+            relationships=relationships
         )
 
         autofocus_ip_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1410,7 +1410,7 @@ def search_ip_command(ip, reliability, create_relationships):
             readable_output=md,
             raw_response=raw_res,
             indicator=ip,
-            relations=relationships
+            relationships=relationships
         ))
 
     return command_results
@@ -1454,7 +1454,7 @@ def search_domain_command(domain, reliability, create_relationships):
                 registrant_name=indicator.get('whoisRegistrant'),
                 malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
                 tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-                relations=relationships
+                relationships=relationships
             )
             autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
             # create human readable markdown for ip
@@ -1489,7 +1489,7 @@ def search_domain_command(domain, reliability, create_relationships):
             readable_output=md,
             raw_response=raw_res,
             indicator=domain,
-            relations=relationships
+            relationships=relationships
         ))
     return command_results
 
@@ -1528,7 +1528,7 @@ def search_url_command(url, reliability, create_relationships):
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
             tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=relationships
+            relationships=relationships
         )
 
         autofocus_url_output = parse_indicator_response(indicator, raw_tags, indicator_type)
@@ -1550,7 +1550,7 @@ def search_url_command(url, reliability, create_relationships):
             readable_output=md,
             raw_response=raw_res,
             indicator=url,
-            relations=relationships
+            relationships=relationships
         ))
 
     return command_results
@@ -1600,7 +1600,7 @@ def search_file_command(file, reliability, create_relationships):
             dbot_score=dbot_score,
             malware_family=get_tags_for_tags_and_malware_family_fields(raw_tags, True),
             tags=get_tags_for_tags_and_malware_family_fields(raw_tags),
-            relations=relationships
+            relationships=relationships
         )
 
         command_results.append(CommandResults(
@@ -1611,7 +1611,7 @@ def search_file_command(file, reliability, create_relationships):
             readable_output=md,
             raw_response=raw_res,
             indicator=file,
-            relations=relationships
+            relationships=relationships
         ))
 
     return command_results
@@ -1673,13 +1673,13 @@ def create_relationships_list(entity_a, entity_a_type, tags, reliability):
         entity_b = tag.get('tag_name')
         relation_by_type = RELATIONSHIP_TYPE_BY_TAG_CLASS_ID.get(tag_class)
         if entity_b and relation_by_type:
-            relationships.append(EntityRelation(relation_by_type.get('name'),
-                                                entity_a=entity_a,
-                                                entity_a_type=entity_a_type,
-                                                entity_b=entity_b,
-                                                entity_b_type=relation_by_type.get('entity_b_type'),
-                                                source_reliability=reliability,
-                                                brand=VENDOR_NAME))
+            relationships.append(EntityRelationship(relation_by_type.get('name'),
+                                                    entity_a=entity_a,
+                                                    entity_a_type=entity_a_type,
+                                                    entity_b=entity_b,
+                                                    entity_b_type=relation_by_type.get('entity_b_type'),
+                                                    source_reliability=reliability,
+                                                    brand=VENDOR_NAME))
 
     return relationships
 
