@@ -2276,6 +2276,12 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: Specify the page size of the result set. The defualt is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists all indicators by the ID that the system creates when the indicator
       is ingested.

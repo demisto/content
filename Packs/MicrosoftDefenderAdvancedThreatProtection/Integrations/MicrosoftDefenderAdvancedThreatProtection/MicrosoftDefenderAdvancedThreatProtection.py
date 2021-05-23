@@ -171,7 +171,7 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         # TODO: Replace with v1 endpoint when out.
-        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators?$top=200&count=true'
+        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
@@ -698,17 +698,20 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicator_id: Optional[str] = None) -> List:
+    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50') -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
             indicator_id: if provided, will get only this specific id.
+            page_size: specify the page size of the result set.
 
         Returns:
             List of responses.
         """
         results = {}
+        odata = f'$top={page_size}'
         cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
+        cmd_url += f'?{odata}'
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
@@ -736,7 +739,6 @@ class MsClient:
         # If a single object - should remove the '@odata.context' key.
         else:
             results.pop('@odata.context')
-            # results = [results]
         return [assign_params(values_to_ignore=[None], **item) for item in results]
 
     def create_indicator(self, body: Dict) -> Dict:
@@ -2028,12 +2030,12 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
 
     Args:
         client: MsClient
-        args: arguments from CortexSOAR. May include 'indicator_id'
+        args: arguments from CortexSOAR. May include 'indicator_id' and 'page_size'
 
     Returns:
         human_readable, outputs.
     """
-    raw_response = client.list_indicators(args.get('indicator_id'))
+    raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'))
     limit = int(args.get('limit', 50))
     raw_response = raw_response[:limit]
     if raw_response:
