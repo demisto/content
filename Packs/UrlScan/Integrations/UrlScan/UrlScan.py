@@ -26,33 +26,6 @@ BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
-    'lists': {
-        'domains': {
-            'indicator_type': FeedIndicatorType.Domain,
-            'name': EntityRelationship.Relationships.RELATED_TO,
-            'detect_type': False
-        },
-        'hashes': {
-            'indicator_type': FeedIndicatorType.File,
-            'name': EntityRelationship.Relationships.RELATED_TO,
-            'detect_type': False
-        },
-        'ips': {
-            'indicator_type': '',
-            'name': EntityRelationship.Relationships.RELATED_TO,
-            'detect_type': True
-        },
-        'linkDomains': {
-            'indicator_type': FeedIndicatorType.Domain,
-            'name': EntityRelationship.Relationships.RELATED_TO,
-            'detect_type': False
-        },
-        'urls': {
-            'indicator_type': FeedIndicatorType.URL,
-            'name': EntityRelationship.Relationships.RELATED_TO,
-            'detect_type': False
-        }
-    },
     'page': {
         'domain': {
             'indicator_type': FeedIndicatorType.Domain,
@@ -442,7 +415,7 @@ def format_results(client, uuid):
                                                                    indicator_type=related_indicator['type']))
         url_cont['FeedRelatedIndicators'] = related_indicators
     if demisto.params().get('create_relationships') is True:
-        relationships = create_list_relationships({'lists': scan_lists, 'page': scan_page}, url_query,
+        relationships = create_list_relationships({'page': scan_page}, url_query,
                                                   client.reliability)
     outputs = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
