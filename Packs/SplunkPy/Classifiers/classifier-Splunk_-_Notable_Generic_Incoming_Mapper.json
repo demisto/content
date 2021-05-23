@@ -6,10 +6,6 @@
         "Splunk Generic": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Comments": {
-                    "complex": null,
-                    "simple": "comment"
-                },
                 "Notable - ID": {
                     "complex": null,
                     "simple": "event_id"
