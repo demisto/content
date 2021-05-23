@@ -234,8 +234,8 @@ Add new host
 | ip_address | ip address | Required | 
 | groups | group identifier. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
-| ignore_warnings | Whether to ignore warnings when adding host | Optional |
-| ignore_errors | Whether to ignore error when adding host | Optional |
+| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. | Optional |
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -307,8 +307,8 @@ update host changes
 | ignore_errors | Apply changes ignoring errors. You won't be able to publish such a changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. | Optional | 
 | groups | Collection of group identifiers. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
-| ignore_warnings | Whether to ignore warnings when adding host | Optional |
-| ignore_errors | Whether to ignore error when adding host | Optional |
+| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. | Optional |
 
 #### Context Output
 
@@ -544,8 +544,8 @@ Get all data of a given group
 | CheckPoint.Group.creator | String | indicates the creator of the object | 
 | CheckPoint.Group.last-modifier | String | indicates the last user modified the object | 
 | CheckPoint.Group.read-only | Boolean | indicates if the object is read only | 
-| CheckPoint.Group.members.ipv4-address | String | ipv4-address |
-| CheckPoint.Group.members.ipv6-address | String | ipv6-address |
+| CheckPoint.Group.members.ipv4-address | String | Group members IPv4 addresses |
+| CheckPoint.Group.members.ipv6-address | String | Group members IPv6 addresses |
 
 #### Command Example
 ```!checkpoint-group-get identifier=group_test```
@@ -2810,4 +2810,3 @@ Get checkpoint-packages details.
 >|target-name|name|target-uid|revision
 >|---|---|---|---|
 >| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
-

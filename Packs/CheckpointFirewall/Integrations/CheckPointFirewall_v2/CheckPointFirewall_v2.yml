@@ -132,14 +132,14 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore warnings when adding host
+      description: Whether to ignore warnings when adding a host.
       defaultValue: "false"
     - name: ignore_errors
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore error when adding host
+      description: Whether to ignore errors when adding a host.
       defaultValue: "false"
     outputs:
     - contextPath: CheckPoint.Host.name
@@ -266,14 +266,14 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore warnings when delete host
+      description: Whether to ignore warnings when deleting a host.
       defaultValue: "false"
     - name: ignore_errors
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore errors when delete host
+      description: Whether to ignore errors when deleting a host.
       defaultValue: "false"
     outputs:
     - contextPath: CheckPoint.Host.message
@@ -339,10 +339,10 @@ script:
       description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Group.members.ipv4-address
-      description: ipv4-address
+      description: Group members IPv4 addresses.
       type: string
     - contextPath: CheckPoint.Group.members.ipv6-address
-      description: ipv6-address
+      description: Group members IPv6 addresses.
       type: string
     description: Gets full data for the specified group.
   - name: checkpoint-group-add
@@ -968,7 +968,7 @@ script:
       defaultValue: None
     - name: new_position
       description: New position in the rulebase. Value can be "int" to set a specific
-        position, or str- 'top' or 'bottom'
+        position, or str- 'top' or 'bottom'.
     - name: ignore_warnings
       auto: PREDEFINED
       predefined:
