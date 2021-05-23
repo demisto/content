@@ -308,7 +308,7 @@ update host changes
 | groups | Collection of group identifiers. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
 | ignore_warnings | Whether to ignore warnings when adding host | Optional |
-| ignore_errors | Whether to ignore error when adding host | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. | Optional |
 
 #### Context Output
 
@@ -2810,4 +2810,3 @@ Get checkpoint-packages details.
 >|target-name|name|target-uid|revision
 >|---|---|---|---|
 >| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
-
