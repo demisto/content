@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "2f7f9005-b1c2-43c3-8bcd-defbe69ec048",
+    "id": "Splunk - Notable Generic Incoming Mapper",
     "mapping": {
         "Splunk Generic": {
             "dontMapEventToLabels": false,

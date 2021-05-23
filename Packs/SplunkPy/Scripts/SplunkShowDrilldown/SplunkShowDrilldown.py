@@ -5,12 +5,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    trace = ''
     try:
         incident = demisto.incident()
-        # events = incident.get('labels', {}).get('Drilldown', {})
-        # print(incident.get('labels', {}))
-        # print(events)
         custom_fields = incident.get('CustomFields', {})
         try:
             drilldown_results_str = custom_fields.get('notabledrilldown', {})
@@ -45,9 +41,6 @@ def main():
         return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
     except Exception as exp:
         return_error('could not parse Splunk events', error=exp)
-    finally:
-        # print('trace: ' + trace)
-        pass
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
