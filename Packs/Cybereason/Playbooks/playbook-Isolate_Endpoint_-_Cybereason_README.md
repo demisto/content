@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Cybereason
+Cybereason
 
 ### Scripts
 This playbook does not use any scripts.
@@ -28,10 +28,10 @@ This playbook does not use any scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Cybereason.Machine | Machine name | unknown |
-| Cybereason.IsIsolated | Is the machine isolated | unknown |
-| Endpoint.Hostname | Machine name | unknown |
+| Cybereason.Machine | Machine name. | unknown |
+| Cybereason.IsIsolated | Is the machine isolated. | unknown |
+| Endpoint.Hostname | Machine name. | unknown |
 
 ## Playbook Image
 ---
-![Isolate Endpoint - Cybereason](Insert the link to your image here)
+![Isolate Endpoint - Cybereason](https://raw.githubusercontent.com/demisto/content/50dc76b34b17604a6fff66f509e0f11dbfedce9[…]s/Cybereason/doc_files/Isolate_Endpoint_-_Cybereason.png)
