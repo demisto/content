@@ -42,7 +42,8 @@
     "hidden": false,
     "associatedTypes": [
         "Infrastructure",
-        "Attack Pattern"
+        "Attack Pattern",
+        "Tool"
     ],
     "associatedToAll": false,
     "unmapped": false,
