@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "query_time": 0.002521475,
+    "powered_by": "device-api",
+    "trace_id": "identifier_number"
+  },
+  "resources": [
+    {
+      "device_id": "identifier_number",
+      "cid": "identifier_number",
+      "agent_load_flags": "0",
+      "agent_local_time": "2021-04-01T23:47:47.122Z",
+      "agent_version": "6.18.13213.0",
+      "bios_manufacturer": "Google",
+      "bios_version": "Google",
+      "build_number": "17763",
+      "config_id_base": "65994753",
+      "config_id_build": "13213",
+      "config_id_platform": "3",
+      "cpu_signature": "198384",
+      "external_ip": "1.1.1.1",
+      "mac_address": "42-01-0a-80-00-07",
+      "instance_id": "identifier_number",
+      "service_provider": "GCP",
+      "service_provider_account_id": "564609343865",
+      "hostname": "FALCON-CROWDSTR",
+      "first_seen": "2020-02-10T12:40:18Z",
+      "last_seen": "2021-04-05T13:48:12Z",
+      "local_ip": "1.1.1.1",
+      "major_version": "10",
+      "minor_version": "0",
+      "os_version": "Windows Server 2019",
+      "platform_id": "0",
+      "platform_name": "Windows",
+      "policies": [
+        {
+          "policy_type": "prevention",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "settings_hash": "hash",
+          "assigned_date": "2021-01-18T15:53:42.071042118Z",
+          "applied_date": "2021-01-18T15:58:42.399432715Z",
+          "rule_groups": [
+            "identifier_number"
+          ]
+        }
+      ],
+      "reduced_functionality_mode": "no",
+      "device_policies": {
+        "prevention": {
+          "policy_type": "prevention",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "settings_hash": "hash",
+          "assigned_date": "2021-01-18T15:53:42.071042118Z",
+          "applied_date": "2021-01-18T15:58:42.399432715Z",
+          "rule_groups": [
+            "identifier_number"
+          ]
+        },
+        "sensor_update": {
+          "policy_type": "sensor-update",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "settings_hash": "tagged|1;101",
+          "assigned_date": "2021-04-01T23:44:17.702330224Z",
+          "applied_date": "2021-04-01T23:50:15.219346172Z",
+          "uninstall_protection": "ENABLED"
+        },
+        "device_control": {
+          "policy_type": "device-control",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "assigned_date": "2021-02-12T20:57:52.928820495Z",
+          "applied_date": "2021-02-12T21:03:08.554730017Z"
+        },
+        "global_config": {
+          "policy_type": "globalconfig",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "settings_hash": "f61a5761",
+          "assigned_date": "2021-04-01T23:50:28.813248227Z",
+          "applied_date": "2021-04-01T23:56:24.175692456Z"
+        },
+        "remote_response": {
+          "policy_type": "remote-response",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "settings_hash": "5aa2f5b",
+          "assigned_date": "2020-11-14T20:38:27.150769027Z",
+          "applied_date": "2020-11-14T20:39:37.923730468Z"
+        },
+        "firewall": {
+          "policy_type": "firewall",
+          "policy_id": "identifier_number",
+          "applied": true,
+          "assigned_date": "2021-03-09T15:32:08.370445318Z",
+          "applied_date": "2021-03-09T15:37:32.98065256Z",
+          "rule_set_id": "identifier_number"
+        }
+      },
+      "groups": [],
+      "group_hash": "identifier_number",
+      "product_type": "3",
+      "product_type_desc": "Server",
+      "provision_status": "Provisioned",
+      "serial_number": "GoogleCloud-identifier_number",
+      "service_pack_major": "0",
+      "service_pack_minor": "0",
+      "pointer_size": "8",
+      "status": "normal",
+      "system_manufacturer": "Google",
+      "system_product_name": "Google Compute Engine",
+      "tags": [],
+      "modified_timestamp": "2021-04-05T13:49:36Z",
+      "slow_changing_modified_timestamp": "2021-04-05T13:49:28Z",
+      "meta": {
+        "version": "23484"
+      },
+      "zone_group": "projects/number/zones/us-central1-a"
+    }
+  ],
+  "errors": []
+}
