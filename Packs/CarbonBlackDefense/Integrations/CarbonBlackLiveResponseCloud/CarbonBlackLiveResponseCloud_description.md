@@ -15,6 +15,6 @@ Set up API Keys in the Carbon Black Cloud.
 
 **Getting the sensor id**
 
-To get the sensor id you can run the command ``cb-list-sensors``
+To get the sensor id you can run the command ``cbd-device-search`` (should have an instance of Carbon Black Defense integration) and find it according the name,
 or manually, in Carbon Black Cloud web page go to Endpoints > search for the sensor name > click > 
 the sensor id will appear in the top of the page in the format ``device_id:<the device id>``. 

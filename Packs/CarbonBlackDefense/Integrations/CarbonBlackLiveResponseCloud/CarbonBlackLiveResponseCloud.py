@@ -62,10 +62,7 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
     """
     session = api_client.select(endpoint_standard.Device, sensor_id).lr_session()
     dir_content = session.list_directory(directory_path)
-
-    limit = arg_to_number(limit)
-    if limit and len(dir_content) > limit:
-        dir_content = dir_content[:limit]
+    dir_content = get_limited_results(original_results=dir_content, limit=limit)
 
     directories_readable = []
     context_entry_items = []
@@ -81,7 +78,7 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
                 'size': item['size']
             })
 
-    context_entry = dict(content=context_entry_items, sensor_id=sensor_id)
+    context_entry = dict(content=context_entry_items, sensor_id=sensor_id, directory_path=directory_path)
 
     readable_output = tableToMarkdown(f'Directory of {directory_path}',
                                       t=directories_readable,
@@ -91,7 +88,7 @@ def list_directory_command(api_client: CBCloudAPI, sensor_id: str, directory_pat
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefenseLR.Directory',
-        outputs_key_field='sensor_id',
+        outputs_key_field=['sensor_id', 'directory_path'],
         outputs=context_entry,
         readable_output=readable_output,
         raw_response=dir_content
@@ -122,9 +119,7 @@ def list_reg_sub_keys_command(api_client: CBCloudAPI, sensor_id: str, reg_path: 
     if not sub_keys:
         return f'The key: {reg_path} does not contain any sub keys'
 
-    limit = arg_to_number(limit)
-    if limit and len(sub_keys) > limit:
-        sub_keys = sub_keys[:limit]
+    sub_keys = get_limited_results(original_results=sub_keys, limit=limit)
 
     context_entry = dict(sub_keys=sub_keys, sensor_id=sensor_id, key=reg_path)
     human_readable = tableToMarkdown(name='Carbon Black Defense Live Response Registry sub keys',
@@ -132,7 +127,7 @@ def list_reg_sub_keys_command(api_client: CBCloudAPI, sensor_id: str, reg_path: 
                                      headers=['Sub keys'])
     return CommandResults(
         outputs_prefix='CarbonBlackDefenseLR.RegistrySubKeys',
-        outputs_key_field='sensor_id',
+        outputs_key_field=['sensor_id', 'key'],
         outputs=context_entry,
         readable_output=human_readable,
         raw_response=sub_keys
@@ -147,9 +142,7 @@ def get_reg_values_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str
     if not values:
         return f'The key: {reg_path} does not contain any value'
 
-    limit = arg_to_number(limit)
-    if limit and len(values) > limit:
-        values = values[:limit]
+    values = get_limited_results(original_results=values, limit=limit)
 
     context_entry = dict(key=reg_path, values=values, sensor_id=sensor_id)
     human_readable = [dict(name=val['value_name'], type=val['value_type'], data=val['value_data']) for val in values]
@@ -162,7 +155,7 @@ def get_reg_values_command(api_client: CBCloudAPI, sensor_id: str, reg_path: str
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefenseLR.RegistryValues',
-        outputs_key_field='sensor_id',
+        outputs_key_field=['sensor_id', 'key'],
         outputs=context_entry,
         readable_output=readable_output,
         raw_response=values
@@ -196,9 +189,7 @@ def list_processes_command(api_client: CBCloudAPI, sensor_id: str, limit: Union[
     if not processes:
         return 'There is no active processes in the remote sensor'
 
-    limit = arg_to_number(limit)
-    if limit and len(processes) > limit:
-        processes = processes[:limit]
+    processes = get_limited_results(original_results=processes, limit=limit)
 
     headers = ['path', 'pid', 'command_line', 'username']
     processes_readable = [dict(
@@ -299,6 +290,13 @@ def delete_reg_key_recursive(session, reg_path: str):
     session.delete_registry_key(reg_path)
 
 
+def get_limited_results(original_results, limit):
+    limit = arg_to_number(limit)
+    if limit and len(original_results) > limit:
+        return original_results[:limit]
+    return original_results
+
+
 def main():
     commands = {
         'test-module': command_test_module,
@@ -328,8 +326,8 @@ def main():
     cb_custom_id = params.get('custom_id')
     cb_org_key = params.get('org_key')
     verify_certificate = not params.get('insecure', True)
-    handle_proxy()
-
+    proxies = handle_proxy()
+    demisto.info(f'proxies:{proxies}')
     command = demisto.command()
     if command not in commands:
         raise NotImplementedError(f'Command: {command} not implemented')
@@ -348,6 +346,7 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
+        msg = f'Failed to execute {command} command.\nError:\n{str(e)}'
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

@@ -99,6 +99,9 @@ script:
     - contextPath: CarbonBlackDefenseLR.Directory.sensor_id
       description: The sensor (endpoint) id
       type: String
+    - contextPath: CarbonBlackDefenseLR.Directory.directory_path
+      description: The path of the listed directory
+      type: String
     description: List the contents of a directory on the remote machine
   - name: cbd-lr-reg-sub-keys
     arguments:
@@ -282,6 +285,9 @@ script:
       type: String
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.sensor_id
       description: The sensor (endpoint) id
+      type: String
+    - contextPath: CarbonBlackDefenseLR.ExecuteProcess.command_string
+      description: The command string used for the create process operation
       type: String
     description: Create a new process on the remote machine with the specified command
       string
