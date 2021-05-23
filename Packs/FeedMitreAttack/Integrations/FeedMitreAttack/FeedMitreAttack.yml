@@ -47,7 +47,8 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -132,8 +133,8 @@ script:
       predefined:
       - 'True'
       - 'False'
-      description: Whether the search is case sensitive. Can be "True" or "False". The
-        default is "False".
+      description: Whether the search is case sensitive. Can be "True" or "False".
+        The default is "False".
       defaultValue: 'False'
     outputs:
     - contextPath: indicators.id
@@ -157,7 +158,7 @@ script:
       description: Indicator ID.
       type: number
     description: Lookup reputation in the indicators.
-  dockerimage: demisto/taxii2:1.0.0.18446
+  dockerimage: demisto/taxii2:1.0.0.19258
   feed: true
   runonce: false
   subtype: python3
