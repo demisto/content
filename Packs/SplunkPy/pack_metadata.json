@@ -35,8 +35,8 @@
             "display_name": "Asset"
         },
         "Identity": {
-        "mandatory": true,
-        "display_name": "Identity"
+            "mandatory": true,
+            "display_name": "Identity"
         }
 
     },
