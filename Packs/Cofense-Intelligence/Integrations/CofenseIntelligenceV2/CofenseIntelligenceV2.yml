@@ -111,13 +111,16 @@ script:
     - contextPath: DBotScore.Reliability
       description: The actual score.
       type: string
+    - contextPath: CofenseIntelligence.IP.Data
+      description: 'The IP address'
+      type: String
     - contextPath: CofenseIntelligence.Threat.id
       description: 'Threat ID'
       type: Number
     - contextPath: CofenseIntelligence.Threat.feeds.id
       description: 'Integer identifier for this feed'
       type: Number
-    - contextPath: CofenseIntelligence.Threat.feeds.permissions.WRITE
+    - contextPath: CofenseIntelligence.IP.Threat.feeds.permissions.WRITE
       description: 'True if you are allowed to submit data to this feed'
       type: Boolean
     - contextPath: CofenseIntelligence.Threat.feeds.permissions.OWNER

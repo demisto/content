@@ -272,6 +272,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandR
 
     result = client.threat_search_call(url=url)
     threats = result.get('data', {}).get('threats', [])
+    outputs = {'Data': url, 'Threat': threats}
     md_data, dbot_score = threats_analysis(threats, indicator=url, threshold=params.get('url_threshold'))
 
     dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
@@ -280,9 +281,9 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandR
     url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj)
 
     return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
-        outputs_key_field='id',
-        outputs=threats,
+        outputs_prefix=f'{OUTPUT_PREFIX}.URL',
+        outputs_key_field='Data',
+        outputs=outputs,
         raw_response=result,
         readable_output=tableToMarkdown(name=f'Cofense URL Reputation for url {url}', t=md_data,
                                         headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
@@ -317,6 +318,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
     # Call the Client function and get the raw response
     result = client.threat_search_call(ip=ip)
     threats = result.get('data', {}).get('threats', [])
+    outputs = {'Data': ip, 'Threat': threats}
     dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
                                       integration_name=INTEGRATION_NAME, score=0,
                                       reliability=params.get(RELIABILITY))
@@ -328,9 +330,9 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
     ip_indicator.dbot_score = dbot_score_obj
 
     return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
-        outputs_key_field='IP',
-        outputs=threats,
+        outputs_prefix=f'{OUTPUT_PREFIX}.IP',
+        outputs_key_field='Data',
+        outputs=outputs,
         raw_response=result,
         readable_output=tableToMarkdown(name=f'Cofense IP Reputation for IP {ip}', t=md_data,
                                         headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
@@ -361,7 +363,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> Command
     # Call the Client function and get the raw response
     result = client.threat_search_call(email=email)
     threats = result.get('data', {}).get('threats', [])
-
+    outputs = {'Data': email, 'Threats': threats}
     md_data, dbot_score = threats_analysis(threats, indicator=email, threshold=params.get('email_threshold'))
 
     dbot_score_obj = Common.DBotScore(indicator=email, indicator_type=DBotScoreType.EMAIL,
@@ -370,9 +372,9 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> Command
 
     email_indicator = Common.EMAIL(address=email, dbot_score=dbot_score_obj, domain=email.split('@')[1])
     return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
-        outputs=threats,
-        outputs_key_field='id',
+        outputs_prefix=f'{OUTPUT_PREFIX}.Email',
+        outputs=outputs,
+        outputs_key_field='Data',
         raw_response=result,
         readable_output=tableToMarkdown(name=f'Cofense email Reputation for email {email}', t=md_data,
                                         headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
@@ -398,6 +400,7 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandRe
     # Call the Client function and get the raw response
     result = client.threat_search_call(file=file)
     threats = result.get('data', {}).get('threats', [])
+    outputs = {'Data': file, 'Threat': threats}
     dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
                                       integration_name=INTEGRATION_NAME, score=0,
                                       reliability=params.get(RELIABILITY))
@@ -408,9 +411,9 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandRe
     file_indicator.dbot_score = dbot_score_obj
     dbot_score_obj.score = dbot_score
     return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Threat',
-        outputs_key_field='id',
-        outputs=threats,
+        outputs_prefix=f'{OUTPUT_PREFIX}.File',
+        outputs_key_field='Data',
+        outputs=outputs,
         raw_response=result,
         readable_output=tableToMarkdown(name=f'Cofense file Reputation for file {file}', t=md_data,
                                         headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
