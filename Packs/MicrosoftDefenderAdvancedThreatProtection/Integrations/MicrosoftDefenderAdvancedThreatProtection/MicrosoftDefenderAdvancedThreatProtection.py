@@ -736,7 +736,7 @@ class MsClient:
         # If a single object - should remove the '@odata.context' key.
         else:
             results.pop('@odata.context')
-            results = [results]
+            # results = [results]
         return [assign_params(values_to_ignore=[None], **item) for item in results]
 
     def create_indicator(self, body: Dict) -> Dict:
