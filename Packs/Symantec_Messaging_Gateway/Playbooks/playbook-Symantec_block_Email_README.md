@@ -7,13 +7,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* integration-Symantec_Messaging_Gateway
+integration-Symantec_Messaging_Gateway
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
-* smg-block-email
+smg-block-email
 
 ## Playbook Inputs
 ---
@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Symantec block Email](Insert the link to your image here)
+![Symantec block Email](https://raw.githubusercontent.com/demisto/content/d7d8d7fc1ddeb0e52e003fc29ec192373d889620/Packs/Symantec_Messaging_Gateway/docs_files/Symantec_block_Email.png)
