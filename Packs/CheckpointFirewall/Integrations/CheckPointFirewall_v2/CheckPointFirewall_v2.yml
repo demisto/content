@@ -21,7 +21,7 @@ configuration:
   type: 0
   required: false
 - display: Username
-  name: userame
+  name: username
   type: 9
   required: true
 - display: Trust any certificate (not secure)
