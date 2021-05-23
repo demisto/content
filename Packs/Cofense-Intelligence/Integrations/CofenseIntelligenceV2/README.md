@@ -9,7 +9,7 @@ This integration was integrated and tested with version 02 of CofenseIntelligenc
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL (e.g., https://www.threathq.com/apiv1) | Cofense Intelligence base API url | True |
-    | User name | API token user name | True |
+    | Token Name | API token user name | True |
     | Password  | API token password | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
     | IP Threshold | threshold for IP related threat's severity  | False |
@@ -47,62 +47,63 @@ Checks the reputation of an IP address.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Reliability | string | The actual score. | 
-| CofenseIntelligence.Threat.id | Number | Threat ID | 
-| CofenseIntelligence.Threat.feeds.id | Number | Integer identifier for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
-| CofenseIntelligence.Threat.feeds.displayName | String | Human readable name for this feed | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
-| CofenseIntelligence.Threat.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
-| CofenseIntelligence.Threat.blockSet.confidence | Number | level of confidence in the threats block | 
-| CofenseIntelligence.Threat.blockSet.blockType | String | Data type of the watchlist item | 
-| CofenseIntelligence.Threat.blockSet.roleDescription | String | Description of infrastructure type | 
-| CofenseIntelligence.Threat.blockSet.role | String | Infrastructure Type | 
-| CofenseIntelligence.Threat.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
-| CofenseIntelligence.Threat.blockSet.data | String | Domain name or an IP address | 
-| CofenseIntelligence.Threat.blockSet.data_1 | String | Either a domain name or an IP address | 
-| CofenseIntelligence.Threat.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.domainSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.domainSet.domain | String | Sender domain name | 
-| CofenseIntelligence.Threat.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.description | String | Names and describes malware families. | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
-| CofenseIntelligence.Threat.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
-| CofenseIntelligence.Threat.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
-| CofenseIntelligence.Threat.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
-| CofenseIntelligence.Threat.executableSet.severityLevel | String | The malware infection severity level | 
-| CofenseIntelligence.Threat.executableSet.fileNameExtension | String | extension of the file | 
-| CofenseIntelligence.Threat.executableSet.md5Hex | String | The md5 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.executableSubtype.description | String | description of the executable file | 
-| CofenseIntelligence.Threat.senderIpSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email | 
-| CofenseIntelligence.Threat.senderNameSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderNameSet.name | String | This is the friendly name of the sender of the email | 
-| CofenseIntelligence.Threat.subjectSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.subjectSet.subject | String | Email subject line | 
-| CofenseIntelligence.Threat.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
-| CofenseIntelligence.Threat.firstPublished | Date | Timestamp of when this campaign was initially published | 
-| CofenseIntelligence.Threat.label | String | Human readable name for this campaign | 
-| CofenseIntelligence.Threat.executiveSummary | String | Analyst written summary of the campaign | 
-| CofenseIntelligence.Threat.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
-| CofenseIntelligence.Threat.reportURL | String | Direct URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.apiReportURL | String | URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.threatDetailURL | String | T3 Report URL | 
-| CofenseIntelligence.Threat.malwareFamilySet.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.malwareFamilySet.description | String | Set of malware family | 
-| CofenseIntelligence.Threat.threatType | String | This will only have one value for malware | 
+| CofenseIntelligence.IP.Data | String | The IP address | 
+| CofenseIntelligence.IP.Threats.id | Number | Threat ID | 
+| CofenseIntelligence.IP.Threats.feeds.id | Number | Integer identifier for this feed | 
+| CofenseIntelligence.IP.Threats.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
+| CofenseIntelligence.IP.Threats.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
+| CofenseIntelligence.IP.Threats.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
+| CofenseIntelligence.IP.Threats.feeds.displayName | String | Human readable name for this feed | 
+| CofenseIntelligence.IP.Threats.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
+| CofenseIntelligence.IP.Threats.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
+| CofenseIntelligence.IP.Threats.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
+| CofenseIntelligence.IP.Threats.blockSet.confidence | Number | level of confidence in the threats block | 
+| CofenseIntelligence.IP.Threats.blockSet.blockType | String | Data type of the watchlist item | 
+| CofenseIntelligence.IP.Threats.blockSet.roleDescription | String | Description of infrastructure type | 
+| CofenseIntelligence.IP.Threats.blockSet.role | String | Infrastructure Type | 
+| CofenseIntelligence.IP.Threats.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
+| CofenseIntelligence.IP.Threats.blockSet.data | String | Domain name or an IP address | 
+| CofenseIntelligence.IP.Threats.blockSet.data_1 | String | Either a domain name or an IP address | 
+| CofenseIntelligence.IP.Threats.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
+| CofenseIntelligence.IP.Threats.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.IP.Threats.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.IP.Threats.domainSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.IP.Threats.domainSet.domain | String | Sender domain name | 
+| CofenseIntelligence.IP.Threats.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.IP.Threats.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
+| CofenseIntelligence.IP.Threats.executableSet.malwareFamily.familyName | String | Family name of malware | 
+| CofenseIntelligence.IP.Threats.executableSet.malwareFamily.description | String | Names and describes malware families. | 
+| CofenseIntelligence.IP.Threats.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
+| CofenseIntelligence.IP.Threats.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
+| CofenseIntelligence.IP.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
+| CofenseIntelligence.IP.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
+| CofenseIntelligence.IP.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
+| CofenseIntelligence.IP.Threats.executableSet.severityLevel | String | The malware infection severity level | 
+| CofenseIntelligence.IP.Threats.executableSet.fileNameExtension | String | extension of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.md5Hex | String | The md5 hash of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
+| CofenseIntelligence.IP.Threats.executableSet.executableSubtype.description | String | description of the executable file | 
+| CofenseIntelligence.IP.Threats.senderIpSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.IP.Threats.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email | 
+| CofenseIntelligence.IP.Threats.senderNameSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.IP.Threats.senderNameSet.name | String | This is the friendly name of the sender of the email | 
+| CofenseIntelligence.IP.Threats.subjectSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.IP.Threats.subjectSet.subject | String | Email subject line | 
+| CofenseIntelligence.IP.Threats.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
+| CofenseIntelligence.IP.Threats.firstPublished | Date | Timestamp of when this campaign was initially published | 
+| CofenseIntelligence.IP.Threats.label | String | Human readable name for this campaign | 
+| CofenseIntelligence.IP.Threats.executiveSummary | String | Analyst written summary of the campaign | 
+| CofenseIntelligence.IP.Threats.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
+| CofenseIntelligence.IP.Threats.reportURL | String | Direct URL to human readable report for this campaign | 
+| CofenseIntelligence.IP.Threats.apiReportURL | String | URL to human readable report for this campaign | 
+| CofenseIntelligence.IP.Threats.threatDetailURL | String | T3 Report URL | 
+| CofenseIntelligence.IP.Threats.malwareFamilySet.familyName | String | Family name of malware | 
+| CofenseIntelligence.IP.Threats.malwareFamilySet.description | String | Set of malware family | 
+| CofenseIntelligence.IP.Threats.threatType | String | This will only have one value for malware | 
 
 
 #### Command Example
@@ -150,67 +151,62 @@ Searches for extracted strings identified within malware campaigns.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Reliability | string | The actual score. | 
-| CofenseIntelligence.Threat.id | Number | Threat ID | 
-| CofenseIntelligence.Threat.feeds.id | Number | Integer identifier for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
-| CofenseIntelligence.Threat.feeds.displayName | String | Human readable name for this feed | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
-| CofenseIntelligence.Threat.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
-| CofenseIntelligence.Threat.blockSet.confidence | Number | level of confidence in the threats block | 
-| CofenseIntelligence.Threat.blockSet.blockType | String | Data type of the watchlist item | 
-| CofenseIntelligence.Threat.blockSet.roleDescription | String | Description of infrastructure type | 
-| CofenseIntelligence.Threat.blockSet.role | String | Infrastructure Type | 
-| CofenseIntelligence.Threat.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
-| CofenseIntelligence.Threat.blockSet.data | String | Domain name or an IP address | 
-| CofenseIntelligence.Threat.blockSet.data_1 | String | Either a domain name or an IP address | 
-| CofenseIntelligence.Threat.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.domainSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.domainSet.domain | String | Sender domain name | 
-| CofenseIntelligence.Threat.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.description | String | Names and describes malware families. | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
-| CofenseIntelligence.Threat.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
-| CofenseIntelligence.Threat.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
-| CofenseIntelligence.Threat.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
-| CofenseIntelligence.Threat.executableSet.severityLevel | String | The malware infection severity level | 
-| CofenseIntelligence.Threat.executableSet.fileNameExtension | String | extension of the file | 
-| CofenseIntelligence.Threat.executableSet.md5Hex | String | The md5 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.executableSubtype.description | String | description of the executable file | 
-| CofenseIntelligence.Threat.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
-| CofenseIntelligence.Threat.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
-| CofenseIntelligence.Threat.senderNameSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderNameSet.name | String | This is the friendly name of the sender of the email | 
-| CofenseIntelligence.Threat.subjectSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.subjectSet.subject | String | Email subject line | 
-| CofenseIntelligence.Threat.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
-| CofenseIntelligence.Threat.firstPublished | Date | Timestamp of when this campaign was initially published | 
-| CofenseIntelligence.Threat.label | String | Human readable name for this campaign | 
-| CofenseIntelligence.Threat.executiveSummary | String | Analyst written summary of the campaign | 
-| CofenseIntelligence.Threat.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
-| CofenseIntelligence.Threat.reportURL | String | Direct URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.apiReportURL | String | URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.threatDetailURL | String | T3 Report URL | 
-| CofenseIntelligence.Threat.malwareFamilySet.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.malwareFamilySet.description | String | Set of malware family | 
-| CofenseIntelligence.Threat.threatType | String | This will only have one value for malware | 
+| CofenseIntelligence.Threats.id | Number | Threat ID | 
+| CofenseIntelligence.Threats.feeds.id | Number | Integer identifier for this feed | 
+| CofenseIntelligence.Threats.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
+| CofenseIntelligence.Threats.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
+| CofenseIntelligence.Threats.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
+| CofenseIntelligence.Threats.feeds.displayName | String | Human readable name for this feed | 
+| CofenseIntelligence.Threats.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
+| CofenseIntelligence.Threats.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
+| CofenseIntelligence.Threats.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
+| CofenseIntelligence.Threats.blockSet.confidence | Number | level of confidence in the threats block | 
+| CofenseIntelligence.Threats.blockSet.blockType | String | Data type of the watchlist item | 
+| CofenseIntelligence.Threats.blockSet.roleDescription | String | Description of infrastructure type | 
+| CofenseIntelligence.Threats.blockSet.role | String | Infrastructure Type | 
+| CofenseIntelligence.Threats.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
+| CofenseIntelligence.Threats.blockSet.data | String | Domain name or an IP address | 
+| CofenseIntelligence.Threats.blockSet.data_1 | String | Either a domain name or an IP address | 
+| CofenseIntelligence.Threats.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
+| CofenseIntelligence.Threats.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.Threats.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.Threats.domainSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Threats.domainSet.domain | String | Sender domain name | 
+| CofenseIntelligence.Threats.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Threats.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
+| CofenseIntelligence.Threats.executableSet.malwareFamily.familyName | String | Family name of malware | 
+| CofenseIntelligence.Threats.executableSet.malwareFamily.description | String | Names and describes malware families. | 
+| CofenseIntelligence.Threats.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
+| CofenseIntelligence.Threats.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
+| CofenseIntelligence.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
+| CofenseIntelligence.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
+| CofenseIntelligence.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
+| CofenseIntelligence.Threats.executableSet.severityLevel | String | The malware infection severity level | 
+| CofenseIntelligence.Threats.executableSet.fileNameExtension | String | extension of the file | 
+| CofenseIntelligence.Threats.executableSet.md5Hex | String | The md5 hash of the file | 
+| CofenseIntelligence.Threats.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
+| CofenseIntelligence.Threats.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
+| CofenseIntelligence.Threats.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
+| CofenseIntelligence.Threats.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
+| CofenseIntelligence.Threats.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
+| CofenseIntelligence.Threats.executableSet.executableSubtype.description | String | description of the executable file | 
+| CofenseIntelligence.Threats.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
+| CofenseIntelligence.Threats.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
+| CofenseIntelligence.Threats.senderNameSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Threats.senderNameSet.name | String | This is the friendly name of the sender of the email | 
+| CofenseIntelligence.Threats.subjectSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Threats.subjectSet.subject | String | Email subject line | 
+| CofenseIntelligence.Threats.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
+| CofenseIntelligence.Threats.firstPublished | Date | Timestamp of when this campaign was initially published | 
+| CofenseIntelligence.Threats.label | String | Human readable name for this campaign | 
+| CofenseIntelligence.Threats.executiveSummary | String | Analyst written summary of the campaign | 
+| CofenseIntelligence.Threats.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
+| CofenseIntelligence.Threats.reportURL | String | Direct URL to human readable report for this campaign | 
+| CofenseIntelligence.Threats.apiReportURL | String | URL to human readable report for this campaign | 
+| CofenseIntelligence.Threats.threatDetailURL | String | T3 Report URL | 
+| CofenseIntelligence.Threats.malwareFamilySet.familyName | String | Family name of malware | 
+| CofenseIntelligence.Threats.malwareFamilySet.description | String | Set of malware family | 
+| CofenseIntelligence.Threats.threatType | String | This will only have one value for malware | 
 
 
 #### Command Example
@@ -260,7 +256,7 @@ Checks the reputation of a file hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A CSV list of file hashes to check (MD5, SHA1, or SHA256). | Required | 
+| file | A file md5 hash to check. | Required | 
 
 
 #### Context Output
@@ -272,62 +268,63 @@ Checks the reputation of a file hash.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Reliability | string | The actual score. | 
-| CofenseIntelligence.Threat.id | Number | Threat ID | 
-| CofenseIntelligence.Threat.feeds.id | Number | Integer identifier for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
-| CofenseIntelligence.Threat.feeds.displayName | String | Human readable name for this feed | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
-| CofenseIntelligence.Threat.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
-| CofenseIntelligence.Threat.blockSet.confidence | Number | level of confidence in the threats block | 
-| CofenseIntelligence.Threat.blockSet.blockType | String | Data type of the watchlist item | 
-| CofenseIntelligence.Threat.blockSet.roleDescription | String | Description of infrastructure type | 
-| CofenseIntelligence.Threat.blockSet.role | String | Infrastructure Type | 
-| CofenseIntelligence.Threat.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
-| CofenseIntelligence.Threat.blockSet.data | String | Domain name or an IP address | 
-| CofenseIntelligence.Threat.blockSet.data_1 | String | Either a domain name or an IP address | 
-| CofenseIntelligence.Threat.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.domainSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.domainSet.domain | String | Sender domain name | 
-| CofenseIntelligence.Threat.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.description | String | Names and describes malware families. | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
-| CofenseIntelligence.Threat.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
-| CofenseIntelligence.Threat.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
-| CofenseIntelligence.Threat.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
-| CofenseIntelligence.Threat.executableSet.severityLevel | String | The malware infection severity level | 
-| CofenseIntelligence.Threat.executableSet.fileNameExtension | String | extension of the file | 
-| CofenseIntelligence.Threat.executableSet.md5Hex | String | The md5 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.executableSubtype.description | String | description of the executable file | 
-| CofenseIntelligence.Threat.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
-| CofenseIntelligence.Threat.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
-| CofenseIntelligence.Threat.senderNameSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderNameSet.name | String | This is the friendly name of the sender of the email | 
-| CofenseIntelligence.Threat.subjectSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.subjectSet.subject | String | Email subject line | 
-| CofenseIntelligence.Threat.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
-| CofenseIntelligence.Threat.firstPublished | Date | Timestamp of when this campaign was initially published | 
-| CofenseIntelligence.Threat.label | String | Human readable name for this campaign | 
-| CofenseIntelligence.Threat.executiveSummary | String | Analyst written summary of the campaign | 
-| CofenseIntelligence.Threat.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
-| CofenseIntelligence.Threat.reportURL | String | Direct URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.apiReportURL | String | URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.threatDetailURL | String | T3 Report URL | 
-| CofenseIntelligence.Threat.malwareFamilySet.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.malwareFamilySet.description | String | Set of malware family | 
-| CofenseIntelligence.Threat.threatType | String | This will only have one value for malware | 
+| CofenseIntelligence.File.Data | String | The file hash |
+| CofenseIntelligence.File.Threats.id | Number | Threat ID | 
+| CofenseIntelligence.File.Threats.feeds.id | Number | Integer identifier for this feed | 
+| CofenseIntelligence.File.Threats.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
+| CofenseIntelligence.File.Threats.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
+| CofenseIntelligence.File.Threats.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
+| CofenseIntelligence.File.Threats.feeds.displayName | String | Human readable name for this feed | 
+| CofenseIntelligence.File.Threats.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
+| CofenseIntelligence.File.Threats.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
+| CofenseIntelligence.File.Threats.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
+| CofenseIntelligence.File.Threats.blockSet.confidence | Number | level of confidence in the threats block | 
+| CofenseIntelligence.File.Threats.blockSet.blockType | String | Data type of the watchlist item | 
+| CofenseIntelligence.File.Threats.blockSet.roleDescription | String | Description of infrastructure type | 
+| CofenseIntelligence.File.Threats.blockSet.role | String | Infrastructure Type | 
+| CofenseIntelligence.File.Threats.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
+| CofenseIntelligence.File.Threats.blockSet.data | String | Domain name or an IP address | 
+| CofenseIntelligence.File.Threats.blockSet.data_1 | String | Either a domain name or an IP address | 
+| CofenseIntelligence.File.Threats.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
+| CofenseIntelligence.File.Threats.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.File.Threats.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.File.Threats.domainSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.File.Threats.domainSet.domain | String | Sender domain name | 
+| CofenseIntelligence.File.Threats.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.File.Threats.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
+| CofenseIntelligence.File.Threats.executableSet.malwareFamily.familyName | String | Family name of malware | 
+| CofenseIntelligence.File.Threats.executableSet.malwareFamily.description | String | Names and describes malware families. | 
+| CofenseIntelligence.File.Threats.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
+| CofenseIntelligence.File.Threats.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
+| CofenseIntelligence.File.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
+| CofenseIntelligence.File.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
+| CofenseIntelligence.File.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
+| CofenseIntelligence.File.Threats.executableSet.severityLevel | String | The malware infection severity level | 
+| CofenseIntelligence.File.Threats.executableSet.fileNameExtension | String | extension of the file | 
+| CofenseIntelligence.File.Threats.executableSet.md5Hex | String | The md5 hash of the file | 
+| CofenseIntelligence.File.Threats.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
+| CofenseIntelligence.File.Threats.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
+| CofenseIntelligence.File.Threats.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
+| CofenseIntelligence.File.Threats.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
+| CofenseIntelligence.File.Threats.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
+| CofenseIntelligence.File.Threats.executableSet.executableSubtype.description | String | description of the executable file | 
+| CofenseIntelligence.File.Threats.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
+| CofenseIntelligence.File.Threats.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
+| CofenseIntelligence.File.Threats.senderNameSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.File.Threats.senderNameSet.name | String | This is the friendly name of the sender of the email | 
+| CofenseIntelligence.File.Threats.subjectSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.File.Threats.subjectSet.subject | String | Email subject line | 
+| CofenseIntelligence.File.Threats.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
+| CofenseIntelligence.File.Threats.firstPublished | Date | Timestamp of when this campaign was initially published | 
+| CofenseIntelligence.File.Threats.label | String | Human readable name for this campaign | 
+| CofenseIntelligence.File.Threats.executiveSummary | String | Analyst written summary of the campaign | 
+| CofenseIntelligence.File.Threats.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
+| CofenseIntelligence.File.Threats.reportURL | String | Direct URL to human readable report for this campaign | 
+| CofenseIntelligence.File.Threats.apiReportURL | String | URL to human readable report for this campaign | 
+| CofenseIntelligence.File.Threats.threatDetailURL | String | T3 Report URL | 
+| CofenseIntelligence.File.Threats.malwareFamilySet.familyName | String | Family name of malware | 
+| CofenseIntelligence.File.Threats.malwareFamilySet.description | String | Set of malware family | 
+| CofenseIntelligence.File.Threats.threatType | String | This will only have one value for malware | 
 
 
 #### Command Example
@@ -379,62 +376,63 @@ Checks the reputation of an email address.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Reliability | string | The actual score. | 
-| CofenseIntelligence.Threat.id | Number | Threat ID | 
-| CofenseIntelligence.Threat.feeds.id | Number | Integer identifier for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
-| CofenseIntelligence.Threat.feeds.displayName | String | Human readable name for this feed | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
-| CofenseIntelligence.Threat.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
-| CofenseIntelligence.Threat.blockSet.confidence | Number | level of confidence in the threats block | 
-| CofenseIntelligence.Threat.blockSet.blockType | String | Data type of the watchlist item | 
-| CofenseIntelligence.Threat.blockSet.roleDescription | String | Description of infrastructure type | 
-| CofenseIntelligence.Threat.blockSet.role | String | Infrastructure Type | 
-| CofenseIntelligence.Threat.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
-| CofenseIntelligence.Threat.blockSet.data | String | Domain name or an IP address | 
-| CofenseIntelligence.Threat.blockSet.data_1 | String | Either a domain name or an IP address | 
-| CofenseIntelligence.Threat.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.domainSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.domainSet.domain | String | Sender domain name | 
-| CofenseIntelligence.Threat.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.description | String | Names and describes malware families. | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
-| CofenseIntelligence.Threat.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
-| CofenseIntelligence.Threat.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
-| CofenseIntelligence.Threat.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
-| CofenseIntelligence.Threat.executableSet.severityLevel | String | The malware infection severity level | 
-| CofenseIntelligence.Threat.executableSet.fileNameExtension | String | extension of the file | 
-| CofenseIntelligence.Threat.executableSet.md5Hex | String | The md5 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.executableSubtype.description | String | description of the executable file | 
-| CofenseIntelligence.Threat.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
-| CofenseIntelligence.Threat.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
-| CofenseIntelligence.Threat.senderNameSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderNameSet.name | String | This is the friendly name of the sender of the email | 
-| CofenseIntelligence.Threat.subjectSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.subjectSet.subject | String | Email subject line | 
-| CofenseIntelligence.Threat.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
-| CofenseIntelligence.Threat.firstPublished | Date | Timestamp of when this campaign was initially published | 
-| CofenseIntelligence.Threat.label | String | Human readable name for this campaign | 
-| CofenseIntelligence.Threat.executiveSummary | String | Analyst written summary of the campaign | 
-| CofenseIntelligence.Threat.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
-| CofenseIntelligence.Threat.reportURL | String | Direct URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.apiReportURL | String | URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.threatDetailURL | String | T3 Report URL | 
-| CofenseIntelligence.Threat.malwareFamilySet.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.malwareFamilySet.description | String | Set of malware family | 
-| CofenseIntelligence.Threat.threatType | String | This will only have one value for malware | 
+| CofenseIntelligence.Email.Data | String | The email address |
+| CofenseIntelligence.Email.Threats.id | Number | Threat ID | 
+| CofenseIntelligence.Email.Threats.feeds.id | Number | Integer identifier for this feed | 
+| CofenseIntelligence.Email.Threats.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
+| CofenseIntelligence.Email.Threats.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
+| CofenseIntelligence.Email.Threats.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
+| CofenseIntelligence.Email.Threats.feeds.displayName | String | Human readable name for this feed | 
+| CofenseIntelligence.Email.Threats.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
+| CofenseIntelligence.Email.Threats.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
+| CofenseIntelligence.Email.Threats.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
+| CofenseIntelligence.Email.Threats.blockSet.confidence | Number | level of confidence in the threats block | 
+| CofenseIntelligence.Email.Threats.blockSet.blockType | String | Data type of the watchlist item | 
+| CofenseIntelligence.Email.Threats.blockSet.roleDescription | String | Description of infrastructure type | 
+| CofenseIntelligence.Email.Threats.blockSet.role | String | Infrastructure Type | 
+| CofenseIntelligence.Email.Threats.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
+| CofenseIntelligence.Email.Threats.blockSet.data | String | Domain name or an IP address | 
+| CofenseIntelligence.Email.Threats.blockSet.data_1 | String | Either a domain name or an IP address | 
+| CofenseIntelligence.Email.Threats.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
+| CofenseIntelligence.Email.Threats.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.Email.Threats.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.Email.Threats.domainSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Email.Threats.domainSet.domain | String | Sender domain name | 
+| CofenseIntelligence.Email.Threats.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Email.Threats.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
+| CofenseIntelligence.Email.Threats.executableSet.malwareFamily.familyName | String | Family name of malware | 
+| CofenseIntelligence.Email.Threats.executableSet.malwareFamily.description | String | Names and describes malware families. | 
+| CofenseIntelligence.Email.Threats.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
+| CofenseIntelligence.Email.Threats.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
+| CofenseIntelligence.Email.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
+| CofenseIntelligence.Email.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
+| CofenseIntelligence.Email.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
+| CofenseIntelligence.Email.Threats.executableSet.severityLevel | String | The malware infection severity level | 
+| CofenseIntelligence.Email.Threats.executableSet.fileNameExtension | String | extension of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.md5Hex | String | The md5 hash of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
+| CofenseIntelligence.Email.Threats.executableSet.executableSubtype.description | String | description of the executable file | 
+| CofenseIntelligence.Email.Threats.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
+| CofenseIntelligence.Email.Threats.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
+| CofenseIntelligence.Email.Threats.senderNameSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Email.Threats.senderNameSet.name | String | This is the friendly name of the sender of the email | 
+| CofenseIntelligence.Email.Threats.subjectSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.Email.Threats.subjectSet.subject | String | Email subject line | 
+| CofenseIntelligence.Email.Threats.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
+| CofenseIntelligence.Email.Threats.firstPublished | Date | Timestamp of when this campaign was initially published | 
+| CofenseIntelligence.Email.Threats.label | String | Human readable name for this campaign | 
+| CofenseIntelligence.Email.Threats.executiveSummary | String | Analyst written summary of the campaign | 
+| CofenseIntelligence.Email.Threats.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
+| CofenseIntelligence.Email.Threats.reportURL | String | Direct URL to human readable report for this campaign | 
+| CofenseIntelligence.Email.Threats.apiReportURL | String | URL to human readable report for this campaign | 
+| CofenseIntelligence.Email.Threats.threatDetailURL | String | T3 Report URL | 
+| CofenseIntelligence.Email.Threats.malwareFamilySet.familyName | String | Family name of malware | 
+| CofenseIntelligence.Email.Threats.malwareFamilySet.description | String | Set of malware family | 
+| CofenseIntelligence.Email.Threats.threatType | String | This will only have one value for malware | 
 
 
 #### Command Example
@@ -487,62 +485,63 @@ Checks the reputation of a URL.
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Reliability | string | The actual score. | 
-| CofenseIntelligence.Threat.id | Number | Threat ID | 
-| CofenseIntelligence.Threat.feeds.id | Number | Integer identifier for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
-| CofenseIntelligence.Threat.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
-| CofenseIntelligence.Threat.feeds.displayName | String | Human readable name for this feed | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
-| CofenseIntelligence.Threat.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
-| CofenseIntelligence.Threat.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
-| CofenseIntelligence.Threat.blockSet.confidence | Number | level of confidence in the threats block | 
-| CofenseIntelligence.Threat.blockSet.blockType | String | Data type of the watchlist item | 
-| CofenseIntelligence.Threat.blockSet.roleDescription | String | Description of infrastructure type | 
-| CofenseIntelligence.Threat.blockSet.role | String | Infrastructure Type | 
-| CofenseIntelligence.Threat.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
-| CofenseIntelligence.Threat.blockSet.data | String | Domain name or an IP address | 
-| CofenseIntelligence.Threat.blockSet.data_1 | String | Either a domain name or an IP address | 
-| CofenseIntelligence.Threat.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
-| CofenseIntelligence.Threat.domainSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.domainSet.domain | String | Sender domain name | 
-| CofenseIntelligence.Threat.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.executableSet.malwareFamily.description | String | Names and describes malware families. | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
-| CofenseIntelligence.Threat.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
-| CofenseIntelligence.Threat.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
-| CofenseIntelligence.Threat.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
-| CofenseIntelligence.Threat.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
-| CofenseIntelligence.Threat.executableSet.severityLevel | String | The malware infection severity level | 
-| CofenseIntelligence.Threat.executableSet.fileNameExtension | String | extension of the file | 
-| CofenseIntelligence.Threat.executableSet.md5Hex | String | The md5 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
-| CofenseIntelligence.Threat.executableSet.executableSubtype.description | String | description of the executable file | 
-| CofenseIntelligence.Threat.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
-| CofenseIntelligence.Threat.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
-| CofenseIntelligence.Threat.senderNameSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.senderNameSet.name | String | This is the friendly name of the sender of the email | 
-| CofenseIntelligence.Threat.subjectSet.totalCount | Number | Count of the instances of each item named | 
-| CofenseIntelligence.Threat.subjectSet.subject | String | Email subject line | 
-| CofenseIntelligence.Threat.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
-| CofenseIntelligence.Threat.firstPublished | Date | Timestamp of when this campaign was initially published | 
-| CofenseIntelligence.Threat.label | String | Human readable name for this campaign | 
-| CofenseIntelligence.Threat.executiveSummary | String | Analyst written summary of the campaign | 
-| CofenseIntelligence.Threat.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
-| CofenseIntelligence.Threat.reportURL | String | Direct URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.apiReportURL | String | URL to human readable report for this campaign | 
-| CofenseIntelligence.Threat.threatDetailURL | String | T3 Report URL | 
-| CofenseIntelligence.Threat.malwareFamilySet.familyName | String | Family name of malware | 
-| CofenseIntelligence.Threat.malwareFamilySet.description | String | Set of malware family | 
-| CofenseIntelligence.Threat.threatType | String | This will only have one value for malware | 
+| CofenseIntelligence.URL.Data | String | The URL |
+| CofenseIntelligence.URL.Threats.id | Number | Threat ID | 
+| CofenseIntelligence.URL.Threats.feeds.id | Number | Integer identifier for this feed | 
+| CofenseIntelligence.URL.Threats.feeds.permissions.WRITE | Boolean | True if you are allowed to submit data to this feed | 
+| CofenseIntelligence.URL.Threats.feeds.permissions.OWNER | Boolean | True if you are the original provider of the source data for this feed | 
+| CofenseIntelligence.URL.Threats.feeds.permissions.READ | Boolean | True if you are allowed to view data for this feed | 
+| CofenseIntelligence.URL.Threats.feeds.displayName | String | Human readable name for this feed | 
+| CofenseIntelligence.URL.Threats.blockSet.malwareFamily.familyName | String | Names and describes malware families | 
+| CofenseIntelligence.URL.Threats.blockSet.malwareFamily.description | String | Brief description of the malware family, what it does, or how it works | 
+| CofenseIntelligence.URL.Threats.blockSet.impact | String | Values borrowed from stixVocabs:ImpactRatingVocab-1.0 | 
+| CofenseIntelligence.URL.Threats.blockSet.confidence | Number | level of confidence in the threats block | 
+| CofenseIntelligence.URL.Threats.blockSet.blockType | String | Data type of the watchlist item | 
+| CofenseIntelligence.URL.Threats.blockSet.roleDescription | String | Description of infrastructure type | 
+| CofenseIntelligence.URL.Threats.blockSet.role | String | Infrastructure Type | 
+| CofenseIntelligence.URL.Threats.blockSet.infrastructureTypeSubclass.description | String | Brief description of infrastructure type being used | 
+| CofenseIntelligence.URL.Threats.blockSet.data | String | Domain name or an IP address | 
+| CofenseIntelligence.URL.Threats.blockSet.data_1 | String | Either a domain name or an IP address | 
+| CofenseIntelligence.URL.Threats.campaignBrandSet.totalCount | Number | Number of individual messages associated with this brand | 
+| CofenseIntelligence.URL.Threats.campaignBrandSet.brand.id | Number | Numeric identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.URL.Threats.campaignBrandSet.brand.text | String | String identifier used by Malcovery to track this brand | 
+| CofenseIntelligence.URL.Threats.domainSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.URL.Threats.domainSet.domain | String | Sender domain name | 
+| CofenseIntelligence.URL.Threats.senderEmailSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.URL.Threats.senderEmailSet.senderEmail | String | The possibly spoofed email address used in the delivery of the email. | 
+| CofenseIntelligence.URL.Threats.executableSet.malwareFamily.familyName | String | Family name of malware | 
+| CofenseIntelligence.URL.Threats.executableSet.malwareFamily.description | String | Names and describes malware families. | 
+| CofenseIntelligence.URL.Threats.executableSet.vendorDetections.detected | Boolean | Was executable detected? | 
+| CofenseIntelligence.URL.Threats.executableSet.vendorDetections.threatVendorName | String | Name of antivirus vendor | 
+| CofenseIntelligence.URL.Threats.executableSet.fileName | String | The file name of any file discovered during a malware infection | 
+| CofenseIntelligence.URL.Threats.executableSet.type | String | Description of the purpose this file serves within the malware infection | 
+| CofenseIntelligence.URL.Threats.executableSet.dateEntered | Date | Date when this file was analyzed by Malcovery | 
+| CofenseIntelligence.URL.Threats.executableSet.severityLevel | String | The malware infection severity level | 
+| CofenseIntelligence.URL.Threats.executableSet.fileNameExtension | String | extension of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.md5Hex | String | The md5 hash of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.sha384Hex | String | The SHA-384 hash of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.sha512Hex | String | The SHA-512 hash of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.sha1Hex | String | The SHA-1 hash of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.sha224Hex | String | The SHA-224 hash of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.sha256Hex | String | The SHA-256 hash of the file | 
+| CofenseIntelligence.URL.Threats.executableSet.executableSubtype.description | String | description of the executable file | 
+| CofenseIntelligence.URL.Threats.senderIpSet.totalCount | Number | Count of the instances of each item named. | 
+| CofenseIntelligence.URL.Threats.senderIpSet.ip | String | One of possibly many IPs used in the delivery of the email. | 
+| CofenseIntelligence.URL.Threats.senderNameSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.URL.Threats.senderNameSet.name | String | This is the friendly name of the sender of the email | 
+| CofenseIntelligence.URL.Threats.subjectSet.totalCount | Number | Count of the instances of each item named | 
+| CofenseIntelligence.URL.Threats.subjectSet.subject | String | Email subject line | 
+| CofenseIntelligence.URL.Threats.lastPublished | Date | Timestamp of when this campaign was most recently updated | 
+| CofenseIntelligence.URL.Threats.firstPublished | Date | Timestamp of when this campaign was initially published | 
+| CofenseIntelligence.URL.Threats.label | String | Human readable name for this campaign | 
+| CofenseIntelligence.URL.Threats.executiveSummary | String | Analyst written summary of the campaign | 
+| CofenseIntelligence.URL.Threats.hasReport | Boolean | Flag to show whether this campaign has a written report associated with it | 
+| CofenseIntelligence.URL.Threats.reportURL | String | Direct URL to human readable report for this campaign | 
+| CofenseIntelligence.URL.Threats.apiReportURL | String | URL to human readable report for this campaign | 
+| CofenseIntelligence.URL.Threats.threatDetailURL | String | T3 Report URL | 
+| CofenseIntelligence.URL.Threats.malwareFamilySet.familyName | String | Family name of malware | 
+| CofenseIntelligence.URL.Threats.malwareFamilySet.description | String | Set of malware family | 
+| CofenseIntelligence.URL.Threats.threatType | String | This will only have one value for malware | 
 
 
 #### Command Example
@@ -552,7 +551,8 @@ Checks the reputation of a URL.
 ```json
 {
     "CofenseIntelligence": {
-        "Threat": {
+        "Data": "http://prosciuttuamo.it/tmp/ifeanyi.exe",
+        "Threats": {
             "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/10882/html",
             "blockSet": [
                 {

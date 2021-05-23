@@ -296,21 +296,6 @@ script:
     - name: limit
       description: 'Maximum number of strings to search. Default is 10.'
     outputs:
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: string
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: number
-    - contextPath: DBotScore.Reliability
-      description: The actual score.
-      type: string
     - contextPath: CofenseIntelligence.Threats.id
       description: 'Threat ID'
       type: Number
@@ -490,7 +475,7 @@ script:
     - name: file
       required: true
       default: true
-      description: A CSV list of file hashes to check (MD5, SHA1, or SHA256).
+      description: A file md5 hash to check.
       isArray: false
     outputs:
     - contextPath: DBotScore.Indicator
