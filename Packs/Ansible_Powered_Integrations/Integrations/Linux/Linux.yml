@@ -973,13 +973,13 @@ script:
         to 255.255.255.0. A `!` argument before the address specification inverts
         the sense of the address.'
       name: destination
-    - defaultValue: '{}'
+    - defaultValue: ''
       description: 'TCP flags specification.
 
         `tcp_flags` expects a dict with the two keys `flags` and `flags_set`.'
       isArray: true
       name: tcp_flags
-    - defaultValue: '[]'
+    - defaultValue: ''
       description: 'Specifies a match to use, that is, an extension module that tests
         for a specific property.
 
@@ -1123,7 +1123,7 @@ script:
       name: set_dscp_mark_class
     - description: This specifies a comment that will be added to the rule.
       name: comment
-    - defaultValue: '[]'
+    - defaultValue: ''
       description: '`ctstate` is a list of the connection states to match in the conntrack
         module.
 
@@ -4180,7 +4180,7 @@ script:
         You can choose seconds, minutes, hours, days, or weeks by specifying the first
         letter of any of those words (e.g., "1w").'
       name: age
-    - defaultValue: '[]'
+    - defaultValue: ''
       description: 'One or more (shell or regex) patterns, which type is controlled
         by `use_regex` option.
 
@@ -7456,7 +7456,7 @@ script:
 
         possible, as it is much faster. Mutually exclusive with `pool_ids`.'
       name: pool
-    - defaultValue: '[]'
+    - defaultValue: ''
       description: 'Specify subscription pool IDs to consume. Prefer over `pool` when
         possible as it is much faster.
 
@@ -7488,7 +7488,7 @@ script:
       name: force_register
     - description: Set a release version
       name: release
-    - defaultValue: '{}'
+    - defaultValue: ''
       description: Set syspurpose attributes in file `/etc/rhsm/syspurpose/syspurpose.json`
         and synchronize these attributes with RHSM server. Syspurpose attributes help
         attach the most appropriate subscriptions to the system automatically. When
@@ -7565,7 +7565,7 @@ script:
       name: ca_cert
     - description: Supply an organizational id for use with registration.
       name: systemorgid
-    - defaultValue: '[]'
+    - defaultValue: ''
       description: Optionally specify a list of channels to subscribe to upon successful
         registration.
       isArray: true
