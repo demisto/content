@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -274,10 +275,11 @@ tasks:
       - "10"
     scriptarguments:
       message:
-        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}
-          \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the
-          following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\nPlease
-          work to fix the errors and proceed only once the incident can be closed."
+        simple: "The following instances failed: ${IAM.Vendor(val.success==false).instanceName}\
+          \ \nwith error codes: ${IAM.Vendor(val.success==false).errorCode}\nand the\
+          \ following error messages: ${IAM.Vendor(val.success==false).errorMessage}.\n\
+          \nPlease work to fix the errors and proceed only once the incident can be\
+          \ closed."
     separatecontext: false
     view: |-
       {
@@ -302,6 +304,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
