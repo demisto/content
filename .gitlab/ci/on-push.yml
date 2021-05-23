@@ -56,35 +56,27 @@ create-instances:
       fi
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - |
-      if [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+      if [[ -n "${CONTRIB_BRANCH}" ]]; then
         echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
       else
         echo "====== Preparing Content Packs For Testing ======"
         ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
       fi
     - |
-      if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
+      if [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
         echo "Skipping packs download to artifact on non master or release branch"
       else
         ZIP_FOLDER=$(mktemp -d)
         python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
       fi
     - |
-      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        echo "====== Creating instances ======"
-        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
-      fi
+      echo "====== Creating instances ======"
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
   after_script:
     - |
-      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        echo "====== Uploading artifacts to GCP ======"
-        ./Tests/scripts/upload_artifacts.sh
-      fi
+      echo "====== Uploading artifacts to GCP ======"
+      ./Tests/scripts/upload_artifacts.sh
 
 .test_content_on_server_instances_base:
   extends:
