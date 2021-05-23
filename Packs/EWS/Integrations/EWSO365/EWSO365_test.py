@@ -11,6 +11,7 @@ from EWSO365 import (
     add_additional_headers,
     handle_transient_files,
     handle_html,
+    fetch_last_emails
 )
 
 with open("test_data/commands_outputs.json", "r") as f:
@@ -258,3 +259,21 @@ def test_handle_html(mocker, html_input, expected_output):
     import EWSO365 as ewso365
     mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
     assert handle_html(html_input) == expected_output
+
+
+@pytest.mark.parametrize('since_datetime, expected_result',
+                         [])
+def test_fetch_last_emails(mocker, since_datetime, expected_result):
+    class MockObject:
+        def filter(self, last_modified_time__gte):
+            pass
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    mocker.patch.object(MockObject, 'filter')
+    fetch_last_emails(client, since_datetime=since_datetime)
+
+    assert MockObject.filter.call_args.kwargs.get('last_modified_time__gte') == expected_result
