@@ -140,10 +140,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Alert Test" --insecure -f
     - demisto-sdk download -o Packs/HelloWorld/ -i "Hello World Test - Incoming Mapper" --insecure -f
     - section_end "Download Entities from XSOAR Instance"
-    - echo "Format Content Items"
+    - section_start "Format Content Items" --collapsed
     - demisto-sdk format -i Packs/HelloWorld/ -nv -ud -y
-    - echo "Run Validate"
+    - section_end "Format Content Items"
+    - section_start "Run Validate" --collapsed
     - demisto-sdk validate -i Packs/HelloWorld/
-    - echo "Run Lint"
+    - section_end "Run Validate"
+    - section_start "Run Lint" --collapsed
     - demisto-sdk lint -i Packs/HelloWorld/
+    - section_end "Run Lint"
     - *upload-entities-to-cortex-xsoar
