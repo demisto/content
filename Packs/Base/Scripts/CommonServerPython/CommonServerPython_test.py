@@ -1200,7 +1200,7 @@ def test_is_demisto_version_build_ge(mocker):
     assert is_demisto_version_ge('6.0.0', '50000')
     assert not is_demisto_version_ge('6.0.0', '50001')
     assert not is_demisto_version_ge('6.1.0', '49999')
-    assert not is_demisto_version_ge('5.5.0', '1000000')
+    assert not is_demisto_version_ge('5.5.0', '50001')
 
 
 def is_demisto_version_ge_an_int(mocker):
