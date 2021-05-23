@@ -10,41 +10,41 @@ from taxii2client.v20 import Server, Collection, ApiRoot
 ''' CONSTANT VARIABLES '''
 
 MITRE_TYPE_TO_DEMISTO_TYPE = {
-    "attack-pattern": "Attack Pattern",
-    "course-of-action": "Course of Action",
-    "intrusion-set": "Intrusion Set",
-    "malware": "Malware",
-    "tool": "Tool",
+    "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
+    "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
+    "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "tool": ThreatIntel.ObjectsNames.TOOL,
     "relationship": "Relationship"
 }
 
 INDICATOR_TYPE_TO_SCORE = {
-    "Intrusion Set": 3,
-    "Attack Pattern": 2,
-    "Course of Action": 0,
-    "Malware": 3,
-    "Tool": 2
+    "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,
+    "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
+    "Course of Action": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
+    "Malware": ThreatIntel.ObjectsScore.MALWARE,
+    "Tool": ThreatIntel.ObjectsScore.TOOL
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
-    'build-capabilities': "Build Capabilities",
-    'privilege-escalation': "Privilege Escalation",
-    'adversary-opsec': "Adversary Opsec",
-    'credential-access': "Credential Access",
-    'exfiltration': "Exfiltration",
-    'lateral-movement': "Lateral Movement",
-    'defense-evasion': "Defense Evasion",
-    'persistence': "Persistence",
-    'collection': "Collection",
-    'impact': "Impact",
-    'initial-access': "Initial Access",
-    'discovery': "Discovery",
-    'execution': "Execution",
-    'installation': "Installation",
-    'delivery': "Delivery",
-    'weaponization': "Weaponization",
-    'act-on-objectives': "Actions on Objectives",
-    'command-and-control': "Command \u0026 Control"
+    'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
+    'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
+    'adversary-opsec': ThreatIntel.KillChainPhases.ADVERSARY_OPSEC,
+    'credential-access': ThreatIntel.KillChainPhases.CREDENTIAL_ACCESS,
+    'exfiltration': ThreatIntel.KillChainPhases.EXFILTRATION,
+    'lateral-movement': ThreatIntel.KillChainPhases.LATERAL_MOVEMENT,
+    'defense-evasion': ThreatIntel.KillChainPhases.DEFENSE_EVASION,
+    'persistence': ThreatIntel.KillChainPhases.PERSISTENCE,
+    'collection': ThreatIntel.KillChainPhases.COLLECTION,
+    'impact': ThreatIntel.KillChainPhases.IMPACT,
+    'initial-access': ThreatIntel.KillChainPhases.INITIAL_ACCESS,
+    'discovery': ThreatIntel.KillChainPhases.DISCOVERY,
+    'execution': ThreatIntel.KillChainPhases.EXECUTION,
+    'installation': ThreatIntel.KillChainPhases.INSTALLATION,
+    'delivery': ThreatIntel.KillChainPhases.DELIVERY,
+    'weaponization': ThreatIntel.KillChainPhases.WEAPONIZATION,
+    'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
+    'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
 
 FILTER_OBJS = {
@@ -315,7 +315,7 @@ def get_indicators_command(client, args):
             'Type': entryTypes['note'],
             'Contents': indicators,
             'ContentsFormat': formats['json'],
-            'HumanReadable': tableToMarkdown('MITRE ATT&CK Indicators:', indicators, ['value', 'score', 'type']),
+            'HumanReadable': tableToMarkdown('MITRE ATT&CK v2 Indicators:', indicators, ['value', 'score', 'type']),
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': {'MITRE.ATT&CK(val.value && val.value == obj.value)': indicators}
         }
