@@ -1,5 +1,89 @@
 {
-  "processes_search_command": [
-  {"query":"chrome.exe", "hostname":"ec2amaz-l4c2okc","facet": True, "facet_field":"hour_of_day"}, "")
-]
+  "processes_search_command": {
+    "Results": [
+      {
+        "process_md5": "processs_md5",
+        "sensor_id": 24,
+        "filtering_known_dlls": false,
+        "modload_count": 0,
+        "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
+        "emet_count": 0,
+        "cmdline": "(unknown)",
+        "filemod_count": 10,
+        "id": "00000018-0000-164c-01d5-9ed472b33472",
+        "parent_name": "(unknown)",
+        "parent_md5": "000000000000000000000000000000",
+        "group": "default group",
+        "parent_id": "00000018-ffff-ffff-0000-000000000000",
+        "hostname": "example_hostname",
+        "last_update": "2021-05-20T12:51:27.7Z",
+        "start": "2019-11-19T12:25:37.19Z",
+        "comms_ip": 314169177,
+        "regmod_count": 0,
+        "interface_ip": -1407250960,
+        "process_pid": 5708,
+        "username": "example_hostname\\username",
+        "terminated": false,
+        "process_name": "chrome.exe",
+        "emet_config": "",
+        "last_server_update": "2021-05-20T13:00:03.484Z",
+        "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
+        "netconn_count": 0,
+        "parent_pid": -1,
+        "crossproc_count": 0,
+        "segment_id": 1621515603479,
+        "watchlists": [
+          {
+            "segments_hit": [
+              1621515342039
+            ],
+            "wid": "1870",
+            "value": "2021-05-20T13:00:03.161Z"
+          }
+        ],
+        "host_type": "server",
+        "processblock_count": 0,
+        "os_type": "windows",
+        "childproc_count": 0,
+        "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989dc8e17"
+      },
+      {
+        "process_md5": "process_md5",
+        "sensor_id": 24,
+        "filtering_known_dlls": false,
+        "modload_count": 0,
+        "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
+        "emet_count": 0,
+        "cmdline": "(unknown)",
+        "filemod_count": 10,
+        "id": "00000018-0000-164c-01d5-9ed472b33472",
+        "parent_name": "(unknown)",
+        "parent_md5": "000000000000000000000000000000",
+        "group": "default group",
+        "parent_id": "00000018-ffff-ffff-0000-000000000000",
+        "hostname": "ec2amaz-l4c2okc",
+        "last_update": "2021-05-20T13:21:27.726Z",
+        "start": "2019-11-19T12:25:37.19Z",
+        "comms_ip": 314169177,
+        "regmod_count": 0,
+        "interface_ip": -1407250960,
+        "process_pid": 5708,
+        "username": "hostname\\user",
+        "terminated": false,
+        "process_name": "chrome.exe",
+        "emet_config": "",
+        "last_server_update": "2021-05-20T13:25:42.096Z",
+        "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
+        "netconn_count": 0,
+        "parent_pid": -1,
+        "crossproc_count": 0,
+        "segment_id": 1621517142090,
+        "host_type": "server",
+        "processblock_count": 0,
+        "os_type": "windows",
+        "childproc_count": 0,
+        "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989f4084a"
+      }
+    ]
+  }
 }

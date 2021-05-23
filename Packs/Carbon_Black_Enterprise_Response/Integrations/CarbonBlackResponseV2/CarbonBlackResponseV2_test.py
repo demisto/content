@@ -205,7 +205,7 @@ def test_crossproc(data_str, expected):
 
 
 ''' COMMANDS TESTS '''
-CLIENT = {"base_url": "https://content.demisto.works:30035/",
+CLIENT = {"base_url": "https://content.demisto.works:30035/api",
           "apitoken": "8bc9122f03757c61b69b189c973f5172147f03f0",
           "use_ssl": False,
           "use_proxy": False}
@@ -213,15 +213,17 @@ CLIENT = {"base_url": "https://content.demisto.works:30035/",
 
 PROCESS_SEARCH_CASES = [
     (
-        {'query':'chrome.exe', 'hostname':'ec2amaz-l4c2okc','facet': True, 'facet_field':'hour_of_day'}, ''
+        {'query':'chrome.exe', 'facet': True, 'facet_field':'hour_of_day'}, ''
 
     ),
 ]
 
-# @pytest.mark.parametrize('args, expected', PROCESS_SEARCH_CASES)
-# def test_processes_search_command(args, expected):
-#     from CarbonBlackResponseV2 import Client, processes_search_command
-#     client = Client(**CLIENT)
-#     res = processes_search_command(client, **args)
-#     assert res == expected
+@pytest.mark.parametrize('args, expected', PROCESS_SEARCH_CASES)
+def test_processes_search_command(args, expected):
+    from CarbonBlackResponseV2 import Client, processes_search_command
+    client = Client(**CLIENT)
+    mock_res = util_load_json('test_data/commands_test_data')
+
+    res = processes_search_command(client, **args)
+    assert res == expected
 

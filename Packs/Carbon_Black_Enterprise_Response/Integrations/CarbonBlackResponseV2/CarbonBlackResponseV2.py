@@ -429,7 +429,7 @@ def processes_search_command(client: Client, process_name: str = None, group: st
     outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Process', outputs_key_field='id',
-                          readable_output=res),
+                          readable_output=res)
 
 def sensor_installer_download_command(client: Client, os_type: str, group_id: str):
     url = f"/v1/group/{group_id}/installer/{os_type.replace('_', '/')}"
