@@ -1,6 +1,6 @@
-id: 'Threat Hunting - Generic '
+id: 'Threat Hunting - Generic'
 version: -1
-name: 'Threat Hunting - Generic '
+name: 'Threat Hunting - Generic'
 description: "This playbook enables threat hunting for IOCs in your enterprise.\n\
   This playbook currently supports the following integrations:\n- Splunk\n- Qradar\n\
   - Pan-os\n- Cortex data lake \n- Autofocus"
@@ -290,8 +290,8 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search. Can be a single domainor URL or an array of domains or URLs to search. By
-    default, the LIKE clause is used.
+  description: Domain or URL to search. Can be a single domainor URL or an array of
+    domains or URLs to search. By default, the LIKE clause is used.
   playbookInputQuery:
 - key: InternalRange
   value: {}
@@ -368,24 +368,5 @@ outputs:
     that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 tests:
-- Account Enrichment - Generic v2.1 - Test
-- Calculate Severity - Generic v2 - Test
-- Calculate Severity - Standard - Test
-- Test Convert file hash to corresponding hashes
-- Detonate File - Generic Test
-- Detonate File - No Files test
-- Detonate URL - Generic Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
-- Extract Indicators From File - Generic v2 - Test
-- Field polling test
-- File Enrichment - Generic v2 - Test
-- Generic Polling Test
-- IP Enrichment - Generic v2 - Test
-- Retrieve File from Endpoint - Generic V2 Test
-- Send Investigation Summary Reports - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Wait Until Datetime - Test
+- no tests
 fromversion: 6.0.0
