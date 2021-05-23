@@ -1663,7 +1663,7 @@ def create_relationships_list(entity_a, entity_a_type, tags, reliability):
     reliability (str): reliability of the source.
 
     return:
-    list of EntityRelation objects containing all the relations from the enricher.
+    list of EntityRelationship objects containing all the relationships from the enricher.
     """
     if not tags:
         return []
