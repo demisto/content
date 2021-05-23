@@ -1161,7 +1161,7 @@ jobs:
           shell: /bin/bash
           command: |
             ./Tests/scripts/slack_notifier.sh 'sdk_unittests' $CIRCLE_ARTIFACTS/env_results.json
-            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' $CIRCLE_ARTIFACTS/env_results.json
+            ./Tests/scripts/slack_notifier.sh 'sdk_failed_steps' $CIRCLE_ARTIFACTS/env_results.json
           when: always
 
   Demisto SDK Nightly - Run against Cortex XSOAR:
