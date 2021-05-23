@@ -9,11 +9,6 @@ Verifies that an email address is valid and only returns the address if it is va
 | Tags | indicator-format |
 | Demisto Version | 5.5.0 |
 
-## Used In
----
-This script is used in the following playbooks and scripts.
-* Extract Indicators - Generic
-
 ## Inputs
 ---
 
