@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Maps Splunk ES incoming fields.",
     "feed": false,
     "id": "Splunk - Notable Generic Incoming Mapper",
     "mapping": {
