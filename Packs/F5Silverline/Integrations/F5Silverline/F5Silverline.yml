@@ -129,7 +129,7 @@ script:
         denylist. If list_target is not specified it will assume both proxy and routed
         are requested (i.e proxy-routed). The allowed values for list_target are proxy
         or routed or proxy-routed. This argument limits the denylist type but is ignored
-        for the other list types.
+        for allowlist.
       isArray: false
       name: list_target
       predefined:
