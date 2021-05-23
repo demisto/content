@@ -7,7 +7,7 @@ name: GetCampaignIncidentsInfo
 runas: DBotWeakRole
 runonce: false
 script: ''
-comment: Get the campaign incidents information as MD table.
+comment: Get the campaign incidents information as a MD table.
 scripttarget: 0
 subtype: python3
 tags:
