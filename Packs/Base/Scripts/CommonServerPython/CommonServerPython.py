@@ -3137,7 +3137,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
+        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
 
         def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None):
             # type (str, str, bool) -> None
