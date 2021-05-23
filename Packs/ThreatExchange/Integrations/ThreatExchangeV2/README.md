@@ -38,9 +38,7 @@ For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the *pa
 
 2. The context output of the ***threatexchange-query*** command appears under *ThreatExchange - Query* instead of under *queryResult*.
 
-3.The output of reputation commands which was executed on an invalid input does not raise an exception, but provides an output
-  that says no information was found for the given input.
-  In addition a description of the error that occurred is added to the Cortex XSOAR server log.
+3. The output of reputation commands which was executed on an invalid input does not raise an exception, but provides an output that says no information was found for the given input. In addition a description of the error that occurred is added to the Cortex XSOAR server log.
 
 ## DBot Score / Reputation scores
 
@@ -696,7 +694,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### ThreatExchange Members: 
->>id|name|email|
+>|id|name|email|
 >|---|---|---|
 >| 906975333085907 | 2U ThreatExchange App | user@example.com |
 
