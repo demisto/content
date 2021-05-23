@@ -6,7 +6,7 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.9.5.20070
 enabled: true
-name: UserListToTable
+name: MS365DefenderUserListToTable
 runas: DBotWeakRole
 runonce: false
 script: |

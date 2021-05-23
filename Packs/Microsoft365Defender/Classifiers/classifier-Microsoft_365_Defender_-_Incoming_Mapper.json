@@ -16,19 +16,19 @@
                     "simple": "determination"
                 },
                 "Microsoft 365 Defender A": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alerts",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "args": {},
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
                 "Microsoft 365 Defender Active": {
                     "complex": null,
                     "simple": "Active alerts"

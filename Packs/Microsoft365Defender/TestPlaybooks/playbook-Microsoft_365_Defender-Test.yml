@@ -9,8 +9,6 @@ tasks:
   "0":
     id: "0"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "6"
@@ -24,6 +22,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 9093d0c7-777f-4c13-8bdb-093a431fecd6
     timertriggers: []
     type: start
@@ -37,8 +36,6 @@ tasks:
   "6":
     id: "6"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "7"
@@ -80,8 +77,6 @@ tasks:
       label: "yes"
     id: "7"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       "yes":
       - "8"
@@ -109,8 +104,6 @@ tasks:
   "8":
     id: "8"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "9"
@@ -152,8 +145,6 @@ tasks:
       label: "yes"
     id: "9"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       "yes":
       - "10"
@@ -181,8 +172,6 @@ tasks:
   "10":
     id: "10"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       '#none#':
       - "11"
@@ -229,8 +218,6 @@ tasks:
       label: "yes"
     id: "11"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     nexttasks:
       "yes":
       - "12"
@@ -258,8 +245,6 @@ tasks:
   "12":
     id: "12"
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
     quietmode: 0
     separatecontext: false
@@ -271,6 +256,7 @@ tasks:
       name: Test Done
       type: title
       version: -1
+      description: ''
     taskid: f8b62de7-0274-48a4-86a2-2e26dd6ff68a
     timertriggers: []
     type: title

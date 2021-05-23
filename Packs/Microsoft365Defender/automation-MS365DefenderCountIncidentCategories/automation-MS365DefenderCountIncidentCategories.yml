@@ -8,7 +8,6 @@ commonfields:
 dockerimage: demisto/python3:3.9.5.20070
 enabled: true
 name: MS365DefenderCountIncidentCategories
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: |-
@@ -46,3 +45,6 @@ subtype: python3
 tags:
 - transformer
 type: python
+fromversion: 5.5.0
+tests:
+- Microsoft_365_Defender-Test
