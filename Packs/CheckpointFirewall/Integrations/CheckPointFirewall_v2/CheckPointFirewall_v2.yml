@@ -968,7 +968,7 @@ script:
       defaultValue: None
     - name: new_position
       description: New position in the rulebase. Value can be "int" to set a specific
-        position, or str- 'top' or 'bottom'
+        position, or str- 'top' or 'bottom'.
     - name: ignore_warnings
       auto: PREDEFINED
       predefined:
