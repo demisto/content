@@ -309,7 +309,7 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
     demisto.info(result)
     if result:
         if result.get('total') == 0:
-            printable_result = 'no_more_output'
+            printable_result = ['no_more_output']
         else:
             result = result.get('objects')
             for element in result:
