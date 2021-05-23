@@ -15,6 +15,7 @@ stages:
 
 
 variables:
+  PY_COLORS: 1
   FORCE_COLOR: 1
   TERM: "xterm-256color"
   DONT_CACHE_LAST_RESPONSE: "true"
