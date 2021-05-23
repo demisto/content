@@ -1965,7 +1965,7 @@
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test",
-            "timeout": 500
+            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
