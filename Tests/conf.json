@@ -3402,7 +3402,6 @@
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "Rundeck_test": "Issue 31174",
-        "Azure NSG - Test": "Issue 33217",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
@@ -3618,7 +3617,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected."
+        "MISP V2": "Cleanup process isn't performed as expected.",
+        "Azure Network Security Groups": "Has a command that sends parameters in the path"
     },
     "parallel_integrations": [
         "AWS - EC2",
