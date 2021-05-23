@@ -339,7 +339,7 @@ script:
       description: Indicates if the object is read-only.
       type: Boolean
     - contextPath: CheckPoint.Group.members.ipv4-address
-      description: ipv4-address
+      description: Group members IPv4 addresses.
       type: string
     - contextPath: CheckPoint.Group.members.ipv6-address
       description: Group members IPv6 addresses.
