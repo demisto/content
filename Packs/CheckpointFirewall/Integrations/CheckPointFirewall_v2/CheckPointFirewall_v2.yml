@@ -132,7 +132,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore warnings when adding host
+      description: Whether to ignore warnings when adding a host.
       defaultValue: "false"
     - name: ignore_errors
       auto: PREDEFINED
