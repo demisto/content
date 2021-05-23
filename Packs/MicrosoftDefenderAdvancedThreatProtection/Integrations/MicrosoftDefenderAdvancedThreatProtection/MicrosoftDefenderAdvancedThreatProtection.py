@@ -171,7 +171,7 @@ class MsClient:
         self.alert_status_to_fetch = alert_status_to_fetch
         self.alert_time_to_fetch = alert_time_to_fetch
         # TODO: Replace with v1 endpoint when out.
-        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators'
+        self.indicators_endpoint = 'https://graph.microsoft.com/beta/security/tiIndicators?$top=200&count=true'
 
     def indicators_http_request(self, *args, **kwargs):
         """ Wraps the ms_client.http_request with scope=Scopes.graph
@@ -707,6 +707,7 @@ class MsClient:
         Returns:
             List of responses.
         """
+        results = {}
         cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
@@ -719,18 +720,24 @@ class MsClient:
         if resp.status_code == 404:
             return []
         resp = resp.json()
+        results.update(resp)
+
+        while next_link := resp.get('@odata.nextLink'):
+            resp = self.indicators_http_request('GET', full_url=next_link, url_suffix=None, timeout=1000)
+            results['value'].extend(resp.get('value'))
+
         # If 'value' is in the response, should filter and limit. The '@odata.context' key is in the root which we're
         # not returning
-        if 'value' in resp:
-            resp['value'] = list(
-                filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', resp.get('value', []))
+        if 'value' in results:
+            results['value'] = list(
+                filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', results.get('value', []))
             )
-            resp = resp['value']
+            results = results['value']
         # If a single object - should remove the '@odata.context' key.
         else:
-            resp.pop('@odata.context')
-            resp = [resp]
-        return [assign_params(values_to_ignore=[None], **item) for item in resp]
+            results.pop('@odata.context')
+            results = [results]
+        return [assign_params(values_to_ignore=[None], **item) for item in results]
 
     def create_indicator(self, body: Dict) -> Dict:
         """Creates indicator from the given body.
