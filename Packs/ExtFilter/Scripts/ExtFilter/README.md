@@ -385,6 +385,7 @@ Available operators
 * `email-header: decode`
 * `regex: replace`
 * `is individually transformed with`
+* `is collectively transformed with`
 
 
 ----
@@ -8540,7 +8541,7 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
-> **Operator**: is transformed with
+> **Operator**: is individually transformed with
 
 > **Path**: 
 
@@ -8579,7 +8580,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Filter
-> **Operator**: is transformed with
+> **Operator**: is individually transformed with
 
 > **Path**: File
 
@@ -8620,7 +8621,7 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
-> **Operator**: is transformed with
+> **Operator**: is individually transformed with
 
 > **Path**: 
 
@@ -8657,7 +8658,7 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
-> **Operator**: is transformed with
+> **Operator**: is individually transformed with
 
 > **Path**: 
 
@@ -8679,6 +8680,71 @@ See `Filter Syntax` for the details of `transformers`.
         "Name": "b.exe",
         "Size": 201
       }
+    ]
+
+</details>
+
+
+----
+### Operator: `is collectively transformed with`
+<details><summary>
+Transform elements with `transformers` given in a filter. The elements are handled and transformed as one value at the first level if the type of it is array.
+See `Filter Syntax` for the details of `transformers`.
+</summary><p/>
+
+> **Filter Format**: `transformers`
+
+#### Example 1
+##### Input
+    [
+      {
+        "Name": "a.dat",
+        "Trusted": true
+      },
+      {
+        "Name": "b.exe",
+        "Trusted": false
+      },
+      {
+        "Name": "c.txt",
+        "Trusted": true
+      }
+    ]
+
+##### Filter
+> **Operator**: is collectively transformed with
+
+> **Path**: 
+
+> **Filter**:
+
+    {
+      "switch-case": {
+        "switch": {
+          "#has_untrusted": {
+            "is filtered with": {
+              "Trusted": {
+                "===": false
+              }
+            }
+          }
+        },
+        "#has_untrusted": {
+          "is replaced with": [
+            "Untrusted"
+          ]
+        },
+        "default": {
+          "is replaced with": [
+            "Trusted"
+          ]
+        }
+      }
+    }
+
+##### Output
+    [
+      "Untrusted"
     ]
 
 </details>
