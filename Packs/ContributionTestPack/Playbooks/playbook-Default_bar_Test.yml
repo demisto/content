@@ -1,0 +1,373 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook executes when no other playbook is associated with an incident.
+  It enriches indicators in an incident using one or more integrations.
+id: Default_bar_Test
+inputs:
+- description: Determines whether to enrich all indicators in the incident.
+  key: Enrich
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "True"
+name: Default_bar_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7de2f931-67e5-430f-885a-bfb2af176b4a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7de2f931-67e5-430f-885a-bfb2af176b4a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Enrich
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      left: {}
+      right: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the Enrich playbook input is set to True.
+      id: 1142c1ab-b115-4513-8d7d-4c8ca1df3ef2
+      iscommand: false
+      name: Should indicators be extracted and enriched?
+      type: condition
+      version: -1
+    taskid: 1142c1ab-b115-4513-8d7d-4c8ca1df3ef2
+    timertriggers:
+    - action: start
+      fieldname: slatest
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy: {}
+      email: {}
+      onCall: {}
+      roles: {}
+      username:
+        simple: ${incident.owner}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assigns a random analyst to this incident.
+      id: 261f752c-3d74-4f59-8c79-1f124e20497c
+      iscommand: false
+      name: Assign analyst to incident
+      script: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 261f752c-3d74-4f59-8c79-1f124e20497c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a6dd57f-d279-411c-8009-b078ac115f1a
+      iscommand: false
+      name: Enrich indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: 0a6dd57f-d279-411c-8009-b078ac115f1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 402.5,
+          "y": 390
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "No":
+      - "12"
+      "Yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually review and investigate this incident.
+      id: a1da3b63-7ccd-458e-8ebc-2d9e949dc132
+      iscommand: false
+      name: Manually review the incident.
+      type: condition
+      version: -1
+    taskid: a1da3b63-7ccd-458e-8ebc-2d9e949dc132
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Default Enrichment Playbook
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Closes the current incident.
+      id: ae3c0a8f-a8f0-42f6-8874-32bc30247512
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: ae3c0a8f-a8f0-42f6-8874-32bc30247512
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 1410
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        complex:
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Extracts all indicators that match the regex for the indicator
+        type, and enriches the repuration using the reputation command defined for
+        the indicator type.
+      id: ad2debde-d8bc-4a21-8caa-6c1cbf85bc3a
+      iscommand: true
+      name: Extract indicators from incident
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: ad2debde-d8bc-4a21-8caa-6c1cbf85bc3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 402.5,
+          "y": 520
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Enrich entities using one or more integrations
+      id: 51ae43be-0493-482e-8e37-271a37eed148
+      iscommand: false
+      name: Entity Enrichment - Generic v2
+      playbookId: Entity Enrichment - Generic v2
+      type: playbook
+      version: -1
+    taskid: 51ae43be-0493-482e-8e37-271a37eed148
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 402.5,
+          "y": 690
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+      id: 8d68b41f-8608-4478-849e-96ca375000fe
+      iscommand: false
+      name: Calculate Severity - Generic v2
+      playbookId: Calculate Severity - Generic v2
+      type: playbook
+      version: -1
+    taskid: 8d68b41f-8608-4478-849e-96ca375000fe
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 402.5,
+          "y": 860
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d607f1da-53ae-4b18-8fa6-5763b255859d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: d607f1da-53ae-4b18-8fa6-5763b255859d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.17,
+      "7_12_No": 0.65,
+      "7_8_Yes": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1605,
+        "width": 732.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
