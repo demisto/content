@@ -263,11 +263,6 @@ def main():
         if command == 'aws-acm-get-certificate':
             get_certificate(args, aws_client)
 
-    except ResponseParserError as e:
-        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-            error=type(e)))
-        LOG(str(e))
-
     except Exception as e:
         LOG(str(e))
         return_error('Error has occurred in the AWS ACM Integration: {code}\n {message}'.format(
