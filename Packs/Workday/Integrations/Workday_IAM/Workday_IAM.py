@@ -433,8 +433,9 @@ def fetch_incidents(client, mapper_in, report_url, workday_date_format, deactiva
             if event is not None:
                 events.append(event)
 
-            # store all user emails from workday report for later use
-            user_emails.append(workday_user.get(EMAIL_ADDRESS_FIELD))
+            # we store all emails of user profiles for later use
+            if demisto_user is not None:
+                user_emails.append(demisto_user.get(EMAIL_ADDRESS_FIELD))
 
         # terminate users in XSOAR which are not on workday report
         orphan_users_events = get_orphan_users(email_to_user_profile, user_emails)
