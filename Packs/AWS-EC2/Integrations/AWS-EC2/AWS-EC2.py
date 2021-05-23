@@ -2,7 +2,6 @@ from datetime import date
 
 import demistomock as demisto  # noqa: F401
 import urllib3.util
-from botocore.parsers import ResponseParserError
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
