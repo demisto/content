@@ -32,7 +32,7 @@ HEADERS = {
 RELATIONSHIP_TYPE_BY_TAG_CLASS_ID = {
     1: {'entity_b_type': 'STIX Threat Actor',
         'name': 'indicator-of'},
-    2: {'entity_b_type': 'Campaign',  # ??????????????????????????????
+    2: {'entity_b_type': 'Campaign',
         'name': 'indicator-of'},
     3: {'entity_b_type': 'STIX Malware',
         'name': 'indicator-of'},
