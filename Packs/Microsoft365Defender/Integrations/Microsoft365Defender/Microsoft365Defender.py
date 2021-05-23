@@ -416,6 +416,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             raw_incidents = response.get('value')
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
+            
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),
