@@ -25,7 +25,8 @@ class Email(object):
         try:
             email_object = parse_from_bytes(message_bytes)
         except UnicodeDecodeError as e:
-            demisto.debug(f'Failed parsing mail from bytes: [{e}]. Will replace backslash and try to parse again')
+            demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
+                         '\nWill replace backslash and try to parse again')
             message_bytes = message_bytes.replace(b'\\U', b'\\\\U').replace(b'\\u', b'\\\\u')
             email_object = parse_from_bytes(message_bytes)
         self.id = id_
