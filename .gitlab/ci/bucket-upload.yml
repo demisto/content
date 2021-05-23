@@ -37,7 +37,7 @@
     fi
   - section_end "Check User Permissions to Upload Packs"
 
-create-instances-bucket-upload:
+create-instances-upload-flow:
   extends:
     - create-instances
   variables:
