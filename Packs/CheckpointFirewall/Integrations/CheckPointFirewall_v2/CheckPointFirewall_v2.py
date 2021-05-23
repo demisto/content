@@ -46,7 +46,8 @@ class Client(BaseClient):
     def add_host(self, name, ip_address, ignore_warnings: bool, ignore_errors: bool, groups):
         return self._http_request(method='POST', url_suffix='add-host', headers=self.headers,
                                   json_data={"name": name, "ip-address": ip_address,
-                                             "ignore-warnings": ignore_warnings, "ignore-errors": ignore_errors, "groups": groups})
+                                             "ignore-warnings": ignore_warnings, "ignore-errors": ignore_errors,
+                                             "groups": groups})
 
     def update_host(self, identifier: str, ignore_warnings: bool, ignore_errors: bool,
                     ip_address: Optional[str], new_name: Optional[str],
@@ -65,7 +66,8 @@ class Client(BaseClient):
 
     def delete_host(self, identifier: str, ignore_warnings: bool, ignore_errors: bool):
         return self._http_request(method='POST', url_suffix='delete-host', headers=self.headers,
-                                  json_data={'name': identifier,"ignore-warnings": ignore_warnings, "ignore-errors": ignore_errors})
+                                  json_data={'name': identifier, "ignore-warnings": ignore_warnings,
+                                             "ignore-errors": ignore_errors})
 
     def list_groups(self, limit: int, offset: int):
         return self._http_request(method='POST', url_suffix='show-groups', headers=self.headers,
@@ -363,6 +365,8 @@ def checkpoint_add_host_command(client: Client, name, ip_address, ignore_warning
         name(str): host name.
         ip_address: ip address linked to the host.
         groups (str or list): Collection of group identifiers.
+        ignore_warnings (str): Whether to ignore warnings when adding a host.
+        ignore_errors (str): Whether to ignore errors when adding a host.
     """
     name = argToList(name)
     ip_address = argToList(ip_address)
@@ -439,13 +443,16 @@ def checkpoint_update_host_command(client: Client, identifier: str, ignore_warni
     return command_results
 
 
-def checkpoint_delete_host_command(client: Client, identifier,ignore_warnings: bool, ignore_errors: bool) -> CommandResults:
+def checkpoint_delete_host_command(client: Client, identifier, ignore_warnings: bool, ignore_errors: bool)\
+        -> CommandResults:
     """
     delete host object using object name or uid.
 
     Args:
         client (Client): CheckPoint client.
-        identifier(str): uid or name.
+        identifier (str): uid or name.
+        ignore_warnings (bool): Whether to ignore warnings when adding a host.
+        ignore_errors (bool): Whether to ignore errors when adding a host.
     """
     identifiers_list = argToList(identifier)
     readable_output = ''
