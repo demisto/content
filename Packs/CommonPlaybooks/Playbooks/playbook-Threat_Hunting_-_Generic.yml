@@ -388,4 +388,4 @@ tests:
 - test-domain-indicator
 - URL Enrichment - Generic v2 - Test
 - Wait Until Datetime - Test
-fromversion: 5.5.0
+fromversion: 6.0.0
