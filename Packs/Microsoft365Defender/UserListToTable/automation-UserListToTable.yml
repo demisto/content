@@ -2,7 +2,7 @@ args:
 - name: value
   description: list of users
 commonfields:
-  id: UserListToTable
+  id: MS365DefenderUserListToTable
   version: -1
 dockerimage: demisto/python3:3.9.5.20070
 enabled: true

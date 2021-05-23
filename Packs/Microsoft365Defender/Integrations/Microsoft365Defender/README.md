@@ -12,12 +12,13 @@ protection against sophisticated attacks.
        | --- | --- | --- |
    | APP ID | The API Key to use for connection | True |
    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+   | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
    | Number of incidents for each fetch. | Due to API limitations, the maximum is 100 | False |
    | Trust any certificate (not secure) |  | False |
    | Use system proxy settings |  | False |
    | Incident type |  | False |
    | Fetch incidents |  | False |
-
+   
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
@@ -150,7 +151,7 @@ Get the most recent incidents.
 | status | Categorize incidents (as Active,  Resolved or Redirected). Possible values are: Active, Resolved, Redirected. | Optional | 
 | assigned_to | Owner of the incident.	. | Optional | 
 | limit | Number of incidents in the list (Max 100). Default is 100. | Optional | 
-
+| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
 
 #### Context Output
 
@@ -199,6 +200,7 @@ Update incident with the given ID.
 | classification | The specification for the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | Optional | 
 | determination | Determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | Optional | 
 | tags | A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
 
 
 #### Context Output
@@ -242,7 +244,7 @@ Details on how to write queries you can find [here](https://docs.microsoft.com/e
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Advanced hunting query. | Required | 
-
+| timeout | The time limit in seconds for the http request to run. Default value is 30| Optional |
 
 #### Context Output
 

@@ -1,5 +1,5 @@
 from typing import Dict, Optional, List
-import demistomock as demisto
+import dateparser
 
 import urllib3
 
@@ -309,7 +309,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     if readable_incidents:
         headers = list(readable_incidents[0].keys())  # the table headers are the incident keys.
         human_readable = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
-    
+
     else:
         human_readable = "No incidents found"
 
@@ -417,7 +417,7 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
             raw_incidents = response.get('value')
             for incident in raw_incidents:
                 incident.update(_get_meta_data_for_incident(incident))
-            
+
             incidents += [{
                 "name": f"Microsoft 365 Defender {incident.get('incidentId')}",
                 "occurred": incident.get('createdTime'),

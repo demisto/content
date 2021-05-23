@@ -15,6 +15,20 @@
                     "complex": null,
                     "simple": "determination"
                 },
+                "Microsoft 365 Defender A": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "alerts",
+						"transformers": [
+							{
+								"args": {},
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					},
+					"simple": ""
+				},
                 "Microsoft 365 Defender Active": {
                     "complex": null,
                     "simple": "Active alerts"
@@ -39,7 +53,7 @@
                             },
                             {
                                 "args": {},
-                                "operator": "ab282779-9eea-497c-8cff-be4f4ecdc080"
+                                "operator": "MS365DefenderCountIncidentCategories"
                             }
                         ]
                     },
@@ -112,7 +126,7 @@
                             },
                             {
                                 "args": {},
-                                "operator": "3b758874-5a4b-417f-8ad8-5add2f5d8608"
+                                "operator": "MS365DefenderUserListToTable"
                             },
                             {
                                 "args": {},
