@@ -23,8 +23,8 @@ Use the following arguments in the URL to modify the request:
  * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?n=50
 2. **s** - The starting entry index from which to export the indicators.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?s=10&n=50
-3. **q** - The query used to retrieve indicators from the system.
- * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?q="type:ip and sourceBrand:my_source"
+3. **q** - The query used to retrieve indicators from the system. Make sure to [URL encode](https://www.w3schools.com/tags/ref_urlencode.ASP).
+ * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?q=type:IP+and+reputation:Bad
 4. **sp** - If set will strip ports off URLs, otherwise will ignore URLs with ports.
  * Example: https://{cortex-xsoar_instance}/instance/execute/{EDL_instance_name}?v=panosurl&sp 
 5. **di** - If set will ignore URLs that are not compliant with PAN-OS URL format instead of being rewritten.
