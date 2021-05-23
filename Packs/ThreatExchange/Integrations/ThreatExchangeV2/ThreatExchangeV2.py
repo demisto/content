@@ -736,7 +736,7 @@ def members_command(client: Client) -> CommandResults:
     """
     raw_response = client.members()
     if data := raw_response.get('data'):
-        headers = ['ID', 'Name', 'Email']
+        headers = ['id', 'name', 'email']
         readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Members: ', data, headers=headers, removeNull=True)
     else:  # no data
         readable_output = f'{CONTEXT_PREFIX} does not have any members \n'
