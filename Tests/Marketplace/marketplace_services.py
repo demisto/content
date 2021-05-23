@@ -1652,6 +1652,9 @@ class Pack(object):
             self._partner_id = user_metadata.get('partnerId', "")
             self._partner_name = user_metadata.get('partnerName', "")
             self._content_commit_hash = user_metadata.get('contentCommitHash', "")
+            # Currently all content packs are legacy.
+            # Since premium packs cannot be legacy, we directly set this attribute to false.
+            self._legacy = False
 
         # ===== Pack Statistics Attributes =====
         if not self._is_private_pack and statistics_handler:  # Public Content case
