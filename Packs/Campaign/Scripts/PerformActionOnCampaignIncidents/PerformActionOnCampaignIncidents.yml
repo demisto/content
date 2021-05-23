@@ -7,7 +7,7 @@ name: PerformActionOnCampaignIncidents
 runas: DBotWeakRole
 runonce: false
 script: ''
-comment: Perform user actions like Link, Close etc on selected incidents from a campaign.
+comment: Perform user actions like Link, Close, etc., on selected incidents from a campaign.
 scripttarget: 0
 subtype: python3
 tags: []
