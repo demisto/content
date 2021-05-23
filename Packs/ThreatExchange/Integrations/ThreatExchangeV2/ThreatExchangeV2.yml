@@ -582,7 +582,7 @@ script:
       default: false
       description: The type of descriptor to search for.
       isArray: false
-      name: descriptor_type
+      name: type
       predefined:
       - ADJUST_TOKEN
       - API_KEY

@@ -390,10 +390,7 @@ def flatten_outputs_paging(raw_response: Dict) -> Dict:
 def get_malicious_description(score: int, reputation_data: List[Dict], params: Dict[str, Any]) -> Optional[str]:
     """
     Gets the malicious description of certain indicator.
-    If the indicator was classified as malicious, description will be determined by going over all the data entries
-    of reputation_data (that was returned from ThreatExchange reputation call) which their status is 'malicious',
-    and selecting the description of the first data entry which has a description.
-    If such a description doesn't exist, description will be defined as default malicious description.
+    If the indicator was classified as malicious, description is defined as default malicious description.
     If the indicator wasn't classified as malicious, description will be None (and won't be added to context).
     Args:
         score: calculated dbot score of the indicator
@@ -403,14 +400,10 @@ def get_malicious_description(score: int, reputation_data: List[Dict], params: D
     Returns: malicious description
 
     """
+    malicious_description: Union[str, None]
     if score == Common.DBotScore.BAD:
         malicious_threshold = arg_to_number(params.get('malicious_threshold', 50))
         default_description = DEFAULT_DESCRIPTION_FOR_MALICIOUS_INDICATOR.format(malicious_threshold)
-        for data_entry in reputation_data:
-            status = data_entry.get('status')
-            if status == ThreatExchangeV2Status.MALICIOUS:
-                if malicious_description := data_entry.get('description'):
-                    return malicious_description
         malicious_description = default_description
 
     else:  # dbot-score isn't malicious
@@ -743,7 +736,8 @@ def members_command(client: Client) -> CommandResults:
     """
     raw_response = client.members()
     if data := raw_response.get('data'):
-        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Members: ', data, removeNull=True)
+        headers = ['ID', 'Name', 'Email']
+        readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Members: ', data, headers=headers, removeNull=True)
     else:  # no data
         readable_output = f'{CONTEXT_PREFIX} does not have any members \n'
 
@@ -762,7 +756,7 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     Searches for subjective opinions on indicators of compromise stored in ThreatExchange.
     """
     text = str(args.get('text'))
-    descriptor_type = str(args.get('descriptor_type'))
+    descriptor_type = str(args.get('type'))
     since = convert_string_to_epoch_time(args.get('since'), arg_name='since')
     until = convert_string_to_epoch_time(args.get('until'), arg_name='until')
     limit = arg_to_number(args.get('limit'), arg_name='limit')
@@ -781,6 +775,7 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Query Result:', data, headers=headers)
         if raw_response.get('paging'):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
+            readable_output += tableToMarkdown('Pagination:', outputs.get('paging'))
         else:  # no paging
             outputs = raw_response
 
@@ -789,11 +784,11 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         outputs = raw_response
 
     outputs['text'] = text
-    outputs['descriptor_type'] = descriptor_type
+    outputs['type'] = descriptor_type
 
     result = CommandResults(
         outputs_prefix=f'{CONTEXT_PREFIX}.Query',
-        outputs_key_field=['text', 'descriptor_type'],
+        outputs_key_field=['text', 'type'],
         outputs=outputs,
         readable_output=readable_output,
         raw_response=raw_response
@@ -823,6 +818,7 @@ def tags_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Tags: ', data, removeNull=True)
         if raw_response.get('paging'):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
+            readable_output += tableToMarkdown('Pagination:', outputs.get('paging'))
         else:  # no paging
             outputs = raw_response
 
@@ -865,6 +861,7 @@ def tagged_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
                                           removeNull=True)
         if raw_response.get('paging'):  # if paging exist - flatten the output
             outputs = flatten_outputs_paging(raw_response)
+            readable_output += tableToMarkdown('Pagination:', outputs.get('paging'))
         else:  # no paging
             outputs = raw_response
 

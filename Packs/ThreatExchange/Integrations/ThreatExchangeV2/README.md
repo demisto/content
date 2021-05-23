@@ -28,16 +28,15 @@ For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the ***
     | Non Malicious Threshold | If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
-## Backwards compatibility
-The integration is fully backwards compatible with the ThreatExchange integration. 
-
+ 
 ## Changes compared to previous version
-1. The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
-that says no information was found for the given input.
-In addition a description of the error that occurred is added to the Cortex XSOAR server log.
+1. Dbot score calculation is different see the section below for more details.
 
-2. Dbot score calculation is different see the section below for more details. 
+2. The context output of the command **threatexchange-query** appears under ThreatExchange - Query instead of under queryResult.
+
+3.The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
+  that says no information was found for the given input.
+  In addition a description of the error that occurred is added to the Cortex XSOAR server log.
 
 ## DBot Score / Reputation scores
 
@@ -539,7 +538,7 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | text | Free-form text field with a value to search for. This can be a file hash or a string found in other fields of the objects. | Required | 
-| descriptor_type | The type of descriptor to search for. Possible values are: ADJUST_TOKEN, API_KEY, AS_NUMBER, BANNER, CMD_LINE, COOKIE_NAME, CRX, DEBUG_STRING, DEST_PORT, DIRECTORY_QUERIED, DOMAIN, EMAIL_ADDRESS, FILE_CREATED, FILE_DELETED, FILE_MOVED, FILE_NAME, FILE_OPENED, FILE_READ, FILE_WRITTEN, GET_PARAM, HASH_IMPHASH, HASH_MD5, HASH_PDQ, HASH_TMK, HASH_SHA1, HASH_SHA256, HASH_SSDEEP, HASH_VIDEO_MD5, HTML_ID, HTTP_REQUEST, IP_ADDRESS, IP_SUBNET, ISP, LATITUDE, LATITUDE, LAUNCH_AGENT, LOCATION, LONGITUDE, MALWARE_NAME, MEMORY_ALLOC, MEMORY_PROTECT, MEMORY_WRITTEN, MUTANT_CREATED, MUTEX, NAME_SERVER, OTHER_FILE_OP, PASSWORD, PASSWORD_SALT, PAYLOAD_DATA, PAYLOAD_TYPE, POST_DATA, PROTOCOL, REFERER, REGISTRAR, REGISTRY_KEY, REG_KEY_CREATED, REG_KEY_DELETED, REG_KEY_ENUMERATED, REG_KEY_MONITORED, REG_KEY_OPENED, REG_KEY_VALUE_CREATED, REG_KEY_VALUE_DELETED, REG_KEY_VALUE_MODIFIED, REG_KEY_VALUE_QUERIED, SIGNATURE, SOURCE_PORT, TELEPHONE, TEXT_STRING, TREND_QUERY, URI, USER_AGENT, VOLUME_QUERIED, WEBSTORAGE_KEY, WEB_PAYLOAD, WHOIS_NAME, WHOIS_ADDR1, WHOIS_ADDR2, XPI. | Required | 
+| type | The type of descriptor to search for. Possible values are: ADJUST_TOKEN, API_KEY, AS_NUMBER, BANNER, CMD_LINE, COOKIE_NAME, CRX, DEBUG_STRING, DEST_PORT, DIRECTORY_QUERIED, DOMAIN, EMAIL_ADDRESS, FILE_CREATED, FILE_DELETED, FILE_MOVED, FILE_NAME, FILE_OPENED, FILE_READ, FILE_WRITTEN, GET_PARAM, HASH_IMPHASH, HASH_MD5, HASH_PDQ, HASH_TMK, HASH_SHA1, HASH_SHA256, HASH_SSDEEP, HASH_VIDEO_MD5, HTML_ID, HTTP_REQUEST, IP_ADDRESS, IP_SUBNET, ISP, LATITUDE, LATITUDE, LAUNCH_AGENT, LOCATION, LONGITUDE, MALWARE_NAME, MEMORY_ALLOC, MEMORY_PROTECT, MEMORY_WRITTEN, MUTANT_CREATED, MUTEX, NAME_SERVER, OTHER_FILE_OP, PASSWORD, PASSWORD_SALT, PAYLOAD_DATA, PAYLOAD_TYPE, POST_DATA, PROTOCOL, REFERER, REGISTRAR, REGISTRY_KEY, REG_KEY_CREATED, REG_KEY_DELETED, REG_KEY_ENUMERATED, REG_KEY_MONITORED, REG_KEY_OPENED, REG_KEY_VALUE_CREATED, REG_KEY_VALUE_DELETED, REG_KEY_VALUE_MODIFIED, REG_KEY_VALUE_QUERIED, SIGNATURE, SOURCE_PORT, TELEPHONE, TEXT_STRING, TREND_QUERY, URI, USER_AGENT, VOLUME_QUERIED, WEBSTORAGE_KEY, WEB_PAYLOAD, WHOIS_NAME, WHOIS_ADDR1, WHOIS_ADDR2, XPI. | Required | 
 | limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
 | headers | Headers to display in Human readable format, comma separated format, for example: header1,header2,header3. | Optional | 
 | since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g 1619870400), iso 8601 (e.g 2021-05-01T12:00:00) and free text (e.g 24 hours ago). | Optional | 
@@ -567,7 +566,7 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
 
 
 #### Command Example
-```!threatexchange-query text=geektime descriptor_type=URI limit=3```
+```!threatexchange-query text=geektime type=URI limit=3```
 
 #### Context Example
 ```json
@@ -599,12 +598,12 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
                     "type": "URI"
                 }
             ],
-            "descriptor_type": "URI",
             "paging": {
                 "after": "AcEQhEzPvmSJmlNNuYsT8wLbhsiWSGZAhyvnrCTolXwfX172HzdMJphzLsXxOnlNtkz8ZD",
                 "before": "AcFuZAqH9BMZANX7CZA4wPjGvfWhrf3HZC8WyAHwLILM31aQNNPW25hIljOrSeeyQDBrYQoZD"
             },
-            "text": "geektime"
+            "text": "geektime",
+            "type": "URI"
         }
     }
 }
