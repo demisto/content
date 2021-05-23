@@ -266,7 +266,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to ignore warnings when delete host
+      description: Whether to ignore warnings when deleting a host.
       defaultValue: "false"
     - name: ignore_errors
       auto: PREDEFINED
