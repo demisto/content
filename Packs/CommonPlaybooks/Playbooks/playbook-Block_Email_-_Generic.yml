@@ -113,5 +113,5 @@ inputs:
 outputs: []
 tests:
 - no tests
-fromversion: 5.5.0
+fromversion: 5.0.0
 description: This playbook will block emails at your mail relay integration.

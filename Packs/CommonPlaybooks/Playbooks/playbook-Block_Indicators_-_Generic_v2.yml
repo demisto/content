@@ -542,7 +542,7 @@ inputs:
 - key: EmailToBlock
   value: {}
   required: false
-  description: 'The email address that you wish to block. '
+  description: 'The email address that you wish to block.'
   playbookInputQuery:
 outputs:
 - contextPath: CheckpointFWRule.Domain
