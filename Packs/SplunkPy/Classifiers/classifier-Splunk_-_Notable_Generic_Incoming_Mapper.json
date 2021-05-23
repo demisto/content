@@ -59,10 +59,6 @@
                     "complex": null,
                     "simple": "urgency"
                 },
-                "Occurred Time": {
-                    "complex": null,
-                    "simple": "_time"
-                },
                 "Srcs": {
                     "complex": null,
                     "simple": "src"

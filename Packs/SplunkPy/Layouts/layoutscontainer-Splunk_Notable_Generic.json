@@ -398,7 +398,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "occurredtime",
+                                "fieldId": "occurred",
                                 "height": 22,
                                 "id": "0577c790-ab88-11eb-b1fb-fd250246d749",
                                 "index": 7,
