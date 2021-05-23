@@ -1,14 +1,18 @@
-Receive threat intelligence about applications, IP addresses, URLs and hashes, a service by Facebook
+Receive threat intelligence about applications, IP addresses, URLs, and hashes. A service by Facebook
 This integration was integrated and tested with API version v3.2 of ThreatExchange 
 
 ## Authentication
 The ThreatExchange APIs perform authentication via access tokens consisting of App ID and App Secret.
-In order to get your App ID and App Secret, Facebook must first confirm your app's access to ThreatExchange.
+
+In order to get your App ID and App Secret, Facebook must first confirm your App's access to ThreatExchange.
+
 After Facebook notifies you that your App can access ThreatExchange, go to the App's **Settings** - **Basic** - and copy your App ID and App Secret.
-When configuring ThreatExchange v2 on Cortex XSOAR, set the copied values in the ***App ID*** and ***App Secret*** fields.
+
+When configuring ThreatExchange v2 on Cortex XSOAR, set the copied values in the *App ID* and *App Secret* fields. 
+
 For more information see [the ThreatExchange API Overview](https://developers.facebook.com/docs/threat-exchange/api/v10.0)
 
-For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the ***password*** field. 
+For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the *password* field.
 
 ## Configure ThreatExchange v2 on Cortex XSOAR
 
@@ -23,18 +27,18 @@ For Cortex XSOAR versions 6.0 and below, the App Secret should be set in the ***
     | Source Reliability | Reliability of the source providing the intelligence data | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Malicious Threshold | If the percentage of 'Malicious' reported statuses is above this threshold the indicator will be defined as malicious, otherwise suspicious | False |
-    | Suspicious Threshold | If the number of 'Suspicious' reported statuses is above this threshold the indicator will be defined as suspicious | False |
-    | Non Malicious Threshold | If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown | False |
+    | Malicious Threshold | If the percentage of 'Malicious' reported statuses is above this threshold the indicator will be defined as malicious, otherwise suspicious. | False |
+    | Suspicious Threshold | If the number of 'Suspicious' reported statuses is above this threshold the indicator will be defined as suspicious. | False |
+    | Non Malicious Threshold | If the percentage of 'Non Malicious' reported statuses is above this threshold the indicator will be defined as good, otherwise unknown. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
  
 ## Changes compared to previous version
-1. Dbot score calculation is different see the section below for more details.
+1. Dbot score calculation is different. See [DBot Score / Reputation scores](#dbot-score-/-Reputation-scores) for details. 
 
-2. The context output of the command **threatexchange-query** appears under ThreatExchange - Query instead of under queryResult.
+2. The context output of the ***threatexchange-query*** command appears under *ThreatExchange - Query* instead of under *queryResult*.
 
-3.The output of reputation commands which was executed on an invalid input is not a raise of an exception, but an output
+3.The output of reputation commands which was executed on an invalid input does not raise an exception, but provides an output
   that says no information was found for the given input.
   In addition a description of the error that occurred is added to the Cortex XSOAR server log.
 
@@ -44,13 +48,17 @@ The following information describes a DBot Score calculation logic which is new 
 
 If the percentage of 'Malicious' reported statuses is above the Malicious Threshold (50% by default),
 the indicator will be defined as malicious.
+
 If the percentage of 'Malicious' reported statuses is below the Malicious Threshold, but there exists at least one
 'Malicious' status, the indicator will be defined as suspicious.
+
 If there are no 'Malicious' statuses, but the number of 'Suspicious' statuses is above the Suspicious Threshold (1 by default),
 the indicator will be defined as suspicious.
+
 If there are no 'Malicious' statuses and the number of 'Suspicious' statuses is below the Suspicious Threshold,
 and the percentage of 'Non Malicious' reported statuses is above the Non Malicious Threshold (50% by default),
 the indicator will be defined as good.
+
 Otherwise, the indicator will be defined as unknown.
 
 ## Commands
@@ -193,7 +201,7 @@ Checks the reputation of the given IP address.
 | DBotScore.Score | Number | The actual score. | 
 | IP.Malicious.Score | Number | For malicious IP addresses, the score from the vendor. | 
 | ThreatExchange.IP.share_level | String | A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol. | 
-| ThreatExchange.IP.confidence | Number | A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is least confident. 100 is most confident. | 
+| ThreatExchange.IP.confidence | Number | A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is the least confident. 100 is the most confident. | 
 | ThreatExchange.IP.indicator.id | String | The ID of the threat indicator described by the descriptor. | 
 | ThreatExchange.IP.indicator.indicator | String | The threat indicator described by the descriptor. | 
 | ThreatExchange.IP.indicator.type | String | The type of the threat indicator described by the descriptor. | 
@@ -270,7 +278,7 @@ Checks the reputation of the given IP address.
 
 ### url
 ***
-Checks the URL reputation.
+Checks URL Reputation
 
 
 #### Base Command
@@ -300,7 +308,7 @@ Checks the URL reputation.
 | URL.Malicious.Description | String | For malicious URLs, the reason for the vendor to make the decision. | 
 | URL.Malicious.Score | Number | For malicious URLs, the score from the vendor. | 
 | ThreatExchange.URL.share_level | String | A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol. | 
-| ThreatExchange.URL.confidence | Number | A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is least confident. 100 is most confident. | 
+| ThreatExchange.URL.confidence | Number | A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is the least confident. 100 is the most confident. | 
 | ThreatExchange.URL.indicator.id | String | The ID of the threat indicator described by the descriptor. | 
 | ThreatExchange.URL.indicator.indicator | String | The threat indicator described by the descriptor. | 
 | ThreatExchange.URL.indicator.type | String | The type of the threat indicator described by the descriptor. | 
@@ -400,7 +408,7 @@ Checks the URL reputation.
 
 ### domain
 ***
-Checks a domain reputation.
+Checks domain reputation.
 
 
 #### Base Command
@@ -429,7 +437,7 @@ Checks a domain reputation.
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
 | ThreatExchange.Domain.share_level | String | A designation of how the indicator may be shared, based on the US-CERT's Traffic Light Protocol. | 
-| ThreatExchange.Domain.confidence | Number | A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is least confident. 100 is most confident. | 
+| ThreatExchange.Domain.confidence | Number | A rating, from 0-100, on how confident the publisher is of the threat indicator's status. 0 is the least confident. 100 is the most confident. | 
 | ThreatExchange.Domain.indicator.id | String | The ID of the threat indicator described by the descriptor. | 
 | ThreatExchange.Domain.indicator.indicator | String | The threat indicator described by the descriptor. | 
 | ThreatExchange.Domain.indicator.type | String | The type of the threat indicator described by the descriptor. | 
@@ -518,8 +526,8 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
 | type | The type of descriptor to search for. Possible values are: ADJUST_TOKEN, API_KEY, AS_NUMBER, BANNER, CMD_LINE, COOKIE_NAME, CRX, DEBUG_STRING, DEST_PORT, DIRECTORY_QUERIED, DOMAIN, EMAIL_ADDRESS, FILE_CREATED, FILE_DELETED, FILE_MOVED, FILE_NAME, FILE_OPENED, FILE_READ, FILE_WRITTEN, GET_PARAM, HASH_IMPHASH, HASH_MD5, HASH_PDQ, HASH_TMK, HASH_SHA1, HASH_SHA256, HASH_SSDEEP, HASH_VIDEO_MD5, HTML_ID, HTTP_REQUEST, IP_ADDRESS, IP_SUBNET, ISP, LATITUDE, LATITUDE, LAUNCH_AGENT, LOCATION, LONGITUDE, MALWARE_NAME, MEMORY_ALLOC, MEMORY_PROTECT, MEMORY_WRITTEN, MUTANT_CREATED, MUTEX, NAME_SERVER, OTHER_FILE_OP, PASSWORD, PASSWORD_SALT, PAYLOAD_DATA, PAYLOAD_TYPE, POST_DATA, PROTOCOL, REFERER, REGISTRAR, REGISTRY_KEY, REG_KEY_CREATED, REG_KEY_DELETED, REG_KEY_ENUMERATED, REG_KEY_MONITORED, REG_KEY_OPENED, REG_KEY_VALUE_CREATED, REG_KEY_VALUE_DELETED, REG_KEY_VALUE_MODIFIED, REG_KEY_VALUE_QUERIED, SIGNATURE, SOURCE_PORT, TELEPHONE, TEXT_STRING, TREND_QUERY, URI, USER_AGENT, VOLUME_QUERIED, WEBSTORAGE_KEY, WEB_PAYLOAD, WHOIS_NAME, WHOIS_ADDR1, WHOIS_ADDR2, XPI. | Required | 
 | limit | The maximum number of results per page. The maximum is 1000. Default is 20. | Optional | 
 | headers | A comma-separated list of headers to display in human-readable format. For example: header1,header2,header3. | Optional | 
-| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
-| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00), and free text (e.g., 24 hours ago). | Optional | 
+| since | The start timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00). and free text (e.g., 24 hours ago). | Optional | 
+| until | The end timestamp for collecting malware. Supported time formats: epoch time (e.g., 1619870400), ISO 8601 (e.g., 2021-05-01T12:00:00). and free text (e.g., 24 hours ago). | Optional | 
 | strict_text | When set to 'true', the API will not do approximate matching on the value in the text. Default is false. | Optional | 
 | before | Returns results collected before this cursor. | Optional | 
 | after | Returns results collected after this cursor. | Optional | 
@@ -648,7 +656,7 @@ Searches for subjective opinions on indicators of compromise stored in ThreatExc
 
 ### threatexchange-members
 ***
-Returns a list of current members of  ThreatExchange, alphabetized by application name. Each application may also include an optional contact email address. You can set this address, if desired, under the settings panel for your application.
+Returns a list of current members of the ThreatExchange, alphabetized by application name. Each application may also include an optional contact email address. You can set this address, if desired, under the settings panel for your application.
 
 
 #### Base Command
@@ -696,7 +704,7 @@ There are no input arguments for this command.
 ### threatexchange-tags-search
 ***
 Enables searching for tags in ThreatExchange.
-With this call, you can search for ThreatTag objects by text.
+With this call you can search for ThreatTag objects by text.
 
 
 #### Base Command
@@ -826,7 +834,7 @@ Gets a list of tagged objects for a specific ThreatTag.
 
 ### threatexchange-object-get-by-id
 ***
-Gets a ThreatExchange object by ID.
+Gets ThreatExchange object by ID.
 
 
 #### Base Command
@@ -836,7 +844,7 @@ Gets a ThreatExchange object by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_id | ID of a ThreatExchange object. Can be retrieved by ThreatExchange reputation commands and the threatexchange-tagged-objects-list command. | Required | 
+| object_id | ID of a ThreatExchange object. Can be retrieved by ThreatExchange reputation commands and threatexchange-tagged-objects-list command. | Required | 
 
 
 #### Context Output
@@ -867,4 +875,3 @@ Gets a ThreatExchange object by ID.
 >|id|text|
 >|---|---|
 >| 1318516441499594 | malware |
-
