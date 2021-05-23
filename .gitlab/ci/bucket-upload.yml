@@ -2,6 +2,8 @@
   rules:
     - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
       when: never # remove this after testing period
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
     - if: '$BUCKET_UPLOAD == "true"'
 
 .start_tunnel: &start_tunnel
@@ -15,7 +17,7 @@
       cat $SSH_CONFIGURATION >> ~/.ssh/config
     fi
   - echo "Open SSH Tunnel"
-  - Tests/scripts/open_ssh_tunnel.sh
+  - ./Tests/scripts/open_ssh_tunnel.sh
   - section_end "Start Tunnel"
 
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
@@ -35,8 +37,15 @@
     fi
   - section_end "Check User Permissions to Upload Packs"
 
+create-instances-bucket-upload:
+  extends:
+    - .bucket-upload-rule
+    - create-instances
+  variables:
+    IFRA_ENV_TYPE: "Bucket-Upload"
+
 .install_packs_in_server:
-  needs: ["create-instances"]
+  needs: ["create-instances-bucket-upload"]
   stage: run-instances
   artifacts:
     expire_in: 48 hrs
@@ -46,14 +55,15 @@
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
+    DESTROY_INSTANCES: "true"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
   script:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
-    - *start_tunnel
     - section_end "Download configuration"
+    - *start_tunnel
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
@@ -64,17 +74,6 @@
     - section_start "Install Packs"
     - ./Tests/Marketplace/install_packs.sh "$INSTANCE_ROLE"
     - section_end "Install Packs"
-    - section_start "Destroy Instances"
-    - |
-      if [ -n "${CONTRIB_BRANCH}" ]; then
-        echo "Skipping - not running in contribution instance"
-      else
-        python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-        export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-        zip -P $PSWD -j $ARTIFACTS_FOLDER/Logs.zip $ARTIFACTS_FOLDER/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
-        rm -f $ARTIFACTS_FOLDER/server*.log
-      fi
-    - section_end "Destroy Instances"
 
 install-packs-in-server6_0:
   extends: .install_packs_in_server
@@ -87,8 +86,7 @@ install-packs-in-server-master:
     INSTANCE_ROLE: "Server Master"
 
 upload-packs-to-marketplace:
-#  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"]
-  needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"]
+  needs: ["run-validations-upload-flow", "install-packs-in-server6_0", "install-packs-in-server-master"] # add "run-unittests-and-lint-upload-flow" after docker in docker is resolved.
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs

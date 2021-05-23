@@ -89,6 +89,7 @@ if [ -n "$_gitlab" ]; then
     --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
     --form "variables[PACKS_TO_UPLOAD]=${_packs}" \
     --form "variables[GCS_MARKET_BUCKET]=${_bucket}" \
+    --form "variables[IFRA_ENV_TYPE]=Bucket-Upload" \
     "$BUILD_TRIGGER_URL"
 
 else

@@ -54,7 +54,7 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
     try:
         # downloading cloud-init logs to artifacts
         check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
-                     f'{os.getenv("ARTIFACTS_FOLDER")}/{ip}-cloud_init.log'.split())
+                     f'{ARTIFACTS_FOLDER}/{ip}-cloud_init.log'.split())
     except Exception:
         logging.exception(f'Could not download cloud-init file from server {ip}.')
 
