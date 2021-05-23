@@ -1,0 +1,21 @@
+{
+    "autorun": false,
+    "color": "#5C6BC0",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "QSS SOC Monitoring",
+    "layout": "QSS SOC Monitoring Layout",
+    "locked": false,
+    "name": "QSS SOC Monitoring",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
