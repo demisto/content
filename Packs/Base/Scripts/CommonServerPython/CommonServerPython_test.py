@@ -3563,6 +3563,60 @@ def test_warnings_handler(mocker):
     assert 'python warning' in msg
 
 
+def test_get_schedule_metadata():
+    """
+        Given
+            - case 1: no parent entry
+            - case 2: parent entry with schedule metadata
+            - case 3: parent entry without schedule metadata
+
+        When
+            querying the schedule metadata
+
+        Then
+            ensure scheduled_metadata is returned correctly
+            - case 1: no data (empty dict)
+            - case 2: schedule metadata with all details
+            - case 3: empty schedule metadata (dict with polling: false)
+    """
+    from CommonServerPython import get_schedule_metadata
+
+    # case 1
+    context = {'ParentEntry': None}
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata == {}
+
+    # case 2
+    parent_entry = {
+        'polling': True,
+        'pollingCommand': 'foo',
+        'pollingArgs': {'name': 'foo'},
+        'timesRan': 5,
+        'startDate': '2021-04-28T14:20:56.03728+03:00',
+        'endingDate': '2021-04-28T14:25:35.976244+03:00'
+    }
+    context = {
+        'ParentEntry': parent_entry
+    }
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata.get('is_polling') is True
+    assert actual_scheduled_metadata.get('polling_command') == parent_entry.get('pollingCommand')
+    assert actual_scheduled_metadata.get('polling_args') == parent_entry.get('pollingArgs')
+    assert actual_scheduled_metadata.get('times_ran') == (parent_entry.get('timesRan') + 1)
+    assert actual_scheduled_metadata.get('startDate') == parent_entry.get('start_date')
+    assert actual_scheduled_metadata.get('startDate') == parent_entry.get('start_date')
+
+    # case 3
+    parent_entry = {
+        'polling': False
+    }
+    context = {
+        'ParentEntry': parent_entry
+    }
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata == {'is_polling': False, 'times_ran': 1}
+
+
 class TestCommonTypes:
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
