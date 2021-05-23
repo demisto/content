@@ -309,6 +309,7 @@ def microsoft_365_defender_incidents_list_command(client: Client, args: Dict) ->
     if readable_incidents:
         headers = list(readable_incidents[0].keys())  # the table headers are the incident keys.
         human_readable = tableToMarkdown(name="Incidents:", t=readable_incidents, headers=headers)
+    
     else:
         human_readable = "No incidents found"
 
