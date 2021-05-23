@@ -51,7 +51,7 @@ create-instances-upload-flow:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 .install_packs_in_server:
-  needs: ["create-instances-bucket-upload"]
+  needs: ["create-instances-upload-flow"]
   stage: run-instances
   artifacts:
     expire_in: 48 hrs
@@ -134,7 +134,7 @@ upload-packs-to-marketplace:
 
 force-pack-upload:
   stage: upload-to-marketplace
-  needs: ["create-instances-bucket-upload"]
+  needs: ["create-instances-upload-flow"]
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:
