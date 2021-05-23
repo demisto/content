@@ -234,7 +234,7 @@ Add new host
 | ip_address | ip address | Required | 
 | groups | group identifier. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
-| ignore_warnings | Whether to ignore warnings when adding host | Optional |
+| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
 | ignore_errors | Whether to ignore error when adding host | Optional |
 #### Context Output
 
