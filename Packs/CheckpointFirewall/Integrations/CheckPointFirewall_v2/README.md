@@ -307,7 +307,7 @@ update host changes
 | ignore_errors | Apply changes ignoring errors. You won't be able to publish such a changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. | Optional | 
 | groups | Collection of group identifiers. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
-| ignore_warnings | Whether to ignore warnings when adding host | Optional |
+| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
 | ignore_errors | Whether to ignore errors when adding a host. | Optional |
 
 #### Context Output
