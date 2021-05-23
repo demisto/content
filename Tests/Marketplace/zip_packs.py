@@ -145,7 +145,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
     zipped_packs = []
-    src_path = 'gs://marketplace-dist-dev/' + gcp_path + '/'
+    src_path = "gs://marketplace-dist-dev/" + gcp_path + "/"
     gs_cmd = f'gsutil -m cp -r {src_path} {destination_path}'
     try:
         subprocess.Popen(gs_cmd)
@@ -239,7 +239,7 @@ def main():
     service_account = option.service_account
     circle_build = option.circle_build
     branch_name = option.branch_name
-    gcp_path = 'content/packs'
+    gcp_path = 'content/packs/*'
     remove_test_playbooks = option.remove_test_playbooks
     private_build = option.private
     print("1.dest path is" + zip_path)
