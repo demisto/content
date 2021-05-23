@@ -319,8 +319,8 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
                     current_printable_result[endpoint] = element.get(endpoint)
                 printable_result.extend([current_printable_result])
 
-            readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
-                                      DEFAULT_LIST_FIELD, removeNull=True)
+            readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result, DEFAULT_LIST_FIELD,
+                                              removeNull=True)
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Host',
         outputs_key_field='uid',
