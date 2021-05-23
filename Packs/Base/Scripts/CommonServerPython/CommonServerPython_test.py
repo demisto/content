@@ -1200,7 +1200,27 @@ def test_is_demisto_version_build_ge(mocker):
     assert is_demisto_version_ge('6.0.0', '50000')
     assert not is_demisto_version_ge('6.0.0', '50001')
     assert not is_demisto_version_ge('6.1.0', '49999')
-    assert not is_demisto_version_ge('5.5.0', '50001')
+    assert not is_demisto_version_ge('5.5.0', '1000000')
+
+
+def is_demisto_version_ge_an_int(mocker):
+    """
+    Given:
+        A server with a build lower than 1000000
+    When:
+        is_demisto_version_ge is running
+    Then:
+        Make sure the return is false, and does not treat them as string".
+    """
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '6.1.0',
+            'buildNumber': '999999'
+        }
+    )
+    assert not is_demisto_version_ge('6.1.0', build_number='1000000')
 
 
 def test_assign_params():
