@@ -1,4 +1,4 @@
-This playbook will auto Isolate endpoints by the endpoint id that was provided in the playbook.
+This playbook will auto isolate endpoints by the endpoint ID that was provided in the playbook.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -7,10 +7,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* FireEyeHX
+FireEyeHX
 
 ### Scripts
-* IsIntegrationAvailable
+IsIntegrationAvailable
 
 ### Commands
 * fireeye-hx-host-containment
@@ -21,8 +21,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_id | The endpoint id/device  id that  you wish to isolate. |  | Optional |
-| Hostname | the hostname that you wish to isolate. |  | Optional |
+| Endpoint_id | The endpoint ID or device ID to isolate. |  | Optional |
+| Hostname | The hostname to isolate. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![FireEye HX - Isolate Endpoint ](Insert the link to your image here)
+![FireEye HX - Isolate Endpoint ](https://raw.githubusercontent.com/demisto/content/497a9bab0a9ca682950f322e71bd30c06f1af32c/Packs/FireEyeHX/doc_files/FireEye_HX_-_Isolate_Endpoint.png)
