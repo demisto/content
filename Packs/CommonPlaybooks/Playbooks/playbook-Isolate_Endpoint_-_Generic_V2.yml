@@ -150,10 +150,10 @@ tasks:
     task:
       id: 2604374d-9538-4451-8064-2f5bb5c6dd81
       version: -1
-      name: 'Crowdstrike Falcon - Isolate Endpoint '
+      name: 'Crowdstrike Falcon - Isolate Endpoint'
       description: This playbook will auto isolate endpoints by the device ID that
         was provided in the playbook.
-      playbookName: 'Crowdstrike Falcon - Isolate Endpoint '
+      playbookName: 'Crowdstrike Falcon - Isolate Endpoint'
       type: playbook
       iscommand: false
       brand: ""
@@ -188,10 +188,10 @@ tasks:
     task:
       id: 48226108-0787-44b0-80f6-cf333758b5e8
       version: -1
-      name: 'FireEye HX - Isolate Endpoint '
+      name: 'FireEye HX - Isolate Endpoint'
       description: This playbook will auto isolate endpoints by the endpoint ID that
         was provided in the playbook.
-      playbookName: 'FireEye HX - Isolate Endpoint '
+      playbookName: 'FireEye HX - Isolate Endpoint'
       type: playbook
       iscommand: false
       brand: ""
