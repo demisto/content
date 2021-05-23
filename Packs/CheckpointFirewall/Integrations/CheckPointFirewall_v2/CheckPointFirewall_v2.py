@@ -309,7 +309,8 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
     demisto.info(result)
     if result:
         if result.get('total') == 0:
-            printable_result = ['no_more_output']
+            readable_output = tableToMarkdown('CheckPoint data for all hosts:', ['no_more_output'],
+                                              DEFAULT_LIST_FIELD, removeNull=True)
         else:
             result = result.get('objects')
             for element in result:
@@ -318,7 +319,7 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
                     current_printable_result[endpoint] = element.get(endpoint)
                 printable_result.append(current_printable_result)
 
-    readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
+            readable_output = tableToMarkdown('CheckPoint data for all hosts:', printable_result,
                                       DEFAULT_LIST_FIELD, removeNull=True)
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Host',
