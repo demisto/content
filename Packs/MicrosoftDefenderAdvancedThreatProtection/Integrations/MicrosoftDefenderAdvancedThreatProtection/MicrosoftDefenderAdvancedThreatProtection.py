@@ -698,25 +698,25 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50') -> List:
+    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50', limit: int = None) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
             indicator_id: if provided, will get only this specific id.
             page_size: specify the page size of the result set.
+            limit: Limit the returned results.
 
         Returns:
             List of responses.
         """
         results = {}
-        odata = f'$top={page_size}'
         cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
-        cmd_url += f'?{odata}'
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
+        params = {'$top': {page_size}}
         resp = self.indicators_http_request(
-            'GET', full_url=cmd_url, url_suffix=None, timeout=1000,
+            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response'
         )
         # 404 - No indicators found, an empty list.
@@ -728,6 +728,8 @@ class MsClient:
         while next_link := resp.get('@odata.nextLink'):
             resp = self.indicators_http_request('GET', full_url=next_link, url_suffix=None, timeout=1000)
             results['value'].extend(resp.get('value'))
+            if len(results['value']) >= limit:
+                break
 
         # If 'value' is in the response, should filter and limit. The '@odata.context' key is in the root which we're
         # not returning
@@ -2035,8 +2037,8 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
     Returns:
         human_readable, outputs.
     """
-    raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'))
     limit = int(args.get('limit', 50))
+    raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'), limit)
     raw_response = raw_response[:limit]
     if raw_response:
         indicators = list()

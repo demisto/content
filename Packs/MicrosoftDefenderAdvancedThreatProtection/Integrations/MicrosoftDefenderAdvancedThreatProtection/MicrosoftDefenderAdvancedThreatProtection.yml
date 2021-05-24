@@ -2277,7 +2277,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specify the page size of the result set. The defualt is 50.
+      defaultValue: '50'
+      description: Specify the page size of the result set. Maximum is 200.
       isArray: false
       name: page_size
       required: false
