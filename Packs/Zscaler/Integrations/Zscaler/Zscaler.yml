@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Zscaler
+  id: Zscaler_test
   version: -1
 configuration:
 - display: Cloud Name (i.e., https://admin.zscalertwo.net)
@@ -39,12 +39,13 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultclassifier: 'null'
 description: Zscaler is a cloud security solution built for performance and flexible
   scalability. This integration enables you to manage URL and IP address whitelists
   and blacklists, manage and update categories, get Sandbox reports, and manually
   log in, log out, and activate changes in a Zscaler session.
 display: Zscaler
-name: Zscaler
+name: Zscaler_test
 script:
   commands:
   - arguments:
@@ -66,7 +67,7 @@ script:
         argument to 'true'.
       isArray: true
       name: url
-      required: false
+      required: true
       secret: false
     - auto: PREDEFINED
       default: false
@@ -380,7 +381,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to display the URLs of each category in the War Room. Default
-        is 'false'.
+        is 'false'. Anyway URLS will be returned to the Context Data.
       isArray: false
       name: displayURL
       predefined:
@@ -395,6 +396,19 @@ script:
         is 'false'.
       isArray: false
       name: custom_categories_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to retrieve only a list of URL category IDs and names.
+        URLs will not be returned at all (even if displayURL set to true). Note -
+        the API does not support the combination of custom_only and get_ids_and_names_only.
+      isArray: false
+      name: get_ids_and_names_only
       predefined:
       - 'true'
       - 'false'
