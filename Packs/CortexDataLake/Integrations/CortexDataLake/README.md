@@ -893,7 +893,7 @@ Searches the URL table
 | limit | The number of logs to return. Default is 5. | Optional | 
 | ip | IP address. Enter an IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2. | Optional | 
 | port | Port utilized by the session. Enter a port or array of ports to search. | Optional | 
-| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,demisto which will provide results like https://apps.paloaltonetworks.com and https://demisto.com | Optional | 
+| url | This argument allows to perform a LIKE search of the specified values on the Url and Uri fields An example value will be paloaltonetworks.com,Cortex XSOAR which will provide results like https://apps.paloaltonetworks.com and https://demisto.com | Optional | 
 
 #### Context Output
 

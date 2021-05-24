@@ -6,7 +6,7 @@ Data output script for populating the dashboard table graph widget with the info
 | --- | --- |
 | Script Type | python3 |
 | Tags | widget, failedInstances |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

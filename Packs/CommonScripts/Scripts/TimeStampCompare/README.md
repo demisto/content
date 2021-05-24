@@ -6,7 +6,7 @@ Compares a single timestamp to a list of timestamps.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Used In
 ---

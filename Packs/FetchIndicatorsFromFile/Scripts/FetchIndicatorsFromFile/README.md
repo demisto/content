@@ -16,7 +16,7 @@ If an Excel file is supplied (XLS, XLSX, CSV), you need to specify the *column_n
 | --- | --- |
 | Script Type | python3 |
 | Tags | indicators |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---
@@ -44,6 +44,6 @@ Indicators from indicator.csv:
 
 |value|type|
 |---|---|
-| demisto.com | Domain |
+| xsoar.com | Domain |
 | 8.8.8.8 | IP |
 | 8.8.8.8/12 | CIDR |

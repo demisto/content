@@ -11,7 +11,7 @@
  Security Hub must be enabled for the member account in the same Region that the invite was sent from.
 
 
-## Configure AWS - Security Hub on Demisto
+## Configure AWS - Security Hub on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -37,7 +37,7 @@
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. aws-securityhub-disable-security-hub
 2. aws-securityhub-batch-update-findings

@@ -5,7 +5,7 @@ In order to use this integration you need the following:
 2. [Enable billing for the project.](https://cloud.google.com/billing/docs/how-to/modify-project#enable_billing_for_a_project)
 3. [Enable the Google Cloud Translate API.](https://cloud.google.com/translate)
 4. [Create a Service Account](#create-a-service-account) with access to Google Translate API
-5. Use the Service Account Private Key in JSON format and the GCP project ID to configure a new instance of Google Cloud Translate integration in Demisto 
+5. Use the Service Account Private Key in JSON format and the GCP project ID to configure a new instance of Google Cloud Translate integration in Cortex XSOAR 
 
 ### Create a Service Account
 1) Go to: https://console.developers.google.com.

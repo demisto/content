@@ -6,7 +6,7 @@ Prepares an email's data for machine learning text classification automation.
 | --- | --- |
 | Script Type | python |
 | Tags | ml, phishing |
-| Demisto Version | 4.1.0+ |
+| Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
 ---

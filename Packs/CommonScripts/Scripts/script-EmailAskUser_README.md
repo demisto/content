@@ -7,7 +7,7 @@ Cortex XSOAR can use email responses within the system, e.g. when an external us
 **Before starting you will need to configure an integration capable for sending and receiving emails. Such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, Microsoft Graph Mail Single User.**
 
 The user who receives the mail will respond accordingly and when an answer is received, it will trigger a task to handle the response.
-This is a two step task. The first, is to send an email asking the user for information. The second step, is to receive the answer and trigger a process of handling it in Demisto.
+This is a two step task. The first, is to send an email asking the user for information. The second step, is to receive the answer and trigger a process of handling it in Cortex XSOAR.
 
 The outgoing email contains a token that will be used when the user responds to the email. According to the token, the response will be directed to the relevant incident.
 
@@ -56,7 +56,7 @@ The tag you choose (in this case "Await") can be used in lieu of the task id in 
 | --- | --- |
 | Script Type | javascript |
 | Tags | email |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

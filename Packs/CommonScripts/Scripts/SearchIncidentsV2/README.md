@@ -1,4 +1,4 @@
-Searches Demisto incidents
+Searches Cortex XSOAR incidents
 ## Script Data
 ---
 
@@ -6,7 +6,7 @@ Searches Demisto incidents
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
 ---

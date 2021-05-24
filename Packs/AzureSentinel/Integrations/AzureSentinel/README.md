@@ -34,7 +34,7 @@ Follow these steps for a self-deployed configuration.
 To get the ***Subscription ID***, ***Workspace Name*** and ***Resource Group*** parameters, navigate in the Azure Portal to ***Azure Sentinel > YOUR-WORKSPACE > Settings*** and click on ***Workspace Settings*** tab.
 
 
-## Configure Azure Sentinel on Demisto
+## Configure Azure Sentinel on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Azure Sentinel.
@@ -60,7 +60,7 @@ To get the ***Subscription ID***, ***Workspace Name*** and ***Resource Group*** 
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-sentinel-get-incident-by-id
 ***

@@ -23,10 +23,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Source** | **Required** |
 | --- | --- | --- | --- | --- |
-| IPListName | The IP address list from the instance context with which to override the remote file. | Demisto Remediation - IP EDL | - | Optional |
+| IPListName | The IP address list from the instance context with which to override the remote file. | XSOAR Remediation - IP EDL | - | Optional |
 | IP | The IP address to block. | Address | IP | Optional |
 | URL | The URL to block. | Data | URL | Optional |
-| URLListName | The URL list from the instance context with which to override the remote file. | Demisto Remediation - URL EDL | - | Optional |
+| URLListName | The URL list from the instance context with which to override the remote file. | XSOAR Remediation - URL EDL | - | Optional |
 | LogForwarding | The log forwarding object name. | - | - | Optional |
 | EDLServerIP | The EDL server IP address. | - | - | Optional |
 | AutoCommit | Whether to commit the configuration automatically. "Yes" will commit automatically. "No" will Commit manually. | No | - | Optional |

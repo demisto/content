@@ -13,12 +13,12 @@ This integration was integrated and tested with version 130 of IllusiveNetworks
 * Manage deception policy assignments per host
 * Retrieve attack surface insights for Crown Jewels and specific hosts
 
-## Configure IllusiveNetworks on Demisto
+## Configure IllusiveNetworks on Cortex XSOAR
 ---
 ####Illusive Console
 1. Open the Illusive Management console, navigate to Settings > General, and locate the API KEYS section. Generate a new API key with all permissions and copy the token at the end of the process.
 
-####Demisto Console
+####Cortex XSOAR Console
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for IllusiveNetworks.
 3. Click **Add instance** to create and configure a new integration instance.
@@ -58,7 +58,7 @@ This integration was integrated and tested with version 130 of IllusiveNetworks
  
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. illusive-get-forensics-timeline
 2. illusive-get-asm-host-insight

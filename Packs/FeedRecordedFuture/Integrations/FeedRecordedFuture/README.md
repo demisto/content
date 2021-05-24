@@ -1,4 +1,4 @@
-Ingests indicators from Recorded Future feeds into Demisto.
+Ingests indicators from Recorded Future feeds into Cortex XSOAR.
 This integration was integrated and tested with Recorded Future Feed
 ## Configure Recorded Future Feed on Cortex XSOAR
 

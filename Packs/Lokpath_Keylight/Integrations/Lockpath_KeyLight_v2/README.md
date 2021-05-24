@@ -1,6 +1,6 @@
 Use the LockPath KeyLight integration to manage GRC tickets in the Keylight platform.
 This integration was integrated and tested with version 5.5.018.10 of Lockpath KeyLight.
-## Configure Lockpath KeyLight v2 on Demisto
+## Configure Lockpath KeyLight v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Lockpath KeyLight v2.
@@ -20,7 +20,7 @@ This integration was integrated and tested with version 5.5.018.10 of Lockpath K
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### kl-get-component
 ***
@@ -761,7 +761,7 @@ Retrieves information of each field in a field path, which relates to a lookup r
 ### kl-create-record
 ***
 Creates a new record within the specified component of the Keylight application.
-* The Required option for a field is only enforced through the user interface, not through Demisto.
+* The Required option for a field is only enforced through the user interface, not through Cortex XSOAR.
 
 
 ##### Base Command
@@ -849,7 +849,7 @@ Creates a new record within the specified component of the Keylight application.
 ### kl-update-record
 ***
 Update fields in a specified record.
-* The Required option for a field is only enforced through the user interface, not through Demisto.
+* The Required option for a field is only enforced through the user interface, not through Cortex XSOAR.
 
 
 ##### Base Command

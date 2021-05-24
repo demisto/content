@@ -7,7 +7,7 @@ Copy all entries marked as notes from current incident to another incident.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

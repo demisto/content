@@ -9,7 +9,7 @@ With Security Center, you can apply security policies across your workloads, lim
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication) .
 
-* After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
+* After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 * In order to assign a role to the application after consent was given:
     * Go to the Azure Portal UI.
     * Go to Subscriptions, and then Access Control (IAM).
@@ -26,7 +26,7 @@ For more details about the authentication used in this integration, see [Microso
       - Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action
     * Select the Azure Security Center application.
 
-## Configure Azure Security Center v2 on Demisto
+## Configure Azure Security Center v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations**   > **Servers & Services**.
 2. Search for Azure Security Center v2.
@@ -47,7 +47,7 @@ For more details about the authentication used in this integration, see [Microso
 Some commands require a subscription ID parameter in order to run.
 You can find your organization's subscriptions list in the ***Microsoft Azure Portal > Subscriptions*** or by running the ***azure-list-subscriptions*** command.
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. azure-sc-list-alert
@@ -431,7 +431,7 @@ Lists all the storage accounts available under the subscription.
 | --- | --- | --- |
 | cs20f907ea4bc8bx4c11x9d7 | cloud-shell-storage-eastus | eastus |
 | useastrgdiag204 | us-east-rg | eastus |
-| demistodevops | cloud-shell-storage-eastus | westeurope |
+| xsoardevops | cloud-shell-storage-eastus | westeurope |
 
 ### 9. azure-list-subscriptions
 

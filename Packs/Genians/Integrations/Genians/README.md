@@ -6,7 +6,7 @@ With the result of comprehensive network visibility, Genian NAC can ensure compl
 
 ## Genians Genian NAC Module Requirements
 
-Before you can use this integration in Demisto, you need to enable certain modules in your Genian NAC environment.
+Before you can use this integration in Cortex XSOAR, you need to enable certain modules in your Genian NAC environment.
 
 #### Genian NAC Web Console
 
@@ -47,7 +47,7 @@ Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.g
 1. Input Tag Name for IP Block (e.g. THREAT, GUEST)
 
 
-## Configure Genian NAC on Demisto
+## Configure Genian NAC on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Genians.
@@ -61,7 +61,7 @@ Reference the Enforcement Policy section in the [Genian NAC Docs](https://docs.g
 
 ## Commands
 
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Post IP address to a tag: genians-assign-ip-tag](#Post-IP-address-to-a-tag)
 2. [Delete IP address from a tag: genians-unassign-ip-tag](#Delete-IP-address-from-a-tag)

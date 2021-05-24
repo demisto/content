@@ -7,7 +7,7 @@
 </ul>
 <h2>Prerequisites</h2>
 <p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
-<h2>Configure the AWS IAM Integration on Demisto</h2>
+<h2>Configure the AWS IAM Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AWS - IAM.</li>
@@ -23,7 +23,7 @@
 <li>Click <strong>Test</strong> to validate the URLs and token.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_35292443731528637122687">Create a user: aws-iam-create-user</a></li>
 <li><a href="#h_761129142021528637130698">Get user information: aws-iam-get-user</a></li>

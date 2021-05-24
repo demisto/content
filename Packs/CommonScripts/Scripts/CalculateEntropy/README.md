@@ -6,7 +6,7 @@ Calculates the entropy for the given data.
 | --- | --- |
 | Script Type | python3 |
 | Tags | entropy |
-| Demisto Version | 0.0.0 |
+| Cortex XSOAR Version | 0.0.0 |
 
 ## Inputs
 ---

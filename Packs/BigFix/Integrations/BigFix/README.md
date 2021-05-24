@@ -3,7 +3,7 @@
 <hr>
 <p>Use the BigFix integration to manage patching processes.</p>
 <p> </p>
-<h2>Configure BigFix on Demisto</h2>
+<h2>Configure BigFix on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -22,7 +22,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_57438930141540901765692">Get all sites: bigfix-get-sites</a></li>
 <li><a href="#h_8123010261041540901803930">Get a single site: bigfix-get-site</a></li>

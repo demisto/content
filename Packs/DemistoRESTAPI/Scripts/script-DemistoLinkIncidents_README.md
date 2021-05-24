@@ -6,13 +6,13 @@ Links two or more incidents.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | javascript |
-| Tags | DemistoAPI |
+| Tags | XSOARAPI |
 
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-post
+* XSOAR-api-post
 
 ## Inputs
 ---

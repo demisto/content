@@ -12,7 +12,7 @@ To Get the appropriate permissions navigate to __Configuration__ > __Roles__ > _
 ---
 * Fetch Alerts
 * Get Alert Details
-* Download File to Demisto
+* Download File to Cortex XSOAR
 * Execute Script on Endpoint
 * query / search the Logs on Fidelis Console
 
@@ -33,7 +33,7 @@ To Get the appropriate permissions navigate to __Configuration__ > __Roles__ > _
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. fidelis-endpoint-list-alerts
 2. fidelis-endpoint-host-info

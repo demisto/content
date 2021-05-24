@@ -134,7 +134,7 @@ To setup the mirroring follow these instructions:
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### 1. xdr-get-incidents

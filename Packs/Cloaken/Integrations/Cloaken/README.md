@@ -4,7 +4,7 @@
 <ol>
 <li>Unshorten a URL to run the expanded URL through intelligence sources.</li>
 </ol>
-<h2>Configure Cloaken on Demisto</h2>
+<h2>Configure Cloaken on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for Cloaken.</li>
@@ -21,7 +21,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_dbafb55d-b213-43c2-8ee3-1f6176a5d1d9" target="_self">Unshorten a URL: cloaken-unshorten-url</a></li>
 </ol>

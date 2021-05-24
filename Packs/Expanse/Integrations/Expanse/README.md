@@ -1,10 +1,10 @@
 ## Overview
 ---
 
-The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
+The Expanse App for Cortex XSOAR leverages the Expander API to retrieve network exposures and create incidents in Cortex XSOAR.  This application also allows for IP, Domain, Certificate, and Behavior enrichment, retrieving assets and exposures information drawn from Expanse’s unparalleled view of the Internet.
 This integration was integrated and tested with Expanse Events API v1, Assets API v2, and Behavior API v1.
 
-## Configure Expanse on Demisto
+## Configure Expanse on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -131,7 +131,7 @@ This integration was integrated and tested with Expanse Events API v1, Assets AP
 
 ## Commands
 ---
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ip
 2. domain

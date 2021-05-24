@@ -8,7 +8,7 @@
 </div>
 </div>
 <hr>
-<h2>Configure the AWS SageMaker Integration on Demisto</h2>
+<h2>Configure the AWS SageMaker Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AWS SageMaker.</li>
@@ -27,7 +27,7 @@
 </ol>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_10416044041544595909992">Predict the maliciousness of an email: predict-phishing</a></li>
 </ol>

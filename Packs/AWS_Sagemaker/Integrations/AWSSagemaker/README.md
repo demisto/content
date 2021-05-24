@@ -1,4 +1,4 @@
-AWS Sagemaker - Demisto Phishing Email Classifier
+AWS Sagemaker - Cortex XSOAR Phishing Email Classifier
 ## Configure AWS Sagemaker on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -6,7 +6,7 @@ Health Check dynamic section, showing the number of failed incidents.
 | --- | --- |
 | Script Type | python3 |
 | Tags | failedIncidents, dynamic-section |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

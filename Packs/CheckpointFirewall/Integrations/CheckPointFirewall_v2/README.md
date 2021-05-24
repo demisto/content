@@ -32,7 +32,7 @@ Enable sftp on your server Check Point guide to walk you through: https://suppor
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### checkpoint-host-list
 ***
@@ -124,7 +124,7 @@ Show all host objects
                 "groups": null,
                 "ipv4-address": "192.192.10.10",
                 "last-modifier": null,
-                "name": "Demisto - 2096",
+                "name": "XSOAR - 2096",
                 "read-only": null,
                 "type": "host",
                 "uid": "cded0c90-3402-4766-ad1b-adaf972b254f"
@@ -143,7 +143,7 @@ Show all host objects
 >| 18.88.8.8 | b032c0a7-096c-4b27-9a09-8d9437312135 | host | 18.88.8.8 |
 >| 192.168.30.2 | 5bd98c85-f848-45ab-aa4c-c729fb8b1723 | host | 192.168.30.2 |
 >| 200.200.200.112 | 23c4b2cf-0adc-4282-8f15-262cfec7f5f5 | host | 200.200.200.112 |
->| Demisto - 2096 | cded0c90-3402-4766-ad1b-adaf972b254f | host | 192.192.10.10 |
+>| XSOAR - 2096 | cded0c90-3402-4766-ad1b-adaf972b254f | host | 192.192.10.10 |
 
 
 ### checkpoint-host-get
@@ -486,7 +486,7 @@ Show a list of all groups
                 "groups": null,
                 "ipv4-address": null,
                 "last-modifier": null,
-                "name": "Group_test_for_demisto",
+                "name": "Group_test_for_XSOAR",
                 "read-only": null,
                 "type": "group",
                 "uid": "1deaead0-136c-4791-8d58-9229c143b8c5"
@@ -505,7 +505,7 @@ Show a list of all groups
 >| group10 | cf069504-5ea5-4eb2-9b97-ccdc500db118 | group |
 >| group9 | c4635886-15c9-4416-8160-5c70d68462cd | group |
 >| group_test | 35a46b01-47f5-496f-9329-d55c7d2ab083 | group |
->| Group_test_for_demisto | 1deaead0-136c-4791-8d58-9229c143b8c5 | group |
+>| Group_test_for_XSOAR | 1deaead0-136c-4791-8d58-9229c143b8c5 | group |
 
 
 ### checkpoint-group-get

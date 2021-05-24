@@ -5,7 +5,7 @@
 <p>This integration requires Team version of Cyber Triage (not the Standalone desktop version).</p>
 <p>This integration was integrated and tested with Cyber Triage v2.4.0.</p>
 <p> </p>
-<h2>Configure Cyber Triage on Demisto</h2>
+<h2>Configure Cyber Triage on Cortex XSOAR</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -31,7 +31,7 @@
 <h2> </h2>
 <h2>Commands</h2>
 <hr>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_62899400271539496080241">Initiate a collection on an endpoint: ct-triage-endpoint</a></li>
 </ol>

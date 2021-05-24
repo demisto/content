@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the BlueCat integration to enrich IP addresses and manage response policies.</p>
-<h2>Configure BluecatAddressManager on Demisto</h2>
+<h2>Configure BluecatAddressManager on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
 <li>Search for BluecatAddressManager.</li>
@@ -19,7 +19,7 @@
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_ad8eee3b-a87d-41c0-b040-3f294b59e922" target="_self">Enrich an IP address: bluecat-am-query-ip</a></li>
 <li><a href="#h_859247e3-9b45-4b4b-850e-3295e96c2f98" target="_self">Get all response policies: bluecat-am-get-response-policies</a></li>
@@ -502,7 +502,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>bluecat-am-search-response-policies-by-domain domain="demisto.com"</pre>
+<pre>bluecat-am-search-response-policies-by-domain domain="xsoar.com"</pre>
 <h5>Human Readable Output</h5>
 <p>Could not find any response policy</p>
 <h3 id="h_d14f7a3e-ee37-439a-918f-8ca79cebb056">4. Add a domain to a response policy</h3>
@@ -536,9 +536,9 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
-<pre>bluecat-am-response-policy-add-domain policy_id="100930" domain="demisto.com"</pre>
+<pre>bluecat-am-response-policy-add-domain policy_id="100930" domain="xsoar.com"</pre>
 <h5>Human Readable Output</h5>
-<p>Successfully added demisto.com to response policy 100930</p>
+<p>Successfully added xsoar.com to response policy 100930</p>
 <h3 id="h_489c45fb-a61f-4aef-88d0-6d9f07798955">5. Remove a domain from a response policy</h3>
 <hr>
 <p>Removes a domain from the given response policy.</p>
@@ -570,9 +570,9 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
-<pre>bluecat-am-response-policy-remove-domain policy_id="100930" domain="demisto.com"</pre>
+<pre>bluecat-am-response-policy-remove-domain policy_id="100930" domain="xsoar.com"</pre>
 <h5>Human Readable Output</h5>
-<p>Successfully removed demisto.com from response policy 100930</p>
+<p>Successfully removed xsoar.com from response policy 100930</p>
 <h3 id="h_0457fa2f-abac-46f1-9091-f56b52cb50be">6. Get an IPv4 block containing an IPv4 address</h3>
 <hr>
 <p>Gets an IPv4 block, which contains a specified IPv4 address.</p>

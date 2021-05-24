@@ -9,7 +9,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility, file |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---

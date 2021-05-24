@@ -15,7 +15,7 @@ In order to use this integration you need the following:
 <li><a href="https://cloud.google.com/billing/docs/how-to/modify-project#enable_billing_for_a_project">Enable billing for the project</a></li>
 <li><a href="https://cloud.google.com/translate">Enable the Google Cloud Translate API</a></li>
 <li><a href="#create-a-service-account">Create a Service Account</a> with access to Google Translate API</li>
-<li>Use the Service Account Private Key in JSON format and the GCP project ID to configure a new instance of Google Cloud Translate integration in Demisto</li>
+<li>Use the Service Account Private Key in JSON format and the GCP project ID to configure a new instance of Google Cloud Translate integration in Cortex XSOAR</li>
 </ol>
 
 <h3>Create a Service Account</h3>
@@ -29,7 +29,7 @@ In order to use this integration you need the following:
 <li>Select <b>JSON</b> and click <b>CREATE</b>. The .json file downloads.</li>
 </ol>
 
-<h2>Configure GoogleCloudTranslate on Demisto</h2>
+<h2>Configure GoogleCloudTranslate on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -50,7 +50,7 @@ In order to use this integration you need the following:
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>

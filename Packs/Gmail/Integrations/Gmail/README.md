@@ -4,7 +4,7 @@ This integration replaces the Gmail functionality in the GoogleApps API and G Su
 
 ### Prerequisites
 
-There are several procedures you have to perform in Google before configuring the integration on Demisto.
+There are several procedures you have to perform in Google before configuring the integration on Cortex XSOAR.
 
 * [Get a New Private Key](#get-a-new-private-key)
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
@@ -98,7 +98,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 - Delete a user: **gmail-delete-user**
 - Get tokens for a user: **gmail-get-tokens-for-user**

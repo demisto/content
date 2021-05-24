@@ -1,4 +1,4 @@
-Sends messages to Demisto's online users over Email, Slack, Mattermost or all.
+Sends messages to XSOAR's online users over Email, Slack, Mattermost or all.
 
 ## Script Data
 ---

@@ -1,4 +1,4 @@
-When you configure an instance of the Bluecat Address Manager integration in Demisto, you need to provide an API user account.
+When you configure an instance of the Bluecat Address Manager integration in Cortex XSOAR, you need to provide an API user account.
 
 ## Generate an API user account
 

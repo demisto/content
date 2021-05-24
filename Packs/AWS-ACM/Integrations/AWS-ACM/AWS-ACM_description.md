@@ -1,7 +1,7 @@
-Before you can use the AWS ACM integration in Demisto, you need to perform several configuration steps in your AWS environment.
+Before you can use the AWS ACM integration in Cortex XSOAR, you need to perform several configuration steps in your AWS environment.
 
 ### Prerequisites
-- Attach an instance profile with the required permissions to the Demisto server or engine that is running 
+- Attach an instance profile with the required permissions to the Cortex XSOAR server or engine that is running 
 on your AWS environment.
 - Instance profile requires minimum permission: sts:AssumeRole.
 - Instance profile requires permission to assume the roles needed by the AWS integrations.

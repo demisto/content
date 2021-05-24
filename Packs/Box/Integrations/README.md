@@ -17,7 +17,7 @@ Deprecated. Use the Box v2 integration instead.
   1. Create a new Box instance. Do not click **Test**.
   2. In your browser, copy the following line containing the Cortex XSOAR application client id:
   https://account.box.com/api/oauth2/authorize?response_type=code&client_id=hznnisyhdf09nu9saf2eyfzupawrn9b2&state=lulubalulu
-  (client_id is demisto-application client id)
+  (client_id is xsoar-application client id)
   3. Click **Grant access to Box**. Allow access to it using your box credentials.
   4. You will be redirected to a non active page, with a url in this form:
   https://localhost/?state=lulubalulu&code=MCTNCsN1gJIjA2cEJ72nczpXzcLVVQxJ
@@ -29,7 +29,7 @@ Deprecated. Use the Box v2 integration instead.
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### box_get_current_user
 ***

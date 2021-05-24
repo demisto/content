@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Palo Alto Networks MineMeld integration to manage your MineMeld miners from within Demisto. All commands require the <code>super admin</code> role.</p>
+<p>Use the Palo Alto Networks MineMeld integration to manage your MineMeld miners from within Cortex XSOAR. All commands require the <code>super admin</code> role.</p>
 <h2>Use Cases</h2>
 <ul>
 <li>Add or remove indicators from a miner.</li>
@@ -15,7 +15,7 @@
 <li>listDomainGeneric</li>
 <li>listIPv6Generic</li>
 </ul>
-<h2>Configure Palo Alto Networks MineMeld on Demisto:</h2>
+<h2>Configure Palo Alto Networks MineMeld on Cortex XSOAR:</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Palo Alto Networks MineMeld.</li>
@@ -31,10 +31,10 @@
 <strong> <font style="vertical-align: inherit;">Username &amp;</font> <font style="vertical-align: inherit;"> Password</font> </strong> <font style="vertical-align: inherit;">: Your credentials in the MineMeld environment.</font>
 </li>
 <li>
-<strong> <font style="vertical-align: inherit;">Blacklist names</font> </strong> <font style="vertical-align: inherit;">:</font> <font style="vertical-align: inherit;"> Comma separated list of miners, to be added to the Demisto blacklist. </font>
+<strong> <font style="vertical-align: inherit;">Blacklist names</font> </strong> <font style="vertical-align: inherit;">:</font> <font style="vertical-align: inherit;"> Comma separated list of miners, to be added to the Cortex XSOAR blacklist. </font>
 </li>
 <li>
-<strong> <font style="vertical-align: inherit;">Whitelist names:</font> </strong> <font style="vertical-align: inherit;"> CSV list of miners to add to the Demisto whitelist.</font>
+<strong> <font style="vertical-align: inherit;">Whitelist names:</font> </strong> <font style="vertical-align: inherit;"> CSV list of miners to add to the Cortex XSOAR whitelist.</font>
 </li>
 <li><strong> <font style="vertical-align: inherit;">Use system proxy settings</font></strong></li>
 </ul>
@@ -42,7 +42,7 @@
 <li>Click <strong>Test</strong> to validate the URLs and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details. All commands require the <code>super admin</code> role.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details. All commands require the <code>super admin</code> role.</p>
 <ol>
 <li><a href="#h_99158719451533030125933">Add an indicator to a miner: minemeld-add-to-miner</a></li>
 <li><a href="#h_84291944691533030131743">Remove an indicator from a miner: minemeld-remove-from-miner</a></li>
@@ -303,7 +303,7 @@
 <h3 id="h_549080515261533045679386">5. Get IP address indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified IP address, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the IP address indicator) has to be on a Demisto blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the IP address indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
 <h5>Base Command</h5>
 <p><code>ip</code></p>
 <h5>Input</h5>
@@ -418,7 +418,7 @@
 <h3 id="h_7852984883241533030162610">6. Get file indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified file, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the file indicator) has to be on a Demisto blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the file indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
 <h5>Base Command</h5>
 <p><code>file</code></p>
 <h5>Input</h5>
@@ -541,7 +541,7 @@
 <h3 id="h_5903761773861533030170543">7. Get domain indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified domain, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the domain indicator) has to be on a Demisto blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the domain indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
 <h5>Base Command</h5>
 <p><code>domain</code></p>
 <h5>Input</h5>
@@ -656,7 +656,7 @@
 <h3 id="h_6945056004471533030179038">8. Get URL indicator</h3>
 <hr>
 <p>Retrieves all occurrences of the specified URL, including the context in which it is found.</p>
-<p>For this command to succeed, the miner (associated with the URL indicator) has to be on a Demisto blacklist or whitelist.</p>
+<p>For this command to succeed, the miner (associated with the URL indicator) has to be on a Cortex XSOAR blacklist or whitelist.</p>
 <h5>Base Command</h5>
 <p><code>url</code></p>
 <h5>Input</h5>

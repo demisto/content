@@ -8,7 +8,7 @@ Loads a PDF file's content and metadata into context.
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility, ingestion |
-| Demisto Version | 4.1.0+ |
+| Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
 ---

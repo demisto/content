@@ -8,7 +8,7 @@ The malicious ratio is the ration between the number of "bad" incidents to the t
 | --- | --- |
 | Script Type | python |
 | Tags | reputation |
-| Demisto Version | 4.0.0+ |
+| Cortex XSOAR Version | 4.0.0+ |
 
 ## Inputs
 ---

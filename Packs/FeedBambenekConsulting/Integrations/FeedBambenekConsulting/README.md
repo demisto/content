@@ -4,7 +4,7 @@
 Use the Bambenek Consulting feed integration to fetch indicators from the feed.
 
 
-## Configure Bambenek Consulting Feed on Demisto
+## Configure Bambenek Consulting Feed on Cortex XSOAR
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.

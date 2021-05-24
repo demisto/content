@@ -2,7 +2,7 @@ Use the AlienVault OTX integration to fetch indicators using a TAXII client.
 
 This integration can only fetch indicators from **active** collections. Active collections are those which contain at least one indicator.
 
-## Configure AlienVault OTX TAXII Feed on Demisto
+## Configure AlienVault OTX TAXII Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AlienVault OTX TAXII Feed.
@@ -34,7 +34,7 @@ If you do not know which collections are available - do not set the `Collections
 
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators

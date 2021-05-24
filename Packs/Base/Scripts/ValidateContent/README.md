@@ -1,4 +1,4 @@
-Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs.
+Runs validation and linting using the Cortex XSOAR SDK on content items, such as integrations, automations and content packs.
 This automation script is used as part of the content validation that runs as part of the contribution flow.
 
 ## Script Data
@@ -7,7 +7,7 @@ This automation script is used as part of the content validation that runs as pa
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Demisto Version | 5.5.0 |
+| XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---
