@@ -28,14 +28,14 @@ script:
   - arguments:
     - default: false
       description: An ISO-standardized country code to get a specific country in the
-        results. Can be retrieved by running the command "na-aed-country-code-list".
+        results. Can be retrieved by running the "na-aed-country-code-list" command.
       isArray: false
       name: country
       required: false
       secret: false
     - default: false
       description: 'Search strings, separated by “+” to filter the results. (example:
-        "AZ+BS")'
+        "AZ+BS").'
       isArray: false
       name: query
       required: false
@@ -90,21 +90,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: gets a country or list of countries (country name and ISO-standardized
-      country code)
+    description: Gets a country or list of countries (country name and ISO-standardized
+      country code).
     execution: false
     name: na-aed-country-code-list
     outputs:
     - contextPath: NetscoutAED.Country.country_name
-      description: The country's name
+      description: The country's name.
       type: String
     - contextPath: NetscoutAED.Country.iso_code
-      description: The ISO-standardized country code
+      description: The ISO-standardized country code.
       type: String
   - arguments:
     - default: false
       description: An ISO standardized country code or a comma-separated list of country
-        codes. Can be retrieved by running the command "na-aed-country-code-list".
+        codes. Can be retrieved by running the "na-aed-country-code-list" command.
       isArray: false
       name: country
       required: true
@@ -133,7 +133,7 @@ script:
   - arguments:
     - default: false
       description: An ISO-standardized country code or a comma-separated list of ISO-standardized
-        country codes to remove. Can be retrieved by running the command "na-aed-country-code-list".
+        country codes to remove. Can be retrieved by running the "na-aed-country-code-list" command.
       isArray: false
       name: country
       required: true
@@ -144,14 +144,14 @@ script:
     name: na-aed-outbound-blacklisted-countries-remove
   - arguments:
     - default: false
-      description: List of ‘,’ delimited central configuration IDs. Cannot be used
+      description: A comma-separated list of central configuration IDs. Cannot be used with the pgid parameter.
         with the pgid parameter.
       isArray: false
       name: cid
       required: false
       secret: false
     - default: false
-      description: List of ‘,’ delimited protection group IDs. Cannot be used with
+      description: A comma-separated list of protection group IDs. Cannot be used with
         the cid parameter.
       isArray: false
       name: pgid
@@ -159,14 +159,14 @@ script:
       secret: false
     - default: false
       description: An ISO-standardized country code to get a specific country in the
-        results. Can be retrieved by running the command "na-aed-country-code-list".
+        results. Can be retrieved by running the "na-aed-country-code-list"command .
       isArray: false
       name: country
       required: false
       secret: false
     - default: false
       description: 'Search strings, separated by “+” to filter the results. (example:
-        "AZ+BS")'
+        "AZ+BS").'
       isArray: false
       name: query
       required: false
@@ -202,7 +202,7 @@ script:
       description: An ISO standardized country code.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistCountry.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.update_time
       description: The time that the country code was added to the list.
@@ -223,14 +223,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: A message to associate with each country that you add to the blacklist.
+      description: A message to associate with each country that you add to the inbound blacklist.
       isArray: false
       name: annotation
       required: false
       secret: false
     - default: false
       description: ISO standardized country code or a comma-separated list of country
-        codes. Can be retrieved by running the command "na-aed-country-code-list".
+        codes. Can be retrieved by running the "na-aed-country-code-list" command.
       isArray: false
       name: country
       required: true
@@ -241,7 +241,7 @@ script:
     name: na-aed-inbound-blacklisted-countries-add
     outputs:
     - contextPath: NetscoutAED.InboundBlacklistCountry.annotation
-      description: List of messages associated with each country in the outbound blacklist.
+      description: List of messages associated with each country in the inbound blacklist.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.cid
       description: List of central configuration IDs
@@ -250,7 +250,7 @@ script:
       description: An ISO standardized country code.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistCountry.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistCountry.update_time
       description: The time that the country code was added to the list.
@@ -272,7 +272,7 @@ script:
       secret: false
     - default: false
       description: ISO standardized country code or a comma-separated list of country
-        codes. Can be retrieved by running the command "na-aed-country-code-list".
+        codes. Can be retrieved by running the "na-aed-country-code-list" command.
       isArray: false
       name: country
       required: true
@@ -284,14 +284,14 @@ script:
     name: na-aed-inbound-blacklisted-countries-remove
   - arguments:
     - default: false
-      description: List of ‘,’ delimited IPv4 host addresses or CIDRs.
+      description: A comma-separated list of IPv4 host addresses or CIDRs.
       isArray: false
       name: host_address
       required: false
       secret: false
     - default: false
       description: 'Search strings, separated by “+” to filter the results. (example:
-        "AZ+BS")'
+        "AZ+BS").'
       isArray: false
       name: query
       required: false
@@ -352,7 +352,7 @@ script:
       description: IPv4 host address or CIDRs.
       type: String
     - contextPath: NetscoutAED.OutboundBlacklistHost.update_time
-      description: The time the host was last updated/set
+      description: The time the host was last updated/set.
       type: Date
   - arguments:
     - default: false
@@ -382,7 +382,7 @@ script:
       description: IPv4 host address or CIDRs.
       type: String
     - contextPath: NetscoutAED.OutboundBlacklistHost.update_time
-      description: The time the host was last updated/set
+      description: The time the host was last updated/set.
       type: Date
   - arguments:
     - default: false
@@ -398,7 +398,7 @@ script:
     name: na-aed-outbound-blacklisted-hosts-remove
   - arguments:
     - default: false
-      description: List of ‘,’ delimited IPv4 host addresses or CIDRs.
+      description: A comma-separated list of IPv4 host addresses or CIDRs.
       isArray: false
       name: host_address
       required: false
@@ -436,7 +436,7 @@ script:
       description: IPv4 host address or CIDRs.
       type: String
     - contextPath: NetscoutAED.OutboundWhitelistHost.update_time
-      description: The time the host was last updated/set
+      description: The time the host was last updated/set.
       type: Date
   - arguments:
     - default: false
@@ -508,7 +508,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Set the protection group mode to active (true) or inactive (false).
-        Default: true'
+        Default: true.'
       isArray: false
       name: active
       predefined:
@@ -542,8 +542,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Required when profiling is set to true. Specify the number of days,
-        from 1 to 14, over which profiling will run.
+      description: Specify the number of days,
+        from 1 to 14, over which profiling will run. Required when profiling is set to true.
       isArray: false
       name: profiling_duration
       predefined:
@@ -572,16 +572,16 @@ script:
       description: True if the protection group mode is active, false if inactive.
       type: Boolean
     - contextPath: NetscoutAED.Protection_Group.bps_dropped
-      description: Number of dropped bps
+      description: Number of dropped bps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bps_passed
-      description: Number of passed bps
+      description: Number of passed bps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bytes_dropped
-      description: Number of dropped bytes
+      description: Number of dropped bytes.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bytes_passed
-      description: Number of passed bytes
+      description: Number of passed bytes.
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.description
       description: Description of the protection group.
@@ -590,22 +590,22 @@ script:
       description: Protection group name.
       type: String
     - contextPath: NetscoutAED.Protection_Group.packets_dropped
-      description: Number of dropped packets
+      description: Number of dropped packets.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.packets_passed
-      description: Number of passed packets
+      description: Number of passed packets.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.pgid
       description: Protection group identifier.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.pps_passed
-      description: Number of passed pps
+      description: Number of passed pps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.pps_dropped
-      description: Number of dropped pps
+      description: Number of dropped pps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.prefixes
-      description: List of ‘,’ delimited prefixes belonging to the protection group.
+      description: A comma-separated list of prefixes belonging to the protection group.
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.profiling
       description: A traffic profile capture for a protection group’s rate-based protection
@@ -617,14 +617,14 @@ script:
       type: Number
     - contextPath: NetscoutAED.Protection_Group.profiling_start
       description: A UNIX epoch timestamp that indicates when a traffic profile capture
-        began. A 0 indicats that profiling was never started.
+        began. A 0 indicates that profiling was never started.
       type: Date
     - contextPath: NetscoutAED.Protection_Group.protection_level
       description: The protection level (None = use the global protection level, low,
         medium, high).
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.server_name
-      description: The protection group’s server name
+      description: The protection group’s server name.
       type: String
     - contextPath: NetscoutAED.Protection_Group.server_type
       description: The protection group’s server type.
@@ -671,16 +671,16 @@ script:
       description: True if the protection group mode is active, false if inactive.
       type: Boolean
     - contextPath: NetscoutAED.Protection_Group.bps_dropped
-      description: Number of dropped bps
+      description: Number of dropped bps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bps_passed
-      description: Number of passed packets
+      description: Number of passed bps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bytes_dropped
-      description: Number of dropped bytes
+      description: Number of dropped bytes.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bytes_passed
-      description: Number of passed bytes
+      description: Number of passed bytes.
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.description
       description: Description of the protection group.
@@ -689,22 +689,22 @@ script:
       description: Protection group name.
       type: String
     - contextPath: NetscoutAED.Protection_Group.packets_dropped
-      description: Number of dropped packets
+      description: Number of dropped packets.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.packets_passed
-      description: Number of passed packets
+      description: Number of passed packets.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.pgid
       description: Protection group identifier.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.pps_passed
-      description: Number of passed pps
+      description: Number of passed pps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.pps_dropped
-      description: Number of dropped pps
+      description: Number of dropped pps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.prefixes
-      description: List of ‘,’ delimited prefixes belonging to the protection group.
+      description: A comma-separated list of prefixes belonging to the protection group.
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.profiling
       description: A traffic profile capture for a protection group’s rate-based protection
@@ -716,14 +716,14 @@ script:
       type: Number
     - contextPath: NetscoutAED.Protection_Group.profiling_start
       description: A UNIX epoch timestamp that indicates when a traffic profile capture
-        began. A 0 indicats that profiling was never started.
+        began. A 0 indicates that profiling was never started.
       type: Date
     - contextPath: NetscoutAED.Protection_Group.protection_level
       description: The protection level (None = use the global protection level, low,
         medium, high).
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.server_name
-      description: The protection group’s server name
+      description: The protection group’s server name.
       type: String
     - contextPath: NetscoutAED.Protection_Group.server_type
       description: The protection group’s server type.
@@ -736,7 +736,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: List of ‘,’ delimited IPv4 host addresses or CIDRs.
+      description: A comma-separated list of IPv4 host addresses or CIDRs.
       isArray: false
       name: host_address
       required: false
@@ -773,13 +773,13 @@ script:
       description: List of messages associated with each host in the inbound blacklist.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.host_address
       description: IPv4 host addresses or CIDRs.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistHost.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.update_time
       description: The time that the host address was added to the list.
@@ -815,7 +815,7 @@ script:
       description: IPv4 host addresses or CIDRs.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistHost.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHostupdate_time
       description: The time that the host address was added to the list.
@@ -851,7 +851,7 @@ script:
       description: IPv4 host addresses or CIDRs.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistHost.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistHost.update_time
       description: The time that the host address was added to the list.
@@ -871,14 +871,14 @@ script:
     name: na-aed-inbound-blacklisted-hosts-remove
   - arguments:
     - default: false
-      description: List of ‘,’ delimited IPv4 or IPv6 host addresses or CIDRs.
+      description: A comma-separated list of IPv4 or IPv6 host addresses or CIDRs.
       isArray: false
       name: host_address
       required: false
       secret: false
     - default: false
       description: 'Search strings, separated by “+” to filter the results. (example:
-        "AZ+BS")'
+        "AZ+BS").'
       isArray: false
       name: query
       required: false
@@ -909,13 +909,13 @@ script:
         list.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.host_address
       description: IPv4 host addresses or CIDRs.
       type: String
     - contextPath: NetscoutAED.InboundWhitelistHost.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.update_time
       description: The time that the host address was added to the list.
@@ -946,13 +946,13 @@ script:
         list.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.host_address
       description: IPv4 host addresses or CIDRs.
       type: String
     - contextPath: NetscoutAED.InboundWhitelistHost.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.update_time
       description: The time that the host address was added to the list.
@@ -983,13 +983,13 @@ script:
         list.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.host_address
       description: IPv4 host addresses or CIDRs.
       type: String
     - contextPath: NetscoutAED.InboundWhitelistHost.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundWhitelistHost.update_time
       description: The time that the host address was added to the list.
@@ -1009,28 +1009,28 @@ script:
     name: na-aed-inbound-whitelisted-hosts-remove
   - arguments:
     - default: false
-      description: List of ‘,’ delimited central configuration IDs. Cannot be used
+      description: A comma-separated list of central configuration IDs. Cannot be used
         with the pgid parameter.
       isArray: false
       name: cid
       required: false
       secret: false
     - default: false
-      description: List of ‘,’ delimited protection group IDs. Cannot be used with
+      description: A comma-separated list of protection group IDs. Cannot be used with
         the cid parameter.
       isArray: false
       name: pgid
       required: false
       secret: false
     - default: false
-      description: List of ‘,’ delimited domains.
+      description: A comma-separated list of domains.
       isArray: false
       name: domain
       required: false
       secret: false
     - default: false
       description: 'Search strings, separated by “+” to filter the results. (example:
-        "AZ+BS")'
+        "AZ+BS").'
       isArray: false
       name: query
       required: false
@@ -1060,13 +1060,13 @@ script:
       description: List of messages associated with each domain in the inbound blacklist.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.domain
-      description: Domain name
+      description: Domain name.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistDomain.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.update_time
       description: The time that the domain was added to the list.
@@ -1113,7 +1113,7 @@ script:
       description: Domain name
       type: String
     - contextPath: NetscoutAED.InboundBlacklistDomain.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.update_time
       description: The time that the domain was added to the list.
@@ -1132,28 +1132,28 @@ script:
     name: na-aed-inbound-blacklisted-domains-remove
   - arguments:
     - default: false
-      description: List of ‘,’ delimited central configuration IDs. Cannot be used
+      description: A comma-separated list of central configuration IDs. Cannot be used
         with the pgid parameter.
       isArray: false
       name: cid
       required: false
       secret: false
     - default: false
-      description: List of ‘,’ delimited protection group IDs. Cannot be used with
+      description: A comma-separated list of protection group IDs. Cannot be used with
         the cid parameter.
       isArray: false
       name: pgid
       required: false
       secret: false
     - default: false
-      description: List of ‘,’ delimited URLs.
+      description: A comma-separated list of URLs.
       isArray: false
       name: url
       required: false
       secret: false
     - default: false
       description: 'Search strings, separated by “+” to filter the results. (example:
-        "AZ+BS")'
+        "AZ+BS").'
       isArray: false
       name: query
       required: false
@@ -1186,10 +1186,10 @@ script:
       description: List of central configuration IDs
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.url
-      description: Url address.
+      description: URL address.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistUrl.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.update_time
       description: The time that the domain was added to the list.
@@ -1230,13 +1230,13 @@ script:
       description: List of messages associated with each url in the inbound blacklist.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.cid
-      description: List of central configuration IDs
+      description: List of central configuration IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.url
-      description: Url address.
+      description: URL address.
       type: String
     - contextPath: NetscoutAED.InboundBlacklistUrl.pgid
-      description: List of protection group ID.
+      description: List of protection group IDs.
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistUrl.update_time
       description: The time that the domain was added to the list.

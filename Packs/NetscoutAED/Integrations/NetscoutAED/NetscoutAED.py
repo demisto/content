@@ -1069,12 +1069,11 @@ def handle_url_deletion_commands(client: Client, demisto_args: dict) -> str:
 
 def main() -> None:
     try:
-        params: dict = demisto.params()
+        params = demisto.params()
         base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/api/aed/v2')
         verify_certificate: bool = not params.get('insecure', False)
         proxy: bool = params.get('proxy', False)
-        api_token = params.get('User')
-        if not api_token and not params.get('User', {}).get('password'):
+        if not params.get('User') and not (api_token := params.get('User', {}).get('password')):
             raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
         commands = init_commands_dict()
         demisto_command = demisto.command()
