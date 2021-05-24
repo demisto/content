@@ -22,7 +22,7 @@ args:
     secret: false
   - default: false
     defaultValue: '500'
-    description: The maximum number of incidents to fetch to group.
+    description: The maximum number of incidents to fetch in a group.
     isArray: false
     name: limit
     required: false
@@ -51,7 +51,7 @@ args:
   - auto: PREDEFINED
     default: false
     defaultValue: 'False'
-    description: Whether to re-train the model in any cases. Default is "False".
+    description: Determines whether to force the model to re-train. Default is "False".
     isArray: false
     name: forceRetrain
     predefined:
