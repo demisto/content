@@ -101,7 +101,7 @@ parameters:
     default: "dmst-content-team"
   performance_test:
     type: string
-    default:
+    default: ""
 
 references:
   environment: &environment
