@@ -52,8 +52,6 @@ def show_incidents_in_cluster(model_name, query, display_fields):
                 value = inc[field]
             else:
                 value = wrapped_list(demisto.dt(inc, field))
-                demisto.results(value)
-                demisto.results(inc)
                 value = ' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], value))))  # type: ignore
             incident_to_show[field] = value
         incident_to_show['Id'] = "[{0}](#/Details/{0})".format(inc['id'])
