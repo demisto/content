@@ -290,7 +290,7 @@ class PolyswarmConnector():
                                       dbot_score=dbot_score)
             elif artifact_type == 'url':
                 indicator = Common.URL(url=artifact,
-                                       dbot_score=dbot_score)
+                                       dbot_score=dbot_score)  # type: ignore
             elif artifact_type == 'domain':
                 indicator = Common.Domain(domain=artifact,
                                           dbot_score=dbot_score)
