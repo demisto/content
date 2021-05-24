@@ -159,6 +159,8 @@ class Client(BaseClient):
     def get_batches_from_file(self, limit):
 
         file_stream = open("response.txt", 'rt')
+        columns = file_stream.readline()  # get the headers from the csv file.
+        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
 
         batch_size = limit if limit else BATCH_SIZE
         while True:
@@ -170,7 +172,7 @@ class Client(BaseClient):
                 os.remove("response.txt")
                 return
 
-            yield csv.DictReader(feed_batch)
+            yield csv.DictReader(feed_batch, fieldnames=columns)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -458,5 +460,5 @@ def main():
         return_error(err_msg)
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
