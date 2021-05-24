@@ -51,7 +51,7 @@ class PolyswarmConnector():
             outputs_prefix=f'PolySwarm.{object_name}',
             outputs_key_field='Scan_UUID',
             outputs=results,
-            indicator=indicator, # type: ignore
+            indicator=indicator,  # type: ignore
             ignore_auto_extract=True)
 
     def test_connectivity(self) -> bool:
