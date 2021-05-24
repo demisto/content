@@ -222,9 +222,5 @@
       "dontMapEventToLabels": true,
       "internalMapping": {}
     }
-  },
-  "transformer": {
-    "complex": null,
-    "simple": ""
   }
 }
