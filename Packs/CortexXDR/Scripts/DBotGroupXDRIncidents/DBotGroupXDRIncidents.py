@@ -33,4 +33,5 @@ else:
         'numberOfFeaturesPerField': 500,
         'fieldsToDisplay': demisto.args().get('fieldsToDisplay')
     })
+    # we need only the last entry because it's a widget script, and only the widget info should be return
     demisto.results(res[-1])
