@@ -350,7 +350,7 @@
             }
         ]
     },
-    "name": "PassiveTotal Domain Indicator",
+    "name": "PassiveTotal Domain Indicator Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0"
