@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Qradar Generic"
+    ],
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "destinationmacaddress",
