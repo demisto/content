@@ -7,13 +7,13 @@ In a web browser, go to **http://*demisto_address*:*listen_port***.
 
 
 ### Access the EDL Service by Instance Name (HTTPS)
-**The route will be open without security hardening and might expose you to network risks.**
+**Note: The EDL will be open to the same network the XSOAR Server is accessible. Make sure you are aware of the network risks. Enabling strong authentication is highly recommended if the route is open to the public.**
 
 To access the EDL service by instance name, make sure ***Instance execute external*** is enabled. 
 
-1. In Demisto, go to **Settings > About > Troubleshooting**.
-2. In the **Server Configuration** section, verify that the ***instance.execute.external*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
-3. In a web browser, go to **https://*<demisto_address>*/instance/execute/*<instance_name>*** .
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar_address>/instance/execute/<instance_name>/`.
 
 
 ### Modify Request Parameters Through the URL
