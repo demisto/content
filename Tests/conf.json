@@ -1006,7 +1006,8 @@
         {
             "playbookID": "Test_EDL",
             "integrations": "EDL",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "pid_threshold": 8
         },
         {
             "playbookID": "Test_export_indicators_service",
@@ -3382,7 +3383,6 @@
         "Kenna Test": "Missing data",
         "Trend Micro Apex - Test": "Issue 27280",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
-        "Field polling test": "Issue 33951",
         "palo_alto_panorama_test_pb": "Issue 34371",
         "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
@@ -3399,11 +3399,8 @@
         "Gmail Single User - Test": "Issue 27361",
         "AWS - EC2 Test Playbook": "Issue 36486",
         "get_file_sample_by_hash_-_cylance_protect_-_test": "Issue 28823",
-        "playbook_TrendmicroCAS_Test": "Issue 32730",
         "Carbon Black Enterprise EDR Test": "Issue 29775",
         "Rundeck_test": "Issue 31174",
-        "Azure NSG - Test": "Issue 33217",
-        "AutoFocus V2 test": "Issue 26464",
         "VirusTotal (API v3) Detonate Test": "Issue 36004",
         "FailedInstances - Test": "Issue 33218",
         "PAN-OS DAG Configuration Test": "Issue 19205",
@@ -3619,7 +3616,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected."
+        "MISP V2": "Cleanup process isn't performed as expected.",
+        "Azure Network Security Groups": "Has a command that sends parameters in the path"
     },
     "parallel_integrations": [
         "AWS - EC2",
