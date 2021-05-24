@@ -39,7 +39,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-defaultclassifier: 'null'
 description: Zscaler is a cloud security solution built for performance and flexible
   scalability. This integration enables you to manage URL and IP address whitelists
   and blacklists, manage and update categories, get Sandbox reports, and manually
@@ -381,7 +380,7 @@ script:
       default: false
       defaultValue: 'false'
       description: Whether to display the URLs of each category in the War Room. Default
-        is 'false'. Anyway URLS will be returned to the Context Data.
+        is 'false'. URLs will always be returned to the Context Data.
       isArray: false
       name: displayURL
       predefined:

@@ -582,7 +582,7 @@ Retrieves a list of all categories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| displayURL | Whether to display the URLs of each category in the War Room. Default is 'false'. Anyway URLS will be returned to the Context Data. | Optional | 
+| displayURL | Whether to display the URLs of each category in the War Room. Default is 'false'. URLs will always be returned to the Context Data. | Optional | 
 | custom_categories_only | Whether to retrieve only custom categories to the War Room. Default is 'false'. | Optional |
 | get_ids_and_names_only | Whether to retrieve only a list of URL category IDs and names. URLs will not be returned at all (even if displayURL set to true). Note - he API does not support the combination of custom_only and get_ids_and_names_only. | Optional |
 
