@@ -65,7 +65,6 @@ def show_incidents_in_cluster(model_name, query, display_fields):
 
     headers = [x.capitalize() for x in BASE_INCIDENT_COLUMNS] + [x for x in display_fields if
                                                                  x not in BASE_INCIDENT_COLUMNS]
-    # headers = [x.capitalize() for x in headers]
     title = 'Incidents In Clusters ' + ", ".join(set(id_to_cluster.values()))
     return_outputs(tableToMarkdown(title, incidents_to_show, headers))
 
