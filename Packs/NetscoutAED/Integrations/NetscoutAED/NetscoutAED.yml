@@ -1,4 +1,3 @@
-beta: false
 category: Utilities
 commonfields:
   id: NetscoutAED
@@ -47,8 +46,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -83,8 +82,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page (default 10)
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page (default 10)
       isArray: false
       name: limit
       required: false
@@ -133,7 +132,8 @@ script:
   - arguments:
     - default: false
       description: An ISO-standardized country code or a comma-separated list of ISO-standardized
-        country codes to remove. Can be retrieved by running the "na-aed-country-code-list" command.
+        country codes to remove. Can be retrieved by running the "na-aed-country-code-list"
+        command.
       isArray: false
       name: country
       required: true
@@ -144,22 +144,23 @@ script:
     name: na-aed-outbound-blacklisted-countries-remove
   - arguments:
     - default: false
-      description: A comma-separated list of central configuration IDs. Cannot be used with the pgid parameter.
-        with the pgid parameter.
+      description: A comma-separated list of central configuration IDs. Cannot be
+        used with the pgid parameter. with the pgid parameter.
       isArray: false
       name: cid
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of protection group IDs. Cannot be used with
-        the cid parameter.
+      description: A comma-separated list of protection group IDs. Cannot be used
+        with the cid parameter.
       isArray: false
       name: pgid
       required: false
       secret: false
     - default: false
       description: An ISO-standardized country code to get a specific country in the
-        results. Can be retrieved by running the "na-aed-country-code-list"command .
+        results. Can be retrieved by running the "na-aed-country-code-list"command
+        .
       isArray: false
       name: country
       required: false
@@ -178,8 +179,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -223,7 +224,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A message to associate with each country that you add to the inbound blacklist.
+      description: A message to associate with each country that you add to the inbound
+        blacklist.
       isArray: false
       name: annotation
       required: false
@@ -303,8 +305,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -417,8 +419,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -542,8 +544,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify the number of days,
-        from 1 to 14, over which profiling will run. Required when profiling is set to true.
+      description: Specify the number of days, from 1 to 14, over which profiling
+        will run. Required when profiling is set to true.
       isArray: false
       name: profiling_duration
       predefined:
@@ -605,7 +607,8 @@ script:
       description: Number of dropped pps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.prefixes
-      description: A comma-separated list of prefixes belonging to the protection group.
+      description: A comma-separated list of prefixes belonging to the protection
+        group.
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.profiling
       description: A traffic profile capture for a protection group’s rate-based protection
@@ -704,7 +707,8 @@ script:
       description: Number of dropped pps.
       type: Number
     - contextPath: NetscoutAED.Protection_Group.prefixes
-      description: A comma-separated list of prefixes belonging to the protection group.
+      description: A comma-separated list of prefixes belonging to the protection
+        group.
       type: Unknown
     - contextPath: NetscoutAED.Protection_Group.profiling
       description: A traffic profile capture for a protection group’s rate-based protection
@@ -755,8 +759,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -890,8 +894,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -1009,15 +1013,15 @@ script:
     name: na-aed-inbound-whitelisted-hosts-remove
   - arguments:
     - default: false
-      description: A comma-separated list of central configuration IDs. Cannot be used
-        with the pgid parameter.
+      description: A comma-separated list of central configuration IDs. Cannot be
+        used with the pgid parameter.
       isArray: false
       name: cid
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of protection group IDs. Cannot be used with
-        the cid parameter.
+      description: A comma-separated list of protection group IDs. Cannot be used
+        with the cid parameter.
       isArray: false
       name: pgid
       required: false
@@ -1042,8 +1046,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -1132,15 +1136,15 @@ script:
     name: na-aed-inbound-blacklisted-domains-remove
   - arguments:
     - default: false
-      description: A comma-separated list of central configuration IDs. Cannot be used
-        with the pgid parameter.
+      description: A comma-separated list of central configuration IDs. Cannot be
+        used with the pgid parameter.
       isArray: false
       name: cid
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of protection group IDs. Cannot be used with
-        the cid parameter.
+      description: A comma-separated list of protection group IDs. Cannot be used
+        with the cid parameter.
       isArray: false
       name: pgid
       required: false
@@ -1165,8 +1169,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Maximal number of results to retrieve. Also sets the size
-        of the returned page.
+      description: Maximal number of results to retrieve. Also sets the size of the
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -1277,6 +1281,4 @@ script:
 tests:
 - No tests (auto formatted)
 defaultclassifier: 'null'
-defaultMapperIn: 'null'
 fromversion: 5.5.0
-defaultMapperOut: 'null'
