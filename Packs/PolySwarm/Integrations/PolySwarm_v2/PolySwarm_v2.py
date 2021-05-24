@@ -74,7 +74,7 @@ class PolyswarmConnector():
             return Common.DBotScore.GOOD
         elif 0.2 <= float(polyscore) < 0.7:
             return Common.DBotScore.SUSPICIOUS
-        elif float(polyscore) >= 0.7:
+        else:  # polyscore is >= 0.7
             return Common.DBotScore.BAD
 
     def return_hash_results(self,
