@@ -90,41 +90,38 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
     alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
                                   plugin_id=plugin_id, action=action, time_frame=time_frame)
     alert = {}
-    for alert in alerts:
+    for dic in alerts['data']:
+        for key in dic.keys():
+            if key == 'time_seen':
+                incident_created_time = dic['time_seen']
+                if last_fetch:
+                    if int(incident_created_time) <= last_fetch:
+                        continue
+                incident_name = "Linkshadow-entityAnomaly"
+                formatted_JSON = format_JSON_for_fetch_incidents(dic)
 
-        if alert == 'data':
-            for dic in alerts['data']:
-                for key in dic.keys():
-                    if key == 'time_seen':
-                        incident_created_time = dic['time_seen']
-                        if last_fetch:
-                            if int(incident_created_time) <= last_fetch:
-                                continue
-                        incident_name = "Linkshadow-entityAnomaly"
-                        formatted_JSON = format_JSON_for_fetch_incidents(dic)
-
-                        incident = {
-                            'name': incident_name,
-                            'occurred': timestamp_to_datestring(incident_created_time),
-                            'rawJSON': json.dumps(formatted_JSON),
-                            'CustomFields': {  # Map specific XSOAR Custom Fields
-                                'sip': formatted_JSON['sip'],
-                                'sourceip': formatted_JSON['sip'],
-                                'destinationip': formatted_JSON['dip'],
-                                'sourceport': formatted_JSON['sport'],
-                                'destinationport': formatted_JSON['dport'],
-                                'macaddress': formatted_JSON['smac'],
-                                'alertid': formatted_JSON['anomaly_id'],
-                                'subcategory': formatted_JSON['category']
-                            }
-                        }
-                        incidents.append(incident)
-                        # Update last run and add incident if the incident is newer than last fetch
-                        # if incident_created_time > latest_created_time:
-                        #     latest_created_time = incident_created_time
-                        # print (max_alerts)
-                        if len(incidents) >= max_alerts:
-                            break
+                incident = {
+                    'name': incident_name,
+                    'occurred': timestamp_to_datestring(incident_created_time),
+                    'rawJSON': json.dumps(formatted_JSON),
+                    'CustomFields': {  # Map specific XSOAR Custom Fields
+                        'sip': formatted_JSON['sip'],
+                        'sourceip': formatted_JSON['sip'],
+                        'destinationip': formatted_JSON['dip'],
+                        'sourceport': formatted_JSON['sport'],
+                        'destinationport': formatted_JSON['dport'],
+                        'macaddress': formatted_JSON['smac'],
+                        'alertid': formatted_JSON['anomaly_id'],
+                        'subcategory': formatted_JSON['category']
+                    }
+                }
+                incidents.append(incident)
+                # Update last run and add incident if the incident is newer than last fetch
+                # if incident_created_time > latest_created_time:
+                #     latest_created_time = incident_created_time
+                # print (max_alerts)
+                if len(incidents) >= max_alerts:
+                    break
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
 
@@ -150,8 +147,7 @@ def fetch_entity_anomalies(client, args):
     )
 
     results = CommandResults(
-        outputs_prefix='Linkshadow.anomaly',
-        outputs_key_field='demisto.args()',
+        outputs_prefix='Linkshadow.data',
         outputs=alerts
     )
 
