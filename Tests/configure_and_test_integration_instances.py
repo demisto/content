@@ -123,7 +123,7 @@ class Build:
     test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv('CIRCLECI') else f'{os.getenv("CI_PROJECT_DIR")}/Tests'  # noqa
     key_file_path = 'Use in case of running with non local server'
     run_environment = Running.CI_RUN
-    env_results_path = './artifacts/env_results.json'
+    env_results_path = f'{os.getenv("ARTIFACTS_FOLDER")}/env_results.json'
     DEFAULT_SERVER_VERSION = '99.99.98'
 
     #  END CHANGE ON LOCAL RUN  #

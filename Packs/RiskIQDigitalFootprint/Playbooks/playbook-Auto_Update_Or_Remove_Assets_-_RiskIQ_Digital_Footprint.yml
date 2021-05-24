@@ -1,0 +1,391 @@
+id: Auto Update Or Remove Assets - RiskIQ Digital Footprint
+version: -1
+name: Auto Update Or Remove Assets - RiskIQ Digital Footprint
+description: |-
+  This playbook automatically updates or removes the provided asset(s) from the RiskIQ Digital Footprint inventory according to the values provided. Use this playbook as a sub playbook and loop over each asset in the asset list in order to update or remove multiple assets.
+  Supported integration:
+  - RiskIQ Digital Footprint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ef6b1118-a506-4676-828b-f2a447d819ed
+    type: start
+    task:
+      id: ef6b1118-a506-4676-828b-f2a447d819ed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 764bc39a-28ee-4ca2-8792-9c59498b24c5
+    type: condition
+    task:
+      id: 764bc39a-28ee-4ca2-8792-9c59498b24c5
+      version: -1
+      name: Is there an asset to update or remove?
+      description: Checks whether there is an asset that should be updated or removed
+        from the inventory.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Remove:
+      - "6"
+      Update:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Update
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.assets_to_update
+                accessor: 'Operation to be performed on the asset: Update or Remove
+                  or None'
+            iscontext: true
+          right:
+            value:
+              simple: Update
+          ignorecase: true
+    - label: Remove
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.assets_to_update
+                accessor: 'Operation to be performed on the asset: Update or Remove
+                  or None'
+            iscontext: true
+          right:
+            value:
+              simple: Remove
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8e04bfd5-919a-4059-8c14-850e020c538d
+    type: condition
+    task:
+      id: 8e04bfd5-919a-4059-8c14-850e020c538d
+      version: -1
+      name: Is RiskIQ Digital Footprint enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules.brand
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3d0f875f-555f-4c88-8fe4-bbc811ac54ff
+    type: title
+    task:
+      id: 3d0f875f-555f-4c88-8fe4-bbc811ac54ff
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 6839c252-d1a1-45d1-8b1d-28c5e180b7b7
+    type: regular
+    task:
+      id: 6839c252-d1a1-45d1-8b1d-28c5e180b7b7
+      version: -1
+      name: Remove the asset from inventory
+      description: Removes the provided asset from the RiskIQ Digital Footprint inventory.
+      script: '|||df-update-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action: {}
+      asset_json: {}
+      brand: {}
+      enterprise: {}
+      fail_on_error: {}
+      name:
+        complex:
+          root: inputs.assets_to_update
+          accessor: Asset Name
+      organization: {}
+      priority: {}
+      removed_state:
+        simple: Dismissed
+      state: {}
+      tag: {}
+      target_asset_types: {}
+      type:
+        complex:
+          root: inputs.assets_to_update
+          accessor: Asset Type
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6a4bf8f5-91c3-4908-842e-e68333464958
+    type: regular
+    task:
+      id: 6a4bf8f5-91c3-4908-842e-e68333464958
+      version: -1
+      name: Update the asset in the inventory
+      description: Updates the provided asset in the RiskIQ Digital Footprint inventory
+        with the provided set of properties.
+      script: '|||df-update-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action:
+        complex:
+          root: 'inputs.assets_to_update.Action to be performed on the asset property:
+            Add or Update or Remove'
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: 'inputs.assets_to_update.Action to be performed on the asset
+                    property: Add or Update or Remove'
+                iscontext: true
+      asset_json: {}
+      brand:
+        complex:
+          root: inputs.assets_to_update.Brands of the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.assets_to_update.Brands of the asset
+                iscontext: true
+      enterprise:
+        complex:
+          root: inputs.assets_to_update.Is the asset an enterprise asset? true or
+            false
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.assets_to_update.Is the asset an enterprise asset?
+                    true or false
+                iscontext: true
+      fail_on_error: {}
+      name:
+        complex:
+          root: inputs.assets_to_update
+          accessor: Asset Name
+      organization:
+        complex:
+          root: inputs.assets_to_update.Organizations of the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.assets_to_update.Organizations of the asset
+                iscontext: true
+      priority:
+        complex:
+          root: 'inputs.assets_to_update.Asset Priority: High or Medium or Low or
+            None'
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: 'inputs.assets_to_update.Asset Priority: High or Medium
+                    or Low or None'
+                iscontext: true
+      removed_state: {}
+      state:
+        complex:
+          root: 'inputs.assets_to_update.Asset State: Candidate or Approved Inventory
+            or Requires Investigation or Dependencies or Monitor Only'
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: 'inputs.assets_to_update.Asset State: Candidate or Approved
+                    Inventory or Requires Investigation or Dependencies or Monitor
+                    Only'
+                iscontext: true
+      tag:
+        complex:
+          root: inputs.assets_to_update.Tags of the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.assets_to_update.Tags of the asset
+                iscontext: true
+      target_asset_types:
+        complex:
+          root: inputs.assets_to_update.Affected target asset types
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.assets_to_update.Affected target asset types
+                iscontext: true
+      type:
+        complex:
+          root: inputs.assets_to_update
+          accessor: Asset Type
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_5_#default#": 0.38,
+      "1_6_Remove": 0.52,
+      "3_5_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1100,
+        "x": -270,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: assets_to_update
+  value: {}
+  required: true
+  description: 'The list of the assets to be updated or removed. The list should have
+    some specific keys used in this playbook. Example of the list: [{"Asset Name":
+    "asset1", "Asset Type": "Domain", "Operation to be performed on the asset: Update
+    or Remove or None": "Update", "Action to be performed on the asset property: Add
+    or Update or Remove": "Add", "Asset State: Candidate or Approved Inventory or
+    Requires Investigation or Dependencies or Monitor Only": "Candidate", "Asset Priority:
+    High or Medium or Low or None": "High", "Is the asset an enterprise asset? true
+    or false": "true", "Brands of the asset": "RiskIQ", "Organizations of the asset":
+    "RiskIQ", "Tags of the asset": "RiskIQ", "Affected target asset types": "Host"}]'
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
