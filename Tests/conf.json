@@ -1748,19 +1748,7 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_prod",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
             "instance_names": "microsoft_defender_atp_dev",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
             "is_mockable": false
         },
         {
@@ -3384,7 +3372,6 @@
         "Trend Micro Apex - Test": "Issue 27280",
         "Create ServiceNow Ticket and Mirror Test": "Issue 30587",
         "palo_alto_panorama_test_pb": "Issue 34371",
-        "Microsoft Defender - ATP - Indicators Test": "Issue 29279",
         "Active Directory - Get User Manager Details - Test": "Issue 25604",
         "GSuiteAdmin-Test": "Issue 34784",
         "Test-BPA": "Issue 28406",
