@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import re
 import json
 from datetime import datetime, date
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
