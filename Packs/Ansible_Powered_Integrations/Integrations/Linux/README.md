@@ -17,7 +17,7 @@ This integration supports a number of methods of authenticating with the Linux H
 3. Username and SSH Key from the XSOAR credential manager
 
 ## Permissions
-Whilst un-privilaged Linux user privilages can be used, a SuperUser account is recommended as most commands will require elevated permissions to execute.
+Whilst un-privileged Linux user privileges can be used, a SuperUser account is recommended as most commands will require elevated permissions to execute.
 
 ## Concurrency
 This integration supports execution of commands against multiple hosts concurrently. The `host` parameter accepts a list of addresses, and will run the command in parallel as per the **Concurrency Factor** value.
@@ -37,7 +37,7 @@ This integration is powered by Ansible 2.9. Further information can be found on 
     | --- | --- | --- |
     | Username | The credentials to associate with the instance. SSH keys can be configured using the credential manager. | True |
     | Default SSH Port | The default port to use if one is not specified in the commands \`host\` argument. | True |
-    | Concurrecy Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
+    | Concurrency Factor | If multiple hosts are specified in a command, how many hosts should be interacted with concurrently. | True |
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

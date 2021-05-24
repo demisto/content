@@ -19,7 +19,7 @@ configuration:
 - additionalinfo: If multiple hosts are specified in a command, how many hosts should
     be interacted with concurrently.
   defaultvalue: '4'
-  display: Concurrecy Factor
+  display: Concurrency Factor
   name: concurrency
   required: true
   type: 0
