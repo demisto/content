@@ -67,7 +67,7 @@ script:
         argument to 'true'.
       isArray: true
       name: url
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
