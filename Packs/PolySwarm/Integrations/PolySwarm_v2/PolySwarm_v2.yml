@@ -17,6 +17,7 @@ configuration:
   name: PolySwarm_v2
   required: true
   type: 0
+  description: the segment of PolySwarm's marketplace to query on.
 description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
 display: PolySwarm
 name: PolySwarm_v2
