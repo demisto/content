@@ -252,3 +252,12 @@ ignore=PA116
 
 [file:README.md]
 ignore=RM104
+
+[file:integration-SafeBreach_README.md]
+ignore=RM105
+
+[file:Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v2_README.md]
+ignore=RM105
+
+[file:playbook-Demisto_Self-Defense_-_Account_policy_monitoring_playbook_README.md]
+ignore=RM105

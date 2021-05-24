@@ -1,6 +1,9 @@
 [file:JiraV2.yml]
 ignore=IN126
 
+[file:README.md]
+ignore=RM105
+
 [file:ScriptJiraChangeTransition.yml]
 ignore=BA110
 

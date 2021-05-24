@@ -5,13 +5,13 @@ Copies a file from an incident to a specified incident. The file is recorded as 
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | javascript |
-| Tags | DemistoAPI |
+| Tags | XSOARAPI |
 
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* demisto-api-multipart
+* XSOAR-api-multipart
 
 ## Inputs
 ---

@@ -598,13 +598,13 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 {
     'CrowdStrike.File(val.ID === obj.ID)': [
         {
-            'CreatedBy': 'spongobob@demisto.com',
+            'CreatedBy': 'spongobob@XSOAR.com',
             'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-            'Description': 'Demisto',
+            'Description': 'XSOAR',
             'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-            'ModifiedBy': 'spongobob@demisto.com',
+            'ModifiedBy': 'spongobob@XSOAR.com',
             'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-            'Name': 'Demisto',
+            'Name': 'XSOAR',
             'Permission': 'private',
             'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
             'Type': 'script'
@@ -617,7 +617,7 @@ Returns files based on the IDs given. These are used for the RTR `put` command.
 ### CrowdStrike Falcon file le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
 |CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
 |---|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+| spongobob@XSOAR.com | 2019-10-17T13:41:48.487520845Z | XSOAR | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@XSOAR.com | 2019-10-17T13:41:48.487521161Z | XSOAR | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
 ### 12. cs-falcon-list-files
 ---
@@ -653,13 +653,13 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 {
     'CrowdStrike.File(val.ID === obj.ID)': [
         {
-            'CreatedBy': 'spongobob@demisto.com',
+            'CreatedBy': 'spongobob@XSOAR.com',
             'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-            'Description': 'Demisto',
+            'Description': 'XSOAR',
             'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-            'ModifiedBy': 'spongobob@demisto.com',
+            'ModifiedBy': 'spongobob@XSOAR.com',
             'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-            'Name': 'Demisto',
+            'Name': 'XSOAR',
             'Permission': 'private',
             'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
             'Type': 'script'
@@ -672,7 +672,7 @@ Returns Returns a list of put-file ID's that are available for the user in the `
 ### CrowdStrike Falcon files
 |CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|Type|
 |---|---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
+| spongobob@XSOAR.com | 2019-10-17T13:41:48.487520845Z | XSOAR | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@XSOAR.com | 2019-10-17T13:41:48.487521161Z | XSOAR | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc | script |
 
 ### 13. cs-falcon-get-script
 ---
@@ -714,13 +714,13 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 {
     'CrowdStrike.Script(val.ID === obj.ID)': [
        {
-           'CreatedBy': 'spongobob@demisto.com',
+           'CreatedBy': 'spongobob@XSOAR.com',
            'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-           'Description': 'Demisto',
+           'Description': 'XSOAR',
            'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-           'ModifiedBy': 'spongobob@demisto.com',
+           'ModifiedBy': 'spongobob@XSOAR.com',
            'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-           'Name': 'Demisto',
+           'Name': 'XSOAR',
            'Permission': 'private',
            'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
            'RunAttemptCount': 0,
@@ -735,7 +735,7 @@ Return custom scripts based on the ID. Used for the RTR `runscript` command.
 ### CrowdStrike Falcon script le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a
 |CreatedBy|CreatedTime|Description|ID|ModifiedBy|ModifiedTime|Name|Permission|SHA256|
 |---|---|---|---|---|---|---|---|---|
-| spongobob@demisto.com | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+| spongobob@XSOAR.com | 2019-10-17T13:41:48.487520845Z | XSOAR | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@XSOAR.com | 2019-10-17T13:41:48.487521161Z | XSOAR | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
 ### 14. cs-falcon-delete-script
@@ -790,13 +790,13 @@ Returns a list of custom script IDs that are available for the user in the `runs
 {
     'CrowdStrike.Script(val.ID === obj.ID)': [
         {
-            'CreatedBy': 'spongobob@demisto.com',
+            'CreatedBy': 'spongobob@XSOAR.com',
             'CreatedTime': '2019-10-17T13:41:48.487520845Z',
-            'Description': 'Demisto',
+            'Description': 'XSOAR',
             'ID': 'le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a',
-            'ModifiedBy': 'spongobob@demisto.com',
+            'ModifiedBy': 'spongobob@XSOAR.com',
             'ModifiedTime': '2019-10-17T13:41:48.487521161Z',
-            'Name': 'Demisto',
+            'Name': 'XSOAR',
             'Permission': 'private',
             'SHA256': '5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc',
             'RunAttemptCount': 0,
@@ -811,7 +811,7 @@ Returns a list of custom script IDs that are available for the user in the `runs
 ### CrowdStrike Falcon scripts
 | CreatedBy | CreatedTime | Description | ID | ModifiedBy | ModifiedTime | Name | Permission| SHA256 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| spongobob@demisto.com |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@demisto.com | 2019-10-17T13:41:48.487521161Z | Demisto | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
+| spongobob@XSOAR.com |  2019-10-17T13:41:48.487520845Z | XSOAR | le10098bf0e311e989190662caec3daa_94cc8c55556741faa1d82bd1faabfb4a | spongobob@XSOAR.com | 2019-10-17T13:41:48.487521161Z | XSOAR | private | 5a4440f2b9ce60b070e98c304370050446a2efa4b3850550a99e4d7b8f447fcc |
 
 
 ### 16. cs-falcon-run-script
@@ -1326,7 +1326,7 @@ Get the full definition of one or more indicators that you are watching
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Policy": "none",
             "ShareLevel": "red",
-            "Source": "Demisto playbook",
+            "Source": "XSOAR playbook",
             "Type": "domain",
             "Value": "test.domain.com"
         }
@@ -1339,7 +1339,7 @@ Get the full definition of one or more indicators that you are watching
 >### Indicator of Compromise
 >|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | XSOAR playbook | domain | test.domain.com |
 
 
 ### 25. cs-falcon-upload-ioc
@@ -1382,7 +1382,7 @@ Uploads an indicator for CrowdStrike to monitor.
 
 
 #### Command Example
-```!cs-falcon-upload-ioc ioc_type="domain" value="test.domain.com" policy="none" share_level="red" source="Demisto playbook" description="Test ioc"```
+```!cs-falcon-upload-ioc ioc_type="domain" value="test.domain.com" policy="none" share_level="red" source="XSOAR playbook" description="Test ioc"```
 
 #### Context Example
 ```json
@@ -1396,7 +1396,7 @@ Uploads an indicator for CrowdStrike to monitor.
             "ModifiedTime": "2020-10-02T13:55:26Z",
             "Policy": "none",
             "ShareLevel": "red",
-            "Source": "Demisto playbook",
+            "Source": "XSOAR playbook",
             "Type": "domain",
             "Value": "test.domain.com"
         }
@@ -1409,7 +1409,7 @@ Uploads an indicator for CrowdStrike to monitor.
 >### Custom IOC was created successfully
 >|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | XSOAR playbook | domain | test.domain.com |
 
 
 ### 26. cs-falcon-update-ioc
@@ -1466,7 +1466,7 @@ Updates an indicator for CrowdStrike to monitor.
             "ModifiedTime": "2020-10-02T13:55:33Z",
             "Policy": "detect",
             "ShareLevel": "red",
-            "Source": "Demisto playbook",
+            "Source": "XSOAR playbook",
             "Type": "domain",
             "Value": "test.domain.com"
         }
@@ -1479,7 +1479,7 @@ Updates an indicator for CrowdStrike to monitor.
 >### Custom IOC was created successfully
 >|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Benign domain IOC | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:33Z | detect | red | Demisto playbook | domain | test.domain.com |
+>| 2020-10-02T13:55:26Z | Benign domain IOC | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:33Z | detect | red | XSOAR playbook | domain | test.domain.com |
 
 
 ### 27. cs-falcon-delete-ioc

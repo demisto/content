@@ -3,7 +3,7 @@
 <p>This integration was integrated and tested with API Version 2012-11-05.</p>
 <h2>Prerequisites</h2>
 <p>It is important that you familiarize yourself with and complete all steps detailed in the <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
-<h2>Configure the AWS S3 Integration in Demisto</h2>
+<h2>Configure the AWS S3 Integration in Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AWS - S3.</li>
@@ -23,7 +23,7 @@
 </ul>
 
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_14490777351528868375934">Create a bucket: aws-s3-create-bucket</a></li>
 <li><a href="#h_3239675201528868603988">Delete a bucket: aws-s3-delete-bucket</a></li>
@@ -387,7 +387,7 @@
 <pre>Policy deleted from <em>test</em>.</pre>
 <hr>
 <h3 id="h_4978373091301528869946621">6. Download a file from a bucket to the War Room</h3>
-<p>Downloads a file from an Amazon S3 bucket to the Demisto War Room.</p>
+<p>Downloads a file from an Amazon S3 bucket to the Cortex XSOAR War Room.</p>
 <h5>Command Example</h5>
 <p><code>!aws-s3-download-file bucket=test key=test.txt</code></p>
 <h5>AWS S3 Policy Permission</h5>
