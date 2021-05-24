@@ -9,7 +9,7 @@
     "FireEye NX Alert": {
       "dontMapEventToLabels": true,
       "internalMapping": {
-        "Alert Acknowledgement": {
+        "FireEye Alert Acknowledgement": {
           "complex": {
             "accessor": "",
             "filters": [],
