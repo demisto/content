@@ -276,14 +276,7 @@ script:
         threshold = parseInt(threshold);
 
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
-        var o = res.obj;
-        var ec = {};
-        if (o.response_code === 0) {
-            ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
-            ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
-        }
+
         var r = [];
         if (Array.isArray(res.obj)) { // Got multiple hashes so need to nicely iterate
             r = res.obj;
@@ -292,6 +285,21 @@ script:
         }
         var entryList = [];
         for (var i=0; i<r.length; i++) {
+            if (r[i].response_code === 0) {
+                var ec = {};
+                ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
+                ec[DBOTSCORE_KEY] = {Indicator: hash, Type: 'file', Vendor: 'VirusTotal', Score: 0, Reliability: reliability};
+                entryList.push(
+                    {
+                        Type: entryTypes.note,
+                        Contents: res.body,
+                        ContentsFormat: formats.json,
+                        EntryContext: ec,
+                        HumanReadable: '## VirusTotal does not have details about ' + r[i].resource + '\n' + res.obj.verbose_msg
+                    }
+                );
+                continue;
+            }
             ec = {};
             ec[DBOTSCORE_KEY] = [];
             ec[outputPaths.file] = [];
