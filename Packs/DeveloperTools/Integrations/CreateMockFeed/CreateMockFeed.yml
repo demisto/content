@@ -129,3 +129,5 @@ script:
   feed: true
   runonce: false
   subtype: python3
+tests:
+- No test

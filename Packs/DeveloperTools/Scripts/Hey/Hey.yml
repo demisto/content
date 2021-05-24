@@ -54,3 +54,5 @@ runonce: false
 dockerimage: demisto/rakyll-hey:1.0.0.20326
 runas: DBotWeakRole
 engineinfo: {}
+tests:
+- No test
