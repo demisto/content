@@ -18,6 +18,7 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'sha-1': FeedIndicatorType.File,
     'sha-256': FeedIndicatorType.File,
     'file:hashes': FeedIndicatorType.File,
+    'file:name': FeedIndicatorType.File
 }
 
 THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
@@ -114,7 +115,8 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
         for indicator_object in indicator_objects:
             pattern = indicator_object.get('pattern')
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
-                if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
+                # retrieve only Demisto indicator types
+                if pattern.startswith(f'[{key}') or pattern.startswith(f'([{key}'):
                     indicator_obj = {
                         "value": get_ioc_value_from_ioc_name(indicator_object),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
