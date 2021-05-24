@@ -698,7 +698,7 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50', limit: int = None) -> List:
+    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
@@ -714,7 +714,7 @@ class MsClient:
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
-        params = {'$top': {page_size}}
+        params = {'$top': page_size}
         resp = self.indicators_http_request(
             'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response'
@@ -739,8 +739,9 @@ class MsClient:
             )
             results = results['value']
         # If a single object - should remove the '@odata.context' key.
-        else:
+        elif not isinstance(results, list):
             results.pop('@odata.context')
+            results = [results]  # type: ignore
         return [assign_params(values_to_ignore=[None], **item) for item in results]
 
     def create_indicator(self, body: Dict) -> Dict:
