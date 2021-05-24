@@ -474,7 +474,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### linux-debconf
 ***
 Configure a .deb package
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
+ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
 
 
 #### Base Command
@@ -499,10 +499,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!linux-debconf host="123.123.123.123" name="locales" question="locales/default_environment_locale" value="fr_FR.UTF-8" vtype="select" ```
+
+#### Context Example
+```json
+{
+    "linux": {
+        "debconf": [
+            {
+                "changed": true,
+                "current": {
+                    "locales/default_environment_locale": "fr_FR.UTF-8"
+                },
+                "host": "123.123.123.123",
+                "msg": "",
+                "previous": {
+                    "locales/default_environment_locale": "None"
+                },
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+># Current #
+>* locales/default_environment_locale: fr_FR.UTF-8
+>  * msg: 
+># Previous #
+>* locales/default_environment_locale: None
 
 
 ### linux-filesystem
@@ -2707,7 +2736,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### linux-locale-gen
 ***
 Creates or removes locales
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
+Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
 
 
 #### Base Command
@@ -2729,10 +2758,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!linux-locale-gen host="123.123.123.123" name="de_CH.UTF-8" state="present" ```
+
+#### Context Example
+```json
+{
+    "linux": {
+        "locale_gen": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "msg": "OK",
+                "name": "de_CH.UTF-8",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * msg: OK
+>  * name: de_CH.UTF-8
 
 
 ### linux-modprobe
@@ -6600,7 +6650,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### linux-archive
 ***
 Creates a compressed archive of one or more files or trees
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
+Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
 
 
 #### Base Command
@@ -6641,10 +6691,47 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!linux-archive host="123.123.123.123" path="/path/to/foo" dest="/path/to/foo.tgz" ```
+
+#### Context Example
+```json
+{
+    "linux": {
+        "archive": [
+            {
+                "archived": [],
+                "arcroot": "/path/to/",
+                "changed": false,
+                "dest": "/path/to/foo.tgz",
+                "expanded_exclude_paths": [],
+                "expanded_paths": [
+                    "/path/to/foo"
+                ],
+                "host": "123.123.123.123",
+                "missing": [
+                    "/path/to/foo"
+                ],
+                "state": "absent",
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  SUCCESS 
+># Archived #
+>  * arcroot: /path/to/
+>  * changed: False
+>  * dest: /path/to/foo.tgz
+># Expanded_Exclude_Paths #
+># Expanded_Paths #
+>* 0: /path/to/foo
+># Missing #
+>* 0: /path/to/foo
+>  * state: absent
 
 
 ### linux-assemble
@@ -8161,7 +8248,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### linux-dpkg-selections
 ***
 Dpkg package selection selections
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
+Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
 
 
 #### Base Command
@@ -8183,10 +8270,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!linux-dpkg-selections host="123.123.123.123" name="python" selection="hold" ```
+
+#### Context Example
+```json
+{
+    "linux": {
+        "dpkg_selections": [
+            {
+                "after": "hold",
+                "before": "install",
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  CHANGED 
+>  * after: hold
+>  * before: install
+>  * changed: True
 
 
 ### linux-flatpak
@@ -8409,7 +8517,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### linux-package
 ***
 Generic OS package manager
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_module.html
+Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/package_module.html
 
 
 #### Base Command
@@ -8432,10 +8540,151 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!linux-package host="123.123.123.123" name="ntpdate" state="present" ```
+
+#### Context Example
+```json
+{
+    "linux": {
+        "package": [
+            {
+                "cache_update_time": 1621871184,
+                "cache_updated": false,
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED",
+                "stderr": "",
+                "stderr_lines": [],
+                "stdout": "Reading package lists...\nBuilding dependency tree...\nReading state information...\nThe following NEW packages will be installed:\n  ntpdate\n0 upgraded, 1 newly installed, 0 to remove and 2 not upgraded.\nNeed to get 153 kB of archives.\nAfter this operation, 242 kB of additional disk space will be used.\nGet:1 http://deb.debian.org/debian buster/main amd64 ntpdate amd64 1:4.2.8p12+dfsg-4 [153 kB]\nFetched 153 kB in 0s (1483 kB/s)\nSelecting previously unselected package ntpdate.\r\n(Reading database ... \r(Reading database ... 5%\r(Reading database ... 10%\r(Reading database ... 15%\r(Reading database ... 20%\r(Reading database ... 25%\r(Reading database ... 30%\r(Reading database ... 35%\r(Reading database ... 40%\r(Reading database ... 45%\r(Reading database ... 50%\r(Reading database ... 55%\r(Reading database ... 60%\r(Reading database ... 65%\r(Reading database ... 70%\r(Reading database ... 75%\r(Reading database ... 80%\r(Reading database ... 85%\r(Reading database ... 90%\r(Reading database ... 95%\r(Reading database ... 100%\r(Reading database ... 28253 files and directories currently installed.)\r\nPreparing to unpack .../ntpdate_1%3a4.2.8p12+dfsg-4_amd64.deb ...\r\nUnpacking ntpdate (1:4.2.8p12+dfsg-4) ...\r\nSetting up ntpdate (1:4.2.8p12+dfsg-4) ...\r\nProcessing triggers for man-db (2.8.5-2) ...\r\n",
+                "stdout_lines": [
+                    "Reading package lists...",
+                    "Building dependency tree...",
+                    "Reading state information...",
+                    "The following NEW packages will be installed:",
+                    "  ntpdate",
+                    "0 upgraded, 1 newly installed, 0 to remove and 2 not upgraded.",
+                    "Need to get 153 kB of archives.",
+                    "After this operation, 242 kB of additional disk space will be used.",
+                    "Get:1 http://deb.debian.org/debian buster/main amd64 ntpdate amd64 1:4.2.8p12+dfsg-4 [153 kB]",
+                    "Fetched 153 kB in 0s (1483 kB/s)",
+                    "Selecting previously unselected package ntpdate.",
+                    "(Reading database ... ",
+                    "(Reading database ... 5%",
+                    "(Reading database ... 10%",
+                    "(Reading database ... 15%",
+                    "(Reading database ... 20%",
+                    "(Reading database ... 25%",
+                    "(Reading database ... 30%",
+                    "(Reading database ... 35%",
+                    "(Reading database ... 40%",
+                    "(Reading database ... 45%",
+                    "(Reading database ... 50%",
+                    "(Reading database ... 55%",
+                    "(Reading database ... 60%",
+                    "(Reading database ... 65%",
+                    "(Reading database ... 70%",
+                    "(Reading database ... 75%",
+                    "(Reading database ... 80%",
+                    "(Reading database ... 85%",
+                    "(Reading database ... 90%",
+                    "(Reading database ... 95%",
+                    "(Reading database ... 100%",
+                    "(Reading database ... 28253 files and directories currently installed.)",
+                    "Preparing to unpack .../ntpdate_1%3a4.2.8p12+dfsg-4_amd64.deb ...",
+                    "Unpacking ntpdate (1:4.2.8p12+dfsg-4) ...",
+                    "Setting up ntpdate (1:4.2.8p12+dfsg-4) ...",
+                    "Processing triggers for man-db (2.8.5-2) ..."
+                ]
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  CHANGED 
+>  * cache_update_time: 1621871184
+>  * cache_updated: False
+>  * changed: True
+>  * stderr: 
+># Stderr_Lines #
+>  * stdout: Reading package lists...
+>Building dependency tree...
+>Reading state information...
+>The following NEW packages will be installed:
+>  ntpdate
+>0 upgraded, 1 newly installed, 0 to remove and 2 not upgraded.
+>Need to get 153 kB of archives.
+>After this operation, 242 kB of additional disk space will be used.
+>Get:1 http://deb.debian.org/debian buster/main amd64 ntpdate amd64 1:4.2.8p12+dfsg-4 [153 kB]
+>Fetched 153 kB in 0s (1483 kB/s)
+>Selecting previously unselected package ntpdate.
+>(Reading database ... 
+>(Reading database ... 5%
+>(Reading database ... 10%
+>(Reading database ... 15%
+>(Reading database ... 20%
+>(Reading database ... 25%
+>(Reading database ... 30%
+>(Reading database ... 35%
+>(Reading database ... 40%
+>(Reading database ... 45%
+>(Reading database ... 50%
+>(Reading database ... 55%
+>(Reading database ... 60%
+>(Reading database ... 65%
+>(Reading database ... 70%
+>(Reading database ... 75%
+>(Reading database ... 80%
+>(Reading database ... 85%
+>(Reading database ... 90%
+>(Reading database ... 95%
+>(Reading database ... 100%
+>(Reading database ... 28253 files and directories currently installed.)
+>Preparing to unpack .../ntpdate_1%3a4.2.8p12+dfsg-4_amd64.deb ...
+>Unpacking ntpdate (1:4.2.8p12+dfsg-4) ...
+>Setting up ntpdate (1:4.2.8p12+dfsg-4) ...
+>Processing triggers for man-db (2.8.5-2) ...
+>
+># Stdout_Lines #
+>* 0: Reading package lists...
+>* 1: Building dependency tree...
+>* 2: Reading state information...
+>* 3: The following NEW packages will be installed:
+>* 4:   ntpdate
+>* 5: 0 upgraded, 1 newly installed, 0 to remove and 2 not upgraded.
+>* 6: Need to get 153 kB of archives.
+>* 7: After this operation, 242 kB of additional disk space will be used.
+>* 8: Get:1 http://deb.debian.org/debian buster/main amd64 ntpdate amd64 1:4.2.8p12+dfsg-4 [153 kB]
+>* 9: Fetched 153 kB in 0s (1483 kB/s)
+>* 10: Selecting previously unselected package ntpdate.
+>* 11: (Reading database ... 
+>* 12: (Reading database ... 5%
+>* 13: (Reading database ... 10%
+>* 14: (Reading database ... 15%
+>* 15: (Reading database ... 20%
+>* 16: (Reading database ... 25%
+>* 17: (Reading database ... 30%
+>* 18: (Reading database ... 35%
+>* 19: (Reading database ... 40%
+>* 20: (Reading database ... 45%
+>* 21: (Reading database ... 50%
+>* 22: (Reading database ... 55%
+>* 23: (Reading database ... 60%
+>* 24: (Reading database ... 65%
+>* 25: (Reading database ... 70%
+>* 26: (Reading database ... 75%
+>* 27: (Reading database ... 80%
+>* 28: (Reading database ... 85%
+>* 29: (Reading database ... 90%
+>* 30: (Reading database ... 95%
+>* 31: (Reading database ... 100%
+>* 32: (Reading database ... 28253 files and directories currently installed.)
+>* 33: Preparing to unpack .../ntpdate_1%3a4.2.8p12+dfsg-4_amd64.deb ...
+>* 34: Unpacking ntpdate (1:4.2.8p12+dfsg-4) ...
+>* 35: Setting up ntpdate (1:4.2.8p12+dfsg-4) ...
+>* 36: Processing triggers for man-db (2.8.5-2) ...
 
 
 ### linux-package-facts

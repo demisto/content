@@ -43,3 +43,7 @@
 !linux-package-facts host="123.123.123.123" manager="auto" 
 !linux-yum-repository host="123.123.123.123" name="epel" description="EPEL YUM repo" baseurl="https://download.fedoraproject.org/pub/epel/$releasever/$basearch/" 
 !linux-rhn-register host="123.123.123.123" state="absent" username="joe_user" password="somepass" 
+!linux-locale-gen host="123.123.123.123" name="de_CH.UTF-8" state="present" 
+!linux-dpkg-selections host="123.123.123.123" name="python" selection="hold" 
+!linux-archive host="123.123.123.123" path="/path/to/foo" dest="/path/to/foo.tgz" 
+!linux-package host="123.123.123.123" name="ntpdate" state="present" 
