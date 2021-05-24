@@ -1,17 +1,15 @@
 import base64
 import json
-import pytest
 
-from EWSO365 import (
-    find_folders,
-    get_searchable_mailboxes,
-    GetSearchableMailboxes,
-    ExpandGroup,
-    get_expanded_group,
-    add_additional_headers,
-    handle_transient_files,
-    handle_html,
-)
+import pytest
+from exchangelib import EWSDate
+from exchangelib.attachments import AttachmentId, ItemAttachment
+from exchangelib.items import Item, Message
+
+from EWSO365 import (ExpandGroup, GetSearchableMailboxes,
+                     add_additional_headers, find_folders, get_expanded_group,
+                     get_searchable_mailboxes, handle_html,
+                     handle_transient_files, parse_incident_from_item)
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -258,3 +256,30 @@ def test_handle_html(mocker, html_input, expected_output):
     import EWSO365 as ewso365
     mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
     assert handle_html(html_input) == expected_output
+
+
+def test_parse_incident_from_item():
+    """
+    Given:
+        - Message item with attachment that contains non UTF-8 encoded char
+
+    When:
+        - Parsing incident from item
+
+    Verify:
+        - Parsing runs successfully
+        - Incidnet attachment is not empty
+    """
+    message = Message(
+        datetime_created=EWSDate(year=2021, month=1, day=25),
+        to_recipients=[],
+        attachments=[
+            ItemAttachment(
+                item=Item(mime_content=b'\xc400'),
+                attachment_id=AttachmentId(),
+                last_modified_time=EWSDate(year=2021, month=1, day=25),
+            ),
+        ],
+    )
+    incident = parse_incident_from_item(message)
+    assert incident['attachment']
