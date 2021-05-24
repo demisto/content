@@ -96,9 +96,9 @@ class Client(BaseClient):
 def get_ioc_value_from_ioc_name(ioc_obj):
     ioc_value = ioc_obj.get('name')
     try:
-        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
+        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value).group(0)
     except AttributeError:
-        return None
+        ioc_value = None
     return ioc_value
 
 
@@ -130,10 +130,9 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
                         }
                     }
 
-                    if "file:hashes.'SHA-256' = " in indicator_obj['value']:
-                        indicator_obj['value'] = get_ioc_value_from_ioc_name(indicator_object)
-                    else:
-                        continue
+                    if "file:hashes.'SHA-256' = '" in indicator_obj['value']:
+                        if get_ioc_value_from_ioc_name(indicator_object):
+                            indicator_obj['value'] = get_ioc_value_from_ioc_name(indicator_object)
 
                     if tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -466,6 +465,8 @@ def get_ioc_value(ioc, id_to_obj):
         elif ioc_obj.get('type') == 'attack-pattern':
             _, value = get_attack_id_and_value_from_name(ioc_obj)
             return value
+        elif "file:hashes.'SHA-256' = '" in ioc_obj.get('name'):
+            return get_ioc_value_from_ioc_name(ioc_obj)
         else:
             return ioc_obj.get('name')
 
@@ -643,7 +644,7 @@ def main():
     verify = not params.get('insecure', False)
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
-    create_relationships = params.get('create_relationships')
+    create_relationships = argToBoolean(params.get('create_relationships'))
 
     command = demisto.command()
     demisto.debug(f'Command being called in Unit42 v2 feed is: {command}')
