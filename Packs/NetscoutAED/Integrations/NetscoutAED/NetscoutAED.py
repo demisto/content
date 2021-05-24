@@ -502,10 +502,10 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
     msg = f'Countries were successfully added to the {direction} blacklisted list\n'
 
     readable_output = msg + tableToMarkdown('Added Countries',
-                                                   countries_list,
-                                                   headers=['country', 'cid', 'pgid', 'update_time',
-                                                            'annotation'],
-                                                   headerTransform=string_to_table_header, removeNull=True)
+                                            countries_list,
+                                            headers=['country', 'cid', 'pgid', 'update_time',
+                                                     'annotation'],
+                                            headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         outputs_prefix=f'NetscoutAED.{camelize_string(direction)}BlacklistCountry',
         outputs_key_field='country',
@@ -673,10 +673,10 @@ def handle_host_addition_and_replacement_commands(client: Client,
     objects_time_to_readable_time(hosts_list, 'updateTime')
 
     readable_output = msg + tableToMarkdown('New Hosts',
-                                                   hosts_list,
-                                                   headers=['host_address', 'pgid', 'cid', 'update_time',
-                                                            'annotation', ],
-                                                   headerTransform=string_to_table_header, removeNull=True)
+                                            hosts_list,
+                                            headers=['host_address', 'pgid', 'cid', 'update_time',
+                                                     'annotation', ],
+                                            headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
         outputs_prefix=f'NetscoutAED.{camelize_string(direction)}{camelize_string(list_color)}Host',
@@ -813,7 +813,7 @@ def handle_protection_groups_update_commands(client: Client, demisto_args: dict)
     msg = f'Successfully updated the protection group object with protection group id: {pgid}\n'
 
     readable_output = msg + tableToMarkdown('Protection Groups', protection_groups_list, headers=headers,
-                                                   headerTransform=string_to_table_header, removeNull=True)
+                                            headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
         outputs_prefix='NetscoutAED.Protection_Group',
@@ -900,8 +900,8 @@ def handle_domain_addition_commands(client: Client, demisto_args: dict) -> Comma
     objects_time_to_readable_time(domains_list, 'updateTime')
 
     readable_output = msg + tableToMarkdown('Added Domains', domains_list,
-                                                   headers=['domain', 'pgid', 'cid', 'update_time', 'annotation'],
-                                                   headerTransform=string_to_table_header, removeNull=True)
+                                            headers=['domain', 'pgid', 'cid', 'update_time', 'annotation'],
+                                            headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
         outputs_prefix='NetscoutAED.InboundBlacklistDomain',
@@ -1017,8 +1017,8 @@ def handle_url_addition_commands(client: Client, demisto_args: dict) -> CommandR
     objects_time_to_readable_time(urls_list, 'updateTime')
 
     readable_output = msg + tableToMarkdown('Added Urls', urls_list,
-                                                   headers=['url', 'pgid', 'cid', 'update_time', 'annotation'],
-                                                   headerTransform=string_to_table_header, removeNull=True)
+                                            headers=['url', 'pgid', 'cid', 'update_time', 'annotation'],
+                                            headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
         outputs_prefix='NetscoutAED.InboundBlacklistUrl',
