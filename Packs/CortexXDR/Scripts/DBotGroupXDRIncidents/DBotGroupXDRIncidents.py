@@ -10,7 +10,8 @@ if return_type == 'incidents':
     res = demisto.executeCommand('DBotShowClusteringModelInfo', {
         'searchQuery': demisto.args().get('searchQuery'),
         'modelName': model_name,
-        'returnType': 'incidents'
+        'returnType': 'incidents',
+        'fieldsToDisplay': demisto.args().get('fieldsToDisplay')
     })
     demisto.results(res)
 elif return_type == 'summary':
@@ -30,8 +31,7 @@ else:
         'storeModel': 'True',
         'searchQuery': demisto.args().get('searchQuery'),
         'forceRetrain': demisto.args().get('forceRetrain'),
-        'numberOfFeaturesPerField': 500,
-        'fieldsToDisplay': demisto.args().get('fieldsToDisplay')
+        'numberOfFeaturesPerField': 500
     })
     # we need only the last entry because it's a widget script, and only the widget info should be return
     demisto.results(res[-1])

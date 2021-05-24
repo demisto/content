@@ -1,71 +1,72 @@
 args:
-  - auto: PREDEFINED
-    default: false
-    defaultValue: scatter
-    description: The type of the widget to return.
-    isArray: false
-    name: returnWidgetType
-    predefined:
-      - scatter
-      - summary
-      - incidents
-    required: false
-    secret: false
-  - default: false
-    defaultValue: 1 months ago
-    description: 'The start date by which to filter incidents. Date format will be the
+- auto: PREDEFINED
+  default: false
+  defaultValue: scatter
+  description: The type of the widget to return.
+  isArray: false
+  name: returnWidgetType
+  predefined:
+    - scatter
+    - summary
+    - incidents
+  required: false
+  secret: false
+- default: false
+  defaultValue: 1 months ago
+  description: 'The start date by which to filter incidents. Date format will be the
     same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
     +0200").'
-    isArray: false
-    name: fromDate
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '500'
-    description: The maximum number of incidents to fetch in a group.
-    isArray: false
-    name: limit
-    required: false
-    secret: false
-  - default: false
-    defaultValue: Cortex XDR Incident
-    isArray: false
-    name: incidentType
-    required: false
-    secret: false
-  - default: false
-    description: Input search query from the dashboard
-    isArray: false
-    name: searchQuery
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '24'
-    description: Period of time (in hours) before retraining the model. Default is "24".
-    isArray: false
-    name: modelExpiration
-    predefined:
-      - ''
-    required: false
-    secret: false
-  - auto: PREDEFINED
-    default: false
-    defaultValue: 'False'
-    description: Determines whether to force the model to re-train. Default is "False".
-    isArray: false
-    name: forceRetrain
-    predefined:
-      - 'True'
-      - 'False'
-    required: false
-    secret: false
-  - default: false
-    description: Comma-separated list of additional incident fields to display, but
-      which will not be taken into account when computing similarity.
-    isArray: false
-    name: fieldsToDisplay
-    required: false
-    secret: false
+  isArray: false
+  name: fromDate
+  required: false
+  secret: false
+- default: false
+  defaultValue: '500'
+  description: The maximum number of incidents to fetch
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  defaultValue: Cortex XDR Incident
+  isArray: false
+  name: incidentType
+  required: false
+  secret: false
+- default: false
+  description: Input search query from the dashboard
+  isArray: false
+  name: searchQuery
+  required: false
+  secret: false
+- default: false
+  defaultValue: '24'
+  description: Period of time (in hours) before retraining the model. Default is "24".
+  isArray: false
+  name: modelExpiration
+  predefined:
+    - ''
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'False'
+  description: Determines whether to force the model to re-train. Default is "False".
+  isArray: false
+  name: forceRetrain
+  predefined:
+    - 'True'
+    - 'False'
+  required: false
+  secret: false
+- default: false
+  defaultValue: xdralerts.osactorprocesscommandline,xdralerts.actionprocessimagecommandline,xdralerts.causalityactorprocesscommandline,xdralerts.actorprocesscommandline,xdralerts.description
+  description: Comma-separated list of additional incident fields to display, but
+    which will not be taken into account when computing similarity.
+  isArray: false
+  name: fieldsToDisplay
+  required: false
+  secret: false
 commonfields:
   id: c77b1a46-168f-4484-9a33-7ea5035fd156
   version: -1
