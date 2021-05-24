@@ -169,3 +169,5 @@ script:
   type: python
   isFetchSamples: true
 fromversion: 5.5.0
+tests:
+- No test
