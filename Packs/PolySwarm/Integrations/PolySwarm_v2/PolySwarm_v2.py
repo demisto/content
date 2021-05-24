@@ -31,6 +31,7 @@ class PolyswarmConnector():
 
     def _get_results(self,
                      object_name: str,
+                     title: str,
                      total_scans: int,
                      positives: int,
                      permalink: str,
@@ -43,7 +44,10 @@ class PolyswarmConnector():
                    'Permalink': permalink,
                    'Artifact': artifact}
 
+        readable_output = tableToMarkdown(title,
+                                          results)
         return CommandResults(
+            readable_output=readable_output,
             outputs_prefix=f'PolySwarm.{object_name}',
             outputs_key_field='Scan_UUID',
             outputs=results,
@@ -75,6 +79,7 @@ class PolyswarmConnector():
 
     def return_hash_results(self,
                             results: dict,
+                            title: str,
                             error_msg: str) -> object:
 
         # default values
@@ -117,7 +122,7 @@ class PolyswarmConnector():
                                 sha256=sha256,
                                 dbot_score=dbot_score)
 
-        return self._get_results('File', total_scans,
+        return self._get_results('File', title, total_scans,
                                  positives, result.permalink,
                                  sha256, indicator)
 
@@ -143,6 +148,7 @@ class PolyswarmConnector():
             error_msg = 'Error fetching results. Please try again.'
 
             command_results.append(self.return_hash_results(results,
+                                                            title,
                                                             error_msg))
         return command_results
 
@@ -154,8 +160,7 @@ class PolyswarmConnector():
         try:
             file_info = demisto.getFilePath(entry_id)
         except Exception:
-            return_error('File not found - EntryID: {entry_id}'.
-                         format(entryID=entry_id))
+            return_error(f'File not found - EntryID: {entry_id}')
 
         try:
             demisto.debug(f'Submit file: {file_info}')
@@ -171,6 +176,7 @@ class PolyswarmConnector():
         error_msg = 'Error submitting File.'
 
         return self.return_hash_results([result],
+                                        title,
                                         error_msg)
 
     def rescan_file(self,
@@ -196,6 +202,7 @@ class PolyswarmConnector():
             error_msg = 'Error rescaning File.'
 
             command_results.append(self.return_hash_results([result],
+                                                            title,
                                                             error_msg))
         return command_results
 
@@ -288,7 +295,7 @@ class PolyswarmConnector():
                 indicator = Common.Domain(domain=artifact,
                                           dbot_score=dbot_score)
 
-            results = self._get_results(object_name, total_scans,
+            results = self._get_results(object_name, title, total_scans,
                                         positives, result.permalink,
                                         artifact, indicator)
             command_results.append(results)
