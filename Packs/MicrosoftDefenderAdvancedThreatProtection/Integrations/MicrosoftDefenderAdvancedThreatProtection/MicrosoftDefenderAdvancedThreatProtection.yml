@@ -2276,6 +2276,13 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: Specify the page size of the result set. Maximum is 200.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
     deprecated: false
     description: Lists all indicators by the ID that the system creates when the indicator
       is ingested.
@@ -3815,7 +3822,7 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
-  dockerimage: demisto/crypto:1.0.0.16776
+  dockerimage: demisto/crypto:1.0.0.19032
   feed: false
   isfetch: true
   longRunning: false
