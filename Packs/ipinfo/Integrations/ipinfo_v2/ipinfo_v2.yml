@@ -27,7 +27,7 @@ configuration:
   defaultvalue: https://ipinfo.io
   display: Base URL
   hidden: false
-  required: false
+  required: true
   type: 0
 - name: insecure
   display: Trust any certificate (not secure)
