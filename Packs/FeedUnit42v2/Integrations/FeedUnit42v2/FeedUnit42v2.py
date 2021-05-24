@@ -93,6 +93,13 @@ class Client(BaseClient):
         self.objects_data[kwargs.get('type')] = data
 
 
+def get_ioc_value_from_ioc_name(ioc_obj):
+    ioc_value = ioc_obj.get('name')
+    if 'file:hashes' in ioc_value:
+        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value).group(0)
+    return ioc_value
+
+
 def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: Optional[str] = None) -> list:
     """Parse the IOC objects retrieved from the feed.
     Args:
@@ -109,7 +116,7 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
-                        "value": indicator_object.get('name'),
+                        "value": get_ioc_value_from_ioc_name(indicator_object),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
                         "rawJSON": indicator_object,
                         "fields": {
@@ -233,7 +240,7 @@ def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
                 "modified": campaign.get('modified'),
                 'description': campaign.get('description'),
                 "reportedby": 'Unit42',
-                "tags": feed_tags,
+                "tags": [tag for tag in feed_tags],
             }
         }
 
@@ -372,7 +379,7 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
                 'description': coa_indicator.get('description', ''),
                 "publications": publications,
                 "reportedby": 'Unit42',
-                "tags": feed_tags,
+                "tags": [tag for tag in feed_tags],
             }
         }
         if tlp_color:
@@ -401,7 +408,7 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
                 'description': intrusion_set.get('description', ''),
                 "publications": publications,
                 "reportedby": 'Unit42',
-                "tags": feed_tags,
+                "tags": [tag for tag in feed_tags],
             }
         }
         if tlp_color:

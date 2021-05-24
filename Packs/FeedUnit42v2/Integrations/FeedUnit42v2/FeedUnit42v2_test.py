@@ -2,7 +2,7 @@ import pytest
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
-    get_ioc_type, get_ioc_value, create_list_relationships
+    get_ioc_type, get_ioc_value, create_list_relationships, get_ioc_value_from_ioc_name
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
@@ -251,3 +251,18 @@ def test_create_list_relationships():
     Validate The relationships list extracted successfully.
     """
     assert create_list_relationships(RELATIONSHIP_DATA, ID_TO_OBJECT) == RELATIONSHIP_OBJECTS
+
+
+def test_get_ioc_value_from_ioc_name():
+    """
+    Given
+    - IOC obj to get its value.
+    When
+    - we extract its value from the name field
+    Then
+    - run the get_ioc_value
+    Validate The IOC value extracted successfully.
+    """
+    assert get_ioc_value_from_ioc_name({"name": "f79ebf038c7731ea3a19628cb329"}) == "f79ebf038c7731ea3a19628cb329"
+    assert get_ioc_value_from_ioc_name({'name': "([file:name = 'blabla' OR file:name = 'blabla'] AND "
+                                       "[file:hashes.'SHA-256' = '4f75622c2dd839f'])"}) == "4f75622c2dd839f"
