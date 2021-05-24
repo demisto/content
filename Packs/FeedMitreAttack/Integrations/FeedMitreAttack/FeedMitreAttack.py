@@ -203,7 +203,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     mitre_id = mitre_id[0] if mitre_id else None
 
     tags = [mitre_id] if mitre_id else []
-    if indicator_type in ['Tool', 'Malware']:
+    if indicator_type in ['Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
     generic_mapping_fields = {
