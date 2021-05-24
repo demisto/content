@@ -20,7 +20,7 @@ DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp
 UNITTESTS_TYPE = 'unittests'
 TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
-SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
+SDK_FAILED_STEPS_TYPE = 'sdk_failed_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
@@ -91,7 +91,7 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
-    parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
+    parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_failed_steps'
                                                   'or bucket_upload')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True, type=str2bool)

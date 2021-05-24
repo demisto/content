@@ -16,6 +16,8 @@ INTEGRATION_NAME = 'WebEx'
 def grab_domains(data):
     domainList: List = []
     for lines in data:
+        if len(lines) < 2:
+            continue
         domains = lines[1].split(' ')
         cleanDomain = " ".join(re.findall("([\^]*[\*\.]*[a-z0-9]+\.+.*)*", domains[0]))
 
