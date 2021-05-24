@@ -59,7 +59,8 @@ configuration:
   name: retries
   defaultvalue: 5
   additionalinfo: The maximum retry attempts when connection or throttling errors
-    are encountered. Set to 0 to disable retries.
+    are encountered. Set to 0 to disable retries. The default value is 5 and the limit is for 10 retries.
+    Please considered when you increase the number of retries, execution time will increased respectively.
   required: false
   type: 0
 - display: Use system proxy settings
