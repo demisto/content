@@ -13,7 +13,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-    "malware": ThreatIntel.ObjectsNames.MALWARE,
+    "malware": "STIX Malware",
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "relationship": "Relationship"
 }
@@ -213,7 +213,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         'description': indicator_json.get('description'),
         'publications': publications,
         'mitreid': mitre_id,
-        'tags': tags
+        'tags': tags,
     }
 
     mapping_by_type = {
@@ -225,9 +225,10 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
             'aliases': indicator_json.get('aliases')
         },
         "Malware": {
-            'aliases': indicator_json.get('x_mitre_aliases'),
-            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
-
+            'stixdescription': 'Gal Test'
+        },
+        "STIX Malware": {
+            'stixdescription': 'Gal Test'
         },
         "Tool": {
             'aliases': indicator_json.get('x_mitre_aliases'),
