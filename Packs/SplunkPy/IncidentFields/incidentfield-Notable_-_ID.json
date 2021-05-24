@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Generic",
+        "Splunk Notable Generic"
+    ],
+    "caseInsensitive": true,
+    "cliName": "notableid",
+    "closeForm": false,
+    "content": true,
+    "description": "The ID of the notable",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_notableid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Notable - ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
