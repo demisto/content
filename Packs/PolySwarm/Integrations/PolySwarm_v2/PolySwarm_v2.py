@@ -293,7 +293,7 @@ class PolyswarmConnector():
                                        dbot_score=dbot_score)  # type: ignore
             elif artifact_type == 'domain':
                 indicator = Common.Domain(domain=artifact,
-                                          dbot_score=dbot_score)
+                                          dbot_score=dbot_score)  # type: ignore
 
             results = self._get_results(object_name, title, total_scans,
                                         positives, result.permalink,
