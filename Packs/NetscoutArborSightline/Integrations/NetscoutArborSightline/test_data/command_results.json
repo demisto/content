@@ -1,0 +1,326 @@
+{
+    "fetched_incidents": [
+        {
+            "name": "flow_down: 2427",
+            "occurred": "2021-03-30T04:07:34+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"data\", \"alert_type\": \"flow_down\", \"importance\": 1, \"ongoing\": false, \"start_time\": \"2021-03-30T04:07:34+00:00\", \"stop_time\": \"2021-03-30T10:00:16+00:00\", \"subobject\": {}}, \"id\": \"2427\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2427?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"router\": {\"data\": {\"id\": \"121\", \"type\": \"router\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/routers/121\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "dos_host_detection: 2428",
+            "occurred": "2021-03-30T10:00:02+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"dos\", \"alert_type\": \"dos_host_detection\", \"classification\": \"Possible Attack\", \"importance\": 2, \"ongoing\": false, \"start_time\": \"2021-03-30T10:00:02+00:00\", \"stop_time\": \"2021-03-30T10:10:29+00:00\", \"subobject\": {\"direction\": \"Incoming\", \"fast_detected\": true, \"host_address\": \"1.2.3.4\", \"impact_boundary\": \"managed object\", \"impact_bps\": 1072, \"impact_pps\": 3, \"ip_version\": 4, \"misuse_types\": [\"Total Traffic\"], \"severity_percent\": 10720.0, \"severity_threshold\": 10, \"severity_unit\": \"bps\", \"summary_url\": \"/page?id=customer_summary&gid=122\"}}, \"id\": \"2428\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"annotations\": {\"data\": [{\"id\": \"889\", \"type\": \"alert_annotation\"}], \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/annotations/\"}}, \"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"managed_object\": {\"data\": {\"id\": \"122\", \"type\": \"managed_object\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/managed_objects/122\"}}, \"packet_size_distribution\": {\"data\": {\"id\": \"packet-size-distribution-2428\", \"type\": \"alert_packet_size_distribution\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/packet_size_distribution\"}}, \"patterns\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/patterns/\"}}, \"router_traffic\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/router_traffic/\"}}, \"source_ip_addresses\": {\"data\": {\"id\": \"source-ip-addresses-2428\", \"type\": \"alert_source_ip_addresses\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/source_ip_addresses\"}}, \"thresholds\": {\"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/misuse_types_thresholds/\"}}, \"traffic\": {\"data\": {\"id\": \"alert-traffic-2428\", \"type\": \"alert_traffic\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2428/traffic\"}}}, \"type\": \"alert\"}"
+        },
+        {
+            "name": "flow_down: 2429",
+            "occurred": "2021-03-30T10:07:16+00:00",
+            "rawJSON": "{\"attributes\": {\"alert_class\": \"data\", \"alert_type\": \"flow_down\", \"importance\": 1, \"ongoing\": true, \"start_time\": \"2021-03-30T10:07:16+00:00\", \"subobject\": {}}, \"id\": \"2429\", \"links\": {\"self\": \"https://content.demisto.works:57585/api/sp/v7/alerts/2429?filter=%2Fdata%2Fattributes%2Fstart_time%3C2021-03-30T14%3A27%3A46.738191%2B00%3A00\"}, \"relationships\": {\"device\": {\"data\": {\"id\": \"115\", \"type\": \"device\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/devices/115\"}}, \"router\": {\"data\": {\"id\": \"121\", \"type\": \"router\"}, \"links\": {\"related\": \"https://content.demisto.works:57585/api/sp/v7/routers/121\"}}}, \"type\": \"alert\"}"
+        }
+    ],
+    "get_incidents": [
+        {
+            "alert_class": "data",
+            "alert_type": "flow_down",
+            "importance": 1,
+            "ongoing": true,
+            "start_time": "2021-03-30T10:07:16+00:00",
+            "subobject": {},
+            "id": "2429",
+            "type": "alert"
+        },
+        {
+            "alert_class": "dos",
+            "alert_type": "dos_host_detection",
+            "classification": "Possible Attack",
+            "importance": 2,
+            "ongoing": false,
+            "start_time": "2021-03-30T10:00:02+00:00",
+            "stop_time": "2021-03-30T10:10:29+00:00",
+            "subobject": {
+                "direction": "Incoming",
+                "fast_detected": true,
+                "host_address": "1.2.3.4",
+                "impact_boundary": "managed object",
+                "impact_bps": 1072,
+                "impact_pps": 3,
+                "ip_version": 4,
+                "misuse_types": [
+                    "Total Traffic"
+                ],
+                "severity_percent": 10720.0,
+                "severity_threshold": 10,
+                "severity_unit": "bps",
+                "summary_url": "/page?id=customer_summary&gid=122"
+            },
+            "id": "2428",
+            "type": "alert"
+        },
+        {
+            "alert_class": "data",
+            "alert_type": "flow_down",
+            "importance": 1,
+            "ongoing": false,
+            "start_time": "2021-03-30T04:07:34+00:00",
+            "stop_time": "2021-03-30T10:00:16+00:00",
+            "subobject": {},
+            "id": "2427",
+            "type": "alert"
+        }
+    ],
+    "get_incident": [
+        {
+            "alert_class": "dos",
+            "alert_type": "dos_host_detection",
+            "classification": "Possible Attack",
+            "importance": 2,
+            "ongoing": false,
+            "start_time": "2021-03-07T11:00:02+00:00",
+            "stop_time": "2021-03-07T11:10:30+00:00",
+            "subobject": {
+                "direction": "Incoming",
+                "fast_detected": true,
+                "host_address": "1.2.3.4",
+                "impact_boundary": "managed object",
+                "impact_bps": 1077,
+                "impact_pps": 3,
+                "ip_version": 4,
+                "misuse_types": [
+                    "Total Traffic"
+                ],
+                "severity_percent": 10774.0,
+                "severity_threshold": 10,
+                "severity_unit": "bps",
+                "summary_url": "/page?id=customer_summary&gid=122"
+            },
+            "id": "2009",
+            "type": "alert"
+        }
+    ],
+    "list_annotations": {
+        "AlertID": "2009",
+        "Annotations": [
+            {
+                "added": "2021-03-29T18:18:13+00:00",
+                "author": "auto-annotation",
+                "text": "Flowspec mitigation 'testMit2' started",
+                "id": "886",
+                "type": "alert_annotation"
+            },
+            {
+                "added": "2021-03-07T19:09:05+00:00",
+                "author": "auto-annotation",
+                "text": "Flowspec mitigation 'testMit' started",
+                "id": "797",
+                "type": "alert_annotation"
+            },
+            {
+                "added": "2021-03-07T11:00:02+00:00",
+                "author": "auto-annotation",
+                "text": "This alert was generated due to fast flood detection. The 'Total Traffic' host alert signature has been triggered at router 'Traffic-PCAP-CentOS'. (expected rate: 5 bps/50.00 Kpps, observed rate: 11 bps/0 pps)",
+                "id": "795",
+                "type": "alert_annotation"
+            }
+        ]
+    },
+    "list_mitigations": [
+        {
+            "description": "just desc",
+            "ip_version": 6,
+            "is_automitigation": false,
+            "name": "testMit2",
+            "ongoing": true,
+            "start": "2021-03-29T18:18:08.699990+00:00",
+            "subtype": "flowspec",
+            "user": "demisto",
+            "id": "flowspec-6",
+            "type": "mitigation"
+        },
+        {
+            "description": "just desc",
+            "ip_version": 6,
+            "is_automitigation": false,
+            "name": "testMit",
+            "ongoing": true,
+            "start": "2021-03-07T19:09:03.895220+00:00",
+            "subtype": "flowspec",
+            "user": "demisto",
+            "id": "flowspec-5",
+            "type": "mitigation"
+        }
+    ],
+    "create_mitigation": {
+        "description": "just desc",
+        "subtype": "flowspec",
+        "start": "2021-04-03T16:16:11.397680+00:00",
+        "ongoing": true,
+        "user": "demisto",
+        "ip_version": 4,
+        "subobject": {
+            "action": {
+                "type": "accept"
+            },
+            "l3vpn_route_distinguisher": "",
+            "bgp_communities": [],
+            "l3vpn_route_targets": []
+        },
+        "is_automitigation": false,
+        "name": "test_mit",
+        "type": "mitigation",
+        "id": "flowspec-8"
+    },
+    "list_mitigation_templates": [
+        {
+            "description": "Default mitigation values inherited by all new IPv4 mitigations (unless otherwise scoped)",
+            "ip_version": 4,
+            "name": "Default IPv4",
+            "subtype": "tms",
+            "system": true,
+            "id": "1",
+            "type": "mitigation_template"
+        },
+        {
+            "description": "Auto-Mitigation template use by default for all IPv4 auto-mitigations. Auto-mitigation must be enabled for the managed object.",
+            "ip_version": 4,
+            "name": "Auto-Mitigation IPv4",
+            "subtype": "tms",
+            "system": true,
+            "id": "2",
+            "type": "mitigation_template"
+        },
+        {
+            "description": "Template contains countermeasures that support TMS deployments focused on VoIP Gateway Flood Protection",
+            "ip_version": 4,
+            "name": "VoIP Gateway Protection",
+            "subtype": "tms",
+            "system": true,
+            "id": "3",
+            "type": "mitigation_template"
+        }
+    ],
+    "list_routers": [
+        {
+            "advanced_fallback_alg": "internal",
+            "advanced_use_simpson_flowspec_redirect_ip": false,
+            "bgp2_capabilities_labeled_unicast": false,
+            "bgp_capabilities_l3vpn_flowspec_ipv4": false,
+            "bgp_capabilities_l3vpn_flowspec_ipv6": false,
+            "bgp_capabilities_labeled_unicast": false,
+            "description": "Traffic-PCAP-CentOS - 192.168.1.116",
+            "flow_alerting": true,
+            "flow_export_ip": "192.168.1.116",
+            "flow_flow_ignored": "off",
+            "flow_flow_ignored_ipv6": "off",
+            "flow_sample_rate": "1",
+            "is_proxy": false,
+            "license_type": "core",
+            "name": "Traffic-PCAP-CentOS",
+            "snmp_authprotocol": "md5",
+            "snmp_priv_protocol": "DES",
+            "snmp_security_level": "noAuthNoPriv",
+            "snmp_version": 2,
+            "id": "121",
+            "type": "router"
+        },
+        {
+            "advanced_fallback_alg": "internal",
+            "advanced_local_as": "44",
+            "advanced_use_simpson_flowspec_redirect_ip": false,
+            "bgp2_capabilities_labeled_unicast": false,
+            "bgp_capabilities_flowspec": true,
+            "bgp_capabilities_flowspec_ipv4": true,
+            "bgp_capabilities_l3vpn_flowspec_ipv4": false,
+            "bgp_capabilities_l3vpn_flowspec_ipv6": false,
+            "bgp_capabilities_labeled_unicast": false,
+            "bgp_capabilities_monitor_routes_ipv4": "primary",
+            "bgp_ip_address": "192.168.1.124",
+            "bgp_remote_as": "4",
+            "bgp_session_name": "NetscoutProfile",
+            "description": "To Netscout PANW FW Router",
+            "flow_alerting": true,
+            "flow_flow_ignored": "off",
+            "flow_flow_ignored_ipv6": "off",
+            "is_proxy": false,
+            "license_type": "core",
+            "name": "PANW-FW_Netscout",
+            "snmp_authprotocol": "md5",
+            "snmp_priv_protocol": "DES",
+            "snmp_security_level": "noAuthNoPriv",
+            "snmp_version": 2,
+            "id": "186",
+            "type": "router"
+        }
+    ],
+    "list_managed_objects": [
+        {
+            "autodetected": false,
+            "automitigation_precise_protection_prefixes": false,
+            "automitigation_precise_protection_prefixes_mit_on_query_failure": false,
+            "custom_shared_host_detection_setting": true,
+            "detection_network_country_enabled": false,
+            "detection_network_enabled": false,
+            "detection_profiled_autorate": false,
+            "detection_profiled_enabled": false,
+            "detection_profiled_fast_flood_enabled": false,
+            "detection_profiled_outgoing_enabled": true,
+            "detection_profiled_severity_duration": 300,
+            "detection_profiled_severity_snmp_enabled": false,
+            "detection_profiled_threshold_bandwidth": 2,
+            "detection_profiled_threshold_packet_rate": 2,
+            "detection_profiled_threshold_protocol": 2,
+            "dynamic_match_enabled": false,
+            "editable": true,
+            "family": "customer",
+            "match": "1.2.3.4/32",
+            "match_enabled": true,
+            "match_type": "cidr_blocks",
+            "mitigation_automitigation": false,
+            "mitigation_automitigation_stop_event": "after_alert_ends",
+            "mitigation_automitigation_stop_minutes": 0,
+            "mitigation_automitigation_tms_enabled": false,
+            "mitigation_blackhole_auto_enabled": false,
+            "mitigation_flowspec_auto_enabled": false,
+            "name": "TestMO1",
+            "num_children": 0,
+            "parent_editable": false,
+            "scrub_insight_mo_match": false,
+            "tags": [
+                "customer"
+            ],
+            "id": "122",
+            "type": "managed_object"
+        }
+    ],
+    "list_tms_group": [
+        {
+            "bgp_communities": [],
+            "check_available_bw": true,
+            "check_bgp_peering": true,
+            "check_group_allup": true,
+            "default_bgp_offramp": true,
+            "description": "Default all mitigation group. Mitigations will use all ports on all configured TMS devices.",
+            "dns_auth_active_secondary_servers": [],
+            "fail_open": false,
+            "flowspec_communities": [],
+            "flowspec_offramp": "",
+            "flowspec_redirect_ipv4_destination": "",
+            "flowspec_redirect_ipv4_type": "",
+            "flowspec_redirect_ipv6_destination": "",
+            "flowspec_redirect_ipv6_type": "",
+            "l3vpn_flowspec_ipv4_route_distinguisher": "",
+            "l3vpn_flowspec_ipv4_route_targets": [],
+            "l3vpn_flowspec_ipv6_route_distinguisher": "",
+            "l3vpn_flowspec_ipv6_route_targets": [],
+            "member_limits_differ": false,
+            "mitigation_orchestration": {
+                "bandwidth_threshold_percent": 85,
+                "enabled": false
+            },
+            "name": "All",
+            "nexthop": "",
+            "nexthop_v6": "",
+            "system": true,
+            "tms_group_type": "",
+            "id": "3",
+            "type": "tms_group"
+        }
+    ]
+}

@@ -347,3 +347,4 @@ inputs: []
 outputs: []
 tests:
 - No test
+deprecated: true
