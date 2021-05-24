@@ -21,7 +21,7 @@ trigger-private-build:
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
 create-instances:
-  extends: 
+  extends:
     - .default-job-settings
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
@@ -146,7 +146,3 @@ run-validations:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .push-rule
-#   variables:
-#     SLACK_TEST_TYPE: "unittests"
-#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
-#     SLACK_ONLY_IF: $BUCKET_UPLOAD
