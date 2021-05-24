@@ -18,7 +18,6 @@ UNIT42_TYPES_TO_DEMISTO_TYPES = {
     'sha-1': FeedIndicatorType.File,
     'sha-256': FeedIndicatorType.File,
     'file:hashes': FeedIndicatorType.File,
-    'file:name': FeedIndicatorType.File
 }
 
 THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
@@ -96,8 +95,10 @@ class Client(BaseClient):
 
 def get_ioc_value_from_ioc_name(ioc_obj):
     ioc_value = ioc_obj.get('name')
-    if 'file:hashes' in ioc_value:
-        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value).group(0)
+    try:
+        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value)
+    except AttributeError:
+        return None
     return ioc_value
 
 
@@ -115,10 +116,9 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
         for indicator_object in indicator_objects:
             pattern = indicator_object.get('pattern')
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
-                # retrieve only Demisto indicator types
-                if pattern.startswith(f'[{key}') or pattern.startswith(f'([{key}'):
+                if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
-                        "value": get_ioc_value_from_ioc_name(indicator_object),
+                        "value": indicator_object.get('name'),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES[key],
                         "rawJSON": indicator_object,
                         "fields": {
@@ -129,6 +129,11 @@ def parse_indicators(indicator_objects: list, feed_tags: list = [], tlp_color: O
                             "reportedby": 'Unit42',
                         }
                     }
+
+                    if "file:hashes.'SHA-256' = " in indicator_obj['value']:
+                        indicator_obj['value'] = get_ioc_value_from_ioc_name(indicator_object)
+                    else:
+                        continue
 
                     if tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
@@ -436,7 +441,7 @@ def get_ioc_type(indicator, id_to_object):
     indicator_obj = id_to_object.get(indicator, {})
     pattern = indicator_obj.get('pattern', '')
     for unit42_type in UNIT42_TYPES_TO_DEMISTO_TYPES:
-        if unit42_type in pattern:
+        if pattern.startswith(f'[{unit42_type}'):
             ioc_type = UNIT42_TYPES_TO_DEMISTO_TYPES.get(unit42_type)  # type: ignore
             break
     return ioc_type
