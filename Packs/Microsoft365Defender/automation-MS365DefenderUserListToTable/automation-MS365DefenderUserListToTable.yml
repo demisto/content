@@ -9,17 +9,7 @@ enabled: true
 name: MS365DefenderUserListToTable
 runas: DBotWeakRole
 runonce: false
-script: |
-  def count_dict(value):
-      if not isinstance(value, str):
-          return value
-      users = value.split(',')
-
-
-      return [{'User': user  for user in users}]
-
-  if __name__ in ('__main__', '__builtin__', 'builtins'):
-      return_results(count_dict(**demisto.args()))
+script: ''
 scripttarget: 0
 subtype: python3
 tags:
