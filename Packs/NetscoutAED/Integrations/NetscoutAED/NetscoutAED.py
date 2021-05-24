@@ -174,60 +174,60 @@ def init_commands_dict() -> dict:
 
         # outbound blacklisted countries
         'na-aed-outbound-blacklisted-countries-list': {"func": handle_country_list_commands,
-                                                             "meta_data": outbound_blacklisted},
+                                                       "meta_data": outbound_blacklisted},
         'na-aed-outbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
-                                                            "meta_data": outbound_blacklisted},
+                                                      "meta_data": outbound_blacklisted},
         'na-aed-outbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
-                                                               "meta_data": outbound_blacklisted},
+                                                         "meta_data": outbound_blacklisted},
 
         # inbound blacklisted countries
         'na-aed-inbound-blacklisted-countries-list': {"func": handle_country_list_commands,
-                                                            "meta_data": inbound_blacklisted},
+                                                      "meta_data": inbound_blacklisted},
         'na-aed-inbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
-                                                           "meta_data": inbound_blacklisted},
+                                                     "meta_data": inbound_blacklisted},
         'na-aed-inbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
-                                                              "meta_data": inbound_blacklisted},
+                                                        "meta_data": inbound_blacklisted},
 
         # outbound blacklisted hosts
         'na-aed-outbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
-                                                         'meta_data': outbound_blacklisted},
+                                                   'meta_data': outbound_blacklisted},
         'na-aed-outbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                        'meta_data': merge_dicts(outbound_blacklisted, {'op': 'POST'})},
+                                                  'meta_data': merge_dicts(outbound_blacklisted, {'op': 'POST'})},
 
         'na-aed-outbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                            'meta_data': merge_dicts(outbound_blacklisted, {'op': 'PUT'})},
+                                                      'meta_data': merge_dicts(outbound_blacklisted, {'op': 'PUT'})},
         'na-aed-outbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                           'meta_data': outbound_blacklisted},
+                                                     'meta_data': outbound_blacklisted},
 
         # inbound blacklisted hosts
         'na-aed-inbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
-                                                        'meta_data': inbound_blacklisted},
+                                                  'meta_data': inbound_blacklisted},
         'na-aed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                       'meta_data': merge_dicts(inbound_blacklisted, {'op': 'POST'})},
+                                                 'meta_data': merge_dicts(inbound_blacklisted, {'op': 'POST'})},
         'na-aed-inbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                           'meta_data': merge_dicts(inbound_blacklisted, {'op': 'PUT'})},
+                                                     'meta_data': merge_dicts(inbound_blacklisted, {'op': 'PUT'})},
         'na-aed-inbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                          'meta_data': inbound_blacklisted},
+                                                    'meta_data': inbound_blacklisted},
 
         # outbound whitelisted hosts
         'na-aed-outbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
-                                                         'meta_data': outbound_whitelisted},
+                                                   'meta_data': outbound_whitelisted},
         'na-aed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                        'meta_data': merge_dicts(outbound_whitelisted, {'op': 'POST'})},
+                                                  'meta_data': merge_dicts(outbound_whitelisted, {'op': 'POST'})},
         'na-aed-outbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                            'meta_data': merge_dicts(outbound_whitelisted, {'op': 'PUT'})},
+                                                      'meta_data': merge_dicts(outbound_whitelisted, {'op': 'PUT'})},
         'na-aed-outbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                           'meta_data': outbound_whitelisted},
+                                                     'meta_data': outbound_whitelisted},
 
         # inbound whitelisted hosts
         'na-aed-inbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
-                                                        'meta_data': inbound_whitelisted},
+                                                  'meta_data': inbound_whitelisted},
         'na-aed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                       'meta_data': merge_dicts(inbound_whitelisted, {'op': 'POST'})},
+                                                 'meta_data': merge_dicts(inbound_whitelisted, {'op': 'POST'})},
         'na-aed-inbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                           'meta_data': merge_dicts(inbound_whitelisted, {'op': 'PUT'})},
+                                                     'meta_data': merge_dicts(inbound_whitelisted, {'op': 'PUT'})},
         'na-aed-inbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                          'meta_data': inbound_whitelisted},
+                                                    'meta_data': inbound_whitelisted},
 
         # inbound blacklisted domains
         'na-aed-inbound-blacklisted-domains-list': {'func': handle_domain_list_commands},
@@ -1068,15 +1068,16 @@ def handle_url_deletion_commands(client: Client, demisto_args: dict) -> str:
 
 
 def main() -> None:
-    params = demisto.params()
-    base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/api/aed/v2')
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy: bool = params.get('proxy', False)
-    if not params.get('User') or not (api_token := params.get('User', {}).get('password')):
-        return_error('Missing API Key. Fill in a valid key in the integration configuration.')
-    commands = init_commands_dict()
-    demisto_command = demisto.command()
     try:
+        params: dict = demisto.params()
+        base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/api/aed/v2')
+        verify_certificate: bool = not params.get('insecure', False)
+        proxy: bool = params.get('proxy', False)
+        api_token = params.get('User')
+        if not api_token and not params.get('User', {}).get('password'):
+            raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
+        commands = init_commands_dict()
+        demisto_command = demisto.command()
         handle_proxy()
         client = Client(
             base_url=base_url,
