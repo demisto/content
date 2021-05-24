@@ -7,6 +7,7 @@ import json
 import requests
 import socket
 import traceback
+from typing import Callable, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -81,8 +82,8 @@ API_PARAM_DICT = {
     },
     'search_arguments': {
         'file_hash': {
-            'api_name': 'alias.hash',
-            'operator': 'contains'
+            'api_name': 'alias.hash_lookup',
+            'operator': 'is'
         },
         'domain': {
             'api_name': 'alias.domain',
@@ -256,6 +257,52 @@ if PARAMS.get('mark_as_malicious'):
         VERDICTS_TO_DBOTSCORE[verdict] = 3
 
 ''' HELPER FUNCTIONS '''
+
+
+def run_polling_command(args: dict, cmd: str, search_function: Callable, results_function: Callable):
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    if 'af_cookie' not in args:
+        # create new search
+        command_results = search_function(args)
+        outputs = command_results.outputs
+        af_cookie = outputs.get('AFCookie')
+        if outputs.get('Status') != 'complete':
+            polling_args = {
+                'af_cookie': af_cookie,
+                'interval_in_seconds': interval_in_secs,
+                'polling': True,
+                **args
+            }
+            scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,
+                args=polling_args,
+                timeout_in_seconds=600)
+            command_results.scheduled_command = scheduled_command
+            return command_results
+        else:
+            # continue to look for search results
+            args['af_cookie'] = af_cookie
+    # get search status
+    command_results, status = results_function(args)
+    if status != 'complete':
+        # schedule next poll
+        polling_args = {
+            'af_cookie': args.get('af_cookie'),
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
+    return command_results
 
 
 def parse_response(resp, err_operation):
@@ -1084,53 +1131,7 @@ def test_module():
     return
 
 
-def search_samples_command():
-    args = demisto.args()
-    with_results = args.get('with_results')
-    if with_results != 'true':
-        md, info, ctx_prefix, ctx_key = search_samples_helper(args)
-        return_results(CommandResults(outputs=info, readable_output=md, outputs_key_field=ctx_key,
-                                      outputs_prefix=ctx_prefix))
-        return
-    # scheduled
-    Common.ScheduledCommandConfiguration.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 60))
-    if 'af_cookie' not in args:
-        # start query
-        if 'scope' not in args:
-            raise DemistoException('Please provide a scope for the search.')
-        md, info, ctx_prefix, af_ctx_path = search_samples_helper(args)
-        af_cookie = info.get(af_ctx_path)
-        if info.get('Status') != 'complete' and af_cookie:
-            polling_args = {
-                'af_cookie': af_cookie,
-                'interval_in_seconds': interval_in_secs,
-                'with_results': with_results
-            }
-            polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-samples',
-                                                                  next_run_in_seconds=interval_in_secs,
-                                                                  args=polling_args, timeout_in_seconds=600)
-            return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
-                                          outputs=info, readable_output=md, scheduled_command_config=polling_config))
-            return
-        else:
-            # continue search command
-            args['af_cookie'] = af_cookie
-
-    status = samples_search_results_helper(args)
-    if status != 'complete':
-        polling_args = {
-            'af_cookie': args.get('af_cookie'),
-            'interval_in_seconds': interval_in_secs,
-            'with_results': with_results
-        }
-        polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-samples',
-                                                              next_run_in_seconds=interval_in_secs,
-                                                              args=polling_args, timeout_in_seconds=600)
-        return_results(CommandResults(scheduled_command_config=polling_config))
-
-
-def search_samples_helper(args):
+def search_samples_command(args):
     file_hash = argToList(args.get('file_hash'))
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
@@ -1148,54 +1149,20 @@ def search_samples_helper(args):
                           domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
                           last_updated=last_updated, artifact_source=artifact_source)
     md = tableToMarkdown('Search Samples Info:', info)
-    return md, info, 'AutoFocus.SamplesSearch', 'AFCookie'
+    return CommandResults(outputs=info, readable_output=md, outputs_key_field='AFCookie',
+                          outputs_prefix='AutoFocus.SamplesSearch')
 
 
-def search_sessions_command():
-    args = demisto.args()
-    with_results = args.get('with_results')
-    if with_results != 'true':
-        md, info, ctx_prefix, ctx_key = search_sessions_helper(args)
-        return_results(CommandResults(outputs=info, readable_output=md, outputs_key_field=ctx_key,
-                                      outputs_prefix=ctx_prefix))
-        return
-    # scheduled
-    Common.ScheduledCommandConfiguration.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 60))
-    if 'af_cookie' not in args:
-        md, info, ctx_prefix, af_ctx_path = search_sessions_helper(args)
-        af_cookie = info.get(af_ctx_path)
-        if info.get('Status') != 'complete' and af_cookie:
-            polling_args = {
-                'af_cookie': af_cookie,
-                'interval_in_seconds': interval_in_secs,
-                'with_results': with_results
-            }
-            polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-sessions',
-                                                                  next_run_in_seconds=interval_in_secs,
-                                                                  args=polling_args, timeout_in_seconds=600)
-            return_results(CommandResults(outputs_prefix=ctx_prefix, outputs_key_field=af_ctx_path,
-                                          outputs=info, readable_output=md, scheduled_command_config=polling_config))
-            return
-        else:
-            # continue search command
-            args['af_cookie'] = af_cookie
-
-    command_results, status = sessions_search_results_helper(args)
-    if status != 'complete':
-        polling_args = {
-            'af_cookie': args.get('af_cookie'),
-            'interval_in_seconds': interval_in_secs,
-            'with_results': with_results
-        }
-        polling_config = Common.ScheduledCommandConfiguration(command='autofocus-search-sessions',
-                                                              next_run_in_seconds=interval_in_secs,
-                                                              args=polling_args, timeout_in_seconds=600)
-        command_results.scheduled_command_config = polling_config
-    return_results(command_results)
+def search_samples_with_polling_command(args):
+    return run_polling_command(args, 'autofocus-search-samples', search_samples_command, samples_search_results_command)
 
 
-def search_sessions_helper(args):
+def search_sessions_with_polling_command(args):
+    return run_polling_command(args, 'autofocus-search-sessions', search_sessions_command,
+                               sessions_search_results_command)
+
+
+def search_sessions_command(args):
     file_hash = argToList(args.get('file_hash'))
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
@@ -1218,22 +1185,22 @@ def search_sessions_helper(args):
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
-    return md, info, 'AutoFocus.SessionsSearch', 'AFCookie'
+    cmd_results = CommandResults(
+        outputs_prefix='AutoFocus.SessionsSearch',
+        outputs_key_field='AFCookie',
+        outputs=info,
+        readable_output=md
+    )
+    return cmd_results
 
 
-def samples_search_results_command():
-    args = demisto.args()
-    samples_search_results_helper(args)
-
-
-def samples_search_results_helper(args):
+def samples_search_results_command(args):
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
     files = get_files_data_from_results(results)
     hr = ''
     if not results or len(results) == 0:
-        hr = 'No entries found that match the query'
-        status = 'complete'
+        hr = 'No entries found that match the query' if status == 'complete' else f'Search Sessions Results is {status}'
     context = {
         'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
         'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
@@ -1251,7 +1218,7 @@ def samples_search_results_helper(args):
                 hr = tableToMarkdown(f'Search Samples Result is {status}', result)
                 hr += tableToMarkdown('Artifacts for Sample: ', [])
                 return_outputs(readable_output=hr, outputs=context, raw_response=results)
-    return status
+    return None, status
 
 
 def samples_search_result_hr(result: dict, status: str) -> str:
@@ -1279,21 +1246,14 @@ def samples_search_result_hr(result: dict, status: str) -> str:
     return hr
 
 
-def sessions_search_results_command():
-    args = demisto.args()
-    command_results, _ = sessions_search_results_helper(args)
-    return_results(command_results)
-
-
-def sessions_search_results_helper(args):
+def sessions_search_results_command(args):
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
     files = get_files_data_from_results(results)
     if not results or len(results) == 0:
         md = results = 'No entries found that match the query'
-        status = 'complete'
     else:
-        md = tableToMarkdown(f'Search Sessions Results is {status}', results)
+        md = tableToMarkdown(f'Search Samples Results is {status}', results)
     context = {
         'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
         'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
@@ -1354,8 +1314,7 @@ def tag_details_command():
     })
 
 
-def top_tags_search_command():
-    args = demisto.args()
+def top_tags_search_command(args):
     scope = args.get('scope')
     tag_class = args.get('class')
     private = args.get('private') == 'True'
@@ -1364,30 +1323,28 @@ def top_tags_search_command():
     unit42 = args.get('unit42') == 'True'
     info = autofocus_top_tags_search(scope, tag_class, private, public, commodity, unit42)
     md = tableToMarkdown('Top tags search Info:', info)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': info,
-        'EntryContext': {'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': info},
-        'HumanReadable': md
-    })
+    return CommandResults(
+        outputs_prefix='AutoFocus.TopTagsSearch',
+        outputs_key_field='AFCookie',
+        outputs=info,
+        readable_output=md
+    )
 
 
-def top_tags_results_command():
-    args = demisto.args()
+def top_tags_results_command(args) -> Tuple[CommandResults, str]:
     af_cookie = args.get('af_cookie')
     results, status = get_top_tags_results(af_cookie)
     md = tableToMarkdown(f'Search Top Tags Results is {status}:', results, headerTransform=string_to_table_header)
     context = createContext(results, keyTransform=string_to_context_key)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
-                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
-                                                                                   'AFCookie': af_cookie}},
-        'HumanReadable': md
-    })
+    outputs = {
+        'AutoFocus.TopTagsResults(val.PublicTagName === obj.PublicTagName)': context,
+        'AutoFocus.TopTagsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie}
+    }
+    return CommandResults(outputs=outputs, raw_response=results, readable_output=md), status
+
+
+def top_tags_with_polling_command(args):
+    return run_polling_command(args, 'autofocus-top-tags-search', top_tags_search_command, top_tags_results_command)
 
 
 def search_ip_command(ip, reliability):
@@ -1769,13 +1726,21 @@ def main():
             test_module()
             demisto.results('ok')
         elif active_command == 'autofocus-search-samples':
-            search_samples_command()
+            if args.get('polling') == 'true':
+                cmd_res = search_samples_with_polling_command(args)
+                if cmd_res is not None:
+                    return_results(cmd_res)
+            else:
+                return_results(search_samples_command(args))
         elif active_command == 'autofocus-search-sessions':
-            search_sessions_command()
+            if args.get('polling') == 'true':
+                return_results(search_sessions_with_polling_command(args))
+            else:
+                return_results(search_sessions_command(args))
         elif active_command == 'autofocus-samples-search-results':
-            samples_search_results_command()
+            samples_search_results_command(args)
         elif active_command == 'autofocus-sessions-search-results':
-            sessions_search_results_command()
+            return_results(sessions_search_results_command(args)[0])  # first result is CommandResults
         elif active_command == 'autofocus-get-session-details':
             get_session_details_command()
         elif active_command == 'autofocus-sample-analysis':
@@ -1783,9 +1748,12 @@ def main():
         elif active_command == 'autofocus-tag-details':
             tag_details_command()
         elif active_command == 'autofocus-top-tags-search':
-            top_tags_search_command()
+            if args.get('polling') == 'true':
+                return_results(top_tags_with_polling_command(args))
+            else:
+                return_results(top_tags_search_command(args))
         elif active_command == 'autofocus-top-tags-results':
-            top_tags_results_command()
+            return_results(top_tags_results_command(args)[0])
         elif active_command == 'autofocus-get-export-list-indicators':
             get_export_list_command(args)
         elif active_command == 'ip':

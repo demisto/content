@@ -55,7 +55,7 @@ script: >-
 
   var domainsIndicators = [];
 
-  for (var indicatorObject in urls) {
+  for (var indicatorObject in domains) {
       if (domains[indicatorObject] && domains[indicatorObject].Indicator && domainsIndicators.indexOf(domains[indicatorObject].Indicator) === -1) {
           domainsIndicators.push(domains[indicatorObject].Indicator);
       }

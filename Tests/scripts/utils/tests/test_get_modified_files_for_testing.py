@@ -1,7 +1,8 @@
 import pytest
+from demisto_sdk.commands.common.constants import FileType
 
 from Tests.scripts.utils.get_modified_files_for_testing import (
-    get_modified_files_for_testing,
+    get_modified_files_for_testing, remove_code_files_by_types,
 )
 
 
@@ -187,10 +188,7 @@ class TestGetModifiedFilesForTesting:
 
     @pytest.mark.parametrize(
         "path",
-        (
-            "Packs/HelloWorld/IndicatorTypes/reputation-cidr.json",
-            "Packs/HelloWorld/IndicatorTypes/reputations.json",
-        ),
+        ("Packs/HelloWorld/IndicatorTypes/reputation-cidr.json", "Packs/HelloWorld/IndicatorTypes/reputations.json"),
     )
     def test_reputations_list(self, path: str, mocker):
         diff_line = f"M {path}"
@@ -346,3 +344,34 @@ class TestGetModifiedFilesForTesting:
         assert modified_files_instance.is_reputations_json is False
         assert modified_files_instance.is_indicator_json is False
         assert modified_files_instance.is_landing_page_sections_json is False
+
+    @pytest.mark.parametrize('file_type, file_path, get_dict_from_file_mocked_response, yml_path, return_type', [
+        (FileType.PYTHON_FILE, "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py", {"category": "cat"},
+         "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml", FileType.INTEGRATION),
+        (FileType.POWERSHELL_FILE, "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1",
+         {"script": "cat"}, "Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.yml", FileType.SCRIPT),
+        (FileType.JAVASCRIPT_FILE, "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.js",
+         {"category": "cat"}, "Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.yml", FileType.INTEGRATION)
+    ])
+    def test_remove_code_files(self, mocker, file_type, file_path, get_dict_from_file_mocked_response, yml_path,
+                               return_type):
+        """
+        Given:
+            - A python, js and powershell files
+
+        When:
+            - Collecting tests, using remove_code_files_by_types function, that returns corresponding yml file
+
+        Then:
+            - Validate that the corresponding yml file is in the output list.
+        """
+        types_to_files = {file_type: {file_path}}
+        mocker.patch(
+            "Tests.scripts.utils.get_modified_files_for_testing.glob.glob",
+            return_value=[yml_path],
+        )
+        mock_get_dict_from_yaml(mocker, get_dict_from_file_mocked_response, "yml")
+
+        result = remove_code_files_by_types(types_to_files, file_type)
+        assert result == {return_type: {yml_path},
+                          file_type: set()}

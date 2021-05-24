@@ -45,7 +45,7 @@ script:
       default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
       isArray: false
-      name: with_results
+      name: polling
       predefined:
         - 'true'
         - 'false'
@@ -109,7 +109,7 @@ script:
         - Private
         - Public
         - Global
-      required: false
+      required: true
       secret: false
     - default: false
       description: The MD5, SHA1 or SHA256 hash of the file.
@@ -275,7 +275,7 @@ script:
       default: false
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
       isArray: false
-      name: with_results
+      name: polling
       predefined:
         - 'true'
         - 'false'
@@ -769,6 +769,28 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      description: Use XSOAR built-in polling to retrieve the result when it's ready.
+      isArray: false
+      name: polling
+      predefined:
+        - 'true'
+        - 'false'
+    - default: false
+      description: The AF Cookie for retrieving results of previous searches. The
+        AF Cookie expires 120 seconds after the search completes.
+      isArray: false
+      name: af_cookie
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      defaultValue: '40'
+    - auto: PREDEFINED
+      default: false
       description: 'Tag class. - Malware Family: group of malware that have shared
         properties or common functions. - Campaign:  targeted attack, which might
         include several incidents or sets of activities. - Actor: individual or group
@@ -840,6 +862,7 @@ script:
       Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-search
+    polling: true
     outputs:
     - contextPath: AutoFocus.TopTagsSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
@@ -851,6 +874,21 @@ script:
     - contextPath: AutoFocus.SamplesSearch.SessionStart
       description: The time when the session began.
       type: Date
+    - contextPath: AutoFocus.TopTagsResults.Count
+      description: The number of samples that matched this tag.
+      type: Number
+    - contextPath: AutoFocus.TopTagsResults.PublicTagName
+      description: The public name of the tag. This is used as an ID of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.TagName
+      description: The simple name of the tag.
+      type: String
+    - contextPath: AutoFocus.TopTagsResults.Lasthit
+      description: The last encounter date of the tag.
+      type: Date
+    - contextPath: AutoFocus.TopTagsSearch.Status
+      description: The search status. Can be "in progress" or "complete".
+      type: String
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
@@ -1276,7 +1314,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: false
   longRunning: false
   longRunningPort: false

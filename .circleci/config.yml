@@ -813,11 +813,8 @@ jobs:
                     exit 0
                   fi
 
-                  GCS_PATH=$(mktemp)
                   ZIP_FOLDER=$(mktemp -d)
-                  echo $GCS_MARKET_KEY > $GCS_PATH
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
-                  rm $GCS_PATH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
                 when: always
             - run:
                 name: Store Artifacts to GCS
@@ -1166,9 +1163,6 @@ jobs:
           name: Instance Test
           command: |
             ./Tests/scripts/instance_test.sh
-            export RETVAL=$?
-            cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
-            exit $RETVAL
           when: always
       - *destroy_instances
       - *store_artifacts
@@ -1199,7 +1193,7 @@ jobs:
           shell: /bin/bash
           command: |
             ./Tests/scripts/slack_notifier.sh 'sdk_unittests' $CIRCLE_ARTIFACTS/env_results.json
-            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' $CIRCLE_ARTIFACTS/env_results.json
+            ./Tests/scripts/slack_notifier.sh 'sdk_failed_steps' $CIRCLE_ARTIFACTS/env_results.json
           when: always
 
   Demisto SDK Nightly - Run against Cortex XSOAR:
