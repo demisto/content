@@ -28,3 +28,6 @@ To authenticate with a token:
         4wtwfuxgaRyA0rGcpbTGLzKy4_j7iQmRJeTdyIBN Example administrative user token
 
 5. With every API request, include a header that specifies this token.
+
+### Configuration params
+**NOTE**: If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty.

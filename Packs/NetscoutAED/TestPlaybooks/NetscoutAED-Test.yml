@@ -42,7 +42,7 @@ tasks:
       name: List of countries
       description: gets a country or list of countries (country name and ISO-standardized
         country code)
-      script: '|||netscout-aed-country-code-list'
+      script: '|||na-aed-country-code-list'
       type: regular
       iscommand: true
       brand: ""
@@ -159,7 +159,7 @@ tasks:
       version: -1
       name: Remove country from outbound blacklisted list
       description: Removes one or more countries from the outbound blacklist.
-      script: '|||netscout-aed-outbound-blacklisted-countries-remove'
+      script: '|||na-aed-outbound-blacklisted-countries-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -194,7 +194,7 @@ tasks:
       name: Get list of outbound blacklisted countries
       description: Gets the countries on the outbound blacklist. By default, 10 blacklisted
         countries are returned.
-      script: '|||netscout-aed-outbound-blacklisted-countries-list'
+      script: '|||na-aed-outbound-blacklisted-countries-list'
       type: regular
       iscommand: true
       brand: ""
@@ -240,7 +240,7 @@ tasks:
               simple: US
           right:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Country.country
+              simple: NetscoutAED.OutboundBlacklistCountry.country
             iscontext: true
       - - operator: notIn
           left:
@@ -249,7 +249,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Country.country
+              simple: NetscoutAED.InboundBlacklistCountry.country
             iscontext: true
     view: |-
       {
@@ -274,7 +274,7 @@ tasks:
       version: -1
       name: Add country to the outbound blacklisted list
       description: Adds one or more countries to the outbound blacklist.
-      script: '|||netscout-aed-outbound-blacklisted-countries-add'
+      script: '|||na-aed-outbound-blacklisted-countries-add'
       type: regular
       iscommand: true
       brand: ""
@@ -320,7 +320,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Country.country
+              simple: NetscoutAED.OutboundBlacklistCountry.country
             iscontext: true
           right:
             value:
@@ -328,7 +328,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Country.country
+              simple: NetscoutAED.InboundBlacklistCountry.country
             iscontext: true
           right:
             value:
@@ -420,7 +420,7 @@ tasks:
       name: Add country to the inbound blacklisted list
       description: Adds one or more countries to the inbound blacklist by pgid or
         cid.
-      script: '|||netscout-aed-inbound-blacklisted-countries-add'
+      script: '|||na-aed-inbound-blacklisted-countries-add'
       type: regular
       iscommand: true
       brand: ""
@@ -455,7 +455,7 @@ tasks:
       name: Remove country from inbound blacklisted list
       description: Removes one or more countries from the blacklist for a specific
         protection group or for all protection groups.
-      script: '|||netscout-aed-inbound-blacklisted-countries-remove'
+      script: '|||na-aed-inbound-blacklisted-countries-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -492,7 +492,7 @@ tasks:
         countries are returned. To return blacklisted countries for specific protection
         groups, specify a list of protection group IDs or central configuration IDs.
         An ID of -1 selects countries that are globally blacklisted.
-      script: '|||netscout-aed-inbound-blacklisted-countries-list'
+      script: '|||na-aed-inbound-blacklisted-countries-list'
       type: regular
       iscommand: true
       brand: ""
@@ -557,7 +557,7 @@ tasks:
       version: -1
       name: Add host to the outbound blacklisted list
       description: Adds one or more hosts to the outbound blacklist.
-      script: '|||netscout-aed-outbound-blacklisted-hosts-add'
+      script: '|||na-aed-outbound-blacklisted-hosts-add'
       type: regular
       iscommand: true
       brand: ""
@@ -591,7 +591,7 @@ tasks:
       version: -1
       name: Add host to the inbound blacklisted list
       description: Adds one or more hosts to the inbound blacklisted list.
-      script: '|||netscout-aed-inbound-blacklisted-hosts-add'
+      script: '|||na-aed-inbound-blacklisted-hosts-add'
       type: regular
       iscommand: true
       brand: ""
@@ -625,7 +625,7 @@ tasks:
       version: -1
       name: Add host to the outbound whitelisted list
       description: Adds one or more hosts to the outbound whitelisted list
-      script: '|||netscout-aed-outbound-whitelisted-hosts-add'
+      script: '|||na-aed-outbound-whitelisted-hosts-add'
       type: regular
       iscommand: true
       brand: ""
@@ -659,7 +659,7 @@ tasks:
       version: -1
       name: Add host to the inbound whitelisted list
       description: Adds one or more hosts to the inbound whitelisted list.
-      script: '|||netscout-aed-inbound-whitelisted-hosts-add'
+      script: '|||na-aed-inbound-whitelisted-hosts-add'
       type: regular
       iscommand: true
       brand: ""
@@ -705,7 +705,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
+              simple: NetscoutAED.OutboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -713,7 +713,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
+              simple: NetscoutAED.InboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -721,7 +721,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
+              simple: NetscoutAED.OutboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -729,7 +729,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
+              simple: NetscoutAED.InboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -757,7 +757,7 @@ tasks:
       version: -1
       name: Replace host in the outbound blacklisted list
       description: Replaces all the hosts on the outbound blacklisted list.
-      script: '|||netscout-aed-outbound-blacklisted-hosts-replace'
+      script: '|||na-aed-outbound-blacklisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -791,7 +791,7 @@ tasks:
       version: -1
       name: Replace host in the inbound blacklisted list
       description: Replaces all the hosts on the inbound blacklist.
-      script: '|||netscout-aed-inbound-blacklisted-hosts-replace'
+      script: '|||na-aed-inbound-blacklisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -825,7 +825,7 @@ tasks:
       version: -1
       name: Replace host in the outbound whitelisted list
       description: Replaces all the hosts on the outbound whitelisted list.
-      script: '|||netscout-aed-outbound-whitelisted-hosts-replace'
+      script: '|||na-aed-outbound-whitelisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -859,7 +859,7 @@ tasks:
       version: -1
       name: Replace host in the inbound whitelisted list
       description: Replaces all the hosts on the inbound whitelist.
-      script: '|||netscout-aed-inbound-whitelisted-hosts-replace'
+      script: '|||na-aed-inbound-whitelisted-hosts-replace'
       type: regular
       iscommand: true
       brand: ""
@@ -905,7 +905,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
+              simple: NetscoutAED.OutboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -913,7 +913,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
+              simple: NetscoutAED.InboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -929,7 +929,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelisted.Hosts.host_address
+              simple: NetscoutAED.InboundWhitelistedHosts.host_address
             iscontext: true
           right:
             value:
@@ -937,7 +937,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
+              simple: NetscoutAED.OutboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -945,7 +945,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
+              simple: NetscoutAED.InboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -953,7 +953,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
+              simple: NetscoutAED.OutboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -961,7 +961,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
+              simple: NetscoutAED.InboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -1024,7 +1024,7 @@ tasks:
       name: Get list of outbound blacklisted host
       description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
         hosts are returned.
-      script: '|||netscout-aed-outbound-blacklisted-hosts-list'
+      script: '|||na-aed-outbound-blacklisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1058,7 +1058,7 @@ tasks:
         hosts are returned. To return blacklisted hosts for specific protection groups,
         specify a list of protection group IDs or central configuration IDs. An ID
         of -1 selects hosts that are globally blacklisted.
-      script: '|||netscout-aed-inbound-blacklisted-hosts-list'
+      script: '|||na-aed-inbound-blacklisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1090,7 +1090,7 @@ tasks:
       name: Get list of outbound whitelisted hosts
       description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
         hosts are returned.
-      script: '|||netscout-aed-outbound-whitelisted-hosts-list'
+      script: '|||na-aed-outbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1124,7 +1124,7 @@ tasks:
         returned. To return whitelisted hosts for specific protection groups, specify
         a list of protection group IDs or central configuration IDs. An ID of -1 selects
         hosts that are globally whitelisted.
-      script: '|||netscout-aed-inbound-whitelisted-hosts-list'
+      script: '|||na-aed-inbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1167,7 +1167,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
+              simple: NetscoutAED.OutboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -1175,7 +1175,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
+              simple: NetscoutAED.InboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -1183,7 +1183,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
+              simple: NetscoutAED.OutboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -1191,7 +1191,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
+              simple: NetscoutAED.InboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -1199,7 +1199,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Blacklist.Host.host_address
+              simple: NetscoutAED.OutboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -1207,7 +1207,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Host.host_address
+              simple: NetscoutAED.InboundBlacklistHost.host_address
             iscontext: true
           right:
             value:
@@ -1215,7 +1215,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Outbound.Whitelist.Host.host_address
+              simple: NetscoutAED.OutboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -1223,7 +1223,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Whitelist.Host.host_address
+              simple: NetscoutAED.InboundWhitelistHost.host_address
             iscontext: true
           right:
             value:
@@ -1314,7 +1314,7 @@ tasks:
       version: -1
       name: Remove host in the outbound blacklisted list
       description: Removes one or more hosts or CIDRS from the outbound blacklist.
-      script: '|||netscout-aed-outbound-blacklisted-hosts-remove'
+      script: '|||na-aed-outbound-blacklisted-hosts-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -1349,7 +1349,7 @@ tasks:
       name: Remove host in the inbound blacklisted list
       description: Removes one or more hosts or CIDRs from the blacklist for a specific
         protection group or for all protection groups.
-      script: '|||netscout-aed-inbound-blacklisted-hosts-remove'
+      script: '|||na-aed-inbound-blacklisted-hosts-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -1383,7 +1383,7 @@ tasks:
       version: -1
       name: Remove host in the outbound whitelisted list
       description: Removes one or more hosts or CIDRs from the outbound whitelist.
-      script: '|||netscout-aed-outbound-whitelisted-hosts-remove'
+      script: '|||na-aed-outbound-whitelisted-hosts-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -1418,7 +1418,7 @@ tasks:
       name: Remove host in the inbound whitelisted list
       description: Removes one or more hosts or CIDRs from the whitelist for a specific
         protection group or for all protection groups.
-      script: '|||netscout-aed-inbound-whitelisted-hosts-remove'
+      script: '|||na-aed-inbound-whitelisted-hosts-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -1453,7 +1453,7 @@ tasks:
       name: Get list of outbound blacklisted host
       description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
         hosts are returned.
-      script: '|||netscout-aed-outbound-blacklisted-hosts-list'
+      script: '|||na-aed-outbound-blacklisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1487,7 +1487,7 @@ tasks:
         hosts are returned. To return blacklisted hosts for specific protection groups,
         specify a list of protection group IDs or central configuration IDs. An ID
         of -1 selects hosts that are globally blacklisted.
-      script: '|||netscout-aed-inbound-blacklisted-hosts-list'
+      script: '|||na-aed-inbound-blacklisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1519,7 +1519,7 @@ tasks:
       name: Get list of outbound whitelisted hosts
       description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
         hosts are returned.
-      script: '|||netscout-aed-outbound-whitelisted-hosts-list'
+      script: '|||na-aed-outbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1553,7 +1553,7 @@ tasks:
         returned. To return whitelisted hosts for specific protection groups, specify
         a list of protection group IDs or central configuration IDs. An ID of -1 selects
         hosts that are globally whitelisted.
-      script: '|||netscout-aed-inbound-whitelisted-hosts-list'
+      script: '|||na-aed-inbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1584,7 +1584,7 @@ tasks:
       version: -1
       name: Get protection groups list
       description: Gets a list of the protection groups.
-      script: '|||netscout-aed-protection-groups-list'
+      script: '|||na-aed-protection-groups-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1730,7 +1730,7 @@ tasks:
       version: -1
       name: Add domains to the inbound blacklisted list
       description: Adds one or more domains to the blacklist by pgid or cid.
-      script: '|||netscout-aed-inbound-blacklisted-domains-add'
+      script: '|||na-aed-inbound-blacklisted-domains-add'
       type: regular
       iscommand: true
       brand: ""
@@ -1776,7 +1776,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
+              simple: NetscoutAED.InboundBlacklistDomain.domain
             iscontext: true
           right:
             value:
@@ -1784,7 +1784,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
+              simple: NetscoutAED.InboundBlacklistDomain.domain
             iscontext: true
           right:
             value:
@@ -1849,7 +1849,7 @@ tasks:
         are returned. To return blacklisted domains for specific protection groups,
         specify a list of protection group IDs or central configuration IDs. An ID
         of -1 selects domains that are globally blacklisted.
-      script: '|||netscout-aed-inbound-blacklisted-domains-list'
+      script: '|||na-aed-inbound-blacklisted-domains-list'
       type: regular
       iscommand: true
       brand: ""
@@ -1892,7 +1892,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
+              simple: NetscoutAED.InboundBlacklistDomain.domain
             iscontext: true
           right:
             value:
@@ -1900,7 +1900,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Domain.domain
+              simple: NetscoutAED.InboundBlacklistDomain.domain
             iscontext: true
           right:
             value:
@@ -1929,7 +1929,7 @@ tasks:
       name: Remove one of the domains from the inbound blacklisted domains
       description: Removes one or more domains from the blacklist for a specific protection
         group or for all protection groups.
-      script: '|||netscout-aed-inbound-blacklisted-domains-remove'
+      script: '|||na-aed-inbound-blacklisted-domains-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -1997,7 +1997,7 @@ tasks:
       version: -1
       name: Add urls to the inbound blacklisted list
       description: Adds one or more URLs to the blacklist by pgid or cid.
-      script: '|||netscout-aed-inbound-blacklisted-urls-add'
+      script: '|||na-aed-inbound-blacklisted-urls-add'
       type: regular
       iscommand: true
       brand: ""
@@ -2043,7 +2043,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Url.url
+              simple: NetscoutAED.InboundBlacklistUrl.url
             iscontext: true
           right:
             value:
@@ -2051,7 +2051,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Url.url
+              simple: NetscoutAED.InboundBlacklistUrl.url
             iscontext: true
           right:
             value:
@@ -2080,7 +2080,7 @@ tasks:
       name: Remove one of the urls from the inbound blacklisted domains
       description: Removes one or more URLs from the blacklist for a specific protection
         group or for all protection groups.
-      script: '|||netscout-aed-inbound-blacklisted-urls-remove'
+      script: '|||na-aed-inbound-blacklisted-urls-remove'
       type: regular
       iscommand: true
       brand: ""
@@ -2151,7 +2151,7 @@ tasks:
         returned. To return blacklisted URLs for specific protection groups, specify
         a list of protection group IDs or central configuration IDs. An ID of -1 selects
         URLs that are globally blacklisted.
-      script: '|||netscout-aed-inbound-blacklisted-urls-list'
+      script: '|||na-aed-inbound-blacklisted-urls-list'
       type: regular
       iscommand: true
       brand: ""
@@ -2194,7 +2194,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Url.url
+              simple: NetscoutAED.InboundBlacklistUrl.url
             iscontext: true
           right:
             value:
@@ -2202,7 +2202,7 @@ tasks:
       - - operator: notContainsGeneral
           left:
             value:
-              simple: NetscoutAED.Inbound.Blacklist.Url.url
+              simple: NetscoutAED.InboundBlacklistUrl.url
             iscontext: true
           right:
             value:

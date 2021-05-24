@@ -170,78 +170,78 @@ def init_commands_dict() -> dict:
         'test-module': {'func': test_module},
 
         # countries code list
-        'netscout-aed-country-code-list': {"func": country_code_list_command},
+        'na-aed-country-code-list': {"func": country_code_list_command},
 
         # outbound blacklisted countries
-        'netscout-aed-outbound-blacklisted-countries-list': {"func": handle_country_list_commands,
+        'na-aed-outbound-blacklisted-countries-list': {"func": handle_country_list_commands,
                                                              "meta_data": outbound_blacklisted},
-        'netscout-aed-outbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
+        'na-aed-outbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
                                                             "meta_data": outbound_blacklisted},
-        'netscout-aed-outbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
+        'na-aed-outbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
                                                                "meta_data": outbound_blacklisted},
 
         # inbound blacklisted countries
-        'netscout-aed-inbound-blacklisted-countries-list': {"func": handle_country_list_commands,
+        'na-aed-inbound-blacklisted-countries-list': {"func": handle_country_list_commands,
                                                             "meta_data": inbound_blacklisted},
-        'netscout-aed-inbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
+        'na-aed-inbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
                                                            "meta_data": inbound_blacklisted},
-        'netscout-aed-inbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
+        'na-aed-inbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
                                                               "meta_data": inbound_blacklisted},
 
         # outbound blacklisted hosts
-        'netscout-aed-outbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
+        'na-aed-outbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
                                                          'meta_data': outbound_blacklisted},
-        'netscout-aed-outbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-outbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                         'meta_data': merge_dicts(outbound_blacklisted, {'op': 'POST'})},
 
-        'netscout-aed-outbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-outbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
                                                             'meta_data': merge_dicts(outbound_blacklisted, {'op': 'PUT'})},
-        'netscout-aed-outbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
+        'na-aed-outbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                            'meta_data': outbound_blacklisted},
 
         # inbound blacklisted hosts
-        'netscout-aed-inbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
+        'na-aed-inbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
                                                         'meta_data': inbound_blacklisted},
-        'netscout-aed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                        'meta_data': merge_dicts(inbound_blacklisted, {'op': 'POST'})},
-        'netscout-aed-inbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-inbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
                                                            'meta_data': merge_dicts(inbound_blacklisted, {'op': 'PUT'})},
-        'netscout-aed-inbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
+        'na-aed-inbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                           'meta_data': inbound_blacklisted},
 
         # outbound whitelisted hosts
-        'netscout-aed-outbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
+        'na-aed-outbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
                                                          'meta_data': outbound_whitelisted},
-        'netscout-aed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                         'meta_data': merge_dicts(outbound_whitelisted, {'op': 'POST'})},
-        'netscout-aed-outbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-outbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
                                                             'meta_data': merge_dicts(outbound_whitelisted, {'op': 'PUT'})},
-        'netscout-aed-outbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
+        'na-aed-outbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                            'meta_data': outbound_whitelisted},
 
         # inbound whitelisted hosts
-        'netscout-aed-inbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
+        'na-aed-inbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
                                                         'meta_data': inbound_whitelisted},
-        'netscout-aed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
                                                        'meta_data': merge_dicts(inbound_whitelisted, {'op': 'POST'})},
-        'netscout-aed-inbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
+        'na-aed-inbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
                                                            'meta_data': merge_dicts(inbound_whitelisted, {'op': 'PUT'})},
-        'netscout-aed-inbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
+        'na-aed-inbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
                                                           'meta_data': inbound_whitelisted},
 
         # inbound blacklisted domains
-        'netscout-aed-inbound-blacklisted-domains-list': {'func': handle_domain_list_commands},
-        'netscout-aed-inbound-blacklisted-domains-add': {'func': handle_domain_addition_commands},
-        'netscout-aed-inbound-blacklisted-domains-remove': {'func': handle_domain_deletion_commands},
+        'na-aed-inbound-blacklisted-domains-list': {'func': handle_domain_list_commands},
+        'na-aed-inbound-blacklisted-domains-add': {'func': handle_domain_addition_commands},
+        'na-aed-inbound-blacklisted-domains-remove': {'func': handle_domain_deletion_commands},
 
         # inbound blacklisted urls
-        'netscout-aed-inbound-blacklisted-urls-list': {'func': handle_url_list_commands},
-        'netscout-aed-inbound-blacklisted-urls-add': {'func': handle_url_addition_commands},
-        'netscout-aed-inbound-blacklisted-urls-remove': {'func': handle_url_deletion_commands},
+        'na-aed-inbound-blacklisted-urls-list': {'func': handle_url_list_commands},
+        'na-aed-inbound-blacklisted-urls-add': {'func': handle_url_addition_commands},
+        'na-aed-inbound-blacklisted-urls-remove': {'func': handle_url_deletion_commands},
 
         # protection groups
-        'netscout-aed-protection-groups-list': {'func': handle_protection_groups_list_commands},
-        'netscout-aed-protection-groups-update': {'func': handle_protection_groups_update_commands},
+        'na-aed-protection-groups-list': {'func': handle_protection_groups_list_commands},
+        'na-aed-protection-groups-update': {'func': handle_protection_groups_update_commands},
 
     }
 
@@ -382,6 +382,9 @@ def country_code_list_command(client: Client, demisto_args: dict) -> CommandResu
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
+    limit = demisto_args.pop('limit', None)
+    if limit:
+        demisto_args['per_page'] = limit
     remove_nulls_from_dictionary(demisto_args)
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
     raw_result = client.country_code_list_command(demisto_args)
@@ -426,6 +429,9 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
+    limit = demisto_args.pop('limit', None)
+    if limit:
+        demisto_args['per_page'] = limit
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     if direction == "outbound":
@@ -443,7 +449,7 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklist.Country',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}BlacklistCountry',
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
@@ -500,7 +506,7 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
                                                             'annotation'],
                                                    headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.Blacklist.Country',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}BlacklistCountry',
         outputs_key_field='country',
         outputs=countries_list,
         raw_response=raw_result,
@@ -576,6 +582,9 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
+    limit = demisto_args.pop('limit', None)
+    if limit:
+        demisto_args['per_page'] = limit
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     if direction == "outbound":
@@ -599,7 +608,7 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.{camelize_string(list_color)}.Host',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}{camelize_string(list_color)}Host',
         outputs_key_field='host_address',
         outputs=hosts_list,
         raw_response=raw_result,
@@ -667,14 +676,14 @@ def handle_host_addition_and_replacement_commands(client: Client,
 
     objects_time_to_readable_time(hosts_list, 'updateTime')
 
-    readable_output = msg + '\n' + tableToMarkdown("Added/Updated Hosts",
+    readable_output = msg + '\n' + tableToMarkdown("New Hosts",
                                                    hosts_list,
                                                    headers=['host_address', 'pgid', 'cid', 'update_time',
                                                             'annotation', ],
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}.{camelize_string(list_color)}.Host',
+        outputs_prefix=f'NetscoutAED.{camelize_string(direction)}{camelize_string(list_color)}Host',
         outputs_key_field='host_address',
         outputs=hosts_list,
         raw_response=raw_result,
@@ -839,6 +848,9 @@ def handle_domain_list_commands(client: Client, demisto_args: dict) -> CommandRe
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
+    limit = demisto_args.pop('limit', None)
+    if limit:
+        demisto_args['per_page'] = limit
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     raw_result = client.inbound_blacklisted_domain_list_command(demisto_args)
@@ -851,7 +863,7 @@ def handle_domain_list_commands(client: Client, demisto_args: dict) -> CommandRe
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Inbound.Blacklist.Domain',
+        outputs_prefix='NetscoutAED.InboundBlacklistDomain',
         outputs_key_field='domain',
         outputs=domains_list,
         raw_response=raw_result,
@@ -896,7 +908,7 @@ def handle_domain_addition_commands(client: Client, demisto_args: dict) -> Comma
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Inbound.Blacklist.Domain',
+        outputs_prefix='NetscoutAED.InboundBlacklistDomain',
         outputs_key_field='domain',
         outputs=domains_list,
         raw_response=raw_result,
@@ -954,6 +966,9 @@ def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResul
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
+    limit = demisto_args.pop('limit', None)
+    if limit:
+        demisto_args['per_page'] = limit
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
 
     raw_result = client.inbound_blacklisted_url_list_command(demisto_args)
@@ -966,7 +981,7 @@ def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResul
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='NetscoutAED.Inbound.Blacklist.Url',
+        outputs_prefix='NetscoutAED.InboundBlacklistUrl',
         outputs_key_field='url',
         outputs=urls_list,
         raw_response=raw_result,
@@ -1010,7 +1025,7 @@ def handle_url_addition_commands(client: Client, demisto_args: dict) -> CommandR
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="NetscoutAED.Inbound.Blacklist.Url",
+        outputs_prefix="NetscoutAED.InboundBlacklistUrl",
         outputs_key_field="url",
         outputs=urls_list,
         raw_response=raw_result,
@@ -1057,7 +1072,8 @@ def main() -> None:
     base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/api/aed/v2')
     verify_certificate: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
-    api_token = params.get('api_token')
+    if not params.get('User') or not (api_token := params.get('User', {}).get('password')):
+        return_error('Missing API Key. Fill in a valid key in the integration configuration.')
     commands = init_commands_dict()
     demisto_command = demisto.command()
     try:
@@ -1086,5 +1102,5 @@ def main() -> None:
 
 ''' ENTRY POINT '''
 
-if __name__ == '__main__':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
