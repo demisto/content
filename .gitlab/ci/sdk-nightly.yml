@@ -20,7 +20,6 @@
 #     - .run-unittests-and-lint
 #     - .sdk-nightly-schedule-rule
 #   variables:
-#     DEMISTO_SDK_NIGHTLY: "true"
 #     SLACK_TEST_TYPE: "sdk_unittests"
 #     SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
 #     SLACK_ONLY_IF: "true"
@@ -31,7 +30,6 @@ demisto-sdk-nightly:run-validations:
     - .run-validations
     - .sdk-nightly-schedule-rule
   variables:
-    DEMISTO_SDK_NIGHTLY: "true"
     SLACK_TEST_TYPE: "sdk_unittests"
     SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
     SLACK_ONLY_IF: "true"
@@ -45,7 +43,6 @@ demisto_sdk_nightly:check_idset_dependent_commands:
   inherit:
     variables: true
   variables:
-    DEMISTO_SDK_NIGHTLY: "true"
     IS_NIGHTLY: "false"
     SLACK_TEST_TYPE: "sdk_failed_steps"
     SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
@@ -92,7 +89,6 @@ demisto-sdk-nightly:create-instance:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    DEMISTO_SDK_NIGHTLY: "true"
     IFRA_ENV_TYPE: "Server Master"
   cache:
     policy: pull-push
@@ -110,7 +106,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    DEMISTO_SDK_NIGHTLY: "true"
     DESTROY_INSTANCES: "true"
     INSTANCE_ROLE: "Server Master"
     SLACK_TEST_TYPE: "sdk_run_against_failed_steps"
