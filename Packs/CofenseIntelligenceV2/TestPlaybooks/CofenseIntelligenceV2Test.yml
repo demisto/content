@@ -1,0 +1,450 @@
+id: Cofense Intelligence v2 test
+version: 19
+vcShouldKeepItemLegacyProdMachine: false
+name: Cofense Intelligence v2 test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f4750309-3b6c-4d67-870f-9d3649ff217d
+    type: start
+    task:
+      id: f4750309-3b6c-4d67-870f-9d3649ff217d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 174c28fb-dc1b-4eb3-8c5b-75f9a3645dcc
+    type: regular
+    task:
+      id: 174c28fb-dc1b-4eb3-8c5b-75f9a3645dcc
+      version: -1
+      name: email
+      description: Checks the reputation of an email address.
+      script: CofenseIntelligenceV2|||email
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      email:
+        simple: ${inputs.email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 69e11612-a34b-472b-87b0-91457b13eaa9
+    type: condition
+    task:
+      id: 69e11612-a34b-472b-87b0-91457b13eaa9
+      version: -1
+      name: Verify threat id
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CofenseIntelligence.Email.Threats.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 59036682-c02c-459a-86c9-91b26f28b1a5
+    type: regular
+    task:
+      id: 59036682-c02c-459a-86c9-91b26f28b1a5
+      version: -1
+      name: file
+      description: Checks the reputation of a file hash.
+      script: CofenseIntelligenceV2|||file
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: 021b08963d6be1bc000605350b18a6f4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ac6d26bf-294e-42f4-8d68-461f54202257
+    type: condition
+    task:
+      id: ac6d26bf-294e-42f4-8d68-461f54202257
+      version: -1
+      name: Verify Dbot Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ac234477-b11e-4697-8da9-3319a35219cc
+    type: regular
+    task:
+      id: ac234477-b11e-4697-8da9-3319a35219cc
+      version: -1
+      name: ip
+      description: Checks the reputation of an IP address.
+      script: CofenseIntelligenceV2|||ip
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ip:
+        simple: 103.63.2.227
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e899e1b7-08b9-4293-8e56-b466f025fe11
+    type: regular
+    task:
+      id: e899e1b7-08b9-4293-8e56-b466f025fe11
+      version: -1
+      name: url
+      description: Checks the reputation of a URL.
+      script: CofenseIntelligenceV2|||url
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      url:
+        simple: http://prosciuttuamo.it/tmp/ifeanyi.exe
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c2e52885-5124-4073-8e71-7e46c855ba5b
+    type: condition
+    task:
+      id: c2e52885-5124-4073-8e71-7e46c855ba5b
+      version: -1
+      name: Verify threat type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CofenseIntelligence.URL.Threats
+                accessor: threatType
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 005a53e9-a379-4011-8d18-84c657c6fa19
+    type: condition
+    task:
+      id: 005a53e9-a379-4011-8d18-84c657c6fa19
+      version: -1
+      name: Verify DBot score indicator is  correct
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: http://prosciuttuamo.it/tmp/ifeanyi.exe
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8237cec9-c163-43a9-8ef5-d098c6e2e476
+    type: regular
+    task:
+      id: 8237cec9-c163-43a9-8ef5-d098c6e2e476
+      version: -1
+      name: cofense-search
+      description: Searches for extracted strings identified within malware campaigns.
+      script: CofenseIntelligenceV2|||cofense-search
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      str:
+        simple: '"\"systime\"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 86b3da4d-4198-4c8a-8dfe-9a58b7e87b09
+    type: condition
+    task:
+      id: 86b3da4d-4198-4c8a-8dfe-9a58b7e87b09
+      version: -1
+      name: Verify Threat id exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CofenseIntelligence.Threats
+                accessor: id
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fd8ad50a-5440-4fb1-8bf0-df6596a47115
+    type: title
+    task:
+      id: fd8ad50a-5440-4fb1-8bf0-df6596a47115
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2375,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email
+  value:
+    simple: myinfo1234@zoho.com
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.5.0
+description: ''
