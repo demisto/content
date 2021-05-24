@@ -14,7 +14,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
-
+@logger
 class Client(BaseClient):
     """
     Client class to interact with the service API
@@ -28,109 +28,109 @@ class Client(BaseClient):
 
     # countries
     def country_code_list_command(self, args: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/countries/', params=args)
+        return self._http_request(method='GET', url_suffix='/countries/', params=args)
 
     def outbound_blacklisted_country_list_command(self, args: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/otf/blacklisted-countries/', params=args)
+        return self._http_request(method='GET', url_suffix='/otf/blacklisted-countries/', params=args)
 
     def inbound_blacklisted_country_list_command(self, args: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/protection-groups/blacklisted-countries/', params=args)
+        return self._http_request(method='GET', url_suffix='/protection-groups/blacklisted-countries/', params=args)
 
     def outbound_blacklisted_country_add_command(self, body: dict) -> list:
-        return list(self._http_request(method="POST", url_suffix='/otf/blacklisted-countries/', params=body))
+        return list(self._http_request(method='POST', url_suffix='/otf/blacklisted-countries/', params=body))
 
     def inbound_blacklisted_country_add_command(self, body: dict) -> dict:
-        return self._http_request(method="POST", url_suffix='/protection-groups/blacklisted-countries/', params=body)
+        return self._http_request(method='POST', url_suffix='/protection-groups/blacklisted-countries/', params=body)
 
     def outbound_blacklisted_country_delete_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/otf/blacklisted-countries/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/otf/blacklisted-countries/', params=body,
                                   return_empty_response=True)
 
     def inbound_blacklisted_country_delete_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/protection-groups/blacklisted-countries/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/protection-groups/blacklisted-countries/', params=body,
                                   return_empty_response=True)
 
     # host lists handlers
 
     def outbound_blacklisted_host_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/otf/blacklisted-hosts/', params=body)
+        return self._http_request(method='GET', url_suffix='/otf/blacklisted-hosts/', params=body)
 
     def outbound_whitelisted_host_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/otf/whitelisted-hosts/', params=body)
+        return self._http_request(method='GET', url_suffix='/otf/whitelisted-hosts/', params=body)
 
     def inbound_blacklisted_host_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/protection-groups/blacklisted-hosts/', params=body)
+        return self._http_request(method='GET', url_suffix='/protection-groups/blacklisted-hosts/', params=body)
 
     def inbound_whitelisted_host_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/protection-groups/whitelisted-hosts/', params=body)
+        return self._http_request(method='GET', url_suffix='/protection-groups/whitelisted-hosts/', params=body)
 
     # host addition/updates handlers
 
     def outbound_blacklisted_host_add_update_command(self, body: dict, op: str) -> dict:
         return self._http_request(method=op, url_suffix='/otf/blacklisted-hosts/', json_data=body,
-                                  headers=merge_dicts(self._headers, {"Content-Type": "application/json"}))
+                                  headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     def outbound_whitelisted_host_add_update_command(self, body: dict, op: str) -> dict:
         return self._http_request(method=op, url_suffix='/otf/whitelisted-hosts/', json_data=body,
-                                  headers=merge_dicts(self._headers, {"Content-Type": "application/json"}))
+                                  headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     def inbound_blacklisted_host_add_update_command(self, body: dict, op: str) -> dict:
         return self._http_request(method=op, url_suffix='/protection-groups/blacklisted-hosts/', json_data=body,
-                                  headers=merge_dicts(self._headers, {"Content-Type": "application/json"}))
+                                  headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     def inbound_whitelisted_host_add_update_command(self, body: dict, op: str) -> dict:
         return self._http_request(method=op, url_suffix='/protection-groups/whitelisted-hosts/', json_data=body,
-                                  headers=merge_dicts(self._headers, {"Content-Type": "application/json"}))
+                                  headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     # host deletion handlers
 
     def outbound_blacklisted_host_remove_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/otf/blacklisted-hosts/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/otf/blacklisted-hosts/', params=body,
                                   return_empty_response=True)
 
     def outbound_whitelisted_host_remove_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/otf/whitelisted-hosts/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/otf/whitelisted-hosts/', params=body,
                                   return_empty_response=True)
 
     def inbound_blacklisted_host_remove_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/protection-groups/blacklisted-hosts/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/protection-groups/blacklisted-hosts/', params=body,
                                   return_empty_response=True)
 
     def inbound_whitelisted_host_remove_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/protection-groups/whitelisted-hosts/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/protection-groups/whitelisted-hosts/', params=body,
                                   return_empty_response=True)
 
     # domain handlers
 
     def inbound_blacklisted_domain_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/protection-groups/blacklisted-domains/', params=body)
+        return self._http_request(method='GET', url_suffix='/protection-groups/blacklisted-domains/', params=body)
 
     def inbound_blacklisted_domain_add_command(self, body: dict) -> dict:
-        return self._http_request(method="POST", url_suffix='/protection-groups/blacklisted-domains/', params=body)
+        return self._http_request(method='POST', url_suffix='/protection-groups/blacklisted-domains/', params=body)
 
     def inbound_blacklisted_domain_remove_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/protection-groups/blacklisted-domains/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/protection-groups/blacklisted-domains/', params=body,
                                   return_empty_response=True)
 
     # url handlers
 
     def inbound_blacklisted_url_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/protection-groups/blacklisted-urls/', params=body)
+        return self._http_request(method='GET', url_suffix='/protection-groups/blacklisted-urls/', params=body)
 
     def inbound_blacklisted_url_add_command(self, body: dict) -> dict:
-        return self._http_request(method="POST", url_suffix='/protection-groups/blacklisted-urls/', params=body)
+        return self._http_request(method='POST', url_suffix='/protection-groups/blacklisted-urls/', params=body)
 
     def inbound_blacklisted_url_remove_command(self, body: dict) -> requests.Response:
-        return self._http_request(method="DELETE", url_suffix='/protection-groups/blacklisted-urls/', params=body,
+        return self._http_request(method='DELETE', url_suffix='/protection-groups/blacklisted-urls/', params=body,
                                   return_empty_response=True)
 
     # protection group handlers
 
     def protection_group_list_command(self, body: dict) -> dict:
-        return self._http_request(method="GET", url_suffix='/protection-groups/', params=body)
+        return self._http_request(method='GET', url_suffix='/protection-groups/', params=body)
 
     def protection_group_patch_command(self, body: dict) -> dict:
-        return self._http_request(method="PATCH", url_suffix='/protection-groups/', params=body)
+        return self._http_request(method='PATCH', url_suffix='/protection-groups/', params=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -170,23 +170,23 @@ def init_commands_dict() -> dict:
         'test-module': {'func': test_module},
 
         # countries code list
-        'na-aed-country-code-list': {"func": country_code_list_command},
+        'na-aed-country-code-list': {'func': country_code_list_command},
 
         # outbound blacklisted countries
-        'na-aed-outbound-blacklisted-countries-list': {"func": handle_country_list_commands,
-                                                       "meta_data": outbound_blacklisted},
-        'na-aed-outbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
-                                                      "meta_data": outbound_blacklisted},
-        'na-aed-outbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
-                                                         "meta_data": outbound_blacklisted},
+        'na-aed-outbound-blacklisted-countries-list': {'func': handle_country_list_commands,
+                                                       'meta_data': outbound_blacklisted},
+        'na-aed-outbound-blacklisted-countries-add': {'func': handle_country_addition_commands,
+                                                      'meta_data': outbound_blacklisted},
+        'na-aed-outbound-blacklisted-countries-remove': {'func': handle_country_deletion_commands,
+                                                         'meta_data': outbound_blacklisted},
 
         # inbound blacklisted countries
-        'na-aed-inbound-blacklisted-countries-list': {"func": handle_country_list_commands,
-                                                      "meta_data": inbound_blacklisted},
-        'na-aed-inbound-blacklisted-countries-add': {"func": handle_country_addition_commands,
-                                                     "meta_data": inbound_blacklisted},
-        'na-aed-inbound-blacklisted-countries-remove': {"func": handle_country_deletion_commands,
-                                                        "meta_data": inbound_blacklisted},
+        'na-aed-inbound-blacklisted-countries-list': {'func': handle_country_list_commands,
+                                                      'meta_data': inbound_blacklisted},
+        'na-aed-inbound-blacklisted-countries-add': {'func': handle_country_addition_commands,
+                                                     'meta_data': inbound_blacklisted},
+        'na-aed-inbound-blacklisted-countries-remove': {'func': handle_country_deletion_commands,
+                                                        'meta_data': inbound_blacklisted},
 
         # outbound blacklisted hosts
         'na-aed-outbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
@@ -354,14 +354,14 @@ def test_module(client: Client, demisto_args: dict) -> str:
     try:
         client.country_code_list_command(demisto_args)
     except Exception as e:
-        demisto.debug(f"Error: {str(e)}")
+        demisto.debug(f'Error: {str(e)}')
         if 'UNAUTHORIZED' in str(e) or 'invalidAuthToken' in str(e):
-            raise DemistoException('Test failed, make sure API Key is correctly set.', e)
+            raise DemistoException('Test failed, make sure API Key is correctly set.', exception=e)
         elif 'Error in API call' in str(e):
-            raise DemistoException("Test failed, Error in API call [404]", e)
+            raise DemistoException('Test failed, Error in API call', exception=e)
         else:
-            raise DemistoException(f'Test failed, Please check your parameters. \n{str(e)}', e)
-    return "ok"
+            raise DemistoException(f'Test failed, Please check your parameters. \n{str(e)}', exception=e)
+    return 'ok'
 
 
 def country_code_list_command(client: Client, demisto_args: dict) -> CommandResults:
@@ -386,9 +386,9 @@ def country_code_list_command(client: Client, demisto_args: dict) -> CommandResu
     if limit:
         demisto_args['per_page'] = limit
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     raw_result = client.country_code_list_command(demisto_args)
-    countries_list = [{"country_name": item.get('name'), "iso_code": item.get('country')} for item in
+    countries_list = [{'country_name': item.get('name'), 'iso_code': item.get('country')} for item in
                       raw_result.get('countries', [])]
     readable_output = tableToMarkdown('Netscout AED Countries List',
                                       countries_list,
@@ -432,9 +432,9 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
     limit = demisto_args.pop('limit', None)
     if limit:
         demisto_args['per_page'] = limit
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
 
-    if direction == "outbound":
+    if direction == 'outbound':
         raw_result = client.outbound_blacklisted_country_list_command(demisto_args)
     else:  # inbound
         raw_result = client.inbound_blacklisted_country_list_command(demisto_args)
@@ -445,7 +445,7 @@ def handle_country_list_commands(client: Client, demisto_args: dict,
     table_header = string_to_table_header(name.replace('-', ' '))
 
     readable_output = tableToMarkdown(table_header, countries_list,
-                                      headers=['country', 'update_time', 'annotation', "pgid", "cid"],
+                                      headers=['country', 'update_time', 'annotation', 'pgid', 'cid'],
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
@@ -479,16 +479,16 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
 
     direction = meta_data.get('direction')
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     countries_to_add = demisto_args.get('country')
 
     if not countries_to_add:
         raise DemistoException(
-            f"You must provide country code in order to add it to the {direction} blacklisted list.")
+            f'You must provide country code in order to add it to the {direction} blacklisted list.')
 
     demisto_args['country'] = ','.join(argToList(countries_to_add))
 
-    if direction == "outbound":
+    if direction == 'outbound':
         raw_result: Union[dict, list] = client.outbound_blacklisted_country_add_command(demisto_args)
         countries_list = list(copy.deepcopy(raw_result))
 
@@ -498,9 +498,9 @@ def handle_country_addition_commands(client: Client, demisto_args: dict,
 
     objects_time_to_readable_time(countries_list, 'updateTime')
 
-    msg = f"Countries were successfully added to the {direction} blacklisted list"
+    msg = f'Countries were successfully added to the {direction} blacklisted list\n'
 
-    readable_output = msg + '\n' + tableToMarkdown("Added Countries",
+    readable_output = msg + tableToMarkdown('Added Countries',
                                                    countries_list,
                                                    headers=['country', 'cid', 'pgid', 'update_time',
                                                             'annotation'],
@@ -535,24 +535,24 @@ def handle_country_deletion_commands(client: Client, demisto_args: dict, meta_da
 
     direction = meta_data.get('direction')
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     countries_to_delete = demisto_args.get('country')
     if not countries_to_delete:
         raise DemistoException(
-            f"You must provide country code in order to remove it from the {direction} blacklisted list.")
+            f'You must provide country code in order to remove it from the {direction} blacklisted list.')
 
     demisto_args['country'] = ','.join(argToList(countries_to_delete))
 
-    if direction == "outbound":
+    if direction == 'outbound':
         raw_result = client.outbound_blacklisted_country_delete_command(demisto_args)
 
     else:  # inbound
         raw_result = client.inbound_blacklisted_country_delete_command(demisto_args)
 
     if raw_result.status_code != 204:
-        raise DemistoException("Api call should return no content status")
+        raise DemistoException('Api call should return no content status')
 
-    return f"Countries were successfully removed from the {direction} blacklisted list"
+    return f'Countries were successfully removed from the {direction} blacklisted list'
 
 
 def handle_host_list_commands(client: Client, demisto_args: dict,
@@ -585,16 +585,16 @@ def handle_host_list_commands(client: Client, demisto_args: dict,
     limit = demisto_args.pop('limit', None)
     if limit:
         demisto_args['per_page'] = limit
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
 
-    if direction == "outbound":
-        if list_color == "blacklist":
+    if direction == 'outbound':
+        if list_color == 'blacklist':
             raw_result = client.outbound_blacklisted_host_list_command(demisto_args)
         else:  # whitelist
             raw_result = client.outbound_whitelisted_host_list_command(demisto_args)
 
     else:  # inbound
-        if list_color == "blacklist":
+        if list_color == 'blacklist':
             raw_result = client.inbound_blacklisted_host_list_command(demisto_args)
         else:
             raw_result = client.inbound_whitelisted_host_list_command(demisto_args)
@@ -645,38 +645,33 @@ def handle_host_addition_and_replacement_commands(client: Client,
     host_address = demisto_args.get('host_address')
     if not host_address:
         raise DemistoException(
-            f"You must provide host in order to add/update him in the {direction} {list_color} list.")
+            f'You must provide host in order to add/update him in the {direction} {list_color} list.')
 
     remove_nulls_from_dictionary(demisto_args)
     demisto_args = camelize(demisto_args, "_", upper_camel=False)
     demisto_args['hostAddress'] = argToList(host_address)
 
-    if direction == "outbound":
-        if list_color == "blacklist":
+    if direction == 'outbound':
+        if list_color == 'blacklist':
             raw_result = client.outbound_blacklisted_host_add_update_command(demisto_args, op)
         else:  # whitelist
             raw_result = client.outbound_whitelisted_host_add_update_command(demisto_args, op)
 
     else:  # inbound
-        if list_color == "blacklist":
+        if list_color == 'blacklist':
             raw_result = client.inbound_blacklisted_host_add_update_command(demisto_args, op)
         else:
             raw_result = client.inbound_whitelisted_host_add_update_command(demisto_args, op)
 
     hosts_list = copy.deepcopy(raw_result.get('hosts', [raw_result]))
 
-    if op == 'POST':
-        msg_op = 'added to'
-    elif op == 'PUT':
-        msg_op = 'replaced in'
-    else:
-        msg_op = ''
+    msg_op = 'added to' if op == 'POST' else 'replaced in'
 
-    msg = f"Hosts were successfully {msg_op} the {direction} {list_color} list"
+    msg = f'Hosts were successfully {msg_op} the {direction} {list_color} list\n'
 
     objects_time_to_readable_time(hosts_list, 'updateTime')
 
-    readable_output = msg + '\n' + tableToMarkdown("New Hosts",
+    readable_output = msg + tableToMarkdown('New Hosts',
                                                    hosts_list,
                                                    headers=['host_address', 'pgid', 'cid', 'update_time',
                                                             'annotation', ],
@@ -716,28 +711,28 @@ def handle_host_deletion_commands(client: Client, demisto_args: dict,
     host_address = demisto_args.get('host_address')
 
     if not host_address:
-        raise DemistoException(f"You must provide host in order to remove it from the {direction} {list_color} list.")
+        raise DemistoException(f'You must provide host in order to remove it from the {direction} {list_color} list.')
 
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     demisto_args['hostAddress'] = ','.join(argToList(host_address))
 
-    if direction == "outbound":
-        if list_color == "blacklist":
+    if direction == 'outbound':
+        if list_color == 'blacklist':
             raw_result = client.outbound_blacklisted_host_remove_command(demisto_args)
         else:
             raw_result = client.outbound_whitelisted_host_remove_command(demisto_args)
 
     else:  # inbound
-        if list_color == "blacklist":
+        if list_color == 'blacklist':
             raw_result = client.inbound_blacklisted_host_remove_command(demisto_args)
         else:
             raw_result = client.inbound_whitelisted_host_remove_command(demisto_args)
 
     if raw_result.status_code != 204:
-        raise DemistoException("Api call should return no content status")
+        raise DemistoException('Api call should return no content status')
 
-    return f"Hosts were successfully removed from the {direction} {list_color} list"
+    return f'Hosts were successfully removed from the {direction} {list_color} list'
 
 
 def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -> CommandResults:
@@ -759,7 +754,7 @@ def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -
     query = demisto_args.pop('query', None)
     if query:
         demisto_args['q'] = query
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     serialize_protection_groups([demisto_args])
     raw_result = client.protection_group_list_command(demisto_args)
     protection_group_list = copy.deepcopy(raw_result.get('protection-groups', []))
@@ -773,7 +768,7 @@ def handle_protection_groups_list_commands(client: Client, demisto_args: dict) -
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="NetscoutAED.Protection_Group",
+        outputs_prefix='NetscoutAED.Protection_Group',
         outputs_key_field='pgid',
         outputs=protection_group_list,
         raw_response=raw_result,
@@ -800,13 +795,13 @@ def handle_protection_groups_update_commands(client: Client, demisto_args: dict)
     pgid = demisto_args.get('pgid')
     if not pgid:
         raise DemistoException(
-            "You must provide pgid in order to update the protection group.")
+            'You must provide pgid in order to update the protection group.')
     if demisto_args.get('profiling') == 'true' and not demisto_args.get('profiling_duration'):
         raise DemistoException(
-            "You must provide profiling duration when profiling is set to true.")
+            'You must provide profiling duration when profiling is set to true.')
 
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     serialize_protection_groups([demisto_args])
     raw_result = client.protection_group_patch_command(demisto_args)
     protection_groups_list = copy.deepcopy(raw_result.get('protection-groups', [raw_result]))
@@ -814,9 +809,9 @@ def handle_protection_groups_update_commands(client: Client, demisto_args: dict)
     objects_time_to_readable_time(protection_groups_list, 'timeCreated')
     headers = ['name', 'pgid', 'protection_level', 'active', 'server_name', 'profiling', 'profiling_duration',
                'time_created', 'description']
-    msg = f"Successfully updated the protection group object with protection group id: {pgid}"
+    msg = f'Successfully updated the protection group object with protection group id: {pgid}\n'
 
-    readable_output = msg + '\n' + tableToMarkdown('Protection Groups', protection_groups_list, headers=headers,
+    readable_output = msg + tableToMarkdown('Protection Groups', protection_groups_list, headers=headers,
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
@@ -858,7 +853,7 @@ def handle_domain_list_commands(client: Client, demisto_args: dict) -> CommandRe
     domains_list = copy.deepcopy(raw_result.get('blacklisted-domains', []))
     objects_time_to_readable_time(domains_list, 'updateTime')
 
-    readable_output = tableToMarkdown("Blacklisted Domains", domains_list,
+    readable_output = tableToMarkdown('Blacklisted Domains', domains_list,
                                       headers=['domain', 'pgid', 'cid', 'update_time', 'annotation'],
                                       headerTransform=string_to_table_header, removeNull=True)
 
@@ -890,20 +885,20 @@ def handle_domain_addition_commands(client: Client, demisto_args: dict) -> Comma
 
     if not domain:
         raise DemistoException(
-            "You must provide domain in order to add it to the inbound blacklisted list.")
+            'You must provide domain in order to add it to the inbound blacklisted list.')
 
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     demisto_args['domain'] = ','.join(argToList(domain))
 
     raw_result = client.inbound_blacklisted_domain_add_command(demisto_args)
     domains_list = copy.deepcopy(raw_result.get('domains', [raw_result]))
 
-    msg = "Domains were successfully added to the inbound blacklisted list"
+    msg = 'Domains were successfully added to the inbound blacklisted list\n'
 
     objects_time_to_readable_time(domains_list, 'updateTime')
 
-    readable_output = msg + '\n' + tableToMarkdown('Added Domains', domains_list,
+    readable_output = msg + tableToMarkdown('Added Domains', domains_list,
                                                    headers=['domain', 'pgid', 'cid', 'update_time', 'annotation'],
                                                    headerTransform=string_to_table_header, removeNull=True)
 
@@ -934,17 +929,17 @@ def handle_domain_deletion_commands(client: Client, demisto_args: dict) -> str:
     domain = demisto_args.get('domain')
 
     if not domain:
-        raise DemistoException("You must provide domain in order to remove it from the inbound blacklisted list.")
+        raise DemistoException('You must provide domain in order to remove it from the inbound blacklisted list.')
 
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     demisto_args['domain'] = ','.join(argToList(domain))
 
     raw_result = client.inbound_blacklisted_domain_remove_command(demisto_args)
     if raw_result.status_code != 204:
-        raise DemistoException("Api call should return no content status")
+        raise DemistoException('Api call should return no content status')
 
-    return "Domains were successfully removed from the inbound blacklisted list"
+    return 'Domains were successfully removed from the inbound blacklisted list'
 
 
 def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResults:
@@ -969,7 +964,7 @@ def handle_url_list_commands(client: Client, demisto_args: dict) -> CommandResul
     limit = demisto_args.pop('limit', None)
     if limit:
         demisto_args['per_page'] = limit
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
 
     raw_result = client.inbound_blacklisted_url_list_command(demisto_args)
 
@@ -1008,25 +1003,25 @@ def handle_url_addition_commands(client: Client, demisto_args: dict) -> CommandR
 
     if not url:
         raise DemistoException(
-            "You must provide url in order to add it to the inbound blacklisted list.")
+            'You must provide url in order to add it to the inbound blacklisted list.')
 
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     demisto_args['url'] = ','.join(argToList(url))
 
     raw_result = client.inbound_blacklisted_url_add_command(demisto_args)
     urls_list = copy.deepcopy(raw_result.get('urls', [raw_result]))
-    msg = "Urls were successfully added to the inbound blacklisted list"
+    msg = 'Urls were successfully added to the inbound blacklisted list\n'
 
     objects_time_to_readable_time(urls_list, 'updateTime')
 
-    readable_output = msg + '\n' + tableToMarkdown('Added Urls', urls_list,
+    readable_output = msg + tableToMarkdown('Added Urls', urls_list,
                                                    headers=['url', 'pgid', 'cid', 'update_time', 'annotation'],
                                                    headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
-        outputs_prefix="NetscoutAED.InboundBlacklistUrl",
-        outputs_key_field="url",
+        outputs_prefix='NetscoutAED.InboundBlacklistUrl',
+        outputs_key_field='url',
         outputs=urls_list,
         raw_response=raw_result,
         readable_output=readable_output,
@@ -1051,17 +1046,17 @@ def handle_url_deletion_commands(client: Client, demisto_args: dict) -> str:
     url = demisto_args.get('url')
 
     if not url:
-        raise DemistoException("You must provide url in order to remove it from the inbound blacklisted list.")
+        raise DemistoException('You must provide url in order to remove it from the inbound blacklisted list.')
 
     remove_nulls_from_dictionary(demisto_args)
-    demisto_args = camelize(demisto_args, "_", upper_camel=False)
+    demisto_args = camelize(demisto_args, '_', upper_camel=False)
     demisto_args['url'] = ','.join(argToList(url))
 
     raw_result = client.inbound_blacklisted_url_remove_command(demisto_args)
     if raw_result.status_code != 204:
-        raise DemistoException("Api call should return no content status")
+        raise DemistoException('Api call should return no content status')
 
-    return "Urls were successfully removed from the inbound blacklisted list"
+    return 'Urls were successfully removed from the inbound blacklisted list'
 
 
 ''' MAIN FUNCTION '''
