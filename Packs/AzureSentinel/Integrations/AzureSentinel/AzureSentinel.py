@@ -137,7 +137,7 @@ def incident_data_to_demisto_format(inc_data):
 
 def get_update_incident_request_data(client: Client, args: Dict[str, str]):
     # Get Etag and other mandatory properties (title, severity, status) for update_incident command
-    _, _, result = get_incident_by_id_command(client, args)
+    _, _, fetched_incident_data = get_incident_by_id_command(client, args)
 
     title = args.get('title')
     description = args.get('description')
@@ -149,30 +149,25 @@ def get_update_incident_request_data(client: Client, args: Dict[str, str]):
     labels = argToList(args.get('labels', ''))
 
     if not title:
-        title = demisto.get(result, 'properties.title')
+        title = demisto.get(fetched_incident_data, 'properties.title')
     if not description:
-        description = demisto.get(result, 'properties.description')
+        description = demisto.get(fetched_incident_data, 'properties.description')
     if not severity:
-        severity = demisto.get(result, 'properties.severity')
+        severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
-        status = demisto.get(result, 'properties.status')
+        status = demisto.get(fetched_incident_data, 'properties.status')
     if not assignee_email:
-        assignee_email = demisto.get(result, 'properties.owner.email')
+        assignee_email = demisto.get(fetched_incident_data, 'properties.owner.email')
 
-    existing_labels = demisto.get(result, 'properties.labels')
+    existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
         labels_formatted = existing_labels
 
     else:
-        # noinspection PyTypeChecker
-        existing_system_label_names = [label['labelName'] for label in existing_labels
-                                       if label['labelType'] == 'System']
-
-        labels_formatted = [{"labelName": label,
-                             "labelType": "System" if label in existing_system_label_names else "User"}
+        labels_formatted = [{"labelName": label, "labelType": "User"}
                             for label in argToList(labels) if label]  # labels can not be blank
-    inc_data = {
-        'etag': result.get('etag'),
+    incident_data = {
+        'etag': fetched_incident_data.get('etag'),
         'properties': {
             'title': title,
             'description': description,
@@ -184,9 +179,9 @@ def get_update_incident_request_data(client: Client, args: Dict[str, str]):
             'owner': {'email': assignee_email}
         }
     }
-    remove_nulls_from_dictionary(inc_data['properties'])
+    remove_nulls_from_dictionary(incident_data['properties'])
 
-    return inc_data
+    return incident_data
 
 
 def comment_data_to_demisto_format(comment_data, inc_id):
