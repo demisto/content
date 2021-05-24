@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Zscaler_test
+  id: Zscaler
   version: -1
 configuration:
 - display: Cloud Name (i.e., https://admin.zscalertwo.net)
@@ -45,7 +45,7 @@ description: Zscaler is a cloud security solution built for performance and flex
   and blacklists, manage and update categories, get Sandbox reports, and manually
   log in, log out, and activate changes in a Zscaler session.
 display: Zscaler
-name: Zscaler_test
+name: Zscaler
 script:
   commands:
   - arguments:
