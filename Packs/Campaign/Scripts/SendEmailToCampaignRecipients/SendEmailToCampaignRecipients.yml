@@ -1,7 +1,7 @@
 commonfields:
   id: SendEmailToCampaignRecipients
   version: -1
-dockerimage: demisto/python3:3.9.4.19537
+dockerimage: demisto/python3:3.9.5.20070
 enabled: true
 name: SendEmailToCampaignRecipients
 runas: DBotWeakRole
