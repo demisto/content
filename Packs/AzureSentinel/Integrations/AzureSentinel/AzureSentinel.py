@@ -318,7 +318,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
     )
 
 
-def update_incident_command(client, args):
+def update_incident_command(client: Client, args: Dict[str, Any]):
     inc_id = args.get('incident_id')
 
     inc_data = get_update_incident_request_data(client, args)

@@ -1,6 +1,7 @@
-from AzureSentinel import Client, list_incidents_command, list_incident_relations_command, incident_add_comment_command, \
-    update_incident_command, get_update_incident_request_data
 import pytest
+
+from AzureSentinel import Client, list_incidents_command, list_incident_relations_command, incident_add_comment_command, \
+    get_update_incident_request_data
 
 
 def mock_client(self_deployed):
