@@ -51,7 +51,7 @@ class PolyswarmConnector():
             outputs_prefix=f'PolySwarm.{object_name}',
             outputs_key_field='Scan_UUID',
             outputs=results,
-            indicator=indicator,
+            indicator=indicator,  # type: ignore
             ignore_auto_extract=True)
 
     def test_connectivity(self) -> bool:
@@ -74,11 +74,11 @@ class PolyswarmConnector():
             return Common.DBotScore.GOOD
         elif 0.2 <= float(polyscore) < 0.7:
             return Common.DBotScore.SUSPICIOUS
-        elif float(polyscore) >= 0.7:
+        else:  # polyscore is >= 0.7
             return Common.DBotScore.BAD
 
     def return_hash_results(self,
-                            results: dict,
+                            results: list,
                             title: str,
                             error_msg: str) -> object:
 
@@ -290,10 +290,10 @@ class PolyswarmConnector():
                                       dbot_score=dbot_score)
             elif artifact_type == 'url':
                 indicator = Common.URL(url=artifact,
-                                       dbot_score=dbot_score)
+                                       dbot_score=dbot_score)  # type: ignore
             elif artifact_type == 'domain':
                 indicator = Common.Domain(domain=artifact,
-                                          dbot_score=dbot_score)
+                                          dbot_score=dbot_score)  # type: ignore
 
             results = self._get_results(object_name, title, total_scans,
                                         positives, result.permalink,
