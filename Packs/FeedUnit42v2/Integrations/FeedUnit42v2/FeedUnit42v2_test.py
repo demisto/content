@@ -263,6 +263,5 @@ def test_get_ioc_value_from_ioc_name():
     - run the get_ioc_value
     Validate The IOC value extracted successfully.
     """
-    assert get_ioc_value_from_ioc_name({"name": "f79ebf038c7731ea3a19628cb329"}) == "f79ebf038c7731ea3a19628cb329"
     assert get_ioc_value_from_ioc_name({'name': "([file:name = 'blabla' OR file:name = 'blabla'] AND "
                                        "[file:hashes.'SHA-256' = '4f75622c2dd839f'])"}) == "4f75622c2dd839f"
