@@ -212,10 +212,10 @@ script:
       description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.fileNameExtension
-      description: 'extension of the file'
+      description: 'The extension of the file'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.md5Hex
-      description: 'The md5 hash of the file'
+      description: 'The MD5 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.sha384Hex
       description: 'The SHA-384 hash of the file'
