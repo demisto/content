@@ -488,6 +488,9 @@ def ip_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> 
                 reliability=reliability,
                 malicious_description=malicious_description
             )
+            if not headers:
+                headers = ['description', 'owner', 'status', 'type', 'raw_indicator', 'share_level', 'confidence',
+                           'severity', 'added_on', 'last_updated', 'review_status', 'id']
             readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP {ip}', data, headers=headers)
             ip_indicator = Common.IP(
                 ip=ip,
@@ -556,6 +559,10 @@ def file_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -
                 reliability=reliability,
                 malicious_description=malicious_description
             )
+            if not headers:
+                headers = ['description', 'status', 'share_level', 'added_on', 'review_status', 'id', 'password',
+                           'sample_size', 'sample_size_compressed', 'sample_type', 'victim_count', 'md5', 'sha1',
+                           'sha256', 'sha3_384', 'ssdeep']
             readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for file hash {file}', data, headers=headers)
             data_entry = data[0]
             file_indicator = Common.File(
@@ -627,6 +634,9 @@ def domain_command(client: Client, args: Dict[str, Any], params: Dict[str, Any])
                 reliability=reliability,
                 malicious_description=malicious_description
             )
+            if not headers:
+                headers = ['description', 'owner', 'status', 'type', 'raw_indicator', 'share_level', 'confidence',
+                           'severity', 'added_on', 'last_updated', 'review_status', 'id']
             readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain {domain}', data, headers=headers)
             domain_indicator = Common.Domain(
                 domain=domain,
@@ -692,6 +702,9 @@ def url_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) ->
                 reliability=reliability,
                 malicious_description=malicious_description
             )
+            if not headers:
+                headers = ['description', 'owner', 'status', 'type', 'raw_indicator', 'share_level', 'confidence',
+                           'severity', 'added_on', 'last_updated', 'review_status', 'id']
             readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL {url}', data, headers=headers)
             url_indicator = Common.URL(
                 url=url,
