@@ -84,7 +84,7 @@ subtype: python2
 tags:
 - nexpose
 comment: |-
-  Deprecated.
+  Deprecated. No available replacement.
   Create incidents based on the Nexpose asset ID and vulnerability ID.
   Duplicate incidents are not created for the same asset ID and vulnerability ID.
 system: true
