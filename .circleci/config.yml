@@ -248,24 +248,25 @@ references:
         [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
         if ./Tests/scripts/is_ami.sh ;
           then
-            if [ -n "${NIGHTLY}" ] ;
-              then
-                export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
-            elif [ -n "${INSTANCE_TESTS}" ] ;
-              then
-                export IFRA_ENV_TYPE="Server 5.5" # disable-secrets-detection
-            elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
-              then
-                export IFRA_ENV_TYPE="Server Master" # disable-secrets-detection
-            elif [ -n "${BUCKET_UPLOAD}" ] ;
-              then
-                export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
-            elif [ -n "${PERFORMANCE_TEST}" ] ;
-              then
-                export IFRA_ENV_TYPE="Performance_Master" # disable-secrets-detection
-            else
-              export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
-            fi
+             export IFRA_ENV_TYPE="Performance_Master" # disable-secrets-detection
+#            if [ -n "${NIGHTLY}" ] ;
+#              then
+#                export IFRA_ENV_TYPE=Nightly # disable-secrets-detection
+#            elif [ -n "${INSTANCE_TESTS}" ] ;
+#              then
+#                export IFRA_ENV_TYPE="Server 5.5" # disable-secrets-detection
+#            elif [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]] ;
+#              then
+#                export IFRA_ENV_TYPE="Server Master" # disable-secrets-detection
+#            elif [ -n "${BUCKET_UPLOAD}" ] ;
+#              then
+#                export IFRA_ENV_TYPE="Bucket-Upload" # disable-secrets-detection
+#            elif [ -n "${PERFORMANCE_TEST}" ] ;
+#              then
+#                export IFRA_ENV_TYPE="Performance_Master" # disable-secrets-detection
+#            else
+#              export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
+#            fi
             python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile $CIRCLE_ARTIFACTS/env_results.json
 
           else
@@ -882,12 +883,12 @@ jobs:
                 cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
             fi
             exit $RETVAL
-      - run:
-          name: Slack Notifier
-          shell: /bin/bash
-          command: |
-            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json   # TODO: Modify this
-          when: always
+#      - run:
+#          name: Slack Notifier
+#          shell: /bin/bash
+#          command: |
+#            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json   # TODO: Modify this
+#          when: always
       - *store_artifacts  # TODO: add another script for the test results artifact
 
   Server 5_0:
@@ -1360,31 +1361,37 @@ workflows:
           filters:
             branches:
               ignore: /pull\/[0-9]+/
-      - Run Unit Testing And Lint:
-          requires:
-            - Setup Environment
-      - Run Validations:
-          requires:
-            - Setup Environment
-      - Server 5_0:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server 5_5:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server 6_0:
-          filters:
-            branches:
-              ignore: /pull\/[0-9]+/
-          requires:
-            - Create Instances
-      - Server Master:
+#      - Run Unit Testing And Lint:
+#          requires:
+#            - Setup Environment
+#      - Run Validations:
+#          requires:
+#            - Setup Environment
+#      - Server 5_0:
+#          filters:
+#            branches:
+#              ignore: /pull\/[0-9]+/
+#          requires:
+#            - Create Instances
+#      - Server 5_5:
+#          filters:
+#            branches:
+#              ignore: /pull\/[0-9]+/
+#          requires:
+#            - Create Instances
+#      - Server 6_0:
+#          filters:
+#            branches:
+#              ignore: /pull\/[0-9]+/
+#          requires:
+#            - Create Instances
+#      - Server Master:
+#          filters:
+#            branches:
+#              ignore: /pull\/[0-9]+/
+#          requires:
+#            - Create Instances
+      - Performance Server Master:
           filters:
             branches:
               ignore: /pull\/[0-9]+/

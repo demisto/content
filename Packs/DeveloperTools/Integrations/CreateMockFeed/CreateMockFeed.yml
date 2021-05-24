@@ -1,7 +1,7 @@
 commonfields:
   id: Create-Mock-Feed-Relationships
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
+fromversion: 6.0.0
 name: Create-Mock-Feed-Relationships
 display: Create-Mock-Feed-Relationships
 category: Data Enrichment & Threat Intelligence

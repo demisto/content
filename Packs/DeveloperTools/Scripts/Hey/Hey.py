@@ -1,5 +1,6 @@
-from subprocess import PIPE, Popen
 from io import StringIO
+from subprocess import PIPE, Popen
+
 import pandas as pd
 import urllib3
 
@@ -12,35 +13,38 @@ urllib3.disable_warnings()
 # ---------- CLASSES ---------- #
 
 
-class EDLPerformanceResult:
-    def __init__(self, timeout: str, concurrent: str, ioc_type: str, size: str, result: str):
-        self._t = timeout or ''
-        self._c = concurrent or ''
-        self._type = ioc_type or ''
-        self._size = size or ''
+class HeyPerformanceResult:
+    def __init__(self, result: str, results_map: Optional[str], t: Optional[str] = None, c: Optional[str] = None, **args):
+        self._t = t or '20'
+        self._c = c or '50'
         self._result = result or ''
+        self._ext_results_map = {}
+        if results_map:
+            self._ext_results_map = dict(item.split("=") for item in results_map.split(";"))
 
-    def to_command_results(self) -> CommandResults:
+    def to_results(self) -> CommandResults:
         df = pd.read_csv(StringIO(self._result), usecols=['response-time'])
         if len(df) == 0:
             max_time = 0
             avg_time = 0
             requests_num = 0
+            total_time = 0
         else:
             response_times = df['response-time']
             max_time = max(response_times)
             avg_time = response_times.mean()
             requests_num = len(response_times)
+            total_time = response_times.sum()
         outputs = {
-            'Type': self._type,
-            'Size': self._size,
-            "Timeout": self._t,
+            "TimeoutPerRequest": self._t,
             "Concurrency": self._c,
             "Requests": requests_num,
             "MaxTime": max_time,
-            "AverageTime": avg_time
+            "AverageTime": avg_time,
+            "TotalTime": total_time
         }
-        return CommandResults(outputs=outputs, outputs_prefix="Hey.EDL")
+        outputs.update(self._ext_results_map)
+        return CommandResults(outputs=outputs, outputs_prefix="Hey")
 
 
 # ---------- HELPER FUNCTIONS ---------- #
@@ -62,37 +66,30 @@ def run_command(command: str) -> str:
     return output
 
 
-def hey_edl_test_command(url: str, edl_suffix: str, ioc_type: str, size: str, n: str = None, t: str = None,
-                         c: str = None, z: str = None) -> CommandResults:
-    edl_url = os.path.join(url, edl_suffix) + f"?q=type:{ioc_type}&n={size}"
+def run_hey_test(url: str, n: Optional[str] = None, t: Optional[str] = None, c: Optional[str] = None,
+                 z: Optional[str] = None, m: Optional[str] = None,
+                 results_map: Optional[dict] = None) -> CommandResults:
     hey_map = assign_params(
         t=t,
         n=n,
         c=c,
-        z=z + 's' if z else None
+        m=m,
+        z=z + 's' if z else None,
+        o='csv'
     )
-    hey_query = f"hey " + " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f'"{edl_url}"'
+    hey_query = f"hey " + " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
     result = run_command(hey_query)
-    return EDLPerformanceResult(t, c, ioc_type, size, result).to_command_results()
+    return HeyPerformanceResult(result=result, results_map=results_map, **hey_map).to_results()
 
 
 def main() -> None:
-    params = demisto.params()
-    command = demisto.command()
     args = demisto.args()
-    url = params.get('url')
-    if isinstance(url, str) and url.endswith("/"):
-        url = url[:-1]
     try:
-        demisto.debug(f'Command being called is {command}')
-        if command == 'test-module':
-            demisto.results('ok')
-        elif command == 'hey-test-edl':
-            return_results(hey_edl_test_command(url=url, **args))
+        return_results(run_hey_test(**args))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Error:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
