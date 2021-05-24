@@ -296,15 +296,16 @@ class TAXIIServer:
         Returns:
             The service URL according to the protocol.
         """
-        base_url = f'{self.url_scheme}://{self.host}'
         if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
+            self.url_scheme = 'https'
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
-            return os.path.join(base_url, 'instance', 'execute', instance_name)
+            endpoint = os.path.join('/instance', 'execute', instance_name)
         else:
-            return f'{base_url}:{self.port}'
+            endpoint = f':{self.port}'
+        return f'{self.url_scheme}://{self.host}{endpoint}'
 
 
 SERVER: TAXIIServer
