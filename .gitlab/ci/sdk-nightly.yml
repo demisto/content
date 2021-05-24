@@ -1,6 +1,6 @@
 .sdk-nightly-schedule-rule:
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(schedule)$/ && $DEMISTO_SDK_NIGHTLY == "true"'
 
 
 .upload-entities-to-cortex-xsoar: &upload-entities-to-cortex-xsoar
