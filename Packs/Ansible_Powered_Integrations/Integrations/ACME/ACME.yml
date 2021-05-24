@@ -23,7 +23,7 @@ configuration:
   name: concurrency
   required: true
   type: 0
-description: Automatic Certificate Management Environment of Linux hosts
+description: Control Automatic Certificate Management Environment on Linux hosts
 display: ACME
 fromversion: 6.0.0
 name: ACME
