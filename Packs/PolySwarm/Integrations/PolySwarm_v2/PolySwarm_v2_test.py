@@ -1,7 +1,7 @@
 
 import demistomock as demisto
 
-from PolySwarm import PolyswarmConnector
+from PolySwarm_v2 import PolyswarmConnector
 
 TEST_SCAN_UUID = '95039375646493045'
 TEST_SCAN_DOMAIN = ['domain-test.com']
