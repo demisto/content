@@ -1,9 +1,9 @@
 This integration enables the management of Linux hosts directly from XSOAR. It functions without any agents or additional software installed on the hosts by utilising SSH combined with Python.
 
-To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the Linux host address(es) as an input, and use the saved credential associated to the instance to execute. Create seperate instances if multiple credentials are required.
+To use this integration, configure an instance of this integration. This will associate a credential to be used to access hosts when commands are run. The commands from this integration will take the Linux host address(es) as an input, and use the saved credential associated to the instance to execute. Create separate instances if multiple credentials are required.
 
 ## Requirements
-The Linux host(s) being managed requires python >= 2.6. Different commands will use different underlying Ansible modules, and may have their own unique package requirements. Refer to command documentation for further information.
+The Linux host(s) being managed requires Python >= 2.6. Different commands will use different underlying Ansible modules, and may have their own unique package requirements. Refer to the individual command documentation for further information.
 
 ## Network Requirements
 By default, TCP port 22 will be used to initiate a SSH connection to the Linux host.
