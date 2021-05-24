@@ -24,6 +24,12 @@ def show_model_info(model_name):
         return_outputs("Cannot find model " + model_name)
 
 
+def wrapped_list(obj):
+    if not isinstance(obj, list):
+        return [obj]
+    return obj
+
+
 def show_incidents_in_cluster(model_name, query, display_fields):
     res = demisto.executeCommand("DBotTrainClustering", {'modelName': model_name})
     data = res[0]['Contents']['data']
@@ -40,7 +46,16 @@ def show_incidents_in_cluster(model_name, query, display_fields):
 
     incidents_to_show = []
     for inc in incidents:
-        incident_to_show = {k: v for k, v in inc.items() if k in display_fields}
+        incident_to_show = {}
+        for field in display_fields:
+            if field in inc:
+                value = inc[field]
+            else:
+                value = wrapped_list(demisto.dt(inc, field))
+                demisto.results(value)
+                demisto.results(inc)
+                value = ' '.join(set(list(filter(lambda x: x not in ['None', None, 'N/A'], value))))  # type: ignore
+            incident_to_show[field] = value
         incident_to_show['Id'] = "[{0}](#/Details/{0})".format(inc['id'])
         incident_to_show['Name'] = incident_to_show['name'].replace("#", "")
         incident_to_show['Created'] = incident_to_show['created'][:incident_to_show['created'].find(".")]
@@ -48,8 +63,9 @@ def show_incidents_in_cluster(model_name, query, display_fields):
         incident_to_show['Group name'] = id_to_cluster_name.get(inc['id'])
         incidents_to_show.append(incident_to_show)
 
-    headers = BASE_INCIDENT_COLUMNS + [x for x in display_fields if x not in BASE_INCIDENT_COLUMNS]
-    headers = [x.capitalize() for x in headers]
+    headers = [x.capitalize() for x in BASE_INCIDENT_COLUMNS] + [x for x in display_fields if
+                                                                 x not in BASE_INCIDENT_COLUMNS]
+    # headers = [x.capitalize() for x in headers]
     title = 'Incidents In Clusters ' + ", ".join(set(id_to_cluster.values()))
     return_outputs(tableToMarkdown(title, incidents_to_show, headers))
 
