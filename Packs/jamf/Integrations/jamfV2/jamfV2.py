@@ -21,6 +21,8 @@ GET_HEADERS = {
     'Accept': 'application/json'
 }
 MAX_PAGE_SIZE = 200
+
+
 ''' CLIENT CLASS '''
 
 
@@ -69,21 +71,34 @@ class Client(BaseClient):
 
     @staticmethod
     def _generic_error_handler(res):
+        if res.status_code == 400:
+            err_msg = BeautifulSoup(res.text).body.text
+            raise DemistoException(f"Bad request. Origin response from server: {err_msg}")
+
+        if res.status_code == 401:
+            err_msg = BeautifulSoup(res.text).body.text
+            raise DemistoException(f"Unauthorized. Origin response from server: {err_msg}")
+
+        if res.status_code == 403:
+            err_msg = BeautifulSoup(res.text).body.text
+            raise DemistoException(f"Invalid permissions. Origin response from server: {err_msg}")
+
         if res.status_code == 404:
             err_msg = BeautifulSoup(res.text).body.text
             raise DemistoException(f"The server has not found anything matching the request URI. Origin response from"
                                    f" server: {err_msg}")
+        if res.status_code == 500:
+            err_msg = BeautifulSoup(res.text).body.text
+            raise DemistoException(f"Internal server error. Origin response from server: {err_msg}")
+
+        if res.status_code == 502:
+            err_msg = BeautifulSoup(res.text).title
+            raise DemistoException(f"Bad gateway. Origin response from server: {err_msg}")
 
     def computer_lock_request(self, computer_id: str, passcode: str, lock_message: str = None):
-        """Lock computer.
-        Args:
-            computer_id: The computer id.
-            passcode: The passcode to lock the computer.
-            lock_message: The lock message.
-        Returns:
-            Computer lock response from API.
         """
-
+         API link: https://www.jamf.com/developers/apis/classic/reference/#/computercommands/createComputerCommandByCommand
+        """
         uri = '/computercommands/command/DeviceLock'
         request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                        '<computer_command>' + \
@@ -113,14 +128,9 @@ class Client(BaseClient):
             raise DemistoException(f"Device is unmanaged. Origin error from server: {err_msg}")
 
     def computer_erase_request(self, computer_id: str, passcode: str):
-        """Erase computer.
-        Args:
-            computer_id: The computer id.
-            passcode: The passcode to lock the computer.
-        Returns:
-            Computer erase response from API.
         """
-
+         API link: https://www.jamf.com/developers/apis/classic/reference/#/computercommands/createComputerCommandByCommand
+        """
         uri = '/computercommands/command/EraseDevice'
         request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                        '<computer_command>' + \
@@ -215,16 +225,12 @@ class Client(BaseClient):
             Get computer by application response from API.
         """
 
-        uri = '/computerapplications'
-        if app:
-            if version:
-                res = self._http_request(method='GET', url_suffix=f'{uri}/application/{app}/version/{version}',
-                                         headers=GET_HEADERS)
-            else:
-                res = self._http_request(method='GET', url_suffix=f'{uri}/application/{app}', headers=GET_HEADERS)
+        url_suffix = f'/computerapplications/application/{app}'
+        if version:
+            res = self._http_request(method='GET', url_suffix=f'{url_suffix}/version/{version}',
+                                     headers=GET_HEADERS)
         else:
-            err_msg = 'You must specify application argument'
-            raise Exception(err_msg)
+            res = self._http_request(method='GET', url_suffix=url_suffix, headers=GET_HEADERS)
 
         return res
 
@@ -237,12 +243,8 @@ class Client(BaseClient):
             raise DemistoException(f"The device does not support lost mode. Origin error from server: {err_msg}")
 
     def mobile_device_lost_request(self, mobile_id: str, lost_message: str = None):
-        """Lock computer.
-        Args:
-            mobile_id: The computer id.
-            lost_message: The lost message.
-        Returns:
-            Mobile device lost response from API.
+        """
+            API link: https://www.jamf.com/developers/apis/classic/reference/#/mobiledevicecommands/createMobileDeviceCommand
         """
 
         uri = '/mobiledevicecommands/command/DeviceLock'
@@ -262,18 +264,13 @@ class Client(BaseClient):
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
                                  resp_type='response', error_handler=self._mobile_lost_erase_error_handler)
 
-        raw_action = json.loads(xml2json(res.content))
-        return raw_action
+        json_response = json.loads(xml2json(res.content))
+        return json_response
 
     def mobile_device_erase_request(self, mobile_id: str = None, preserve_data_plan: bool = False,
                                     clear_activation_code: bool = False):
-        """Erase mobile device.
-        Args:
-            mobile_id: The computer id.
-            preserve_data_plan: Retain cellular data plans.
-            clear_activation_code: Clear Activation Lock on the device.
-        Returns:
-           Erase mobile device response from API.
+        """
+            API link: https://www.jamf.com/developers/apis/classic/reference/#/mobiledevicecommands/createMobileDeviceCommand
         """
 
         uri = '/mobiledevicecommands/command/EraseDevice'
@@ -294,17 +291,26 @@ class Client(BaseClient):
         res = self._http_request(method='POST', data=request_body, url_suffix=uri, headers=POST_HEADERS,
                                  resp_type='response', error_handler=self._mobile_lost_erase_error_handler)
 
-        raw_action = json.loads(xml2json(res.content))
-        return raw_action
+        json_response = json.loads(xml2json(res.content))
+        return json_response
 
 
 ''' HELPER FUNCTIONS '''
 
 
 def pagination(response, limit, page):
-    if limit > MAX_PAGE_SIZE:
-        limit = MAX_PAGE_SIZE
-    return response[page * limit:(page + 1) * limit]
+    """
+    Args:
+        response: The response from the API.
+        limit: Maximum number of objects to retrieve.
+        page: Page number
+    Returns:
+        Return a list of objects from the response according to the page and limit per page.
+    """
+    limit = MAX_PAGE_SIZE if limit > MAX_PAGE_SIZE else limit
+    start = page * limit
+    end = (page + 1) * limit
+    return response[start:end]
 
 
 def get_computers_readable_output(computers_response, computer_id=None):
@@ -472,28 +478,28 @@ def get_users_readable_output(users_response, user_id, name, email):
 def get_mobile_devices_readable_output(response, mobile_id):
     readable_output = []
     if mobile_id:
-        mobile_dev_response = response.get('mobile_device').get('general')
+        mobile_dev_data = response.get('mobile_device').get('general')
         readable_output.append({
-            'ID': mobile_dev_response.get('id'),
-            'Name': mobile_dev_response.get('name'),
-            'WIFI MAC address': mobile_dev_response.get('wifi_mac_address'),
-            'Bluetooth MAC address': mobile_dev_response.get('bluetooth_mac_address'),
-            'IP address': mobile_dev_response.get('ip_address'),
-            'Serial Number': mobile_dev_response.get('serial_number'),
-            'UDID': mobile_dev_response.get('udid'),
-            'Model': mobile_dev_response.get('model'),
-            'Model Number': mobile_dev_response.get('model_number'),
-            'Managed': mobile_dev_response.get('managed'),
-            'Supervised': mobile_dev_response.get('supervised')
+            'ID': mobile_dev_data.get('id'),
+            'Name': mobile_dev_data.get('name'),
+            'WIFI MAC address': mobile_dev_data.get('wifi_mac_address'),
+            'Bluetooth MAC address': mobile_dev_data.get('bluetooth_mac_address'),
+            'IP address': mobile_dev_data.get('ip_address'),
+            'Serial Number': mobile_dev_data.get('serial_number'),
+            'UDID': mobile_dev_data.get('udid'),
+            'Model': mobile_dev_data.get('model'),
+            'Model Number': mobile_dev_data.get('model_number'),
+            'Managed': mobile_dev_data.get('managed'),
+            'Supervised': mobile_dev_data.get('supervised')
         })
     else:
-        mobile_dev_response = response
-        for mobile_device in mobile_dev_response:
+        mobile_dev_data = response
+        for mobile_device in mobile_dev_data:
             readable_output.append({
                 'ID': mobile_device.get('id'),
                 'Name': mobile_device.get('name')
             })
-    return mobile_dev_response, readable_output
+    return mobile_dev_data, readable_output
 
 
 def get_mobile_device_subset_readable_output(response, subset):
@@ -636,10 +642,10 @@ def get_computers_by_app_readable_output(response):
     readable_output = []
     versions_list = response.get('versions')
     for version in versions_list:
-        computers_len = len(version.get('computers'))
+        total_computers = len(version.get('computers'))
         readable_output.append({
             'version': version.get('number'),
-            'Sum of computers': computers_len
+            'Sum of computers': total_computers
         })
 
     return readable_output
@@ -790,7 +796,7 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     page = arg_to_number(args.get('page', 0))
 
     user_response = client.get_users_request(user_id, name, email)
-    if not user_id and not name and not email:
+    if not any([user_id, name, email]):
         user_response = pagination(user_response.get('users'), limit, page)
     else:
         user_response = user_response['user']

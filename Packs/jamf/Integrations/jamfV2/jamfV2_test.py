@@ -34,7 +34,7 @@ def test_get_computers_command(mocker):
     Then
     - Ensure the response matches the default limit.
     """
-    from jamf_v2 import Client, get_computers_command
+    from jamfV2 import Client, get_computers_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
@@ -56,7 +56,7 @@ def test_get_computers_limit_command(mocker):
     Then
     - Ensure the result are according to the limit and page
     """
-    from jamf_v2 import Client, get_computers_command
+    from jamfV2 import Client, get_computers_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 2}
@@ -78,7 +78,7 @@ def test_get_computers_by_id_command(mocker):
     Then
     - Get results on specific computer ID.
     """
-    from jamf_v2 import Client, get_computers_command
+    from jamfV2 import Client, get_computers_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
@@ -100,7 +100,7 @@ def test_get_computers_by_match_command(mocker):
     Then
     - Ensure the result are according to the id and match args.
     """
-    from jamf_v2 import Client, get_computers_command
+    from jamfV2 import Client, get_computers_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'match': '564D26*'}
@@ -122,7 +122,7 @@ def test_get_computer_subset_command(mocker):
     Then
     - Ensure the command output matched the given query.
     """
-    from jamf_v2 import Client, get_computer_subset_command
+    from jamfV2 import Client, get_computer_subset_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'identifier': 'name', 'identifier_value': 'Computer 95', 'subset': 'General'}
@@ -145,7 +145,7 @@ def test_computer_lock_command(mocker):
     Then
     - Ensure the response matches the default limit.
     """
-    from jamf_v2 import Client, computer_lock_command
+    from jamfV2 import Client, computer_lock_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 138, 'passcode': 123456, 'lock_msg': 'Test'}
@@ -167,7 +167,7 @@ def test_computer_erase_command(mocker):
     Then
     - Ensure the response matches .
     """
-    from jamf_v2 import Client, computer_erase_command
+    from jamfV2 import Client, computer_erase_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 138, 'passcode': 123456}
@@ -189,7 +189,7 @@ def test_get_users_command(mocker):
     Then
     - Ensure the response matches the default limit.
     """
-    from jamf_v2 import Client, get_users_command
+    from jamfV2 import Client, get_users_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
@@ -211,7 +211,7 @@ def test_get_users_limit_command(mocker):
     Then
     - Ensure the result are according to the limit and page
     """
-    from jamf_v2 import Client, get_users_command
+    from jamfV2 import Client, get_users_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 2}
@@ -233,7 +233,7 @@ def test_get_mobile_devices_command(mocker):
     Then
     - Ensure the response matches the default limit.
     """
-    from jamf_v2 import Client, get_mobile_devices_command
+    from jamfV2 import Client, get_mobile_devices_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
@@ -255,7 +255,7 @@ def test_get_mobile_devices_limit_command(mocker):
     Then
     - Ensure the result are according to the limit and page
     """
-    from jamf_v2 import Client, get_mobile_devices_command
+    from jamfV2 import Client, get_mobile_devices_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 1}
@@ -277,7 +277,7 @@ def test_get_mobile_devices_by_id_command(mocker):
     Then
     - Get results on specific mobile device ID.
     """
-    from jamf_v2 import Client, get_mobile_devices_command
+    from jamfV2 import Client, get_mobile_devices_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
@@ -299,7 +299,7 @@ def test_get_mobile_devices_by_match_command(mocker):
     Then
     - Ensure the result are according to the match arg.
     """
-    from jamf_v2 import Client, get_mobile_devices_command
+    from jamfV2 import Client, get_mobile_devices_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'match': 'ab12cdc060a311e490b812*'}
@@ -321,7 +321,7 @@ def test_get_mobile_device_subset_command(mocker):
     Then
     - Ensure the command output matched the given query.
     """
-    from jamf_v2 import Client, get_mobile_device_subset_command
+    from jamfV2 import Client, get_mobile_device_subset_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'identifier': 'udid', 'identifier_value': 'ab12f4c660a311e490b812df261f2c7e', 'subset': 'General'}
@@ -345,7 +345,7 @@ def test_get_computers_by_app_command(mocker):
     Then
     - Ensure the response matches the default limit.
     """
-    from jamf_v2 import Client, get_computers_by_app_command
+    from jamfV2 import Client, get_computers_by_app_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'application': 'safar*'}
@@ -367,7 +367,7 @@ def test_mobile_device_lost_command(mocker):
     Then
     - Ensure the response matches.
     """
-    from jamf_v2 import Client, mobile_device_lost_command
+    from jamfV2 import Client, mobile_device_lost_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 114, 'lost_mode_message': 'test'}
@@ -389,7 +389,7 @@ def test_mobile_device_erase_command(mocker):
     Then
     - Ensure the response matches.
     """
-    from jamf_v2 import Client, mobile_device_erase_command
+    from jamfV2 import Client, mobile_device_erase_command
 
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 114}

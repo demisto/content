@@ -29,7 +29,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: get the “general” subset of a specific computer.
+      description: Get general data on  a specific computer.(If id argument is given
+        it overrides everything else)
       isArray: false
       name: id
       required: false
@@ -37,13 +38,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Default is “False”. “True” will return the “basic” subset for all
-        of the computers.
+      description: Finds basic information for all computers. Default value is False.
       isArray: false
       name: basic_subset
       predefined:
       - 'True'
-      - 'false'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -66,7 +66,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: ' number of requested page (relevant when no id is provided)'
+      description: Number of requested page (relevant when no id is provided)
       isArray: false
       name: page
       required: false
@@ -75,8 +75,9 @@ script:
     description: This command will return a list of computers or a single computer
       based on the parameters being passed. In case no parameter are passed, a list
       of all computers with their associated IDs will be returned. Please note that
-      only one of the parameters should be passed. By default, will return the first
-      50 computers to the context (id + name).
+      only one of the parameters should be passe, if not the order wil be ID -> basic
+      -> match. By default, will return the first 50 computers to the context (ID
+      + name).
     execution: false
     name: jamf-get-computers
     outputs:
@@ -248,7 +249,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns a specific subset for a specific computer.
+    description: Returns a specific subset data for a specific computer according
+      to the given arguments. for example `jamf-get-computer-subset identifier=name
+      identifier_value=test_computer subset=Hardware` will search for test_computer's
+      hardware subset.
     execution: false
     name: jamf-get-computer-subset
     outputs:
@@ -684,13 +688,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The computer id which you like to lock.
+      description: The computer ID which you like to lock.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: ' A message to display on the lock screen.'
+      description: A message to display on the lock screen.
       isArray: false
       name: lock_message
       required: false
@@ -720,7 +724,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The computer id which you like to erase.
+      description: The computer ID which you like to erase.
       isArray: false
       name: id
       required: true
@@ -743,7 +747,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The user id.
+      description: The user ID.
       isArray: false
       name: id
       required: false
@@ -875,8 +879,11 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Will return a list of all devices with general information on each
-      of them.
+    description: This command will return a list of devices or a single devices based
+      on the parameters being passed. In case no parameter are passed, a list of all
+      devices with their associated IDs will be returned. Please note that only one
+      of the parameters should be passe, if not the order wil be ID -> basic -> match.
+      By default, will return the first 50 devices to the context (ID + name).
     execution: false
     name: jamf-get-mobile-devices
     outputs:
@@ -1064,10 +1071,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: ' the value of the “identifier”. For example, if we choose the
-        “id” identifier, a value of a mobile device’s id should be passed. If we choose
+      description: The value of the “identifier”. For example, if we choose the “id”
+        identifier, a value of a mobile device’s id should be passed. If we choose
         the “mac_address” identifier, a value of a mobile device’s mac address should
-        be passed, etc.'
+        be passed, etc.
       isArray: false
       name: identifier_value
       required: true
@@ -1511,13 +1518,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: the application’s name (supports wildcards)
+      description: The application’s name (supports wildcards)
       isArray: false
       name: application
       required: true
       secret: false
     - default: false
-      description: the application’s version (supports wildcards) - applicable only
+      description: The application’s version (supports wildcards) - applicable only
         when “application” parameter value is set.
       isArray: false
       name: version
@@ -1538,8 +1545,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Will return a list of computers with basic information based on an
-      application filter.
+    description: Will return a list of computers with basic information on each of
+      them.
     execution: false
     name: jamf-get-computers-by-application
     outputs:
@@ -1563,7 +1570,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: the mobile device’s id
+      description: The mobile device’s ID
       isArray: false
       name: id
       required: true
@@ -1597,7 +1604,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The device’s id
+      description: The device’s ID
       isArray: false
       name: id
       required: true
