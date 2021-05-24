@@ -189,15 +189,6 @@
           },
           "simple": ""
         },
-        "UUID": {
-          "complex": {
-            "accessor": "",
-            "filters": [],
-            "root": "uuid",
-            "transformers": []
-          },
-          "simple": ""
-        },
         "occurred": {
           "complex": {
             "accessor": "",
