@@ -39,7 +39,7 @@ script:
   commands:
   - arguments: []
     description: "Provides information about VMware server to which user is connecting\
-      \ to\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_about_info_module.html"
+      \ to\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_about_info_module.html"
     name: vmware-about-info
     outputs:
     - contextPath: VMwareV2.vmware_about_info.about_info
@@ -95,7 +95,7 @@ script:
       predefined:
       - http
       - https
-    description: "Manage VMware categories\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_category_module.html"
+    description: "Manage VMware categories\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_category_module.html"
     name: vmware-category
     outputs:
     - contextPath: VMwareV2.vmware_category.category_results
@@ -110,7 +110,7 @@ script:
       - http
       - https
     description: "Gather info about VMware tag categories\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_category_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_category_info_module.html"
     name: vmware-category-info
     outputs:
     - contextPath: VMwareV2.vmware_category_info.tag_category_info
@@ -144,7 +144,7 @@ script:
       - absent
       - loaded
     description: "Backup / Restore / Reset ESXi host configuration\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_cfg_backup_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_cfg_backup_module.html"
     name: vmware-cfg-backup
     outputs:
     - contextPath: VMwareV2.vmware_cfg_backup.dest_file
@@ -396,7 +396,7 @@ script:
       predefined:
       - absent
       - present
-    description: "Manage VMware vSphere clusters\n Further documentation availiable\
+    description: "Manage VMware vSphere clusters\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_module.html"
     name: vmware-cluster
     outputs: []
@@ -446,7 +446,7 @@ script:
       - '4'
       - '5'
     description: "Manage Distributed Resource Scheduler (DRS) on VMware vSphere clusters\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_drs_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_drs_module.html"
     name: vmware-cluster-drs
     outputs: []
   - arguments:
@@ -587,7 +587,7 @@ script:
       - low
       - medium
     description: "Manage High Availability (HA) on VMware vSphere clusters\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_ha_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_ha_module.html"
     name: vmware-cluster-ha
     outputs: []
   - arguments:
@@ -605,7 +605,7 @@ script:
       description: Tags related to cluster are shown if set to `True`.
       name: show_tag
     description: "Gather info about clusters available in given vCenter\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_info_module.html"
     name: vmware-cluster-info
     outputs:
     - contextPath: VMwareV2.vmware_cluster_info.clusters
@@ -626,7 +626,7 @@ script:
         storage on VSAN-enabled hosts in the cluster.
       name: vsan_auto_claim_storage
     description: "Manages virtual storage area network (vSAN) configuration on VMware\
-      \ vSphere clusters\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_vsan_module.html"
+      \ vSphere clusters\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_cluster_vsan_module.html"
     name: vmware-cluster-vsan
     outputs: []
   - arguments:
@@ -678,7 +678,7 @@ script:
       - http
       - https
     description: "Deploy Virtual Machine from template stored in content library.\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_content_deploy_template_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_deploy_template_module.html"
     name: vmware-content-deploy-template
     outputs:
     - contextPath: VMwareV2.vmware_content_deploy_template.vm_deploy_info
@@ -695,7 +695,7 @@ script:
       - http
       - https
     description: "Gather information about VMware Content Library\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_info_module.html"
     name: vmware-content-library-info
     outputs:
     - contextPath: VMwareV2.vmware_content_library_info.content_lib_details
@@ -759,7 +759,7 @@ script:
       - http
       - https
     description: "Create, update and delete VMware content library\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_manager_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_content_library_manager_module.html"
     name: vmware-content-library-manager
     outputs:
     - contextPath: VMwareV2.vmware_content_library_manager.content_library_info
@@ -776,7 +776,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manage VMware vSphere Datacenters\n Further documentation availiable\
+    description: "Manage VMware vSphere Datacenters\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_datacenter_module.html"
     name: vmware-datacenter
     outputs: []
@@ -822,7 +822,7 @@ script:
         folder: /folder1/datacenter1/datastore/folder2'
       name: folder
     description: "Manage VMware vSphere datastore clusters\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_cluster_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_cluster_module.html"
     name: vmware-datastore-cluster
     outputs:
     - contextPath: VMwareV2.vmware_datastore_cluster.result
@@ -856,7 +856,7 @@ script:
         of datastores.'
       name: gather_vmfs_mount_info
     description: "Gather info about datastores available in given vCenter\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_info_module.html"
     name: vmware-datastore-info
     outputs:
     - contextPath: VMwareV2.vmware_datastore_info.datastores
@@ -896,7 +896,7 @@ script:
       - present
       - absent
     description: "Place a datastore into maintenance mode\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_maintenancemode_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_datastore_maintenancemode_module.html"
     name: vmware-datastore-maintenancemode
     outputs:
     - contextPath: VMwareV2.vmware_datastore_maintenancemode.results
@@ -913,7 +913,7 @@ script:
       isArray: true
       name: dns_servers
       required: true
-    description: "Manage VMware ESXi DNS Configuration\n Further documentation availiable\
+    description: "Manage VMware ESXi DNS Configuration\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_dns_config_module.html"
     name: vmware-dns-config
     outputs: []
@@ -949,7 +949,7 @@ script:
       isArray: true
       name: vms
     description: "Creates vm/host group in a given cluster.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_module.html"
     name: vmware-drs-group
     outputs:
     - contextPath: VMwareV2.vmware_drs_group.drs_group_facts
@@ -966,7 +966,7 @@ script:
       name: datacenter
       required: true
     description: "Gathers info about DRS VM/Host groups on the given cluster\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_group_info_module.html"
     name: vmware-drs-group-info
     outputs:
     - contextPath: VMwareV2.vmware_drs_group_info.drs_group_info
@@ -986,7 +986,7 @@ script:
         This is required parameter if `cluster_name` parameter is not provided.'
       name: datacenter
     description: "Gathers info about DRS rule on the given cluster\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_rule_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_drs_rule_info_module.html"
     name: vmware-drs-rule-info
     outputs:
     - contextPath: VMwareV2.vmware_drs_rule_info.drs_rule_info
@@ -1021,7 +1021,7 @@ script:
       isArray: true
       name: vendor_specific_config
     description: "Add or remove a host from distributed virtual switch\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_host_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_host_module.html"
     name: vmware-dvs-host
     outputs: []
   - arguments:
@@ -1148,7 +1148,7 @@ script:
       isArray: true
       name: port_policy
     description: "Create or remove a Distributed vSwitch portgroup.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_module.html"
     name: vmware-dvs-portgroup
     outputs: []
   - arguments:
@@ -1168,7 +1168,7 @@ script:
         Only relevant when `vlanid` is supplied.'
       name: show_uplink
     description: "Find portgroup(s) in a VMware environment\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_find_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_find_module.html"
     name: vmware-dvs-portgroup-find
     outputs:
     - contextPath: VMwareV2.vmware_dvs_portgroup_find.dvs_portgroups
@@ -1193,7 +1193,7 @@ script:
       description: Show or hide vlan information of the DVS portgroup.
       name: show_vlan_info
     description: "Gathers info DVS portgroup configurations\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvs_portgroup_info_module.html"
     name: vmware-dvs-portgroup-info
     outputs:
     - contextPath: VMwareV2.vmware_dvs_portgroup_info.dvs_portgroup_info
@@ -1373,7 +1373,7 @@ script:
 
         folder: /folder1/datacenter1/network/folder2'
       name: folder
-    description: "Create or remove a Distributed Switch\n Further documentation availiable\
+    description: "Create or remove a Distributed Switch\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_module.html"
     name: vmware-dvswitch
     outputs:
@@ -1459,7 +1459,7 @@ script:
       isArray: true
       name: link_aggregation_groups
     description: "Manage LACP configuration on a Distributed Switch\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_lacp_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_lacp_module.html"
     name: vmware-dvswitch-lacp
     outputs:
     - contextPath: VMwareV2.vmware_dvswitch_lacp.result
@@ -1499,7 +1499,7 @@ script:
       isArray: true
       name: resources
     description: "Manage distributed switch Network IO Control\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_nioc_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_nioc_module.html"
     name: vmware-dvswitch-nioc
     outputs:
     - contextPath: VMwareV2.vmware_dvswitch_nioc.dvswitch_nioc_status
@@ -1548,7 +1548,7 @@ script:
       isArray: true
       name: secondary_pvlans
     description: "Manage Private VLAN configuration of a Distributed Switch\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_pvlans_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_pvlans_module.html"
     name: vmware-dvswitch-pvlans
     outputs:
     - contextPath: VMwareV2.vmware_dvswitch_pvlans.result
@@ -1618,7 +1618,7 @@ script:
       description: Indicates if all ports are blocked on the uplink portgroup.
       name: block_all_ports
     description: "Manage uplink portproup configuration of a Distributed Switch\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_uplink_pg_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_dvswitch_uplink_pg_module.html"
     name: vmware-dvswitch-uplink-pg
     outputs:
     - contextPath: VMwareV2.vmware_dvswitch_uplink_pg.result
@@ -1645,7 +1645,7 @@ script:
       predefined:
       - absent
       - present
-    description: "Enable/Disable EVC mode on vCenter\n Further documentation availiable\
+    description: "Enable/Disable EVC mode on vCenter\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_evc_mode_module.html"
     name: vmware-evc-mode
     outputs:
@@ -1657,7 +1657,7 @@ script:
       name: datacenter
       required: true
     description: "Provides information about folders in a datacenter\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_folder_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_folder_info_module.html"
     name: vmware-folder-info
     outputs:
     - contextPath: VMwareV2.vmware_folder_info.folder_info
@@ -2186,7 +2186,7 @@ script:
       - thin
       - thick
       - eagerzeroedthick
-    description: "Manages virtual machines in vCenter\n Further documentation availiable\
+    description: "Manages virtual machines in vCenter\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_module.html"
     name: vmware-guest
     outputs:
@@ -2220,7 +2220,7 @@ script:
       - first
       - last
     description: "Gather info about boot options for the given virtual machine\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_info_module.html"
     name: vmware-guest-boot-info
     outputs:
     - contextPath: VMwareV2.vmware_guest_boot_info.vm_boot_info
@@ -2289,7 +2289,7 @@ script:
         only be enabled with boot_firmware = efi
       name: secure_boot_enabled
     description: "Manage boot options for the given virtual machine\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_manager_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_boot_manager_module.html"
     name: vmware-guest-boot-manager
     outputs:
     - contextPath: VMwareV2.vmware_guest_boot_manager.vm_boot_status
@@ -2319,7 +2319,7 @@ script:
       - absent
       required: true
     description: "Manage custom attributes definitions for virtual machine from VMware\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attribute_defs_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attribute_defs_module.html"
     name: vmware-guest-custom-attribute-defs
     outputs:
     - contextPath: VMwareV2.vmware_guest_custom_attribute_defs.custom_attribute_defs
@@ -2372,7 +2372,7 @@ script:
       isArray: true
       name: attributes
     description: "Manage custom attributes from VMware for the given virtual machine\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attributes_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_custom_attributes_module.html"
     name: vmware-guest-custom-attributes
     outputs:
     - contextPath: VMwareV2.vmware_guest_custom_attributes.custom_attributes
@@ -2382,7 +2382,7 @@ script:
     - description: Name of customization specification to find.
       name: spec_name
     description: "Gather info about VM customization specifications\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_customization_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_customization_info_module.html"
     name: vmware-guest-customization-info
     outputs:
     - contextPath: VMwareV2.vmware_guest_customization_info.custom_spec_info
@@ -2505,7 +2505,7 @@ script:
       isArray: true
       name: disk
     description: "Manage disks related to virtual machine in given vCenter infrastructure\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_module.html"
     name: vmware-guest-disk
     outputs:
     - contextPath: VMwareV2.vmware_guest_disk.disk_status
@@ -2560,7 +2560,7 @@ script:
       name: datacenter
       required: true
     description: "Gather info about disks of given virtual machine\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_disk_info_module.html"
     name: vmware-guest-disk-info
     outputs:
     - contextPath: VMwareV2.vmware_guest_disk_info.guest_disk_info
@@ -2584,7 +2584,7 @@ script:
         Deprecated in 2.5, will be removed in 2.9 release.'
       name: datacenter
     description: "Find the folder path(s) for a virtual machine by name or UUID\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_find_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_find_module.html"
     name: vmware-guest-find
     outputs:
     - contextPath: VMwareV2.vmware_guest_find.folders
@@ -2689,7 +2689,7 @@ script:
         Only valid when `schema` is `vsphere`.'
       isArray: true
       name: properties
-    description: "Gather info about a single VM\n Further documentation availiable\
+    description: "Gather info about a single VM\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_info_module.html"
     name: vmware-guest-info
     outputs:
@@ -2752,7 +2752,7 @@ script:
     - description: Destination datacenter for the move operation
       name: datacenter
       required: true
-    description: "Moves virtual machines in vCenter\n Further documentation availiable\
+    description: "Moves virtual machines in vCenter\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_move_module.html"
     name: vmware-guest-move
     outputs:
@@ -2880,7 +2880,7 @@ script:
       isArray: true
       name: networks
     description: "Manage network adapters of specified virtual machine in given vCenter\
-      \ infrastructure\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_network_module.html"
+      \ infrastructure\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_network_module.html"
     name: vmware-guest-network
     outputs:
     - contextPath: VMwareV2.vmware_guest_network.network_data
@@ -2985,7 +2985,7 @@ script:
         The value sets a timeout in seconds for the module to wait for the state change.'
       name: state_change_timeout
     description: "Manages power states of virtual machines in vCenter\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_powerstate_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_powerstate_module.html"
     name: vmware-guest-powerstate
     outputs: []
   - arguments:
@@ -3053,7 +3053,7 @@ script:
         the returned file URL in screenshot facts manually.'
       name: local_path
     description: "Create a screenshot of the Virtual Machine console.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_screenshot_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_screenshot_module.html"
     name: vmware-guest-screenshot
     outputs:
     - contextPath: VMwareV2.vmware_guest_screenshot.screenshot_info
@@ -3131,7 +3131,7 @@ script:
       isArray: true
       name: keys_send
     description: "Send USB HID codes to the Virtual Machine's keyboard.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_sendkey_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_sendkey_module.html"
     name: vmware-guest-sendkey
     outputs:
     - contextPath: VMwareV2.vmware_guest_sendkey.sendkey_info
@@ -3260,7 +3260,7 @@ script:
     - description: Value to change the description of an existing snapshot to.
       name: new_description
     description: "Manages virtual machines snapshots in vCenter\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_module.html"
     name: vmware-guest-snapshot
     outputs:
     - contextPath: VMwareV2.vmware_guest_snapshot.snapshot_results
@@ -3318,7 +3318,7 @@ script:
       name: datacenter
       required: true
     description: "Gather info about virtual machine's snapshots in vCenter\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_snapshot_info_module.html"
     name: vmware-guest-snapshot-info
     outputs:
     - contextPath: VMwareV2.vmware_guest_snapshot_info.guest_snapshots
@@ -3377,7 +3377,7 @@ script:
     - description: Destination datacenter where the virtual machine exists.
       name: datacenter
       required: true
-    description: "Module to upgrade VMTools\n Further documentation availiable at\
+    description: "Module to upgrade VMTools\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_upgrade_module.html"
     name: vmware-guest-tools-upgrade
     outputs: []
@@ -3434,7 +3434,7 @@ script:
       description: Whether to use the VMware instance UUID rather than the BIOS UUID.
       name: use_instance_uuid
     description: "Wait for VMware tools to become available\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_wait_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_wait_module.html"
     name: vmware-guest-tools-wait
     outputs:
     - contextPath: VMwareV2.vmware_guest_tools_wait.instance
@@ -3528,7 +3528,7 @@ script:
         32 MB to 2048 MB.
       name: memory_3D_mb
     description: "Modify video card configurations of specified virtual machine in\
-      \ given vCenter infrastructure\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_video_module.html"
+      \ given vCenter infrastructure\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_video_module.html"
     name: vmware-guest-video
     outputs:
     - contextPath: VMwareV2.vmware_guest_video.video_status
@@ -3596,7 +3596,7 @@ script:
         `state` is absent.'
       name: vnc_password
     description: "Manages VNC remote display on virtual machines in vCenter\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_vnc_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_vnc_module.html"
     name: vmware-guest-vnc
     outputs:
     - contextPath: VMwareV2.vmware_guest_vnc.changed
@@ -3726,7 +3726,7 @@ script:
         This is only used if `state` is set to `present` and if the host already exists.'
       name: reconnect_disconnected
     description: "Add, remove, or move an ESXi host to, from, or within vCenter\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_module.html"
     name: vmware-host
     outputs:
     - contextPath: VMwareV2.vmware_host.result
@@ -3776,7 +3776,7 @@ script:
       - vmware_accepted
       - vmware_certified
     description: "Manage the host acceptance level of an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_acceptance_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_acceptance_module.html"
     name: vmware-host-acceptance
     outputs:
     - contextPath: VMwareV2.vmware_host_acceptance.facts
@@ -3807,7 +3807,7 @@ script:
         This parameter is required if `esxi_hostname` is not specified.'
       name: cluster_name
     description: "Joins an ESXi host system to an Active Directory domain or leaves\
-      \ it\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_active_directory_module.html"
+      \ it\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_active_directory_module.html"
     name: vmware-host-active-directory
     outputs:
     - contextPath: VMwareV2.vmware_host_active_directory.results
@@ -3824,7 +3824,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's capability information\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_capability_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_capability_info_module.html"
     name: vmware-host-capability-info
     outputs:
     - contextPath: VMwareV2.vmware_host_capability_info.hosts_capability_info
@@ -3840,7 +3840,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's advance configuration information\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_info_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_info_module.html"
     name: vmware-host-config-info
     outputs:
     - contextPath: VMwareV2.vmware_host_config_info.hosts_info
@@ -3871,7 +3871,7 @@ script:
       isArray: true
       name: options
     description: "Manage advanced system settings of an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_manager_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_config_manager_module.html"
     name: vmware-host-config-manager
     outputs: []
   - arguments:
@@ -3932,7 +3932,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manage a datastore on ESXi host\n Further documentation availiable\
+    description: "Manage a datastore on ESXi host\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_host_datastore_module.html"
     name: vmware-host-datastore
     outputs: []
@@ -3946,7 +3946,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's DNS configuration information\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_dns_info_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_dns_info_module.html"
     name: vmware-host-dns-info
     outputs:
     - contextPath: VMwareV2.vmware_host_dns_info.hosts_dns_info
@@ -3964,7 +3964,7 @@ script:
       description: Tags related to Host are shown if set to `True`.
       name: show_tag
     description: "Gathers facts about remote ESXi hostsystem\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_facts_module.html"
     name: vmware-host-facts
     outputs:
     - contextPath: VMwareV2.vmware_host_facts.ansible_facts
@@ -3981,7 +3981,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's feature capability information\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_feature_info_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_feature_info_module.html"
     name: vmware-host-feature-info
     outputs:
     - contextPath: VMwareV2.vmware_host_feature_info.hosts_feature_info
@@ -3997,7 +3997,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's firewall configuration information\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_info_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_info_module.html"
     name: vmware-host-firewall-info
     outputs:
     - contextPath: VMwareV2.vmware_host_firewall_info.hosts_firewall_info
@@ -4029,7 +4029,7 @@ script:
       isArray: true
       name: rules
     description: "Manage firewall configurations about an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_manager_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_firewall_manager_module.html"
     name: vmware-host-firewall-manager
     outputs:
     - contextPath: VMwareV2.vmware_host_firewall_manager.rule_set_state
@@ -4059,7 +4059,7 @@ script:
         This parameter is required if `esxi_hostname` is not specified.'
       name: cluster_name
     description: "Enables/Disables Hyperthreading optimization for an ESXi host system\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_hyperthreading_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_hyperthreading_module.html"
     name: vmware-host-hyperthreading
     outputs:
     - contextPath: VMwareV2.vmware_host_hyperthreading.results
@@ -4084,7 +4084,7 @@ script:
         This is required parameter if `esxi_hostname` is not specified.'
       name: cluster_name
     description: "Enables/Disables IPv6 support for an ESXi host system\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ipv6_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ipv6_module.html"
     name: vmware-host-ipv6
     outputs:
     - contextPath: VMwareV2.vmware_host_ipv6.result
@@ -4111,7 +4111,7 @@ script:
       name: kernel_module_option
       required: true
     description: "Manage kernel module options on ESXi hosts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_kernel_manager_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_kernel_manager_module.html"
     name: vmware-host-kernel-manager
     outputs:
     - contextPath: VMwareV2.vmware_host_kernel_manager.results
@@ -4151,7 +4151,7 @@ script:
       - present
       - absent
     description: "Manage administrator permission for the local administrative account\
-      \ for the ESXi host\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_lockdown_module.html"
+      \ for the ESXi host\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_lockdown_module.html"
     name: vmware-host-lockdown
     outputs:
     - contextPath: VMwareV2.vmware_host_lockdown.results
@@ -4191,7 +4191,7 @@ script:
         was changed.'
       name: verbose
     description: "Manage NTP server configuration of an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_module.html"
     name: vmware-host-ntp
     outputs:
     - contextPath: VMwareV2.vmware_host_ntp.results
@@ -4212,7 +4212,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about NTP configuration on an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ntp_info_module.html"
     name: vmware-host-ntp-info
     outputs:
     - contextPath: VMwareV2.vmware_host_ntp_info.hosts_ntp_info
@@ -4234,7 +4234,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about available packages on an ESXi host\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_package_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_package_info_module.html"
     name: vmware-host-package-info
     outputs:
     - contextPath: VMwareV2.vmware_host_package_info.hosts_package_info
@@ -4261,7 +4261,7 @@ script:
         This is required parameter if `esxi_hostname` is not specified.'
       name: cluster_name
     description: "Manages the Power Management Policy of an ESXI host system\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powermgmt_policy_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powermgmt_policy_module.html"
     name: vmware-host-powermgmt-policy
     outputs:
     - contextPath: VMwareV2.vmware_host_powermgmt_policy.result
@@ -4309,7 +4309,7 @@ script:
         This parameter is defined in seconds.'
       name: timeout
     description: "Manages power states of host systems in vCenter\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powerstate_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_powerstate_module.html"
     name: vmware-host-powerstate
     outputs:
     - contextPath: VMwareV2.vmware_host_powerstate.result
@@ -4326,7 +4326,7 @@ script:
         host found
       name: refresh_storage
     description: "Rescan host HBA's and optionally refresh the storage system\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_scanhba_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_scanhba_module.html"
     name: vmware-host-scanhba
     outputs:
     - contextPath: VMwareV2.vmware_host_scanhba.result
@@ -4347,7 +4347,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's services\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_info_module.html"
     name: vmware-host-service-info
     outputs:
     - contextPath: VMwareV2.vmware_host_service_info.host_service_info
@@ -4402,7 +4402,7 @@ script:
         This value should be a valid ESXi service name.'
       name: service_name
       required: true
-    description: "Manage services on a given ESXi host\n Further documentation availiable\
+    description: "Manage services on a given ESXi host\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_host_service_manager_module.html"
     name: vmware-host-service-manager
     outputs: []
@@ -4455,7 +4455,7 @@ script:
       - info
       - warning
       - error
-    description: "Configures SNMP on an ESXi host system\n Further documentation availiable\
+    description: "Configures SNMP on an ESXi host system\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_host_snmp_module.html"
     name: vmware-host-snmp
     outputs:
@@ -4477,7 +4477,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gather info of ESXi host system about SSL\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ssl_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_ssl_info_module.html"
     name: vmware-host-ssl-info
     outputs:
     - contextPath: VMwareV2.vmware_host_ssl_info.host_ssl_info
@@ -4499,7 +4499,7 @@ script:
         This parameter is required if `esxi_hostname` is not specified.'
       name: cluster_name
     description: "Gathers info about vmhbas available on the given ESXi host\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmhba_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmhba_info_module.html"
     name: vmware-host-vmhba-info
     outputs:
     - contextPath: VMwareV2.vmware_host_vmhba_info.hosts_vmhbas_info
@@ -4531,7 +4531,7 @@ script:
         This parameter is required if `esxi_hostname` is not specified.'
       name: cluster_name
     description: "Gathers info about vmnics available on the given ESXi host\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmnic_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_host_vmnic_info_module.html"
     name: vmware-host-vmnic-info
     outputs:
     - contextPath: VMwareV2.vmware_host_vmnic_info.hosts_vmnics_info
@@ -4548,7 +4548,7 @@ script:
       type: unknown
   - arguments: []
     description: "Gather info about local roles on an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_info_module.html"
     name: vmware-local-role-info
     outputs:
     - contextPath: VMwareV2.vmware_local_role_info.local_role_info
@@ -4593,7 +4593,7 @@ script:
       - add
       - remove
       - set
-    description: "Manage local roles on an ESXi host\n Further documentation availiable\
+    description: "Manage local roles on an ESXi host\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_local_role_manager_module.html"
     name: vmware-local-role-manager
     outputs:
@@ -4620,7 +4620,7 @@ script:
       type: unknown
   - arguments: []
     description: "Gather info about users on the given ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_info_module.html"
     name: vmware-local-user-info
     outputs:
     - contextPath: VMwareV2.vmware_local_user_info.local_user_info
@@ -4642,7 +4642,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manage local users on an ESXi host\n Further documentation availiable\
+    description: "Manage local users on an ESXi host\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_local_user_manager_module.html"
     name: vmware-local-user-manager
     outputs: []
@@ -4670,7 +4670,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Place a host into maintenance mode\n Further documentation availiable\
+    description: "Place a host into maintenance mode\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_maintenancemode_module.html"
     name: vmware-maintenancemode
     outputs:
@@ -4703,7 +4703,7 @@ script:
       name: migrate_portgroup_name
       required: true
     description: "Migrate a VMK interface from VSS to VDS\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_migrate_vmk_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_migrate_vmk_module.html"
     name: vmware-migrate-vmk
     outputs: []
   - arguments:
@@ -4751,7 +4751,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manage local roles on an ESXi host\n Further documentation availiable\
+    description: "Manage local roles on an ESXi host\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_object_role_permission_module.html"
     name: vmware-object-role-permission
     outputs:
@@ -4854,7 +4854,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Create a VMware portgroup\n Further documentation availiable at\
+    description: "Create a VMware portgroup\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_module.html"
     name: vmware-portgroup
     outputs:
@@ -4879,7 +4879,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's Port Group configuration\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_info_module.html"
     name: vmware-portgroup-info
     outputs:
     - contextPath: VMwareV2.vmware_portgroup_info.hosts_portgroup_info
@@ -4949,7 +4949,7 @@ script:
       - present
       - absent
     description: "Add/remove resource pools to/from vCenter\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_module.html"
     name: vmware-resource-pool
     outputs:
     - contextPath: VMwareV2.vmware_resource_pool.instance
@@ -4957,7 +4957,7 @@ script:
       type: unknown
   - arguments: []
     description: "Gathers info about resource pool information\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_resource_pool_info_module.html"
     name: vmware-resource-pool-info
     outputs:
     - contextPath: VMwareV2.vmware_resource_pool_info.resource_pool_info
@@ -5002,7 +5002,7 @@ script:
       predefined:
       - http
       - https
-    description: "Manage VMware tags\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_module.html"
+    description: "Manage VMware tags\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_module.html"
     name: vmware-tag
     outputs:
     - contextPath: VMwareV2.vmware_tag.results
@@ -5016,7 +5016,7 @@ script:
       predefined:
       - http
       - https
-    description: "Manage VMware tag info\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_info_module.html"
+    description: "Manage VMware tag info\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_info_module.html"
     name: vmware-tag-info
     outputs:
     - contextPath: VMwareV2.vmware_tag_info.results
@@ -5073,7 +5073,7 @@ script:
       - http
       - https
     description: "Manage association of VMware tags with VMware objects\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_manager_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_tag_manager_module.html"
     name: vmware-tag-manager
     outputs:
     - contextPath: VMwareV2.vmware_tag_manager.tag_status
@@ -5097,7 +5097,7 @@ script:
         This parameter is required, if `cluster_name` is not provided.'
       name: esxi_hostname
     description: "Return canonical (NAA) from an ESXi host system\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_target_canonical_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_target_canonical_info_module.html"
     name: vmware-target-canonical-info
     outputs:
     - contextPath: VMwareV2.vmware_target_canonical_info.canonical
@@ -5227,7 +5227,7 @@ script:
       - verbose
       - trivia
     description: "Configures general settings on a vCenter server\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_settings_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_settings_module.html"
     name: vmware-vcenter-settings
     outputs:
     - contextPath: VMwareV2.vmware_vcenter_settings.results
@@ -5293,7 +5293,7 @@ script:
       isArray: true
       name: interval_past_year
     description: "Configures statistics on a vCenter server\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_statistics_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vcenter_statistics_module.html"
     name: vmware-vcenter-statistics
     outputs:
     - contextPath: VMwareV2.vmware_vcenter_statistics.results
@@ -5348,7 +5348,7 @@ script:
       name: vm_group_name
       required: true
     description: "Creates vm/host group in a given cluster\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_host_drs_rule_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_host_drs_rule_module.html"
     name: vmware-vm-host-drs-rule
     outputs: []
   - arguments:
@@ -5397,7 +5397,7 @@ script:
       description: Tags related to virtual machine are shown if set to `True`.
       name: show_tag
     description: "Return basic info pertaining to a VMware machine guest\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_info_module.html"
     name: vmware-vm-info
     outputs:
     - contextPath: VMwareV2.vmware_vm_info.virtual_machines
@@ -5486,7 +5486,7 @@ script:
         and will exit after this timeout.'
       name: timeout
     description: "Run commands in a VMware guest operating system\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_shell_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_shell_module.html"
     name: vmware-vm-shell
     outputs:
     - contextPath: VMwareV2.vmware_vm_shell.results
@@ -5494,7 +5494,7 @@ script:
       type: unknown
   - arguments: []
     description: "Gather information about vSphere storage profile defined storage\
-      \ policy information.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_storage_policy_info_module.html"
+      \ policy information.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_storage_policy_info_module.html"
     name: vmware-vm-storage-policy-info
     outputs:
     - contextPath: VMwareV2.vmware_vm_storage_policy_info.spbm_profiles
@@ -5543,7 +5543,7 @@ script:
       - present
       - absent
     description: "Configure VMware DRS Affinity rule for virtual machine in given\
-      \ cluster\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vm_drs_rule_module.html"
+      \ cluster\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vm_drs_rule_module.html"
     name: vmware-vm-vm-drs-rule
     outputs:
     - contextPath: VMwareV2.vmware_vm_vm_drs_rule.result
@@ -5557,7 +5557,7 @@ script:
       name: dvportgroup_name
       required: true
     description: "Migrates a virtual machine from a standard vswitch to distributed\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vss_dvs_migrate_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vm_vss_dvs_migrate_module.html"
     name: vmware-vm-vss-dvs-migrate
     outputs: []
   - arguments:
@@ -5672,7 +5672,7 @@ script:
       name: esxi_hostname
       required: true
     description: "Manages a VMware VMkernel Adapter of an ESXi host.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_module.html"
     name: vmware-vmkernel
     outputs:
     - contextPath: VMwareV2.vmware_vmkernel.result
@@ -5693,7 +5693,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers VMKernel info about an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_info_module.html"
     name: vmware-vmkernel-info
     outputs:
     - contextPath: VMwareV2.vmware_vmkernel_info.host_vmk_info
@@ -5709,7 +5709,7 @@ script:
     - description: Subnet Mask to assign to VMkernel interface
       name: subnet_mask
       required: true
-    description: "Configure the VMkernel IP Address\n Further documentation availiable\
+    description: "Configure the VMkernel IP Address\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vmware_vmkernel_ip_config_module.html"
     name: vmware-vmkernel-ip-config
     outputs: []
@@ -5743,7 +5743,7 @@ script:
         be moved on.
       name: destination_datastore
     description: "Move a virtual machine using vMotion, and/or its vmdks using storage\
-      \ vMotion.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vmotion_module.html"
+      \ vMotion.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vmotion_module.html"
     name: vmware-vmotion
     outputs:
     - contextPath: VMwareV2.vmware_vmotion.running_host
@@ -5753,7 +5753,7 @@ script:
     - description: Desired cluster UUID
       name: cluster_uuid
     description: "Configure VSAN clustering on an ESXi host\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vsan_cluster_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vsan_cluster_module.html"
     name: vmware-vsan-cluster
     outputs: []
   - arguments:
@@ -5858,7 +5858,7 @@ script:
       isArray: true
       name: destination_vm
     description: "Create or remove a Port Mirroring session.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vspan_session_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vspan_session_module.html"
     name: vmware-vspan-session
     outputs: []
   - arguments:
@@ -5889,7 +5889,7 @@ script:
     - description: Manage the vSwitch using this ESXi host system.
       name: esxi_hostname
     description: "Manage a VMware Standard Switch to an ESXi host.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_module.html"
     name: vmware-vswitch
     outputs:
     - contextPath: VMwareV2.vmware_vswitch.result
@@ -5908,7 +5908,7 @@ script:
         If `cluster_name` is not given, this parameter is required.'
       name: esxi_hostname
     description: "Gathers info about an ESXi host's vswitch configurations\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_vswitch_info_module.html"
     name: vmware-vswitch-info
     outputs:
     - contextPath: VMwareV2.vmware_vswitch_info.hosts_vswitch_info
@@ -5947,7 +5947,7 @@ script:
       - directory
       - file
       - touch
-    description: "Manage files on a vCenter datastore\n Further documentation availiable\
+    description: "Manage files on a vCenter datastore\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vsphere_file_module.html"
     name: vmware-vsphere-file
     outputs: []
@@ -5992,7 +5992,7 @@ script:
       predefined:
       - absent
       - present
-    description: "Register/deregister vCenter Extensions\n Further documentation availiable\
+    description: "Register/deregister vCenter Extensions\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_module.html"
     name: vmware-vcenter-extension
     outputs:
@@ -6000,7 +6000,7 @@ script:
       description: information about performed operation
       type: string
   - arguments: []
-    description: "Gather info vCenter extensions\n Further documentation availiable\
+    description: "Gather info vCenter extensions\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_extension_info_module.html"
     name: vmware-vcenter-extension-info
     outputs:
@@ -6064,7 +6064,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manage folders on given datacenter\n Further documentation availiable\
+    description: "Manage folders on given datacenter\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_folder_module.html"
     name: vmware-vcenter-folder
     outputs:
@@ -6097,7 +6097,7 @@ script:
       name: datacenter
     - description: Name of the cluster to apply vSAN license.
       name: cluster_name
-    description: "Manage VMware vCenter license keys\n Further documentation availiable\
+    description: "Manage VMware vCenter license keys\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/vcenter_license_module.html"
     name: vmware-vcenter-license
     outputs:

@@ -145,7 +145,7 @@ script:
         launching the new ECS instances.
       name: user_data
     description: "Create, Start, Stop, Restart or Terminate an Instance in ECS. Add\
-      \ or Remove Instance to/from a Security Group.\n Further documentation availiable\
+      \ or Remove Instance to/from a Security Group.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html"
     name: ali-instance
     outputs:
@@ -165,7 +165,7 @@ script:
     - description: A hash/dictionaries of instance tags. `{"key":"value"}`
       name: instance_tags
     description: "Gather information on instances of Alibaba Cloud ECS.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html"
     name: ali-instance-info
     outputs:
     - contextPath: AlibabaCloud.ali_instance_info.instances

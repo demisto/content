@@ -628,7 +628,7 @@ script:
         to be included in the string.'
       name: attributes
     description: "Generate and/or check OpenSSL certificates\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_module.html"
     name: openssl-certificate
     outputs:
     - contextPath: OpenSSL.openssl_certificate.filename
@@ -682,7 +682,7 @@ script:
       - cryptography
       - pyopenssl
     description: "Provide information of OpenSSL X.509 certificates\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_certificate_info_module.html"
     name: openssl-certificate-info
     outputs:
     - contextPath: OpenSSL.openssl_certificate_info.expired
@@ -1084,7 +1084,7 @@ script:
         to be included in the string.'
       name: attributes
     description: "Generate OpenSSL Certificate Signing Request (CSR)\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_module.html"
     name: openssl-csr
     outputs:
     - contextPath: OpenSSL.openssl_csr.privatekey
@@ -1147,7 +1147,7 @@ script:
       - cryptography
       - pyopenssl
     description: "Provide information of OpenSSL Certificate Signing Requests (CSR)\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_info_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssl_csr_info_module.html"
     name: openssl-csr-info
     outputs:
     - contextPath: OpenSSL.openssl_csr_info.signature_valid
@@ -1343,7 +1343,7 @@ script:
         to be included in the string.'
       name: attributes
     description: "Generate OpenSSL Diffie-Hellman Parameters\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_dhparam_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_dhparam_module.html"
     name: openssl-dhparam
     outputs:
     - contextPath: OpenSSL.openssl_dhparam.size
@@ -1479,7 +1479,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need
         to be included in the string.'
       name: attributes
-    description: "Generate OpenSSL PKCS#12 archive\n Further documentation availiable\
+    description: "Generate OpenSSL PKCS#12 archive\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/openssl_pkcs12_module.html"
     name: openssl-pkcs12
     outputs:
@@ -1662,7 +1662,7 @@ script:
         The `=` operator is assumed as default, otherwise `+` or `-` operators need
         to be included in the string.'
       name: attributes
-    description: "Generate OpenSSL private keys\n Further documentation availiable\
+    description: "Generate OpenSSL private keys\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_module.html"
     name: openssl-privatekey
     outputs:
@@ -1731,7 +1731,7 @@ script:
       - cryptography
       - pyopenssl
     description: "Provide information for OpenSSL private keys\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_privatekey_info_module.html"
     name: openssl-privatekey-info
     outputs:
     - contextPath: OpenSSL.openssl_privatekey_info.can_load_key
@@ -1903,7 +1903,7 @@ script:
         to be included in the string.'
       name: attributes
     description: "Generate an OpenSSL public key from its private key.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/openssl_publickey_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/openssl_publickey_module.html"
     name: openssl-publickey
     outputs:
     - contextPath: OpenSSL.openssl_publickey.privatekey
@@ -1967,7 +1967,7 @@ script:
       isArray: true
       name: intermediate_certificates
     description: "Complete certificate chain given a set of untrusted and root certificates\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/certificate_complete_chain_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/certificate_complete_chain_module.html"
     name: openssl-certificate-complete-chain
     outputs:
     - contextPath: OpenSSL.certificate_complete_chain.root
@@ -2033,7 +2033,7 @@ script:
       - auto
       - cryptography
       - pyopenssl
-    description: "Get a certificate from a host:port\n Further documentation availiable\
+    description: "Get a certificate from a host:port\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/get_certificate_module.html"
     name: openssl-get-certificate
     outputs:

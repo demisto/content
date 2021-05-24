@@ -105,7 +105,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Firewall instance.\n Further documentation availiable\
+    description: "Manage Azure Firewall instance.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_module.html"
     name: azure-rm-azurefirewall
     outputs:
@@ -121,7 +121,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get AzureFirewall info.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_info_module.html"
+    description: "Get AzureFirewall info.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_azurefirewall_info_module.html"
     name: azure-rm-azurefirewall-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_azurefirewall_info.firewalls
@@ -184,7 +184,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure virtual networks\n Further documentation availiable\
+    description: "Manage Azure virtual networks\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_module.html"
     name: azure-rm-virtualnetwork
     outputs:
@@ -203,7 +203,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get virtual network facts\n Further documentation availiable at\
+    description: "Get virtual network facts\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_info_module.html"
     name: azure-rm-virtualnetwork-info
     outputs:
@@ -296,7 +296,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure virtual network gateways\n Further documentation availiable\
+    description: "Manage Azure virtual network gateways\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkgateway_module.html"
     name: azure-rm-virtualnetworkgateway
     outputs:
@@ -352,7 +352,7 @@ script:
       - present
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Manage Azure Virtual Network Peering\n Further documentation availiable\
+    description: "Manage Azure Virtual Network Peering\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_module.html"
     name: azure-rm-virtualnetworkpeering
     outputs:
@@ -373,7 +373,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get facts of Azure Virtual Network Peering\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetworkpeering_info_module.html"
     name: azure-rm-virtualnetworkpeering-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_virtualnetworkpeering_info.vnetpeerings
@@ -422,7 +422,7 @@ script:
       name: service_endpoints
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Manage Azure subnets\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_module.html"
+    description: "Manage Azure subnets\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_module.html"
     name: azure-rm-subnet
     outputs:
     - contextPath: AzureNetworking.azure_rm_subnet.state
@@ -441,7 +441,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Subnet facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_info_module.html"
+    description: "Get Azure Subnet facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_subnet_info_module.html"
     name: azure-rm-subnet-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_subnet_info.subnets
@@ -513,7 +513,7 @@ script:
       - present
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Manage Azure Traffic Manager endpoint\n Further documentation availiable\
+    description: "Manage Azure Traffic Manager endpoint\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_module.html"
     name: azure-rm-trafficmanagerendpoint
     outputs:
@@ -541,7 +541,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get Azure Traffic Manager endpoint facts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerendpoint_info_module.html"
     name: azure-rm-trafficmanagerendpoint-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_trafficmanagerendpoint_info.endpoints
@@ -609,7 +609,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Traffic Manager profile\n Further documentation availiable\
+    description: "Manage Azure Traffic Manager profile\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_module.html"
     name: azure-rm-trafficmanagerprofile
     outputs:
@@ -634,7 +634,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get Azure Traffic Manager profile facts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_trafficmanagerprofile_info_module.html"
     name: azure-rm-trafficmanagerprofile-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_trafficmanagerprofile_info.tms
@@ -799,7 +799,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure network interfaces\n Further documentation availiable\
+    description: "Manage Azure network interfaces\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_networkinterface_module.html"
     name: azure-rm-networkinterface
     outputs:
@@ -819,7 +819,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get network interface facts\n Further documentation availiable at\
+    description: "Get network interface facts\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_networkinterface_info_module.html"
     name: azure-rm-networkinterface-info
     outputs:
@@ -908,7 +908,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Public IP Addresses\n Further documentation availiable\
+    description: "Manage Azure Public IP Addresses\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_module.html"
     name: azure-rm-publicipaddress
     outputs:
@@ -927,7 +927,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get public IP facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_info_module.html"
+    description: "Get public IP facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_publicipaddress_info_module.html"
     name: azure-rm-publicipaddress-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_publicipaddress_info.azure_publicipaddresses
@@ -998,7 +998,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure route resource\n Further documentation availiable at\
+    description: "Manage Azure route resource\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_route_module.html"
     name: azure-rm-route
     outputs:
@@ -1047,7 +1047,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure route table resource\n Further documentation availiable\
+    description: "Manage Azure route table resource\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_module.html"
     name: azure-rm-routetable
     outputs:
@@ -1071,7 +1071,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get route table facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_info_module.html"
+    description: "Get route table facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_routetable_info_module.html"
     name: azure-rm-routetable-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_routetable_info.id
@@ -1156,7 +1156,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure network security groups\n Further documentation availiable\
+    description: "Manage Azure network security groups\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_module.html"
     name: azure-rm-securitygroup
     outputs:
@@ -1176,7 +1176,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get security group facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_info_module.html"
+    description: "Get security group facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_securitygroup_info_module.html"
     name: azure-rm-securitygroup-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_securitygroup_info.securitygroups
@@ -1248,7 +1248,7 @@ script:
         the object''s metadata.'
       name: append_tags
     description: "Create, delete and update DNS record sets and records\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_module.html"
     name: azure-rm-dnsrecordset
     outputs:
     - contextPath: AzureNetworking.azure_rm_dnsrecordset.state
@@ -1285,7 +1285,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Get DNS Record Set facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_info_module.html"
+    description: "Get DNS Record Set facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnsrecordset_info_module.html"
     name: azure-rm-dnsrecordset-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_dnsrecordset_info.azure_dnsrecordset
@@ -1355,7 +1355,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure DNS zones\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_module.html"
+    description: "Manage Azure DNS zones\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_module.html"
     name: azure-rm-dnszone
     outputs:
     - contextPath: AzureNetworking.azure_rm_dnszone.state
@@ -1381,7 +1381,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Get DNS zone facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_info_module.html"
+    description: "Get DNS zone facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_dnszone_info_module.html"
     name: azure-rm-dnszone-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_dnszone_info.azure_dnszones

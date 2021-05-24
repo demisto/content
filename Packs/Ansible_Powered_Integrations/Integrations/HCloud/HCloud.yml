@@ -26,7 +26,7 @@ script:
     - description: The name of the datacenter you want to get.
       name: name
     description: "Gather info about the Hetzner Cloud datacenters.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_datacenter_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_datacenter_info_module.html"
     name: hcloud-datacenter-info
     outputs:
     - contextPath: HCloud.hcloud_datacenter_info.hcloud_datacenter_info
@@ -44,7 +44,7 @@ script:
     - description: The label selector for the Floating IP you want to get.
       name: label_selector
     description: "Gather infos about the Hetzner Cloud Floating IPs.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_floating_ip_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_floating_ip_info_module.html"
     name: hcloud-floating-ip-info
     outputs:
     - contextPath: HCloud.hcloud_floating_ip_info.hcloud_floating_ip_info
@@ -66,7 +66,7 @@ script:
       - snapshot
       - backup
     description: "Gather infos about your Hetzner Cloud images.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_image_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_image_info_module.html"
     name: hcloud-image-info
     outputs:
     - contextPath: HCloud.hcloud_image_info.hcloud_image_info
@@ -78,7 +78,7 @@ script:
     - description: The name of the location you want to get.
       name: name
     description: "Gather infos about your Hetzner Cloud locations.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_location_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_location_info_module.html"
     name: hcloud-location-info
     outputs:
     - contextPath: HCloud.hcloud_location_info.hcloud_location_info
@@ -108,7 +108,7 @@ script:
       - absent
       - present
     description: "Create and manage cloud Networks on the Hetzner Cloud.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_module.html"
     name: hcloud-network
     outputs:
     - contextPath: HCloud.hcloud_network.hcloud_network
@@ -122,7 +122,7 @@ script:
     - description: The label selector for the network you want to get.
       name: label_selector
     description: "Gather info about your Hetzner Cloud networks.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_network_info_module.html"
     name: hcloud-network-info
     outputs:
     - contextPath: HCloud.hcloud_network_info.hcloud_network_info
@@ -148,7 +148,7 @@ script:
       - absent
       - present
     description: "Create and manage reverse DNS entries on the Hetzner Cloud.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_rdns_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_rdns_module.html"
     name: hcloud-rdns
     outputs:
     - contextPath: HCloud.hcloud_rdns.hcloud_rdns
@@ -172,7 +172,7 @@ script:
       - absent
       - present
     description: "Create and delete cloud routes on the Hetzner Cloud.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_route_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_route_module.html"
     name: hcloud-route
     outputs:
     - contextPath: HCloud.hcloud_route.hcloud_route
@@ -248,7 +248,7 @@ script:
       - stopped
       - rebuild
     description: "Create and manage cloud servers on the Hetzner Cloud.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_module.html"
     name: hcloud-server
     outputs:
     - contextPath: HCloud.hcloud_server.hcloud_server
@@ -262,7 +262,7 @@ script:
     - description: The label selector for the server you want to get.
       name: label_selector
     description: "Gather infos about your Hetzner Cloud servers.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_info_module.html"
     name: hcloud-server-info
     outputs:
     - contextPath: HCloud.hcloud_server_info.hcloud_server_info
@@ -288,7 +288,7 @@ script:
       - absent
       - present
     description: "Manage the relationship between Hetzner Cloud Networks and servers\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_network_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_network_module.html"
     name: hcloud-server-network
     outputs:
     - contextPath: HCloud.hcloud_server_network.hcloud_server_network
@@ -300,7 +300,7 @@ script:
     - description: The name of the server type you want to get.
       name: name
     description: "Gather infos about the Hetzner Cloud server types.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_type_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_server_type_info_module.html"
     name: hcloud-server-type-info
     outputs:
     - contextPath: HCloud.hcloud_server_type_info.hcloud_server_type_info
@@ -334,7 +334,7 @@ script:
       - absent
       - present
     description: "Create and manage ssh keys on the Hetzner Cloud.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_module.html"
     name: hcloud-ssh-key
     outputs:
     - contextPath: HCloud.hcloud_ssh_key.hcloud_ssh_key
@@ -350,7 +350,7 @@ script:
     - description: The label selector for the ssh key you want to get.
       name: label_selector
     description: "Gather infos about your Hetzner Cloud ssh_keys.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_ssh_key_info_module.html"
     name: hcloud-ssh-key-info
     outputs:
     - contextPath: HCloud.hcloud_ssh_key_info.hcloud_ssh_key_info
@@ -377,7 +377,7 @@ script:
       - absent
       - present
     description: "Manage cloud subnetworks on the Hetzner Cloud.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_subnetwork_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_subnetwork_module.html"
     name: hcloud-subnetwork
     outputs:
     - contextPath: HCloud.hcloud_subnetwork.hcloud_subnetwork
@@ -425,7 +425,7 @@ script:
       - absent
       - present
     description: "Create and manage block volumes on the Hetzner Cloud.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_module.html"
     name: hcloud-volume
     outputs:
     - contextPath: HCloud.hcloud_volume.hcloud_volume
@@ -439,7 +439,7 @@ script:
     - description: The label selector for the volume you want to get.
       name: label_selector
     description: "Gather infos about your Hetzner Cloud volumes.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/hcloud_volume_info_module.html"
     name: hcloud-volume-info
     outputs:
     - contextPath: HCloud.hcloud_volume_info.hcloud_volume_info

@@ -165,7 +165,7 @@ script:
     - description: The name of a context found in the config file. Can also be specified
         via K8S_AUTH_CONTEXT environment variable.
       name: context
-    description: "Manage Kubernetes (K8s) objects\n Further documentation availiable\
+    description: "Manage Kubernetes (K8s) objects\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_module.html"
     name: k8s-k8s
     outputs:
@@ -205,7 +205,7 @@ script:
     - description: The name of a context found in the config file. Can also be specified
         via K8S_AUTH_CONTEXT environment variable.
       name: context
-    description: "Describe Kubernetes (K8s) objects\n Further documentation availiable\
+    description: "Describe Kubernetes (K8s) objects\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_info_module.html"
     name: k8s-info
     outputs:
@@ -275,7 +275,7 @@ script:
         time, an error will result. In the case of a Job, this option is ignored.
       name: wait_timeout
     description: "Set a new size for a Deployment, ReplicaSet, Replication Controller,\
-      \ or Job.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/k8s_scale_module.html"
+      \ or Job.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/k8s_scale_module.html"
     name: k8s-scale
     outputs:
     - contextPath: Kubernetes.k8s_scale.result
@@ -370,7 +370,7 @@ script:
     - description: The name of a context found in the config file. Can also be specified
         via K8S_AUTH_CONTEXT environment variable.
       name: context
-    description: "Manage Services on Kubernetes\n Further documentation availiable\
+    description: "Manage Services on Kubernetes\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/k8s_service_module.html"
     name: k8s-service
     outputs:

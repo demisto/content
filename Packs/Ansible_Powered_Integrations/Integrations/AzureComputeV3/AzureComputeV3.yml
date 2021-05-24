@@ -108,7 +108,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure autoscale setting\n Further documentation availiable\
+    description: "Manage Azure autoscale setting\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_module.html"
     name: azure-rm-autoscale
     outputs:
@@ -126,7 +126,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Auto Scale Setting facts\n Further documentation availiable\
+    description: "Get Azure Auto Scale Setting facts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_autoscale_info_module.html"
     name: azure-rm-autoscale-info
     outputs:
@@ -187,7 +187,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Availability Set\n Further documentation availiable\
+    description: "Manage Azure Availability Set\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_module.html"
     name: azure-rm-availabilityset
     outputs:
@@ -206,7 +206,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Availability Set facts\n Further documentation availiable\
+    description: "Get Azure Availability Set facts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_availabilityset_info_module.html"
     name: azure-rm-availabilityset-info
     outputs:
@@ -296,7 +296,7 @@ script:
         the object''s metadata.'
       name: append_tags
     description: "Create or destroy Azure Resource Manager template deployments\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_module.html"
     name: azure-rm-deployment
     outputs:
     - contextPath: AzureComputeV3.azure_rm_deployment.deployment
@@ -310,7 +310,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Deployment facts\n Further documentation availiable at\
+    description: "Get Azure Deployment facts\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_deployment_info_module.html"
     name: azure-rm-deployment-info
     outputs:
@@ -375,7 +375,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Function Apps\n Further documentation availiable at\
+    description: "Manage Azure Function Apps\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_module.html"
     name: azure-rm-functionapp
     outputs:
@@ -394,7 +394,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Function App facts\n Further documentation availiable\
+    description: "Get Azure Function App facts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html"
     name: azure-rm-functionapp-info
     outputs:
@@ -443,7 +443,7 @@ script:
         the object''s metadata.'
       name: append_tags
     description: "Manage Azure Shared Image Gallery instance.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_module.html"
     name: azure-rm-gallery
     outputs:
     - contextPath: AzureComputeV3.azure_rm_gallery.id
@@ -458,7 +458,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Shared Image Gallery info.\n Further documentation availiable\
+    description: "Get Azure Shared Image Gallery info.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_gallery_info_module.html"
     name: azure-rm-gallery-info
     outputs:
@@ -548,7 +548,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure SIG Image instance.\n Further documentation availiable\
+    description: "Manage Azure SIG Image instance.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_module.html"
     name: azure-rm-galleryimage
     outputs:
@@ -569,7 +569,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure SIG Image info.\n Further documentation availiable at\
+    description: "Get Azure SIG Image info.\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html"
     name: azure-rm-galleryimage-info
     outputs:
@@ -628,7 +628,7 @@ script:
         the object''s metadata.'
       name: append_tags
     description: "Manage Azure SIG Image Version instance.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_module.html"
     name: azure-rm-galleryimageversion
     outputs:
     - contextPath: AzureComputeV3.azure_rm_galleryimageversion.id
@@ -652,7 +652,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure SIG Image Version info.\n Further documentation availiable\
+    description: "Get Azure SIG Image Version info.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimageversion_info_module.html"
     name: azure-rm-galleryimageversion-info
     outputs:
@@ -718,7 +718,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure image\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_module.html"
+    description: "Manage Azure image\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_module.html"
     name: azure-rm-image
     outputs:
     - contextPath: AzureComputeV3.azure_rm_image.id
@@ -735,7 +735,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get facts about azure custom images\n Further documentation availiable\
+    description: "Get facts about azure custom images\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_image_info_module.html"
     name: azure-rm-image-info
     outputs:
@@ -919,7 +919,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure load balancers\n Further documentation availiable at\
+    description: "Manage Azure load balancers\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_module.html"
     name: azure-rm-loadbalancer
     outputs:
@@ -943,7 +943,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get load balancer facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_info_module.html"
+    description: "Get load balancer facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_loadbalancer_info_module.html"
     name: azure-rm-loadbalancer-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_loadbalancer_info.azure_loadbalancers
@@ -1064,7 +1064,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Manage Disks\n Further documentation availiable at\
+    description: "Manage Azure Manage Disks\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html"
     name: azure-rm-manageddisk
     outputs:
@@ -1102,7 +1102,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Get managed disk facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_info_module.html"
+    description: "Get managed disk facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_info_module.html"
     name: azure-rm-manageddisk-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_manageddisk_info.azure_managed_disk
@@ -1174,7 +1174,7 @@ script:
       - present
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Create any Azure resource\n Further documentation availiable at\
+    description: "Create any Azure resource\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_module.html"
     name: azure-rm-resource
     outputs:
@@ -1202,7 +1202,7 @@ script:
       name: subresource
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Generic facts of Azure resources\n Further documentation availiable\
+    description: "Generic facts of Azure resources\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_info_module.html"
     name: azure-rm-resource-info
     outputs:
@@ -1253,7 +1253,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure resource groups\n Further documentation availiable\
+    description: "Manage Azure resource groups\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html"
     name: azure-rm-resourcegroup
     outputs:
@@ -1280,7 +1280,7 @@ script:
       name: list_resources
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get resource group facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_info_module.html"
+    description: "Get resource group facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_info_module.html"
     name: azure-rm-resourcegroup-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_resourcegroup_info.azure_resourcegroups
@@ -1335,7 +1335,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Snapshot instance.\n Further documentation availiable\
+    description: "Manage Azure Snapshot instance.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_snapshot_module.html"
     name: azure-rm-snapshot
     outputs:
@@ -1619,7 +1619,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure virtual machines\n Further documentation availiable\
+    description: "Manage Azure virtual machines\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_module.html"
     name: azure-rm-virtualmachine
     outputs:
@@ -1660,7 +1660,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get virtual machine facts\n Further documentation availiable at\
+    description: "Get virtual machine facts\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html"
     name: azure-rm-virtualmachine-info
     outputs:
@@ -1706,7 +1706,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Managed Azure Virtual Machine extension\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_module.html"
     name: azure-rm-virtualmachineextension
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachineextension.state
@@ -1734,7 +1734,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get Azure Virtual Machine Extension facts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineextension_info_module.html"
     name: azure-rm-virtualmachineextension-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachineextension_info.extensions
@@ -1763,7 +1763,7 @@ script:
       name: version
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get virtual machine image facts\n Further documentation availiable\
+    description: "Get virtual machine image facts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachineimage_info_module.html"
     name: azure-rm-virtualmachineimage-info
     outputs:
@@ -1950,7 +1950,7 @@ script:
         the object''s metadata.'
       name: append_tags
     description: "Manage Azure virtual machine scale sets\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_module.html"
     name: azure-rm-virtualmachinescaleset
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachinescaleset.azure_vmss
@@ -1988,7 +1988,7 @@ script:
       - raw
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Virtual Machine Scale Set facts\n Further documentation availiable\
+    description: "Get Virtual Machine Scale Set facts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescaleset_info_module.html"
     name: azure-rm-virtualmachinescaleset-info
     outputs:
@@ -2045,7 +2045,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Manage Azure Virtual Machine Scale Set (VMSS) extensions\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_module.html"
     name: azure-rm-virtualmachinescalesetextension
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachinescalesetextension.id
@@ -2065,7 +2065,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get Azure Virtual Machine Scale Set Extension facts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetextension_info_module.html"
     name: azure-rm-virtualmachinescalesetextension-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachinescalesetextension_info.extensions
@@ -2104,7 +2104,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get Azure Virtual Machine Scale Set Instance facts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_module.html"
     name: azure-rm-virtualmachinescalesetinstance
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachinescalesetinstance.instances
@@ -2127,7 +2127,7 @@ script:
     - description: Your Azure subscription Id.
       name: subscription_id
     description: "Get Azure Virtual Machine Scale Set Instance facts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_info_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachinescalesetinstance_info_module.html"
     name: azure-rm-virtualmachinescalesetinstance-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachinescalesetinstance_info.instances
@@ -2236,7 +2236,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Web App instances\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html"
+    description: "Manage Web App instances\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_module.html"
     name: azure-rm-webapp
     outputs:
     - contextPath: AzureComputeV3.azure_rm_webapp.azure_webapp
@@ -2257,7 +2257,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure web app facts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_info_module.html"
+    description: "Get Azure web app facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webapp_info_module.html"
     name: azure-rm-webapp-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_webapp_info.webapps
@@ -2343,7 +2343,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Web App slot\n Further documentation availiable at\
+    description: "Manage Azure Web App slot\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html"
     name: azure-rm-webappslot
     outputs:

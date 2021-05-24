@@ -164,7 +164,7 @@ script:
       - auto
       - cryptography
       - openssl
-    description: "Create, modify or delete ACME accounts\n Further documentation availiable\
+    description: "Create, modify or delete ACME accounts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/acme_account_module.html"
     name: acme-account
     outputs:
@@ -270,7 +270,7 @@ script:
       - auto
       - cryptography
       - openssl
-    description: "Retrieves information on ACME accounts\n Further documentation availiable\
+    description: "Retrieves information on ACME accounts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/acme_account_info_module.html"
     name: acme-account-info
     outputs:
@@ -488,7 +488,7 @@ script:
       - cryptography
       - openssl
     description: "Create SSL/TLS certificates with the ACME protocol\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/acme_certificate_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/acme_certificate_module.html"
     name: acme-certificate
     outputs:
     - contextPath: ACME.acme_certificate.cert_days
@@ -647,7 +647,7 @@ script:
       - cryptography
       - openssl
     description: "Revoke certificates with the ACME protocol\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/acme_certificate_revoke_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/acme_certificate_revoke_module.html"
     name: acme-certificate-revoke
     outputs: []
   - arguments:
@@ -678,7 +678,7 @@ script:
         Mutually exclusive with `private_key_src`.'
       name: private_key_content
     description: "Prepare certificates required for ACME challenges such as C(tls-alpn-01)\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/acme_challenge_cert_helper_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acme_challenge_cert_helper_module.html"
     name: acme-challenge-cert-helper
     outputs:
     - contextPath: ACME.acme_challenge_cert_helper.domain
@@ -825,7 +825,7 @@ script:
       - auto
       - cryptography
       - openssl
-    description: "Send direct requests to an ACME server\n Further documentation availiable\
+    description: "Send direct requests to an ACME server\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/acme_inspect_module.html"
     name: acme-inspect
     outputs:

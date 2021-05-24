@@ -60,7 +60,7 @@ script:
       - present
       - absent
     description: "Manage multiline banners on Cisco IOS devices\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html"
     name: ios-banner
     outputs:
     - contextPath: CiscoIOS.ios_banner.commands
@@ -99,7 +99,7 @@ script:
       - override
       - delete
     description: "Configure global BGP protocol settings on Cisco IOS.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_bgp_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_bgp_module.html"
     name: ios-bgp
     outputs:
     - contextPath: CiscoIOS.ios_bgp.commands
@@ -147,7 +147,7 @@ script:
         indicates how long to wait before trying the command again.
       name: interval
     description: "Run commands on remote devices running Cisco IOS\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html"
     name: ios-command
     outputs:
     - contextPath: CiscoIOS.ios_command.stdout
@@ -298,7 +298,7 @@ script:
       isArray: true
       name: backup_options
     description: "Manage Cisco IOS configuration sections\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_config_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_config_module.html"
     name: ios-config
     outputs:
     - contextPath: CiscoIOS.ios_config.updates
@@ -349,7 +349,7 @@ script:
         'l3_interfaces'.
       name: gather_network_resources
     description: "Collect facts from remote devices running Cisco IOS\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html"
     name: ios-facts
     outputs:
     - contextPath: CiscoIOS.ios_facts.ansible_net_gather_subset
@@ -441,7 +441,7 @@ script:
       - overridden
       - deleted
     description: "Manages interface attributes of Cisco IOS network devices\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html"
     name: ios-interfaces
     outputs:
     - contextPath: CiscoIOS.ios_interfaces.before
@@ -473,7 +473,7 @@ script:
       - overridden
       - deleted
     description: "Manage Layer-2 interface on Cisco IOS devices.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_l2_interfaces_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_l2_interfaces_module.html"
     name: ios-l2-interfaces
     outputs:
     - contextPath: CiscoIOS.ios_l2_interfaces.before
@@ -505,7 +505,7 @@ script:
       - overridden
       - deleted
     description: "Manage Layer-3 interface on Cisco IOS devices.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_l3_interfaces_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_l3_interfaces_module.html"
     name: ios-l3-interfaces
     outputs:
     - contextPath: CiscoIOS.ios_l3_interfaces.before
@@ -536,7 +536,7 @@ script:
       - replaced
       - deleted
     description: "Manage Global Link Aggregation Control Protocol (LACP) on Cisco\
-      \ IOS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_module.html"
+      \ IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_module.html"
     name: ios-lacp
     outputs:
     - contextPath: CiscoIOS.ios_lacp.before
@@ -568,7 +568,7 @@ script:
       - overridden
       - deleted
     description: "Manage Link Aggregation Control Protocol (LACP) on Cisco IOS devices\
-      \ interface.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_interfaces_module.html"
+      \ interface.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lacp_interfaces_module.html"
     name: ios-lacp-interfaces
     outputs:
     - contextPath: CiscoIOS.ios_lacp_interfaces.before
@@ -600,7 +600,7 @@ script:
       - overridden
       - deleted
     description: "Manage Link Aggregation on Cisco IOS devices.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lag_interfaces_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_lag_interfaces_module.html"
     name: ios-lag-interfaces
     outputs:
     - contextPath: CiscoIOS.ios_lag_interfaces.before
@@ -646,7 +646,7 @@ script:
       description: Purge links not defined in the `aggregate` parameter.
       name: purge
     description: "Manage link aggregation groups on Cisco IOS network devices\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_linkagg_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_linkagg_module.html"
     name: ios-linkagg
     outputs:
     - contextPath: CiscoIOS.ios_linkagg.commands
@@ -668,7 +668,7 @@ script:
       - present
       - absent
     description: "Manage LLDP configuration on Cisco IOS network devices.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_module.html"
     name: ios-lldp
     outputs:
     - contextPath: CiscoIOS.ios_lldp.commands
@@ -693,7 +693,7 @@ script:
       - replaced
       - deleted
     description: "Configure and manage Link Layer Discovery Protocol(LLDP) attributes\
-      \ on IOS platforms.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_global_module.html"
+      \ on IOS platforms.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_global_module.html"
     name: ios-lldp-global
     outputs:
     - contextPath: CiscoIOS.ios_lldp_global.before
@@ -725,7 +725,7 @@ script:
       - overridden
       - deleted
     description: "Manage link layer discovery protocol (LLDP) attributes of interfaces\
-      \ on Cisco IOS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_interfaces_module.html"
+      \ on Cisco IOS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_lldp_interfaces_module.html"
     name: ios-lldp-interfaces
     outputs:
     - contextPath: CiscoIOS.ios_lldp_interfaces.before
@@ -786,7 +786,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manage logging on network devices\n Further documentation availiable\
+    description: "Manage logging on network devices\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/ios_logging_module.html"
     name: ios-logging
     outputs:
@@ -823,7 +823,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages core NTP configuration.\n Further documentation availiable\
+    description: "Manages core NTP configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/ios_ntp_module.html"
     name: ios-ntp
     outputs:
@@ -857,7 +857,7 @@ script:
       description: The VRF to use for forwarding.
       name: vrf
     description: "Tests reachability using ping from Cisco IOS network devices\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_ping_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_ping_module.html"
     name: ios-ping
     outputs:
     - contextPath: CiscoIOS.ios_ping.commands
@@ -910,7 +910,7 @@ script:
       - present
       - absent
     description: "Manage static IP routes on Cisco IOS network devices\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_static_route_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_static_route_module.html"
     name: ios-static-route
     outputs:
     - contextPath: CiscoIOS.ios_static_route.commands
@@ -957,7 +957,7 @@ script:
       - present
       - absent
     description: "Manage the system attributes on Cisco IOS devices\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/ios_system_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/ios_system_module.html"
     name: ios-system
     outputs:
     - contextPath: CiscoIOS.ios_system.commands
@@ -1034,7 +1034,7 @@ script:
       - present
       - absent
     description: "Manage the aggregate of local users on Cisco IOS device\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html"
     name: ios-user
     outputs:
     - contextPath: CiscoIOS.ios_user.commands
@@ -1059,7 +1059,7 @@ script:
       - replaced
       - overridden
       - deleted
-    description: "Manage VLANs on Cisco IOS devices.\n Further documentation availiable\
+    description: "Manage VLANs on Cisco IOS devices.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/ios_vlans_module.html"
     name: ios-vlans
     outputs:
@@ -1150,7 +1150,7 @@ script:
         configuration submode to the VRF.
       name: route_import_ipv6
     description: "Manage the collection of VRF definitions on Cisco IOS devices\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ios_vrf_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_vrf_module.html"
     name: ios-vrf
     outputs:
     - contextPath: CiscoIOS.ios_vrf.commands

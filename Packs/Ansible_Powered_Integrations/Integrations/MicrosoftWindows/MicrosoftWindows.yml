@@ -42,7 +42,7 @@ script:
 
         By default it will be true if more than one fact module is used.'
       name: parallel
-    description: "Gathers facts about remote hosts\n Further documentation availiable\
+    description: "Gathers facts about remote hosts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html"
     name: win-gather-facts
     outputs: []
@@ -110,7 +110,7 @@ script:
       - None
       - NoPropagateInherit
     description: "Set file/directory/registry permissions for a system user or group\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html"
     name: win-acl
     outputs: []
   - arguments:
@@ -138,7 +138,7 @@ script:
         For P(state) = `present`, indicates if the inherited ACE''s should be deduplicated
         compared to the parent directory. This removes complexity of the ACL structure.'
       name: reorganize
-    description: "Change ACL inheritance\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html"
+    description: "Change ACL inheritance\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html"
     name: win-acl-inheritance
     outputs: []
   - arguments:
@@ -173,7 +173,7 @@ script:
       - success
       required: true
     description: "Used to make changes to the system wide Audit Policy\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_audit_policy_system_module.html"
     name: win-audit-policy-system
     outputs:
     - contextPath: MicrosoftWindows.win_audit_policy_system.current_audit_policy
@@ -255,7 +255,7 @@ script:
       - absent
       - present
     description: "Adds an audit rule to files, folders, or registry keys\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_audit_rule_module.html"
     name: win-audit-rule
     outputs:
     - contextPath: MicrosoftWindows.win_audit_rule.current_audit_rules
@@ -406,7 +406,7 @@ script:
       - der
       - pem
       - pkcs12
-    description: "Manages the certificate store\n Further documentation availiable\
+    description: "Manages the certificate store\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html"
     name: win-certificate-store
     outputs:
@@ -591,7 +591,7 @@ script:
         this will be the version of Chocolatey that is installed. You can also set
         the `chocolateyVersion` environment var.'
       name: version
-    description: "Manage packages using chocolatey\n Further documentation availiable\
+    description: "Manage packages using chocolatey\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html"
     name: win-chocolatey
     outputs:
@@ -636,7 +636,7 @@ script:
         Cannot be null or an empty string, use `state=absent` to unset a config value
         instead.'
       name: value
-    description: "Manages Chocolatey config settings\n Further documentation availiable\
+    description: "Manages Chocolatey config settings\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_config_module.html"
     name: win-chocolatey-config
     outputs: []
@@ -648,7 +648,7 @@ script:
       name: host
       required: true
     description: "Create a facts collection for Chocolatey\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html"
     name: win-chocolatey-facts
     outputs:
     - contextPath: MicrosoftWindows.win_chocolatey_facts.ansible_facts
@@ -675,7 +675,7 @@ script:
       predefined:
       - disabled
       - enabled
-    description: "Manages Chocolatey features\n Further documentation availiable at\
+    description: "Manages Chocolatey features\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_feature_module.html"
     name: win-chocolatey-feature
     outputs: []
@@ -759,7 +759,7 @@ script:
       predefined:
       - always
       - on_create
-    description: "Manages Chocolatey sources\n Further documentation availiable at\
+    description: "Manages Chocolatey sources\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_source_module.html"
     name: win-chocolatey-source
     outputs: []
@@ -838,7 +838,7 @@ script:
         Required unless using `content`.'
       name: src
     description: "Copies files to remote locations on windows hosts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html"
     name: win-copy
     outputs:
     - contextPath: MicrosoftWindows.win_copy.backup_file
@@ -983,7 +983,7 @@ script:
         certificate store for the executing user.'
       name: username
     description: "Manages Windows Credentials in the Credential Manager\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_credential_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_credential_module.html"
     name: win-credential
     outputs: []
   - arguments:
@@ -1016,7 +1016,7 @@ script:
       description: Run the operation on each volume in parallel in the background.
       name: parallel
     description: "Consolidate fragmented files on local volumes\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html"
     name: win-defrag
     outputs:
     - contextPath: MicrosoftWindows.win_defrag.cmd
@@ -1045,7 +1045,7 @@ script:
       name: host
       required: true
     description: "Show the attached disks and disk information of the target host\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_disk_facts_module.html"
     name: win-disk-facts
     outputs:
     - contextPath: MicrosoftWindows.win_disk_facts.ansible_facts
@@ -1072,7 +1072,7 @@ script:
       - absent
       - present
     description: "Manage ISO/VHD/VHDX mounts on Windows hosts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_disk_image_module.html"
     name: win-disk-image
     outputs:
     - contextPath: MicrosoftWindows.win_disk_image.mount_path
@@ -1102,7 +1102,7 @@ script:
         connections.
       name: ipv4_addresses
       required: true
-    description: "Configures DNS lookup on Windows hosts\n Further documentation availiable\
+    description: "Configures DNS lookup on Windows hosts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_dns_client_module.html"
     name: win-dns-client
     outputs: []
@@ -1157,7 +1157,7 @@ script:
         You can specify an IP address or any value that resolves to an IP address,
         such as a fully qualified domain name (FQDN), host name, or NETBIOS name.'
       name: computer_name
-    description: "Manage Windows Server DNS records\n Further documentation availiable\
+    description: "Manage Windows Server DNS records\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_dns_record_module.html"
     name: win-dns-record
     outputs: []
@@ -1230,7 +1230,7 @@ script:
       - Win2012R2
       - WinThreshold
     description: "Ensures the existence of a Windows domain\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_domain_module.html"
     name: win-domain
     outputs:
     - contextPath: MicrosoftWindows.win_domain.reboot_required
@@ -1312,7 +1312,7 @@ script:
       predefined:
       - absent
       - present
-    description: "Manage computers in Active Directory\n Further documentation availiable\
+    description: "Manage computers in Active Directory\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_domain_computer_module.html"
     name: win-domain-computer
     outputs: []
@@ -1366,7 +1366,7 @@ script:
         If not set then the default path is `%SYSTEMROOT%\SYSVOL`.'
       name: sysvol_path
     description: "Manage domain controller/member server state for a Windows host\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_controller_module.html"
     name: win-domain-controller
     outputs:
     - contextPath: MicrosoftWindows.win_domain_controller.reboot_required
@@ -1464,7 +1464,7 @@ script:
       - absent
       - present
     description: "Creates, modifies or removes domain groups\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_module.html"
     name: win-domain-group
     outputs:
     - contextPath: MicrosoftWindows.win_domain_group.attributes
@@ -1554,7 +1554,7 @@ script:
         If not specified then the value is based on the domain of the computer running
         PowerShell.'
       name: domain_server
-    description: "Manage Windows domain group membership\n Further documentation availiable\
+    description: "Manage Windows domain group membership\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_domain_group_membership_module.html"
     name: win-domain-group-membership
     outputs:
@@ -1606,7 +1606,7 @@ script:
         Windows host should be in.
       name: workgroup_name
     description: "Manage domain/workgroup membership for a Windows host\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_domain_membership_module.html"
     name: win-domain-membership
     outputs:
     - contextPath: MicrosoftWindows.win_domain_membership.reboot_required
@@ -1771,7 +1771,7 @@ script:
         PowerShell.'
       name: domain_server
     description: "Manages Windows Active Directory user accounts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_domain_user_module.html"
     name: win-domain-user
     outputs:
     - contextPath: MicrosoftWindows.win_domain_user.account_locked
@@ -1854,7 +1854,7 @@ script:
       name: host
       required: true
     description: "Runs ngen to recompile DLLs after .NET  updates\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_dotnet_ngen_module.html"
     name: win-dotnet-ngen
     outputs:
     - contextPath: MicrosoftWindows.win_dotnet_ngen.dotnet_ngen_update_exit_code
@@ -1935,7 +1935,7 @@ script:
         invalid fields.'
       name: free_form
       required: true
-    description: "Invokes a PowerShell DSC configuration\n Further documentation availiable\
+    description: "Invokes a PowerShell DSC configuration\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_dsc_module.html"
     name: win-dsc
     outputs:
@@ -1992,7 +1992,7 @@ script:
       - user
       required: true
     description: "Modify environment variables on windows hosts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_environment_module.html"
     name: win-environment
     outputs:
     - contextPath: MicrosoftWindows.win_environment.before_value
@@ -2068,7 +2068,7 @@ script:
 
         This option is only used when `overflow_action` is `OverwriteOlder`.'
       name: retention_days
-    description: "Manage Windows event logs\n Further documentation availiable at\
+    description: "Manage Windows event logs\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html"
     name: win-eventlog
     outputs:
@@ -2134,7 +2134,7 @@ script:
 
         Value must be a comma-separated array of 8-bit unsigned integers (0 to 255).'
       name: raw_data
-    description: "Write entries to Windows event logs\n Further documentation availiable\
+    description: "Write entries to Windows event logs\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html"
     name: win-eventlog-entry
     outputs: []
@@ -2174,7 +2174,7 @@ script:
         Can either be `{driveletter}:\sources\sxs` or `\\{IP}\share\sources\sxs`.'
       name: source
     description: "Installs and uninstalls Windows Features on Windows Server\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_feature_module.html"
     name: win-feature
     outputs:
     - contextPath: MicrosoftWindows.win_feature.exitcode
@@ -2216,7 +2216,7 @@ script:
       - file
       - touch
     description: "Creates, touches or removes files or directories\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html"
     name: win-file
     outputs: []
   - arguments:
@@ -2231,7 +2231,7 @@ script:
         Always provide absolute path.'
       name: path
       required: true
-    description: "Get DLL or EXE file build version\n Further documentation availiable\
+    description: "Get DLL or EXE file build version\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_file_version_module.html"
     name: win-file-version
     outputs:
@@ -2347,7 +2347,7 @@ script:
       description: Will set patterns to run as a regex check if set to `yes`.
       name: use_regex
     description: "Return a list of files based on specific criteria\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_find_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_find_module.html"
     name: win-find
     outputs:
     - contextPath: MicrosoftWindows.win_find.examined
@@ -2383,7 +2383,7 @@ script:
       predefined:
       - disabled
       - enabled
-    description: "Enable or disable the Windows Firewall\n Further documentation availiable\
+    description: "Enable or disable the Windows Firewall\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html"
     name: win-firewall
     outputs:
@@ -2489,7 +2489,7 @@ script:
         Defaults to `domain,private,public` when creating a new rule.'
       isArray: true
       name: profiles
-    description: "Windows firewall automation\n Further documentation availiable at\
+    description: "Windows firewall automation\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_firewall_rule_module.html"
     name: win-firewall-rule
     outputs: []
@@ -2542,7 +2542,7 @@ script:
         created from new partitions or if the source and target file system are different.
       name: force
     description: "Formats an existing volume or a new volume on an existing partition\
-      \ on Windows\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html"
+      \ on Windows\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html"
     name: win-format
     outputs: []
   - arguments:
@@ -2708,7 +2708,7 @@ script:
         will occur.'
       name: proxy_use_default_credential
     description: "Downloads file from HTTP, HTTPS, or FTP to node\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html"
     name: win-get-url
     outputs:
     - contextPath: MicrosoftWindows.win_get_url.dest
@@ -2755,7 +2755,7 @@ script:
       predefined:
       - absent
       - present
-    description: "Add and remove local groups\n Further documentation availiable at\
+    description: "Add and remove local groups\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_group_module.html"
     name: win-group
     outputs: []
@@ -2795,7 +2795,7 @@ script:
       - absent
       - present
       - pure
-    description: "Manage Windows local group membership\n Further documentation availiable\
+    description: "Manage Windows local group membership\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html"
     name: win-group-membership
     outputs:
@@ -2824,7 +2824,7 @@ script:
     - description: The hostname to set for the computer.
       name: name
       required: true
-    description: "Manages local Windows computer name\n Further documentation availiable\
+    description: "Manages local Windows computer name\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html"
     name: win-hostname
     outputs:
@@ -2887,7 +2887,7 @@ script:
       - add
       - remove
       - set
-    description: "Manages hosts file entries on Windows.\n Further documentation availiable\
+    description: "Manages hosts file entries on Windows.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_hosts_module.html"
     name: win-hosts
     outputs: []
@@ -2934,7 +2934,7 @@ script:
         This MUST be set if `state=present` and MUST be a .msu hotfix file.'
       name: source
     description: "Install and uninstalls Windows hotfixes\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_hotfix_module.html"
     name: win-hotfix
     outputs:
     - contextPath: MicrosoftWindows.win_hotfix.identifier
@@ -2994,7 +2994,7 @@ script:
       name: source
       predefined:
       - ie
-    description: "Manages proxy settings for WinHTTP\n Further documentation availiable\
+    description: "Manages proxy settings for WinHTTP\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_http_proxy_module.html"
     name: win-http-proxy
     outputs: []
@@ -3028,7 +3028,7 @@ script:
 
         The specified folder must already exist.'
       name: physical_path
-    description: "Configures a virtual directory in IIS\n Further documentation availiable\
+    description: "Configures a virtual directory in IIS\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_virtualdirectory_module.html"
     name: win-iis-virtualdirectory
     outputs: []
@@ -3058,7 +3058,7 @@ script:
       name: physical_path
     - description: The application pool in which the new site executes.
       name: application_pool
-    description: "Configures IIS web applications\n Further documentation availiable\
+    description: "Configures IIS web applications\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapplication_module.html"
     name: win-iis-webapplication
     outputs:
@@ -3122,7 +3122,7 @@ script:
       - restarted
       - started
       - stopped
-    description: "Configure IIS Web Application Pools\n Further documentation availiable\
+    description: "Configure IIS Web Application Pools\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_webapppool_module.html"
     name: win-iis-webapppool
     outputs:
@@ -3181,7 +3181,7 @@ script:
 
         Set to c(1) to enable SNI.'
       name: ssl_flags
-    description: "Configures a IIS Web site binding\n Further documentation availiable\
+    description: "Configures a IIS Web site binding\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_iis_webbinding_module.html"
     name: win-iis-webbinding
     outputs:
@@ -3244,7 +3244,7 @@ script:
     - description: Custom site Parameters from string where properties are separated
         by a pipe and property name/values by colon Ex. "foo:1|bar:2"
       name: parameters
-    description: "Configures a IIS Web site\n Further documentation availiable at\
+    description: "Configures a IIS Web site\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html"
     name: win-iis-website
     outputs: []
@@ -3308,7 +3308,7 @@ script:
         Omit, set to null or an empty string to remove the proxy settings.'
       name: proxy
     description: "Manages proxy settings for WinINet and Internet Explorer\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_inet_proxy_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_inet_proxy_module.html"
     name: win-inet-proxy
     outputs: []
   - arguments:
@@ -3420,7 +3420,7 @@ script:
       - unix
       - windows
     description: "Ensure a particular line is in a file, or replace an existing line\
-      \ using a back-referenced regular expression\n Further documentation availiable\
+      \ using a back-referenced regular expression\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html"
     name: win-lineinfile
     outputs:
@@ -3489,7 +3489,7 @@ script:
         If become or CredSSP is used, any credentials saved with `win_credential`
         will automatically be used instead.'
       name: username
-    description: "Map network drives for users\n Further documentation availiable\
+    description: "Map network drives for users\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html"
     name: win-mapped-drive
     outputs: []
@@ -3519,7 +3519,7 @@ script:
         The message must be less than 256 characters.'
       name: msg
     description: "Sends a message to logged in users on Windows hosts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html"
     name: win-msg
     outputs:
     - contextPath: MicrosoftWindows.win_msg.msg
@@ -3565,7 +3565,7 @@ script:
       isArray: true
       name: adapter_names
     description: "Manage NetBIOS over TCP/IP settings on Windows.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_netbios_module.html"
     name: win-netbios
     outputs:
     - contextPath: MicrosoftWindows.win_netbios.reboot_required
@@ -3662,7 +3662,7 @@ script:
       - delayed
       - disabled
       - manual
-    description: "Install a service using NSSM\n Further documentation availiable\
+    description: "Install a service using NSSM\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html"
     name: win-nssm
     outputs: []
@@ -3695,7 +3695,7 @@ script:
 
         Can either be `{driveletter}:\sources\sxs` or `\\{IP}\share\sources\sxs`.'
       name: source
-    description: "Manage optional Windows features\n Further documentation availiable\
+    description: "Manage optional Windows features\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html"
     name: win-optional-feature
     outputs:
@@ -3718,7 +3718,7 @@ script:
     - defaultValue: 'False'
       description: Indicates if the owner should be changed recursively.
       name: recurse
-    description: "Set owner\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html"
+    description: "Set owner\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html"
     name: win-owner
     outputs: []
   - arguments:
@@ -3829,7 +3829,7 @@ script:
         This is only valid for MSI files, use `arguments` for other package types.'
       name: log_path
     description: "Installs/uninstalls an installable package\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html"
     name: win-package
     outputs:
     - contextPath: MicrosoftWindows.win_package.log
@@ -3884,7 +3884,7 @@ script:
       - absent
       - present
       - query
-    description: "Query or change pagefile configuration\n Further documentation availiable\
+    description: "Query or change pagefile configuration\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_pagefile_module.html"
     name: win-pagefile
     outputs:
@@ -3979,7 +3979,7 @@ script:
       - basic_data
       - microsoft_recovery
     description: "Creates, changes and removes partitions on Windows Server\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html"
     name: win-partition
     outputs: []
   - arguments:
@@ -4030,7 +4030,7 @@ script:
       - machine
       - user
     description: "Manage Windows path environment variables\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_path_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_path_module.html"
     name: win-path
     outputs: []
   - arguments:
@@ -4057,7 +4057,7 @@ script:
     - description: Minimum version of the pester module that has to be available on
         the remote host.
       name: version
-    description: "Run Pester tests on Windows hosts\n Further documentation availiable\
+    description: "Run Pester tests on Windows hosts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html"
     name: win-pester
     outputs:
@@ -4080,7 +4080,7 @@ script:
         If this parameter is set to `crash`, the module will cause an exception.'
       name: data
     description: "A windows version of the classic ping module\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html"
     name: win-ping
     outputs:
     - contextPath: MicrosoftWindows.win_ping.ping
@@ -4101,7 +4101,7 @@ script:
       name: name
       required: true
     description: "Changes the power plan of a Windows system\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_power_plan_module.html"
     name: win-power-plan
     outputs:
     - contextPath: MicrosoftWindows.win_power_plan.power_plan_name
@@ -4121,7 +4121,7 @@ script:
       name: host
       required: true
     description: "Provides Windows product and license information\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_product_facts_module.html"
     name: win-product-facts
     outputs:
     - contextPath: MicrosoftWindows.win_product_facts.ansible_facts
@@ -4209,7 +4209,7 @@ script:
         Only use for non-interactive applications.'
       name: wait
     description: "Runs commands (remotely) as another (privileged) user\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psexec_module.html"
     name: win-psexec
     outputs:
     - contextPath: MicrosoftWindows.win_psexec.cmd
@@ -4282,7 +4282,7 @@ script:
         module instead.'
       name: url
     description: "Adds or removes a Windows PowerShell module\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_psmodule_module.html"
     name: win-psmodule
     outputs:
     - contextPath: MicrosoftWindows.win_psmodule.output
@@ -4328,7 +4328,7 @@ script:
       - trusted
       - untrusted
     description: "Adds, removes or updates a Windows PowerShell repository.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_psrepository_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_psrepository_module.html"
     name: win-psrepository
     outputs: []
   - arguments:
@@ -4355,7 +4355,7 @@ script:
       - enabled
     - description: Specify a custom install prefix to a Rabbit.
       name: prefix
-    description: "Manage RabbitMQ plugins\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html"
+    description: "Manage RabbitMQ plugins\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rabbitmq_plugin_module.html"
     name: win-rabbitmq-plugin
     outputs:
     - contextPath: MicrosoftWindows.win_rabbitmq_plugin.enabled
@@ -4455,7 +4455,7 @@ script:
     - description: Allow Plug and Play devices redirection.
       name: redirect_pnp
     description: "Manage Connection Authorization Policies (CAP) on a Remote Desktop\
-      \ Gateway server\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_rds_cap_module.html"
+      \ Gateway server\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_cap_module.html"
     name: win-rds-cap
     outputs: []
   - arguments:
@@ -4520,7 +4520,7 @@ script:
         This is required when `computer_group_type` is `rdg_group` or `ad_network_resource_group`.'
       name: computer_group
     description: "Manage Resource Authorization Policies (RAP) on a Remote Desktop\
-      \ Gateway server\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_rds_rap_module.html"
+      \ Gateway server\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_rap_module.html"
     name: win-rds-rap
     outputs: []
   - arguments:
@@ -4556,7 +4556,7 @@ script:
         messages can connect.
       name: enable_only_messaging_capable_clients
     description: "Manage main settings of a Remote Desktop Gateway server\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_rds_settings_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_rds_settings_module.html"
     name: win-rds-settings
     outputs: []
   - arguments:
@@ -4603,7 +4603,7 @@ script:
     - defaultValue: Reboot initiated by Ansible
       description: Message to display to users.
       name: msg
-    description: "Reboot a windows machine\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html"
+    description: "Reboot a windows machine\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_reboot_module.html"
     name: win-reboot
     outputs:
     - contextPath: MicrosoftWindows.win_reboot.rebooted
@@ -4630,7 +4630,7 @@ script:
         value.'
       name: name
     description: "Get information about Windows registry keys\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_reg_stat_module.html"
     name: win-reg-stat
     outputs:
     - contextPath: MicrosoftWindows.win_reg_stat.changed
@@ -4732,7 +4732,7 @@ script:
         `SeBackupPrivilege` privileges enabled.'
       name: hive
     description: "Add, change, or remove registry keys and values\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html"
     name: win-regedit
     outputs:
     - contextPath: MicrosoftWindows.win_regedit.data_changed
@@ -4770,7 +4770,7 @@ script:
         or `unicode_language` has resulted in a change. If this process runs then
         it will always result in a change.
       name: copy_settings
-    description: "Set the region and format settings\n Further documentation availiable\
+    description: "Set the region and format settings\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_region_module.html"
     name: win-region
     outputs:
@@ -4795,7 +4795,7 @@ script:
         and the module will report changed.
       name: compare_key
     description: "Merges the contents of a registry file into the Windows registry\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html"
     name: win-regmerge
     outputs:
     - contextPath: MicrosoftWindows.win_regmerge.compare_to_key_found
@@ -4839,7 +4839,7 @@ script:
         If set, `purge` and `recurse` will be ignored.'
       name: flags
     description: "Synchronizes the contents of two directories using Robocopy\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html"
     name: win-robocopy
     outputs:
     - contextPath: MicrosoftWindows.win_robocopy.cmd
@@ -4895,7 +4895,7 @@ script:
       predefined:
       - absent
       - present
-    description: "Add or remove a static route\n Further documentation availiable\
+    description: "Add or remove a static route\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_route_module.html"
     name: win-route
     outputs:
@@ -4948,7 +4948,7 @@ script:
         speaking.'
       name: end_sound_path
     description: "Text to speech module for Windows to speak messages and optionally\
-      \ play sounds\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html"
+      \ play sounds\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html"
     name: win-say
     outputs:
     - contextPath: MicrosoftWindows.win_say.message_text
@@ -5181,7 +5181,7 @@ script:
     - description: Whether the task will wake the computer when it is time to run
         the task.
       name: wake_to_run
-    description: "Manage scheduled tasks\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_module.html"
+    description: "Manage scheduled tasks\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_module.html"
     name: win-scheduled-task
     outputs: []
   - arguments:
@@ -5199,7 +5199,7 @@ script:
         If `name` is set and exists, will return information on the task itself.'
       name: name
     description: "Get information about Windows Scheduled Tasks\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_scheduled_task_stat_module.html"
     name: win-scheduled-task-stat
     outputs:
     - contextPath: MicrosoftWindows.win_scheduled_task_stat.actions
@@ -5261,7 +5261,7 @@ script:
         If the key takes in a boolean value then 0 = False and 1 = True.'
       name: value
       required: true
-    description: "Change local security policy settings\n Further documentation availiable\
+    description: "Change local security policy settings\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_security_policy_module.html"
     name: win-security-policy
     outputs:
@@ -5396,7 +5396,7 @@ script:
         to be able to start up. You can use the `win_user_right` module to grant this
         user right for you.'
       name: username
-    description: "Manage and query Windows services\n Further documentation availiable\
+    description: "Manage and query Windows services\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_service_module.html"
     name: win-service
     outputs:
@@ -5489,7 +5489,7 @@ script:
     - defaultValue: 'False'
       description: Sets whether to encrypt the traffic to the share or not.
       name: encrypt
-    description: "Manage Windows shares\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html"
+    description: "Manage Windows shares\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html"
     name: win-share
     outputs:
     - contextPath: MicrosoftWindows.win_share.actions
@@ -5557,7 +5557,7 @@ script:
       description: When `src` is an executable, this can control whether the shortcut
         will be opened as an administrator or not.
       name: run_as_admin
-    description: "Manage shortcuts on Windows\n Further documentation availiable at\
+    description: "Manage shortcuts on Windows\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_shortcut_module.html"
     name: win-shortcut
     outputs: []
@@ -5588,7 +5588,7 @@ script:
       - add
       - set
       - remove
-    description: "Configures the Windows SNMP service\n Further documentation availiable\
+    description: "Configures the Windows SNMP service\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_snmp_module.html"
     name: win-snmp
     outputs:
@@ -5642,7 +5642,7 @@ script:
         In the case of `path` pointing to another link, then that will be followed
         until no more links are found.'
       name: follow
-    description: "Get information about Windows files\n Further documentation availiable\
+    description: "Get information about Windows files\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html"
     name: win-stat
     outputs:
@@ -5679,7 +5679,7 @@ script:
       description: Suffix of file/directory name created by module.
       name: suffix
     description: "Creates temporary files and directories\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html"
     name: win-tempfile
     outputs:
     - contextPath: MicrosoftWindows.win_tempfile.path
@@ -5761,7 +5761,7 @@ script:
 
         The source template file must always be encoded using `utf-8`, for homogeneity.'
       name: output_encoding
-    description: "Template a file out to a remote server\n Further documentation availiable\
+    description: "Template a file out to a remote server\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_template_module.html"
     name: win-template
     outputs:
@@ -5780,7 +5780,7 @@ script:
         Example: Central Standard Time'
       name: timezone
       required: true
-    description: "Sets Windows machine timezone\n Further documentation availiable\
+    description: "Sets Windows machine timezone\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_timezone_module.html"
     name: win-timezone
     outputs:
@@ -5820,7 +5820,7 @@ script:
       description: The notification title, which appears in the pop up..
       name: title
     description: "Sends Toast windows notification to logged in users on Windows 10\
-      \ or later hosts\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html"
+      \ or later hosts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html"
     name: win-toast
     outputs:
     - contextPath: MicrosoftWindows.win_toast.expire_at_utc
@@ -5864,7 +5864,7 @@ script:
         extracted.
       name: creates
     description: "Unzips compressed files and archives on the Windows node\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html"
     name: win-unzip
     outputs:
     - contextPath: MicrosoftWindows.win_unzip.dest
@@ -5978,7 +5978,7 @@ script:
         Can also be set to `yes` on newer hosts where become does not work due to
         further privilege restrictions from the OS defaults.'
       name: use_scheduled_task
-    description: "Download and install Windows updates\n Further documentation availiable\
+    description: "Download and install Windows updates\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_updates_module.html"
     name: win-updates
     outputs:
@@ -6157,7 +6157,7 @@ script:
         there will be no default credentials available and no proxy authentication
         will occur.'
       name: proxy_use_default_credential
-    description: "Interacts with webservices\n Further documentation availiable at\
+    description: "Interacts with webservices\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html"
     name: win-uri
     outputs:
@@ -6260,7 +6260,7 @@ script:
       - absent
       - present
       - query
-    description: "Manages local Windows user accounts\n Further documentation availiable\
+    description: "Manages local Windows user accounts\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html"
     name: win-user
     outputs:
@@ -6348,7 +6348,7 @@ script:
         When `state` is `absent` then this must still be a valid account number but
         the SID can be a deleted user''s SID.'
       name: username
-    description: "Manages the Windows user profiles.\n Further documentation availiable\
+    description: "Manages the Windows user profiles.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html"
     name: win-user-profile
     outputs:
@@ -6396,7 +6396,7 @@ script:
       - add
       - remove
       - set
-    description: "Manage Windows User Rights\n Further documentation availiable at\
+    description: "Manage Windows User Rights\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html"
     name: win-user-right
     outputs:
@@ -6470,7 +6470,7 @@ script:
       description: The maximum number of seconds to wait for.
       name: timeout
     description: "Waits for a condition before continuing\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html"
     name: win-wait-for
     outputs:
     - contextPath: MicrosoftWindows.win_wait_for.wait_attempts
@@ -6539,7 +6539,7 @@ script:
         or stop before erroring out.
       name: timeout
     description: "Waits for a process to exist or not exist before continuing.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_process_module.html"
     name: win-wait-for-process
     outputs:
     - contextPath: MicrosoftWindows.win_wait_for_process.elapsed
@@ -6567,7 +6567,7 @@ script:
       description: UDP port to use for magic Wake-on-LAN packet.
       name: port
     description: "Send a magic Wake-on-LAN (WoL) broadcast packet\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_wakeonlan_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_wakeonlan_module.html"
     name: win-wakeonlan
     outputs: []
   - arguments:
@@ -6581,7 +6581,7 @@ script:
       name: name
       required: true
     description: "Installs packages using Web Platform Installer command-line\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/win_webpicmd_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/win_webpicmd_module.html"
     name: win-webpicmd
     outputs: []
   - arguments:
@@ -6592,7 +6592,7 @@ script:
       name: host
       required: true
     description: "Get information about the current user and process\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_whoami_module.html"
     name: win-whoami
     outputs:
     - contextPath: MicrosoftWindows.win_whoami.authentication_package
@@ -6694,7 +6694,7 @@ script:
       name: xpath
       required: true
     description: "Manages XML file content on Windows hosts\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/win_xml_module.html"
     name: win-xml
     outputs:
     - contextPath: MicrosoftWindows.win_xml.backup_file

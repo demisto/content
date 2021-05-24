@@ -73,7 +73,7 @@ script:
       - present
       - default
     description: "Manages AAA server global configuration.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_module.html"
     name: nxos-aaa-server
     outputs:
     - contextPath: CiscoNXOS.nxos_aaa_server.commands
@@ -122,7 +122,7 @@ script:
       - present
       - absent
     description: "Manages AAA server host-specific configuration.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_host_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_aaa_server_host_module.html"
     name: nxos-aaa-server-host
     outputs:
     - contextPath: CiscoNXOS.nxos_aaa_server_host.proposed
@@ -291,7 +291,7 @@ script:
       - present
       - absent
       - delete_acl
-    description: "Manages access list entries for ACLs.\n Further documentation availiable\
+    description: "Manages access list entries for ACLs.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_acl_module.html"
     name: nxos-acl
     outputs:
@@ -325,7 +325,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages applying ACLs to interfaces.\n Further documentation availiable\
+    description: "Manages applying ACLs to interfaces.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_acl_interface_module.html"
     name: nxos-acl-interface
     outputs:
@@ -363,7 +363,7 @@ script:
       - present
       - absent
     description: "Manage multiline banners on Cisco NXOS devices\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_banner_module.html"
     name: nxos-banner
     outputs:
     - contextPath: CiscoNXOS.nxos_banner.commands
@@ -423,7 +423,7 @@ script:
     - description: BFD fabricpath control vlan.
       name: fabricpath_vlan
     description: "Bidirectional Forwarding Detection (BFD) global-level configuration\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_global_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_global_module.html"
     name: nxos-bfd-global
     outputs:
     - contextPath: CiscoNXOS.nxos_bfd_global.cmds
@@ -449,7 +449,7 @@ script:
       - overridden
       - deleted
     description: "Manages BFD attributes of nxos interfaces.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_interfaces_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_bfd_interfaces_module.html"
     name: nxos-bfd-interfaces
     outputs:
     - contextPath: CiscoNXOS.nxos_bfd_interfaces.before
@@ -601,7 +601,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages BGP configuration.\n Further documentation availiable at\
+    description: "Manages BGP configuration.\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_module.html"
     name: nxos-bgp
     outputs:
@@ -738,7 +738,7 @@ script:
       - present
       - absent
     description: "Manages BGP Address-family configuration.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_af_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_af_module.html"
     name: nxos-bgp-af
     outputs:
     - contextPath: CiscoNXOS.nxos_bgp_af.commands
@@ -850,7 +850,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages BGP neighbors configurations.\n Further documentation availiable\
+    description: "Manages BGP neighbors configurations.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_module.html"
     name: nxos-bgp-neighbor
     outputs:
@@ -1007,7 +1007,7 @@ script:
       - present
       - absent
     description: "Manages BGP address-family's neighbors configuration.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_af_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_bgp_neighbor_af_module.html"
     name: nxos-bgp-neighbor-af
     outputs:
     - contextPath: CiscoNXOS.nxos_bgp_neighbor_af.commands
@@ -1055,7 +1055,7 @@ script:
         indicates how to long to wait before trying the command again.
       name: interval
     description: "Run arbitrary command on Cisco NXOS devices\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_command_module.html"
     name: nxos-command
     outputs:
     - contextPath: CiscoNXOS.nxos_command.stdout
@@ -1212,7 +1212,7 @@ script:
       isArray: true
       name: backup_options
     description: "Manage Cisco NXOS configuration sections\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_config_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_config_module.html"
     name: nxos-config
     outputs:
     - contextPath: CiscoNXOS.nxos_config.commands
@@ -1247,7 +1247,7 @@ script:
       name: nv_overlay_evpn
       required: true
     description: "Handles the EVPN control plane for VXLAN.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_global_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_global_module.html"
     name: nxos-evpn-global
     outputs:
     - contextPath: CiscoNXOS.nxos_evpn_global.commands
@@ -1282,7 +1282,7 @@ script:
       - present
       - absent
     description: "Manages Cisco EVPN VXLAN Network Identifier (VNI).\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_vni_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_evpn_vni_module.html"
     name: nxos-evpn-vni
     outputs:
     - contextPath: CiscoNXOS.nxos_evpn_vni.commands
@@ -1310,7 +1310,7 @@ script:
         'lag_interfaces', 'telemetry', 'vlans', 'lacp', 'lacp_interfaces', 'interfaces',
         'l3_interfaces', 'l2_interfaces', 'lldp_global'.
       name: gather_network_resources
-    description: "Gets facts about NX-OS switches\n Further documentation availiable\
+    description: "Gets facts about NX-OS switches\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_facts_module.html"
     name: nxos-facts
     outputs:
@@ -1413,7 +1413,7 @@ script:
       predefined:
       - enabled
       - disabled
-    description: "Manage features in NX-OS switches.\n Further documentation availiable\
+    description: "Manage features in NX-OS switches.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_feature_module.html"
     name: nxos-feature
     outputs:
@@ -1473,7 +1473,7 @@ script:
       - absent
       required: true
     description: "Trigger a graceful removal or insertion (GIR) of the switch.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_module.html"
     name: nxos-gir
     outputs:
     - contextPath: CiscoNXOS.nxos_gir.final_system_mode
@@ -1509,7 +1509,7 @@ script:
       - present
       - absent
     description: "Create a maintenance-mode or normal-mode profile for GIR.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_profile_management_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_gir_profile_management_module.html"
     name: nxos-gir-profile-management
     outputs:
     - contextPath: CiscoNXOS.nxos_gir_profile_management.proposed
@@ -1577,7 +1577,7 @@ script:
       - present
       - absent
     description: "Manages HSRP configuration on NX-OS switches.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_hsrp_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_hsrp_module.html"
     name: nxos-hsrp
     outputs:
     - contextPath: CiscoNXOS.nxos_hsrp.commands
@@ -1605,7 +1605,7 @@ script:
       predefined:
       - present
       - default
-    description: "Manages IGMP global configuration.\n Further documentation availiable\
+    description: "Manages IGMP global configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_module.html"
     name: nxos-igmp
     outputs:
@@ -1696,7 +1696,7 @@ script:
       - present
       - absent
       - default
-    description: "Manages IGMP interface configuration.\n Further documentation availiable\
+    description: "Manages IGMP interface configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_interface_module.html"
     name: nxos-igmp-interface
     outputs:
@@ -1741,7 +1741,7 @@ script:
       - present
       - default
     description: "Manages IGMP snooping global configuration.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_snooping_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_igmp_snooping_module.html"
     name: nxos-igmp-snooping
     outputs:
     - contextPath: CiscoNXOS.nxos_igmp_snooping.commands
@@ -1779,7 +1779,7 @@ script:
       - 'yes'
       - 'no'
     description: "Set boot options like boot, kickstart image and issu.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_install_os_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_install_os_module.html"
     name: nxos-install-os
     outputs:
     - contextPath: CiscoNXOS.nxos_install_os.install_state
@@ -1866,7 +1866,7 @@ script:
       - present
       - absent
     description: "Manages configuration of an OSPF interface instance.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_interface_ospf_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_interface_ospf_module.html"
     name: nxos-interface-ospf
     outputs:
     - contextPath: CiscoNXOS.nxos_interface_ospf.commands
@@ -1892,7 +1892,7 @@ script:
       - overridden
       - deleted
     description: "Manages interface attributes of NX-OS Interfaces\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_interfaces_module.html"
     name: nxos-interfaces
     outputs:
     - contextPath: CiscoNXOS.nxos_interfaces.before
@@ -1924,7 +1924,7 @@ script:
       - overridden
       - deleted
     description: "Manages Layer-2 Interfaces attributes of NX-OS Interfaces\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_l2_interfaces_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_l2_interfaces_module.html"
     name: nxos-l2-interfaces
     outputs:
     - contextPath: CiscoNXOS.nxos_l2_interfaces.before
@@ -1956,7 +1956,7 @@ script:
       - overridden
       - deleted
     description: "Manages Layer-3 Interfaces attributes of NX-OS Interfaces\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_l3_interfaces_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_l3_interfaces_module.html"
     name: nxos-l3-interfaces
     outputs:
     - contextPath: CiscoNXOS.nxos_l3_interfaces.before
@@ -1987,7 +1987,7 @@ script:
       - replaced
       - deleted
     description: "Manage Global Link Aggregation Control Protocol (LACP) on Cisco\
-      \ NX-OS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_module.html"
+      \ NX-OS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_module.html"
     name: nxos-lacp
     outputs:
     - contextPath: CiscoNXOS.nxos_lacp.before
@@ -2019,7 +2019,7 @@ script:
       - overridden
       - deleted
     description: "Manage Link Aggregation Control Protocol (LACP) attributes of interfaces\
-      \ on Cisco NX-OS devices.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_interfaces_module.html"
+      \ on Cisco NX-OS devices.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lacp_interfaces_module.html"
     name: nxos-lacp-interfaces
     outputs:
     - contextPath: CiscoNXOS.nxos_lacp_interfaces.before
@@ -2051,7 +2051,7 @@ script:
       - overridden
       - deleted
     description: "Manages link aggregation groups of NX-OS Interfaces\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lag_interfaces_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_lag_interfaces_module.html"
     name: nxos-lag-interfaces
     outputs:
     - contextPath: CiscoNXOS.nxos_lag_interfaces.before
@@ -2079,7 +2079,7 @@ script:
       - present
       - absent
     description: "Manage LLDP configuration on Cisco NXOS network devices.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_module.html"
     name: nxos-lldp
     outputs:
     - contextPath: CiscoNXOS.nxos_lldp.commands
@@ -2104,7 +2104,7 @@ script:
       - replaced
       - deleted
     description: "Configure and manage Link Layer Discovery Protocol(LLDP) attributes\
-      \ on NX-OS platforms.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_global_module.html"
+      \ on NX-OS platforms.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_lldp_global_module.html"
     name: nxos-lldp-global
     outputs:
     - contextPath: CiscoNXOS.nxos_lldp_global.before
@@ -2193,7 +2193,7 @@ script:
         has been configured Not supported for ansible_connection local. All nxos_logging
         tasks must use the same ansible_connection type.
       name: purge
-    description: "Manage logging on network devices\n Further documentation availiable\
+    description: "Manage logging on network devices\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_logging_module.html"
     name: nxos-logging
     outputs:
@@ -2237,7 +2237,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages core NTP configuration.\n Further documentation availiable\
+    description: "Manages core NTP configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_module.html"
     name: nxos-ntp
     outputs:
@@ -2298,7 +2298,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages NTP authentication.\n Further documentation availiable at\
+    description: "Manages NTP authentication.\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_auth_module.html"
     name: nxos-ntp-auth
     outputs:
@@ -2326,7 +2326,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages NTP options.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_options_module.html"
+    description: "Manages NTP options.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_ntp_options_module.html"
     name: nxos-ntp-options
     outputs:
     - contextPath: CiscoNXOS.nxos_ntp_options.updates
@@ -2399,7 +2399,7 @@ script:
         set the value of this argument to True.
       name: tlsv1_2
     description: "Manage NXAPI configuration on an NXOS device.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_nxapi_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_nxapi_module.html"
     name: nxos-nxapi
     outputs:
     - contextPath: CiscoNXOS.nxos_nxapi.updates
@@ -2426,7 +2426,7 @@ script:
       - present
       - absent
     description: "Manages configuration of an ospf instance.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_module.html"
     name: nxos-ospf
     outputs:
     - contextPath: CiscoNXOS.nxos_ospf.commands
@@ -2501,7 +2501,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages a VRF for an OSPF router.\n Further documentation availiable\
+    description: "Manages a VRF for an OSPF router.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_ospf_vrf_module.html"
     name: nxos-ospf-vrf
     outputs:
@@ -2519,7 +2519,7 @@ script:
       name: anycast_gateway_mac
       required: true
     description: "Configures anycast gateway MAC of the switch.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_overlay_global_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_overlay_global_module.html"
     name: nxos-overlay-global
     outputs:
     - contextPath: CiscoNXOS.nxos_overlay_global.commands
@@ -2548,7 +2548,7 @@ script:
       name: ssm_range
       required: true
     description: "Manages configuration of a PIM instance.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_module.html"
     name: nxos-pim
     outputs:
     - contextPath: CiscoNXOS.nxos_pim.commands
@@ -2619,7 +2619,7 @@ script:
       predefined:
       - present
       - default
-    description: "Manages PIM interface configuration.\n Further documentation availiable\
+    description: "Manages PIM interface configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_interface_module.html"
     name: nxos-pim-interface
     outputs:
@@ -2657,7 +2657,7 @@ script:
       - default
       required: true
     description: "Manages configuration of an PIM static RP address instance.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_rp_address_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_pim_rp_address_module.html"
     name: nxos-pim-rp-address
     outputs:
     - contextPath: CiscoNXOS.nxos_pim_rp_address.commands
@@ -2688,7 +2688,7 @@ script:
       - absent
       - present
     description: "Tests reachability using ping from Nexus switch.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_ping_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_ping_module.html"
     name: nxos-ping
     outputs:
     - contextPath: CiscoNXOS.nxos_ping.commands
@@ -2716,7 +2716,7 @@ script:
     - defaultValue: 'False'
       description: Safeguard boolean. Set to true if you're sure you want to reboot.
       name: confirm
-    description: "Reboot a network device.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_reboot_module.html"
+    description: "Reboot a network device.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_reboot_module.html"
     name: nxos-reboot
     outputs:
     - contextPath: CiscoNXOS.nxos_reboot.rebooted
@@ -2735,7 +2735,7 @@ script:
         checkpoint_file.
       name: rollback_to
     description: "Set a checkpoint or rollback to a checkpoint.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_rollback_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_rollback_module.html"
     name: nxos-rollback
     outputs:
     - contextPath: CiscoNXOS.nxos_rollback.filename
@@ -2769,7 +2769,7 @@ script:
       - present
       - absent
     description: "Install patch or feature rpms on Cisco NX-OS devices.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_rpm_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_rpm_module.html"
     name: nxos-rpm
     outputs:
     - contextPath: CiscoNXOS.nxos_rpm.commands
@@ -2788,7 +2788,7 @@ script:
     - description: The remote file system of the device. If omitted, devices that
         support a file_system parameter will use their default values.
       name: file_system
-    description: "Perform SMUs on Cisco NX-OS devices.\n Further documentation availiable\
+    description: "Perform SMUs on Cisco NX-OS devices.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_smu_module.html"
     name: nxos-smu
     outputs:
@@ -2853,7 +2853,7 @@ script:
         or `action=compare`.
       name: path
     description: "Manage snapshots of the running states of selected features.\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_snapshot_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snapshot_module.html"
     name: nxos-snapshot
     outputs:
     - contextPath: CiscoNXOS.nxos_snapshot.commands
@@ -2886,7 +2886,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages SNMP community configs.\n Further documentation availiable\
+    description: "Manages SNMP community configs.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_community_module.html"
     name: nxos-snmp-community
     outputs:
@@ -2911,7 +2911,7 @@ script:
       - present
       - absent
       required: true
-    description: "Manages SNMP contact info.\n Further documentation availiable at\
+    description: "Manages SNMP contact info.\n Further documentation available at\
       \ https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_contact_module.html"
     name: nxos-snmp-contact
     outputs:
@@ -2975,7 +2975,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages SNMP host configuration.\n Further documentation availiable\
+    description: "Manages SNMP host configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_host_module.html"
     name: nxos-snmp-host
     outputs:
@@ -2999,7 +2999,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages SNMP location information.\n Further documentation availiable\
+    description: "Manages SNMP location information.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_location_module.html"
     name: nxos-snmp-location
     outputs:
@@ -3055,7 +3055,7 @@ script:
       predefined:
       - enabled
       - disabled
-    description: "Manages SNMP traps.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_traps_module.html"
+    description: "Manages SNMP traps.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_traps_module.html"
     name: nxos-snmp-traps
     outputs:
     - contextPath: CiscoNXOS.nxos_snmp_traps.commands
@@ -3097,7 +3097,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages SNMP users for monitoring.\n Further documentation availiable\
+    description: "Manages SNMP users for monitoring.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_snmp_user_module.html"
     name: nxos-snmp-user
     outputs:
@@ -3141,7 +3141,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages static route configuration\n Further documentation availiable\
+    description: "Manages static route configuration\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_static_route_module.html"
     name: nxos-static-route
     outputs:
@@ -3190,7 +3190,7 @@ script:
       - present
       - absent
     description: "Manage the system attributes on Cisco NXOS devices\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_system_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_system_module.html"
     name: nxos-system
     outputs:
     - contextPath: CiscoNXOS.nxos_system.commands
@@ -3215,7 +3215,7 @@ script:
       - replaced
       - deleted
     description: "Telemetry Monitoring Service (TMS) configuration\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_telemetry_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_telemetry_module.html"
     name: nxos-telemetry
     outputs:
     - contextPath: CiscoNXOS.nxos_telemetry.before
@@ -3255,7 +3255,7 @@ script:
       - present
       - absent
     description: "Manages UDLD global configuration params.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_module.html"
     name: nxos-udld
     outputs:
     - contextPath: CiscoNXOS.nxos_udld.proposed
@@ -3301,7 +3301,7 @@ script:
       - present
       - absent
     description: "Manages UDLD interface configuration params.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_interface_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_udld_interface_module.html"
     name: nxos-udld-interface
     outputs:
     - contextPath: CiscoNXOS.nxos_udld_interface.proposed
@@ -3375,7 +3375,7 @@ script:
       - present
       - absent
     description: "Manage the collection of local users on Nexus devices\n Further\
-      \ documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html"
+      \ documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_user_module.html"
     name: nxos-user
     outputs:
     - contextPath: CiscoNXOS.nxos_user.commands
@@ -3410,7 +3410,7 @@ script:
       - overridden
       - deleted
     description: "Create VLAN and manage VLAN configurations on NX-OS Interfaces\n\
-      \ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vlans_module.html"
+      \ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vlans_module.html"
     name: nxos-vlans
     outputs:
     - contextPath: CiscoNXOS.nxos_vlans.before
@@ -3482,7 +3482,7 @@ script:
       - present
       - absent
       required: true
-    description: "Manages global VPC configuration\n Further documentation availiable\
+    description: "Manages global VPC configuration\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_module.html"
     name: nxos-vpc
     outputs:
@@ -3511,7 +3511,7 @@ script:
       - present
       - absent
       required: true
-    description: "Manages interface VPC configuration\n Further documentation availiable\
+    description: "Manages interface VPC configuration\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vpc_interface_module.html"
     name: nxos-vpc-interface
     outputs:
@@ -3568,7 +3568,7 @@ script:
       description: Time in seconds to wait before checking for the operational state
         on remote device. This wait is applicable for operational state arguments.
       name: delay
-    description: "Manages global VRF configuration.\n Further documentation availiable\
+    description: "Manages global VRF configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_module.html"
     name: nxos-vrf
     outputs:
@@ -3602,7 +3602,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages VRF AF.\n Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_af_module.html"
+    description: "Manages VRF AF.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_af_module.html"
     name: nxos-vrf-af
     outputs:
     - contextPath: CiscoNXOS.nxos_vrf_af.commands
@@ -3629,7 +3629,7 @@ script:
       - present
       - absent
     description: "Manages interface specific VRF configuration.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_interface_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrf_interface_module.html"
     name: nxos-vrf-interface
     outputs:
     - contextPath: CiscoNXOS.nxos_vrf_interface.commands
@@ -3677,7 +3677,7 @@ script:
       - present
       - absent
     description: "Manages VRRP configuration on NX-OS switches.\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vrrp_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_vrrp_module.html"
     name: nxos-vrrp
     outputs:
     - contextPath: CiscoNXOS.nxos_vrrp.commands
@@ -3693,7 +3693,7 @@ script:
     - description: VTP domain name.
       name: domain
       required: true
-    description: "Manages VTP domain configuration.\n Further documentation availiable\
+    description: "Manages VTP domain configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_domain_module.html"
     name: nxos-vtp-domain
     outputs:
@@ -3730,7 +3730,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Manages VTP password configuration.\n Further documentation availiable\
+    description: "Manages VTP password configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_password_module.html"
     name: nxos-vtp-password
     outputs:
@@ -3765,7 +3765,7 @@ script:
       - '1'
       - '2'
       required: true
-    description: "Manages VTP version configuration.\n Further documentation availiable\
+    description: "Manages VTP version configuration.\n Further documentation available\
       \ at https://docs.ansible.com/ansible/2.9/modules/nxos_vtp_version_module.html"
     name: nxos-vtp-version
     outputs:
@@ -3828,7 +3828,7 @@ script:
       - present
       - absent
     description: "Manages VXLAN Network Virtualization Endpoint (NVE).\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_module.html"
     name: nxos-vxlan-vtep
     outputs:
     - contextPath: CiscoNXOS.nxos_vxlan_vtep.commands
@@ -3877,7 +3877,7 @@ script:
       - present
       - absent
     description: "Creates a Virtual Network Identifier member (VNI)\n Further documentation\
-      \ availiable at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_vni_module.html"
+      \ available at https://docs.ansible.com/ansible/2.9/modules/nxos_vxlan_vtep_vni_module.html"
     name: nxos-vxlan-vtep-vni
     outputs:
     - contextPath: CiscoNXOS.nxos_vxlan_vtep_vni.commands

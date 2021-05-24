@@ -44,7 +44,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### linux-alternatives
 ***
 Manages alternative programs for common commands
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/alternatives_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/alternatives_module.html
 
 #### Base Command
 
@@ -93,7 +93,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-at
 ***
 Schedule the execution of a command or script file via the at command
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/at_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/at_module.html
 
 
 #### Base Command
@@ -153,7 +153,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-authorized-key
 ***
 Adds or removes an SSH authorized key
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/authorized_key_module.html
 
 
 #### Base Command
@@ -241,7 +241,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-capabilities
 ***
 Manage Linux capabilities
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/capabilities_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/capabilities_module.html
 
 
 #### Base Command
@@ -292,7 +292,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-cron
 ***
 Manage cron.d and crontab entries
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/cron_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cron_module.html
 
 
 #### Base Command
@@ -365,7 +365,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-cronvar
 ***
 Manage variables in crontabs
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/cronvar_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cronvar_module.html
 
 
 #### Base Command
@@ -424,7 +424,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-dconf
 ***
 Modify and read dconf database
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/dconf_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dconf_module.html
 
 
 #### Base Command
@@ -474,7 +474,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-debconf
 ***
 Configure a .deb package
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/debconf_module.html
 
 
 #### Base Command
@@ -508,7 +508,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-filesystem
 ***
 Makes a filesystem
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/filesystem_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/filesystem_module.html
 
 
 #### Base Command
@@ -559,7 +559,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-firewalld
 ***
 Manage arbitrary ports/services with firewalld
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/firewalld_module.html
 
 
 #### Base Command
@@ -621,7 +621,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-gather-facts
 ***
 Gathers facts about remote hosts
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
 
 
 #### Base Command
@@ -1943,7 +1943,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-gconftool2
 ***
 Edit GNOME Configurations
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gconftool2_module.html
 
 
 #### Base Command
@@ -1998,7 +1998,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-getent
 ***
 A wrapper to the unix getent utility
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/getent_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/getent_module.html
 
 
 #### Base Command
@@ -2049,7 +2049,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-group
 ***
 Add or remove groups
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/group_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/group_module.html
 
 
 #### Base Command
@@ -2109,7 +2109,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-hostname
 ***
 Manage hostname
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/hostname_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/hostname_module.html
 
 
 #### Base Command
@@ -2159,7 +2159,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-interfaces-file
 ***
 Tweak settings in /etc/network/interfaces files
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/interfaces_file_module.html
 
 
 #### Base Command
@@ -2206,7 +2206,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-iptables
 ***
 Modify iptables rules
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/iptables_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iptables_module.html
 
 
 #### Base Command
@@ -2304,7 +2304,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-java-cert
 ***
 Uses keytool to import/remove key from java keystore (cacerts)
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_cert_module.html
 
 
 #### Base Command
@@ -2366,7 +2366,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-java-keystore
 ***
 Create or delete a Java keystore in JKS format.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/java_keystore_module.html
 
 
 #### Base Command
@@ -2424,7 +2424,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-kernel-blacklist
 ***
 Blacklist kernel modules
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/kernel_blacklist_module.html
 
 
 #### Base Command
@@ -2477,7 +2477,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-known-hosts
 ***
 Add or remove a host from the C(known_hosts) file
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/known_hosts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/known_hosts_module.html
 
 
 #### Base Command
@@ -2552,7 +2552,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-listen-ports-facts
 ***
 Gather facts on processes listening on TCP and UDP ports.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/listen_ports_facts_module.html
 
 
 #### Base Command
@@ -2707,7 +2707,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-locale-gen
 ***
 Creates or removes locales
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/locale_gen_module.html
 
 
 #### Base Command
@@ -2738,7 +2738,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-modprobe
 ***
 Load or unload kernel modules
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/modprobe_module.html
 
 
 #### Base Command
@@ -2793,7 +2793,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-mount
 ***
 Control active and configured mount points
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/mount_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/mount_module.html
 
 
 #### Base Command
@@ -2863,7 +2863,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-open-iscsi
 ***
 Manage iSCSI targets with Open-iSCSI
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/open_iscsi_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/open_iscsi_module.html
 
 
 #### Base Command
@@ -2902,7 +2902,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-pam-limits
 ***
 Modify Linux PAM limits
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/pam_limits_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pam_limits_module.html
 
 
 #### Base Command
@@ -2960,7 +2960,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-pamd
 ***
 Manage PAM Modules
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/pamd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pamd_module.html
 
 
 #### Base Command
@@ -3030,7 +3030,7 @@ The file name of the backup file, if created. |
 ### linux-parted
 ***
 Configure block device partitions
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/parted_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/parted_module.html
 
 
 #### Base Command
@@ -3129,7 +3129,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-pids
 ***
 Retrieves process IDs list if the process is running otherwise return empty list
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/pids_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pids_module.html
 
 
 #### Base Command
@@ -3172,7 +3172,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-ping
 ***
 Try to connect to host, verify a usable python and return C(pong) on success
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ping_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ping_module.html
 
 
 #### Base Command
@@ -3215,7 +3215,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-python-requirements-info
 ***
 Show python path and assert dependency versions
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/python_requirements_info_module.html
 
 
 #### Base Command
@@ -3298,7 +3298,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-reboot
 ***
 Reboot a machine
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/reboot_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/reboot_module.html
 
 
 #### Base Command
@@ -3336,7 +3336,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-seboolean
 ***
 Toggles SELinux booleans
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/seboolean_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seboolean_module.html
 
 
 #### Base Command
@@ -3369,7 +3369,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-sefcontext
 ***
 Manages SELinux file context mapping definitions
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/sefcontext_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sefcontext_module.html
 
 
 #### Base Command
@@ -3406,7 +3406,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-selinux
 ***
 Change policy and state of SELinux
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/selinux_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_module.html
 
 
 #### Base Command
@@ -3470,7 +3470,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-selinux-permissive
 ***
 Change permissive domain in SELinux policy
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/selinux_permissive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selinux_permissive_module.html
 
 
 #### Base Command
@@ -3503,7 +3503,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-selogin
 ***
 Manages linux user to SELinux user mapping
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/selogin_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/selogin_module.html
 
 
 #### Base Command
@@ -3538,7 +3538,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-seport
 ***
 Manages SELinux network port type definitions
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/seport_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/seport_module.html
 
 
 #### Base Command
@@ -3573,7 +3573,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-service
 ***
 Manage services
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/service_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_module.html
 
 
 #### Base Command
@@ -3852,7 +3852,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-service-facts
 ***
 Return service state information as fact data
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/service_facts_module.html
 
 
 #### Base Command
@@ -5717,7 +5717,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-setup
 ***
 Gathers facts about remote hosts
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/setup_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/setup_module.html
 
 
 #### Base Command
@@ -5750,7 +5750,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-sysctl
 ***
 Manage entries in sysctl.conf.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysctl_module.html
 
 
 #### Base Command
@@ -5803,7 +5803,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-systemd
 ***
 Manage services
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/systemd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/systemd_module.html
 
 
 #### Base Command
@@ -6085,7 +6085,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-sysvinit
 ***
 Manage SysV services.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/sysvinit_module.html
 
 
 #### Base Command
@@ -6123,7 +6123,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-timezone
 ***
 Configure timezone setting
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/timezone_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/timezone_module.html
 
 
 #### Base Command
@@ -6172,7 +6172,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-ufw
 ***
 Manage firewall with UFW
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ufw_module.html
 
 
 #### Base Command
@@ -6219,7 +6219,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-user
 ***
 Manage user accounts
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/user_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/user_module.html
 
 
 #### Base Command
@@ -6300,7 +6300,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-xfs-quota
 ***
 Manage quotas on XFS filesystems
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xfs_quota_module.html
 
 
 #### Base Command
@@ -6345,7 +6345,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-htpasswd
 ***
 manage user files for basic authentication
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/htpasswd_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/htpasswd_module.html
 
 
 #### Base Command
@@ -6389,7 +6389,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-supervisorctl
 ***
 Manage the state of a program or group of programs running via supervisord
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/supervisorctl_module.html
 
 
 #### Base Command
@@ -6426,7 +6426,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-openssh-cert
 ***
 Generate OpenSSH host or user certificates.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_cert_module.html
 
 
 #### Base Command
@@ -6480,7 +6480,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-openssh-keypair
 ***
 Generate OpenSSH private and public keys.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/openssh_keypair_module.html
 
 
 #### Base Command
@@ -6559,7 +6559,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-acl
 ***
 Set and retrieve file ACL information.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/acl_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/acl_module.html
 
 
 #### Base Command
@@ -6600,7 +6600,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-archive
 ***
 Creates a compressed archive of one or more files or trees
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/archive_module.html
 
 
 #### Base Command
@@ -6650,7 +6650,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-assemble
 ***
 Assemble configuration files from fragments
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/assemble_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/assemble_module.html
 
 
 #### Base Command
@@ -6697,7 +6697,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-blockinfile
 ***
 Insert/update/remove a text block surrounded by marker lines
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/blockinfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/blockinfile_module.html
 
 
 #### Base Command
@@ -6746,7 +6746,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-file
 ***
 Manage files and file properties
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/file_module.html
 
 
 #### Base Command
@@ -6794,7 +6794,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-find
 ***
 Return a list of files based on specific criteria
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/find_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/find_module.html
 
 
 #### Base Command
@@ -6865,7 +6865,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-ini-file
 ***
 Tweak settings in INI files
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ini_file_module.html
 
 
 #### Base Command
@@ -6949,7 +6949,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-iso-extract
 ***
 Extract files from an ISO image
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/iso_extract_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/iso_extract_module.html
 
 
 #### Base Command
@@ -6983,7 +6983,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-lineinfile
 ***
 Manage lines in text files
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/lineinfile_module.html
 
 
 #### Base Command
@@ -7054,7 +7054,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-replace
 ***
 Replace all instances of a particular string in a file using a back-referenced regular expression
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/replace_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/replace_module.html
 
 
 #### Base Command
@@ -7120,7 +7120,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-stat
 ***
 Retrieve file or file system status
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/stat_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/stat_module.html
 
 
 #### Base Command
@@ -7173,7 +7173,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-synchronize
 ***
 A wrapper around rsync to make common tasks in your playbooks quick and easy
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/synchronize_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/synchronize_module.html
 
 
 #### Base Command
@@ -7228,7 +7228,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-tempfile
 ***
 Creates temporary files and directories
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/tempfile_module.html
 
 
 #### Base Command
@@ -7297,7 +7297,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-unarchive
 ***
 Unpacks an archive after (optionally) copying it from the local machine.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/unarchive_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/unarchive_module.html
 
 
 #### Base Command
@@ -7346,7 +7346,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-xml
 ***
 Manage bits and pieces of XML files or strings
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/xml_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/xml_module.html
 
 
 #### Base Command
@@ -7399,7 +7399,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-expect
 ***
 Executes a command and responds to prompts.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/expect_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/expect_module.html
 
 
 #### Base Command
@@ -7435,7 +7435,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-bower
 ***
 Manage bower packages with bower
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/bower_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bower_module.html
 
 
 #### Base Command
@@ -7471,7 +7471,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-bundler
 ***
 Manage Ruby Gem dependencies with Bundler
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/bundler_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/bundler_module.html
 
 
 #### Base Command
@@ -7512,7 +7512,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-composer
 ***
 Dependency Manager for PHP
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/composer_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/composer_module.html
 
 
 #### Base Command
@@ -7555,7 +7555,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-cpanm
 ***
 Manages Perl library dependencies.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/cpanm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/cpanm_module.html
 
 
 #### Base Command
@@ -7594,7 +7594,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-gem
 ***
 Manage Ruby gems
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/gem_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gem_module.html
 
 
 #### Base Command
@@ -7637,7 +7637,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-maven-artifact
 ***
 Downloads an Artifact from a Maven Repository
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/maven_artifact_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/maven_artifact_module.html
 
 
 #### Base Command
@@ -7690,7 +7690,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-npm
 ***
 Manage node.js packages with npm
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/npm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/npm_module.html
 
 
 #### Base Command
@@ -7730,7 +7730,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-pear
 ***
 Manage pear/pecl packages
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/pear_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pear_module.html
 
 
 #### Base Command
@@ -7762,7 +7762,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-pip
 ***
 Manages Python library dependencies
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/pip_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_module.html
 
 
 #### Base Command
@@ -7864,7 +7864,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-pip-package-info
 ***
 pip package information
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/pip_package_info_module.html
 
 
 #### Base Command
@@ -7895,7 +7895,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-yarn
 ***
 Manage node.js packages with Yarn
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/yarn_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yarn_module.html
 
 
 #### Base Command
@@ -7937,7 +7937,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-apk
 ***
 Manages apk packages
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/apk_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apk_module.html
 
 
 #### Base Command
@@ -7973,7 +7973,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-apt
 ***
 Manages apt-packages
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/apt_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_module.html
 
 
 #### Base Command
@@ -8023,7 +8023,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-apt-key
 ***
 Add or remove an apt key
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/apt_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_key_module.html
 
 
 #### Base Command
@@ -8060,7 +8060,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-apt-repo
 ***
 Manage APT repositories via apt-repo
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/apt_repo_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repo_module.html
 
 
 #### Base Command
@@ -8093,7 +8093,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-apt-repository
 ***
 Add and remove APT repositories
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/apt_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_repository_module.html
 
 
 #### Base Command
@@ -8129,7 +8129,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-apt-rpm
 ***
 apt_rpm package manager
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/apt_rpm_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/apt_rpm_module.html
 
 
 #### Base Command
@@ -8161,7 +8161,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-dpkg-selections
 ***
 Dpkg package selection selections
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/dpkg_selections_module.html
 
 
 #### Base Command
@@ -8192,7 +8192,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-flatpak
 ***
 Manage flatpaks
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_module.html
 
 
 #### Base Command
@@ -8231,7 +8231,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-flatpak-remote
 ***
 Manage flatpak repository remotes
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/flatpak_remote_module.html
 
 
 #### Base Command
@@ -8270,7 +8270,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-homebrew
 ***
 Package manager for Homebrew
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/homebrew_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_module.html
 
 
 #### Base Command
@@ -8305,7 +8305,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-homebrew-cask
 ***
 Install/uninstall homebrew casks.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/homebrew_cask_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_cask_module.html
 
 
 #### Base Command
@@ -8344,7 +8344,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-homebrew-tap
 ***
 Tap a Homebrew repository.
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/homebrew_tap_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/homebrew_tap_module.html
 
 
 #### Base Command
@@ -8376,7 +8376,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-layman
 ***
 Manage Gentoo overlays
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/layman_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/layman_module.html
 
 
 #### Base Command
@@ -8409,7 +8409,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-package
 ***
 Generic OS package manager
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/package_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_module.html
 
 
 #### Base Command
@@ -8441,7 +8441,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-package-facts
 ***
 package information as facts
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/package_facts_module.html
 
 
 #### Base Command
@@ -16737,7 +16737,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-yum
 ***
 Manages packages with the I(yum) package manager
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_module.html
 
 
 #### Base Command
@@ -16792,7 +16792,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-yum-repository
 ***
 Add or remove YUM repositories
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/yum_repository_module.html
 
 
 #### Base Command
@@ -16901,7 +16901,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-zypper
 ***
 Manage packages on SUSE and openSUSE
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/zypper_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_module.html
 
 
 #### Base Command
@@ -16940,7 +16940,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-zypper-repository
 ***
 Add and remove Zypper repositories
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/zypper_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/zypper_repository_module.html
 
 
 #### Base Command
@@ -16980,7 +16980,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-snap
 ***
 Manages snaps
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/snap_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/snap_module.html
 
 
 #### Base Command
@@ -17018,7 +17018,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-redhat-subscription
 ***
 Manage registration and subscriptions to RHSM using the C(subscription-manager) command
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/redhat_subscription_module.html
 
 
 #### Base Command
@@ -17071,7 +17071,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-rhn-channel
 ***
 Adds or removes Red Hat software channels
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/rhn_channel_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_channel_module.html
 
 
 #### Base Command
@@ -17106,7 +17106,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-rhn-register
 ***
 Manage Red Hat Network registration using the C(rhnreg_ks) command
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/rhn_register_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhn_register_module.html
 
 
 #### Base Command
@@ -17165,7 +17165,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-rhsm-release
 ***
 Set or Unset RHSM Release version
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_release_module.html
 
 
 #### Base Command
@@ -17196,7 +17196,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-rhsm-repository
 ***
 Manage RHSM repositories using the subscription-manager command
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rhsm_repository_module.html
 
 
 #### Base Command
@@ -17231,7 +17231,7 @@ When this module is used to change the repository states, this list contains the
 ### linux-rpm-key
 ***
 Adds or removes a gpg key from the rpm db
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/rpm_key_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/rpm_key_module.html
 
 
 #### Base Command
@@ -17264,7 +17264,7 @@ Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules
 ### linux-get-url
 ***
 Downloads files from HTTP, HTTPS, or FTP to node
-Further documentation availiable at https://docs.ansible.com/ansible/2.9/modules/get_url_module.html
+Further documentation available at https://docs.ansible.com/ansible/2.9/modules/get_url_module.html
 
 
 #### Base Command
