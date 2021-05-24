@@ -13,7 +13,7 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-    "malware": "STIX Malware",
+    "malware": ThreatIntel.ObjectsNames.MALWARE,
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "relationship": "Relationship"
 }
