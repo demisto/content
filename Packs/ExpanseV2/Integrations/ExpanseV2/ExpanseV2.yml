@@ -1094,7 +1094,7 @@ script:
       secret: false
     - default: false
       description: Sort by specified properties.
-      isArray: false
+      isArray: true
       auto: PREDEFINED
       name: sort
       required: false

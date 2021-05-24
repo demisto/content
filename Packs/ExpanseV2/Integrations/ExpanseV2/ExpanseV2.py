@@ -987,7 +987,7 @@ def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[Co
             )
         )
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New IP indicator was found", cloud_resource_standard_context.to_context()),
+            readable_output=tableToMarkdown("New IP indicator was found", {"IP": cloud_resource_data['ips'][0]}),
             indicator=cloud_resource_standard_context
         ))
         hr_cloud_resource_list.append({
@@ -1007,7 +1007,8 @@ def format_cloud_resource_data(cloud_resources: List[Dict[str, Any]]) -> List[Co
         outputs_prefix='Expanse.CloudResource',
         outputs_key_field='id',
         outputs=cloud_resource_data_list if len(cloud_resource_data_list) > 0 else None,
-        readable_output=readable_output
+        readable_output=readable_output,
+        raw_response=cloud_resources
     ))
 
     return command_results
@@ -2573,7 +2574,7 @@ def main() -> None:
             business_units = argToList(params.get('business_unit'))
             issue_types = argToList(params.get('issue_type'))
             tags = argToList(params.get('tag'))
-            cloud_management_status = argToList(params.get('cloud_management_status'))
+            cloud_management_status = params.get('cloud_management_status')
 
             sync_tags = argToList(params.get('sync_tags'))
 
