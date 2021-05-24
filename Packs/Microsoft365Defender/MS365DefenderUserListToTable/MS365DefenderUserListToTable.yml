@@ -1,0 +1,7 @@
+name: MS365DefenderUserListToTable
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
