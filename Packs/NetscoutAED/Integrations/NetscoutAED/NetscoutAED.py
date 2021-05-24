@@ -1069,7 +1069,7 @@ def main() -> None:
         base_url: str = urljoin(params.get('base_url', '').rstrip('/'), '/api/aed/v2')
         verify_certificate: bool = not params.get('insecure', False)
         proxy: bool = params.get('proxy', False)
-        if not params.get('User') and not (api_token := params.get('User', {}).get('password')):
+        if not params.get('User') or not (api_token := params.get('User', {}).get('password')):
             raise DemistoException('Missing API Key. Fill in a valid key in the integration configuration.')
         commands = init_commands_dict()
         demisto_command = demisto.command()

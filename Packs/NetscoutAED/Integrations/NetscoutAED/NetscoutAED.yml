@@ -16,7 +16,9 @@ configuration:
   required: false
   type: 8
 - name: User
+  displaypassword: API Key
   required: false
+  hiddenusername: true
   type: 9
 description: Use the Netscout Arbor Edge Defense Integration to detect and stop both
   inbound threats and outbound communication from internal compromised hosts.
