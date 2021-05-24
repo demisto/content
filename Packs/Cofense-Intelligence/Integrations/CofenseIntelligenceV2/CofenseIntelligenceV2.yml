@@ -214,10 +214,10 @@ script:
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.fileNameExtension
       description: 'extension of the file'
       type: String
-    - contextPath: CofenseIntelligence.Threat.executableSet.md5Hex
+    - contextPath: CofenseIntelligence.IP.Threats.executableSet.md5Hex
       description: 'The md5 hash of the file'
       type: String
-    - contextPath: CofenseIntelligence.Threat.executableSet.sha384Hex
+    - contextPath: CofenseIntelligence.IP.Threats.executableSet.sha384Hex
       description: 'The SHA-384 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.sha512Hex
@@ -965,17 +965,17 @@ script:
     - contextPath: CofenseIntelligence.URL.Threats.senderEmailSet.totalCount
       description: 'Count of the instances of each item named'
       type: Number
-    - contextPath: CofenseIntelligence.Threat.senderEmailSet.senderEmail
+    - contextPath: CofenseIntelligence.URL.Threats.senderEmailSet.senderEmail
       description: 'The possibly spoofed email address used in the delivery of the
         email.'
       type: String
-    - contextPath: CofenseIntelligence.Threat.executableSet.malwareFamily.familyName
+    - contextPath: CofenseIntelligence.URL.Threats.executableSet.malwareFamily.familyName
       description: 'Family name of malware'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.malwareFamily.description
       description: 'Names and describes malware families.'
       type: String
-    - contextPath: CofenseIntelligence.Threat.executableSet.vendorDetections.detected
+    - contextPath: CofenseIntelligence.URL.Threats.executableSet.vendorDetections.detected
       description: 'Was executable detected?'
       type: Boolean
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.vendorDetections.threatVendorName
@@ -1055,7 +1055,7 @@ script:
     - contextPath: CofenseIntelligence.URL.Threats.reportURL
       description: 'Direct URL to human readable report for this campaign'
       type: String
-    - contextPath: CofenseIntelligence.Threat.apiReportURL
+    - contextPath: CofenseIntelligence.URL.Threats.apiReportURL
       description: 'URL to human readable report for this campaign'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.threatDetailURL
