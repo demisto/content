@@ -14,6 +14,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
 
+
 @logger
 class Client(BaseClient):
     """
@@ -1092,7 +1093,7 @@ def main() -> None:
 
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto_command} command. Error: {str(e)}', error=e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}', error=e)
 
 
 ''' ENTRY POINT '''
