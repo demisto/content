@@ -3,7 +3,7 @@
     "contextValue": "",
     "defaultMapping": null,
     "details": "Attack Pattern",
-    "legacyName": ["STIX Attack Pattern"],
+    "legacyNames": ["STIX Attack Pattern"],
     "disabled": false,
     "enhancementScriptNames": [],
     "excludedBrands": [],

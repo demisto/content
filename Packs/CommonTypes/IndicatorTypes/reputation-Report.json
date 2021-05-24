@@ -3,7 +3,7 @@
     "contextValue": "",
     "defaultMapping": null,
     "details": "Report",
-    "legacyName": ["STIX Report"],
+    "legacyNames": ["STIX Report"],
     "disabled": false,
     "enhancementScriptNames": [],
     "excludedBrands": [],

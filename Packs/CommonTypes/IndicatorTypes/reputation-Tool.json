@@ -3,7 +3,7 @@
     "contextValue": "",
     "defaultMapping": null,
     "details": "Tool",
-    "legacyName": ["STIX Tool"],
+    "legacyNames": ["STIX Tool"],
     "disabled": false,
     "enhancementScriptNames": [],
     "excludedBrands": [],

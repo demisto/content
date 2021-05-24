@@ -3,7 +3,7 @@
     "contextValue": "",
     "defaultMapping": null,
     "details": "Threat Actor",
-    "legacyName": ["STIX Threat Actor"],
+    "legacyNames": ["STIX Threat Actor"],
     "disabled": false,
     "enhancementScriptNames": [],
     "excludedBrands": [],
