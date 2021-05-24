@@ -336,13 +336,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email of the incident assignee. NOTE it shows as owner in the API.
+      description: Email of the incident assignee. Note it shows as owner in the API.
       isArray: false
       name: assignee_email
       required: false
       secret: false
     - default: false
-      description: Incident labels.
+      description: Incident labels. Note that all labels will be set as labelType='User'.
       isArray: true
       name: labels
       required: false

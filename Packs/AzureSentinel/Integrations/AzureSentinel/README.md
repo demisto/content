@@ -124,6 +124,7 @@ Gets a list of incidents from Azure Sentinel.
 ##### Base Command
 
 `azure-sentinel-list-incidents`
+`azure-sentinel-update-incident incident_id=1234567 severity=Informational assignee_email=example@example.com`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -196,6 +197,8 @@ Updates a single incident in Azure Sentinel.
 | status | The incident status. | Optional | 
 | classification | The reason the incident was closed. Required when updating the status to Closed. Possible values are:  BenignPositive, FalsePositive, TruePositive, Undetermined | Optional | 
 | classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are:  InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected | Optional | 
+| assignee_email | Email of the incident assignee. Note it shows as owner in the API. | Optional | 
+| labels | Incident labels. Note that all labels will be set as `labelType=User`. | Optional | 
 
 
 ##### Context Output
