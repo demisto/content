@@ -146,7 +146,7 @@ def get_update_incident_request_data(client: Client, args: Dict[str, str]):
     classification = args.get('classification')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
-    labels_raw = args.get('labels')
+    labels = argToList(args.get('labels', ''))
 
     if not title:
         title = demisto.get(result, 'properties.title')
@@ -158,10 +158,19 @@ def get_update_incident_request_data(client: Client, args: Dict[str, str]):
         status = demisto.get(result, 'properties.status')
     if not assignee_email:
         assignee_email = demisto.get(result, 'properties.owner.email')
-    if not labels_raw:
-        labels_formatted = demisto.get(result, 'properties.labels')
-    else:  # if labels are provided in args
-        labels_formatted = [{"labelName": label} for label in argToList(labels_raw) if label]  # labels can not be blank
+
+    existing_labels = demisto.get(result, 'properties.labels')
+    if not labels:  # not provided as arg
+        labels_formatted = existing_labels
+
+    else:
+        # noinspection PyTypeChecker
+        existing_system_label_names = [label['labelName'] for label in existing_labels
+                                       if label['labelType'] == 'System']
+
+        labels_formatted = [{"labelName": label,
+                             "labelType": "System" if label in existing_system_label_names else "User"}
+                            for label in argToList(labels) if label]  # labels can not be blank
     inc_data = {
         'etag': result.get('etag'),
         'properties': {
