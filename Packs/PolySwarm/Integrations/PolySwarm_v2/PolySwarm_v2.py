@@ -78,7 +78,7 @@ class PolyswarmConnector():
             return Common.DBotScore.BAD
 
     def return_hash_results(self,
-                            results: dict,
+                            results: list,
                             title: str,
                             error_msg: str) -> object:
 
