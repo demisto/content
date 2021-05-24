@@ -131,6 +131,33 @@ class Client(BaseClient):
         return response
 
 
+    def api_v1_images_names_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+        params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, id=id_, hostname=hostname, repository=repository, registry=registry, name=name, layers=layers, filterBaseImage=filterBaseImage, compact=compact, trustStatuses=trustStatuses, clusters=clusters)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'images/names', params=params, headers=headers)
+
+        return response
+    def api_v1_images_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+        params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, id=id_, hostname=hostname, repository=repository, registry=registry, name=name, layers=layers, filterBaseImage=filterBaseImage, compact=compact, trustStatuses=trustStatuses, clusters=clusters)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'images', params=params, headers=headers)
+
+        return response
+
+    def api_v1_images_download_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+        params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, id=id_, hostname=hostname, repository=repository, registry=registry, name=name, layers=layers, filterBaseImage=filterBaseImage, compact=compact, trustStatuses=trustStatuses, clusters=clusters)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'images/download', params=params, headers=headers, resp_type="response")
+
+        return response
+
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -312,7 +339,7 @@ def api_v1_list_hosts_command(client, args):
 
     response = client.api_v1_hosts_request(offset, limit, search, sort, reverse, collections, accountIDs, fields, hostname, distro, provider, compact, clusters)
     command_results = CommandResults(
-        outputs_prefix='PrismaCloudCompute.-_sharedImageScanResult',
+        outputs_prefix='PrismaCloudCompute.Host',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -342,6 +369,96 @@ def api_v1_containers_scan_command(client, args):
     )
 
     return command_results
+
+def api_v1_images_names_command(client, args):
+    offset = args.get('offset', None)
+    limit = args.get('limit', None)
+    search = str(args.get('search', ''))
+    sort = str(args.get('sort', ''))
+    reverse = argToBoolean(args.get('reverse', False))
+    collections = str(args.get('collections', ''))
+    accountIDs = str(args.get('accountIDs', ''))
+    fields = str(args.get('fields', ''))
+    id_ = str(args.get('id', ''))
+    hostname = str(args.get('hostname', ''))
+    repository = str(args.get('repository', ''))
+    registry = str(args.get('registry', ''))
+    name = str(args.get('name', ''))
+    layers = argToBoolean(args.get('layers', False))
+    filterBaseImage = argToBoolean(args.get('filterBaseImage', False))
+    compact = argToBoolean(args.get('compact', False))
+    trustStatuses = str(args.get('trustStatuses', ''))
+    clusters = str(args.get('clusters', ''))
+
+    response = client.api_v1_images_names_request(offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters)
+
+    entry = {
+        "Result": response
+    }
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Images',
+        outputs_key_field='',
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_images_command(client, args):
+    offset = args.get('offset', None)
+    limit = args.get('limit', None)
+    search = str(args.get('search', ''))
+    sort = str(args.get('sort', ''))
+    reverse = argToBoolean(args.get('reverse', False))
+    collections = str(args.get('collections', ''))
+    accountIDs = str(args.get('accountIDs', ''))
+    fields = str(args.get('fields', ''))
+    id_ = str(args.get('id', ''))
+    hostname = str(args.get('hostname', ''))
+    repository = str(args.get('repository', ''))
+    registry = str(args.get('registry', ''))
+    name = str(args.get('name', ''))
+    layers = argToBoolean(args.get('layers', False))
+    filterBaseImage = argToBoolean(args.get('filterBaseImage', False))
+    compact = argToBoolean(args.get('compact', False))
+    trustStatuses = str(args.get('trustStatuses', ''))
+    clusters = str(args.get('clusters', ''))
+
+    response = client.api_v1_images_request(offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters)
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Images',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def api_v1_images_download_command(client, args):
+    offset = args.get('offset', None)
+    limit = args.get('limit', None)
+    search = str(args.get('search', ''))
+    sort = str(args.get('sort', ''))
+    reverse = argToBoolean(args.get('reverse', False))
+    collections = str(args.get('collections', ''))
+    accountIDs = str(args.get('accountIDs', ''))
+    fields = str(args.get('fields', ''))
+    id_ = str(args.get('id', ''))
+    hostname = str(args.get('hostname', ''))
+    repository = str(args.get('repository', ''))
+    registry = str(args.get('registry', ''))
+    name = str(args.get('name', ''))
+    layers = argToBoolean(args.get('layers', False))
+    filterBaseImage = argToBoolean(args.get('filterBaseImage', False))
+    compact = argToBoolean(args.get('compact', False))
+    trustStatuses = str(args.get('trustStatuses', ''))
+    clusters = str(args.get('clusters', ''))
+
+    response = client.api_v1_images_download_request(offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters)
+
+    return fileResult("images.csv", response.content)
 
 
 def main():
@@ -388,7 +505,10 @@ def main():
         commands = {
            "prismacloudcompute-logs-defender-download": api_v1_logs_defender_download_command,
            "prismacloudcompute-list-hosts": api_v1_list_hosts_command,
-           "prismacloudcompute-containers-scan": api_v1_containers_scan_command
+           "prismacloudcompute-containers-scan": api_v1_containers_scan_command,
+           "prismacloudcompute-images-names": api_v1_images_names_command,
+           "prismacloudcompute-images": api_v1_images_command,
+           "prismacloudcompute-images-download": api_v1_images_download_command
         }
 
         if demisto.command() == 'test-module':

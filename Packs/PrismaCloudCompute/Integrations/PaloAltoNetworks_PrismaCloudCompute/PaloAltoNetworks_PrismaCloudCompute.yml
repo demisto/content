@@ -93,6 +93,132 @@ script:
   - name: prismacloudcompute-containers-scan
     arguments: []
     description: 'Sends a container scan request to all containers'
+  - name: prismacloudcompute-images-names
+    arguments:
+    - name: offset
+      description: 'Offset from query start '
+    - name: limit
+      description: 'Limit limits the number of documents '
+    - name: search
+      description: 'Search is the search term '
+    - name: sort
+      description: 'Sort is the sort key '
+    - name: reverse
+      description: 'Reverse is the sorting order '
+    - name: collections
+      description: 'Collections are collections scoping the query '
+    - name: accountIDs
+      description: 'AccountIDs are the account IDs scoping the query '
+    - name: fields
+      description: 'Select is a list of fields to select from the query (others will
+        be empty) '
+    - name: id
+      description: 'IDs is the image id filter '
+    - name: hostname
+      description: 'Hosts is the host filter '
+    - name: repository
+      description: 'Repositories is the image repositories filter '
+    - name: registry
+      description: 'Registries is the image registries filter '
+    - name: name
+      description: 'Names is a list of full image names to query by '
+    - name: layers
+      description: 'IncludeImageLayers adds image CVEs to image layers '
+    - name: filterBaseImage
+      description: 'FilterBaseImageVulns indicates to filter the base image vulnerabilities.Requires
+        predefining base images with an existing scan '
+    - name: compact
+      description: 'Compact indicates that only minimum image data should be sent
+        vulnerabilities, compliance and extended image metadata should be skipped '
+    - name: trustStatuses
+      description: 'TrustStatuses is the trust statuses filter '
+    - name: clusters
+      description: 'Clusters is a list of cluster names to query by '
+    description: 'ImageNames returns image names according to the query specification '
+  - name: prismacloudcompute-images
+    arguments:
+    - name: offset
+      description: 'Offset from query start '
+    - name: limit
+      description: 'Limit limits the number of documents '
+    - name: search
+      description: 'Search is the search term '
+    - name: sort
+      description: 'Sort is the sort key '
+    - name: reverse
+      description: 'Reverse is the sorting order '
+    - name: collections
+      description: 'Collections are collections scoping the query '
+    - name: accountIDs
+      description: 'AccountIDs are the account IDs scoping the query '
+    - name: fields
+      description: 'Select is a list of fields to select from the query (others will
+        be empty) '
+    - name: id
+      description: 'IDs is the image id filter '
+    - name: hostname
+      description: 'Hosts is the host filter '
+    - name: repository
+      description: 'Repositories is the image repositories filter '
+    - name: registry
+      description: 'Registries is the image registries filter '
+    - name: name
+      description: 'Names is a list of full image names to query by '
+    - name: layers
+      description: 'IncludeImageLayers adds image CVEs to image layers '
+    - name: filterBaseImage
+      description: 'FilterBaseImageVulns indicates to filter the base image vulnerabilities.
+        Requires predefining base images with an existing scan '
+    - name: compact
+      description: 'Compact indicates that only minimum image data should be sent
+        (vulnerabilities, compliance and extended image metadata should be skipped) '
+    - name: trustStatuses
+      description: 'TrustStatuses is the trust statuses filter '
+    - name: clusters
+      description: 'Clusters is a list of cluster names to query by '
+    description: 'Images returns images by the query specification '
+  - name: prismacloudcompute-images-download
+    arguments:
+    - name: offset
+      description: 'Offset from query start '
+    - name: limit
+      description: 'Limit limits the number of documents '
+    - name: search
+      description: 'Search is the search term '
+    - name: sort
+      description: 'Sort is the sort key '
+    - name: reverse
+      description: 'Reverse is the sorting order '
+    - name: collections
+      description: 'Collections are collections scoping the query '
+    - name: accountIDs
+      description: 'AccountIDs are the account IDs scoping the query '
+    - name: fields
+      description: 'Select is a list of fields to select from the query (others will
+        be empty) '
+    - name: id
+      description: 'IDs is the image id filter '
+    - name: hostname
+      description: 'Hosts is the host filter '
+    - name: repository
+      description: 'Repositories is the image repositories filter '
+    - name: registry
+      description: 'Registries is the image registries filter '
+    - name: name
+      description: 'Names is a list of full image names to query by '
+    - name: layers
+      description: 'IncludeImageLayers adds image CVEs to image layers '
+    - name: filterBaseImage
+      description: 'FilterBaseImageVulns indicates to filter the base image vulnerabilities.
+        Requires predefining base images with an existing scan '
+    - name: compact
+      description: 'Compact indicates that only minimum image data should be sent
+        (vulnerabilities, compliance and extended image metadata should be skipped) '
+    - name: trustStatuses
+      description: 'TrustStatuses is the trust statuses filter '
+    - name: clusters
+      description: 'Clusters is a list of cluster names to query by '
+    description: 'DownloadImages downloads the image data '
 tests:
 - No test
 fromversion: 5.0.0
