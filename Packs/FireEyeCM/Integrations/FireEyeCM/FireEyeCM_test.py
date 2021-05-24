@@ -4,8 +4,8 @@ import json
 import pytest
 
 from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    get_artifacts_metadata_by_uuid, get_events, get_reports, alert_severity_to_dbot_score, to_fe_datetime_converter, \
-    fetch_incidents, to_fe_datetime_converter
+    get_artifacts_metadata_by_uuid, get_events, get_reports, alert_severity_to_dbot_score, fetch_incidents, \
+    to_fe_datetime_converter
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
     GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
 
