@@ -27,18 +27,18 @@ BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 # ====== BUCKET CONFIGURATION  ======
 if [[ -z "$1" ]]; then
-  GCS_MARKET_BUCKET='marketplace-dist'
+  GCS_MARKET_BUCKET=$GCS_PRODUCTION_BUCKET
 else
   GCS_MARKET_BUCKET=$1
 fi
 
-if [[ "$GCS_MARKET_BUCKET" == "marketplace-dist" ]]; then
+if [[ "$GCS_MARKET_BUCKET" == "$GCS_PRODUCTION_BUCKET" ]]; then
   SOURCE_PATH="content"
 else
   # ====== UPDATING TESTING BUCKET ======
   SOURCE_PATH="upload-flow/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/content"
-  echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
-  gsutil -m cp -r "gs://marketplace-dist/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing.log" 2>&1
+  echo "Copying production bucket files at: gs://$GCS_PRODUCTION_BUCKET/content to testing bucket at path: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH ..."
+  gsutil -m cp -r "gs://$GCS_PRODUCTION_BUCKET/content" "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" > "$ARTIFACTS_FOLDER/logs/Prepare Content Packs For Testing.log" 2>&1
   echo "Finished copying successfully."
   # ====== UPDATING TESTING BUCKET ======
 fi
