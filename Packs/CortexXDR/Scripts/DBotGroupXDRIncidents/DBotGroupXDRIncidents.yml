@@ -29,6 +29,7 @@ args:
   secret: false
 - default: false
   defaultValue: Cortex XDR Incident
+  description: The Cortex XDR incident type
   isArray: false
   name: incidentType
   required: false
@@ -67,8 +68,9 @@ args:
   name: fieldsToDisplay
   required: false
   secret: false
+comment: Train clustering model on Cortex XDR incident type.
 commonfields:
-  id: c77b1a46-168f-4484-9a33-7ea5035fd156
+  id: DBotGroupXDRIncidents
   version: -1
 enabled: false
 name: DBotGroupXDRIncidents
@@ -79,4 +81,6 @@ tags:
   - widget
 timeout: 3.6µs
 type: python
+tests:
+  - No tests (auto formatted)
 fromversion: 6.2.0

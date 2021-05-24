@@ -1,16 +1,6 @@
 {
-    "id": "7ae700ad-9c94-47cc-8ddb-f2555c943449",
-    "version": 9,
-    "modified": "2021-05-20T13:45:56.001811809Z",
-    "sortValues": null,
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "6.2.0",
-    "toServerVersion": "",
-    "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
+    "id": "Cortex XDR Events Grouping",
+    "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
     "period": {
@@ -22,16 +12,7 @@
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "roles": null,
-    "allRead": false,
-    "allReadWrite": false,
-    "previousRoles": null,
-    "previousAllRead": false,
-    "previousAllReadWrite": false,
-    "hasRole": false,
-    "dbotCreatedBy": "",
     "name": "Cortex XDR Events Grouping",
-    "prevName": "Cortex XDR Events Grouping",
     "layout": [
         {
             "id": "8cc4ac20-b35a-11eb-9e54-7d1db5554075",
@@ -79,12 +60,12 @@
                 },
                 "params": {
                     "returnWidgetType": "summary",
-                    "tableColumns": []
+                    "tableColumns": [
+                    ]
                 },
                 "size": 0,
                 "category": ""
-            },
-            "reflectDimensions": false
+            }
         },
         {
             "id": "cf432d50-b95f-11eb-bc3c-579f145ea812",
@@ -132,12 +113,12 @@
                 },
                 "params": {
                     "returnWidgetType": "incidents",
-                    "tableColumns": []
+                    "tableColumns": [
+                    ]
                 },
                 "size": 0,
                 "category": ""
-            },
-            "reflectDimensions": false
+            }
         },
         {
             "id": "f59d1400-b970-11eb-83d5-2b88253a452b",
@@ -185,15 +166,14 @@
                     },
                     "fromDateLicense": "0001-01-01T00:00:00Z"
                 },
-                "params": {},
+                "params": {
+                },
                 "size": 0,
                 "category": ""
-            },
-            "reflectDimensions": false
+            }
         }
     ],
-    "system": false,
-    "isCommon": false,
-    "owner": "admin",
-    "locked": false
+    "fromVersion": "6.2.0",
+    "description": "",
+    "isPredefined": true
 }
