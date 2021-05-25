@@ -32,9 +32,9 @@ configuration:
   required: true
   type: 4
 description: Manage VMware vSphere Server, Guests, and ESXi Hosts
-display: VMware V2
+display: VMware v2
 fromversion: 6.0.0
-name: VMware V2
+name: VMwareV2
 script:
   commands:
   - arguments: []

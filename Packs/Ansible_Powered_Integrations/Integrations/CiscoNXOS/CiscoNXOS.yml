@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: CiscoNXOS
+  id: CiscoNX-OS
   version: -1
 configuration:
 - additionalinfo: The credentials to associate with the instance. SSH keys can be
@@ -24,9 +24,9 @@ configuration:
   required: true
   type: 0
 description: Cisco NX-OS Platform management over SSH
-display: Cisco NXOS
+display: Cisco NX-OS
 fromversion: 6.0.0
-name: CiscoNXOS
+name: CiscoNX-OS
 script:
   commands:
   - arguments:
