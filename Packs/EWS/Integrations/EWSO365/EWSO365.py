@@ -2,6 +2,8 @@ import random
 import string
 from typing import Dict
 
+import chardet
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -2060,10 +2062,12 @@ def parse_incident_from_item(item):
                                     and header.name != "Content-Type"
                             ):
                                 attached_email.add_header(header.name, header.value)
-
+                    attached_email_bytes = attached_email.as_bytes()
+                    chardet_detection = chardet.detect(attached_email_bytes)
+                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email.as_bytes().decode('utf-8'),
+                        attached_email_bytes.decode(encoding),
                     )
 
                 if file_result:
