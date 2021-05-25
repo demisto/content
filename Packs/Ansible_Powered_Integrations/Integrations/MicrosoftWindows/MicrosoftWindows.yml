@@ -5607,18 +5607,6 @@ script:
         and back slashes are accepted.
       name: path
       required: true
-    - defaultValue: 'False'
-      description: 'Whether to return the checksum sum of the file. Between Ansible
-        1.9 and Ansible 2.2 this is no longer an MD5, but a SHA1 instead. As of Ansible
-        2.3 this is back to an MD5. Will return None if host is unable to use specified
-        algorithm.
-
-        The default of this option changed from `yes` to `no` in Ansible 2.5 and will
-        be removed altogether in Ansible 2.9.
-
-        Use `get_checksum=yes` with `checksum_algorithm=md5` to return an md5 hash
-        under the `checksum` return value.'
-      name: get_md5
     - defaultValue: 'True'
       description: Whether to return a checksum of the file (default sha1)
       name: get_checksum
