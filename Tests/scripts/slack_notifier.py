@@ -380,7 +380,7 @@ def main():
     test_type = options.test_type
     env_results_file_name = options.env_results_file_name
     bucket_upload = options.bucket_upload
-    ci_artifacts_path = options.ci_artifacts
+    ci_artifacts_path = options.ci_artifacts or ARTIFACTS_FOLDER
     job_name = options.job_name
     slack_channel = options.slack_channel or CONTENT_CHANNEL
     gitlab_server = options.gitlab_server
