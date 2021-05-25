@@ -23,7 +23,6 @@ outputs:
     one  of the given incidents.
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
