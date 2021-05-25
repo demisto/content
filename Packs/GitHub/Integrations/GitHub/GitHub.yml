@@ -2925,7 +2925,13 @@ script:
       description: Entry ID for the file to commit.
       isArray: false
       name: entry_id
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: Plain text for the file to commit.
+      isArray: false
+      name: file_text
+      required: false
       secret: false
     - default: false
       description: The branch name.

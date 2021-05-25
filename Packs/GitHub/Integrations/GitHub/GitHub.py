@@ -1521,14 +1521,22 @@ def commit_file_command():
     path_to_file = args.get('path_to_file')
     branch = args.get('branch_name')
     entry_id = args.get('entry_id')
+    file_text = args.get('file_text')
     file_sha = args.get('file_sha')
-    file_path = demisto.getFilePath(entry_id).get('path')
-    with open(file_path, 'rb') as f:
-        file_content = f.read()
-    decoded_content = base64.b64encode(file_content).decode("utf-8")
+
+    if not entry_id and not file_text:
+        raise DemistoException("You have to specify either the file_text or the entry_id of the file.")
+    elif entry_id:
+        file_path = demisto.getFilePath(entry_id).get('path')
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+        content = file_content
+    else:
+        content = bytes(file_text, encoding='utf8')
+
     data = {
         'message': commit_message,
-        'content': decoded_content,
+        'content': base64.b64encode(content).decode("utf-8"),
         'branch': branch
     }
     if file_sha:
