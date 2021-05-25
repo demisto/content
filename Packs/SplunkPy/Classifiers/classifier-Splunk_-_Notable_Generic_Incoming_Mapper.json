@@ -1,0 +1,180 @@
+{
+    "description": "Maps Splunk ES incoming fields.",
+    "feed": false,
+    "id": "Splunk - Notable Generic Incoming Mapper",
+    "mapping": {
+        "Splunk Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Notable - ID": {
+                    "complex": null,
+                    "simple": "event_id"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                }
+            }
+        },
+        "Splunk Notable Generic": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Asset Table": {
+                    "complex": null,
+                    "simple": "Asset"
+                },
+                "Assigned User": {
+                    "complex": null,
+                    "simple": "owner"
+                },
+                "Dsts": {
+                    "complex": null,
+                    "simple": "dest"
+                },
+                "Identity Table": {
+                    "complex": null,
+                    "simple": "Identity"
+                },
+                "Notable - ID": {
+                    "complex": null,
+                    "simple": "event_id"
+                },
+                "Notable Drilldown": {
+                    "complex": null,
+                    "simple": "Drilldown"
+                },
+                "Notable Status": {
+                    "complex": null,
+                    "simple": "status_label"
+                },
+                "Notable Urgency": {
+                    "complex": null,
+                    "simple": "urgency"
+                },
+                "Srcs": {
+                    "complex": null,
+                    "simple": "src"
+                },
+                "Successful Asset Enrichment": {
+                    "complex": null,
+                    "simple": "successful_asset_enrichment"
+                },
+                "Successful Drilldown Enrichment": {
+                    "complex": null,
+                    "simple": "successful_drilldown_enrichment"
+                },
+                "Successful Identity Enrichment": {
+                    "complex": null,
+                    "simple": "successful_identity_enrichment"
+                },
+                "Tags": {
+                    "complex": null,
+                    "simple": "tag"
+                },
+                "Usernames": {
+                    "complex": null,
+                    "simple": "user"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "rule_description"
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "event_id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": " - "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            },
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "suffix": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "rule_name"
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "_time"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Categories": {
+                    "complex": null,
+                    "simple": "security_domain"
+                },
+                "dbotMirrorDirection": {
+                    "complex": null,
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": null,
+                    "simple": "event_id"
+                },
+                "dbotMirrorInstance": {
+                    "complex": null,
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "Splunk - Notable Generic Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
