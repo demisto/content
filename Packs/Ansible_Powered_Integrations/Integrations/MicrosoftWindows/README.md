@@ -80,7 +80,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-acl
 ***
 Set file/directory/registry permissions for a system user or group
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html
 
 
 #### Base Command
@@ -107,16 +107,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-acl host="123.123.123.123" user="Fed-Phil" path="C:\\Important\\Executable.exe" type="deny" rights="ExecuteFile,Write" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_acl": [
+            {
+                "changed": false,
+                "host": "123.123.123.123",
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
 
 ### win-acl-inheritance
 ***
 Change ACL inheritance
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_inheritance_module.html
 
 
 #### Base Command
@@ -129,7 +145,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | path | Path to be used for changing inheritance. | Required | 
 | state | Specify whether to enable `present` or disable `absent` ACL inheritance. Possible values are: absent, present. Default is absent. | Optional | 
-| reorganize | For state = `absent`, indicates if the inherited ACE's should be copied from the parent directory. This is necessary (in combination with removal) for a simple ACL instead of using multiple ACE deny entries.<br/>For state = `present`, indicates if the inherited ACE's should be deduplicated compared to the parent directory. This removes complexity of the ACL structure. Default is False. | Optional | 
+| reorganize | For P(state) = `absent`, indicates if the inherited ACE's should be copied from the parent directory. This is necessary (in combination with removal) for a simple ACL instead of using multiple ACE deny entries.<br/>For P(state) = `present`, indicates if the inherited ACE's should be deduplicated compared to the parent directory. This removes complexity of the ACL structure. Default is False. | Optional | 
 
 
 #### Context Output
@@ -139,11 +155,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-acl-inheritance host="123.123.123.123" path="C://apache" state="absent"```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_acl_inheritance": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
 
 ### win-audit-policy-system
 ***
@@ -236,16 +268,49 @@ Will be one of file, directory, registry. |
 
 
 #### Command Example
-``` ```
+```!win-audit-rule host="123.123.123.123" path="C:\\inetpub\\wwwroot\\website" user="BUILTIN\\Users" rights="write,delete,changepermissions" audit_flags="success,failure" inheritance_flags="ContainerInherit,ObjectInherit" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_audit_rule": [
+            {
+                "changed": false,
+                "current_audit_rules": {
+                    "audit_flags": "Success, Failure",
+                    "inheritance_flags": "ContainerInherit, ObjectInherit",
+                    "is_inherited": "False",
+                    "propagation_flags": "None",
+                    "rights": "Write, Delete, ChangePermissions",
+                    "user": "BUILTIN\\Users"
+                },
+                "host": "123.123.123.123",
+                "path_type": "directory",
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
+># Current_Audit_Rules #
+>* audit_flags: Success, Failure
+>* inheritance_flags: ContainerInherit, ObjectInherit
+>* is_inherited: False
+>* propagation_flags: None
+>* rights: Write, Delete, ChangePermissions
+>* user: BUILTIN\Users
+>  * path_type: directory
 
 ### win-certificate-store
 ***
 Manages the certificate store
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_certificate_store_module.html
 
 
 #### Base Command
@@ -275,17 +340,36 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-certificate-store host="123.123.123.123" path="C:\\Temp\\cert.pem" state="present" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_certificate_store": [
+            {
+                "changed": false,
+                "host": "123.123.123.123",
+                "status": "SUCCESS",
+                "thumbprints": [
+                    "67E9C1B115CA6FE9E7351AB2B6C736069752E6CE"
+                ]
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
+># Thumbprints #
+>* 0: 67E9C1B115CA6FE9E7351AB2B6C736069752E6CE
 ### win-chocolatey
 ***
 Manage packages using chocolatey
 Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
-
 
 #### Base Command
 
@@ -406,7 +490,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-chocolatey-facts
 ***
 Create a facts collection for Chocolatey
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_facts_module.html
 
 
 #### Base Command
@@ -427,12 +511,156 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-chocolatey-facts host="123.123.123.123" ```
+```!win-chocolatey-facts host="123.123.123.123"```
 
 #### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_chocolatey_facts": [
+            {
+                "chocolatey": {
+                    "config": {
+                        "cacheLocation": "",
+                        "commandExecutionTimeoutSeconds": 2700,
+                        "containsLegacyPackageInstalls": true,
+                        "proxy": "",
+                        "proxyBypassList": "",
+                        "proxyBypassOnLocal": true,
+                        "proxyPassword": "",
+                        "proxyUser": "",
+                        "upgradeAllExceptions": "",
+                        "webRequestTimeoutSeconds": 30
+                    },
+                    "feature": {
+                        "allowEmptyChecksums": false,
+                        "allowEmptyChecksumsSecure": true,
+                        "allowGlobalConfirmation": false,
+                        "autoUninstaller": true,
+                        "checksumFiles": true,
+                        "exitOnRebootDetected": false,
+                        "failOnAutoUninstaller": false,
+                        "failOnInvalidOrMissingLicense": false,
+                        "failOnStandardError": false,
+                        "ignoreInvalidOptionsSwitches": true,
+                        "ignoreUnfoundPackagesOnUpgradeOutdated": false,
+                        "logEnvironmentValues": false,
+                        "logValidationResultsOnWarnings": true,
+                        "logWithoutColor": false,
+                        "powershellHost": true,
+                        "removePackageInformationOnUninstall": false,
+                        "scriptsCheckLastExitCode": false,
+                        "showDownloadProgress": true,
+                        "showNonElevatedWarnings": true,
+                        "skipPackageUpgradesWhenNotInstalled": false,
+                        "stopOnFirstPackageFailure": false,
+                        "useEnhancedExitCodes": false,
+                        "useFipsCompliantChecksums": false,
+                        "usePackageExitCodes": true,
+                        "usePackageRepositoryOptimizations": true,
+                        "useRememberedArgumentsForUpgrades": false,
+                        "virusCheck": false
+                    },
+                    "packages": [
+                        {
+                            "package": "chocolatey",
+                            "version": "0.10.15"
+                        },
+                        {
+                            "package": "chocolatey-core.extension",
+                            "version": "1.3.5.1"
+                        },
+                        {
+                            "package": "Firefox",
+                            "version": "88.0.1"
+                        }
+                    ],
+                    "sources": [
+                        {
+                            "admin_only": false,
+                            "allow_self_service": false,
+                            "bypass_proxy": false,
+                            "certificate": null,
+                            "disabled": false,
+                            "name": "chocolatey",
+                            "priority": 0,
+                            "source": "https://chocolatey.org/api/v2/",
+                            "source_username": null
+                        }
+                    ]
+                },
+                "host": "123.123.123.123",
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  SUCCESS 
+># Chocolatey #
+>* ## Config ##
+>  * cacheLocation: 
+>  * commandExecutionTimeoutSeconds: 2700
+>  * containsLegacyPackageInstalls: True
+>  * proxy: 
+>  * proxyBypassList: 
+>  * proxyBypassOnLocal: True
+>  * proxyPassword: 
+>  * proxyUser: 
+>  * upgradeAllExceptions: 
+>  * webRequestTimeoutSeconds: 30
+>* ## Feature ##
+>  * allowEmptyChecksums: False
+>  * allowEmptyChecksumsSecure: True
+>  * allowGlobalConfirmation: False
+>  * autoUninstaller: True
+>  * checksumFiles: True
+>  * exitOnRebootDetected: False
+>  * failOnAutoUninstaller: False
+>  * failOnInvalidOrMissingLicense: False
+>  * failOnStandardError: False
+>  * ignoreInvalidOptionsSwitches: True
+>  * ignoreUnfoundPackagesOnUpgradeOutdated: False
+>  * logEnvironmentValues: False
+>  * logValidationResultsOnWarnings: True
+>  * logWithoutColor: False
+>  * powershellHost: True
+>  * removePackageInformationOnUninstall: False
+>  * scriptsCheckLastExitCode: False
+>  * showDownloadProgress: True
+>  * showNonElevatedWarnings: True
+>  * skipPackageUpgradesWhenNotInstalled: False
+>  * stopOnFirstPackageFailure: False
+>  * useEnhancedExitCodes: False
+>  * useFipsCompliantChecksums: False
+>  * usePackageExitCodes: True
+>  * usePackageRepositoryOptimizations: True
+>  * useRememberedArgumentsForUpgrades: False
+>  * virusCheck: False
+>* ## Packages ##
+>* ### List ###
+>  * package: chocolatey
+>  * version: 0.10.15
+>* ### List ###
+>  * package: chocolatey-core.extension
+>  * version: 1.3.5.1
+>* ### List ###
+>  * package: Firefox
+>  * version: 88.0.1
+>* ## Sources ##
+>* ### Chocolatey ###
+>  * admin_only: False
+>  * allow_self_service: False
+>  * bypass_proxy: False
+>  * certificate: None
+>  * disabled: False
+>  * name: chocolatey
+>  * priority: 0
+>  * source: https://chocolatey.org/api/v2/
+>  * source_username: None
 
 ### win-chocolatey-feature
 ***
@@ -543,7 +771,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-copy
 ***
 Copies files to remote locations on windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_copy_module.html
 
 
 #### Base Command
@@ -578,11 +806,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-copy host="123.123.123.123" src="C:\\Important\\Executable.exe" dest="C:\\Temp" remote_src=yes```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_copy": [
+            {
+                "changed": true,
+                "checksum": "4a2446ee9651d90ac6c5613bddf416df197f6401",
+                "dest": "C:\\Temp\\Executable.exe",
+                "host": "123.123.123.123",
+                "operation": "file_copy",
+                "original_basename": "Executable.exe",
+                "size": 32256,
+                "src": "C:\\Important\\Executable.exe",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * checksum: 4a2446ee9651d90ac6c5613bddf416df197f6401
+>  * dest: C:\Temp\Executable.exe
+>  * operation: file_copy
+>  * original_basename: Executable.exe
+>  * size: 32256
+>  * src: C:\Important\Executable.exe
 
 ### win-credential
 ***
@@ -627,7 +883,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-defrag
 ***
 Consolidate fragmented files on local volumes
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_defrag_module.html
 
 
 #### Base Command
@@ -658,7 +914,52 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-```!win-defrag host="123.123.123.123" parallel="True" ```
+```!win-defrag host="123.123.123.123"```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_defrag": [
+            {
+                "changed": true,
+                "cmd": "defrag.exe /C /V",
+                "delta": "0:00:00.062504",
+                "end": "2021-05-25 06:10:53.672101",
+                "host": "123.123.123.123",
+                "rc": 0,
+                "start": "2021-05-25 06:10:53.609597",
+                "status": "CHANGED",
+                "stderr": "",
+                "stderr_lines": [],
+                "stdout": "Microsoft Drive Optimizer\r\nCopyright (c) 2013 Microsoft Corp.\r\n",
+                "stdout_lines": [
+                    "Microsoft Drive Optimizer",
+                    "Copyright (c) 2013 Microsoft Corp."
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * cmd: defrag.exe /C /V
+>  * delta: 0:00:00.062504
+>  * end: 2021-05-25 06:10:53.672101
+>  * rc: 0
+>  * start: 2021-05-25 06:10:53.609597
+>  * stderr: 
+># Stderr_Lines #
+>  * stdout: Microsoft Drive Optimizer
+>Copyright (c) 2013 Microsoft Corp.
+>
+># Stdout_Lines #
+>* 0: Microsoft Drive Optimizer
+>* 1: Copyright (c) 2013 Microsoft Corp.
 
 ### win-disk-facts
 ***
@@ -1069,11 +1370,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-disk-image host="123.123.123.123" image_path="C:/install.iso" state="present" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_disk_image": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "mount_paths": [
+                    "E:\\"
+                ],
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+># Mount_Paths #
+>* 0: E:\
 
 ### win-dns-client
 ***
@@ -1725,7 +2047,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-eventlog-entry
 ***
 Write entries to Windows event logs
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_entry_module.html
 
 
 #### Base Command
@@ -1752,12 +2074,29 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-eventlog-entry host="123.123.123.123" log="System" source="System" event_id="1234" message="This is a test log entry." ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_eventlog_entry": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "msg": "Entry added to log System from source System",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * msg: Entry added to log System from source System
 ### win-feature
 ***
 Installs and uninstalls Windows Features on Windows Server
@@ -2045,7 +2384,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-file
 ***
 Creates, touches or removes files or directories
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
 
 
 #### Base Command
@@ -2067,12 +2406,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-file host="123.123.123.123" path="C:/Temp/foo.conf" state="touch" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_file": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
 ### win-file-version
 ***
 Get DLL or EXE file build version
@@ -2361,7 +2715,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-format
 ***
 Formats an existing volume or a new volume on an existing partition on Windows
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_format_module.html
 
 
 #### Base Command
@@ -2392,16 +2746,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-format host="123.123.123.123" drive_letter=f```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_format": [
+            {
+                "changed": false,
+                "host": "123.123.123.123",
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
 
 ### win-get-url
 ***
 Downloads file from HTTP, HTTPS, or FTP to node
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_get_url_module.html
 
 
 #### Base Command
@@ -2453,16 +2823,47 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-get-url host="123.123.123.123" url="https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/297755main_GPN-2001-000009_full.jpg" dest="C:\\Temp\\earthrise.jpg" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_get_url": [
+            {
+                "changed": true,
+                "checksum_dest": "40c7d97574e7c791d649582912620f7d816829e4",
+                "checksum_src": "40c7d97574e7c791d649582912620f7d816829e4",
+                "dest": "C:\\Temp\\earthrise.jpg",
+                "elapsed": 1.4687531999999999,
+                "host": "123.123.123.123",
+                "msg": "OK",
+                "size": 45108,
+                "status": "CHANGED",
+                "status_code": 200,
+                "url": "https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/297755main_GPN-2001-000009_full.jpg"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * checksum_dest: 40c7d97574e7c791d649582912620f7d816829e4
+>  * checksum_src: 40c7d97574e7c791d649582912620f7d816829e4
+>  * dest: C:\Temp\earthrise.jpg
+>  * elapsed: 1.4687531999999999
+>  * msg: OK
+>  * size: 45108
+>  * status_code: 200
+>  * url: https://www.nasa.gov/sites/default/files/styles/full_width_feature/public/images/297755main_GPN-2001-000009_full.jpg
 ### win-group
 ***
 Add and remove local groups
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_module.html
 
 
 #### Base Command
@@ -2485,16 +2886,32 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-group host="123.123.123.123" name="deploy" description="Deploy Group" state="present" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_group": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
 
 ### win-group-membership
 ***
 Manage Windows local group membership
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_group_membership_module.html
 
 
 #### Base Command
@@ -2521,16 +2938,44 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-group-membership host="123.123.123.123" name="Remote Desktop Users" members="Fed-Phil" state="present" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_group_membership": [
+            {
+                "added": [
+                    "WIN-U425UI0HPP7\\Fed-Phil"
+                ],
+                "changed": true,
+                "host": "123.123.123.123",
+                "members": [
+                    "WIN-U425UI0HPP7\\Fed-Phil"
+                ],
+                "name": "Remote Desktop Users",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+># Added #
+>* 0: WIN-U425UI0HPP7\Fed-Phil
+>  * changed: True
+># Members #
+>* 0: WIN-U425UI0HPP7\Fed-Phil
+>  * name: Remote Desktop Users
 
 ### win-hostname
 ***
 Manages local Windows computer name
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_hostname_module.html
 
 
 #### Base Command
@@ -2553,11 +2998,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-hostname host="123.123.123.123" name="sample-hostname" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_hostname": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "old_name": "WIN-U425UI0HPP7",
+                "reboot_required": true,
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * old_name: WIN-U425UI0HPP7
+>  * reboot_required: True
 
 ### win-hosts
 ***
@@ -2978,7 +3443,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-lineinfile
 ***
 Ensure a particular line is in a file, or replace an existing line using a back-referenced regular expression
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_lineinfile_module.html
 
 
 #### Base Command
@@ -3014,12 +3479,33 @@ This is now deprecated, use \`backup_file\` instead. |
 
 
 #### Command Example
-``` ```
+```!win-lineinfile host="123.123.123.123" path="c:/temp/file.txt" line="c:/temp/new" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_lineinfile": [
+            {
+                "backup": "",
+                "changed": false,
+                "encoding": "utf-8",
+                "host": "123.123.123.123",
+                "msg": "",
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  SUCCESS 
+>  * backup: 
+>  * changed: False
+>  * encoding: utf-8
+>  * msg: 
 ### win-mapped-drive
 ***
 Map network drives for users
@@ -3057,7 +3543,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-msg
 ***
 Sends a message to logged in users on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_msg_module.html
 
 
 #### Base Command
@@ -3087,11 +3573,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-msg host="123.123.123.123" display_seconds="60" msg="Automated upgrade about to start.  Please save your work and log off before 6pm" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_msg": [
+            {
+                "changed": true,
+                "display_seconds": 60,
+                "host": "123.123.123.123",
+                "msg": "Automated upgrade about to start.  Please save your work and log off before 6pm",
+                "rc": 0,
+                "runtime_seconds": 0.12196549999999999,
+                "sent_localtime": "Monday, May 24, 2021 10:55:19 PM",
+                "status": "CHANGED",
+                "wait": false
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * display_seconds: 60
+>  * msg: Automated upgrade about to start.  Please save your work and log off before 6pm
+>  * rc: 0
+>  * runtime_seconds: 0.12196549999999999
+>  * sent_localtime: Monday, May 24, 2021 10:55:19 PM
+>  * wait: False
 
 ### win-netbios
 ***
@@ -3147,7 +3661,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-nssm
 ***
 Install a service using NSSM
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html
 
 
 #### Base Command
@@ -3182,16 +3696,34 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-nssm host="123.123.123.123" name="foo" application="C:/windows/system32/calc.exe" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_nssm": [
+            {
+                "changed": true,
+                "changed_by": "AppRotateBytes",
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * changed_by: AppRotateBytes
 
 ### win-optional-feature
 ***
 Manage optional Windows features
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_optional_feature_module.html
 
 
 #### Base Command
@@ -3216,16 +3748,34 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-optional-feature host="123.123.123.123" name="TelnetClient" state="present" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_optional_feature": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "reboot_required": false,
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * reboot_required: False
 
 ### win-owner
 ***
 Set owner
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_owner_module.html
 
 
 #### Base Command
@@ -3248,12 +3798,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-owner host="123.123.123.123" path="C:/apache" user="fed-phil" recurse="True" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_owner": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
 ### win-package
 ***
 Installs/uninstalls an installable package
@@ -3365,7 +3930,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-partition
 ***
 Creates, changes and removes partitions on Windows Server
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_partition_module.html
 
 
 #### Base Command
@@ -3396,12 +3961,27 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-partition host="123.123.123.123" drive_letter="F" partition_size="10 MB" disk_number="1" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_partition": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
 ### win-path
 ***
 Manage Windows path environment variables
