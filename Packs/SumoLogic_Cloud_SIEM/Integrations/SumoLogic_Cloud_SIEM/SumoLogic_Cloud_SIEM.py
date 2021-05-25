@@ -231,7 +231,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.Insight',
+        outputs_prefix='SumoLogicSec.Insight',
         outputs_key_field='Id',
         outputs=insight
     )
@@ -251,7 +251,7 @@ def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.InsightComments',
+        outputs_prefix='SumoLogicSec.InsightComments',
         outputs_key_field='Id',
         outputs=comments
     )
@@ -274,7 +274,7 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.Signal',
+        outputs_prefix='SumoLogicSec.Signal',
         outputs_key_field='Id',
         outputs=signal
     )
@@ -297,7 +297,7 @@ def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.Entity',
+        outputs_prefix='SumoLogicSec.Entity',
         outputs_key_field='Id',
         outputs=entity
     )
@@ -366,7 +366,7 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.InsightList',
+        outputs_prefix='SumoLogicSec.InsightList',
         outputs_key_field='Id',
         outputs=insights
     )
@@ -397,7 +397,7 @@ def entity_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.EntityList',
+        outputs_prefix='SumoLogicSec.EntityList',
         outputs_key_field='Id',
         outputs=entities
     )
@@ -428,7 +428,7 @@ def signal_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.SignalList',
+        outputs_prefix='SumoLogicSec.SignalList',
         outputs_key_field='Id',
         outputs=signals
     )
@@ -461,7 +461,7 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.Insight',
+        outputs_prefix='SumoLogicSec.Insight',
         outputs_key_field='Id',
         outputs=insight
     )
@@ -489,7 +489,7 @@ def match_list_get(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.MatchLists',
+        outputs_prefix='SumoLogicSec.MatchLists',
         outputs_key_field='Id',
         outputs=match_lists
     )
@@ -512,7 +512,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.UpdateResult',
+        outputs_prefix='SumoLogicSec.UpdateResult',
         outputs=result
     )
 
@@ -564,7 +564,7 @@ def threat_intel_search_indicators(client: Client, args: Dict[str, Any]) -> Comm
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.ThreatIntelIndicators',
+        outputs_prefix='SumoLogicSec.ThreatIntelIndicators',
         outputs_key_field='Id',
         outputs=indicators
     )
@@ -591,7 +591,7 @@ def threat_intel_get_sources(client: Client, args: Dict[str, Any]) -> CommandRes
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.ThreatIntelSources',
+        outputs_prefix='SumoLogicSec.ThreatIntelSources',
         outputs_key_field='Id',
         outputs=threat_intel_sources
     )
@@ -615,7 +615,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.UpdateResult',
+        outputs_prefix='SumoLogicSec.UpdateResult',
         outputs=result
     )
 

@@ -59,88 +59,88 @@ script:
       default: true
       description: The insight to retrieve details for
     outputs:
-    - contextPath: SumoLogic.Sec.Insight.Assignee
+    - contextPath: SumoLogicSec.Insight.Assignee
       description: User or team assigned to the Insight
       type: string
-    - contextPath: SumoLogic.Sec.Insight.Closed
+    - contextPath: SumoLogicSec.Insight.Closed
       description: Closed date
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.ClosedBy
+    - contextPath: SumoLogicSec.Insight.ClosedBy
       description: Closed by user
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Created
+    - contextPath: SumoLogicSec.Insight.Created
       description: Created date
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.Description
+    - contextPath: SumoLogicSec.Insight.Description
       description: Description of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Entity
+    - contextPath: SumoLogicSec.Insight.Entity
       description: Entity name associated with the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Id
+    - contextPath: SumoLogicSec.Insight.Id
       description: The ID of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.LastUpdated
+    - contextPath: SumoLogicSec.Insight.LastUpdated
       description: The time the Insight was last updated
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.LastUpdatedBy
+    - contextPath: SumoLogicSec.Insight.LastUpdatedBy
       description: The last user to update the Insight
       type: string
-    - contextPath: SumoLogic.Sec.Insight.Name
+    - contextPath: SumoLogicSec.Insight.Name
       description: The name of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.ReadableId
+    - contextPath: SumoLogicSec.Insight.ReadableId
       description: The ID of the Insight in readable form
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Resolution
+    - contextPath: SumoLogicSec.Insight.Resolution
       description: Resolution for closed Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Severity
+    - contextPath: SumoLogicSec.Insight.Severity
       description: The severity of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.contentType
+    - contextPath: SumoLogicSec.Insight.Signals.contentType
       description: Type of content that triggered the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.description
+    - contextPath: SumoLogicSec.Insight.Signals.description
       description: Description of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.id
+    - contextPath: SumoLogicSec.Insight.Signals.id
       description: The ID of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.name
+    - contextPath: SumoLogicSec.Insight.Signals.name
       description: The name of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.recordCount
+    - contextPath: SumoLogicSec.Insight.Signals.recordCount
       description: Number of records associated with the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.Signals.ruleId
+    - contextPath: SumoLogicSec.Insight.Signals.ruleId
       description: Rule ID associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.severity
+    - contextPath: SumoLogicSec.Insight.Signals.severity
       description: The severity of the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.Signals.stage
+    - contextPath: SumoLogicSec.Insight.Signals.stage
       description: The stage of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.timestamp
+    - contextPath: SumoLogicSec.Insight.Signals.timestamp
       description: Signal timestamp
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.Source
+    - contextPath: SumoLogicSec.Insight.Source
       description: The source of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Status
+    - contextPath: SumoLogicSec.Insight.Status
       description: The status of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.TimeToDetection
+    - contextPath: SumoLogicSec.Insight.TimeToDetection
       description: Insight time to detection
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.TimeToRemediation
+    - contextPath: SumoLogicSec.Insight.TimeToRemediation
       description: Insight time to remediation
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.TimeToResponse
+    - contextPath: SumoLogicSec.Insight.TimeToResponse
       description: Insight time to response
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.Timestamp
+    - contextPath: SumoLogicSec.Insight.Timestamp
       description: Insight timestamp
       type: Date
     description: Get Insight details for a specific Insight ID.
@@ -150,19 +150,19 @@ script:
       required: true
       description: The insight ID for which to retrieve comments.
     outputs:
-    - contextPath: SumoLogic.Sec.InsightComments..Id
+    - contextPath: SumoLogicSec.InsightComments..Id
       description: ID of comment
       type: String
-    - contextPath: SumoLogic.Sec.InsightComments..Body
+    - contextPath: SumoLogicSec.InsightComments..Body
       description: Comment contents
       type: String
-    - contextPath: SumoLogic.Sec.InsightComments..Author
+    - contextPath: SumoLogicSec.InsightComments..Author
       description: User that created the comment
       type: String
-    - contextPath: SumoLogic.Sec.InsightComments..Timestamp
+    - contextPath: SumoLogicSec.InsightComments..Timestamp
       description: Comment created timestamp
       type: Date
-    - contextPath: SumoLogic.Sec.InsightComments..InsightId
+    - contextPath: SumoLogicSec.InsightComments..InsightId
       description: The ID of the Insight
       type: String
     description: Get comments for a specific Insight ID. (Users can post and update
@@ -174,37 +174,37 @@ script:
       default: true
       description: The signal to retrieve details for
     outputs:
-    - contextPath: SumoLogic.Sec.Signal.ContentType
+    - contextPath: SumoLogicSec.Signal.ContentType
       description: Type of content that triggered the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.Description
+    - contextPath: SumoLogicSec.Signal.Description
       description: Description of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.Entity
+    - contextPath: SumoLogicSec.Signal.Entity
       description: Entity name associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.Id
+    - contextPath: SumoLogicSec.Signal.Id
       description: The ID of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.Name
+    - contextPath: SumoLogicSec.Signal.Name
       description: The name of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.RecordCount
+    - contextPath: SumoLogicSec.Signal.RecordCount
       description: Number of records associated with the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.Signal.RuleId
+    - contextPath: SumoLogicSec.Signal.RuleId
       description: Rule ID associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.Severity
+    - contextPath: SumoLogicSec.Signal.Severity
       description: The severity of the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.Signal.Stage
+    - contextPath: SumoLogicSec.Signal.Stage
       description: The stage of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Signal.Suppressed
+    - contextPath: SumoLogicSec.Signal.Suppressed
       description: Whether or not the Signal was suppressed
       type: Boolean
-    - contextPath: SumoLogic.Sec.Signal.Timestamp
+    - contextPath: SumoLogicSec.Signal.Timestamp
       description: Signal timestamp
       type: Date
     description: Get Signal details for a specific Signal ID. Signal details command
@@ -217,31 +217,31 @@ script:
       default: true
       description: The entity to retrieve details for
     outputs:
-    - contextPath: SumoLogic.Sec.Entity.ActivityScore
+    - contextPath: SumoLogicSec.Entity.ActivityScore
       description: Entity Activity Score
       type: Number
-    - contextPath: SumoLogic.Sec.Entity.FirstSeen
+    - contextPath: SumoLogicSec.Entity.FirstSeen
       description: When the Entity was first seen
       type: Date
-    - contextPath: SumoLogic.Sec.Entity.Hostname
+    - contextPath: SumoLogicSec.Entity.Hostname
       description: Entity hostname
       type: String
-    - contextPath: SumoLogic.Sec.Entity.Id
+    - contextPath: SumoLogicSec.Entity.Id
       description: Entity ID
       type: String
-    - contextPath: SumoLogic.Sec.Entity.IsWhitelisted
+    - contextPath: SumoLogicSec.Entity.IsWhitelisted
       description: Whether or not the Entity is whitelisted
       type: Boolean
-    - contextPath: SumoLogic.Sec.Entity.LastSeen
+    - contextPath: SumoLogicSec.Entity.LastSeen
       description: When the Entity was last seen
       type: Date
-    - contextPath: SumoLogic.Sec.Entity.Name
+    - contextPath: SumoLogicSec.Entity.Name
       description: The Entity name
       type: String
-    - contextPath: SumoLogic.Sec.Entity.OperatingSystem
+    - contextPath: SumoLogicSec.Entity.OperatingSystem
       description: Entity Operating System (observed or from inventory)
       type: String
-    - contextPath: SumoLogic.Sec.Entity.InventoryData
+    - contextPath: SumoLogicSec.Entity.InventoryData
       description: Whether or not this Entity was ingested from inventory e.g. Active
         Directory
       type: Boolean
@@ -271,88 +271,88 @@ script:
       description: The maximum number of items to return
       defaultValue: "10"
     outputs:
-    - contextPath: SumoLogic.Sec.InsightList..Assignee
+    - contextPath: SumoLogicSec.InsightList..Assignee
       description: User or team assigned to the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Closed
+    - contextPath: SumoLogicSec.InsightList..Closed
       description: Closed date
       type: Date
-    - contextPath: SumoLogic.Sec.InsightList..ClosedBy
+    - contextPath: SumoLogicSec.InsightList..ClosedBy
       description: Closed by user
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Created
+    - contextPath: SumoLogicSec.InsightList..Created
       description: Created date
       type: Date
-    - contextPath: SumoLogic.Sec.InsightList..Description
+    - contextPath: SumoLogicSec.InsightList..Description
       description: Description of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Entity
+    - contextPath: SumoLogicSec.InsightList..Entity
       description: Entity name associated with the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Id
+    - contextPath: SumoLogicSec.InsightList..Id
       description: The ID of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..LastUpdated
+    - contextPath: SumoLogicSec.InsightList..LastUpdated
       description: The time the Insight was last updated
       type: Date
-    - contextPath: SumoLogic.Sec.InsightList..LastUpdatedBy
+    - contextPath: SumoLogicSec.InsightList..LastUpdatedBy
       description: The last user to update the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Name
+    - contextPath: SumoLogicSec.InsightList..Name
       description: The name of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..ReadableId
+    - contextPath: SumoLogicSec.InsightList..ReadableId
       description: The ID of the Insight in readable form
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Resolution
+    - contextPath: SumoLogicSec.InsightList..Resolution
       description: Resolution for closed Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Severity
+    - contextPath: SumoLogicSec.InsightList..Severity
       description: The severity of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.contentType
+    - contextPath: SumoLogicSec.InsightList..Signals.contentType
       description: Type of content that triggered the Signal
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.description
+    - contextPath: SumoLogicSec.InsightList..Signals.description
       description: Description of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.id
+    - contextPath: SumoLogicSec.InsightList..Signals.id
       description: The ID of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.name
+    - contextPath: SumoLogicSec.InsightList..Signals.name
       description: The name of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.recordCount
+    - contextPath: SumoLogicSec.InsightList..Signals.recordCount
       description: Number of records associated with the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.InsightList..Signals.ruleId
+    - contextPath: SumoLogicSec.InsightList..Signals.ruleId
       description: Rule ID associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.severity
+    - contextPath: SumoLogicSec.InsightList..Signals.severity
       description: The severity of the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.InsightList..Signals.stage
+    - contextPath: SumoLogicSec.InsightList..Signals.stage
       description: The stage of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Signals.timestamp
+    - contextPath: SumoLogicSec.InsightList..Signals.timestamp
       description: Signal timestamp
       type: Date
-    - contextPath: SumoLogic.Sec.InsightList..Source
+    - contextPath: SumoLogicSec.InsightList..Source
       description: The source of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..Status
+    - contextPath: SumoLogicSec.InsightList..Status
       description: The status of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.InsightList..TimeToDetection
+    - contextPath: SumoLogicSec.InsightList..TimeToDetection
       description: Insight time to detection
       type: Number
-    - contextPath: SumoLogic.Sec.InsightList..TimeToRemediation
+    - contextPath: SumoLogicSec.InsightList..TimeToRemediation
       description: Insight time to remediation
       type: Number
-    - contextPath: SumoLogic.Sec.InsightList..TimeToResponse
+    - contextPath: SumoLogicSec.InsightList..TimeToResponse
       description: Insight time to response
       type: Number
-    - contextPath: SumoLogic.Sec.InsightList..Timestamp
+    - contextPath: SumoLogicSec.InsightList..Timestamp
       description: Insight timestamp
       type: Date
     description: Search insights using available filters
@@ -387,37 +387,37 @@ script:
       description: The maximum number of items to return
       defaultValue: "10"
     outputs:
-    - contextPath: SumoLogic.Sec.SignalList..ContentType
+    - contextPath: SumoLogicSec.SignalList..ContentType
       description: Type of content that triggered the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..Description
+    - contextPath: SumoLogicSec.SignalList..Description
       description: Description of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..Entity
+    - contextPath: SumoLogicSec.SignalList..Entity
       description: Entity name associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..Id
+    - contextPath: SumoLogicSec.SignalList..Id
       description: The ID of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..Name
+    - contextPath: SumoLogicSec.SignalList..Name
       description: The name of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..RecordCount
+    - contextPath: SumoLogicSec.SignalList..RecordCount
       description: Number of records associated with the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.SignalList..RuleId
+    - contextPath: SumoLogicSec.SignalList..RuleId
       description: Rule ID associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..Severity
+    - contextPath: SumoLogicSec.SignalList..Severity
       description: The severity of the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.SignalList..Stage
+    - contextPath: SumoLogicSec.SignalList..Stage
       description: The stage of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.SignalList..Suppressed
+    - contextPath: SumoLogicSec.SignalList..Suppressed
       description: Whether or not the Signal was suppressed
       type: Boolean
-    - contextPath: SumoLogic.Sec.SignalList..Timestamp
+    - contextPath: SumoLogicSec.SignalList..Timestamp
       description: Signal timestamp
       type: Date
     description: Search signals using available filters
@@ -456,41 +456,41 @@ script:
       description: The maximum number of items to return
       defaultValue: "10"
     outputs:
-    - contextPath: SumoLogic.Sec.EntityList..ActivityScore
+    - contextPath: SumoLogicSec.EntityList..ActivityScore
       description: Entity Activity Score
       type: Number
-    - contextPath: SumoLogic.Sec.EntityList..FirstSeen
+    - contextPath: SumoLogicSec.EntityList..FirstSeen
       description: When the Entity was first seen
       type: Date
-    - contextPath: SumoLogic.Sec.EntityList..Id
+    - contextPath: SumoLogicSec.EntityList..Id
       description: Entity ID
       type: String
-    - contextPath: SumoLogic.Sec.EntityList..IpHostname
+    - contextPath: SumoLogicSec.EntityList..IpHostname
       description: Hostname associated with IP Entity
       type: String
-    - contextPath: SumoLogic.Sec.EntityList..IsWhitelisted
+    - contextPath: SumoLogicSec.EntityList..IsWhitelisted
       description: Whether or not the Entity is whitelisted
       type: Boolean
-    - contextPath: SumoLogic.Sec.EntityList..LastSeen
+    - contextPath: SumoLogicSec.EntityList..LastSeen
       description: When the Entity was last seen
       type: Date
-    - contextPath: SumoLogic.Sec.EntityList..Name
+    - contextPath: SumoLogicSec.EntityList..Name
       description: The Entity name
       type: String
-    - contextPath: SumoLogic.Sec.EntityList..OperatingSystem
+    - contextPath: SumoLogicSec.EntityList..OperatingSystem
       description: Entity Operating System (observed or from inventory)
       type: String
-    - contextPath: SumoLogic.Sec.EntityList..InventoryData
+    - contextPath: SumoLogicSec.EntityList..InventoryData
       description: Whether or not this Entity was ingested from inventory e.g. Active
         Directory
       type: Boolean
-    - contextPath: SumoLogic.Sec.EntityList..Hostname
+    - contextPath: SumoLogicSec.EntityList..Hostname
       description: Entity hostname
       type: String
-    - contextPath: SumoLogic.Sec.EntityList..Department
+    - contextPath: SumoLogicSec.EntityList..Department
       description: Username Entity department
       type: String
-    - contextPath: SumoLogic.Sec.EntityList..EmployeeId
+    - contextPath: SumoLogicSec.EntityList..EmployeeId
       description: Username Entity employee ID
       type: String
     description: Search entities using the available filters
@@ -519,88 +519,88 @@ script:
         "False Positive", "No Action", "Duplicate"'
       defaultValue: Resolved
     outputs:
-    - contextPath: SumoLogic.Sec.Insight.Assignee
+    - contextPath: SumoLogicSec.Insight.Assignee
       description: User or team assigned to the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Closed
+    - contextPath: SumoLogicSec.Insight.Closed
       description: Closed date
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.ClosedBy
+    - contextPath: SumoLogicSec.Insight.ClosedBy
       description: Closed by user
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Created
+    - contextPath: SumoLogicSec.Insight.Created
       description: Created date
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.Description
+    - contextPath: SumoLogicSec.Insight.Description
       description: Description of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Entity
+    - contextPath: SumoLogicSec.Insight.Entity
       description: Entity name associated with the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Id
+    - contextPath: SumoLogicSec.Insight.Id
       description: The ID of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.LastUpdated
+    - contextPath: SumoLogicSec.Insight.LastUpdated
       description: The time the Insight was last updated
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.LastUpdatedBy
+    - contextPath: SumoLogicSec.Insight.LastUpdatedBy
       description: The last user to update the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Name
+    - contextPath: SumoLogicSec.Insight.Name
       description: The name of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.ReadableId
+    - contextPath: SumoLogicSec.Insight.ReadableId
       description: The ID of the Insight in readable form
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Resolution
+    - contextPath: SumoLogicSec.Insight.Resolution
       description: Resolution for closed Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Severity
+    - contextPath: SumoLogicSec.Insight.Severity
       description: The severity of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.contentType
+    - contextPath: SumoLogicSec.Insight.Signals.contentType
       description: Type of content that triggered the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.description
+    - contextPath: SumoLogicSec.Insight.Signals.description
       description: Description of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.id
+    - contextPath: SumoLogicSec.Insight.Signals.id
       description: The ID of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.name
+    - contextPath: SumoLogicSec.Insight.Signals.name
       description: The name of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.recordCount
+    - contextPath: SumoLogicSec.Insight.Signals.recordCount
       description: Number of records associated with the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.Signals.ruleId
+    - contextPath: SumoLogicSec.Insight.Signals.ruleId
       description: Rule ID associated with the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.severity
+    - contextPath: SumoLogicSec.Insight.Signals.severity
       description: The severity of the Signal
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.Signals.stage
+    - contextPath: SumoLogicSec.Insight.Signals.stage
       description: The stage of the Signal
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Signals.timestamp
+    - contextPath: SumoLogicSec.Insight.Signals.timestamp
       description: Signal timestamp
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.Source
+    - contextPath: SumoLogicSec.Insight.Source
       description: The source of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.Status
+    - contextPath: SumoLogicSec.Insight.Status
       description: The status of the Insight
       type: String
-    - contextPath: SumoLogic.Sec.Insight.TimeToDetection
+    - contextPath: SumoLogicSec.Insight.TimeToDetection
       description: Insight time to detection
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.TimeToRemediation
+    - contextPath: SumoLogicSec.Insight.TimeToRemediation
       description: Insight time to remediation
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.TimeToResponse
+    - contextPath: SumoLogicSec.Insight.TimeToResponse
       description: Insight time to response
       type: Number
-    - contextPath: SumoLogic.Sec.Insight.Timestamp
+    - contextPath: SumoLogicSec.Insight.Timestamp
       description: Insight timestamp
       type: Date
     description: Change status of Insight
@@ -625,31 +625,31 @@ script:
       description: Sort direction
       defaultValue: ASC
     outputs:
-    - contextPath: SumoLogic.Sec.MatchLists..Created
+    - contextPath: SumoLogicSec.MatchLists..Created
       description: When the Match List was created
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..CreatedBy
+    - contextPath: SumoLogicSec.MatchLists..CreatedBy
       description: User that created the Match List
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..DefaultTtl
+    - contextPath: SumoLogicSec.MatchLists..DefaultTtl
       description: Default TTL for entries in the Match List
       type: Number
-    - contextPath: SumoLogic.Sec.MatchLists..Description
+    - contextPath: SumoLogicSec.MatchLists..Description
       description: Description of the Match List
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..Id
+    - contextPath: SumoLogicSec.MatchLists..Id
       description: ID of the Match List
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..LastUpdated
+    - contextPath: SumoLogicSec.MatchLists..LastUpdated
       description: When the Match List was last updated
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..LastUpdatedBy
+    - contextPath: SumoLogicSec.MatchLists..LastUpdatedBy
       description: The last user to update the Match List
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..Name
+    - contextPath: SumoLogicSec.MatchLists..Name
       description: Name of Match List
       type: String
-    - contextPath: SumoLogic.Sec.MatchLists..TargetColumn
+    - contextPath: SumoLogicSec.MatchLists..TargetColumn
       description: Match List Target Column
       type: String
     description: Get match lists
@@ -671,10 +671,10 @@ script:
       required: true
       description: Value of match list item
     outputs:
-    - contextPath: SumoLogic.Sec.UpdateResult.Result
+    - contextPath: SumoLogicSec.UpdateResult.Result
       description: Result (Success or Failed)
       type: String
-    - contextPath: SumoLogic.Sec.UpdateResult.Server response
+    - contextPath: SumoLogicSec.UpdateResult.Server response
       description: Server response (True or False)
       type: Boolean
     description: Add item to match list
@@ -697,28 +697,28 @@ script:
       description: Comma separated list of threat intelligence source IDs to search,
         e.g. 1,2,3
     outputs:
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Active
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Active
       description: Whether or not the Threat Intel Indicator is Active
       type: Boolean
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Expiration
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Expiration
       description: Date and time the Threat Intel Indicator is set to expire
       type: Date
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Id
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Id
       description: ID of Threat Intel Indicator
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Meta.created.username
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Meta.created.username
       description: User that created the Threat Intel Indicator
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Meta.created.when
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Meta.created.when
       description: When the Threat Intel Indicator was created
       type: Date
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Meta.description
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Meta.description
       description: Description of Threat Intel Indicator
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Meta.updated
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Meta.updated
       description: When the Threat Intel Indicator was last updated
       type: Date
-    - contextPath: SumoLogic.Sec.ThreatIntelIndicators..Value
+    - contextPath: SumoLogicSec.ThreatIntelIndicators..Value
       description: Value of Threat Intel Indicator
       type: String
     description: Search Threat Intel Indicators
@@ -742,28 +742,28 @@ script:
       description: Sort direction
       defaultValue: ASC
     outputs:
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..Created
+    - contextPath: SumoLogicSec.ThreatIntelSources..Created
       description: When the Threat Intel Source was created
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..CreatedBy
+    - contextPath: SumoLogicSec.ThreatIntelSources..CreatedBy
       description: User that created the Threat Intel Source
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..Description
+    - contextPath: SumoLogicSec.ThreatIntelSources..Description
       description: Description of Threat Intel Source
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..Id
+    - contextPath: SumoLogicSec.ThreatIntelSources..Id
       description: ID of Threat Intel Source
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..LastUpdated
+    - contextPath: SumoLogicSec.ThreatIntelSources..LastUpdated
       description: When the Threat Intel Source was last updated
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..LastUpdatedBy
+    - contextPath: SumoLogicSec.ThreatIntelSources..LastUpdatedBy
       description: User that last updated the Threat Intel Source
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..Name
+    - contextPath: SumoLogicSec.ThreatIntelSources..Name
       description: Name of Threat Intel Source
       type: String
-    - contextPath: SumoLogic.Sec.ThreatIntelSources..SourceType
+    - contextPath: SumoLogicSec.ThreatIntelSources..SourceType
       description: Source type of Threat Intel Source
       type: String
     description: Get Threat Intel Sources
@@ -786,10 +786,10 @@ script:
       required: true
       description: Indicator value
     outputs:
-    - contextPath: SumoLogic.Sec.UpdateResult.Result
+    - contextPath: SumoLogicSec.UpdateResult.Result
       description: Result (Success or Failed)
       type: String
-    - contextPath: SumoLogic.Sec.UpdateResult.Server response
+    - contextPath: SumoLogicSec.UpdateResult.Server response
       description: Server response (True or False)
       type: Boolean
     description: Add Threat Intel Indicator to Threat Intel Source

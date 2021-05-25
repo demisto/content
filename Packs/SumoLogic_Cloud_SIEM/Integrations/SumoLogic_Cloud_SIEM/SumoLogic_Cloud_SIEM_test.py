@@ -43,7 +43,7 @@ def test_insight_get_details(requests_mock):
 
     response = insight_get_details(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.Insight'
+    assert response.outputs_prefix == 'SumoLogicSec.Insight'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == insight
     assert response.readable_output == tableToMarkdown(
@@ -77,7 +77,7 @@ def test_insight_get_comments(requests_mock):
 
     response = insight_get_comments(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.InsightComments'
+    assert response.outputs_prefix == 'SumoLogicSec.InsightComments'
     assert response.outputs_key_field == 'Id'
     assert response.outputs[0]['Id'] == comments[0]['id'] == '2'
     assert response.outputs[0]['Author'] == comments[0]['author']['username'] == 'obfuscated@email.com'
@@ -111,7 +111,7 @@ def test_signal_get_details(requests_mock):
 
     response = signal_get_details(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.Signal'
+    assert response.outputs_prefix == 'SumoLogicSec.Signal'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == signal
 
@@ -141,7 +141,7 @@ def test_entity_get_details(requests_mock):
 
     response = entity_get_details(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.Entity'
+    assert response.outputs_prefix == 'SumoLogicSec.Entity'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == entity
 
@@ -172,7 +172,7 @@ def test_insight_search(requests_mock):
 
     response = insight_search(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.InsightList'
+    assert response.outputs_prefix == 'SumoLogicSec.InsightList'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == insights
 
@@ -204,7 +204,7 @@ def test_entity_search(requests_mock):
 
     response = entity_search(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.EntityList'
+    assert response.outputs_prefix == 'SumoLogicSec.EntityList'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == entities
 
@@ -238,7 +238,7 @@ def test_signal_search(requests_mock):
 
     response = signal_search(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.SignalList'
+    assert response.outputs_prefix == 'SumoLogicSec.SignalList'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == signals
 
@@ -272,7 +272,7 @@ def test_insight_set_status(requests_mock):
 
     response = insight_set_status(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.Insight'
+    assert response.outputs_prefix == 'SumoLogicSec.Insight'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == insight
 
@@ -303,7 +303,7 @@ def test_match_list_get(requests_mock):
 
     response = match_list_get(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.MatchLists'
+    assert response.outputs_prefix == 'SumoLogicSec.MatchLists'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == match_lists
 
@@ -335,7 +335,7 @@ def test_match_list_update(requests_mock):
 
     response = match_list_update(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.UpdateResult'
+    assert response.outputs_prefix == 'SumoLogicSec.UpdateResult'
     assert response.outputs == get_update_result(mock_response.get('data'))
 
 
@@ -366,7 +366,7 @@ def test_threat_intel_search_indicators(requests_mock):
 
     response = threat_intel_search_indicators(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.ThreatIntelIndicators'
+    assert response.outputs_prefix == 'SumoLogicSec.ThreatIntelIndicators'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == threat_intel_indicators
 
@@ -397,7 +397,7 @@ def test_threat_intel_get_sources(requests_mock):
 
     response = threat_intel_get_sources(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.ThreatIntelSources'
+    assert response.outputs_prefix == 'SumoLogicSec.ThreatIntelSources'
     assert response.outputs_key_field == 'Id'
     assert response.outputs == threat_intel_sources
 
@@ -429,7 +429,7 @@ def test_threat_intel_update_source(requests_mock):
 
     response = threat_intel_update_source(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.UpdateResult'
+    assert response.outputs_prefix == 'SumoLogicSec.UpdateResult'
     assert response.outputs == get_update_result(mock_response.get('data'))
 
 
