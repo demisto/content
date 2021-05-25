@@ -63,6 +63,11 @@ DEFAULT_TICKET_CONTEXT_FIELDS = [
 ''' HELPER FUNCTIONS '''
 
 
+def get_number_of_incidents_to_fetch():
+    # FreshDesk API supports maximum of 100 tickets per page so if user asked for more, pagination is needed.
+    return 100 if MAX_INCIDENTS >= 100 else MAX_INCIDENTS
+
+
 def reformat_canned_response_context(context):
     """
     Reformat context for canned-response related commands (from having used string_to_context_key)
@@ -784,13 +789,7 @@ def test_module():
 
 
 def fetch_incidents():
-    # FreshDesk API supports maximum of 100 tickets per page so if user asked for more, pagination is needed.
-    if MAX_INCIDENTS >= 100:
-        per_page = 100
-    elif MAX_INCIDENTS <= 50:
-        per_page = 50
-    else:
-        per_page = MAX_INCIDENTS
+    per_page = get_number_of_incidents_to_fetch()
 
     # demisto.getLastRun() will returns an obj with the previous run in it.
     last_run = demisto.getLastRun()
@@ -800,7 +799,7 @@ def fetch_incidents():
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%S')
+    updated_since = timestamp_to_datestring(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
     args = {'updated_since': updated_since, 'order_type': 'asc', 'per_page': per_page}
 
     response = search_tickets(args)  # page 1
@@ -813,11 +812,12 @@ def fetch_incidents():
         incident_id = ticket.get('id')
         incident_date = date_to_timestamp(incident.get('update_time'), '%Y-%m-%dT%H:%M:%SZ')
         # Update last run and add incident if the incident is newer than last fetch and was not fetched before
+        # The incident IDs are in incremental order.
         if incident_date >= last_fetch and incident_id > last_incident_id:
             last_fetch = incident_date
             incidents.append(incident)
             last_incident_id = incident_id
-        if len(incidents) == MAX_INCIDENTS:
+        if len(incidents) >= MAX_INCIDENTS:
             break
 
     demisto.setLastRun({'last_created_incident_timestamp': last_fetch, 'last_incident_id': last_incident_id})

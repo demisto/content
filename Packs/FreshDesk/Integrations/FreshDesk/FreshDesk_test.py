@@ -9,7 +9,7 @@ MOCK_PARAMS = {
         'password': 'TEST'
     },
     'url': 'https://MOCK_URL',
-    'maxFetch': '14',
+    'maxFetch': '50',
 }
 
 
@@ -19,19 +19,20 @@ def util_load_json(path):
 
 
 # The unitest timestamps where taken according to the remote machine time zone (UTC).
-def test_fetch_incidents_no_pagination(mocker, requests_mock):
+def test_first_fetch_incidents_no_pagination(mocker, requests_mock):
     """Unit test
     Given
-    - fetch incidents command where no pagination is needed
+    - fetch incidents command where no pagination is needed because the user requested 5 incidents per page and
+    we assume that the api supports maximum of 10 tickets per page.
     - command raw response
     When
     - mock the search-ticket get request.
     Then
     - run the fetch incidents command
-    - validate the length of the results.
-    - validate the time and id of the last item that was fetched
+    - validate the length of the results (5 tickets).
+    - validate the time and id of the last item that was fetched (the 5th ticket)
     """
-
+    MOCK_PARAMS['maxFetch'] = '5'
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     from FreshDesk import fetch_incidents
     raw_response = util_load_json('test_data/first_page_incindents_respone.json')
@@ -39,60 +40,77 @@ def test_fetch_incidents_no_pagination(mocker, requests_mock):
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
     requests_mock.get('https://MOCK_URL/api/v2/tickets',
-                      json=raw_response)
+                      json=raw_response[:5])
     requests_mock.get('https://MOCK_URL/api/v2/tickets?page=2',
                       json=[])
     fetch_incidents()
-    assert len(demisto.incidents.call_args_list[0][0][0]) == 10
-    # 1620826211000 was taken according to the AWS machine timestamp
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826211000,
-                                                          'last_incident_id': 38}
+    assert len(demisto.incidents.call_args_list[0][0][0]) == 5
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826205000,
+                                                          'last_incident_id': 33}
 
 
-def test_fetch_incidents_with_pagination(mocker, requests_mock):
+# The unitest timestamps where taken according to the remote machine time zone (UTC).
+def test_first_fetch_incidents_with_pagination(mocker, requests_mock):
     """Unit test
     Given
-    - fetch incidents command where pagination is needed
+    - fetch incidents command where pagination is needed because the user requested 15 incidents per page and
+    we assume that the api supports maximum of 10 tickets per page.
     - command raw response
     When
     - mock the search-ticket get request.
     Then
     - run the fetch incidents command
-    - validate the length of the results.
-    - validate the time and id of the last item that was fetched
-    - run the fetch incidents command once again
-    - validate the length of the remaining results.
-    - validate the time and id of the last item that was fetched
+    - validate the length of the results (15 tickets).
+    - validate the time and id of the last item that was fetched (the 15th ticket)
     """
+    MOCK_PARAMS['maxFetch'] = '15'
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    from FreshDesk import fetch_incidents
+    raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
+    raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'incidents')
+    requests_mock.get('https://MOCK_URL/api/v2/tickets',
+                      json=raw_response_first)
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T01:58:18Z&page=2',
+                      json=raw_response_second)
+    fetch_incidents()
+    assert len(demisto.incidents.call_args_list[0][0][0]) == 15
+    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826216000,
+                                                          'last_incident_id': 43}
 
+
+def test_second_fetch_incidents(mocker, requests_mock):
+    """Unit test
+    Given
+    - fetch incidents command which is executed after the first fetch incident
+    - user requests 15 incidents per page, we already got the first 15 from the first fetch.
+    There are 20 tickets in the system and we assume that the api supports maximum of 10 tickets per page
+    (no pagination is needed).
+    - command raw response
+    When
+    - mock the search-ticket get request.
+    Then
+    - run the fetch incidents command
+    - validate the length of the remaining results (5 tickets).
+    - validate the time and id of the last item that was fetched (the 20th ticket)
+    """
+    MOCK_PARAMS['maxFetch'] = '15'
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
     from FreshDesk import fetch_incidents
     raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
     raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1620826216000,
+                                                             'last_incident_id': 43})
     mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'incidents')
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T01:58:18',
-                      json=raw_response_first)
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T01:58:18&page=2',
-                      json=raw_response_second)
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T01:58:18&page=3',
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-12T13:30:16Z',
+                      json=raw_response_second[4:])
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-12T13:30:16Z&page=2',
                       json=[])
     fetch_incidents()
-    assert len(demisto.incidents.call_args_list[0][0][0]) == 14
-    # 1620826215000 was taken according to the AWS machine timestamp
-    assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826215000,
-                                                          'last_incident_id': 42}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1620826215000,
-                                                             'last_incident_id': 42})
-    mocker.patch.object(demisto, 'setLastRun')
-    mocker.patch.object(demisto, 'incidents')
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-12T13:30:15',
-                      json=raw_response_second[2:])
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-12T13:30:15&page=2',
-                      json=[])
-    fetch_incidents()
-    assert len(demisto.incidents.call_args_list[0][0][0]) == 6
+    assert len(demisto.incidents.call_args_list[0][0][0]) == 5
     assert demisto.setLastRun.call_args_list[0][0][0] == {'last_created_incident_timestamp': 1620826221000,
                                                           'last_incident_id': 48}
