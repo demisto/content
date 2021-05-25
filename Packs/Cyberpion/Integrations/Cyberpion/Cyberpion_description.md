@@ -3,7 +3,7 @@
 The Cyberpion content package allows you to easily export all your **Cyberpion action items** to Cortex XSOAR, so as to create and view dashboards, create custom alerts, and improve investigation. Integration between Cyberpion and Cortex XSOAR makes use of REST API. 
 
 
-###Configure and connect Cyberpion
+### Configure and connect Cyberpion
 
 Cyberpion can integrate and export action items directly to Cortex XSOAR. 
 
