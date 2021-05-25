@@ -34,7 +34,7 @@ configuration:
 description: Manage VMware vSphere Server, Guests, and ESXi Hosts
 display: VMware V2
 fromversion: 6.0.0
-name: VMwareV2
+name: VMware V2
 script:
   commands:
   - arguments: []
@@ -6104,7 +6104,7 @@ script:
     - contextPath: VMwareV2.vcenter_license.licenses
       description: list of license keys after module executed
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.19017
+  dockerimage: demisto/ansible-runner:1.0.0.20246
   runonce: false
   script: ''
   subtype: python3
