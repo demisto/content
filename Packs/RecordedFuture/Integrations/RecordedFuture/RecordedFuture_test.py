@@ -192,7 +192,22 @@ def create_client():
     )
 
 
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
 def test_entity_enrich_with_related_entities(mocker):
+    """
+
+    Given:
+        a request for entity enrichment with the argument fetch_related_entities as True
+    When:
+        requesting the API for entity enrichment
+    Then:
+        The returned data is valid and has the key relatedEntities
+
+    """
     client = create_client()
     raw_response = util_load_json('./cassettes/entity_raw_response_related.json')
     mocker.patch.object(Client, '_http_request', return_value=raw_response)
@@ -203,6 +218,16 @@ def test_entity_enrich_with_related_entities(mocker):
 
 
 def test_entity_enrich_no_related_entities(mocker):
+    """
+
+    Given:
+        a request for entity enrichment with the argument fetch_related_entities as False
+    When:
+        requesting the API for entity enrichment
+    Then:
+        The returned data is valid and does not have the key relatedEntities
+
+    """
     client = create_client()
     raw_response = util_load_json('./cassettes/entity_raw_response_no_related.json')
     mocker.patch.object(Client, '_http_request', return_value=raw_response)
@@ -212,9 +237,7 @@ def test_entity_enrich_no_related_entities(mocker):
     assert 'relatedEntities' not in returned_data.get('data').keys()
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+
 
 
 
