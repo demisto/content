@@ -1,0 +1,219 @@
+id: active directory search user with parentheses test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: active directory search user with parentheses test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5e1e5f08-4763-4881-8f1e-3452d6fdfedb
+    type: start
+    task:
+      id: 5e1e5f08-4763-4881-8f1e-3452d6fdfedb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 528e1282-ff89-420e-8ff3-3778e1ec47d0
+    type: regular
+    task:
+      id: 528e1282-ff89-420e-8ff3-3778e1ec47d0
+      version: -1
+      name: ad-get-user by dn
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      dn:
+        simple: '"CN=Administrator,CN=Users,DC=demisto,DC=local"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5c52efdb-6e76-488e-8e05-e530d94270cf
+    type: title
+    task:
+      id: 5c52efdb-6e76-488e-8e05-e530d94270cf
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 57aa7420-0244-4c94-8516-2e12f7ff2deb
+    type: regular
+    task:
+      id: 57aa7420-0244-4c94-8516-2e12f7ff2deb
+      version: -1
+      name: ad-get-user by name
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        simple: '"Administrator"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0fd5be0f-997c-4d41-8be4-0f99f0c9ac61
+    type: regular
+    task:
+      id: 0fd5be0f-997c-4d41-8be4-0f99f0c9ac61
+      version: -1
+      name: ad-get-user by email
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email:
+        simple: '"test@example.com"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6f30965e-9728-4c95-8b0f-453d10d979b9
+    type: regular
+    task:
+      id: 6f30965e-9728-4c95-8b0f-453d10d979b9
+      version: -1
+      name: ad-get-user by username
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      iscommand: true
+      brand: Active Directory Query v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      username:
+        simple: '"Administrator"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
