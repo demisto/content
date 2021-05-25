@@ -37,53 +37,12 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def get_connections(self, domain: str, reverse: bool = False):
-        connection_direction = 'to_domain' if reverse else 'from_domain'
-        params = {connection_direction: domain}
-        http_responses = []
-        page_num = 1
-        while page_num <= MAX_PAGES_TO_GRAB:
-            # call API
-            params['page'] = str(page_num)
-            demisto.info(f'getting connections, page num: {page_num}, domain={domain}')
-            http_response = self._http_request(
-                method='GET',
-                url_suffix='/connections/',
-                params=params,
-                resp_type='json',
-                ok_codes=VALID_STATUS_CODES,
-                timeout=(CONNECTION_TIMEOUT, READ_TIMEOUT),
-                retries=NUM_OF_RETRIES,
-                backoff_factor=BACKOFF_FACTOR,
-                raise_on_status=True
-            )
-            demisto.info(f'after getting connections, page num: {page_num}, domain={domain}')
-            if 'results' not in http_response:
-                raise Exception('failed to read connections.\nError: got response without \'results\' key')
-            http_responses.append(http_response['results'])
-            # for idx, action_items_result in enumerate(http_response['results']):
-            #     technical_det = action_items_result.get('technical_details', {})
-            #     http_response['results'][idx]['technical_details'] = '\n'.join(
-            #         ['{}: {}'.format(k.strip(), v.strip()) for k, v in technical_det.items()] if type(
-            #             technical_det) is dict else technical_det.strip())
-            #     http_response['results'][idx]['alert_type'] = ACTION_ITEM_TYPE_NAME
-            if not http_response.get('next'):
-                break
-            else:
-                time.sleep(2)
-            page_num += 1
-        demisto.info(f'finished getting connections, number of pages: {page_num}, domain={domain}')
-        final_results = []
-        for response in http_responses:
-            final_results += response
-        return final_results
-
     def get_domain_state(self, domain: str):
         params = {
             'verbosity': 'details',
             'domain': domain
         }
-        demisto.info(f'getting domain state for domain- {domain}')
+        demisto.debug(f'getting domain state for domain- {domain}')
         http_response = self._http_request(
             method='GET',
             url_suffix='/domainstate/',
@@ -102,7 +61,7 @@ class Client(BaseClient):
             demisto.error(f'no response from server for domain: {domain}')
             return {}
         http_response = http_response[0]
-        demisto.info(f'after getting domain state for domain- {domain}')
+        demisto.debug(f'after getting domain state for domain- {domain}')
         reverse_ips = http_response.get('ips')
         if reverse_ips is None:
             raise Exception(f'in server\'s response: ips is none. response: {json.dumps(http_response, indent=2)}')
@@ -114,7 +73,8 @@ class Client(BaseClient):
         http_response['ips'] = formatted_reverse_ips
         domain_types = http_response.get('domain_types')
         if domain_types is None:
-            raise Exception(f'in server\'s response: domain_types is none. response: {json.dumps(http_response, indent=2)}')
+            raise Exception(
+                f'in server\'s response: domain_types is none. response: {json.dumps(http_response, indent=2)}')
         domain_info = ''
         for idx, domain_type in enumerate(domain_types, 1):
             domain_info += f'{idx}.\n'
@@ -150,7 +110,7 @@ class Client(BaseClient):
         for page_num in page_range:
             # call API
             params['page'] = str(page_num)
-            demisto.info(f'getting action items, page num: {page_num}, domain={domain}')
+            demisto.debug(f'getting action items, page num: {page_num}, domain={domain}')
             http_response = self._http_request(
                 method='GET',
                 url_suffix='/actionitems/',
@@ -162,7 +122,7 @@ class Client(BaseClient):
                 backoff_factor=BACKOFF_FACTOR,
                 raise_on_status=True
             )
-            demisto.info(f'after getting action items, page num: {page_num}, domain={domain}')
+            demisto.debug(f'after getting action items, page num: {page_num}, domain={domain}')
             if 'results' not in http_response:
                 raise Exception('failed to read action items.\nError: got response without \'results\' key')
             results = http_response['results']
@@ -181,7 +141,7 @@ class Client(BaseClient):
             if not http_response.get('next') or max_fetch is not None:
                 # if max fetch is not none, there's a limit (< max_page_size) so don't fetch more pages
                 break
-        demisto.info(f'finished getting action items, number of pages: {len(http_responses)}, domain={domain}')
+        demisto.debug(f'finished getting action items, number of pages: {len(http_responses)}, domain={domain}')
         final_results = []
         for response in http_responses:
             final_results += response
@@ -252,12 +212,7 @@ def test_module(client: Client) -> str:
 
     try:
         client.get_domain_action_items(domain='company1.com', min_severity=2)
-        time.sleep(2)
         client.get_action_items(max_fetch=2, min_severity=1, alert_types=['PKI'])
-        time.sleep(2)
-        # client.get_connections('company1.com')
-        # time.sleep(2)
-        # client.get_connections('company1.com', reverse=True)
         client.get_domain_state('company1.com')
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -302,11 +257,11 @@ def fetch_incidents(client: Client,
     last_run_dict = demisto.getLastRun()
     if 'last_fetch' in last_run_dict:
         last_fetch = last_run_dict['last_fetch']
-        demisto.info('zzz last fetch: {}'.format(str(last_fetch)))
+        demisto.debug('zzz last fetch: {}'.format(str(last_fetch)))
     else:
-        demisto.info('no previous data... this means this is the first time we are fetching incidents')
+        demisto.debug('no previous data... this means this is the first time we are fetching incidents')
         last_fetch = None
-    demisto.info("Cyberpion fetch incidents last run time: {}".format(
+    demisto.debug("Cyberpion fetch incidents last run time: {}".format(
         str(last_fetch) if last_fetch else 'this is the first time'))
     action_items = client.get_action_items(
         max_fetch=max_fetch,
@@ -341,16 +296,13 @@ def fetch_incidents(client: Client,
     return new_last_run_dict, incidents
 
 
-# def get_domain_connection_details_command(client: Client,args: Dict[str, Any],) -> CommandResults:
-# def get_domain_reverse_connections_command(client: Client,args: Dict[str, Any],) -> CommandResults:
-
 def get_domain_state_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     domain = args.get('domain')
     if not domain:
         raise ValueError('no domain specified')
-    demisto.info(f'getting domain state {domain}')
+    demisto.debug(f'getting domain state {domain}')
     domain_state = client.get_domain_state(domain)
-    demisto.info(f'creating domain state table for domain {domain}')
+    demisto.debug(f'creating domain state table for domain {domain}')
     markdown = '### Cyberpion\n'
     markdown += tableToMarkdown('Domain State', domain_state, headers=[
         "id",
@@ -362,13 +314,8 @@ def get_domain_state_command(client: Client, args: Dict[str, Any]) -> CommandRes
         "domain_types",
         "discovery_date",
     ])
-    demisto.info(f'finished creating domain state table for domain {domain}')
-    # return CommandResults(
-    #     readable_output=markdown,
-    #     outputs_prefix='Cyberpion.ConnectionFrom',
-    #     outputs_key_field='id',
-    #     outputs={"Domain": domain, "Connections": connections}
-    # )
+    demisto.debug(f'finished creating domain state table for domain {domain}')
+
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='Cyberpion',
@@ -377,50 +324,18 @@ def get_domain_state_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def get_domain_connections_command(client: Client, args: Dict[str, Any], reverse=False) -> CommandResults:
-    domain = args.get('domain')
-    if not domain:
-        raise ValueError('no domain specified')
-    demisto.info(f'getting action items for domain {domain}')
-    connections = client.get_connections(domain=domain, reverse=reverse)
-    demisto.info(f'creating connection table for domain {domain}')
-    markdown = '### Cyberpion\n'
-    markdown += tableToMarkdown('Connections', connections, headers=[
-        "id",
-        "from_domain",
-        "to_domain",
-        "connection_type",
-        "is_redirected",
-        "risk_rank",
-        "remarks",
-    ])
-    demisto.info(f'finished creating connection table for domain {domain}')
-    # return CommandResults(
-    #     readable_output=markdown,
-    #     outputs_prefix='Cyberpion.ConnectionFrom',
-    #     outputs_key_field='id',
-    #     outputs={"Domain": domain, "Connections": connections}
-    # )
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix='Cyberpion',
-        outputs_key_field='id',
-        outputs={"Connections": connections}
-    )
-
-
 def get_domain_action_items_command(client: Client, args: Dict[str, Any], min_severity: int, alert_types: list = None,
                                     show_only_active: bool = True) -> CommandResults:
     domain = args.get('domain')
     if not domain:
         raise ValueError('no domain specified')
-    demisto.info(f'getting action items for domain {domain}')
+    demisto.debug(f'getting action items for domain {domain}')
     domain_data = client.get_domain_action_items(domain=domain,
                                                  min_severity=min_severity,
                                                  show_only_active=show_only_active,
                                                  alert_types=alert_types,
                                                  )
-    demisto.info(f'creating action items table data for domain {domain}')
+    demisto.debug(f'creating action items table data for domain {domain}')
     markdown = '### Cyberpion\n'
     markdown += tableToMarkdown('Action Items', domain_data['Vulnerabilities'], headers=[
         "domain",
@@ -436,7 +351,7 @@ def get_domain_action_items_command(client: Client, args: Dict[str, Any], min_se
         "description",
         "technical_details"
     ])
-    demisto.info(f'finished creating table data for domain {domain}. returning command result')
+    demisto.debug(f'finished creating table data for domain {domain}. returning command result')
     return CommandResults(
         readable_output=markdown,
         # outputs_prefix='Cyberpion.DomainData.vulnerabilities',
@@ -479,10 +394,6 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == 'cyberpion-get-connections-from-domain':
-            return_results(get_domain_connections_command(client, demisto.args()))
-        elif demisto.command() == 'cyberpion-get-connections-to-domain':
-            return_results(get_domain_connections_command(client, demisto.args(), reverse=True))
         elif demisto.command() == 'cyberpion-get-domain-state':
             return_results(get_domain_state_command(client, demisto.args()))
         elif demisto.command() == 'cyberpion-get-domain-action-items':
@@ -516,7 +427,7 @@ def main() -> None:
             # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(new_last_run_dict)
         else:
-            raise ValueError(f'no such command: {demisto.command()}')
+            raise NotImplemented(f'no such command: {demisto.command()}')
 
     # Log exceptions and return errors
     except Exception as e:

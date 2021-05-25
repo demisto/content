@@ -1,5 +1,8 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Cyberpion Security Alert"
+    ],
     "caseInsensitive": true,
     "cliName": "cyberpionimpact",
     "closeForm": false,
@@ -22,5 +25,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "6.0.0"
 }

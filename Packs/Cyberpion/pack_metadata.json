@@ -1,11 +1,11 @@
 {
     "name": "Cyberpion",
-    "description": "Attack surface discovery and vulnerability management",
+    "description": "Cyberpion’s platform provides the breadth and depth of discovery and vulnerability assessment that security teams need to manage the threats from their far-reaching online ecosystems. Cyberpion solves the rising cybersecurity challenge of understanding the risks and vulnerabilities of your connected online assets and their artifacts. You can use this pack to push Cyberpion Action Items directly into your XSOAR instance, and also get additional information relating to those Action Items, and much more",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cyberpion",
-    "url": "",
-    "email": "isaac@cyberpion.com",
+    "url": "https://www.cyberpion.com",
+    "email": "support@cyberpion.com",
     "created": "2021-01-27T11:24:01Z",
     "categories": [
         "Vulnerability Management"

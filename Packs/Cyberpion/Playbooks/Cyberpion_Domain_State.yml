@@ -1,30 +1,24 @@
 id: Cyberpion Domain State
-inputs: []
+version: -1
 name: Cyberpion Domain State
-outputs: []
 description: Allows analyst to get basic information about the domain
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 030c7c85-d984-4a22-859a-fddd8daaf6a7
+    type: start
+    task:
+      id: 030c7c85-d984-4a22-859a-fddd8daaf6a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
-    note: false
-    quietmode: 0
+      - "2"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: abe22634-6ede-4f30-839c-23e8b2fff5c0
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: abe22634-6ede-4f30-839c-23e8b2fff5c0
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -32,35 +26,31 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7f8479d2-9339-4717-8dcc-d85188f03534
+    type: regular
+    task:
+      id: 7f8479d2-9339-4717-8dcc-d85188f03534
+      version: -1
+      name: cyberpion-get-domain-state
+      description: Retrieves domain's info and current state
+      script: Cyberpion|||cyberpion-get-domain-state
+      type: regular
+      iscommand: true
+      brand: Cyberpion
     nexttasks:
       '#none#':
-      - "2"
-    note: false
-    quietmode: 0
+      - "6"
     scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+      domain:
+        simple: ${incident.cyberpiondomain}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 36cd4c75-7523-46fe-8fa2-6830aa8bae9a
-      description: Allows analyst to get basic information about the domain
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 36cd4c75-7523-46fe-8fa2-6830aa8bae9a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -68,35 +58,58 @@ tasks:
           "y": 195
         }
       }
-  "2":
+    note: false
     evidencedata:
-      customfields: {}
       description:
         simple: This result is an evidence
-    id: "2"
+      customfields: {}
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 15abe8eb-f8ee-4270-81b4-c6e393a1b3c6
+    type: title
+    task:
+      id: 15abe8eb-f8ee-4270-81b4-c6e393a1b3c6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 35e2419d-62da-4f99-8e8a-f2e46cbed0e9
+    type: regular
+    task:
+      id: 35e2419d-62da-4f99-8e8a-f2e46cbed0e9
+      version: -1
+      name: Wait for manual review
+      description: |-
+        Steps:
+        #Review evidence
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - "6"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      domain:
-        simple: ${incident.cyberpiondomain}
+      - "7"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Cyberpion
-      description: Retrieves domain's info and current state
-      id: a7b8aa7b-dd11-454a-8eca-67b80db4a909
-      iscommand: true
-      name: cyberpion-get-domain-state
-      script: Cyberpion|||cyberpion-get-domain-state
-      type: regular
-      version: -1
-    taskid: a7b8aa7b-dd11-454a-8eca-67b80db4a909
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -104,69 +117,27 @@ tasks:
           "y": 370
         }
       }
-  "4":
-    id: "4"
-    ignoreworker: false
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c66d7ef7-ec0d-448b-8264-81ed929b37bb
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ''
-    taskid: c66d7ef7-ec0d-448b-8264-81ed929b37bb
     timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-  "6":
-    id: "6"
     ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "7"
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
-    task:
-      brand: ""
-      description: |-
-        Steps:
-        #Review evidence
-      id: 814800e5-7cb7-453e-8d01-c074c6083f47
-      iscommand: false
-      name: Wait for manual review
-      type: regular
-      version: -1
-    taskid: 814800e5-7cb7-453e-8d01-c074c6083f47
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 5b962ce5-4481-4e9e-8269-01e562709a8c
+    type: regular
+    task:
+      id: 5b962ce5-4481-4e9e-8269-01e562709a8c
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -177,39 +148,32 @@ tasks:
       outgoingmirrorerror: {}
       phishingsubtype: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: 8e4e42b5-2bd5-43ca-82af-f976017cb3e6
-      iscommand: true
-      name: Close investigation
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: 8e4e42b5-2bd5-43ca-82af-f976017cb3e6
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 545
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs: []
+outputs: []
 tests:
 - Cyberpion-Test
 fromversion: 6.0.0

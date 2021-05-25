@@ -75,9 +75,6 @@ def test_fetch_incidents(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
-    # last_run = {
-    #     'last_fetch': 1581944401  # Mon Feb 17 2020
-    # }
 
     _, new_incidents = fetch_incidents(
         client,
