@@ -839,7 +839,7 @@ jobs:
     resource_class: medium
     <<: *environment
     steps:
-      - checkout
+      - *attach_workspace
       - *restore_cache
       - *prepare_environment
       - *add_ssh_keys
