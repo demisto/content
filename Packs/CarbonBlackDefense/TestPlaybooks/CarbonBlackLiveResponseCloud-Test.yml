@@ -3,7 +3,6 @@ version: 197
 vcShouldKeepItemLegacyProdMachine: false
 name: CarbonBlackLiveResponseCloud-Test
 fromversion: 5.5.0
-is_mockable: false
 starttaskid: "0"
 tasks:
   "0":
