@@ -34,9 +34,7 @@ cloud-based sync API, developed on top of big data architecture.
 * **Online Brand Protection Detect and Respond Playbook:** Fully automates the process of reviewing the emails sent by customers and the public to online brand abuse inboxes. It detects brand impersonators and malicious URLs using deep inspection of website content and packages everything required to request a take-down (IOCs, forensics, and screenshots) into an email sent to the abuse department to simply forward to the domain registrar
 
 ### Useful Links
-<!-- disable-secrets-detection-start -->
 * [https://www.slashnext.com/technology-partners/cortex-xsoar/](https://www.slashnext.com/technology-partners/cortex-xsoar/)
 * [https://live.paloaltonetworks.com/t5/blogs/cortex-xsoar-amp-slashnext/ba-p/333682](https://live.paloaltonetworks.com/t5/blogs/cortex-xsoar-amp-slashnext/ba-p/333682)
 * [https://www.slashnext.com/wp-content/uploads/2020/01/SlashNext-Phishing-IR-Integration-Guide-Demisto-SOAR.pdf](https://www.slashnext.com/wp-content/uploads/2020/01/SlashNext-Phishing-IR-Integration-Guide-Demisto-SOAR.pdf)
 * [https://www.slashnext.com/wp-content/uploads/2020/07/SlashNext_CORTEX-XSOAR-Integration.pdf](https://www.slashnext.com/wp-content/uploads/2020/07/SlashNext_CORTEX-XSOAR-Integration.pdf)
-<!-- disable-secrets-detection-end -->
