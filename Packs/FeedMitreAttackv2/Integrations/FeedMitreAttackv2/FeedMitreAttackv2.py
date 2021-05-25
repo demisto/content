@@ -107,7 +107,7 @@ class Client:
 
         return indicator_obj
 
-    def build_iterator(self, create_relationships=False, limit: int = -1) -> List:
+    def build_iterator(self, create_relationships=False, is_up_to_6_2=True, limit: int = -1) -> List:
         """Retrieves all entries from the feed.
 
         Returns:
@@ -150,7 +150,7 @@ class Client:
                     mitre_item_json = json.loads(str(mitre_item))
                     if mitre_item_json.get('id') not in mitre_id_list:
                         value = mitre_item_json.get('name')
-                        item_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_item_json.get('type'))  # type: ignore
+                        item_type = get_item_type(mitre_item_json.get('type'), is_up_to_6_2)
 
                         if item_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
@@ -178,6 +178,13 @@ class Client:
         return indicators
 
 
+def get_item_type(mitre_type, is_up_to_6_2):
+    item_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_type)
+    if not is_up_to_6_2 and item_type in ['Malware', 'Tool', 'Attack Pattern']:
+        return f'STIX {item_type}'
+    return item_type
+
+
 def is_indicator_deprecated_or_revoked(indicator_json):
     return True if indicator_json.get("x_mitre_deprecated") or indicator_json.get("revoked") else False
 
@@ -203,7 +210,7 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     mitre_id = mitre_id[0] if mitre_id else None
 
     tags = [mitre_id] if mitre_id else []
-    if indicator_type in ['Tool', 'Malware']:
+    if indicator_type in ['Tool', 'STIX Tool', 'Malware', 'STIX Malware']:
         tags.extend(indicator_json.get('labels', ''))
 
     generic_mapping_fields = {
@@ -231,6 +238,20 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         },
         "Tool": {
             'aliases': indicator_json.get('x_mitre_aliases'),
+            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+        },
+
+        "STIX Attack Pattern": {
+            'stixkillchainphases': kill_chain_phases,
+            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+        },
+        "STIX Malware": {
+            'stixaliases': indicator_json.get('x_mitre_aliases'),
+            'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+
+        },
+        "STIX Tool": {
+            'stixaliases': indicator_json.get('x_mitre_aliases'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }
@@ -293,7 +314,8 @@ def test_module(client):
 
 
 def fetch_indicators(client, create_relationships):
-    indicators = client.build_iterator(create_relationships)
+    is_up_to_6_2 = is_demisto_version_ge('6.2.0')
+    indicators = client.build_iterator(create_relationships, is_up_to_6_2)
     return indicators
 
 

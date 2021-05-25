@@ -105,6 +105,63 @@ ATTACK_PATTERN = {
                   {'relationships': [], 'value': '$$DummyIndicator$$'}]
 }
 
+STIX_ATTACK_PATTERN = {
+    'response': {
+        "id": "attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055",
+        "name": "ATTACK_PATTERN 1",
+        "type": "attack-pattern",
+        "modified": "2020-05-13T22:50:51.258Z",
+        "created": "2017-05-31T21:30:44.329Z",
+        "description": "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+        "x_mitre_platforms": [
+            "Windows"
+        ],
+        "external_references": [
+            {
+                "url": "https://attack.mitre.org/techniques/T1047",
+                "source_name": "mitre-attack",
+                "external_id": "T1047"
+            },
+            {
+                "description": "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                "source_name": "Wikipedia SMB",
+                "url": "https://en.wikipedia.org/wiki/Server_Message_Block"
+            },
+            {
+                "description": "Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.",
+                "source_name": "TechNet RPC",
+                "url": "https://technet.microsoft.com/en-us/library/cc787851.aspx"
+            },
+        ],
+        "kill_chain_phases": [
+            {
+                "phase_name": "defense-evasion",
+                "kill_chain_name": "mitre-attack"
+            },
+            {
+                "phase_name": "privilege-escalation",
+                "kill_chain_name": "mitre-attack"
+            }
+        ]
+    },
+    'map_result': {
+        'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
+        'firstseenbysource': '2017-05-31T21:30:44.329Z',
+        'stixkillchainphases': ['Defense Evasion', 'Privilege Escalation'],
+        'modified': "2020-05-13T22:50:51.258Z",
+        'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+        'operatingsystemrefs': ['Windows'],
+        'mitreid': 'T1047',
+        'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
+                          'title': "Wikipedia. (2016, June 12). Server Message Block. Retrieved June 12, 2016.",
+                          'source': 'Wikipedia SMB'},
+                         {'link': "https://technet.microsoft.com/en-us/library/cc787851.aspx",
+                          'title': 'Microsoft. (2003, March 28). What Is RPC?. Retrieved June 12, 2016.',
+                          "source": 'TechNet RPC'}],
+        'tags': ['T1047']
+    }
+}
+
 COURSE_OF_ACTION = {
     'response': {
         "id": "course-of-action--02f0f92a-0a51-4c94-9bda-6437b9a93f22",
@@ -308,6 +365,51 @@ MALWARE = {
                   {'relationships': [], 'value': '$$DummyIndicator$$'}]
 }
 
+STIX_MALWARE = {
+    'response': {
+        "description": "[Wiarp](https://attack.mitre.org/software/S0206)",
+        "external_references": [
+            {
+                "external_id": "S0206",
+                "source_name": "mitre-attack",
+                "url": "https://attack.mitre.org/software/S0206"
+            },
+            {
+                "description": "Zhou, R. (2012, May 15). Backdoor.Wiarp. Retrieved February 22, 2018.",
+                "source_name": "Symantec Wiarp May 2012",
+                "url": "https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99"
+            }
+        ],
+        "x_mitre_platforms": [
+            "Windows"
+        ],
+        "x_mitre_aliases": [
+            "Wiarp"
+        ],
+        "modified": "2021-01-06T19:32:28.378Z",
+        "created": "2018-04-18T17:59:24.739Z",
+        "labels": [
+            "malware"
+        ],
+        "id": "malware--039814a0-88de-46c5-a4fb-b293db21880a",
+        "name": "MALWARE 1",
+        "type": "malware"
+    },
+    'map_result': {'stixaliases': ['Wiarp'],
+                   'description': '[Wiarp](https://attack.mitre.org/software/S0206)',
+                   'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                   'mitreid': 'S0206',
+                   'modified': '2021-01-06T19:32:28.378Z',
+                   'operatingsystemrefs': ['Windows'],
+                   'publications': [
+                       {'link': 'https://www.symantec.com/security_response/writeup.jsp?docid=2012-051606-1005-99',
+                        'source': 'Symantec Wiarp May 2012',
+                        'title': 'Zhou, R. (2012, May 15). Backdoor.Wiarp. '
+                                 'Retrieved February 22, 2018.'}],
+                   'stixid': 'malware--039814a0-88de-46c5-a4fb-b293db21880a',
+                   'tags': ['S0206', 'malware']}
+}
+
 TOOL = {
     'response': {
         "name": "TOOL 1",
@@ -367,6 +469,42 @@ TOOL = {
                    'type': 'Tool',
                    'value': 'TOOL 1'},
                   {'relationships': [], 'value': '$$DummyIndicator$$'}]
+}
+
+STIX_TOOL = {
+    'response': {
+        "name": "TOOL 1",
+        "type": "tool",
+        "description": "[PowerSploit](https://attack.mitre.org/software/S0194)",
+        "external_references": [
+            {
+                "external_id": "S0194",
+                "source_name": "mitre-attack",
+                "url": "https://attack.mitre.org/software/S0194"
+            }
+        ],
+        "x_mitre_platforms": [
+            "Windows"
+        ],
+        "x_mitre_aliases": [
+            "PowerSploit"
+        ],
+        "modified": "2021-02-09T14:00:16.093Z",
+        "created": "2018-04-18T17:59:24.739Z",
+        "labels": [
+            "tool"
+        ],
+        "id": "tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d"
+    },
+    'map_result': {'stixaliases': ['PowerSploit'],
+                   'description': '[PowerSploit](https://attack.mitre.org/software/S0194)',
+                   'firstseenbysource': '2018-04-18T17:59:24.739Z',
+                   'mitreid': 'S0194',
+                   'modified': '2021-02-09T14:00:16.093Z',
+                   'operatingsystemrefs': ['Windows'],
+                   'publications': [],
+                   'stixid': 'tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d',
+                   'tags': ['S0194', 'tool']},
 }
 
 ID_TO_NAME = {

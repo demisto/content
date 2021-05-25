@@ -2,7 +2,7 @@ import json
 import pytest
 from stix2 import TAXIICollectionSource
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
-    RELATION
+    RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN
 
 
 class MockCollection:
@@ -98,7 +98,10 @@ def test_is_indicator_deprecated_or_revoked(indicator, expected_result):
     ('Course of Action', COURSE_OF_ACTION.get('response'), COURSE_OF_ACTION.get('map_result')),
     ('Intrusion Set', INTRUSION_SET.get('response'), INTRUSION_SET.get('map_result')),
     ('Malware', MALWARE.get('response'), MALWARE.get('map_result')),
-    ('Tool', TOOL.get('response'), TOOL.get('map_result'))
+    ('Tool', TOOL.get('response'), TOOL.get('map_result')),
+    ('STIX Tool', STIX_TOOL.get('response'), STIX_TOOL.get('map_result')),
+    ('STIX Malware', STIX_MALWARE.get('response'), STIX_MALWARE.get('map_result')),
+    ('STIX Attack Pattern', STIX_ATTACK_PATTERN.get('response'), STIX_ATTACK_PATTERN.get('map_result'))
 ])
 def test_map_fields_by_type(indicator_type, indicator_json, expected_result):
     from FeedMitreAttackv2 import map_fields_by_type
@@ -124,3 +127,11 @@ def test_create_relationship():
     relation._name = 'uses'
     relation._relation_type = 'IndicatorToIndicator'
     relation._reverse_name = 'used-by'
+
+
+def test_get_item_type():
+    from FeedMitreAttackv2 import get_item_type
+    assert get_item_type('malware', True) == 'Malware'
+    assert get_item_type('malware', False) == 'STIX Malware'
+    assert get_item_type('intrusion-set', True) == 'Intrusion Set'
+    assert get_item_type('intrusion-set', False) == 'Intrusion Set'
