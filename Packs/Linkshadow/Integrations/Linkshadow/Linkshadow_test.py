@@ -15,7 +15,7 @@ def test_fetch_incidents(requests_mock):
     from Linkshadow import Client, fetch_incidents
 
     test_api_response = util_load_json('test_data/fetch_incident.json')
-    requests_mock.post('https://LS_test_fetch_incidents.com/api/plugin/',json=test_api_response)
+    requests_mock.post('https://LS_test_fetch_incidents.com/api/plugin/', json=test_api_response)
     client = Client(
         base_url='https://LS_test_fetch_incidents.com/',
         verify=False,
@@ -38,4 +38,3 @@ def test_fetch_incidents(requests_mock):
     # raise ValueError(integration_response.incidents,":::::",expected_response)
     # THEN the response should be returned and formatted
     assert integration_response[1] == expected_response
-    
