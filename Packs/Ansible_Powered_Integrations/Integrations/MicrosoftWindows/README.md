@@ -4037,7 +4037,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-pester
 ***
 Run Pester tests on Windows hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_pester_module.html
 
 
 #### Base Command
@@ -4063,12 +4063,1037 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-pester host="123.123.123.123" path="C:\Pester"```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_pester": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "output": {
+                    "ExcludeTagFilter": [
+                        ""
+                    ],
+                    "FailedCount": 5,
+                    "PassedCount": 0,
+                    "PendingCount": 0,
+                    "SkippedCount": 0,
+                    "TagFilter": [
+                        ""
+                    ],
+                    "TestNameFilter": null,
+                    "TestResult": [
+                        {
+                            "Context": "",
+                            "Describe": "Add-Numbers",
+                            "ErrorRecord": {
+                                "CategoryInfo": {
+                                    "Activity": "",
+                                    "Category": 14,
+                                    "Reason": "RuntimeException",
+                                    "TargetName": "'-Be' is not a valid Should operator.",
+                                    "TargetType": "String"
+                                },
+                                "ErrorDetails": null,
+                                "Exception": {
+                                    "Data": {},
+                                    "ErrorRecord": {
+                                        "CategoryInfo": {
+                                            "Activity": "",
+                                            "Category": 0,
+                                            "Reason": "ParentContainsErrorRecordException",
+                                            "TargetName": "",
+                                            "TargetType": ""
+                                        },
+                                        "ErrorDetails": null,
+                                        "Exception": {
+                                            "Data": {},
+                                            "HResult": -2146233087,
+                                            "HelpLink": null,
+                                            "InnerException": null,
+                                            "Message": "'-Be' is not a valid Should operator.",
+                                            "Source": null,
+                                            "StackTrace": null,
+                                            "TargetSite": null
+                                        },
+                                        "FullyQualifiedErrorId": "RuntimeException",
+                                        "InvocationInfo": null,
+                                        "PipelineIterationInfo": [],
+                                        "ScriptStackTrace": null,
+                                        "TargetObject": null
+                                    },
+                                    "HResult": -2146233087,
+                                    "HelpLink": null,
+                                    "InnerException": null,
+                                    "Message": "'-Be' is not a valid Should operator.",
+                                    "Source": null,
+                                    "StackTrace": null,
+                                    "TargetSite": null,
+                                    "WasThrownFromThrowStatement": true
+                                },
+                                "FullyQualifiedErrorId": "'-Be' is not a valid Should operator.",
+                                "InvocationInfo": {
+                                    "BoundParameters": {},
+                                    "CommandOrigin": 1,
+                                    "DisplayScriptPosition": null,
+                                    "ExpectingInput": false,
+                                    "HistoryId": -1,
+                                    "InvocationName": "",
+                                    "Line": "        throw \"'$assertionMethod' is not a valid Should operator.\"\r\n",
+                                    "MyCommand": null,
+                                    "OffsetInLine": 9,
+                                    "PSCommandPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "PSScriptRoot": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions",
+                                    "PipelineLength": 0,
+                                    "PipelinePosition": 0,
+                                    "PositionMessage": "At C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1:42 char:9\r\n+         throw \"'$assertionMethod' is not a valid Should operator.\"\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                                    "ScriptLineNumber": 42,
+                                    "ScriptName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "UnboundArguments": []
+                                },
+                                "PipelineIterationInfo": [],
+                                "ScriptStackTrace": "at Get-TestResult, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 42\r\nat Should<End>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 83\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 8\r\nat Invoke-Test, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 253\r\nat ItImpl, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 203\r\nat It, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 117\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 7\r\nat Describe, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Describe.ps1: line 100\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 5\r\nat <ScriptBlock>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 297\r\nat Invoke-Pester, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 310\r\nat <ScriptBlock>, <No file>: line 110",
+                                "TargetObject": "'-Be' is not a valid Should operator."
+                            },
+                            "FailureMessage": "'-Be' is not a valid Should operator.",
+                            "Name": "adds positive numbers",
+                            "ParameterizedSuiteName": "",
+                            "Parameters": {},
+                            "Passed": false,
+                            "Result": "Failed",
+                            "StackTrace": "at line: 42 in C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                            "Time": {
+                                "Days": 0,
+                                "Hours": 0,
+                                "Milliseconds": 654,
+                                "Minutes": 0,
+                                "Seconds": 0,
+                                "Ticks": 6547071,
+                                "TotalDays": 7.577628472222222e-06,
+                                "TotalHours": 0.00018186308333333333,
+                                "TotalMilliseconds": 654.7071000000001,
+                                "TotalMinutes": 0.010911785,
+                                "TotalSeconds": 0.6547071
+                            }
+                        },
+                        {
+                            "Context": "",
+                            "Describe": "Add-Numbers",
+                            "ErrorRecord": {
+                                "CategoryInfo": {
+                                    "Activity": "",
+                                    "Category": 14,
+                                    "Reason": "RuntimeException",
+                                    "TargetName": "'-Be' is not a valid Should operator.",
+                                    "TargetType": "String"
+                                },
+                                "ErrorDetails": null,
+                                "Exception": {
+                                    "Data": {},
+                                    "ErrorRecord": {
+                                        "CategoryInfo": {
+                                            "Activity": "",
+                                            "Category": 0,
+                                            "Reason": "ParentContainsErrorRecordException",
+                                            "TargetName": "",
+                                            "TargetType": ""
+                                        },
+                                        "ErrorDetails": null,
+                                        "Exception": {
+                                            "Data": {},
+                                            "HResult": -2146233087,
+                                            "HelpLink": null,
+                                            "InnerException": null,
+                                            "Message": "'-Be' is not a valid Should operator.",
+                                            "Source": null,
+                                            "StackTrace": null,
+                                            "TargetSite": null
+                                        },
+                                        "FullyQualifiedErrorId": "RuntimeException",
+                                        "InvocationInfo": null,
+                                        "PipelineIterationInfo": [],
+                                        "ScriptStackTrace": null,
+                                        "TargetObject": null
+                                    },
+                                    "HResult": -2146233087,
+                                    "HelpLink": null,
+                                    "InnerException": null,
+                                    "Message": "'-Be' is not a valid Should operator.",
+                                    "Source": null,
+                                    "StackTrace": null,
+                                    "TargetSite": null,
+                                    "WasThrownFromThrowStatement": true
+                                },
+                                "FullyQualifiedErrorId": "'-Be' is not a valid Should operator.",
+                                "InvocationInfo": {
+                                    "BoundParameters": {},
+                                    "CommandOrigin": 1,
+                                    "DisplayScriptPosition": null,
+                                    "ExpectingInput": false,
+                                    "HistoryId": -1,
+                                    "InvocationName": "",
+                                    "Line": "        throw \"'$assertionMethod' is not a valid Should operator.\"\r\n",
+                                    "MyCommand": null,
+                                    "OffsetInLine": 9,
+                                    "PSCommandPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "PSScriptRoot": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions",
+                                    "PipelineLength": 0,
+                                    "PipelinePosition": 0,
+                                    "PositionMessage": "At C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1:42 char:9\r\n+         throw \"'$assertionMethod' is not a valid Should operator.\"\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                                    "ScriptLineNumber": 42,
+                                    "ScriptName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "UnboundArguments": []
+                                },
+                                "PipelineIterationInfo": [],
+                                "ScriptStackTrace": "at Get-TestResult, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 42\r\nat Should<End>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 83\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 12\r\nat Invoke-Test, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 253\r\nat ItImpl, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 203\r\nat It, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 117\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 11\r\nat Describe, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Describe.ps1: line 100\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 5\r\nat <ScriptBlock>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 297\r\nat Invoke-Pester, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 310\r\nat <ScriptBlock>, <No file>: line 110",
+                                "TargetObject": "'-Be' is not a valid Should operator."
+                            },
+                            "FailureMessage": "'-Be' is not a valid Should operator.",
+                            "Name": "adds negative numbers",
+                            "ParameterizedSuiteName": "",
+                            "Parameters": {},
+                            "Passed": false,
+                            "Result": "Failed",
+                            "StackTrace": "at line: 42 in C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                            "Time": {
+                                "Days": 0,
+                                "Hours": 0,
+                                "Milliseconds": 297,
+                                "Minutes": 0,
+                                "Seconds": 0,
+                                "Ticks": 2970677,
+                                "TotalDays": 3.4382835648148146e-06,
+                                "TotalHours": 8.251880555555555e-05,
+                                "TotalMilliseconds": 297.0677,
+                                "TotalMinutes": 0.004951128333333333,
+                                "TotalSeconds": 0.2970677
+                            }
+                        },
+                        {
+                            "Context": "",
+                            "Describe": "Add-Numbers",
+                            "ErrorRecord": {
+                                "CategoryInfo": {
+                                    "Activity": "",
+                                    "Category": 14,
+                                    "Reason": "RuntimeException",
+                                    "TargetName": "'-Be' is not a valid Should operator.",
+                                    "TargetType": "String"
+                                },
+                                "ErrorDetails": null,
+                                "Exception": {
+                                    "Data": {},
+                                    "ErrorRecord": {
+                                        "CategoryInfo": {
+                                            "Activity": "",
+                                            "Category": 0,
+                                            "Reason": "ParentContainsErrorRecordException",
+                                            "TargetName": "",
+                                            "TargetType": ""
+                                        },
+                                        "ErrorDetails": null,
+                                        "Exception": {
+                                            "Data": {},
+                                            "HResult": -2146233087,
+                                            "HelpLink": null,
+                                            "InnerException": null,
+                                            "Message": "'-Be' is not a valid Should operator.",
+                                            "Source": null,
+                                            "StackTrace": null,
+                                            "TargetSite": null
+                                        },
+                                        "FullyQualifiedErrorId": "RuntimeException",
+                                        "InvocationInfo": null,
+                                        "PipelineIterationInfo": [],
+                                        "ScriptStackTrace": null,
+                                        "TargetObject": null
+                                    },
+                                    "HResult": -2146233087,
+                                    "HelpLink": null,
+                                    "InnerException": null,
+                                    "Message": "'-Be' is not a valid Should operator.",
+                                    "Source": null,
+                                    "StackTrace": null,
+                                    "TargetSite": null,
+                                    "WasThrownFromThrowStatement": true
+                                },
+                                "FullyQualifiedErrorId": "'-Be' is not a valid Should operator.",
+                                "InvocationInfo": {
+                                    "BoundParameters": {},
+                                    "CommandOrigin": 1,
+                                    "DisplayScriptPosition": null,
+                                    "ExpectingInput": false,
+                                    "HistoryId": -1,
+                                    "InvocationName": "",
+                                    "Line": "        throw \"'$assertionMethod' is not a valid Should operator.\"\r\n",
+                                    "MyCommand": null,
+                                    "OffsetInLine": 9,
+                                    "PSCommandPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "PSScriptRoot": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions",
+                                    "PipelineLength": 0,
+                                    "PipelinePosition": 0,
+                                    "PositionMessage": "At C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1:42 char:9\r\n+         throw \"'$assertionMethod' is not a valid Should operator.\"\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                                    "ScriptLineNumber": 42,
+                                    "ScriptName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "UnboundArguments": []
+                                },
+                                "PipelineIterationInfo": [],
+                                "ScriptStackTrace": "at Get-TestResult, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 42\r\nat Should<End>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 83\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 16\r\nat Invoke-Test, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 253\r\nat ItImpl, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 203\r\nat It, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 117\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 15\r\nat Describe, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Describe.ps1: line 100\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 5\r\nat <ScriptBlock>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 297\r\nat Invoke-Pester, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 310\r\nat <ScriptBlock>, <No file>: line 110",
+                                "TargetObject": "'-Be' is not a valid Should operator."
+                            },
+                            "FailureMessage": "'-Be' is not a valid Should operator.",
+                            "Name": "adds one negative number to positive number",
+                            "ParameterizedSuiteName": "",
+                            "Parameters": {},
+                            "Passed": false,
+                            "Result": "Failed",
+                            "StackTrace": "at line: 42 in C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                            "Time": {
+                                "Days": 0,
+                                "Hours": 0,
+                                "Milliseconds": 39,
+                                "Minutes": 0,
+                                "Seconds": 0,
+                                "Ticks": 399921,
+                                "TotalDays": 4.628715277777778e-07,
+                                "TotalHours": 1.1108916666666666e-05,
+                                "TotalMilliseconds": 39.9921,
+                                "TotalMinutes": 0.000666535,
+                                "TotalSeconds": 0.039992099999999996
+                            }
+                        },
+                        {
+                            "Context": "",
+                            "Describe": "Add-Numbers",
+                            "ErrorRecord": {
+                                "CategoryInfo": {
+                                    "Activity": "",
+                                    "Category": 14,
+                                    "Reason": "RuntimeException",
+                                    "TargetName": "'-Be' is not a valid Should operator.",
+                                    "TargetType": "String"
+                                },
+                                "ErrorDetails": null,
+                                "Exception": {
+                                    "Data": {},
+                                    "ErrorRecord": {
+                                        "CategoryInfo": {
+                                            "Activity": "",
+                                            "Category": 0,
+                                            "Reason": "ParentContainsErrorRecordException",
+                                            "TargetName": "",
+                                            "TargetType": ""
+                                        },
+                                        "ErrorDetails": null,
+                                        "Exception": {
+                                            "Data": {},
+                                            "HResult": -2146233087,
+                                            "HelpLink": null,
+                                            "InnerException": null,
+                                            "Message": "'-Be' is not a valid Should operator.",
+                                            "Source": null,
+                                            "StackTrace": null,
+                                            "TargetSite": null
+                                        },
+                                        "FullyQualifiedErrorId": "RuntimeException",
+                                        "InvocationInfo": null,
+                                        "PipelineIterationInfo": [],
+                                        "ScriptStackTrace": null,
+                                        "TargetObject": null
+                                    },
+                                    "HResult": -2146233087,
+                                    "HelpLink": null,
+                                    "InnerException": null,
+                                    "Message": "'-Be' is not a valid Should operator.",
+                                    "Source": null,
+                                    "StackTrace": null,
+                                    "TargetSite": null,
+                                    "WasThrownFromThrowStatement": true
+                                },
+                                "FullyQualifiedErrorId": "'-Be' is not a valid Should operator.",
+                                "InvocationInfo": {
+                                    "BoundParameters": {},
+                                    "CommandOrigin": 1,
+                                    "DisplayScriptPosition": null,
+                                    "ExpectingInput": false,
+                                    "HistoryId": -1,
+                                    "InvocationName": "",
+                                    "Line": "        throw \"'$assertionMethod' is not a valid Should operator.\"\r\n",
+                                    "MyCommand": null,
+                                    "OffsetInLine": 9,
+                                    "PSCommandPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "PSScriptRoot": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions",
+                                    "PipelineLength": 0,
+                                    "PipelinePosition": 0,
+                                    "PositionMessage": "At C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1:42 char:9\r\n+         throw \"'$assertionMethod' is not a valid Should operator.\"\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                                    "ScriptLineNumber": 42,
+                                    "ScriptName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "UnboundArguments": []
+                                },
+                                "PipelineIterationInfo": [],
+                                "ScriptStackTrace": "at Get-TestResult, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 42\r\nat Should<End>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 83\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 20\r\nat Invoke-Test, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 253\r\nat ItImpl, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 203\r\nat It, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 117\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 19\r\nat Describe, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Describe.ps1: line 100\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 5\r\nat <ScriptBlock>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 297\r\nat Invoke-Pester, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 310\r\nat <ScriptBlock>, <No file>: line 110",
+                                "TargetObject": "'-Be' is not a valid Should operator."
+                            },
+                            "FailureMessage": "'-Be' is not a valid Should operator.",
+                            "Name": "concatenates strings if given strings",
+                            "ParameterizedSuiteName": "",
+                            "Parameters": {},
+                            "Passed": false,
+                            "Result": "Failed",
+                            "StackTrace": "at line: 42 in C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                            "Time": {
+                                "Days": 0,
+                                "Hours": 0,
+                                "Milliseconds": 40,
+                                "Minutes": 0,
+                                "Seconds": 0,
+                                "Ticks": 405462,
+                                "TotalDays": 4.692847222222222e-07,
+                                "TotalHours": 1.1262833333333333e-05,
+                                "TotalMilliseconds": 40.5462,
+                                "TotalMinutes": 0.00067577,
+                                "TotalSeconds": 0.0405462
+                            }
+                        },
+                        {
+                            "Context": "",
+                            "Describe": "Add-Numbers",
+                            "ErrorRecord": {
+                                "CategoryInfo": {
+                                    "Activity": "",
+                                    "Category": 14,
+                                    "Reason": "RuntimeException",
+                                    "TargetName": "'-Not' is not a valid Should operator.",
+                                    "TargetType": "String"
+                                },
+                                "ErrorDetails": null,
+                                "Exception": {
+                                    "Data": {},
+                                    "ErrorRecord": {
+                                        "CategoryInfo": {
+                                            "Activity": "",
+                                            "Category": 0,
+                                            "Reason": "ParentContainsErrorRecordException",
+                                            "TargetName": "",
+                                            "TargetType": ""
+                                        },
+                                        "ErrorDetails": null,
+                                        "Exception": {
+                                            "Data": {},
+                                            "HResult": -2146233087,
+                                            "HelpLink": null,
+                                            "InnerException": null,
+                                            "Message": "'-Not' is not a valid Should operator.",
+                                            "Source": null,
+                                            "StackTrace": null,
+                                            "TargetSite": null
+                                        },
+                                        "FullyQualifiedErrorId": "RuntimeException",
+                                        "InvocationInfo": null,
+                                        "PipelineIterationInfo": [],
+                                        "ScriptStackTrace": null,
+                                        "TargetObject": null
+                                    },
+                                    "HResult": -2146233087,
+                                    "HelpLink": null,
+                                    "InnerException": null,
+                                    "Message": "'-Not' is not a valid Should operator.",
+                                    "Source": null,
+                                    "StackTrace": null,
+                                    "TargetSite": null,
+                                    "WasThrownFromThrowStatement": true
+                                },
+                                "FullyQualifiedErrorId": "'-Not' is not a valid Should operator.",
+                                "InvocationInfo": {
+                                    "BoundParameters": {},
+                                    "CommandOrigin": 1,
+                                    "DisplayScriptPosition": null,
+                                    "ExpectingInput": false,
+                                    "HistoryId": -1,
+                                    "InvocationName": "",
+                                    "Line": "        throw \"'$assertionMethod' is not a valid Should operator.\"\r\n",
+                                    "MyCommand": null,
+                                    "OffsetInLine": 9,
+                                    "PSCommandPath": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "PSScriptRoot": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions",
+                                    "PipelineLength": 0,
+                                    "PipelinePosition": 0,
+                                    "PositionMessage": "At C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1:42 char:9\r\n+         throw \"'$assertionMethod' is not a valid Should operator.\"\r\n+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+                                    "ScriptLineNumber": 42,
+                                    "ScriptName": "C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                                    "UnboundArguments": []
+                                },
+                                "PipelineIterationInfo": [],
+                                "ScriptStackTrace": "at Get-TestResult, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 42\r\nat Should<End>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1: line 83\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 24\r\nat Invoke-Test, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 253\r\nat ItImpl, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 203\r\nat It, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\It.ps1: line 117\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 23\r\nat Describe, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Describe.ps1: line 100\r\nat <ScriptBlock>, C:\\Pester\\Add-Numbers.Tests.ps1: line 5\r\nat <ScriptBlock>, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 297\r\nat Invoke-Pester, C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Pester.psm1: line 310\r\nat <ScriptBlock>, <No file>: line 110",
+                                "TargetObject": "'-Not' is not a valid Should operator."
+                            },
+                            "FailureMessage": "'-Not' is not a valid Should operator.",
+                            "Name": "should not be 0",
+                            "ParameterizedSuiteName": "",
+                            "Parameters": {},
+                            "Passed": false,
+                            "Result": "Failed",
+                            "StackTrace": "at line: 42 in C:\\Program Files\\WindowsPowerShell\\Modules\\Pester\\3.4.0\\Functions\\Assertions\\Should.ps1",
+                            "Time": {
+                                "Days": 0,
+                                "Hours": 0,
+                                "Milliseconds": 40,
+                                "Minutes": 0,
+                                "Seconds": 0,
+                                "Ticks": 401561,
+                                "TotalDays": 4.647696759259259e-07,
+                                "TotalHours": 1.1154472222222222e-05,
+                                "TotalMilliseconds": 40.1561,
+                                "TotalMinutes": 0.0006692683333333334,
+                                "TotalSeconds": 0.0401561
+                            }
+                        }
+                    ],
+                    "Time": {
+                        "Days": 0,
+                        "Hours": 0,
+                        "Milliseconds": 72,
+                        "Minutes": 0,
+                        "Seconds": 1,
+                        "Ticks": 10724692,
+                        "TotalDays": 1.2412837962962962e-05,
+                        "TotalHours": 0.0002979081111111111,
+                        "TotalMilliseconds": 1072.4692,
+                        "TotalMinutes": 0.017874486666666668,
+                        "TotalSeconds": 1.0724692
+                    },
+                    "TotalCount": 5
+                },
+                "pester_version": "3.4.0",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+># Output #
+>* ## Excludetagfilter ##
+>  * 0: 
+>* FailedCount: 5
+>* PassedCount: 0
+>* PendingCount: 0
+>* SkippedCount: 0
+>* ## Tagfilter ##
+>  * 0: 
+>* TestNameFilter: None
+>* ## Testresult ##
+>* ### List ###
+>  * Context: 
+>  * Describe: Add-Numbers
+>* ### Errorrecord ###
+>* #### Categoryinfo ####
+>  * Activity: 
+>  * Category: 14
+>  * Reason: RuntimeException
+>  * TargetName: '-Be' is not a valid Should operator.
+>  * TargetType: String
+>  * ErrorDetails: None
+>* #### Exception ####
+>* ##### Data #####
+>* ##### Errorrecord #####
+>* ###### Categoryinfo ######
+>  * Activity: 
+>  * Category: 0
+>  * Reason: ParentContainsErrorRecordException
+>  * TargetName: 
+>  * TargetType: 
+>  * ErrorDetails: None
+>* ###### Exception ######
+>* ####### Data #######
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * FullyQualifiedErrorId: RuntimeException
+>  * InvocationInfo: None
+>* ###### Pipelineiterationinfo ######
+>  * ScriptStackTrace: None
+>  * TargetObject: None
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * WasThrownFromThrowStatement: True
+>  * FullyQualifiedErrorId: '-Be' is not a valid Should operator.
+>* #### Invocationinfo ####
+>* ##### Boundparameters #####
+>  * CommandOrigin: 1
+>  * DisplayScriptPosition: None
+>  * ExpectingInput: False
+>  * HistoryId: -1
+>  * InvocationName: 
+>  * Line:         throw "'$assertionMethod' is not a valid Should operator."
+>
+>  * MyCommand: None
+>  * OffsetInLine: 9
+>  * PSCommandPath: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>  * PSScriptRoot: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions
+>  * PipelineLength: 0
+>  * PipelinePosition: 0
+>  * PositionMessage: At C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1:42 char:9
+>+         throw "'$assertionMethod' is not a valid Should operator."
+>+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  * ScriptLineNumber: 42
+>  * ScriptName: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ##### Unboundarguments #####
+>* #### Pipelineiterationinfo ####
+>  * ScriptStackTrace: at Get-TestResult, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 42
+>at Should<End>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 83
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 8
+>at Invoke-Test, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 253
+>at ItImpl, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 203
+>at It, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 117
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 7
+>at Describe, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Describe.ps1: line 100
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 5
+>at <ScriptBlock>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 297
+>at Invoke-Pester, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 310
+>at <ScriptBlock>, <No file>: line 110
+>  * TargetObject: '-Be' is not a valid Should operator.
+>  * FailureMessage: '-Be' is not a valid Should operator.
+>  * Name: adds positive numbers
+>  * ParameterizedSuiteName: 
+>* ### Parameters ###
+>  * Passed: False
+>  * Result: Failed
+>  * StackTrace: at line: 42 in C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ### Time ###
+>  * Days: 0
+>  * Hours: 0
+>  * Milliseconds: 654
+>  * Minutes: 0
+>  * Seconds: 0
+>  * Ticks: 6547071
+>  * TotalDays: 7.577628472222222e-06
+>  * TotalHours: 0.00018186308333333333
+>  * TotalMilliseconds: 654.7071000000001
+>  * TotalMinutes: 0.010911785
+>  * TotalSeconds: 0.6547071
+>* ### List ###
+>  * Context: 
+>  * Describe: Add-Numbers
+>* ### Errorrecord ###
+>* #### Categoryinfo ####
+>  * Activity: 
+>  * Category: 14
+>  * Reason: RuntimeException
+>  * TargetName: '-Be' is not a valid Should operator.
+>  * TargetType: String
+>  * ErrorDetails: None
+>* #### Exception ####
+>* ##### Data #####
+>* ##### Errorrecord #####
+>* ###### Categoryinfo ######
+>  * Activity: 
+>  * Category: 0
+>  * Reason: ParentContainsErrorRecordException
+>  * TargetName: 
+>  * TargetType: 
+>  * ErrorDetails: None
+>* ###### Exception ######
+>* ####### Data #######
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * FullyQualifiedErrorId: RuntimeException
+>  * InvocationInfo: None
+>* ###### Pipelineiterationinfo ######
+>  * ScriptStackTrace: None
+>  * TargetObject: None
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * WasThrownFromThrowStatement: True
+>  * FullyQualifiedErrorId: '-Be' is not a valid Should operator.
+>* #### Invocationinfo ####
+>* ##### Boundparameters #####
+>  * CommandOrigin: 1
+>  * DisplayScriptPosition: None
+>  * ExpectingInput: False
+>  * HistoryId: -1
+>  * InvocationName: 
+>  * Line:         throw "'$assertionMethod' is not a valid Should operator."
+>
+>  * MyCommand: None
+>  * OffsetInLine: 9
+>  * PSCommandPath: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>  * PSScriptRoot: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions
+>  * PipelineLength: 0
+>  * PipelinePosition: 0
+>  * PositionMessage: At C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1:42 char:9
+>+         throw "'$assertionMethod' is not a valid Should operator."
+>+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  * ScriptLineNumber: 42
+>  * ScriptName: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ##### Unboundarguments #####
+>* #### Pipelineiterationinfo ####
+>  * ScriptStackTrace: at Get-TestResult, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 42
+>at Should<End>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 83
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 12
+>at Invoke-Test, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 253
+>at ItImpl, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 203
+>at It, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 117
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 11
+>at Describe, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Describe.ps1: line 100
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 5
+>at <ScriptBlock>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 297
+>at Invoke-Pester, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 310
+>at <ScriptBlock>, <No file>: line 110
+>  * TargetObject: '-Be' is not a valid Should operator.
+>  * FailureMessage: '-Be' is not a valid Should operator.
+>  * Name: adds negative numbers
+>  * ParameterizedSuiteName: 
+>* ### Parameters ###
+>  * Passed: False
+>  * Result: Failed
+>  * StackTrace: at line: 42 in C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ### Time ###
+>  * Days: 0
+>  * Hours: 0
+>  * Milliseconds: 297
+>  * Minutes: 0
+>  * Seconds: 0
+>  * Ticks: 2970677
+>  * TotalDays: 3.4382835648148146e-06
+>  * TotalHours: 8.251880555555555e-05
+>  * TotalMilliseconds: 297.0677
+>  * TotalMinutes: 0.004951128333333333
+>  * TotalSeconds: 0.2970677
+>* ### List ###
+>  * Context: 
+>  * Describe: Add-Numbers
+>* ### Errorrecord ###
+>* #### Categoryinfo ####
+>  * Activity: 
+>  * Category: 14
+>  * Reason: RuntimeException
+>  * TargetName: '-Be' is not a valid Should operator.
+>  * TargetType: String
+>  * ErrorDetails: None
+>* #### Exception ####
+>* ##### Data #####
+>* ##### Errorrecord #####
+>* ###### Categoryinfo ######
+>  * Activity: 
+>  * Category: 0
+>  * Reason: ParentContainsErrorRecordException
+>  * TargetName: 
+>  * TargetType: 
+>  * ErrorDetails: None
+>* ###### Exception ######
+>* ####### Data #######
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * FullyQualifiedErrorId: RuntimeException
+>  * InvocationInfo: None
+>* ###### Pipelineiterationinfo ######
+>  * ScriptStackTrace: None
+>  * TargetObject: None
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * WasThrownFromThrowStatement: True
+>  * FullyQualifiedErrorId: '-Be' is not a valid Should operator.
+>* #### Invocationinfo ####
+>* ##### Boundparameters #####
+>  * CommandOrigin: 1
+>  * DisplayScriptPosition: None
+>  * ExpectingInput: False
+>  * HistoryId: -1
+>  * InvocationName: 
+>  * Line:         throw "'$assertionMethod' is not a valid Should operator."
+>
+>  * MyCommand: None
+>  * OffsetInLine: 9
+>  * PSCommandPath: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>  * PSScriptRoot: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions
+>  * PipelineLength: 0
+>  * PipelinePosition: 0
+>  * PositionMessage: At C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1:42 char:9
+>+         throw "'$assertionMethod' is not a valid Should operator."
+>+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  * ScriptLineNumber: 42
+>  * ScriptName: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ##### Unboundarguments #####
+>* #### Pipelineiterationinfo ####
+>  * ScriptStackTrace: at Get-TestResult, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 42
+>at Should<End>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 83
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 16
+>at Invoke-Test, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 253
+>at ItImpl, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 203
+>at It, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 117
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 15
+>at Describe, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Describe.ps1: line 100
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 5
+>at <ScriptBlock>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 297
+>at Invoke-Pester, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 310
+>at <ScriptBlock>, <No file>: line 110
+>  * TargetObject: '-Be' is not a valid Should operator.
+>  * FailureMessage: '-Be' is not a valid Should operator.
+>  * Name: adds one negative number to positive number
+>  * ParameterizedSuiteName: 
+>* ### Parameters ###
+>  * Passed: False
+>  * Result: Failed
+>  * StackTrace: at line: 42 in C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ### Time ###
+>  * Days: 0
+>  * Hours: 0
+>  * Milliseconds: 39
+>  * Minutes: 0
+>  * Seconds: 0
+>  * Ticks: 399921
+>  * TotalDays: 4.628715277777778e-07
+>  * TotalHours: 1.1108916666666666e-05
+>  * TotalMilliseconds: 39.9921
+>  * TotalMinutes: 0.000666535
+>  * TotalSeconds: 0.039992099999999996
+>* ### List ###
+>  * Context: 
+>  * Describe: Add-Numbers
+>* ### Errorrecord ###
+>* #### Categoryinfo ####
+>  * Activity: 
+>  * Category: 14
+>  * Reason: RuntimeException
+>  * TargetName: '-Be' is not a valid Should operator.
+>  * TargetType: String
+>  * ErrorDetails: None
+>* #### Exception ####
+>* ##### Data #####
+>* ##### Errorrecord #####
+>* ###### Categoryinfo ######
+>  * Activity: 
+>  * Category: 0
+>  * Reason: ParentContainsErrorRecordException
+>  * TargetName: 
+>  * TargetType: 
+>  * ErrorDetails: None
+>* ###### Exception ######
+>* ####### Data #######
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * FullyQualifiedErrorId: RuntimeException
+>  * InvocationInfo: None
+>* ###### Pipelineiterationinfo ######
+>  * ScriptStackTrace: None
+>  * TargetObject: None
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Be' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * WasThrownFromThrowStatement: True
+>  * FullyQualifiedErrorId: '-Be' is not a valid Should operator.
+>* #### Invocationinfo ####
+>* ##### Boundparameters #####
+>  * CommandOrigin: 1
+>  * DisplayScriptPosition: None
+>  * ExpectingInput: False
+>  * HistoryId: -1
+>  * InvocationName: 
+>  * Line:         throw "'$assertionMethod' is not a valid Should operator."
+>
+>  * MyCommand: None
+>  * OffsetInLine: 9
+>  * PSCommandPath: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>  * PSScriptRoot: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions
+>  * PipelineLength: 0
+>  * PipelinePosition: 0
+>  * PositionMessage: At C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1:42 char:9
+>+         throw "'$assertionMethod' is not a valid Should operator."
+>+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  * ScriptLineNumber: 42
+>  * ScriptName: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ##### Unboundarguments #####
+>* #### Pipelineiterationinfo ####
+>  * ScriptStackTrace: at Get-TestResult, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 42
+>at Should<End>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 83
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 20
+>at Invoke-Test, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 253
+>at ItImpl, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 203
+>at It, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 117
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 19
+>at Describe, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Describe.ps1: line 100
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 5
+>at <ScriptBlock>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 297
+>at Invoke-Pester, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 310
+>at <ScriptBlock>, <No file>: line 110
+>  * TargetObject: '-Be' is not a valid Should operator.
+>  * FailureMessage: '-Be' is not a valid Should operator.
+>  * Name: concatenates strings if given strings
+>  * ParameterizedSuiteName: 
+>* ### Parameters ###
+>  * Passed: False
+>  * Result: Failed
+>  * StackTrace: at line: 42 in C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ### Time ###
+>  * Days: 0
+>  * Hours: 0
+>  * Milliseconds: 40
+>  * Minutes: 0
+>  * Seconds: 0
+>  * Ticks: 405462
+>  * TotalDays: 4.692847222222222e-07
+>  * TotalHours: 1.1262833333333333e-05
+>  * TotalMilliseconds: 40.5462
+>  * TotalMinutes: 0.00067577
+>  * TotalSeconds: 0.0405462
+>* ### List ###
+>  * Context: 
+>  * Describe: Add-Numbers
+>* ### Errorrecord ###
+>* #### Categoryinfo ####
+>  * Activity: 
+>  * Category: 14
+>  * Reason: RuntimeException
+>  * TargetName: '-Not' is not a valid Should operator.
+>  * TargetType: String
+>  * ErrorDetails: None
+>* #### Exception ####
+>* ##### Data #####
+>* ##### Errorrecord #####
+>* ###### Categoryinfo ######
+>  * Activity: 
+>  * Category: 0
+>  * Reason: ParentContainsErrorRecordException
+>  * TargetName: 
+>  * TargetType: 
+>  * ErrorDetails: None
+>* ###### Exception ######
+>* ####### Data #######
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Not' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * FullyQualifiedErrorId: RuntimeException
+>  * InvocationInfo: None
+>* ###### Pipelineiterationinfo ######
+>  * ScriptStackTrace: None
+>  * TargetObject: None
+>  * HResult: -2146233087
+>  * HelpLink: None
+>  * InnerException: None
+>  * Message: '-Not' is not a valid Should operator.
+>  * Source: None
+>  * StackTrace: None
+>  * TargetSite: None
+>  * WasThrownFromThrowStatement: True
+>  * FullyQualifiedErrorId: '-Not' is not a valid Should operator.
+>* #### Invocationinfo ####
+>* ##### Boundparameters #####
+>  * CommandOrigin: 1
+>  * DisplayScriptPosition: None
+>  * ExpectingInput: False
+>  * HistoryId: -1
+>  * InvocationName: 
+>  * Line:         throw "'$assertionMethod' is not a valid Should operator."
+>
+>  * MyCommand: None
+>  * OffsetInLine: 9
+>  * PSCommandPath: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>  * PSScriptRoot: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions
+>  * PipelineLength: 0
+>  * PipelinePosition: 0
+>  * PositionMessage: At C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1:42 char:9
+>+         throw "'$assertionMethod' is not a valid Should operator."
+>+         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  * ScriptLineNumber: 42
+>  * ScriptName: C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ##### Unboundarguments #####
+>* #### Pipelineiterationinfo ####
+>  * ScriptStackTrace: at Get-TestResult, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 42
+>at Should<End>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1: line 83
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 24
+>at Invoke-Test, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 253
+>at ItImpl, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 203
+>at It, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\It.ps1: line 117
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 23
+>at Describe, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Describe.ps1: line 100
+>at <ScriptBlock>, C:\Pester\Add-Numbers.Tests.ps1: line 5
+>at <ScriptBlock>, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 297
+>at Invoke-Pester, C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Pester.psm1: line 310
+>at <ScriptBlock>, <No file>: line 110
+>  * TargetObject: '-Not' is not a valid Should operator.
+>  * FailureMessage: '-Not' is not a valid Should operator.
+>  * Name: should not be 0
+>  * ParameterizedSuiteName: 
+>* ### Parameters ###
+>  * Passed: False
+>  * Result: Failed
+>  * StackTrace: at line: 42 in C:\Program Files\WindowsPowerShell\Modules\Pester\3.4.0\Functions\Assertions\Should.ps1
+>* ### Time ###
+>  * Days: 0
+>  * Hours: 0
+>  * Milliseconds: 40
+>  * Minutes: 0
+>  * Seconds: 0
+>  * Ticks: 401561
+>  * TotalDays: 4.647696759259259e-07
+>  * TotalHours: 1.1154472222222222e-05
+>  * TotalMilliseconds: 40.1561
+>  * TotalMinutes: 0.0006692683333333334
+>  * TotalSeconds: 0.0401561
+>* ## Time ##
+>  * Days: 0
+>  * Hours: 0
+>  * Milliseconds: 72
+>  * Minutes: 0
+>  * Seconds: 1
+>  * Ticks: 10724692
+>  * TotalDays: 1.2412837962962962e-05
+>  * TotalHours: 0.0002979081111111111
+>  * TotalMilliseconds: 1072.4692
+>  * TotalMinutes: 0.017874486666666668
+>  * TotalSeconds: 1.0724692
+>* TotalCount: 5
+>  * pester_version: 3.4.0
 ### win-ping
 ***
 A windows version of the classic ping module
@@ -5089,7 +6114,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-regmerge
 ***
 Merges the contents of a registry file into the Windows registry
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regmerge_module.html
 
 
 #### Base Command
@@ -5114,16 +6139,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-regmerge host="123.123.123.123" path="C:/temp/firefox.reg" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_regmerge": [
+            {
+                "changed": true,
+                "compared": false,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * compared: False
 ### win-robocopy
 ***
 Synchronizes the contents of two directories using Robocopy
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_robocopy_module.html
 
 
 #### Base Command
@@ -5157,10 +6199,140 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-robocopy host="123.123.123.123" src="C:/temp" dest="C:/temp2" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_robocopy": [
+            {
+                "changed": true,
+                "cmd": " C:/temp C:/temp2",
+                "dest": "C:/temp2",
+                "flags": null,
+                "host": "123.123.123.123",
+                "msg": "Files copied successfully!",
+                "output": [
+                    "",
+                    "-------------------------------------------------------------------------------",
+                    "   ROBOCOPY     ::     Robust File Copy for Windows                              ",
+                    "-------------------------------------------------------------------------------",
+                    "",
+                    "  Started : Tuesday, May 25, 2021 1:24:02 AM",
+                    "   Source : C:\\temp\\",
+                    "     Dest : C:\\temp2\\",
+                    "",
+                    "    Files : *.*",
+                    "\t    ",
+                    "  Options : *.* /DCOPY:DA /COPY:DAT /R:1000000 /W:30 ",
+                    "",
+                    "------------------------------------------------------------------------------",
+                    "",
+                    "\t  New Dir          7\tC:\\temp\\",
+                    "\t    New File  \t\t   38472\tAMD64-all-intcaudiobusremove_8f5bdb01d8f5ee64e038a6d31422ff98e9f692d4.exe",
+                    "  0%  ",
+                    "100%  ",
+                    "\t    New File  \t\t    1746\tcert.pem",
+                    "  0%  ",
+                    "100%  ",
+                    "\t    New File  \t\t   45108\tearthrise.jpg",
+                    "  0%  ",
+                    "100%  ",
+                    "\t    New File  \t\t   32256\tExecutable.exe",
+                    "  0%  ",
+                    "100%  ",
+                    "\t    New File  \t\t      17\tfile.txt",
+                    "  0%  ",
+                    "100%  ",
+                    "\t    New File  \t\t     414\tfirefox.reg",
+                    "  0%  ",
+                    "100%  ",
+                    "\t    New File  \t\t       0\tfoo.conf",
+                    "100%  ",
+                    "",
+                    "------------------------------------------------------------------------------",
+                    "",
+                    "               Total    Copied   Skipped  Mismatch    FAILED    Extras",
+                    "    Dirs :         1         1         0         0         0         0",
+                    "   Files :         7         7         0         0         0         0",
+                    "   Bytes :   115.2 k   115.2 k         0         0         0         0",
+                    "   Times :   0:00:00   0:00:00                       0:00:00   0:00:00",
+                    "   Ended : Tuesday, May 25, 2021 1:24:02 AM",
+                    ""
+                ],
+                "purge": false,
+                "rc": 1,
+                "recurse": false,
+                "return_code": 1,
+                "src": "C:/temp",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * cmd:  C:/temp C:/temp2
+>  * dest: C:/temp2
+>  * flags: None
+>  * msg: Files copied successfully!
+># Output #
+>* 0: 
+>* 1: -------------------------------------------------------------------------------
+>* 2:    ROBOCOPY     ::     Robust File Copy for Windows                              
+>* 1: -------------------------------------------------------------------------------
+>* 0: 
+>* 5:   Started : Tuesday, May 25, 2021 1:24:02 AM
+>* 6:    Source : C:\temp\
+>* 7:      Dest : C:\temp2\
+>* 0: 
+>* 9:     Files : *.*
+>* 10: 	    
+>* 11:   Options : *.* /DCOPY:DA /COPY:DAT /R:1000000 /W:30 
+>* 0: 
+>* 13: ------------------------------------------------------------------------------
+>* 0: 
+>* 15: 	  New Dir          7	C:\temp\
+>* 16: 	    New File  		   38472	AMD64-all-intcaudiobusremove_8f5bdb01d8f5ee64e038a6d31422ff98e9f692d4.exe
+>* 17:   0%  
+>* 18: 100%  
+>* 19: 	    New File  		    1746	cert.pem
+>* 17:   0%  
+>* 18: 100%  
+>* 22: 	    New File  		   45108	earthrise.jpg
+>* 17:   0%  
+>* 18: 100%  
+>* 25: 	    New File  		   32256	Executable.exe
+>* 17:   0%  
+>* 18: 100%  
+>* 28: 	    New File  		      17	file.txt
+>* 17:   0%  
+>* 18: 100%  
+>* 31: 	    New File  		     414	firefox.reg
+>* 17:   0%  
+>* 18: 100%  
+>* 34: 	    New File  		       0	foo.conf
+>* 18: 100%  
+>* 0: 
+>* 13: ------------------------------------------------------------------------------
+>* 0: 
+>* 39:                Total    Copied   Skipped  Mismatch    FAILED    Extras
+>* 40:     Dirs :         1         1         0         0         0         0
+>* 41:    Files :         7         7         0         0         0         0
+>* 42:    Bytes :   115.2 k   115.2 k         0         0         0         0
+>* 43:    Times :   0:00:00   0:00:00                       0:00:00   0:00:00
+>* 44:    Ended : Tuesday, May 25, 2021 1:24:02 AM
+>* 0: 
+>  * purge: False
+>  * rc: 1
+>  * recurse: False
+>  * return_code: 1
+>  * src: C:/temp
 
 
 ### win-route
@@ -5219,7 +6391,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-say
 ***
 Text to speech module for Windows to speak messages and optionally play sounds
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_say_module.html
 
 
 #### Base Command
@@ -5248,11 +6420,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-say host="123.123.123.123" msg="Warning, deployment commencing in 5 minutes, please log out." ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_say": [
+            {
+                "changed": false,
+                "host": "123.123.123.123",
+                "message_text": "Warning, deployment commencing in 5 minutes, please log out.",
+                "status": "SUCCESS",
+                "voice": "Microsoft Zira Desktop"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
+>  * message_text: Warning, deployment commencing in 5 minutes, please log out.
+>  * voice: Microsoft Zira Desktop
 
 ### win-scheduled-task
 ***
@@ -5604,7 +6796,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-share
 ***
 Manage Windows shares
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_share_module.html
 
 
 #### Base Command
@@ -5636,11 +6828,46 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-share host="123.123.123.123" name="internal" description="top secret share" path="C:/temp" list="False" full="Administrators,bob" read="fed-phil" deny="Guest" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_share": [
+            {
+                "actions": [
+                    "New-SmbShare -Name internal -Path C:\\temp",
+                    "Set-SmbShare -Force -Name internal -Description top secret share",
+                    "Set-SmbShare -Force -Name internal -FolderEnumerationMode AccessBased",
+                    "Revoke-SmbShareAccess -Force -Name internal -AccountName Everyone",
+                    "Grant-SmbShareAccess -Force -Name internal -AccountName SAMPLE-HOSTNAME\\Fed-Phil -AccessRight Read",
+                    "Grant-SmbShareAccess -Force -Name internal -AccountName BUILTIN\\Administrators -AccessRight Full",
+                    "Grant-SmbShareAccess -Force -Name internal -AccountName SAMPLE-HOSTNAME\\bob -AccessRight Full",
+                    "Block-SmbShareAccess -Force -Name internal -AccountName SAMPLE-HOSTNAME\\Guest"
+                ],
+                "changed": true,
+                "host": "123.123.123.123",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+># Actions #
+>* 0: New-SmbShare -Name internal -Path C:\temp
+>* 1: Set-SmbShare -Force -Name internal -Description top secret share
+>* 2: Set-SmbShare -Force -Name internal -FolderEnumerationMode AccessBased
+>* 3: Revoke-SmbShareAccess -Force -Name internal -AccountName Everyone
+>* 4: Grant-SmbShareAccess -Force -Name internal -AccountName SAMPLE-HOSTNAME\Fed-Phil -AccessRight Read
+>* 5: Grant-SmbShareAccess -Force -Name internal -AccountName BUILTIN\Administrators -AccessRight Full
+>* 6: Grant-SmbShareAccess -Force -Name internal -AccountName SAMPLE-HOSTNAME\bob -AccessRight Full
+>* 7: Block-SmbShareAccess -Force -Name internal -AccountName SAMPLE-HOSTNAME\Guest
+>  * changed: True
 
 ### win-shortcut
 ***
@@ -5753,7 +6980,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-stat
 ***
 Get information about Windows files
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_stat_module.html
 
 
 #### Base Command
@@ -5765,7 +6992,6 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 | --- | --- | --- |
 | host | hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance. | Required | 
 | path | The full path of the file/object to get the facts of; both forward and back slashes are accepted. | Required | 
-| get_md5 | Whether to return the checksum sum of the file. Between Ansible 1.9 and Ansible 2.2 this is no longer an MD5, but a SHA1 instead. As of Ansible 2.3 this is back to an MD5. Will return None if host is unable to use specified algorithm.<br/>The default of this option changed from `yes` to `no` in Ansible 2.5 and will be removed altogether in Ansible 2.9.<br/>Use `get_checksum=yes` with `checksum_algorithm=md5` to return an md5 hash under the `checksum` return value. Default is False. | Optional | 
 | get_checksum | Whether to return a checksum of the file (default sha1). Default is True. | Optional | 
 | checksum_algorithm | Algorithm to determine checksum of file.<br/>Will throw an error if the host is unable to use specified algorithm. Possible values are: md5, sha1, sha256, sha384, sha512. Default is sha1. | Optional | 
 | follow | Whether to follow symlinks or junction points.<br/>In the case of `path` pointing to another link, then that will be followed until no more links are found. Default is False. | Optional | 
@@ -5780,11 +7006,72 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-stat host="123.123.123.123" path="C:/logs.zip" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_stat": [
+            {
+                "changed": false,
+                "host": "123.123.123.123",
+                "stat": {
+                    "attributes": "Archive",
+                    "checksum": "f55dc0daa7dc67efb1c0252e0feae7399b8354d3",
+                    "creationtime": 1621904952.8970397,
+                    "exists": true,
+                    "extension": ".zip",
+                    "filename": "logs.zip",
+                    "hlnk_targets": [],
+                    "isarchive": true,
+                    "isdir": false,
+                    "ishidden": false,
+                    "isjunction": false,
+                    "islnk": false,
+                    "isreadonly": false,
+                    "isreg": true,
+                    "isshared": false,
+                    "lastaccesstime": 1621904952.8970397,
+                    "lastwritetime": 1621904952.912667,
+                    "nlink": 1,
+                    "owner": "BUILTIN\\Administrators",
+                    "path": "C:\\logs.zip",
+                    "size": 131
+                },
+                "status": "SUCCESS"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
+># Stat #
+>* attributes: Archive
+>* checksum: f55dc0daa7dc67efb1c0252e0feae7399b8354d3
+>* creationtime: 1621904952.8970397
+>* exists: True
+>* extension: .zip
+>* filename: logs.zip
+>* ## Hlnk_Targets ##
+>* isarchive: True
+>* isdir: False
+>* ishidden: False
+>* isjunction: False
+>* islnk: False
+>* isreadonly: False
+>* isreg: True
+>* isshared: False
+>* lastaccesstime: 1621904952.8970397
+>* lastwritetime: 1621904952.912667
+>* nlink: 1
+>* owner: BUILTIN\Administrators
+>* path: C:\logs.zip
+>* size: 131
 
 ### win-tempfile
 ***
@@ -5939,7 +7226,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-toast
 ***
 Sends Toast windows notification to logged in users on Windows 10 or later hosts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_toast_module.html
 
 
 #### Base Command
@@ -5970,16 +7257,42 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-toast host="123.123.123.123" expire="60" title="System Upgrade Notification" msg="Automated upgrade about to start.  Please save your work and log off before 6pm" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_toast": [
+            {
+                "changed": false,
+                "expire_at": "5/25/2021 1:25:25 AM",
+                "expire_at_utc": "Tuesday, May 25, 2021 8:25:25 AM",
+                "host": "123.123.123.123",
+                "sent_localtime": "Tuesday, May 25, 2021 1:25:25 AM",
+                "status": "SUCCESS",
+                "time_taken": 60.251941699999996,
+                "toast_sent": true
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
+>  * expire_at: 5/25/2021 1:25:25 AM
+>  * expire_at_utc: Tuesday, May 25, 2021 8:25:25 AM
+>  * sent_localtime: Tuesday, May 25, 2021 1:25:25 AM
+>  * time_taken: 60.251941699999996
+>  * toast_sent: True
 
 ### win-unzip
 ***
 Unzips compressed files and archives on the Windows node
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_unzip_module.html
 
 
 #### Base Command
@@ -6007,12 +7320,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-unzip host="123.123.123.123" src="C:/logs.zip" dest="C:/temp/OldLogs" creates="C:/temp/OldLogs" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_unzip": [
+            {
+                "changed": true,
+                "dest": "C:/temp/OldLogs",
+                "host": "123.123.123.123",
+                "removed": false,
+                "src": "C:/logs.zip",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * dest: C:/temp/OldLogs
+>  * removed: False
+>  * src: C:/logs.zip
 ### win-updates
 ***
 Download and install Windows updates
@@ -6060,7 +7394,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 ### win-uri
 ***
 Interacts with webservices
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_uri_module.html
 
 
 #### Base Command
@@ -6113,16 +7447,128 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-uri host="123.123.123.123" url="http://google.com/" status_code=200```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_uri": [
+            {
+                "accept_ranges": "none",
+                "cache_control": "private, max-age=0",
+                "changed": false,
+                "character_set": "ISO-8859-1",
+                "content_encoding": "",
+                "content_length": -1,
+                "content_type": "text/html; charset=ISO-8859-1",
+                "cookies": [],
+                "date": "Tue, 25 May 2021 08:25:41 GMT",
+                "elapsed": 0.5624958,
+                "expires": "-1",
+                "headers": [
+                    "X-XSS-Protection",
+                    "X-Frame-Options",
+                    "Cache-Control",
+                    "Content-Type",
+                    "Date",
+                    "Expires",
+                    "P3P",
+                    "Set-Cookie",
+                    "Server",
+                    "Accept-Ranges",
+                    "Vary",
+                    "Transfer-Encoding"
+                ],
+                "host": "123.123.123.123",
+                "is_from_cache": false,
+                "is_mutually_authenticated": false,
+                "last_modified": "2021-05-25T01:25:41.5532613-07:00",
+                "method": "GET",
+                "msg": "OK",
+                "p3_p": "CP=\"This is not a P3P policy! See g.co/p3phelp for more info.\"",
+                "protocol_version": {
+                    "Build": -1,
+                    "Major": 1,
+                    "MajorRevision": -1,
+                    "Minor": 1,
+                    "MinorRevision": -1,
+                    "Revision": -1
+                },
+                "response_uri": "http://www.google.com/",
+                "server": "gws",
+                "set_cookie": "1P_JAR=2021-05-25-08; expires=Thu, 24-Jun-2021 08:25:41 GMT; path=/; domain=.google.com; Secure,NID=216=tumG9zONyuYEO8n7lfr2m9L81sDA2NRBtTIQGcuh1e-OtP6kDc_WUBP9HtXBx1FCTFhFpBMUDxbAzMJrkxh8_cKziDI3qHD_VRxbwgqza7GM6kXbcnC5jGfM_Ln8OCBd5CKvevp4_0y82nrD6ihgLxxdoJLJAdqgVYhdX-Nd2DA; expires=Wed, 24-Nov-2021 08:25:41 GMT; path=/; domain=.google.com; HttpOnly",
+                "status": "SUCCESS",
+                "status_code": 200,
+                "status_description": "OK",
+                "supports_headers": true,
+                "transfer_encoding": "chunked",
+                "url": "http://google.com/",
+                "vary": "Accept-Encoding",
+                "x_frame_options": "SAMEORIGIN",
+                "xxss_protection": "0"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * accept_ranges: none
+>  * cache_control: private, max-age=0
+>  * changed: False
+>  * character_set: ISO-8859-1
+>  * content_encoding: 
+>  * content_length: -1
+>  * content_type: text/html; charset=ISO-8859-1
+># Cookies #
+>  * date: Tue, 25 May 2021 08:25:41 GMT
+>  * elapsed: 0.5624958
+>  * expires: -1
+># Headers #
+>* 0: X-XSS-Protection
+>* 1: X-Frame-Options
+>* 2: Cache-Control
+>* 3: Content-Type
+>* 4: Date
+>* 5: Expires
+>* 6: P3P
+>* 7: Set-Cookie
+>* 8: Server
+>* 9: Accept-Ranges
+>* 10: Vary
+>* 11: Transfer-Encoding
+>  * is_from_cache: False
+>  * is_mutually_authenticated: False
+>  * last_modified: 2021-05-25T01:25:41.5532613-07:00
+>  * method: GET
+>  * msg: OK
+>  * p3_p: CP="This is not a P3P policy! See g.co/p3phelp for more info."
+># Protocol_Version #
+>* Build: -1
+>* Major: 1
+>* MajorRevision: -1
+>* Minor: 1
+>* MinorRevision: -1
+>* Revision: -1
+>  * response_uri: http://www.google.com/
+>  * server: gws
+>  * set_cookie: 1P_JAR=2021-05-25-08; expires=Thu, 24-Jun-2021 08:25:41 GMT; path=/; domain=.google.com; Secure,NID=216=tumG9zONyuYEO8n7lfr2m9L81sDA2NRBtTIQGcuh1e-OtP6kDc_WUBP9HtXBx1FCTFhFpBMUDxbAzMJrkxh8_cKziDI3qHD_VRxbwgqza7GM6kXbcnC5jGfM_Ln8OCBd5CKvevp4_0y82nrD6ihgLxxdoJLJAdqgVYhdX-Nd2DA; expires=Wed, 24-Nov-2021 08:25:41 GMT; path=/; domain=.google.com; HttpOnly
+>  * status_code: 200
+>  * status_description: OK
+>  * supports_headers: True
+>  * transfer_encoding: chunked
+>  * url: http://google.com/
+>  * vary: Accept-Encoding
+>  * x_frame_options: SAMEORIGIN
+>  * xxss_protection: 0
 
 ### win-user
 ***
 Manages local Windows user accounts
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
 
 
 #### Base Command
@@ -6166,16 +7612,64 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-user host="123.123.123.123" name="bob" password="B0bP4ssw0rd" state="present" groups="Users" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_user": [
+            {
+                "account_disabled": false,
+                "account_locked": false,
+                "changed": true,
+                "description": "",
+                "fullname": "bob",
+                "groups": [
+                    {
+                        "name": "Users",
+                        "path": "WinNT://WORKGROUP/SAMPLE-HOSTNAME/Users"
+                    }
+                ],
+                "host": "123.123.123.123",
+                "name": "bob",
+                "password_expired": false,
+                "password_never_expires": false,
+                "path": "WinNT://WORKGROUP/SAMPLE-HOSTNAME/bob",
+                "sid": "S-1-5-21-4202888923-410868521-3023024269-1002",
+                "state": "present",
+                "status": "CHANGED",
+                "user_cannot_change_password": false
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+>  * account_disabled: False
+>  * account_locked: False
+>  * changed: True
+>  * description: 
+>  * fullname: bob
+># Groups #
+>* ## Users ##
+>* name: Users
+>* path: WinNT://WORKGROUP/SAMPLE-HOSTNAME/Users
+>  * name: bob
+>  * password_expired: False
+>  * password_never_expires: False
+>  * path: WinNT://WORKGROUP/SAMPLE-HOSTNAME/bob
+>  * sid: S-1-5-21-4202888923-410868521-3023024269-1002
+>  * state: present
+>  * user_cannot_change_password: False
 
 ### win-user-profile
 ***
 Manages the Windows user profiles.
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_profile_module.html
 
 
 #### Base Command
@@ -6200,16 +7694,33 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-user-profile host="123.123.123.123" username="bob" state="present" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_user_profile": [
+            {
+                "changed": true,
+                "host": "123.123.123.123",
+                "path": "C:\\Users\\bob",
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
-
+># 123.123.123.123 -  CHANGED 
+>  * changed: True
+>  * path: C:\Users\bob
 ### win-user-right
 ***
 Manage Windows User Rights
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_right_module.html
 
 
 #### Base Command
@@ -6234,16 +7745,39 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-user-right host="123.123.123.123" name="SeDenyInteractiveLogonRight" users="Guest" action="set" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_user_right": [
+            {
+                "added": [
+                    "SAMPLE-HOSTNAME\\Guest"
+                ],
+                "changed": true,
+                "host": "123.123.123.123",
+                "removed": [],
+                "status": "CHANGED"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  CHANGED 
+># Added #
+>* 0: SAMPLE-HOSTNAME\Guest
+>  * changed: True
+># Removed #
 
 ### win-wait-for
 ***
 Waits for a condition before continuing
-Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html
+ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_wait_for_module.html
 
 
 #### Base Command
@@ -6275,11 +7809,31 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 
 #### Command Example
-``` ```
+```!win-wait-for host="123.123.123.123" port="3389" delay="10" ```
+
+#### Context Example
+```json
+{
+    "microsoftwindows": {
+        "win_wait_for": [
+            {
+                "changed": false,
+                "elapsed": 10.0312787,
+                "host": "123.123.123.123",
+                "status": "SUCCESS",
+                "wait_attempts": 1
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
-
+># 123.123.123.123 -  SUCCESS 
+>  * changed: False
+>  * elapsed: 10.0312787
+>  * wait_attempts: 1
 
 ### win-wait-for-process
 ***
