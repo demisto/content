@@ -38,9 +38,9 @@ def test_fetch_incidents(requests_mock):
         action = "fetch_entity_anomalies",
         time_frame = "01",
     )
- 
+    
     expected_response = util_load_json('test_data/formatted_fetch_incident.json')
-
+    raise ValueError(integration_response,":::::",expected_response)
     # THEN the response should be returned and formatted
     assert integration_response == expected_response
  
