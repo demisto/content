@@ -615,22 +615,6 @@ def get_calling_context():
     return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
 
 
-def get_https_hostname(host_name):
-    """
-    Get the host name for the https endpoint.
-    Args:
-        host_name:
-
-    Returns:
-        The host name in the format of host/instance/execute/instance_name
-    """
-    calling_context = get_calling_context()
-    instance_name = calling_context.get('IntegrationInstance', '')
-    host_name = os.path.join(host_name, 'instance', 'execute', instance_name)
-
-    return host_name
-
-
 def handle_long_running_error(error: str):
     """
     Handle errors in the long running process.
@@ -969,7 +953,6 @@ def main():
     host_name = server_link_parts.hostname
     if not http_server:
         scheme = 'https'
-        host_name = get_https_hostname(host_name)
 
     SERVER = TAXIIServer(scheme, str(host_name), port, collections,
                          certificate, private_key, http_server, credentials)
