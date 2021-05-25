@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import dateparser
-import json
 import urllib3
 import traceback
 urllib3.disable_warnings()
