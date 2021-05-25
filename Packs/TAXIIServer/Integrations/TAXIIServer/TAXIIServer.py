@@ -33,7 +33,7 @@ from libtaxii.constants import (
     CB_STIX_XML_11
 )
 from cybox.core import Observable
-
+from requests.utils import requote_uri
 
 import functools
 import stix.core
@@ -302,7 +302,7 @@ class TAXIIServer:
             self.url_scheme = 'https'
             calling_context = get_calling_context()
             instance_name = calling_context.get('IntegrationInstance', '')
-            endpoint = os.path.join('/instance', 'execute', instance_name)
+            endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
         else:
             endpoint = f':{self.port}'
         return f'{self.url_scheme}://{self.host}{endpoint}'
