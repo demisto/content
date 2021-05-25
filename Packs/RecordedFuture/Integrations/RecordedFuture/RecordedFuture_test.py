@@ -13,9 +13,7 @@ from RecordedFuture import (
 )
 from CommonServerPython import CommandResults
 import vcr as vcrpy
-import json
 import io
-import pytest
 
 CASSETTES = Path(__file__).parent / 'cassettes'
 
@@ -85,7 +83,7 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence_profile(self) -> None:
         """Will fetch related entities even if related_entities param is false"""  # noqa
-        resp = enrich_command(self.client, "184.168.221.96", "ip", False, False, "Vulnerability Analyst")  # noqa
+        resp = enrich_command(self.client, "184.168.221.96", "ip", True, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp[0], CommandResults)
         data = resp[0].raw_response['data']
         list_of_lists = sorted([[*entry][0] for entry in data['relatedEntities']]) # noqa
@@ -235,9 +233,3 @@ def test_entity_enrich_no_related_entities(mocker):
     returned_data = client.entity_enrich('184.168.221.96', 'ip', False, False, 'Vulnerability Analyst')
     assert expected_entity_data == returned_data
     assert 'relatedEntities' not in returned_data.get('data').keys()
-
-
-
-
-
-

@@ -880,17 +880,18 @@ def build_intel_context(
         entity_type = "cve"
     command_results: List[CommandResults] = []
     if entity_data and ("error" not in entity_data):
-        data = entity_data.get("data")
-        data.update(data.pop("entity"))
-        data.update(data.pop("risk"))
-        data.update(data.pop("timestamps"))
-        evidence_details = data['evidenceDetails']
-        rules = ','.join([e['rule'] for e in evidence_details])
-        data['concatRules'] = rules
-        if data.get('relatedEntities'):
-            data['relatedEntities'] = handle_related_entities(
-                data.pop('relatedEntities')
-            )
+        data = entity_data.get("data")  # type: ignore
+        if data:
+            data.update(data.pop("entity"))
+            data.update(data.pop("risk"))
+            data.update(data.pop("timestamps"))
+            evidence_details = data['evidenceDetails']
+            rules = ','.join([e['rule'] for e in evidence_details])
+            data['concatRules'] = rules
+            if data.get('relatedEntities'):
+                data['relatedEntities'] = handle_related_entities(
+                    data.pop('relatedEntities')
+                )
 
         command_results.append(
             CommandResults(
