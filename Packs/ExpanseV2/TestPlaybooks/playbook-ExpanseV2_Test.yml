@@ -2805,7 +2805,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
+          "y": 10340
         }
       }
     note: false
@@ -3601,7 +3601,7 @@ inputs:
   playbookInputQuery: null
 - key: common_name
   value:
-    simple: shack.com
+    simple: api-dev.radioshack.com
   required: false
   description: A partial certificate common name
   playbookInputQuery: null
