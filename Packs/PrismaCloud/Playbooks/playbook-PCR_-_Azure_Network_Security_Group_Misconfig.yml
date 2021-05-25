@@ -658,6 +658,7 @@ tasks:
           left:
             value:
               simple: ${ruleName}
+            iscontext: true
       - - operator: inList
           left:
             value:
