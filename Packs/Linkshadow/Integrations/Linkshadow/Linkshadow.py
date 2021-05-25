@@ -102,7 +102,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 incident = {
                     'name': incident_name,
                     'occurred': timestamp_to_datestring(incident_created_time),
-                    'rawJSON': json.dumps(formatted_JSON),
+                    'rawJSON': formatted_JSON,
                     'CustomFields': {  # Map specific XSOAR Custom Fields
                         'sip': formatted_JSON['sip'],
                         'sourceip': formatted_JSON['sip'],
