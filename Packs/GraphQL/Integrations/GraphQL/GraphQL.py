@@ -70,7 +70,10 @@ def main() -> None:
 
         transport = RequestsHTTPTransport(**request_params)
         handle_proxy()
-        client = Client(transport=transport, fetch_schema_from_transport=True)
+        client = Client(
+            transport=transport,
+            fetch_schema_from_transport=params.get('fetch_schema_from_transport', True),
+        )
 
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
