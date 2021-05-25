@@ -844,7 +844,6 @@ jobs:
       - *prepare_environment
       - *add_ssh_keys
       - *download_configuration
-      - *create_instance
       - set-instance-role-env-variable:
           instance_role: Performance Server Master
       - *check_if_instance_was_created
