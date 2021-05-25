@@ -46,8 +46,9 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: The maximum retry attempts when connection or throttling errors
-    are encountered. Set to 0 to disable retries.
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
+  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
+  Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
 script:
@@ -522,7 +523,7 @@ script:
       type: string
     description: Lists the specified metric filters. You can list all the metric filters
       or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: demisto/boto3:2.0.0.20310
+  dockerimage: demisto/boto3:2.0.0.20417
   runonce: false
 tests:
 - No Tests
