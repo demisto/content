@@ -3377,8 +3377,7 @@ script:
     - description: Destination datacenter where the virtual machine exists.
       name: datacenter
       required: true
-    description: "Module to upgrade VMTools\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_upgrade_module.html"
+    description: "Module to upgrade VMTools\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_guest_tools_upgrade_module.html"
     name: vmware-guest-tools-upgrade
     outputs: []
   - arguments:
@@ -4854,8 +4853,7 @@ script:
       predefined:
       - present
       - absent
-    description: "Create a VMware portgroup\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_module.html"
+    description: "Create a VMware portgroup\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/vmware_portgroup_module.html"
     name: vmware-portgroup
     outputs:
     - contextPath: VMwareV2.vmware_portgroup.result
@@ -6109,3 +6107,5 @@ script:
   script: ''
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)

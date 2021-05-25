@@ -1,16 +1,12 @@
-import json
 import traceback
-import ansible_runner
 import ssh_agent_setup
-from typing import Dict, cast
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Import Generated code
 from AnsibleApiModule import *  # noqa: E402
 
-host_type =  'ios'
+host_type = 'ios'
 
 # MAIN FUNCTION
 

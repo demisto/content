@@ -2068,8 +2068,7 @@ script:
 
         This option is only used when `overflow_action` is `OverwriteOlder`.'
       name: retention_days
-    description: "Manage Windows event logs\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html"
+    description: "Manage Windows event logs\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_eventlog_module.html"
     name: win-eventlog
     outputs:
     - contextPath: MicrosoftWindows.win_eventlog.name
@@ -3244,8 +3243,7 @@ script:
     - description: Custom site Parameters from string where properties are separated
         by a pipe and property name/values by colon Ex. "foo:1|bar:2"
       name: parameters
-    description: "Configures a IIS Web site\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html"
+    description: "Configures a IIS Web site\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_iis_website_module.html"
     name: win-iis-website
     outputs: []
   - arguments:
@@ -3489,8 +3487,8 @@ script:
         If become or CredSSP is used, any credentials saved with `win_credential`
         will automatically be used instead.'
       name: username
-    description: "Map network drives for users\n Further documentation available\
-      \ at https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html"
+    description: "Map network drives for users\n Further documentation available at\
+      \ https://docs.ansible.com/ansible/2.9/modules/win_mapped_drive_module.html"
     name: win-mapped-drive
     outputs: []
   - arguments:
@@ -3662,8 +3660,8 @@ script:
       - delayed
       - disabled
       - manual
-    description: "Install a service using NSSM\n Further documentation available\
-      \ at https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html"
+    description: "Install a service using NSSM\n Further documentation available at\
+      \ https://docs.ansible.com/ansible/2.9/modules/win_nssm_module.html"
     name: win-nssm
     outputs: []
   - arguments:
@@ -4895,8 +4893,8 @@ script:
       predefined:
       - absent
       - present
-    description: "Add or remove a static route\n Further documentation available\
-      \ at https://docs.ansible.com/ansible/2.9/modules/win_route_module.html"
+    description: "Add or remove a static route\n Further documentation available at\
+      \ https://docs.ansible.com/ansible/2.9/modules/win_route_module.html"
     name: win-route
     outputs:
     - contextPath: MicrosoftWindows.win_route.output
@@ -6714,3 +6712,5 @@ script:
   script: ''
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)

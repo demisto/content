@@ -203,8 +203,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get virtual network facts\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_info_module.html"
+    description: "Get virtual network facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualnetwork_info_module.html"
     name: azure-rm-virtualnetwork-info
     outputs:
     - contextPath: AzureNetworking.azure_rm_virtualnetwork_info.azure_virtualnetworks
@@ -1400,3 +1399,5 @@ script:
   script: ''
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)

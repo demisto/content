@@ -394,8 +394,8 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure Function App facts\n Further documentation available\
-      \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html"
+    description: "Get Azure Function App facts\n Further documentation available at\
+      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_functionapp_info_module.html"
     name: azure-rm-functionapp-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_functionapp_info.azure_functionapps
@@ -569,8 +569,7 @@ script:
       name: name
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get Azure SIG Image info.\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html"
+    description: "Get Azure SIG Image info.\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_galleryimage_info_module.html"
     name: azure-rm-galleryimage-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_galleryimage_info.images
@@ -1064,8 +1063,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Manage Disks\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html"
+    description: "Manage Azure Manage Disks\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_manageddisk_module.html"
     name: azure-rm-manageddisk
     outputs:
     - contextPath: AzureComputeV3.azure_rm_manageddisk.id
@@ -1174,8 +1172,7 @@ script:
       - present
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Create any Azure resource\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_module.html"
+    description: "Create any Azure resource\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resource_module.html"
     name: azure-rm-resource
     outputs:
     - contextPath: AzureComputeV3.azure_rm_resource.response
@@ -1253,8 +1250,8 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure resource groups\n Further documentation available\
-      \ at https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html"
+    description: "Manage Azure resource groups\n Further documentation available at\
+      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_resourcegroup_module.html"
     name: azure-rm-resourcegroup
     outputs:
     - contextPath: AzureComputeV3.azure_rm_resourcegroup.contains_resources
@@ -1660,8 +1657,7 @@ script:
       name: tags
     - description: Your Azure subscription Id.
       name: subscription_id
-    description: "Get virtual machine facts\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html"
+    description: "Get virtual machine facts\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_virtualmachine_info_module.html"
     name: azure-rm-virtualmachine-info
     outputs:
     - contextPath: AzureComputeV3.azure_rm_virtualmachine_info.vms
@@ -2343,8 +2339,7 @@ script:
         When canonical, any tags not found in the tags parameter will be removed from
         the object''s metadata.'
       name: append_tags
-    description: "Manage Azure Web App slot\n Further documentation available at\
-      \ https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html"
+    description: "Manage Azure Web App slot\n Further documentation available at https://docs.ansible.com/ansible/2.9/modules/azure_rm_webappslot_module.html"
     name: azure-rm-webappslot
     outputs:
     - contextPath: AzureComputeV3.azure_rm_webappslot.id
@@ -2357,3 +2352,5 @@ script:
   script: ''
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)

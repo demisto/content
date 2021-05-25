@@ -1,10 +1,14 @@
 from CommonServerPython import *  # noqa: F403
 from CommonServerUserPython import *  # noqa: F403
-
+import ansible_runner
+import json
 from typing import Dict, cast
+
 import demistomock as demisto  # noqa: F401
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
+
+
 def dict2md(json_block, depth=0):
     markdown = ""
     if isinstance(json_block, dict):
@@ -45,7 +49,7 @@ def find_header_in_dict(rawdict):
     header = None
     # Finds a suitible value to use as a header
     if not isinstance(rawdict, dict):
-        return  header # Not a dict, nothing to do
+        return header  # Not a dict, nothing to do
 
     id_search = [val for key, val in rawdict.items() if 'id' in key]
     name_search = [val for key, val in rawdict.items() if 'name' in key]
@@ -56,7 +60,7 @@ def find_header_in_dict(rawdict):
         header = name_search[0]
 
     return header
-            
+
 
 def buildHeaderChain(depth):
     list_tag = '* '
@@ -128,7 +132,7 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
                     new_host['ansible_port'] = demisto.params().get('port')
 
             # Common SSH based auth options
-            if host_type in ['ssh','nxos', 'ios']:
+            if host_type in ['ssh', 'nxos', 'ios']:
                 # SSH Key saved in credential manager selection
                 if demisto.params().get('creds', {}).get('credentials').get('sshkey'):
                     username = demisto.params().get('creds', {}).get('credentials').get('user')
@@ -196,7 +200,6 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
     return inventory, sshkey
 
 
-
 def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = ""
@@ -219,7 +222,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
         module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
         # If this isn't host based, then all the integratation parms will be used as command args
-    if host_type == 'local': 
+    if host_type == 'local':
         for arg_key, arg_value in demisto.params().items():
             module_args += "%s=\"%s\" " % (arg_key, arg_value)
 

@@ -101,12 +101,11 @@ script:
         \ exclusive with `account_key_src`.\nRequired if `account_key_src` is not\
         \ used.\n`Warning`: the content will be written into a temporary file, which\
         \ will be deleted by Ansible when the module completes. Since this is an important\
-        \ private key \u2014 it can be used to change the account key, or to revoke\
-        \ your certificates without knowing their private keys \u2014, this might\
-        \ not be acceptable.\nIn case `cryptography` is used, the content is not written\
-        \ into a temporary file. It can still happen that it is written to disk by\
-        \ Ansible in the process of moving the module with its argument to the node\
-        \ where it is executed."
+        \ private key — it can be used to change the account key, or to revoke your\
+        \ certificates without knowing their private keys —, this might not be acceptable.\n\
+        In case `cryptography` is used, the content is not written into a temporary\
+        \ file. It can still happen that it is written to disk by Ansible in the process\
+        \ of moving the module with its argument to the node where it is executed."
       name: account_key_content
     - description: If specified, assumes that the account URI is as given. If the
         account key does not match this account, or an account with this URI does
@@ -207,12 +206,11 @@ script:
         \ exclusive with `account_key_src`.\nRequired if `account_key_src` is not\
         \ used.\n`Warning`: the content will be written into a temporary file, which\
         \ will be deleted by Ansible when the module completes. Since this is an important\
-        \ private key \u2014 it can be used to change the account key, or to revoke\
-        \ your certificates without knowing their private keys \u2014, this might\
-        \ not be acceptable.\nIn case `cryptography` is used, the content is not written\
-        \ into a temporary file. It can still happen that it is written to disk by\
-        \ Ansible in the process of moving the module with its argument to the node\
-        \ where it is executed."
+        \ private key — it can be used to change the account key, or to revoke your\
+        \ certificates without knowing their private keys —, this might not be acceptable.\n\
+        In case `cryptography` is used, the content is not written into a temporary\
+        \ file. It can still happen that it is written to disk by Ansible in the process\
+        \ of moving the module with its argument to the node where it is executed."
       name: account_key_content
     - description: If specified, assumes that the account URI is as given. If the
         account key does not match this account, or an account with this URI does
@@ -424,12 +422,11 @@ script:
         \ exclusive with `account_key_src`.\nRequired if `account_key_src` is not\
         \ used.\n`Warning`: the content will be written into a temporary file, which\
         \ will be deleted by Ansible when the module completes. Since this is an important\
-        \ private key \u2014 it can be used to change the account key, or to revoke\
-        \ your certificates without knowing their private keys \u2014, this might\
-        \ not be acceptable.\nIn case `cryptography` is used, the content is not written\
-        \ into a temporary file. It can still happen that it is written to disk by\
-        \ Ansible in the process of moving the module with its argument to the node\
-        \ where it is executed."
+        \ private key — it can be used to change the account key, or to revoke your\
+        \ certificates without knowing their private keys —, this might not be acceptable.\n\
+        In case `cryptography` is used, the content is not written into a temporary\
+        \ file. It can still happen that it is written to disk by Ansible in the process\
+        \ of moving the module with its argument to the node where it is executed."
       name: account_key_content
     - description: If specified, assumes that the account URI is as given. If the
         account key does not match this account, or an account with this URI does
@@ -560,12 +557,12 @@ script:
         \ exactly one of `account_key_src`, `account_key_content`, `private_key_src`\
         \ or `private_key_content` must be specified.\n`Warning`: the content will\
         \ be written into a temporary file, which will be deleted by Ansible when\
-        \ the module completes. Since this is an important private key \u2014 it can\
-        \ be used to change the account key, or to revoke your certificates without\
-        \ knowing their private keys \u2014, this might not be acceptable.\nIn case\
-        \ `cryptography` is used, the content is not written into a temporary file.\
-        \ It can still happen that it is written to disk by Ansible in the process\
-        \ of moving the module with its argument to the node where it is executed."
+        \ the module completes. Since this is an important private key — it can be\
+        \ used to change the account key, or to revoke your certificates without knowing\
+        \ their private keys —, this might not be acceptable.\nIn case `cryptography`\
+        \ is used, the content is not written into a temporary file. It can still\
+        \ happen that it is written to disk by Ansible in the process of moving the\
+        \ module with its argument to the node where it is executed."
       name: account_key_content
     - description: 'Path to the certificate''s private key.
 
@@ -576,9 +573,9 @@ script:
         \ of `account_key_src`, `account_key_content`, `private_key_src` or `private_key_content`\
         \ must be specified.\n`Warning`: the content will be written into a temporary\
         \ file, which will be deleted by Ansible when the module completes. Since\
-        \ this is an important private key \u2014 it can be used to change the account\
-        \ key, or to revoke your certificates without knowing their private keys \u2014\
-        , this might not be acceptable.\nIn case `cryptography` is used, the content\
+        \ this is an important private key — it can be used to change the account\
+        \ key, or to revoke your certificates without knowing their private keys —,\
+        \ this might not be acceptable.\nIn case `cryptography` is used, the content\
         \ is not written into a temporary file. It can still happen that it is written\
         \ to disk by Ansible in the process of moving the module with its argument\
         \ to the node where it is executed."
@@ -762,12 +759,11 @@ script:
         \ exclusive with `account_key_src`.\nRequired if `account_key_src` is not\
         \ used.\n`Warning`: the content will be written into a temporary file, which\
         \ will be deleted by Ansible when the module completes. Since this is an important\
-        \ private key \u2014 it can be used to change the account key, or to revoke\
-        \ your certificates without knowing their private keys \u2014, this might\
-        \ not be acceptable.\nIn case `cryptography` is used, the content is not written\
-        \ into a temporary file. It can still happen that it is written to disk by\
-        \ Ansible in the process of moving the module with its argument to the node\
-        \ where it is executed."
+        \ private key — it can be used to change the account key, or to revoke your\
+        \ certificates without knowing their private keys —, this might not be acceptable.\n\
+        In case `cryptography` is used, the content is not written into a temporary\
+        \ file. It can still happen that it is written to disk by Ansible in the process\
+        \ of moving the module with its argument to the node where it is executed."
       name: account_key_content
     - description: If specified, assumes that the account URI is as given. If the
         account key does not match this account, or an account with this URI does
@@ -846,3 +842,5 @@ script:
   script: ''
   subtype: python3
   type: python
+tests:
+- No tests (auto formatted)
