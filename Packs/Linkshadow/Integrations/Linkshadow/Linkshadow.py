@@ -42,7 +42,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
+def test_module(client, apiKey, api_username, plugin_id, action, time_frame):
     try:
         alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
                                       plugin_id=plugin_id, action=action, time_frame=time_frame)
@@ -175,7 +175,7 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame)
+            result = test_module(client, apiKey, api_username, plugin_id, action, time_frame)
             return_results(result)
 
         if demisto.command() == 'fetch-incidents':
