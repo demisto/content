@@ -793,6 +793,9 @@ def main():
 
         elif demisto.command() == 'microsoft-cas-alert-close-false-positive':
             return_results(close_false_positive_command(client, demisto.args()))
+
+        else:
+            raise NotImplementedError(f'{demisto.command} is not a demisto command.')
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
