@@ -1,5 +1,35 @@
 {
   "data": {
+    "relationships": {
+      "siblings": {
+        "data": [
+          {
+            "type": "domain",
+            "id": "test1.pw"
+          },
+          {
+            "type": "domain",
+            "id": "test2.pw"
+          }
+        ],
+        "links": {
+          "self": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/relationships/siblings?limit=20",
+          "related": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/siblings"
+        }
+      },
+      "subdomains": {
+        "data": [
+          {
+            "type": "domain",
+            "id": "test3.pw"
+          }
+        ],
+        "links": {
+          "self": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/relationships/subdomains?limit=20",
+          "related": "https://www.virustotal.com/api/v3/domains/down.mykings.pw/subdomains"
+        }
+      }
+    },
     "attributes": {
       "categories": {
         "Comodo Valkyrie Verdict": "media sharing",
