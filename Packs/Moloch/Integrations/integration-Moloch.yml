@@ -101,8 +101,6 @@ script:
     var parseSessions = function(response) {
         var outputs = [];
         var contexts = [];
-        logDebug('response data is: ' + JSON.stringify(response.data))
-        logDebug('number of iterations is:' + objects.length.toString())
         for (var i = 0, objects = response.data; i < objects.length; i++) {
             var output = {};
 
@@ -138,7 +136,6 @@ script:
             EntryContext: {'Moloch.Sessions': contexts},
             HumanReadable: tableToMarkdown('Moloch Sessions Search', outputs)
         };
-        logDebug('entry is: ' + JSON.stringify(entry))
         return entry;
     }
 
@@ -158,13 +155,7 @@ script:
                 args.date = -1;
             }
 
-            if (command == 'moloch_sessions_json') {
-                url = urlDict[command] + encodeToURLQuery(args) + fields_to_req;
-                logDebug("URL in moloch_sessions_json: " + url)
-            } else {
-                url = urlDict[command] + encodeToURLQuery(args);
-                logDebug("URL in other command: " + url)
-            }
+            url = urlDict[command] + encodeToURLQuery(args);
 
             var res = sendRequest(url, urlDict[command]);
             if (!res || !res.Body) {
@@ -175,10 +166,8 @@ script:
                 return res.Body;
             } else if (jsonResponses.indexOf(command) !== -1) {
                 if (command == 'moloch_sessions_json') {
-                    logDebug('In command == moloch_sessions_json condition, res.Body is:' + JSON.stringify(JSON.parse(res.Body)))
                     return parseSessions(JSON.parse(res.Body));
                 } else {
-                    logDebug('In else condition, res.Body is:' + JSON.stringify(JSON.parse(res.Body)))
                     return JSON.parse(res.Body);
                 }
             } else if (csvResponses.indexOf(command) !== -1) {
