@@ -29,8 +29,9 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Get general data on  a specific computer.(If id argument is given
-        it overrides everything else)
+      description: 'Get the “general” subset of a specific computer, e.g: name, mac
+        address, ip, serial number, udid etc.(If id argument is given it overrides
+        everything else)'
       isArray: false
       name: id
       required: false
@@ -38,7 +39,10 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Finds basic information for all computers. Default value is False.
+      description: '“True” will return the “basic” subset for all of the computers.
+        The “basic” subset will provide some basic information: mac address, model,
+        udid, name, department, building, serial number, username, id. Default is
+        “False”'
       isArray: false
       name: basic_subset
       predefined:

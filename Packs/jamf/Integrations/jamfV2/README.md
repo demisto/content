@@ -1,5 +1,5 @@
 EMM for apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, Install/Uninstall applications, lock devices, smart groups searches and more.
-This integration was integrated and tested with version 10.28.0-t1615386406 of jamf v2
+This integration was integrated and tested with version 10.28.0 of jamf v2
 JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
 
 ## Configure jamf v2 on Cortex XSOAR
