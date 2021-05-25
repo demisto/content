@@ -887,7 +887,7 @@ def build_intel_context(
         evidence_details = data['evidenceDetails']
         rules = ','.join([e['rule'] for e in evidence_details])
         data['concatRules'] = rules
-        if 'relatedEntities' in data:
+        if data.get('relatedEntities'):
             data['relatedEntities'] = handle_related_entities(
                 data.pop('relatedEntities')
             )
