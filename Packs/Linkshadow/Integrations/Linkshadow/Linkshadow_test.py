@@ -12,7 +12,7 @@ def util_load_json(path):
 
 def test_fetch_incidents(requests_mock):
 
-    from Linkshadow import Client, fetch_entity_anomalies
+    from Linkshadow import Client, fetch_incidents
 
     test_api_response = util_load_json('test_data/fetch_incident.json')
     requests_mock.post('https://LS_test_fetch_incidents.com/api/plugin/',
