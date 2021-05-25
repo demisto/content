@@ -339,6 +339,39 @@ ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
                              "score": 2,
                              'value': 'Windows Management Instrumentation'}]
 
+STIX_ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
+                                             'firstseenbysource': '2018-08-03T19:54:02.821Z',
+                                             'stixkillchainphases': ['Installation', 'Execution'],
+                                             'mitreid': 'T1047',
+                                             'modified': '2020-05-12T13:02:30.000Z',
+                                             'operatingsystemrefs': ['Windows'],
+                                             'publications': [{'link': 'example.com',
+                                                               'source': 'FireEye WMI 2015',
+                                                               'title': 'Ballenthin'},
+                                                              {
+                                                                  'link': 'https://msdn.microsoft.com/en-us/library/aa394582.aspx',
+                                                                  'source': 'MSDN WMI',
+                                                                  'title': 'Microsoft. (n.d.). Windows Management '
+                                                                           'Instrumentation. Retrieved April 27, '
+                                                                           '2016.'},
+                                                              {
+                                                                  'link': 'https://technet.microsoft.com/en-us/library/cc787851.aspx',
+                                                                  'source': 'TechNet RPC',
+                                                                  'title': 'Microsoft. (2003, March 28). What Is '
+                                                                           'RPC?. Retrieved June 12, 2016.'},
+                                                              {
+                                                                  'link': 'https://en.wikipedia.org/wiki/Server_Message_Block',
+                                                                  'source': 'Wikipedia SMB',
+                                                                  'title': 'Wikipedia. (2016, June 12). Server '
+                                                                           'Message Block. Retrieved June 12, '
+                                                                           '2016.'}],
+                                             'reportedby': 'Unit42',
+                                             'stixid': 'attack-pattern--01a5a209-b94c-450b-b7f9-946497d91055',
+                                             'tags': ['T1047']},
+                                  'type': 'STIX Attack Pattern',
+                                  "score": 2,
+                                  'value': 'Windows Management Instrumentation'}]
+
 COURSE_OF_ACTION_DATA = [{
     "type": "course-of-action",
     "id": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",

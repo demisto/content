@@ -310,13 +310,25 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_color) -> List:
+def add_stix_prefix_to_indicator(indicator: dict):
+    indicator_type = indicator['type']
+    kill_chain_phases = indicator['fields']['killchainphases']
+    del indicator['fields']['killchainphases']
+
+    indicator['type'] = f'STIX {indicator_type}'
+    indicator['fields']['stixkillchainphases'] = kill_chain_phases
+
+    return indicator
+
+
+def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_color, is_up_to_6_2) -> List:
     """Parse the Attack Pattern objects retrieved from the feed.
 
     Args:
       attack_indicator_objects: a list of Attack Pattern objects containing the Attack Pattern.
       feed_tags: feed tags.
       tlp_color: Traffic Light Protocol color.
+      is_up_to_6_2: is the server version is up to 6.2
 
     Returns:
         A list of processed Attack Pattern.
@@ -352,6 +364,9 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
         indicator['fields']['tags'].extend([mitre_id])
         if tlp_color:
             indicator['fields']['trafficlightprotocol'] = tlp_color
+
+        if not is_up_to_6_2:
+            indicator = add_stix_prefix_to_indicator(indicator)
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
@@ -555,6 +570,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship',
                                     'course-of-action', 'intrusion-set']
     client.get_stix_objects(items_types=item_types_to_fetch_from_api)
+    is_up_to_6_2 = is_demisto_version_ge('6.2.0')
 
     for type_, objects in client.objects_data.items():
         demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
@@ -569,7 +585,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
     reports = parse_reports_and_report_relationships(client.objects_data['report'], feed_tags, tlp_color, id_to_object)
     campaigns = parse_campaigns(client.objects_data['campaign'], feed_tags, tlp_color)
-    attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'], feed_tags, tlp_color)
+    attack_patterns = create_attack_pattern_indicator(client.objects_data['attack-pattern'],
+                                                      feed_tags, tlp_color, is_up_to_6_2)
     intrusion_sets = create_intrusion_sets(client.objects_data['intrusion-set'], feed_tags, tlp_color)
     course_of_actions = create_course_of_action_indicators(client.objects_data['course-of-action'],
                                                            feed_tags, tlp_color)
