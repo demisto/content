@@ -348,8 +348,10 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
                 logging.info(f"Starting Slack notifications for {job_name}")
                 if 'unittest' in job_name:
                     content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
-                    # override the 'title' from the attachment to be the job name 
-                    content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace('SDK Nightly Unit Tests', job_name)
+                    # override the 'title' from the attachment to be the job name
+                    content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace(
+                        'SDK Nightly Unit Tests', job_name
+                    )
                 else:
                     content_team_attachments = get_attachments_for_all_steps(build_url, build_title=job_name)
                     # override the 'fields' from the attachment since any failure will be the same as the job name
