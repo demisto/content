@@ -1,8 +1,7 @@
 import pytest
 
 import demistomock as demisto
-from Packs.Campaign.Scripts.IsIncidentPartOfCampaign.IsIncidentPartOfCampaign import \
-    check_incidents_ids_in_campaigns_list, get_incidents_ids_by_type, main
+from IsIncidentPartOfCampaign import check_incidents_ids_in_campaigns_list, get_incidents_ids_by_type, main
 
 PHISHING_CAMPAIGN_INCIDENTS = [
     {'id': '1',
