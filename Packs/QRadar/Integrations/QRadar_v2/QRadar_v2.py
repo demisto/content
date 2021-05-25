@@ -2016,9 +2016,10 @@ def fetch_loop_with_events(
                 events_columns,
                 events_limit,
             )
-            time.sleep(FETCH_SLEEP)
         except Exception as e:
             demisto.error(str(e))
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enrich, asset_enrich):
@@ -2033,6 +2034,8 @@ def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enr
             time.sleep(FETCH_SLEEP)
         except Exception as e:
             demisto.error(e)
+        finally:
+            time.sleep(FETCH_SLEEP)
 
 
 def long_running_main(

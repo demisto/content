@@ -205,8 +205,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         bool: whether cleanup was skipped or not.
     """
     if ('CI' not in os.environ) or (
-            os.environ.get('CIRCLE_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
-            os.environ.get('CIRCLE_BRANCH') == 'master' and storage_bucket.name not in
+            os.environ.get('CI_COMMIT_BRANCH') != 'master' and storage_bucket.name == GCPConfig.PRODUCTION_BUCKET) or (
+            os.environ.get('CI_COMMIT_BRANCH') == 'master' and storage_bucket.name not in
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
@@ -256,7 +256,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param index_folder_path: index folder full path.
     :param extract_destination_path: extract folder full path.
     :param index_blob: google cloud storage object that represents index.zip blob.
-    :param build_number: circleCI build number, used as an index revision.
+    :param build_number: CI build number, used as an index revision.
     :param private_packs: List of private packs and their price.
     :param current_commit_hash: last commit hash of head.
     :param index_generation: downloaded index generation.
@@ -264,7 +264,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
     :param landing_page_sections: landingPage sections.
-    :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
+    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
     :param storage_bucket: The storage bucket object
     :returns None.
 
@@ -739,11 +739,11 @@ Total number of packs: {len(successful_packs + skipped_packs + failed_packs)}
             sys.exit(1)
 
     # for external pull requests -  when there is no failed packs, add the build summary to the pull request
-    branch_name = os.environ.get('CIRCLE_BRANCH')
+    branch_name = os.environ.get('CI_COMMIT_BRANCH')
     if branch_name and branch_name.startswith('pull/'):
         successful_packs_table = build_summary_table_md(successful_packs)
 
-        build_num = os.environ['CIRCLE_BUILD_NUM']
+        build_num = os.environ['CI_BUILD_ID']
 
         bucket_path = f'https://console.cloud.google.com/storage/browser/' \
                       f'marketplace-ci-build/content/builds/{branch_name}/{build_num}'
@@ -794,7 +794,7 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
+    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -808,8 +808,8 @@ def add_pr_comment(comment: str):
 
     """
     token = os.environ['CONTENT_GITHUB_TOKEN']
-    branch_name = os.environ['CIRCLE_BRANCH']
-    sha1 = os.environ['CIRCLE_SHA1']
+    branch_name = os.environ['CI_COMMIT_BRANCH']
+    sha1 = os.environ['CI_COMMIT_SHA']
 
     query = f'?q={sha1}+repo:demisto/content+is:pr+is:open+head:{branch_name}+is:open'
     url = 'https://api.github.com/search/issues'
@@ -940,7 +940,7 @@ def main():
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
     private_bucket_name = option.private_bucket_name
-    circle_branch = option.circle_branch
+    ci_branch = option.ci_branch
     force_upload = option.force_upload
 
     # google cloud storage client initialized
@@ -961,7 +961,7 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                        is_bucket_upload_flow, circle_branch)
+                                                                        is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)
@@ -980,7 +980,7 @@ def main():
                                   storage_bucket, is_private_content_updated)
 
     # initiate the statistics handler for marketplace packs
-    statistics_handler = StatisticsHandler(service_account, index_folder_path, packs_list)
+    statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket)

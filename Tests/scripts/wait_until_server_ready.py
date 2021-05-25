@@ -19,7 +19,7 @@ from demisto_sdk.commands.test_content.tools import is_redhat_instance
 
 urllib3.disable_warnings()
 
-ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS')
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 MAX_TRIES = 30
 PRINT_INTERVAL_IN_SECONDS = 30
 SETUP_TIMEOUT = 60 * 60
@@ -53,7 +53,8 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
     cloud_init_log_path = '/var/log/cloud-init-output.log'
     try:
         # downloading cloud-init logs to artifacts
-        check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} {ARTIFACTS_PATH}/{ip}-cloud_init.log'.split())
+        check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
+                     f'{ARTIFACTS_FOLDER}/{ip}-cloud_init.log'.split())
     except Exception:
         logging.exception(f'Could not download cloud-init file from server {ip}.')
 
@@ -80,8 +81,10 @@ def main():
     install_logging('Wait_Until_Server_Ready.log')
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
+
     ready_ami_list = []
-    with open('./env_results.json', 'r') as json_file:
+    env_results_path = os.path.join(ARTIFACTS_FOLDER, 'env_results.json')
+    with open(env_results_path, 'r') as json_file:
         env_results = json.load(json_file)
         instance_ips = [(env.get('Role'), env.get('InstanceDNS'), env.get('TunnelPort')) for env in env_results]
 
