@@ -38,7 +38,7 @@ def test_fetch_incidents(requests_mock):
         action = "fetch_entity_anomalies",
         time_frame = "01",
     )
-
+ 
     expected_response = util_load_json('test_data/formatted_fetch_incident.json')
 
     # THEN the response should be returned and formatted
