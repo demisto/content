@@ -10,7 +10,7 @@ Use the IPinfo.io API to get data about an IP address.
        | --- | --- | --- |
    | API Token | The API Key to use for connection | True |
    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-   | Base URL |  | False |
+   | Base URL |  | True |
    | Trust any certificate (not secure) |  | False |
    | Use system proxy settings |  | False |
 
