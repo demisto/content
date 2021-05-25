@@ -880,7 +880,7 @@ def build_intel_context(
         entity_type = "cve"
     command_results: List[CommandResults] = []
     if entity_data and ("error" not in entity_data):
-        data = entity_data["data"]
+        data = entity_data.get("data")
         data.update(data.pop("entity"))
         data.update(data.pop("risk"))
         data.update(data.pop("timestamps"))
