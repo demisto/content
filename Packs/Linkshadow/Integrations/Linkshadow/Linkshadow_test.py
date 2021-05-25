@@ -24,7 +24,7 @@ def test_fetch_incidents(requests_mock):
             proxy=False)
     
     last_run = {
-        'last_fetch': 1621933263000  # Mon, Aug 31, 2020 9 PM Pacific
+        'last_fetch': 1621860339000  # Mon, May 24, 2021 12:45 PM Pacific
     }
     # WHEN the desired anomaly has 
     integration_response = fetch_incidents(
@@ -36,7 +36,7 @@ def test_fetch_incidents(requests_mock):
         api_username = "lsadmin"    ,
         plugin_id = "xsoar_integration_1604211382",
         action = "fetch_entity_anomalies",
-        time_frame = "10",
+        time_frame = "01",
     )
     
     expected_response = util_load_json('test_data/formatted_fetch_incident.json')
