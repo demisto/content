@@ -1534,7 +1534,12 @@ def commit_file_command():
     if file_sha:
         data['sha'] = file_sha
     res = http_request(method='PUT', url_suffix='{}/{}'.format(FILE_SUFFIX, path_to_file), data=data)
-    return_outputs(res)
+
+    return_results(CommandResults(
+        readable_output=f"The file {path_to_file} committed successfully. Link to the commit:"
+                        f" {res['commit'].get('html_url')}",
+        raw_response=res
+    ))
 
 
 def list_check_runs(owner_name, repository_name, run_id, commit_id):

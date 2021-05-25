@@ -2928,15 +2928,14 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: master
-      description: 'The branch name. '
+      description: The branch name.
       isArray: false
       name: branch_name
       required: true
       secret: false
     - default: false
       description: Required if you are updating a file. The blob SHA of the file being
-        replaced.
+        replaced, use Github-list-files command to get the SHA value of the file.
       isArray: false
       name: file_sha
       required: false
