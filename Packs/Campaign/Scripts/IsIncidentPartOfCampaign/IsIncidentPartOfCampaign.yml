@@ -1,7 +1,6 @@
 commonfields:
-  id: 7be5586e-3db2-4e88-841a-065ba7e9b618
-  version: 102
-vcShouldKeepItemLegacyProdMachine: false
+  id: IsIncidentPartOfCampaign
+  version: -1
 name: IsIncidentPartOfCampaign
 script: ''
 type: python
@@ -28,3 +27,6 @@ pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
