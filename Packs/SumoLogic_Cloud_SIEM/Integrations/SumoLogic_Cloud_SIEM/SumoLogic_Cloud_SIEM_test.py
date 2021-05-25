@@ -49,7 +49,7 @@ def test_insight_get_details(requests_mock):
     assert response.readable_output == tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
 
 
 def test_insight_get_comments(requests_mock):
@@ -77,7 +77,7 @@ def test_insight_get_comments(requests_mock):
 
     response = insight_get_comments(client, args)
 
-    assert response.outputs_prefix == 'SumoLogic.Sec.Insight.CommentList'
+    assert response.outputs_prefix == 'SumoLogic.Sec.InsightComments'
     assert response.outputs_key_field == 'Id'
     assert response.outputs[0]['Id'] == comments[0]['id'] == '2'
     assert response.outputs[0]['Author'] == comments[0]['author']['username'] == 'obfuscated@email.com'

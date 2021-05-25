@@ -101,11 +101,11 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogic.Sec.Insight.CommentList..Id | String | ID of comment | 
-| SumoLogic.Sec.Insight.CommentList..Body | String | Comment contents | 
-| SumoLogic.Sec.Insight.CommentList..Author | String | User that created the comment | 
-| SumoLogic.Sec.Insight.CommentList..Timestamp | Date | Comment created timestamp | 
-| SumoLogic.Sec.Insight.CommentList..InsightId | String | The ID of the Insight | 
+| SumoLogic.Sec.InsightComments..Id | String | ID of comment | 
+| SumoLogic.Sec.InsightComments..Body | String | Comment contents | 
+| SumoLogic.Sec.InsightComments..Author | String | User that created the comment | 
+| SumoLogic.Sec.InsightComments..Timestamp | Date | Comment created timestamp | 
+| SumoLogic.Sec.InsightComments..InsightId | String | The ID of the Insight | 
 
 
 #### Command Example

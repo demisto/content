@@ -251,7 +251,7 @@ def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='SumoLogic.Sec.Insight.CommentList',
+        outputs_prefix='SumoLogic.Sec.InsightComments',
         outputs_key_field='Id',
         outputs=comments
     )

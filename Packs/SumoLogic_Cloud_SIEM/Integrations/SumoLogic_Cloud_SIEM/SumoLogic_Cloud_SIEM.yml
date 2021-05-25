@@ -150,19 +150,19 @@ script:
       required: true
       description: The insight ID for which to retrieve comments.
     outputs:
-    - contextPath: SumoLogic.Sec.Insight.CommentList..Id
+    - contextPath: SumoLogic.Sec.InsightComments..Id
       description: ID of comment
       type: String
-    - contextPath: SumoLogic.Sec.Insight.CommentList..Body
+    - contextPath: SumoLogic.Sec.InsightComments..Body
       description: Comment contents
       type: String
-    - contextPath: SumoLogic.Sec.Insight.CommentList..Author
+    - contextPath: SumoLogic.Sec.InsightComments..Author
       description: User that created the comment
       type: String
-    - contextPath: SumoLogic.Sec.Insight.CommentList..Timestamp
+    - contextPath: SumoLogic.Sec.InsightComments..Timestamp
       description: Comment created timestamp
       type: Date
-    - contextPath: SumoLogic.Sec.Insight.CommentList..InsightId
+    - contextPath: SumoLogic.Sec.InsightComments..InsightId
       description: The ID of the Insight
       type: String
     description: Get comments for a specific Insight ID. (Users can post and update
