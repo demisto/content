@@ -972,6 +972,10 @@ Provides data enrichment for domains.
 | PassiveTotal.Domain.techPostalCode | String | The postal code of the domain tech. | 
 | PassiveTotal.Domain.techCountry | String | The country of the domain tech. | 
 | PassiveTotal.Domain.techTelephone | String | The telephone number of the domain tech. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual DBot score. | 
 
 
 #### Command Example

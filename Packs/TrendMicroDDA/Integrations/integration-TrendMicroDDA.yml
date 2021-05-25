@@ -200,8 +200,7 @@ script:
 
 
     DEFAULT_HEADERS = {
-        'Host' : HOST,
-        'X-DTAS-ProtocolVersion' : PROTOCOL_VERSION,
+        'X-DTAS-ProtocolVersion': PROTOCOL_VERSION,
         'X-DTAS-ClientUUID': UUID,
         'X-DTAS-Time': get_epoch_time(),
         'X-DTAS-Challenge': str(uuid.uuid4()),
@@ -211,9 +210,11 @@ script:
         'X-DTAS-SourceName': 'DemistoIntegration',
     }
 
+    if HOST:
+        DEFAULT_HEADERS['Host'] = HOST
 
-    #for fetch incident
 
+    # for fetch incident
     CURRENT_TIME = datetime.utcnow()
 
 

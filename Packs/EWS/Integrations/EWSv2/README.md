@@ -2802,3 +2802,5 @@
 <p> </p>
 <h4>New-Compliance Search</h4>
 <p>The EWS v2 integration uses remote ps-session to run commands of compliance search as part of Office 365. To check if your account can connect to Office 365 Security &amp; Compliance Center via powershell, check the following<span> </span><a href="https://docs.microsoft.com/en-us/powershell/exchange/office-365-scc/connect-to-scc-powershell/connect-to-scc-powershell?view=exchange-ps" rel="nofollow">steps</a>. New-Compliance search is a long-running task which has no limitation of searched mailboxes and therefore the suggestion is to use<span> </span><code>Office 365 Search and Delete</code>playbook. New-Compliance search returns statistics of matched content search query and doesn't return preview of found emails in contrast to<span> </span><code>ews-search-mailboxes</code><span> </span>command.</p>
+<h2>Troubleshooting</h2>
+For troubleshooting information, see the <a href="https://xsoar.pan.dev/docs/reference/articles/EWS_V2_Troubleshooting" target="_blank" rel="noopener">EWS V2 Troubleshooting</a>.
