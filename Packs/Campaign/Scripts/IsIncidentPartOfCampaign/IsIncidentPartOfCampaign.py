@@ -43,7 +43,7 @@ def arg_to_set(arg: str) -> Set[str]:
 ''' COMMAND FUNCTION '''
 
 
-def check_incidents_ids_in_campaigns_list(campaigns_ids_list: List[str], incidents_ids_set: Set[str]) -> (None, str):
+def check_incidents_ids_in_campaigns_list(campaigns_ids_list: List[str], incidents_ids_set: Set[str]) -> Optional[str]:
     """
     Check for each incident in the campaigns_ids_list if any of the ids in incidents_ids_set is linked.
     Args:
