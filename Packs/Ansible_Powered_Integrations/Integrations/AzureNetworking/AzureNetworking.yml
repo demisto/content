@@ -1395,7 +1395,7 @@ script:
         List of zone dicts, which share the same layout as azure_rm_dnszone module
         parameter.'
       type: unknown
-  dockerimage: demisto/ansible-runner:1.0.0.19017
+  dockerimage: demisto/ansible-runner:1.0.0.20246
   runonce: false
   script: ''
   subtype: python3
