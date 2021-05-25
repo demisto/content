@@ -8,7 +8,7 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "domain",
+            "displayName": "Domain",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -20,7 +20,7 @@
             "width": 150
         },
         {
-            "displayName": "name",
+            "displayName": "Name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,

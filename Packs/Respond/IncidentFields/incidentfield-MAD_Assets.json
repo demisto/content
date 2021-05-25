@@ -8,7 +8,7 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "hostname",
+            "displayName": "Hostname",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
@@ -20,7 +20,7 @@
             "width": 150
         },
         {
-            "displayName": "ipaddress",
+            "displayName": "IP Address",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
