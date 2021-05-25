@@ -34,13 +34,13 @@ configuration:
   name: apikey
   required: true
   type: 4
-- additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+- additionalInfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
   required: false
   type: 0
-- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
+- additionalInfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -51,7 +51,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every
+- additionalInfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every
     incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be
     synced. Note that once this value is changed and synchronized between the systems,
     additional changes will not be reflected. For example, if you change the owner
@@ -72,7 +72,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
+- additionalInfo: 'The statuses of the incidents that will be fetched. If no status
     is provided then incidents of all the statuses will be fetched. Note: An incident
     whose status was changed to a filtered status after its creation time will not
     be fetched.'
@@ -183,7 +183,8 @@ script:
       secret: false
     - default: false
       description: 'Filters only incidents in the specified status. The options are:
-     new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto'
+        new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive,
+        resolved_other, resolved_auto'
       isArray: false
       name: status
       required: false
@@ -354,6 +355,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.Incident.starred
       description: Incident starred.
       type: Boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names
+      description: Incident Mitre techniques ids and names.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names
+      description: Incident Mitre tactics ids and names.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
       description: Unique ID for each alert.
       type: String
@@ -738,8 +745,7 @@ script:
       - Low
       - Medium
       - High
-      - Unknown
-      required: false
+      required: true
       secret: false
     - default: false
       description: String defining the alert name.
@@ -1051,7 +1057,7 @@ script:
       description: The endpoint's MAC address.
       type: String
     - contextPath: Endpoint.Vendor
-      description: The integration name of the endpoint vendor. 
+      description: The integration name of the endpoint vendor.
       type: String
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution
@@ -1750,17 +1756,19 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency.
+      description: Whether to scan all of the endpoints or not. Default is false.
+        Do note that scanning all the endpoints may cause performance issues and latency.
       isArray: false
       name: all
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
     description: Runs a scan on a selected endpoint. To scan all endpoints, run this
-      command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
+      command with argument all=true. Do note that scanning all the endpoints may
+      cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan
     outputs:
@@ -1867,9 +1875,9 @@ script:
       secret: false
     deprecated: false
     description: Cancel the scan of selected endpoints. A scan can only be aborted
-      if the selected endpoints are Pending or In Progress. To scan all
-      endpoints, run the command with the argument all=true. Note that scanning all
-      of the endpoints may cause performance issues and latency.
+      if the selected endpoints are Pending or In Progress. To scan all endpoints,
+      run the command with the argument all=true. Note that scanning all of the endpoints
+      may cause performance issues and latency.
     execution: true
     name: xdr-endpoint-scan-abort
     outputs:
@@ -2801,7 +2809,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: true
   longRunning: false
@@ -2809,9 +2817,6 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook
