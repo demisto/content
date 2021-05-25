@@ -96,6 +96,10 @@ def add_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def define_body_for_add_ip_command(list_target, mask, ip_address, duration, note, tags):
+    """
+    API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (POST section)
+    prepares the body of a POST request in order to add an IP
+    """
     return \
         {
             "list_target": list_target,
@@ -131,6 +135,20 @@ def delete_ip_objects_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=human_readable)
 
 
+def handle_paging(page_number, page_size):
+    """
+    * Returns whether the user wants to get the results by paging (page size and page number).
+    * Returns the parameters dict to the HTTP request when using paging, empty dict will be returned if paging was
+    not required.
+    """
+    is_paging_required = False
+    params = {}
+    if page_number and page_size:
+        params = paging_args_to_params(page_size, page_number)
+        is_paging_required = True
+    return is_paging_required, params
+
+
 def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Gets a list of IP objects by the requested list type (denylist or allowlist).
@@ -143,12 +161,7 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     page_number = args.get('page_number')
     page_size = args.get('page_size')
     url_suffix = f'{list_type}/ip_objects'
-    params = {}
-
-    is_paging = False
-    if page_number and page_size:
-        params = paging_args_to_params(page_size, page_number)
-        is_paging = True
+    is_paging_required, params = handle_paging(page_number, page_size)
 
     if not object_ids:
         # in case the user wants to get all the IP objects and not specific ones
@@ -161,9 +174,9 @@ def get_ip_objects_list_command(client: Client, args: Dict[str, Any]) -> Command
     human_readable = tableToMarkdown('F5 Silverline IP Objects', human_results, TABLE_HEADERS_GET_OBJECTS,
                                      removeNull=True)
 
-    if not human_results and is_paging:
+    if not human_results and is_paging_required:
         human_readable = "No results were found. Please try to run the command without page_number and page_size to " \
-                         "get all the IP objects that exist."
+                         "get all existing IP objects."
 
     return CommandResults(
         readable_output=human_readable,
