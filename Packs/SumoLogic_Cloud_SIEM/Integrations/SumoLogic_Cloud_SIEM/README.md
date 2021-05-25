@@ -101,11 +101,11 @@ Get comments for a specific Insight ID. (Users can post and update comments on t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.InsightComments..Id | String | ID of comment | 
-| SumoLogicSec.InsightComments..Body | String | Comment contents | 
-| SumoLogicSec.InsightComments..Author | String | User that created the comment | 
-| SumoLogicSec.InsightComments..Timestamp | Date | Comment created timestamp | 
-| SumoLogicSec.InsightComments..InsightId | String | The ID of the Insight | 
+| SumoLogicSec.InsightComments.Id | String | ID of comment | 
+| SumoLogicSec.InsightComments.Body | String | Comment contents | 
+| SumoLogicSec.InsightComments.Author | String | User that created the comment | 
+| SumoLogicSec.InsightComments.Timestamp | Date | Comment created timestamp | 
+| SumoLogicSec.InsightComments.InsightId | String | The ID of the Insight | 
 
 
 #### Command Example
@@ -227,34 +227,34 @@ Search insights using available filters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.InsightList..Assignee | String | User or team assigned to the Insight | 
-| SumoLogicSec.InsightList..Closed | Date | Closed date | 
-| SumoLogicSec.InsightList..ClosedBy | String | Closed by user | 
-| SumoLogicSec.InsightList..Created | Date | Created date | 
-| SumoLogicSec.InsightList..Description | String | Description of the Insight | 
-| SumoLogicSec.InsightList..Entity | String | Entity name associated with the Insight | 
-| SumoLogicSec.InsightList..Id | String | The ID of the Insight | 
-| SumoLogicSec.InsightList..LastUpdated | Date | The time the Insight was last updated | 
-| SumoLogicSec.InsightList..LastUpdatedBy | String | The last user to update the Insight | 
-| SumoLogicSec.InsightList..Name | String | The name of the Insight | 
-| SumoLogicSec.InsightList..ReadableId | String | The ID of the Insight in readable form | 
-| SumoLogicSec.InsightList..Resolution | String | Resolution for closed Insight | 
-| SumoLogicSec.InsightList..Severity | String | The severity of the Insight | 
-| SumoLogicSec.InsightList..Signals.contentType | String | Type of content that triggered the Signal | 
-| SumoLogicSec.InsightList..Signals.description | String | Description of the Signal | 
-| SumoLogicSec.InsightList..Signals.id | String | The ID of the Signal | 
-| SumoLogicSec.InsightList..Signals.name | String | The name of the Signal | 
-| SumoLogicSec.InsightList..Signals.recordCount | Number | Number of records associated with the Signal | 
-| SumoLogicSec.InsightList..Signals.ruleId | String | Rule ID associated with the Signal | 
-| SumoLogicSec.InsightList..Signals.severity | Number | The severity of the Signal | 
-| SumoLogicSec.InsightList..Signals.stage | String | The stage of the Signal | 
-| SumoLogicSec.InsightList..Signals.timestamp | Date | Signal timestamp | 
-| SumoLogicSec.InsightList..Source | String | The source of the Insight | 
-| SumoLogicSec.InsightList..Status | String | The status of the Insight | 
-| SumoLogicSec.InsightList..TimeToDetection | Number | Insight time to detection | 
-| SumoLogicSec.InsightList..TimeToRemediation | Number | Insight time to remediation | 
-| SumoLogicSec.InsightList..TimeToResponse | Number | Insight time to response | 
-| SumoLogicSec.InsightList..Timestamp | Date | Insight timestamp | 
+| SumoLogicSec.InsightList.Assignee | String | User or team assigned to the Insight | 
+| SumoLogicSec.InsightList.Closed | Date | Closed date | 
+| SumoLogicSec.InsightList.ClosedBy | String | Closed by user | 
+| SumoLogicSec.InsightList.Created | Date | Created date | 
+| SumoLogicSec.InsightList.Description | String | Description of the Insight | 
+| SumoLogicSec.InsightList.Entity | String | Entity name associated with the Insight | 
+| SumoLogicSec.InsightList.Id | String | The ID of the Insight | 
+| SumoLogicSec.InsightList.LastUpdated | Date | The time the Insight was last updated | 
+| SumoLogicSec.InsightList.LastUpdatedBy | String | The last user to update the Insight | 
+| SumoLogicSec.InsightList.Name | String | The name of the Insight | 
+| SumoLogicSec.InsightList.ReadableId | String | The ID of the Insight in readable form | 
+| SumoLogicSec.InsightList.Resolution | String | Resolution for closed Insight | 
+| SumoLogicSec.InsightList.Severity | String | The severity of the Insight | 
+| SumoLogicSec.InsightList.Signals.contentType | String | Type of content that triggered the Signal | 
+| SumoLogicSec.InsightList.Signals.description | String | Description of the Signal | 
+| SumoLogicSec.InsightList.Signals.id | String | The ID of the Signal | 
+| SumoLogicSec.InsightList.Signals.name | String | The name of the Signal | 
+| SumoLogicSec.InsightList.Signals.recordCount | Number | Number of records associated with the Signal | 
+| SumoLogicSec.InsightList.Signals.ruleId | String | Rule ID associated with the Signal | 
+| SumoLogicSec.InsightList.Signals.severity | Number | The severity of the Signal | 
+| SumoLogicSec.InsightList.Signals.stage | String | The stage of the Signal | 
+| SumoLogicSec.InsightList.Signals.timestamp | Date | Signal timestamp | 
+| SumoLogicSec.InsightList.Source | String | The source of the Insight | 
+| SumoLogicSec.InsightList.Status | String | The status of the Insight | 
+| SumoLogicSec.InsightList.TimeToDetection | Number | Insight time to detection | 
+| SumoLogicSec.InsightList.TimeToRemediation | Number | Insight time to remediation | 
+| SumoLogicSec.InsightList.TimeToResponse | Number | Insight time to response | 
+| SumoLogicSec.InsightList.Timestamp | Date | Insight timestamp | 
 
 
 #### Command Example
@@ -293,21 +293,21 @@ Search signals using available filters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.SignalList..ContentType | String | Type of content that triggered the Signal | 
-| SumoLogicSec.SignalList..Description | String | Description of the Signal | 
-| SumoLogicSec.SignalList..Entity | String | Entity name associated with the Signal | 
-| SumoLogicSec.SignalList..Id | String | The ID of the Signal | 
-| SumoLogicSec.SignalList..Name | String | The name of the Signal | 
-| SumoLogicSec.SignalList..RecordCount | Number | Number of records associated with the Signal | 
-| SumoLogicSec.SignalList..RuleId | String | Rule ID associated with the Signal | 
-| SumoLogicSec.SignalList..Severity | Number | The severity of the Signal | 
-| SumoLogicSec.SignalList..Stage | String | The stage of the Signal | 
-| SumoLogicSec.SignalList..Suppressed | Boolean | Whether or not the Signal was suppressed | 
-| SumoLogicSec.SignalList..Timestamp | Date | Signal timestamp | 
+| SumoLogicSec.SignalList.ContentType | String | Type of content that triggered the Signal | 
+| SumoLogicSec.SignalList.Description | String | Description of the Signal | 
+| SumoLogicSec.SignalList.Entity | String | Entity name associated with the Signal | 
+| SumoLogicSec.SignalList.Id | String | The ID of the Signal | 
+| SumoLogicSec.SignalList.Name | String | The name of the Signal | 
+| SumoLogicSec.SignalList.RecordCount | Number | Number of records associated with the Signal | 
+| SumoLogicSec.SignalList.RuleId | String | Rule ID associated with the Signal | 
+| SumoLogicSec.SignalList.Severity | Number | The severity of the Signal | 
+| SumoLogicSec.SignalList.Stage | String | The stage of the Signal | 
+| SumoLogicSec.SignalList.Suppressed | Boolean | Whether or not the Signal was suppressed | 
+| SumoLogicSec.SignalList.Timestamp | Date | Signal timestamp | 
 
 
 #### Command Example
-`!sumologic-sec-signal-search query="timestamp:NOW-7D..NOW name:contains(\"Internal\")"`
+`!sumologic-sec-signal-search query="timestamp:NOW-7D.NOW name:contains(\"Internal\")"`
 
 #### Human Readable Output
 Signals:
@@ -344,18 +344,18 @@ Search entities using the available filters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.EntityList..ActivityScore | Number | Entity Activity Score | 
-| SumoLogicSec.EntityList..FirstSeen | Date | When the Entity was first seen | 
-| SumoLogicSec.EntityList..Id | String | Entity ID | 
-| SumoLogicSec.EntityList..IpHostname | String | Hostname associated with IP Entity | 
-| SumoLogicSec.EntityList..IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
-| SumoLogicSec.EntityList..LastSeen | Date | When the Entity was last seen | 
-| SumoLogicSec.EntityList..Name | String | The Entity name | 
-| SumoLogicSec.EntityList..OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 
-| SumoLogicSec.EntityList..InventoryData | Boolean | Whether or not this Entity was ingested from inventory e.g. Active Directory | 
-| SumoLogicSec.EntityList..Hostname | String | Entity hostname | 
-| SumoLogicSec.EntityList..Department | String | Username Entity department | 
-| SumoLogicSec.EntityList..EmployeeId | String | Username Entity employee ID | 
+| SumoLogicSec.EntityList.ActivityScore | Number | Entity Activity Score | 
+| SumoLogicSec.EntityList.FirstSeen | Date | When the Entity was first seen | 
+| SumoLogicSec.EntityList.Id | String | Entity ID | 
+| SumoLogicSec.EntityList.IpHostname | String | Hostname associated with IP Entity | 
+| SumoLogicSec.EntityList.IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogicSec.EntityList.LastSeen | Date | When the Entity was last seen | 
+| SumoLogicSec.EntityList.Name | String | The Entity name | 
+| SumoLogicSec.EntityList.OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 
+| SumoLogicSec.EntityList.InventoryData | Boolean | Whether or not this Entity was ingested from inventory e.g. Active Directory | 
+| SumoLogicSec.EntityList.Hostname | String | Entity hostname | 
+| SumoLogicSec.EntityList.Department | String | Username Entity department | 
+| SumoLogicSec.EntityList.EmployeeId | String | Username Entity employee ID | 
 
 
 #### Command Example
@@ -453,15 +453,15 @@ Get match lists
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.MatchLists..Created | String | When the Match List was created | 
-| SumoLogicSec.MatchLists..CreatedBy | String | User that created the Match List | 
-| SumoLogicSec.MatchLists..DefaultTtl | Number | Default TTL for entries in the Match List | 
-| SumoLogicSec.MatchLists..Description | String | Description of the Match List | 
-| SumoLogicSec.MatchLists..Id | String | ID of the Match List | 
-| SumoLogicSec.MatchLists..LastUpdated | String | When the Match List was last updated | 
-| SumoLogicSec.MatchLists..LastUpdatedBy | String | The last user to update the Match List | 
-| SumoLogicSec.MatchLists..Name | String | Name of Match List | 
-| SumoLogicSec.MatchLists..TargetColumn | String | Match List Target Column | 
+| SumoLogicSec.MatchLists.Created | String | When the Match List was created | 
+| SumoLogicSec.MatchLists.CreatedBy | String | User that created the Match List | 
+| SumoLogicSec.MatchLists.DefaultTtl | Number | Default TTL for entries in the Match List | 
+| SumoLogicSec.MatchLists.Description | String | Description of the Match List | 
+| SumoLogicSec.MatchLists.Id | String | ID of the Match List | 
+| SumoLogicSec.MatchLists.LastUpdated | String | When the Match List was last updated | 
+| SumoLogicSec.MatchLists.LastUpdatedBy | String | The last user to update the Match List | 
+| SumoLogicSec.MatchLists.Name | String | Name of Match List | 
+| SumoLogicSec.MatchLists.TargetColumn | String | Match List Target Column | 
 
 
 #### Command Example
@@ -538,14 +538,14 @@ Search Threat Intel Indicators
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.ThreatIntelIndicators..Active | Boolean | Whether or not the Threat Intel Indicator is Active | 
-| SumoLogicSec.ThreatIntelIndicators..Expiration | Date | Date and time the Threat Intel Indicator is set to expire | 
-| SumoLogicSec.ThreatIntelIndicators..Id | String | ID of Threat Intel Indicator | 
-| SumoLogicSec.ThreatIntelIndicators..Meta.created.username | String | User that created the Threat Intel Indicator | 
-| SumoLogicSec.ThreatIntelIndicators..Meta.created.when | Date | When the Threat Intel Indicator was created | 
-| SumoLogicSec.ThreatIntelIndicators..Meta.description | String | Description of Threat Intel Indicator | 
-| SumoLogicSec.ThreatIntelIndicators..Meta.updated | Date | When the Threat Intel Indicator was last updated | 
-| SumoLogicSec.ThreatIntelIndicators..Value | String | Value of Threat Intel Indicator | 
+| SumoLogicSec.ThreatIntelIndicators.Active | Boolean | Whether or not the Threat Intel Indicator is Active | 
+| SumoLogicSec.ThreatIntelIndicators.Expiration | Date | Date and time the Threat Intel Indicator is set to expire | 
+| SumoLogicSec.ThreatIntelIndicators.Id | String | ID of Threat Intel Indicator | 
+| SumoLogicSec.ThreatIntelIndicators.Meta.created.username | String | User that created the Threat Intel Indicator | 
+| SumoLogicSec.ThreatIntelIndicators.Meta.created.when | Date | When the Threat Intel Indicator was created | 
+| SumoLogicSec.ThreatIntelIndicators.Meta.description | String | Description of Threat Intel Indicator | 
+| SumoLogicSec.ThreatIntelIndicators.Meta.updated | Date | When the Threat Intel Indicator was last updated | 
+| SumoLogicSec.ThreatIntelIndicators.Value | String | Value of Threat Intel Indicator | 
 
 
 #### Command Example
@@ -581,14 +581,14 @@ Get Threat Intel Sources
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SumoLogicSec.ThreatIntelSources..Created | String | When the Threat Intel Source was created | 
-| SumoLogicSec.ThreatIntelSources..CreatedBy | String | User that created the Threat Intel Source | 
-| SumoLogicSec.ThreatIntelSources..Description | String | Description of Threat Intel Source | 
-| SumoLogicSec.ThreatIntelSources..Id | String | ID of Threat Intel Source | 
-| SumoLogicSec.ThreatIntelSources..LastUpdated | String | When the Threat Intel Source was last updated | 
-| SumoLogicSec.ThreatIntelSources..LastUpdatedBy | String | User that last updated the Threat Intel Source | 
-| SumoLogicSec.ThreatIntelSources..Name | String | Name of Threat Intel Source | 
-| SumoLogicSec.ThreatIntelSources..SourceType | String | Source type of Threat Intel Source | 
+| SumoLogicSec.ThreatIntelSources.Created | String | When the Threat Intel Source was created | 
+| SumoLogicSec.ThreatIntelSources.CreatedBy | String | User that created the Threat Intel Source | 
+| SumoLogicSec.ThreatIntelSources.Description | String | Description of Threat Intel Source | 
+| SumoLogicSec.ThreatIntelSources.Id | String | ID of Threat Intel Source | 
+| SumoLogicSec.ThreatIntelSources.LastUpdated | String | When the Threat Intel Source was last updated | 
+| SumoLogicSec.ThreatIntelSources.LastUpdatedBy | String | User that last updated the Threat Intel Source | 
+| SumoLogicSec.ThreatIntelSources.Name | String | Name of Threat Intel Source | 
+| SumoLogicSec.ThreatIntelSources.SourceType | String | Source type of Threat Intel Source | 
 
 
 #### Command Example
