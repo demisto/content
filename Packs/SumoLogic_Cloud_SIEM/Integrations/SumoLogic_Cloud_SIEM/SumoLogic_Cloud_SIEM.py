@@ -165,7 +165,7 @@ def get_update_result(resp_json):
     '''
     Readable json output from update
     '''
-    return {'Result': 'Success' if resp_json is True else 'Failed', 'Server response': resp_json}
+    return {'Result': 'Success' if resp_json is True else 'Failed', 'Server Response': resp_json}
 
 
 ''' COMMAND FUNCTIONS '''
@@ -227,7 +227,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -245,8 +245,9 @@ def insight_get_comments(client: Client, args: Dict[str, Any]) -> CommandResults
     resp_json = client.req('GET', 'sec/v1/insights/{}/comments'.format(insight_id))
     comments = [{'Id': c.get('id'), 'Body': c.get('body'), 'Author': c.get('author').get('username'),
                  'Timestamp': c.get('timestamp'), 'InsightId': insight_id} for c in resp_json.get('comments')]
-    readable_output = tableToMarkdown('Insight Comments:', comments, [
-                                      'Id', 'InsightId', 'Author', 'Body', 'LastUpdated', 'Timestamp'])
+    readable_output = tableToMarkdown('Insight Comments:', comments,
+                                      ['Id', 'InsightId', 'Author', 'Body', 'LastUpdated', 'Timestamp'],
+                                      headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -269,7 +270,7 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     signal = insight_signal_to_readable(signal)
     readable_output = tableToMarkdown(
         'Signal Details:', [signal],
-        ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity'])
+        ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -291,7 +292,8 @@ def entity_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     entity = entity_to_readable(resp_json)
     readable_output = tableToMarkdown(
         'Entity Details:', [entity],
-        ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'])
+        ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'],
+        headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -360,7 +362,7 @@ def insight_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         'Insights:', insights,
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -390,7 +392,8 @@ def entity_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = tableToMarkdown(
         'Entities:', entities,
-        ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'])
+        ['Id', 'Name', 'FirstSeen', 'LastSeen', 'ActivityScore', 'IsWhitelisted', 'OperatingSystem', 'InventoryData'],
+        headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -420,7 +423,8 @@ def signal_search(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = tableToMarkdown(
         'Signals:', signals,
-        ['Id', 'Name', 'Entity', 'RuleId', 'Description', 'Severity', 'Stage', 'Timestamp', 'ContentType', 'Tags'])
+        ['Id', 'Name', 'Entity', 'RuleId', 'Description', 'Severity', 'Stage', 'Timestamp', 'ContentType', 'Tags'],
+        headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -453,7 +457,7 @@ def insight_set_status(client: Client, args: Dict[str, Any]) -> CommandResults:
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'])
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution'], headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
@@ -478,7 +482,9 @@ def match_list_get(client: Client, args: Dict[str, Any]) -> CommandResults:
     for match_list in resp_json.get('objects'):
         cap_match_list = {(k[0].capitalize() + k[1:]): v for k, v in match_list.items()}
         match_lists.append(cap_match_list)
-    readable_output = tableToMarkdown('Match lists:', match_lists, headers=['Id', 'Name', 'TargetColumn', 'DefaultTtl'])
+    readable_output = tableToMarkdown(
+        'Match lists:', match_lists, headers=['Id', 'Name', 'TargetColumn', 'DefaultTtl'],
+        headerTransform=pascalToSpace)
     # Filtered out from readable output: 'Description', 'Created', 'CreatedBy', 'LastUpdated', 'LastUpdatedBy'
 
     return CommandResults(
@@ -502,7 +508,7 @@ def match_list_update(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('POST', 'sec/v1/match-lists/{}/items'.format(match_list_id), None, {'items': [item]})
     result = get_update_result(resp_json)
-    readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
+    readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server Response'])
 
     return CommandResults(
         readable_output=readable_output,
@@ -580,7 +586,7 @@ def threat_intel_get_sources(client: Client, args: Dict[str, Any]) -> CommandRes
         cap_threat_intel_source = {(k[0].capitalize() + k[1:]): v for k, v in threat_intel_source.items()}
         threat_intel_sources.append(cap_threat_intel_source)
     readable_output = tableToMarkdown('Threat intel sources:', threat_intel_sources,
-                                      headers=['Id', 'Name', 'Description', 'SourceType'])
+                                      headers=['Id', 'Name', 'Description', 'SourceType'], headerTransform=pascalToSpace)
     # Filtered out from readable output: Created', 'CreatedBy', 'LastUpdated', 'LastUpdatedBy'
 
     return CommandResults(
@@ -605,7 +611,7 @@ def threat_intel_update_source(client: Client, args: Dict[str, Any]) -> CommandR
     resp_json = client.req('POST', 'sec/v1/threat-intel-sources/{}/items'.format(threat_intel_source_id),
                            None, {'indicators': [item]})
     result = get_update_result(resp_json)
-    readable_output = tableToMarkdown('Result:', [result], ['Result', 'Server response'])
+    readable_output = tableToMarkdown('Result:', [result], ['Result', 'Response'])
 
     return CommandResults(
         readable_output=readable_output,
