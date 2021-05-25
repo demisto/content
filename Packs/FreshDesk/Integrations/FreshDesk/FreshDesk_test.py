@@ -3,14 +3,16 @@ import io
 import json
 
 
-MOCK_PARAMS = {
-    'credentials': {
-        'identifier': 'TEST',
-        'password': 'TEST'
-    },
-    'url': 'https://MOCK_URL',
-    'maxFetch': '50',
-}
+def get_mock_params(max_fetch):
+    return {
+        'credentials': {
+            'identifier': 'TEST',
+            'password': 'TEST'
+        },
+        'url': 'https://MOCK_URL',
+        'maxFetch': max_fetch,
+    }
+
 
 
 def util_load_json(path):
@@ -32,8 +34,8 @@ def test_first_fetch_incidents_no_pagination(mocker, requests_mock):
     - validate the length of the results (5 tickets).
     - validate the time and id of the last item that was fetched (the 5th ticket)
     """
-    MOCK_PARAMS['maxFetch'] = '5'
-    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mock_params = get_mock_params('5')
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
     from FreshDesk import fetch_incidents
     raw_response = util_load_json('test_data/first_page_incindents_respone.json')
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1619834298000})
@@ -63,8 +65,8 @@ def test_first_fetch_incidents_with_pagination(mocker, requests_mock):
     - validate the length of the results (15 tickets).
     - validate the time and id of the last item that was fetched (the 15th ticket)
     """
-    MOCK_PARAMS['maxFetch'] = '15'
-    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mock_params = get_mock_params('15')
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
     from FreshDesk import fetch_incidents
     raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
     raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
@@ -73,7 +75,7 @@ def test_first_fetch_incidents_with_pagination(mocker, requests_mock):
     mocker.patch.object(demisto, 'incidents')
     requests_mock.get('https://MOCK_URL/api/v2/tickets',
                       json=raw_response_first)
-    requests_mock.get('https://MOCK_URL/api/v2/tickets?updated_since=2021-05-01T01:58:18Z&page=2',
+    requests_mock.get('https://MOCK_URL/api/v2/tickets?page=2',
                       json=raw_response_second)
     fetch_incidents()
     assert len(demisto.incidents.call_args_list[0][0][0]) == 15
@@ -96,10 +98,9 @@ def test_second_fetch_incidents(mocker, requests_mock):
     - validate the length of the remaining results (5 tickets).
     - validate the time and id of the last item that was fetched (the 20th ticket)
     """
-    MOCK_PARAMS['maxFetch'] = '15'
-    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mock_params = get_mock_params('15')
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
     from FreshDesk import fetch_incidents
-    raw_response_first = util_load_json('test_data/first_page_incindents_respone.json')
     raw_response_second = util_load_json('test_data/second_page_incidents_response.json')
 
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_created_incident_timestamp': 1620826216000,
