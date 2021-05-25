@@ -275,7 +275,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The direction by which to order the indicators. The options are `asc` or `desc`.
+      description: The direction by which to order the indicators. The options are
+        `asc` or `desc`.
       isArray: false
       name: sort_order
       predefined:
@@ -288,7 +289,7 @@ script:
       On-Demand).
     execution: false
     name: eis-update
-  dockerimage: demisto/teams:1.0.0.16907
+  dockerimage: demisto/teams:1.0.0.19340
   feed: false
   isfetch: false
   longRunning: true

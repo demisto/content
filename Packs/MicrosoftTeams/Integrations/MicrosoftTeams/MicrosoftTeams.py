@@ -605,7 +605,7 @@ def validate_auth_header(headers: dict) -> bool:
         demisto.info('Authorization header validation - failed to verify schema')
         return False
 
-    decoded_payload: dict = jwt.decode(jwt_token, verify=False)
+    decoded_payload: dict = jwt.decode(jwt=jwt_token, options={'verify_signature': False})
     issuer: str = decoded_payload.get('iss', '')
     if issuer != 'https://api.botframework.com':
         demisto.info('Authorization header validation - failed to verify issuer')
@@ -670,7 +670,8 @@ def validate_auth_header(headers: dict) -> bool:
     public_key: str = RSAAlgorithm.from_jwk(json.dumps(key_object))
     options = {
         'verify_aud': False,
-        'verify_exp': True
+        'verify_exp': True,
+        'verify_signature': False,
     }
     decoded_payload = jwt.decode(jwt_token, public_key, options=options)
 
@@ -867,6 +868,28 @@ def create_channel(team_aad_id: str, channel_name: str, channel_description: str
     return channel_id
 
 
+def create_meeting(user_id: str, subject: str, start_date_time: str, end_date_time: str) -> dict:
+    """
+    Creates a Microsoft Teams meeting
+    :param user_id: The User's ID
+    :param subject: The meeting's subject
+    :param start_date_time: The meeting's start time
+    :param end_date_time: The meeting's end time
+    :return: Dict with info about the created meeting.
+    """
+    url: str = f'{GRAPH_BASE_URL}/v1.0/users/{user_id}/onlineMeetings'
+    request_json: dict = {
+        'subject': subject
+    }
+    if start_date_time:
+        request_json['startDateTime'] = start_date_time
+    if end_date_time:
+        request_json['endDateTime'] = end_date_time
+
+    channel_data: dict = cast(Dict[Any, Any], http_request('POST', url, json_=request_json))
+    return channel_data
+
+
 def create_channel_command():
     channel_name: str = demisto.args().get('channel_name', '')
     channel_description: str = demisto.args().get('description', '')
@@ -876,6 +899,61 @@ def create_channel_command():
     channel_id: str = create_channel(team_aad_id, channel_name, channel_description)
     if channel_id:
         demisto.results(f'The channel "{channel_name}" was created successfully')
+
+
+def create_meeting_command():
+    subject: str = demisto.args().get('subject', '')
+    start_date_time: str = demisto.args().get('start_time', '')
+    end_date_time: str = demisto.args().get('end_time', '')
+    member = demisto.args().get('member', '')
+
+    user: list = get_user(member)
+    if not (user and user[0].get('id')):
+        raise ValueError(f'User {member} was not found')
+    meeting_data: dict = create_meeting(user[0].get('id'), subject, start_date_time, end_date_time)
+
+    thread_id = ''
+    message_id = ''
+    if chat_info := meeting_data.get('chatInfo', {}):
+        thread_id = chat_info.get('threadId', '')
+        message_id = chat_info.get('messageId', '')
+
+    participant_id, participant_display_name = get_participant_info(meeting_data.get('participants', {}))
+
+    outputs = {
+        'creationDateTime': meeting_data.get('creationDateTime', ''),
+        'threadId': thread_id,
+        'messageId': message_id,
+        'id': meeting_data.get('id', ''),
+        'joinWebUrl': meeting_data.get('joinWebUrl', ''),
+        'participantId': participant_id,
+        'participantDisplayName': participant_display_name
+    }
+    result = CommandResults(
+        readable_output=f'The meeting "{subject}" was created successfully',
+        outputs_prefix='MicrosoftTeams.CreateMeeting',
+        outputs_key_field='id',
+        outputs=outputs
+    )
+    return_results(result)
+
+
+def get_participant_info(participants: dict) -> Tuple[str, str]:
+    """
+    Retrieves the participant ID and name
+    :param participants: The participants in the Team meeting
+    :return: The participant ID and name
+    """
+    participant_id = ''
+    participant_display_name = ''
+
+    if participants:
+        user = participants.get('organizer', {}).get('identity', {}).get('user', {})
+        if user:
+            participant_id = user.get('id')
+            participant_display_name = user.get('displayName')
+
+    return participant_id, participant_display_name
 
 
 def get_channel_id(channel_name: str, team_aad_id: str, investigation_id: str = None) -> str:
@@ -1225,8 +1303,9 @@ def channel_mirror_loop():
     """
     while True:
         found_channel_to_mirror: bool = False
-        integration_context = get_integration_context()
+        integration_context = {}
         try:
+            integration_context = get_integration_context()
             teams: list = json.loads(integration_context.get('teams', '[]'))
             for team in teams:
                 mirrored_channels = team.get('mirrored_channels', [])
@@ -1658,7 +1737,6 @@ def test_module():
 
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
-
     commands: dict = {
         'test-module': test_module,
         'long-running-execution': long_running_loop,
@@ -1673,6 +1751,7 @@ def main():
         'microsoft-teams-ring-user': ring_user,
         'microsoft-teams-create-channel': create_channel_command,
         'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
+        'microsoft-teams-create-meeting': create_meeting_command,
     }
 
     ''' EXECUTION '''

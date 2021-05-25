@@ -128,6 +128,7 @@ def login():
         for j in range(0, len(r), 1):
             key += seed[int(r[j]) + 2]
         return now, key
+
     ctx = get_integration_context() or {}
     session_id = ctx.get(SESSION_ID_KEY)
     if session_id:
@@ -263,7 +264,8 @@ def unwhitelist_url(url):
     if len(urls_to_unwhitelist) == 1:  # Given only one URL to whitelist
         if urls_to_unwhitelist[0] not in whitelist_urls['whitelistUrls']:
             raise Exception('Given host address is not whitelisted.')
-    elif not set(urls_to_unwhitelist).issubset(set(whitelist_urls['whitelistUrls'])):  # Given more than one URL to whitelist
+    elif not set(urls_to_unwhitelist).issubset(
+            set(whitelist_urls['whitelistUrls'])):  # Given more than one URL to whitelist
         raise Exception('Given host addresses are not whitelisted.')
     # List comprehension to remove requested URLs from the whitelist
     whitelist_urls['whitelistUrls'] = [x for x in whitelist_urls['whitelistUrls'] if x not in urls_to_unwhitelist]
@@ -304,7 +306,8 @@ def unwhitelist_ip(ip):
     if len(ips_to_unwhitelist) == 1:  # Given only one IP to whitelist
         if ips_to_unwhitelist[0] not in whitelist_ips['whitelistUrls']:
             raise Exception('Given IP address is not whitelisted.')
-    elif not set(ips_to_unwhitelist).issubset(set(whitelist_ips['whitelistUrls'])):  # Given more than one IP to whitelist
+    elif not set(ips_to_unwhitelist).issubset(
+            set(whitelist_ips['whitelistUrls'])):  # Given more than one IP to whitelist
         raise Exception('Given IP address is not whitelisted.')
     # List comprehension to remove requested IPs from the whitelist
     whitelist_ips['whitelistUrls'] = [x for x in whitelist_ips['whitelistUrls'] if x not in ips_to_unwhitelist]
@@ -701,18 +704,18 @@ def url_quota_command():
     return entry
 
 
-def get_categories_command(display_url, custom_only=False):
+def get_categories_command(args):
+    display_urls = argToBoolean(args.get('displayURL'))  # urls returned to context data even if set to false
+    custom_only = argToBoolean(args.get('custom_categories_only', False))
+    ids_and_names_only = argToBoolean(args.get('get_ids_and_names_only', False))  # won't get URLs at all
     categories = []
-    display_urls = argToBoolean(display_url)
-    custom_only = argToBoolean(custom_only)
-
-    raw_categories = get_categories(custom_only)
+    raw_categories = get_categories(custom_only, ids_and_names_only)
     for raw_category in raw_categories:
         category = {
             'ID': raw_category['id'],
             'CustomCategory': raw_category['customCategory']
         }
-        if raw_category['urls']:
+        if 'urls' in raw_category:
             category['URL'] = raw_category['urls']
         if 'description' in raw_category:
             category['Description'] = raw_category['description']
@@ -722,7 +725,7 @@ def get_categories_command(display_url, custom_only=False):
     ec = {
         'Zscaler.Category(val.ID && val.ID === obj.ID)': categories
     }
-    if display_urls:
+    if display_urls and not ids_and_names_only:
         headers = ['ID', 'Description', 'URL', 'CustomCategory', 'Name']
     else:
         headers = ['ID', 'Description', 'CustomCategory', 'Name']
@@ -738,8 +741,13 @@ def get_categories_command(display_url, custom_only=False):
     return entry
 
 
-def get_categories(custom_only=False):
-    cmd_url = '/urlCategories?customOnly=true' if custom_only else '/urlCategories'
+def get_categories(custom_only=False, ids_and_names_only=False):
+    if ids_and_names_only:
+        # if you only want a list of URL category IDs and names (i.e without urls list).
+        # Note: API does not support the combination of custom_only and 'lite' endpoint
+        cmd_url = '/urlCategories/lite'
+    else:
+        cmd_url = '/urlCategories?customOnly=true' if custom_only else '/urlCategories'
 
     response = http_request('GET', cmd_url).json()
     return response
@@ -890,7 +898,7 @@ def main():
             elif command == 'zscaler-category-remove-ip':
                 return_results(category_remove_ip(args.get('category-id'), args.get('ip')))
             elif command == 'zscaler-get-categories':
-                return_results(get_categories_command(args.get('displayURL'), args.get('custom_categories_only')))
+                return_results(get_categories_command(args))
             elif command == 'zscaler-get-blacklist':
                 return_results(get_blacklist_command())
             elif command == 'zscaler-get-whitelist':

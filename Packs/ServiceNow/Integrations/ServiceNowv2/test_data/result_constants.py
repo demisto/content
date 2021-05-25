@@ -158,6 +158,7 @@ EXPECTED_CREATE_TICKET = {
         "description": "creating a test ticket"
     }
 }
+EXPECTED_CREATE_TICKET_WITH_OUT_JSON = {}
 EXPECTED_QUERY_TICKETS = {
     'Ticket(val.ID===obj.ID)': [
         {
@@ -191,6 +192,28 @@ EXPECTED_QUERY_TICKETS = {
          'CreatedOn': '2018-04-07 14:41:46', 'Active': 'true', 'OpenedAt': '2019-09-03 23:07:30', 'OpenedBy': 'admin',
          'Creator': 'admin', 'Assignee': 'admin', 'Priority': '1 - Critical', 'State': '2'
          }
+    ]
+}
+EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK = {
+    'Ticket(val.ID===obj.ID)': [
+        {
+            'ID': '9c573169c611228700193229fff72400', 'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '06/12/2018 10:24:13', 'Active': 'false', 'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '06/05/2020 16:09:51', 'ResolvedBy': 'Don Goodliffe', 'OpenedBy': 'Joe Employee',
+            'Creator': 'Joe Employee', 'Assignee': 'Charlie Whitherspoon', 'Priority': '1 - Critical', 'State': 'Closed'
+        }
+    ],
+    'ServiceNow.Ticket(val.ID===obj.ID)': [
+        {
+            'ID': '9c573169c611228700193229fff72400',
+            'Summary': "Can't read email", 'Number': 'INC0000001',
+            'CreatedOn': '06/12/2018 10:24:13', 'Active': 'false',
+            'CloseCode': 'Closed/Resolved by Caller',
+            'OpenedAt': '06/05/2020 16:09:51', 'ResolvedBy': 'Don Goodliffe',
+            'OpenedBy': 'Joe Employee', 'Creator': 'Joe Employee',
+            'Assignee': 'Charlie Whitherspoon', 'Priority': '1 - Critical',
+            'State': 'Closed'
+        }
     ]
 }
 EXPECTED_ADD_LINK_HR = '### Link successfully added to ServiceNow ticket'

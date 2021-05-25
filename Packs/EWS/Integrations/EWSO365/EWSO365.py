@@ -1491,7 +1491,7 @@ def get_items_from_folder(
         "receivedBy",
         "author",
         "toRecipients",
-        "id",
+        "itemId",
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
@@ -2063,7 +2063,7 @@ def parse_incident_from_item(item):
 
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email.as_string(),
+                        attached_email.as_bytes().decode('utf-8'),
                     )
 
                 if file_result:
