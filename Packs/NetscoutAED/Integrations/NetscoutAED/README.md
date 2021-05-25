@@ -35,7 +35,7 @@ Gets the countries on the outbound blacklist. By default, 10 blacklisted countri
 
 ### na-aed-country-code-list
 ***
-gets a country or list of countries (country name and ISO-standardized country code)
+Gets a country or list of countries (country name and ISO-standardized country code).
 
 
 #### Base Command
@@ -45,17 +45,17 @@ gets a country or list of countries (country name and ISO-standardized country c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
+| query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page (default 10). | Optional | 
+| limit | The maximum number of results returned per page. Default: 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.Country.country_name | String | The country's name | 
-| NetscoutAED.Country.iso_code | String | The ISO-standardized country code | 
+| NetscoutAED.Country.country_name | String | The country's name. | 
+| NetscoutAED.Country.iso_code | String | The ISO-standardized country code. | 
 
 
 #### Command Example
@@ -109,10 +109,10 @@ gets a country or list of countries (country name and ISO-standardized country c
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the command "na-aed-country-code-list". | Optional | 
-| query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
+| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the "na-aed-country-code-list" command. | Optional | 
+| query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | The maximum number of results returned per page. Default: 10. | Optional | 
 
 
 #### Context Output
@@ -120,7 +120,7 @@ gets a country or list of countries (country name and ISO-standardized country c
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.OutboundBlacklistCountry.annotation | String | A message associated with each country in the outbound blacklist. | 
-| NetscoutAED.OutboundBlacklistCountry.country | String | An ISO standardized country code. | 
+| NetscoutAED.OutboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.OutboundBlacklistCountry.update_time | Date | The time that the country code was added to the list. | 
 
 
@@ -168,7 +168,7 @@ Adds one or more countries to the outbound blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | An ISO standardized country code or a comma-separated list of country codes. Can be retrieved by running the command "na-aed-country-code-list". | Required | 
+| country | An ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
 | annotation | A message to associate with each country that you add to the outbound blacklist. | Optional | 
 
 
@@ -177,7 +177,7 @@ Adds one or more countries to the outbound blacklist.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.OutboundBlacklistCountry.annotation | String | A message associated with each country in the outbound blacklist. | 
-| NetscoutAED.OutboundBlacklistCountry.country | String | An ISO standardized country code. | 
+| NetscoutAED.OutboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.OutboundBlacklistCountry.update_time | Date | The time that the country code was added to the list. | 
 
 
@@ -218,7 +218,7 @@ Removes one or more countries from the outbound blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | An ISO-standardized country code or a comma-separated list of ISO-standardized country codes to remove. Can be retrieved by running the command "na-aed-country-code-list". | Required | 
+| country | An ISO-standardized country code or a comma-separated list of ISO-standardized country codes to remove. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
 
 
 #### Context Output
@@ -244,12 +244,12 @@ Gets the inbound blacklisted countries. By default, 10 blacklisted countries are
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cid | List of ‘,’ delimited central configuration IDs. Cannot be used with the pgid parameter. | Optional | 
-| pgid | List of ‘,’ delimited protection group IDs. Cannot be used with the cid parameter. | Optional | 
-| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the command "na-aed-country-code-list". | Optional | 
-| query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
+| cid | A comma-separated list of central configuration IDs. Cannot be used with the pgid parameter.| Optional | 
+| pgid | A comma-separated list of protection group IDs. Cannot be used with the cid parameter. | Optional | 
+| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the "na-aed-country-code-list" command. | Optional | 
+| query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | The maximum number of results returned per page. Default: 10. | Optional | 
 
 
 #### Context Output
@@ -257,8 +257,8 @@ Gets the inbound blacklisted countries. By default, 10 blacklisted countries are
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.InboundBlacklistCountry.annotation | Unknown | List of messages associated with each country in the inbound blacklist. | 
-| NetscoutAED.InboundBlacklistCountry.cid | Unknown | List of central configuration IDs | 
-| NetscoutAED.InboundBlacklistCountry.country | String | An ISO standardized country code. | 
+| NetscoutAED.InboundBlacklistCountry.cid | Unknown | List of central configuration IDs. | 
+| NetscoutAED.InboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.InboundBlacklistCountry.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistCountry.update_time | Date | The time that the country code was added to the list. | 
 
@@ -308,7 +308,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
 | annotation | A message to associate with each country that you add to the blacklist. | Optional | 
-| country | ISO standardized country code or a comma-separated list of country codes. Can be retrieved by running the command "na-aed-country-code-list". | Required | 
+| country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
 
 
 #### Context Output
@@ -316,8 +316,8 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.InboundBlacklistCountry.annotation | Unknown | List of messages associated with each country in the outbound blacklist. | 
-| NetscoutAED.InboundBlacklistCountry.cid | Unknown | List of central configuration IDs | 
-| NetscoutAED.InboundBlacklistCountry.country | String | An ISO standardized country code. | 
+| NetscoutAED.InboundBlacklistCountry.cid | Unknown | List of central configuration IDs. | 
+| NetscoutAED.InboundBlacklistCountry.country | String | An ISO-standardized country code. | 
 | NetscoutAED.InboundBlacklistCountry.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistCountry.update_time | Date | The time that the country code was added to the list. | 
 
@@ -367,7 +367,7 @@ Removes one or more countries from the blacklist for a specific protection group
 | --- | --- | --- |
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
-| country | ISO standardized country code or a comma-separated list of country codes. Can be retrieved by running the command "na-aed-country-code-list". | Required | 
+| country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
 
 
 #### Context Output
@@ -393,10 +393,10 @@ Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are return
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_address | List of ‘,’ delimited IPv4 host addresses or CIDRs. | Optional | 
+| host_address | Comma-separated list of IPv4 host addresses or CIDRs. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | The maximum number of results to retrieve. | Optional | 
 
 
 #### Context Output
@@ -405,7 +405,7 @@ Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are return
 | --- | --- | --- |
 | NetscoutAED.OutboundBlacklistHost.annotation | String | A description of the host. | 
 | NetscoutAED.OutboundBlacklistHost.host_address | String | IPv4 host address or CIDRs. | 
-| NetscoutAED.OutboundBlacklistHost.update_time | Date | The time the host was last updated/set | 
+| NetscoutAED.OutboundBlacklistHost.update_time | Date | The time the host was last updated/set. | 
 
 
 #### Command Example
@@ -512,7 +512,7 @@ Replaces all the hosts on the outbound blacklisted list.
 | --- | --- | --- |
 | NetscoutAED.OutboundBlacklistHost.annotation | String | A description of the host. | 
 | NetscoutAED.OutboundBlacklistHost.host_address | String | IPv4 host address or CIDRs. | 
-| NetscoutAED.OutboundBlacklistHost.update_time | Date | The time the host was last updated/set | 
+| NetscoutAED.OutboundBlacklistHost.update_time | Date | The time the host was last updated/set. | 
 
 
 #### Command Example
@@ -578,7 +578,7 @@ Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are return
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_address | List of ‘,’ delimited IPv4 host addresses or CIDRs. | Optional | 
+| host_address | Comma-separated list of IPv4 host addresses or CIDRs. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
 | limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
@@ -590,7 +590,7 @@ Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are return
 | --- | --- | --- |
 | NetscoutAED.OutboundWhitelistHost.annotation | String | A description of the host. | 
 | NetscoutAED.OutboundWhitelistHost.host_address | String | IPv4 host address or CIDRs. | 
-| NetscoutAED.OutboundWhitelistHost.update_time | Date | The time the host was last updated/set | 
+| NetscoutAED.OutboundWhitelistHost.update_time | Date | The time the host was last updated/set. | 
 
 
 #### Command Example
@@ -619,7 +619,7 @@ Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are return
 
 ### na-aed-outbound-whitelisted-hosts-add
 ***
-Adds one or more hosts to the outbound whitelisted list
+Adds one or more hosts to the outbound whitelisted list.
 
 
 #### Base Command
@@ -639,7 +639,7 @@ Adds one or more hosts to the outbound whitelisted list
 | --- | --- | --- |
 | NetscoutAED.OutboundWhitelistHost.annotation | String | A description of the host. | 
 | NetscoutAED.OutboundWhitelistHost.host_address | String | IPv4 host address or CIDRs. | 
-| NetscoutAED.OutboundWhitelistHost.update_time | Date | The time the host was last updated/set | 
+| NetscoutAED.OutboundWhitelistHost.update_time | Date | The time the host was last updated/set. | 
 
 
 #### Command Example
@@ -689,7 +689,7 @@ Replaces all the hosts on the outbound whitelisted list.
 | --- | --- | --- |
 | NetscoutAED.OutboundWhitelistHost.annotation | String | A description of the host. | 
 | NetscoutAED.OutboundWhitelistHost.host_address | String | IPv4 host address or CIDRs. | 
-| NetscoutAED.OutboundWhitelistHost.update_time | Date | The time the host was last updated/set | 
+| NetscoutAED.OutboundWhitelistHost.update_time | Date | The time the host was last updated/set. | 
 
 
 #### Command Example
@@ -749,23 +749,23 @@ Updates the settings for one or more protection groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.Protection_Group.active | Boolean | True if the protection group mode is active, false if inactive. | 
-| NetscoutAED.Protection_Group.bps_dropped | Number | Number of dropped bps | 
-| NetscoutAED.Protection_Group.bps_passed | Number | Number of passed bps | 
-| NetscoutAED.Protection_Group.bytes_dropped | Number | Number of dropped bytes | 
-| NetscoutAED.Protection_Group.bytes_passed | Unknown | Number of passed bytes | 
+| NetscoutAED.Protection_Group.bps_dropped | Number | Number of dropped bps. | 
+| NetscoutAED.Protection_Group.bps_passed | Number | Number of passed bps. | 
+| NetscoutAED.Protection_Group.bytes_dropped | Number | Number of dropped bytes. | 
+| NetscoutAED.Protection_Group.bytes_passed | Unknown | Number of passed bytes. | 
 | NetscoutAED.Protection_Group.description | String | Description of the protection group. | 
 | NetscoutAED.Protection_Group.name | String | Protection group name. | 
-| NetscoutAED.Protection_Group.packets_dropped | Number | Number of dropped packets | 
-| NetscoutAED.Protection_Group.packets_passed | Number | Number of passed packets | 
+| NetscoutAED.Protection_Group.packets_dropped | Number | Number of dropped packets. | 
+| NetscoutAED.Protection_Group.packets_passed | Number | Number of passed packets. | 
 | NetscoutAED.Protection_Group.pgid | Number | Protection group identifier. | 
-| NetscoutAED.Protection_Group.pps_passed | Number | Number of passed pps | 
-| NetscoutAED.Protection_Group.pps_dropped | Number | Number of dropped pps | 
+| NetscoutAED.Protection_Group.pps_passed | Number | Number of passed pps. | 
+| NetscoutAED.Protection_Group.pps_dropped | Number | Number of dropped pps. | 
 | NetscoutAED.Protection_Group.prefixes | Unknown | List of ‘,’ delimited prefixes belonging to the protection group. | 
 | NetscoutAED.Protection_Group.profiling | Boolean | A traffic profile capture for a protection group’s rate-based protection settings is running \(true\) or not \(false\). | 
 | NetscoutAED.Protection_Group.profiling_duration | Number | The duration, in days, of an active traffic profile capture. A 0 indicates that profiling is not active. | 
-| NetscoutAED.Protection_Group.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicats that profiling was never started. | 
+| NetscoutAED.Protection_Group.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicates that profiling was never started. | 
 | NetscoutAED.Protection_Group.protection_level | Unknown | The protection level \(None = use the global protection level, low, medium, high\). | 
-| NetscoutAED.Protection_Group.server_name | String | The protection group’s server name | 
+| NetscoutAED.Protection_Group.server_name | String | The protection group’s server name. | 
 | NetscoutAED.Protection_Group.server_type | Number | The protection group’s server type. | 
 | NetscoutAED.Protection_Group.time_created | Date | The time when the protection group was created. | 
 
@@ -829,7 +829,7 @@ Gets a list of the protection groups.
 | pgid | Protection group identifier. | Optional | 
 | name | Protection group name. | Optional | 
 | active | Whether the protection group is active or not. Possible values are: true, false. | Optional | 
-| query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
+| query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 
 
 #### Context Output
@@ -837,23 +837,23 @@ Gets a list of the protection groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.Protection_Group.active | Boolean | True if the protection group mode is active, false if inactive. | 
-| NetscoutAED.Protection_Group.bps_dropped | Number | Number of dropped bps | 
-| NetscoutAED.Protection_Group.bps_passed | Number | Number of passed packets | 
-| NetscoutAED.Protection_Group.bytes_dropped | Number | Number of dropped bytes | 
-| NetscoutAED.Protection_Group.bytes_passed | Unknown | Number of passed bytes | 
+| NetscoutAED.Protection_Group.bps_dropped | Number | Number of dropped bps. | 
+| NetscoutAED.Protection_Group.bps_passed | Number | Number of passed bps. | 
+| NetscoutAED.Protection_Group.bytes_dropped | Number | Number of dropped bytes. | 
+| NetscoutAED.Protection_Group.bytes_passed | Unknown | Number of passed bytes. | 
 | NetscoutAED.Protection_Group.description | String | Description of the protection group. | 
 | NetscoutAED.Protection_Group.name | String | Protection group name. | 
-| NetscoutAED.Protection_Group.packets_dropped | Number | Number of dropped packets | 
-| NetscoutAED.Protection_Group.packets_passed | Number | Number of passed packets | 
+| NetscoutAED.Protection_Group.packets_dropped | Number | Number of dropped packets. | 
+| NetscoutAED.Protection_Group.packets_passed | Number | Number of passed packets. | 
 | NetscoutAED.Protection_Group.pgid | Number | Protection group identifier. | 
-| NetscoutAED.Protection_Group.pps_passed | Number | Number of passed pps | 
-| NetscoutAED.Protection_Group.pps_dropped | Number | Number of dropped pps | 
-| NetscoutAED.Protection_Group.prefixes | Unknown | List of ‘,’ delimited prefixes belonging to the protection group. | 
+| NetscoutAED.Protection_Group.pps_passed | Number | Number of passed pps. | 
+| NetscoutAED.Protection_Group.pps_dropped | Number | Number of dropped pps. | 
+| NetscoutAED.Protection_Group.prefixes | Unknown | Comma-separated list of prefixes belonging to the protection group. | 
 | NetscoutAED.Protection_Group.profiling | Boolean | A traffic profile capture for a protection group’s rate-based protection settings is running \(true\) or not \(false\). | 
 | NetscoutAED.Protection_Group.profiling_duration | Number | The duration, in days, of an active traffic profile capture. A 0 indicates that profiling is not active. | 
 | NetscoutAED.Protection_Group.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicats that profiling was never started. | 
 | NetscoutAED.Protection_Group.protection_level | Unknown | The protection level \(None = use the global protection level, low, medium, high\). | 
-| NetscoutAED.Protection_Group.server_name | String | The protection group’s server name | 
+| NetscoutAED.Protection_Group.server_name | String | The protection group’s server name. | 
 | NetscoutAED.Protection_Group.server_type | Number | The protection group’s server type. | 
 | NetscoutAED.Protection_Group.time_created | Date | The time when the protection group was created. | 
 | NetscoutAED.Protection_Group.cid | Number | Central configuration ID. | 
@@ -914,9 +914,9 @@ Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returne
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_address | List of ‘,’ delimited IPv4 host addresses or CIDRs. | Optional | 
-| query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
+| query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | The maximum number of results to retrieve. | Optional | 
 
 
 #### Context Output
@@ -924,7 +924,7 @@ Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returne
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.InboundBlacklistHost.annotation | Unknown | List of messages associated with each host in the inbound blacklist. | 
-| NetscoutAED.InboundBlacklistHost.cid | Unknown | List of central configuration IDs | 
+| NetscoutAED.InboundBlacklistHost.cid | Unknown | List of central configuration IDs. | 
 | NetscoutAED.InboundBlacklistHost.host_address | String | IPv4 host addresses or CIDRs. | 
 | NetscoutAED.InboundBlacklistHost.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistHost.update_time | Date | The time that the host address was added to the list. | 
@@ -1119,10 +1119,10 @@ Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To ret
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_address | List of ‘,’ delimited IPv4 or IPv6 host addresses or CIDRs. | Optional | 
+| host_address | Comma-separated list of IPv4 or IPv6 host addresses or CIDRs. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | The maximum number of results to retrieve. | Optional | 
 
 
 #### Context Output
@@ -1325,12 +1325,12 @@ Gets the blacklisted domains. By default, 10 blacklisted domains are returned. T
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cid | List of ‘,’ delimited central configuration IDs. Cannot be used with the pgid parameter. | Optional | 
-| pgid | List of ‘,’ delimited protection group IDs. Cannot be used with the cid parameter. | Optional | 
-| domain | List of ‘,’ delimited domains. | Optional | 
+| cid | Comma-separated list of central configuration IDs. Cannot be used with the pgid parameter. | Optional | 
+| pgid | Comma-separated list of protection group IDs. Cannot be used with the cid parameter. | Optional | 
+| domain | Comma-separated list of domains. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | The maximum number of results to retrieve. | Optional | 
 
 
 #### Context Output
@@ -1338,8 +1338,8 @@ Gets the blacklisted domains. By default, 10 blacklisted domains are returned. T
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.InboundBlacklistDomain.annotation | Unknown | List of messages associated with each domain in the inbound blacklist. | 
-| NetscoutAED.InboundBlacklistDomain.cid | Unknown | List of central configuration IDs | 
-| NetscoutAED.InboundBlacklistDomain.domain | String | Domain name | 
+| NetscoutAED.InboundBlacklistDomain.cid | Unknown | List of central configuration IDs. | 
+| NetscoutAED.InboundBlacklistDomain.domain | String | Domain name. | 
 | NetscoutAED.InboundBlacklistDomain.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistDomain.update_time | Date | The time that the domain was added to the list. | 
 
@@ -1425,8 +1425,8 @@ Adds one or more domains to the blacklist by pgid or cid.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NetscoutAED.InboundBlacklistDomain.annotation | Unknown | List of messages associated with each domain in the inbound blacklist. | 
-| NetscoutAED.InboundBlacklistDomain.cid | Unknown | List of central configuration IDs | 
-| NetscoutAED.InboundBlacklistDomain.domain | String | Domain name | 
+| NetscoutAED.InboundBlacklistDomain.cid | Unknown | List of central configuration IDs. | 
+| NetscoutAED.InboundBlacklistDomain.domain | String | Domain name. | 
 | NetscoutAED.InboundBlacklistDomain.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistDomain.update_time | Unknown | The time that the domain was added to the list. | 
 
@@ -1500,21 +1500,21 @@ Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To retu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cid | List of ‘,’ delimited central configuration IDs. Cannot be used with the pgid parameter. | Optional | 
-| pgid | List of ‘,’ delimited protection group IDs. Cannot be used with the cid parameter. | Optional | 
-| url | List of ‘,’ delimited URLs. | Optional | 
+| cid | Comma-separated list of central configuration IDs. Cannot be used with the pgid parameter. | Optional | 
+| pgid | Comma-separated list of protection group IDs. Cannot be used with the cid parameter. | Optional | 
+| url | Comma-separated list of URLs. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
-| limit | Maximal number of results to retrieve. Also sets the size of the returned page. | Optional | 
+| limit | Maximum number of results to retrieve. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each url in the inbound blacklist. | 
-| NetscoutAED.InboundBlacklistUrl.cid | Unknown | List of central configuration IDs | 
-| NetscoutAED.InboundBlacklistUrl.url | String | Url address. | 
+| NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each URL in the inbound blacklist. | 
+| NetscoutAED.InboundBlacklistUrl.cid | Unknown | List of central configuration ID.s | 
+| NetscoutAED.InboundBlacklistUrl.url | String | URL address. | 
 | NetscoutAED.InboundBlacklistUrl.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistUrl.update_time | Date | The time that the domain was added to the list. | 
 
@@ -1603,7 +1603,7 @@ Adds one or more URLs to the blacklist by pgid or cid.
 | --- | --- | --- |
 | NetscoutAED.InboundBlacklistUrl.annotation | Unknown | List of messages associated with each url in the inbound blacklist. | 
 | NetscoutAED.InboundBlacklistUrl.cid | Unknown | List of central configuration IDs | 
-| NetscoutAED.InboundBlacklistUrl.url | String | Url address. | 
+| NetscoutAED.InboundBlacklistUrl.url | String | URL address. | 
 | NetscoutAED.InboundBlacklistUrl.pgid | Unknown | List of protection group ID. | 
 | NetscoutAED.InboundBlacklistUrl.update_time | Date | The time that the domain was added to the list. | 
 
