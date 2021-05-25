@@ -32,7 +32,7 @@ def test_fetch_incidents(requests_mock):
         max_alerts=20,
         last_run=last_run,
         first_fetch_time='1 day ago',
-        api_key = "VFGXq8XJkxmkN1XqQoqkilaJgdKsQsrgQq3RchGg",
+        apiKey = "",
         api_username = "lsadmin"    ,
         plugin_id = "xsoar_integration_1604211382",
         action = "fetch_entity_anomalies",
