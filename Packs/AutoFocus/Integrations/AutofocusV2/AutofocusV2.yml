@@ -34,6 +34,12 @@ configuration:
   name: mark_as_malicious
   required: false
   type: 0
+- additionalinfo: Create relationships between indicators as part of Enrichment.
+  defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
   important threats from everyday commodity attacks.
 display: Palo Alto Networks AutoFocus v2
@@ -945,6 +951,21 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: AutoFocus.IP.IndicatorValue
       description: The IP address.
       type: String
@@ -1022,6 +1043,21 @@ script:
     - contextPath: URL.Data
       description: The URL address.
       type: String
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: AutoFocus.URL.IndicatorValue
       description: The URL value.
       type: String
@@ -1099,6 +1135,21 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: File.Tags.TagGroups.TagGroupName
       description: The tag's group name.
       type: String
@@ -1257,6 +1308,21 @@ script:
     - contextPath: Domain.MalwareFamily
       description: The malware family associated with the domain.
       type: String
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
     - contextPath: Domain.Tags
       description: Tags that are associated with the domain.
       type: String
