@@ -1,0 +1,46 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "enabledintegrationsinstances",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Instances",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "instances",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_enabledintegrationsinstances",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Enabled Integrations Instances",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

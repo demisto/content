@@ -1,0 +1,336 @@
+description: "Collect Log bundle  and parse data\n\nHolding the default Thresholds:\n\
+  {\n\t\"LargeInvestigations\": {\n\t\t\"numberofincidentswithmorethan500entries\"\
+  : 300,\n\t\t\"numberofincidentsbiggerthan10mb\": 1,\n\t\t\"numberofincidentsbiggerthan1mb\"\
+  : 300\n\t},\n\t\"LargeInputsOutputs\": {\n\t\t\"numberofincidentsIObiggerthan10mb\"\
+  : 1,\n\t\t\"numberofincidentsIObiggerthan1mb\": 10\n\t},\n\t\"Indicators\": {\n\t\
+  \t\"relatedIndicatorCount\": 100\n\t},\n\t\"CPU\": {\n\t\t\"CPUHighUsage\": 90,\n\
+  \t\t\"CPULowUsage\": 30,\n\t\t\"CPUMediumUsage\": 70\n\t},\n\t\"Disk\": {\n\t\t\"\
+  DiskUsageHigh\": 90,\n\t\t\"DiskUsageMedium\": 80,\n\t\t\"DiskUsageLow\": 70,\n\t\
+  \t\"DiskUsageDailyIncrease\": 2\n\t},\n\t\"Docker\": {\n\t\t\"DockerContainerCPUUsage\"\
+  : 10,\n\t\t\"DockerContainerRAMUsage\": 10\n\t},\n\t\"DB\": {\n\t\t\"FSPartitionsMedium\"\
+  : 12,\n\t\t\"FSPartitionsLow\": 6\n\t},\n\t\"Playbooks\": {\n\t\t\"CustomPlaybookLength\"\
+  : 30,\n\t\t\"CustomPlaybookSetIncidentCount\": 4,\n\t\t\"CustomPlaybookDeprecatedScriptIds\"\
+  : [\n\t\t\t\"Sleep\",\n\t\t\t\"EmailAskUser\"\n\t\t]\n\t},\n\t\"Incidents\": {\n\
+  \t\t\"NumberOfDroppedIncidents\": 2000\n\t}\n}"
+id: Health Check - Collect Log Bundle
+inputs:
+- description: ""
+  key: Thresholds
+  playbookInputQuery:
+  required: false
+  value:
+    simple: |-
+      {
+        "LargeInvestigations": {
+          "numberofincidentswithmorethan500entries": 300,
+          "numberofincidentsbiggerthan10mb": 1,
+          "numberofincidentsbiggerthan1mb": 300
+        },
+        "LargeInputsOutputs": {
+          "numberofincidentsIObiggerthan10mb": 1,
+          "numberofincidentsIObiggerthan1mb": 10
+        },
+        "Indicators": {
+          "relatedIndicatorCount": 100
+        },
+        "CPU": {
+          "CPUHighUsage": 90,
+          "CPULowUsage": 30,
+          "CPUMediumUsage": 70
+        },
+        "Disk": {
+          "DiskUsageHigh": 90,
+          "DiskUsageMedium": 80,
+          "DiskUsageLow": 70,
+          "DiskUsageDailyIncrease": 2
+        },
+        "Docker": {
+          "DockerContainerCPUUsage": 10,
+          "DockerContainerRAMUsage": 10
+        },
+        "DB": {
+          "FSPartitionsMedium": 12,
+          "FSPartitionsLow": 6
+        },
+        "Playbooks": {
+          "CustomPlaybookLength": 30,
+          "CustomPlaybookSetIncidentCount": 4,
+          "CustomPlaybookDeprecatedScriptIds": [
+            "Sleep",
+            "EmailAskUser"
+          ]
+        },
+        "Incidents": {
+          "NumberOfDroppedIncidents": 2000
+        }
+      }
+name: Health Check - Collect Log Bundle
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "72"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f2c5f39-053b-4826-8359-8fe16c22bf41
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 1f2c5f39-053b-4826-8359-8fe16c22bf41
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "57"
+      "no":
+      - "56"
+      "yes":
+      - "74"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: containsString
+              right:
+                value:
+                  simple: logs-bundle
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: tar
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: gz
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle\
+        \ unsupported use cases and unextracted files. "
+      id: 1566df6b-9270-4dcf-8ae5-2f7edb524dfd
+      iscommand: false
+      name: UnPack the zipped log file
+      script: HealthCheckUnpack
+      type: condition
+      version: -1
+    taskid: 1566df6b-9270-4dcf-8ae5-2f7edb524dfd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: file type is not supported
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 795bbb07-fa0d-42f7-813e-54389d0a9881
+      iscommand: false
+      name: File Type is not supported
+      script: Print
+      type: regular
+      version: -1
+    taskid: 795bbb07-fa0d-42f7-813e-54389d0a9881
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: File can't be extracted
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 3c5e2348-819b-4197-83ef-06b86c5c9a71
+      iscommand: false
+      name: File can't be extracted
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 3c5e2348-819b-4197-83ef-06b86c5c9a71
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8fbd14b4-1b4c-46f2-861c-abd290e75a67
+      iscommand: false
+      name: continue
+      type: title
+      version: -1
+      description: ''
+    taskid: 8fbd14b4-1b4c-46f2-861c-abd290e75a67
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+  "72":
+    id: "72"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description: {}
+      filename: {}
+      uri:
+        simple: /log/bundle
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Download files from Demisto server
+      id: f4ab0e04-2513-4528-85b5-ec97fef63682
+      iscommand: true
+      name: Download log bundle
+      script: '|||demisto-api-download'
+      type: regular
+      version: -1
+    taskid: f4ab0e04-2513-4528-85b5-ec97fef63682
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "74":
+    id: "74"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: Health Check Thresholds
+      stringify: {}
+      value:
+        simple: ${inputs.Thresholds}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 6b1d2ffb-78e7-4801-8beb-2ab65bbd0a56
+      iscommand: false
+      name: Save Thresholds to Context
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6b1d2ffb-78e7-4801-8beb-2ab65bbd0a56
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

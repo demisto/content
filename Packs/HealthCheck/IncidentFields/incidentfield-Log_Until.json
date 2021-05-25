@@ -1,0 +1,29 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "loguntil",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_loguntil",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Log Until",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

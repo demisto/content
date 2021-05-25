@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Zendesk Ticket",
+        "Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "multirepo",
+    "closeForm": false,
+    "content": true,
+    "description": "Multi Repo Flag",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_multirepo",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Multi-Repo",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

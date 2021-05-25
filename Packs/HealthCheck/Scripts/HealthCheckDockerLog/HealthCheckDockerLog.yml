@@ -1,0 +1,25 @@
+args:
+- default: true
+  description: War room entryID of the file to read.
+  name: entryID
+  required: true
+- description: ' Define the thresholds'
+  name: Thresholds
+comment: Read docker log file
+commonfields:
+  id: HealthCheckDockerLog
+  version: -1
+dockerimage: demisto/python3:3.9.5.20070
+enabled: true
+name: HealthCheckDockerLog
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags: []
+timeout: 600ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

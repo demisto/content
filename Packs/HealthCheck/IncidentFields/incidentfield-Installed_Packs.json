@@ -1,0 +1,75 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Internal Log analysis",
+        "Log Analysis",
+        "Zendesk Ticket",
+        "Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "installedpacks",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Packs",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "packs",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 267
+        },
+        {
+            "displayName": "currentVersion",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "currentversion",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 349
+        },
+        {
+            "displayName": "updateAvailable",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "updateavailable",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_installedpacks",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Installed Packs",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
