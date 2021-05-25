@@ -66,7 +66,7 @@ create-instances-upload-flow:
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
     DESTROY_INSTANCES: "true"
-    SLACK_TEST_TYPE: "bucket_upload"
+    SLACK_TEST_TYPE: "bucket_upload_flow"
     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
     SLACK_ONLY_IF: "true"
   extends:
@@ -111,7 +111,7 @@ upload-packs-to-marketplace:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-    SLACK_TEST_TYPE: "bucket_upload"
+    SLACK_TEST_TYPE: "bucket_upload_flow"
     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
     SLACK_ONLY_IF: "true"
   extends:
@@ -179,6 +179,6 @@ run-validations-upload-flow:
 #     - .run-unittests-and-lint
 #     - .bucket-upload-rule
 #   variables:
-#     SLACK_TEST_TYPE: "unittests"
+#     SLACK_TEST_TYPE: "bucket_upload_flow"
 #     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
 #     SLACK_ONLY_IF: "true"
