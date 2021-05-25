@@ -1,8 +1,8 @@
-The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Demisto incidents.
+The Microsoft Management Activity API integration enables you to subscribe or unsubscribe to different audits, receive their content and fetch new content as incidents. Through the integration you can subscribe to new content types or stop your subscription, list the available content of each content type, and most importantly - fetch new content records from content types of your choice as Cortex XSOAR incidents.
 
 This integration was integrated and tested with version 1.0 of Microsoft Management Activity API (O365 Azure Events)
 
-## Grant Demisto Authorization in Microsoft Management Activity API
+## Grant Cortex XSOAR Authorization in Microsoft Management Activity API
 To allow us to access Microsoft Management Activity API you will be required to give us authorization to access it.
 
 1. To grant authorization, click [HERE](https://oproxy.demisto.ninja/ms-management-api).
@@ -20,7 +20,7 @@ SOME_PREFIX?code=AUTH_CODE&session_state=SESSION_STATE
 Take the AUTH_CODE (without the “code=” prefix) and enter it to the instance configuration under the “Authentication” code section.
 Moreover, enter your client secret as the “Key” parameter and your client ID as the “ID” parameter. 
 
-## Configure Microsoft Management Activity API (O365 Azure Events) on Demisto
+## Configure Microsoft Management Activity API (O365 Azure Events) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Management Activity API (O365 Azure Events).
@@ -46,7 +46,7 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ms-management-activity-start-subscription
 ***

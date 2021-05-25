@@ -1,7 +1,7 @@
 Run nmap scans with the given parameters.
 This integration was integrated and tested with version 7.70 of nmap. The nmap binary is shipped with the integration Docker. You can see the options available for running an nmap scan here: https://nmap.org/book/man-briefoptions.html. Some scan options require **root** access for using raw packet scanning techniques. See [here](https://nmap.org/book/man-port-scanning-techniques.html) for detailed scanning techniques. If you've configured the server to run Docker images with a non-root internal user and you want to use raw packet scanning (for example via the *-sS* option for SYN/ACK scan), make sure to exclude the *demisto/nmap* Docker image as documented [here](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/docker/docker-hardening-guide/run-docker-with-non-root-internal-users.html).
 
-## Configure nmap on Demisto
+## Configure nmap on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for *nmap*.
@@ -10,7 +10,7 @@ This integration was integrated and tested with version 7.70 of nmap. The nmap b
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nmap-scan
 ***

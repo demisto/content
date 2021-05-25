@@ -32,7 +32,7 @@
 <li>Click <strong>Import CSR</strong> and select the CSR file you created previously.</li>
 <li>Select your certificate and click <strong>Export Certificate</strong>.<br>This generates a CRT file.</li>
 <li>Add your certificate to <a href="https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html" target="_blank" rel="noopener">Restrict Send Certificates</a> and <a href="https://opendxl.github.io/opendxl-client-python/pydoc/marsendauth.html" target="_blank" rel="noopener">Restrict Receive Certificates</a>.</li>
-<li>In Demisto, search for <strong>McAfee Active Response</strong> integration and click <strong>Add instance</strong>.
+<li>In Cortex XSOAR, search for <strong>McAfee Active Response</strong> integration and click <strong>Add instance</strong>.
 <ul>
 <li>
 <strong>Broker CA certificates content</strong> - The content of the <code>brokercerts.crt</code>
@@ -50,7 +50,7 @@
 </ol>
 <p class="wysiwyg-indent3"><img src="https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png" alt="McAfee_Active_Response.png"></p>
 <div class="cl-preview-section">
-<h2 id="configure-mcafee-active-response-on-demisto">Configure McAfee Active Response on Demisto</h2>
+<h2 id="configure-mcafee-active-response-on-demisto">Configure McAfee Active Response on Cortex XSOAR</h2>
 </div>
 <div class="cl-preview-section">
 <ol>
@@ -63,7 +63,7 @@
 <li><strong>Broker CA certificates content (see <code>brokercerts.crt</code> in the Deatiled Instructions section)</strong></li>
 <li><strong>Client certificates content (see <code>client.crt</code> in the Deatiled Instructions section)</strong></li>
 <li><strong>Client private key content (see <code>client.key</code> in the Deatiled Instructions section)</strong></li>
-<li><strong>Brokers URLs (CSV list in the form of - [ssl://][:port]) - Get the hostname and port from <code>brokerlist.properties</code> file in the Deatiled Instructions section. Note that the broker should be reachable from Demisto server.</strong></li>
+<li><strong>Brokers URLs (CSV list in the form of - [ssl://][:port]) - Get the hostname and port from <code>brokerlist.properties</code> file in the Deatiled Instructions section. Note that the broker should be reachable from Cortex XSOAR server.</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -73,7 +73,7 @@
 <h2 id="commands">Commands</h2>
 </div>
 <div class="cl-preview-section">
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br> After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

@@ -31,7 +31,7 @@ This playbook does not use any commands.
 | incidentsQuery | The incidents query to fetch the training data for the model. | - | - | Optional |
 | maxIncidentsToFetchOnTraining | The maximum number of incidents to fetch. | 3000 | - | Optional |
 | hashSeed | If non-empty, hash every word with this seed. | - | - | Optional |
-| historicalDataFileListName | The name of demisto list contains historical data training samples for the model. | - | - | Optional |
+| historicalDataFileListName | The name of XSOAR list contains historical data training samples for the model. | - | - | Optional |
 | overrideModel | Whether to override the existing model if a model with the same name exists. The default is "false". | true | - | Optional |
 | incidentTypes | The CSV list of incident types by which to filter. | Phishing | - | Optional |
 | dedupThreshold | Removes emails with similarity greater then this threshold. The range 0-1, where 1 is completly identical. | 0.99 | - | Optional |
@@ -48,7 +48,7 @@ This playbook does not use any commands.
 | DBotPhishingClassifier.EvaluationScores.TP.All | The number of instances of all classes that were predicted correctly. | number |
 | DBotPhishingClassifier.EvaluationScores.Coverage.All | The number of instances that were predicted at a probability greater than the threshold. | number |
 | DBotPhishingClassifier.EvaluationScores.Total.All | The total number of instances. | number |
-| DBotPhishingClassifier.ModelName | The name of the model in Demisto. | string |
+| DBotPhishingClassifier.ModelName | The name of the model in XSOAR. | string |
 
 ## Playbook Image
 ---

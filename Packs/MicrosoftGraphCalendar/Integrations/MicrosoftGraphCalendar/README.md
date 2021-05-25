@@ -35,7 +35,7 @@ For more details about the authentication used in this integration, see <a href=
 </ol>
 
 <h2>Commands</h2>
-<p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#msgraph-calendar-list-calendars" target="_self">Get all calendars for a user: msgraph-calendar-list-calendars</a></li>
 <li><a href="#msgraph-calendar-get-calendar" target="_self">Get one user's calendar: msgraph-calendar-get-calendar</a></li>

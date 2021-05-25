@@ -1,4 +1,7 @@
 [file:MobileIronCLOUD.yml]
-ignore=IN126
+ignore=IN126,DS107
 [file:MobileIronCORE.yml]
-ignore=IN126
+ignore=IN126,DS107
+
+[file:README.md]
+ignore=RM105
