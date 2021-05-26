@@ -791,6 +791,17 @@ def route_list_values() -> Response:
         elif not values:
             values = "No Results Found For the Query"
 
+        # IF we have strings to add to the EDL, add them here if output type is Text.
+        if request_args.out_format == FORMAT_TEXT:
+            append_str = params.get("append_string")
+            prepend_str = params.get("prepend_string")
+            if append_str:
+                append_str = append_str.replace("\\n", "\n")
+                values = values + f"\n{append_str}"
+            if prepend_str:
+                prepend_str = prepend_str.replace("\\n", "\n")
+                values = f"{prepend_str}\n" + values
+
         mimetype = get_outbound_mimetype()
         return Response(values, status=200, mimetype=mimetype)
 

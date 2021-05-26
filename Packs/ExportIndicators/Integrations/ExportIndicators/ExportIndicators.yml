@@ -71,6 +71,16 @@ configuration:
   name: certificate
   required: false
   type: 12
+- display: Append String To EDL
+  name: append_string
+  required: false
+  type: 12
+  additionalinfo: String to add to end of published EDL, if type is Text. Supports Newline characters (\n).
+- display: Prepend String To EDL
+  name: append_string
+  required: false
+  type: 12
+  additionalinfo: String to add to beginning of published EDL, if type is Text. Supports Newline characters (\n).
 - display: Private Key (Required for HTTPS)
   name: key
   required: false
