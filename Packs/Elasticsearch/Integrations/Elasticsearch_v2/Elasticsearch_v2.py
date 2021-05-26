@@ -46,7 +46,7 @@ FETCH_TIME = param.get('fetch_time', '3 days')
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
-TIMEOUT = int(param.get('timeout', 60))
+TIMEOUT = int(param.get('timeout') or 60)
 
 
 def get_timestamp_first_fetch(last_fetch):
