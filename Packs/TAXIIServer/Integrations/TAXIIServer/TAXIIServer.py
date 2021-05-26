@@ -299,7 +299,6 @@ class TAXIIServer:
         """
         if self.service_address:
             return self.service_address
-        else:
         if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
