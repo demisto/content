@@ -117,19 +117,27 @@ script:
     - name: search
       description: User to search.
     - name: locked
+      description: locked
     description: Display transaction log.
   - name: safewalk-get-users
     arguments:
     - name: page
+      description: page
     - name: search
+      description: search
     - name: locked
+      description: locked
     description: Search local users.
   - name: safewalk-get-ldap-users
     arguments:
     - name: page
+      description: page
     - name: search
+      description: search
     - name: locked
+      description: locked
     - name: ldap
+      description: ldap
     description: Search LDAP users
   - name: safewalk-get-ldaps
     arguments: []
@@ -137,180 +145,287 @@ script:
   - name: safewalk-get-user-personalinformation
     arguments:
     - name: username
-      description: Username to display.
+      description: Username
     description: Get users personal information.
   - name: safewalk-set-user-personalinformation
     arguments:
     - name: username
+      description: Username
     - name: email
+      description: email
     - name: mobile_phone
+      description: mobile_phone
     description: Set user personal information.
   - name: safewalk-get-user-accessattempts
     arguments:
     - name: username
+      description: Username
     description: Get user access attempts
   - name: safewalk-delete-user-accessattempts
     arguments:
     - name: username
+      description: Username
     description: Delete user access attempts
   - name: safewalk-create-user-token
     arguments:
     - name: username
+      description: Username
     - name: params
+      description: params
     description: Create user token
   - name: safewalk-update-user-token
     arguments:
     - name: username
+      description: Username
     - name: token_devicetype
+      description: token_devicetype
     - name: token_serialnumber
+      description: token_serialnumber
     - name: params
+      description: params
     description: Update user token.
   - name: safewalk-get-user-tokens
     arguments:
     - name: username
+      description: Username
     description: Get user tokens
   - name: safewalk-delete-user-token
     arguments:
     - name: username
+      description: Username
     - name: devicetype
+      description: devicetype
     - name: serialnumber
+      description: serialnumber
     description: Delete user token.
   - name: safewalk-send-user-virtualtoken
     arguments:
     - name: username
+      description: Username
     - name: token_devicetype
+      description: token_devicetype
     - name: token_serialnumber
+      description: token_serialnumber
     description: Send user virtual token.
   - name: safewalk-get-user-settings
     arguments:
     - name: username
+      description: Username
     description: Get user settings.
   - name: safewalk-get-user-group
     arguments:
     - name: username
+      description: Username
     description: Get user group.
   - name: safewalk-add-user-group
     arguments:
     - name: username
+      description: Username
     - name: new-group-name
+      description: new-group-name
     description: Add user group.
   - name: safewalk-remove-user-group
     arguments:
     - name: username
+      description: Username
     - name: old-group-name
+      description: old-group-name
     description: Remove user group.
   - name: safewalk-get-user-registrationcode
     arguments:
     - name: username
+      description: Username
     description: Get user registration code
   - name: safewalk-set-user-registrationcode
     arguments:
     - name: username
+      description: Username
     - name: expiration
+      description: Expiration
     - name: attempts-left
+      description: attempts-left
     description: Set user registration code
   - name: safewalk-send-user-registrationcode
     arguments:
     - name: username
+      description: Username
     description: Send user registration code
   - name: safewalk-create-user-token-virtual
     arguments:
     - name: username
+      description: Username
     description: Create user virtual token
   - name: safewalk-create-user-token-fastauth
     arguments:
     - name: username
+      description: Username
     - name: serial-number
+      description: Serial number
     description: Create user FastAuth Token
   - name: safewalk-create-user-token-totpmobile
     arguments:
     - name: username
+      description: Username
     - name: serial-number
+      description: Serail number
     - name: password-required
+      description: Password required
     description: Create user TopMobile Token
   - name: safewalk-create-user-token-totmobilehybrid
     arguments:
     - name: username
+      description: Username
     - name: serial-number
+      description: Serial number
     description: Create user TotMobileHybrid
   - name: safewalk-create-user-token-physical
     arguments:
     - name: username
+      description: Username
     - name: serial-number
+      description: serial-number
     - name: password-required
+      description: password-required
     description: Create user Physical Token
   - name: safewalk-create-user-token-backup
     arguments:
     - name: username
+      description: Username
     - name: password-required
+      description: password-required
     - name: backuptoken-timeout
+      description: backuptoken-timeout
     - name: backuptoken_attempts
+      description: backuptoken_attempts
     description: Create user Backup Token
   - name: safewalk-set-user-backuptoken-settings
     arguments:
     - name: username
+      description: Username
     - name: backup-password-required
+      description: backup-password-required
     - name: backuptoken-attempts
+      description: backuptoken-attempts
     - name: backuptoken-timeout
+      description: backuptoken-timeout
+    description: Set user backup token
   - name: safewalk-set-user-general-settings
     arguments:
     - name: username
+      description: Username
     - name: user-storage
+      description: User storage
+    description: Set user general settings
   - name: safewalk-set-user-hotpauthentication-settings
     arguments:
     - name: username
+      description: Username
     - name: hotp-accept-tolerance
+      description: hotp-accept-tolerance
     - name: hotp-resend-tolerance
+      description: hotp-resend-tolerance
     - name: hotp-resend-timeout
+      description: hotp-resend-timeout
     - name: hotp-password_required
+      description: hotp-password_required
     - name: hotp-flex-password-required
+      description: hotp-flex-password-required
     - name: hotp-flex-pin-password-required
+      description: hotp-flex-pin-password-required
+    description: Set user hotpauthentication settings
   - name: safewalk-set-user-sesamiauthentication-settings
     arguments:
     - name: username
+      description: Username
     - name: sesami_mobile_password_required
+      description: sesami_mobile_password_required
     - name: sesami_slim_password_required
+      description: sesami_slim_password_required
     - name: gaia_ttw_level
+      description: gaia_ttw_level
+    description: Set user sesamiauthentication setttings
   - name: safewalk-set-user-totpauthentication-settings
     arguments:
     - name: username
+      description: Username
     - name: totp-accept-tolerance
+      description: totp-accept-tolerance
     - name: totp-resend-tolerance
+      description: totp-resend-tolerance
     - name: totp-resend-timeout
+      description: totp-resend-timeout
     - name: totp-password-required
+      description: totp-password-required
     - name: totp-flex-password-required
+      description: totp-flex-password-required
     - name: totp-flex-pin-password-required
+      description: totp-flex-pin-password-required
     - name: totp-mobile-password-required
+      description: totp-mobile-password-required
+    description: Set user  totpauthentication settings
   - name: safewalk-set-user-userauthentication-settings
     arguments:
     - name: username
+      description: Username
     - name: multiple-step-auth-timeout
+      description: multiple-step-auth-timeout
     - name: allow-password
+      description: allow-password
     - name: allow-password-for-registration
+      description: allow-password-for-registration
     - name: max-allowed-failures
+      description: max-allowed-failures
     - name: allow-access-when-pwd-expired
+      description: allow-access-when-pwd-expired
     - name: allow-password-reset-when-forgot-pwd
+      description: allow-password-reset-when-forgot-pwd
     - name: min-otp-length
+      description: min-otp-length
     - name: max-otp-length
+      description: max-otp-length
     - name: dos-tmp-lockdown-max-fail-authentications
+      description: dos-tmp-lockdown-max-fail-authentications
     - name: dos-tmp-lockdown-time-interval-in-seconds
+      description: dos-tmp-lockdown-time-interval-in-seconds
     - name: dos-tmp-lockdown-time-in-seconds
+      description: dos-tmp-lockdown-time-in-seconds
+    description: Set user userauthentication settings
   - name: safewalk-set-user-virtualauthentication-settings
     arguments:
     - name: username
+      description: Username
     - name: virtual-device-accept-tolerance
+      description: Virtual device accept tolerance
     - name: virtual-device-gateways
+      description: Virtual device gateways
+    description: Set user virtualauthentication settings
   - name: safewalk-create-user
     arguments:
     - name: username
+      description: Username
     - name: password
+      description: Password
     - name: firstname
+      description: First Name
     - name: lastname
+      description: Last Name
     - name: mobilephone
+      description: Mobile Phone
     - name: email
+      description: email
+    description: Create user
   - name: safewalk-delete-user
     arguments:
     - name: username
+      description: Username.
+    description: Delete user
+  - name: safewalk-update-user-group
+    arguments:
+    - name: username
+      description: Username.
+    - name: new-group-name
+      description: New user group.
+    description: Update user group
   dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   feed: true
