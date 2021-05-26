@@ -601,36 +601,58 @@ script:
   - name: safewalk-get-associated-users
     arguments:
     - name: devicetype
+      description: devicetype
+    description: safewalk-get-associated-users
   - name: safewalk-get-authentication-methods-distribution
     arguments: []
+    description: safewalk-get-authentication-methods-distribution
   - name: safewalk-get-authentication-rate-per-device
     arguments: []
+    description: safewalk-get-authentication-rate-per-device
   - name: safewalk-get-least-active-users
     arguments:
     - name: sincedate
+      description: sincedate
     - name: userinformation
+      description: userinformation
+    description: safewalk-get-least-active-users
   - name: safewalk-get-licenses-inventory
     arguments: []
+    description: safewalk-get-licenses-inventory
   - name: safewalk-get-licenses-usage
     arguments:
     - name: begindate
+      description: begindate
     - name: enddate
+      description: enddate
+    description: safewalk-get-licenses-usage
   - name: safewalk-get-most-active-users
     arguments:
     - name: days
+      description: days
     - name: limit
+      description: limit
     - name: userinformation
+      description: userinformation
+    description: safewalk-get-most-active-users
   - name: safewalk-get-physical-tokens-inventory
     arguments: []
+    description: safewalk-get-physical-tokens-inventory
   - name: safewalk-get-registered-devices-distribution
     arguments: []
+    description: safewalk-get-registered-devices-distribution
   - name: safewalk-get-registration
     arguments:
     - name: begindate
+      description: begindate
     - name: enddate
+      description: enddate
     - name: userinformation
+      description: userinformation
+    description: safewalk-get-registration
   - name: safewalk-get-users-associations-indicators
     arguments: []
+    description: safewalk-get-users-associations-indicators
   dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   feed: true
