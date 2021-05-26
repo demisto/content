@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PolySwarm_v2
+  id: PolySwarmV2
   version: -1
 configuration:
 - display: PolySwarm API Key
@@ -14,7 +14,7 @@ configuration:
   type: 0
 - defaultvalue: default
   display: PolySwarm v2 Community
-  name: PolySwarm_v2
+  name: PolySwarmV2
   required: true
   type: 0
   additionalinfo: the segment of PolySwarm's marketplace to query on.
