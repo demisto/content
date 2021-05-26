@@ -3409,7 +3409,6 @@
         "McAfeeWebGatewayTest": "Issue 37020",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
-        "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "Pwned v2 test": "Issue 26601"
     },
     "skipped_integrations": {
