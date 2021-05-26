@@ -81,7 +81,7 @@ class Handler:
 
 class TAXIIServer:
     def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
-                 http_server: bool, credentials: dict):
+                 http_server: bool, credentials: dict, service_address: str = Optional[None]):
         """
         Class for a TAXII Server configuration.
         Args:
@@ -101,6 +101,7 @@ class TAXIIServer:
         self.certificate = certificate
         self.private_key = private_key
         self.http_server = http_server
+        self.service_address = service_address
         self.auth = None
         if credentials:
             self.auth = (credentials.get('identifier', ''), credentials.get('password', ''))
@@ -296,6 +297,9 @@ class TAXIIServer:
         Returns:
             The service URL according to the protocol.
         """
+        if self.service_address:
+            return self.service_address
+        else:
         if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
@@ -934,8 +938,9 @@ def main():
     if not http_server:
         scheme = 'https'
 
+    service_address = params.get('service_address')
     SERVER = TAXIIServer(scheme, str(host_name), port, collections,
-                         certificate, private_key, http_server, credentials)
+                         certificate, private_key, http_server, credentials, service_address)
 
     demisto.debug(f'Command being called is {command}')
     commands = {
