@@ -115,7 +115,7 @@ class Client:
         """
         indicators: List[Dict] = list()
         mitre_id_list: Set[str] = set()
-        relationships_list = []
+        mitre_relationships_list = []
         id_to_name: Dict = {}
         counter = 0
 
@@ -155,7 +155,7 @@ class Client:
                         if item_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
-                            relationships_list.append(mitre_item_json)
+                            mitre_relationships_list.append(mitre_item_json)
 
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
@@ -166,7 +166,7 @@ class Client:
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-        return indicators, relationships_list, id_to_name
+        return indicators, mitre_relationships_list, id_to_name
 
 
 def get_item_type(mitre_type, is_up_to_6_2):
