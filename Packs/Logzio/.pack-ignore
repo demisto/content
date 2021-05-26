@@ -5,4 +5,4 @@ ignore=IN126
 ignore=RM104
 
 [file:Logzio_Indicator_Hunting_README.md]
-ignore=RM105
+ignore=RM106

@@ -5,4 +5,4 @@ ignore=IN126,IN135
 ignore=BA108,BA109
 
 [file:README.md]
-ignore=RM105
+ignore=RM106

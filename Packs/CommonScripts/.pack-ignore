@@ -35,7 +35,7 @@ ignore=SC105
 ignore=BA109
 
 [file:script-SetByIncidentId_README.md]
-ignore=RM105
+ignore=RM106
 
 [file:script-TimeStampToDate_README.md]
-ignore=RM105
+ignore=RM106
