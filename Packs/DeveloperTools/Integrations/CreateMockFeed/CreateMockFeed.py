@@ -181,6 +181,8 @@ def main():
             incidents = [{"name": demisto.params().get('incidents_name'), "type": "Access", "details": json.dumps(run_info)}]
             demisto.createIncidents(incidents)
             demisto.info('feed finished create result incident')
+    elif demisto.command() == 'test-module':
+        demisto.results('ok')
     elif demisto.command() == 'random-score-indicators':
         indicators = argToList(demisto.args().get('indicators')) or []
         dbot_scores = [generate_dbotscore(i, get_indicator_type(i)) for i in indicators]
