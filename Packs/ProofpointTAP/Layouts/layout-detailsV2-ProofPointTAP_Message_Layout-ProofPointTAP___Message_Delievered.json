@@ -704,7 +704,7 @@
             }
         ]
     },
-    "fromVersion": "4.1.0",
+    "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
     "typeId": "ProofPointTAP - Message Delievered",
     "version": -1
