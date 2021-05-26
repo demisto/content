@@ -2,7 +2,7 @@
     "id": "incident_proofpointtapthreatinfomap",
     "version": -1,
     "modified": "2021-05-05T15:54:41.231741761+03:00",
-    "name": "ProofPointTAP Threat Info Map",
+    "name": "Proofpoint TAP Threat Info Map",
     "ownerOnly": false,
     "cliName": "proofpointtapthreatinfomap",
     "type": "grid",
@@ -18,10 +18,10 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "ProofPointTAP - Click Blocked",
-        "ProofPointTAP - Click Permitted",
-        "ProofPointTAP - Message Blocked",
-        "ProofPointTAP - Message Delivered"
+        "Proofpoint TAP - Click Blocked",
+        "Proofpoint TAP - Click Permitted",
+        "Proofpoint TAP - Message Blocked",
+        "Proofpoint TAP - Message Delivered"
     ],
     "associatedToAll": false,
     "unmapped": false,

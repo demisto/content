@@ -1,20 +1,20 @@
 {
     "description": "",
     "feed": false,
-    "id": "ProofPointTAP Mapper",
+    "id": "Proofpoint TAP Mapper",
     "mapping": {
-        "ProofPointTAP - Click Blocked": {
+        "Proofpoint TAP - Click Blocked": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "ProofPointTAP Classification": {
+                "Proofpoint TAP Classification": {
                     "complex": null,
                     "simple": "classification"
                 },
-                "ProofPointTAP Click IP": {
+                "Proofpoint TAP Click IP": {
                     "complex": null,
                     "simple": "clickIP"
                 },
-                "ProofPointTAP Click Time": {
+                "Proofpoint TAP Click Time": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -23,72 +23,72 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP GUID": {
+                "Proofpoint TAP GUID": {
                     "complex": null,
                     "simple": "GUID"
                 },
-                "ProofPointTAP ID": {
+                "Proofpoint TAP ID": {
                     "complex": null,
                     "simple": "id"
                 },
-                "ProofPointTAP Message ID": {
+                "Proofpoint TAP Message ID": {
                     "complex": null,
                     "simple": "messageID"
                 },
-                "ProofPointTAP SMTP Recipient": {
+                "Proofpoint TAP SMTP Recipient": {
                     "complex": null,
                     "simple": "recipient"
                 },
-                "ProofPointTAP SMTP Sender": {
+                "Proofpoint TAP SMTP Sender": {
                     "complex": null,
                     "simple": "sender"
                 },
-                "ProofPointTAP Sender IP": {
+                "Proofpoint TAP Sender IP": {
                     "complex": null,
                     "simple": "senderIP"
                 },
-                "ProofPointTAP Suspicious URL": {
+                "Proofpoint TAP Suspicious URL": {
                     "complex": null,
                     "simple": "url"
                 },
-                "ProofPointTAP Threat ID": {
+                "Proofpoint TAP Threat ID": {
                     "complex": null,
                     "simple": "threatID"
                 },
-                "ProofPointTAP Threat Status": {
+                "Proofpoint TAP Threat Status": {
                     "complex": null,
                     "simple": "threatStatus"
                 },
-                "ProofPointTAP Threat Time": {
+                "Proofpoint TAP Threat Time": {
                     "complex": null,
                     "simple": "threatTime"
                 },
-                "ProofPointTAP Threat URL": {
+                "Proofpoint TAP Threat URL": {
                     "complex": null,
                     "simple": "threatURL"
                 },
-                "ProofPointTAP Type": {
+                "Proofpoint TAP Type": {
                     "complex": null,
                     "simple": "type"
                 },
-                "ProofPointTAP User Agent": {
+                "Proofpoint TAP User Agent": {
                     "complex": null,
                     "simple": "userAgent"
                 }
             }
         },
-        "ProofPointTAP - Click Permitted": {
+        "Proofpoint TAP - Click Permitted": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "ProofPointTAP Classification": {
+                "Proofpoint TAP Classification": {
                     "complex": null,
                     "simple": "classification"
                 },
-                "ProofPointTAP Click IP": {
+                "Proofpoint TAP Click IP": {
                     "complex": null,
                     "simple": "clickIP"
                 },
-                "ProofPointTAP Click Time": {
+                "Proofpoint TAP Click Time": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -97,68 +97,68 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP GUID": {
+                "Proofpoint TAP GUID": {
                     "complex": null,
                     "simple": "GUID"
                 },
-                "ProofPointTAP ID": {
+                "Proofpoint TAP ID": {
                     "complex": null,
                     "simple": "id"
                 },
-                "ProofPointTAP Message ID": {
+                "Proofpoint TAP Message ID": {
                     "complex": null,
                     "simple": "messageID"
                 },
-                "ProofPointTAP SMTP Recipient": {
+                "Proofpoint TAP SMTP Recipient": {
                     "complex": null,
                     "simple": "recipient"
                 },
-                "ProofPointTAP SMTP Sender": {
+                "Proofpoint TAP SMTP Sender": {
                     "complex": null,
                     "simple": "sender"
                 },
-                "ProofPointTAP Sender IP": {
+                "Proofpoint TAP Sender IP": {
                     "complex": null,
                     "simple": "senderIP"
                 },
-                "ProofPointTAP Suspicious URL": {
+                "Proofpoint TAP Suspicious URL": {
                     "complex": null,
                     "simple": "url"
                 },
-                "ProofPointTAP Threat ID": {
+                "Proofpoint TAP Threat ID": {
                     "complex": null,
                     "simple": "threatID"
                 },
-                "ProofPointTAP Threat Status": {
+                "Proofpoint TAP Threat Status": {
                     "complex": null,
                     "simple": "threatStatus"
                 },
-                "ProofPointTAP Threat Time": {
+                "Proofpoint TAP Threat Time": {
                     "complex": null,
                     "simple": "threatTime"
                 },
-                "ProofPointTAP Threat URL": {
+                "Proofpoint TAP Threat URL": {
                     "complex": null,
                     "simple": "threatURL"
                 },
-                "ProofPointTAP Type": {
+                "Proofpoint TAP Type": {
                     "complex": null,
                     "simple": "type"
                 },
-                "ProofPointTAP User Agent": {
+                "Proofpoint TAP User Agent": {
                     "complex": null,
                     "simple": "userAgent"
                 }
             }
         },
-        "ProofPointTAP - Message Blocked": {
+        "Proofpoint TAP - Message Blocked": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "ProofPointTAP Cluster": {
+                "Proofpoint TAP Cluster": {
                     "complex": null,
                     "simple": "cluster"
                 },
-                "ProofPointTAP Examined By": {
+                "Proofpoint TAP Examined By": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -180,11 +180,11 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP GUID": {
+                "Proofpoint TAP GUID": {
                     "complex": null,
                     "simple": "GUID"
                 },
-                "ProofPointTAP Header CC": {
+                "Proofpoint TAP Header CC": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -206,31 +206,31 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Headers From": {
+                "Proofpoint TAP Headers From": {
                     "complex": null,
                     "simple": "headerFrom"
                 },
-                "ProofPointTAP Headers Reply To": {
+                "Proofpoint TAP Headers Reply To": {
                     "complex": null,
                     "simple": "replyToAddress"
                 },
-                "ProofPointTAP ID": {
+                "Proofpoint TAP ID": {
                     "complex": null,
                     "simple": "id"
                 },
-                "ProofPointTAP Imposter Score": {
+                "Proofpoint TAP Imposter Score": {
                     "complex": null,
                     "simple": "impostorScore"
                 },
-                "ProofPointTAP Malware Score": {
+                "Proofpoint TAP Malware Score": {
                     "complex": null,
                     "simple": "malwareScore"
                 },
-                "ProofPointTAP Message ID": {
+                "Proofpoint TAP Message ID": {
                     "complex": null,
                     "simple": "messageID"
                 },
-                "ProofPointTAP Message Parts": {
+                "Proofpoint TAP Message Parts": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -244,7 +244,7 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Message Size": {
+                "Proofpoint TAP Message Size": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -282,11 +282,11 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Phishing Score": {
+                "Proofpoint TAP Phishing Score": {
                     "complex": null,
                     "simple": "phishScore"
                 },
-                "ProofPointTAP Policies": {
+                "Proofpoint TAP Policies": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -308,15 +308,15 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Quarantine Folder": {
+                "Proofpoint TAP Quarantine Folder": {
                     "complex": null,
                     "simple": "quarantineFolder"
                 },
-                "ProofPointTAP Quarantine Rule": {
+                "Proofpoint TAP Quarantine Rule": {
                     "complex": null,
                     "simple": "quarantineRule"
                 },
-                "ProofPointTAP Reply To Address": {
+                "Proofpoint TAP Reply To Address": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -338,7 +338,7 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP SMTP Recipient": {
+                "Proofpoint TAP SMTP Recipient": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -360,11 +360,11 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP SMTP Sender": {
+                "Proofpoint TAP SMTP Sender": {
                     "complex": null,
                     "simple": "sender"
                 },
-                "ProofPointTAP Sender Address": {
+                "Proofpoint TAP Sender Address": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -386,15 +386,15 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Spam Score": {
+                "Proofpoint TAP Spam Score": {
                     "complex": null,
                     "simple": "spamScore"
                 },
-                "ProofPointTAP Subject": {
+                "Proofpoint TAP Subject": {
                     "complex": null,
                     "simple": "subject"
                 },
-                "ProofPointTAP Threat Info Map": {
+                "Proofpoint TAP Threat Info Map": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -408,24 +408,24 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Type": {
+                "Proofpoint TAP Type": {
                     "complex": null,
                     "simple": "type"
                 },
-                "ProofPointTAP Xmailer": {
+                "Proofpoint TAP Xmailer": {
                     "complex": null,
                     "simple": "xmailer"
                 }
             }
         },
-        "ProofPointTAP - Message Delivered": {
+        "Proofpoint TAP - Message Delivered": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "ProofPointTAP Cluster": {
+                "Proofpoint TAP Cluster": {
                     "complex": null,
                     "simple": "cluster"
                 },
-                "ProofPointTAP Examined By": {
+                "Proofpoint TAP Examined By": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -447,11 +447,11 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP GUID": {
+                "Proofpoint TAP GUID": {
                     "complex": null,
                     "simple": "GUID"
                 },
-                "ProofPointTAP Header CC": {
+                "Proofpoint TAP Header CC": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -473,31 +473,31 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Headers From": {
+                "Proofpoint TAP Headers From": {
                     "complex": null,
                     "simple": "headerFrom"
                 },
-                "ProofPointTAP Headers Reply To": {
+                "Proofpoint TAP Headers Reply To": {
                     "complex": null,
                     "simple": "replyToAddress"
                 },
-                "ProofPointTAP ID": {
+                "Proofpoint TAP ID": {
                     "complex": null,
                     "simple": "id"
                 },
-                "ProofPointTAP Imposter Score": {
+                "Proofpoint TAP Imposter Score": {
                     "complex": null,
                     "simple": "impostorScore"
                 },
-                "ProofPointTAP Malware Score": {
+                "Proofpoint TAP Malware Score": {
                     "complex": null,
                     "simple": "malwareScore"
                 },
-                "ProofPointTAP Message ID": {
+                "Proofpoint TAP Message ID": {
                     "complex": null,
                     "simple": "messageID"
                 },
-                "ProofPointTAP Message Parts": {
+                "Proofpoint TAP Message Parts": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -511,7 +511,7 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Message Size": {
+                "Proofpoint TAP Message Size": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -549,11 +549,11 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Phishing Score": {
+                "Proofpoint TAP Phishing Score": {
                     "complex": null,
                     "simple": "phishScore"
                 },
-                "ProofPointTAP Policies": {
+                "Proofpoint TAP Policies": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -575,15 +575,15 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Quarantine Folder": {
+                "Proofpoint TAP Quarantine Folder": {
                     "complex": null,
                     "simple": "quarantineFolder"
                 },
-                "ProofPointTAP Quarantine Rule": {
+                "Proofpoint TAP Quarantine Rule": {
                     "complex": null,
                     "simple": "quarantineRule"
                 },
-                "ProofPointTAP Reply To Address": {
+                "Proofpoint TAP Reply To Address": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -605,7 +605,7 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP SMTP Recipient": {
+                "Proofpoint TAP SMTP Recipient": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -627,11 +627,11 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP SMTP Sender": {
+                "Proofpoint TAP SMTP Sender": {
                     "complex": null,
                     "simple": "sender"
                 },
-                "ProofPointTAP Sender Address": {
+                "Proofpoint TAP Sender Address": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -653,15 +653,15 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Spam Score": {
+                "Proofpoint TAP Spam Score": {
                     "complex": null,
                     "simple": "spamScore"
                 },
-                "ProofPointTAP Subject": {
+                "Proofpoint TAP Subject": {
                     "complex": null,
                     "simple": "subject"
                 },
-                "ProofPointTAP Threat Info Map": {
+                "Proofpoint TAP Threat Info Map": {
                     "complex": {
                         "accessor": "",
                         "filters": [],
@@ -675,18 +675,18 @@
                     },
                     "simple": ""
                 },
-                "ProofPointTAP Type": {
+                "Proofpoint TAP Type": {
                     "complex": null,
                     "simple": "type"
                 },
-                "ProofPointTAP Xmailer": {
+                "Proofpoint TAP Xmailer": {
                     "complex": null,
                     "simple": "xmailer"
                 }
             }
         }
     },
-    "name": "ProofPointTAP Mapper",
+    "name": "Proofpoint TAP Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

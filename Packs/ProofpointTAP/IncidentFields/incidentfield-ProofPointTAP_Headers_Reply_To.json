@@ -2,7 +2,7 @@
     "id": "incident_proofpointtapheadersreplyto",
     "version": -1,
     "modified": "2021-05-02T12:01:14.640782839+03:00",
-    "name": "ProofPointTAP Headers Reply To",
+    "name": "Proofpoint TAP Headers Reply To",
     "ownerOnly": false,
     "cliName": "proofpointtapheadersreplyto",
     "type": "shortText",
@@ -18,10 +18,10 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "ProofPointTAP - Click Blocked",
-        "ProofPointTAP - Click Permitted",
-        "ProofPointTAP - Message Blocked",
-        "ProofPointTAP - Message Delivered"
+        "Proofpoint TAP - Click Blocked",
+        "Proofpoint TAP - Click Permitted",
+        "Proofpoint TAP - Message Blocked",
+        "Proofpoint TAP - Message Delivered"
     ],
     "associatedToAll": false,
     "unmapped": false,

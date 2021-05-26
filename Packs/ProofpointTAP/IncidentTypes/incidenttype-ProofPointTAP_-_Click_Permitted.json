@@ -1,10 +1,10 @@
 {
-    "id": "ProofPointTAP - Click Permitted",
+    "id": "Proofpoint TAP - Click Permitted",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "ProofPointTAP - Click Permitted",
-    "prevName": "ProofPointTAP - Click Permitted",
+    "name": "Proofpoint TAP - Click Permitted",
+    "prevName": "Proofpoint TAP - Click Permitted",
     "color": "#0097A7",
     "hours": 0,
     "days": 0,
@@ -18,6 +18,6 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 2,
-    "layout": "ProofPointTAP Clicks Layout",
+    "layout": "Proofpoint TAP Clicks Layout",
     "fromVersion": "5.0.0"
 }

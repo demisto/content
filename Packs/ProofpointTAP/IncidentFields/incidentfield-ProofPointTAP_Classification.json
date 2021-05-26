@@ -2,7 +2,7 @@
     "id": "incident_proofpointtapclassification",
     "version": -1,
     "modified": "2021-05-02T12:37:32.018306637+03:00",
-    "name": "ProofPointTAP Classification",
+    "name": "Proofpoint TAP Classification",
     "ownerOnly": false,
     "cliName": "proofpointtapclassification",
     "type": "shortText",
@@ -18,10 +18,10 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "ProofPointTAP - Click Blocked",
-        "ProofPointTAP - Click Permitted",
-        "ProofPointTAP - Message Blocked",
-        "ProofPointTAP - Message Delivered"
+        "Proofpoint TAP - Click Blocked",
+        "Proofpoint TAP - Click Permitted",
+        "Proofpoint TAP - Message Blocked",
+        "Proofpoint TAP - Message Delivered"
     ],
     "associatedToAll": false,
     "unmapped": false,

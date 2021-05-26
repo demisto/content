@@ -2,7 +2,7 @@
     "id": "incident_proofpointtapimposterscore",
     "version": -1,
     "modified": "2021-05-02T12:01:14.782268773+03:00",
-    "name": "ProofPointTAP Imposter Score",
+    "name": "Proofpoint TAP Imposter Score",
     "ownerOnly": false,
     "cliName": "proofpointtapimposterscore",
     "type": "number",
@@ -18,10 +18,10 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "ProofPointTAP - Click Blocked",
-        "ProofPointTAP - Click Permitted",
-        "ProofPointTAP - Message Blocked",
-        "ProofPointTAP - Message Delivered"
+        "Proofpoint TAP - Click Blocked",
+        "Proofpoint TAP - Click Permitted",
+        "Proofpoint TAP - Message Blocked",
+        "Proofpoint TAP - Message Delivered"
     ],
     "associatedToAll": false,
     "unmapped": false,

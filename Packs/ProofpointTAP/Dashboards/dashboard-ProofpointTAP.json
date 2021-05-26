@@ -1,5 +1,5 @@
 {
-    "id": "ProofpointTAP",
+    "id": "Proofpoint TAP",
     "version": -1,
     "fromDate": "0001-01-01T00:00:00Z",
     "toDate": "0001-01-01T00:00:00Z",
@@ -12,7 +12,7 @@
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "name": "ProofpointTAP",
+    "name": "Proofpoint TAP",
     "layout": [
         {
             "id": "31372130-b09e-11eb-be5d-2be9346b7e07",
@@ -153,11 +153,11 @@
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
-                "name": "ProofpointTAP Clicks Events",
-                "prevName": "ProofpointTAP Clicks Events",
+                "name": "Proofpoint TAP Clicks Events",
+                "prevName": "Proofpoint TAP Clicks Events",
                 "dataType": "incidents",
                 "widgetType": "pie",
-                "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Click Blocked\" or type:\"ProofPointTAP - Click Permitted\"",
+                "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"Proofpoint TAP - Click Blocked\" or type:\"Proofpoint TAP - Click Permitted\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -319,8 +319,8 @@
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "commitMessage": "",
                 "shouldCommit": false,
-                "name": "ProofPointTAP Top Clickers",
-                "prevName": "ProofPointTAP Top Clickers",
+                "name": "Proofpoint TAP Top Clickers",
+                "prevName": "Proofpoint TAP Top Clickers",
                 "dataType": "scripts",
                 "widgetType": "column",
                 "query": "ProofPointTapTopClickers",
@@ -374,7 +374,7 @@
                 "prevName": "ProofPoint Message Events",
                 "dataType": "incidents",
                 "widgetType": "pie",
-                "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delivered\"",
+                "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"Proofpoint TAP - Message Blocked\" or type:\"Proofpoint TAP - Message Delivered\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {

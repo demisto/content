@@ -1,14 +1,14 @@
 {
     "description": "",
     "feed": false,
-    "id": "ProofPointTAP Classifier",
+    "id": "Proofpoint TAP Classifier",
     "keyTypeMap": {
-        "clicks blocked": "ProofPointTAP - Click Blocked",
-        "clicks permitted": "ProofPointTAP - Click Permitted",
-        "messages blocked": "ProofPointTAP - Message Blocked",
-        "messages delivered": "ProofPointTAP - Message Delivered"
+        "clicks blocked": "Proofpoint TAP - Click Blocked",
+        "clicks permitted": "Proofpoint TAP - Click Permitted",
+        "messages blocked": "Proofpoint TAP - Message Blocked",
+        "messages delivered": "Proofpoint TAP - Message Delivered"
     },
-    "name": "ProofPointTAP Classifier",
+    "name": "Proofpoint TAP Classifier",
     "propagationLabels": [
         "all"
     ],
