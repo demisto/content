@@ -859,7 +859,8 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
     for interval_string in intervals:
         try:
             raw_response = client.list_campaigns(interval_string, page, limit)
-        except ValueError:
+        except ValueError:  # In case there are no campaigns for the interval,  the request returns status code 404
+            # which causes an error in http_request function
             request_error.append(
                 {'interval': interval_string, "message": f'Not found campaigns data from {interval_string}'})
             continue

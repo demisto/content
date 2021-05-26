@@ -14,11 +14,12 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: v1 is deprecated. The current API version is v2.
+- additionalinfo: v1 is deprecated for new instances. The current API version is v2.
   defaultvalue: v2
   display: API Version
   name: api_version
   options:
+  - v1
   - v2
   required: false
   type: 15
