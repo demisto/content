@@ -269,5 +269,6 @@ def test_get_ioc_value_from_ioc_name():
 
 
 def test_add_stix_prefix_to_indicator():
-    assert add_stix_prefix_to_indicator({"type": "indicator", "fields": {"killchainphases": "kill chain"}}) == \
-           {"type": "STIX indicator", "fields": {"stixkillchainphases": "kill chain"}}
+    assert add_stix_prefix_to_indicator({"type": "ind", "fields":
+                                        {"killchainphases": "kill chain", "description": "des"}}) == \
+        {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}

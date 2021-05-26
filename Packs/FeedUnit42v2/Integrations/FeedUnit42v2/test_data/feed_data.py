@@ -339,7 +339,7 @@ ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
                              "score": 2,
                              'value': 'Windows Management Instrumentation'}]
 
-STIX_ATTACK_PATTERN_INDICATOR = [{'fields': {'description': 'Windows Management',
+STIX_ATTACK_PATTERN_INDICATOR = [{'fields': {'stixdescription': 'Windows Management',
                                              'firstseenbysource': '2018-08-03T19:54:02.821Z',
                                              'stixkillchainphases': ['Installation', 'Execution'],
                                              'mitreid': 'T1047',

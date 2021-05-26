@@ -311,12 +311,15 @@ def get_attack_id_and_value_from_name(attack_indicator):
 
 
 def add_stix_prefix_to_indicator(indicator: dict):
-    indicator_type = indicator['type']
     kill_chain_phases = indicator['fields']['killchainphases']
     del indicator['fields']['killchainphases']
+    description = indicator['fields']['description']
+    del indicator['fields']['description']
 
+    indicator_type = indicator['type']
     indicator['type'] = f'STIX {indicator_type}'
     indicator['fields']['stixkillchainphases'] = kill_chain_phases
+    indicator['fields']['stixdescription'] = description
 
     return indicator
 
