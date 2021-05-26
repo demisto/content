@@ -21,7 +21,7 @@ def util_load_json(path):
 def test_insight_get_details(requests_mock):
     """Tests sumologic-sec-insight-get-details command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, insight_get_details, insight_signal_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, insight_get_details, insight_signal_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/insight_details.json')
     insight_id = 'INSIGHT-220'
@@ -55,7 +55,7 @@ def test_insight_get_details(requests_mock):
 def test_insight_get_comments(requests_mock):
     """Tests sumologic-sec-insight-get-comments command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, insight_get_comments, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, insight_get_comments, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/insight_comments.json')
     insight_id = 'INSIGHT-116'
@@ -87,7 +87,7 @@ def test_insight_get_comments(requests_mock):
 def test_signal_get_details(requests_mock):
     """Tests sumologic-sec-signal-get-details command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, signal_get_details, insight_signal_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, signal_get_details, insight_signal_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/signal_details.json')
     signal_id = '2b449e56-f6e8-5306-980a-447a8c026b77'
@@ -119,7 +119,7 @@ def test_signal_get_details(requests_mock):
 def test_entity_get_details(requests_mock):
     """Tests sumologic-sec-entity-get-details command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, entity_get_details, entity_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, entity_get_details, entity_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/entity_details.json')
     entity_id = '_hostname-win10--admin.b.test.com'
@@ -149,7 +149,7 @@ def test_entity_get_details(requests_mock):
 def test_insight_search(requests_mock):
     """Tests sumologic-sec-insight-search command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, insight_search, insight_signal_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, insight_search, insight_signal_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/insight_list.json')
     insights = []
@@ -180,7 +180,7 @@ def test_insight_search(requests_mock):
 def test_entity_search(requests_mock):
     """Tests sumologic-sec-entity-search command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, entity_search, entity_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, entity_search, entity_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/entity_list.json')
     entities = []
@@ -212,7 +212,7 @@ def test_entity_search(requests_mock):
 def test_signal_search(requests_mock):
     """Tests sumologic-sec-signal-search command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, signal_search, insight_signal_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, signal_search, insight_signal_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/signal_list.json')
     signals = []
@@ -246,7 +246,7 @@ def test_signal_search(requests_mock):
 def test_insight_set_status(requests_mock):
     """Tests sumologic-sec-insight-set-status command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, insight_set_status, insight_signal_to_readable, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, insight_set_status, insight_signal_to_readable, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/insight_status.json')
     insight_id = 'INSIGHT-221'
@@ -280,7 +280,7 @@ def test_insight_set_status(requests_mock):
 def test_match_list_get(requests_mock):
     """Tests sumologic-sec-match-list-get command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, match_list_get, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, match_list_get, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/match_lists.json')
     match_lists = []
@@ -311,7 +311,7 @@ def test_match_list_get(requests_mock):
 def test_match_list_update(requests_mock):
     """Tests sumologic-sec-match-list-update command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, match_list_update, get_update_result, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, match_list_update, get_update_result, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/update_result.json')
     match_list_id = '166'
@@ -342,7 +342,7 @@ def test_match_list_update(requests_mock):
 def test_threat_intel_search_indicators(requests_mock):
     """Tests sumologic-sec-threat-intel-search-indicators command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, threat_intel_search_indicators, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, threat_intel_search_indicators, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/threat_intel_indicators.json')
     threat_intel_indicators = []
@@ -374,7 +374,7 @@ def test_threat_intel_search_indicators(requests_mock):
 def test_threat_intel_get_sources(requests_mock):
     """Tests sumologic-sec-threat-intel-get-sources command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, threat_intel_get_sources, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, threat_intel_get_sources, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/threat_intel_sources.json')
     threat_intel_sources = []
@@ -405,7 +405,7 @@ def test_threat_intel_get_sources(requests_mock):
 def test_threat_intel_update_source(requests_mock):
     """Tests sumologic-sec-threat-intel-update-source command function.
     """
-    from SumoLogic_Cloud_SIEM import Client, threat_intel_update_source, get_update_result, DEFAULT_HEADERS
+    from SumoLogicCloudSIEM import Client, threat_intel_update_source, get_update_result, DEFAULT_HEADERS
 
     mock_response = util_load_json('test_data/update_result.json')
     threat_intel_source_id = '54'
