@@ -33,3 +33,9 @@ ignore=SC105
 
 [file:FileToBase64List.yml]
 ignore=BA109
+
+[file:script-SetByIncidentId_README.md]
+ignore=RM105
+
+[file:script-TimeStampToDate_README.md]
+ignore=RM105

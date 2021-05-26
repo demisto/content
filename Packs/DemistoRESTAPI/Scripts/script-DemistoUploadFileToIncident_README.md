@@ -6,13 +6,13 @@ Copies a file from an incident to the specified incident. The file is uploaded a
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python |
-| Tags | XSOARAPI |
+| Tags | DemistoAPI |
 
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* XSOAR-api-multipart
+* demisto-api-multipart
 
 ## Inputs
 ---
