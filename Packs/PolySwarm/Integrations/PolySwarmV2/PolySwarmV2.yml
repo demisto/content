@@ -1,26 +1,26 @@
-deprecated: true
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: PolySwarm
+  id: PolySwarmV2
   version: -1
 configuration:
 - display: PolySwarm API Key
   name: api_key
   required: true
   type: 4
-- defaultvalue: https://api.polyswarm.network/v1
+- defaultvalue: https://api.polyswarm.network/v2
   display: The base URL to connect to
   name: base_url
   required: true
   type: 0
-- defaultvalue: lima
-  display: PolySwarm community
-  name: polyswarm_community
+- defaultvalue: default
+  display: PolySwarm v2 Community
+  name: PolySwarm_v2
   required: true
   type: 0
-description: Deprecated. Use PolySwarm V2 instead.
-display: PolySwarm (Deprecated)
-name: PolySwarm
+  additionalinfo: the segment of PolySwarm's marketplace to query on.
+description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
+display: PolySwarm
+name: PolySwarmV2
 script:
   commands:
   - arguments:
@@ -59,7 +59,7 @@ script:
       secret: false
     - default: true
       description: 'The type of the file hash for which to retrieve the reputation information. The hash type can be: "SHA256", "SHA1", or "MD5".'
-      isArray: false
+      isArray: true
       name: file
       required: false
       secret: false
@@ -86,7 +86,7 @@ script:
   - arguments:
     - default: true
       description: The IP address for which to retrieve the reputation information.
-      isArray: false
+      isArray: true
       name: ip
       required: true
       secret: false
@@ -109,6 +109,30 @@ script:
       type: String
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: IP.MalwareFamily
+      description: The malware family associated with the IP.
+      type: String
+    - contextPath: IP.Tags
+      description: Tags that are associated with the IP.
       type: String
   - arguments:
     - default: true
@@ -137,10 +161,34 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: URL.Data
+      description: The URL address.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: URL.MalwareFamily
+      description: The malware family associated with the url.
+      type: String
+    - contextPath: URL.Tags
+      description: Tags that are associated with the url.
+      type: String
   - arguments:
     - default: true
       description: Domain for which to retrieve the reputation information.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -164,10 +212,34 @@ script:
     - contextPath: PolySwarm.Artifact
       description: The artifact queried.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.MalwareFamily
+      description: The malware family associated with the domain.
+      type: String
+    - contextPath: Domain.Tags
+      description: Tags that are associated with the domain.
+      type: String
   - arguments:
     - default: true
       description: The URL to scan.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -263,6 +335,30 @@ script:
     - contextPath: PolySwarm.FileID
       description: The file ID.
       type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: File.Tags.TagGroups.TagGroupName
+      description: The tag's group name.
+      type: String
+    - contextPath: File.Tags.Aliases
+      description: Aliases of the tags.
+      type: String
+    - contextPath: File.Tags.PublicTagName
+      description: The public name of the tag. This is usually used as the ID of the tag.
+      type: String
+    - contextPath: File.Tags.TagName
+      description: The simple name of the tag.
+      type: String
   - arguments:
     - default: true
       description: The War Room entry ID of the file.
@@ -296,6 +392,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
+  dockerimage: demisto/polyswarm:1.0.0.18926
 fromversion: 5.0.0
