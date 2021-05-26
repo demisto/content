@@ -197,7 +197,7 @@ Updates a single incident in Azure Sentinel.
 | status | The incident status. | Optional | 
 | classification | The reason the incident was closed. Required when updating the status to Closed. Possible values are:  BenignPositive, FalsePositive, TruePositive, Undetermined | Optional | 
 | classification_reason | The classification reason the incident was closed with. Required when updating the status to Closed and the classification is determined. Possible values are:  InaccurateData, IncorrectAlertLogic, SuspiciousActivity, SuspiciousButExpected | Optional | 
-| assignee_email | Email of the incident assignee. Note it shows as owner in the API. | Optional | 
+| assignee_email | Email of the incident assignee. Note that the API field updated is `owner.email` | Optional | 
 | labels | Incident labels. Note that all labels will be set as `labelType=User`. | Optional | 
 
 

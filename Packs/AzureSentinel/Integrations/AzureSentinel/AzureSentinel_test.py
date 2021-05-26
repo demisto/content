@@ -164,7 +164,7 @@ MOCKED_UPDATE_INCIDENT = {
     ({'labels': ['label_after_1', 'label_after_2'],
       'assignee_email': 'bob@example.com'},
      mock_client(self_deployed=False))])
-def test_update_incidents(args, client, mocker):
+def test_update_incident(args, client, mocker):
     mocker.patch.object(client, 'http_request', return_value=MOCKED_UPDATE_INCIDENT)
 
     incident_data = get_update_incident_request_data(client, args)
@@ -173,4 +173,3 @@ def test_update_incidents(args, client, mocker):
     assert properties['labels'] == [{'labelName': 'label_after_1', 'labelType': 'User'},
                                     {'labelName': 'label_after_2', 'labelType': 'User'}]
     assert properties['owner']['email'] == 'bob@example.com'
-    pass
