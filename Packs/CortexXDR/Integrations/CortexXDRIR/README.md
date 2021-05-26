@@ -318,6 +318,8 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.manual_description | String | Incident description provided by the user. | 
 | PaloAltoNetworksXDR.Incident.xdr_url | String | A link to the incident view on XDR. | 
 | PaloAltoNetworksXDR.Incident.starred | Boolean | Incident starred | 
+| PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_techniques_ids_and_names | String | Incident Mitre techniques ids and names. | 
+| PaloAltoNetworksXDR.Incident.wildfire_hits.mitre_tactics_ids_and_names | String | Incident Mitre tactics ids and names. | 
 | PaloAltoNetworksXDR.Incident.alerts.alert_id | String | Unique ID for each alert. | 
 | PaloAltoNetworksXDR.Incident.alerts.detection_timestamp | Date | Date and time that the alert occurred. | 
 | PaloAltoNetworksXDR.Incident.alerts.source | String | Source of the alert. The product/vendor this alert came from. | 
@@ -753,7 +755,7 @@ maximum of 60 alerts.
 | remote_ip | String value of the destination IP<br/>address. | Required | 
 | remote_port | Integer value for the destination<br/>port. | Required | 
 | event_timestamp | Integer value representing the epoch of the time the alert occurred in milliseconds or String value of date format 2019-10-23T10:00:00. If not set then the event time will be defined as now. | Optional | 
-| severity | String value of alert severity:<br/>Informational, Low, Medium, High, or Unknown | Optional | 
+| severity | String value of alert severity:<br/>Informational, Low, Medium or High | Required | 
 | alert_name | String defining the alert name | Required | 
 | alert_description | String defining the alert description | Optional | 
 
