@@ -2031,7 +2031,6 @@ def fetch_loop_no_events(client: QRadarClient, incident_type, user_query, ip_enr
             fetch_incidents_long_running_no_events(
                 client, incident_type, user_query, ip_enrich, asset_enrich
             )
-            time.sleep(FETCH_SLEEP)
         except Exception as e:
             demisto.error(e)
         finally:
