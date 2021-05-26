@@ -2922,13 +2922,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Entry ID for the file to commit.
+      description: Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided.
       isArray: false
       name: entry_id
       required: false
       secret: false
     - default: false
-      description: Plain text for the file to commit.
+      description: Plain text for the file to commit. Either "entry_id" or "file_text" must be provided.
       isArray: false
       name: file_text
       required: false
