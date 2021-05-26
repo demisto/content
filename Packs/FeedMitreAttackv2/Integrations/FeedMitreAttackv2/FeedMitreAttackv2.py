@@ -217,7 +217,6 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
         'stixid': indicator_json.get('id'),
         'firstseenbysource': created,
         'modified': modified,
-        'description': indicator_json.get('description'),
         'publications': publications,
         'mitreid': mitre_id,
         'tags': tags
@@ -226,32 +225,42 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     mapping_by_type = {
         "Attack Pattern": {
             'killchainphases': kill_chain_phases,
+            'description': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "Intrusion Set": {
+            'description': indicator_json.get('description'),
             'aliases': indicator_json.get('aliases')
         },
         "Malware": {
             'aliases': indicator_json.get('x_mitre_aliases'),
+            'description': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
 
         },
         "Tool": {
             'aliases': indicator_json.get('x_mitre_aliases'),
+            'description': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
+        },
+        "Course of Action": {
+            'description': indicator_json.get('description')
         },
 
         "STIX Attack Pattern": {
             'stixkillchainphases': kill_chain_phases,
+            'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         },
         "STIX Malware": {
             'stixaliases': indicator_json.get('x_mitre_aliases'),
+            'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
 
         },
         "STIX Tool": {
             'stixaliases': indicator_json.get('x_mitre_aliases'),
+            'stixdescription': indicator_json.get('description'),
             'operatingsystemrefs': indicator_json.get('x_mitre_platforms')
         }
     }

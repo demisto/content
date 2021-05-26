@@ -149,7 +149,7 @@ STIX_ATTACK_PATTERN = {
         'firstseenbysource': '2017-05-31T21:30:44.329Z',
         'stixkillchainphases': ['Defense Evasion', 'Privilege Escalation'],
         'modified': "2020-05-13T22:50:51.258Z",
-        'description': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
+        'stixdescription': "Adversaries may abuse Windows Management Instrumentation (WMI) to achieve execution.",
         'operatingsystemrefs': ['Windows'],
         'mitreid': 'T1047',
         'publications': [{'link': "https://en.wikipedia.org/wiki/Server_Message_Block",
@@ -396,7 +396,7 @@ STIX_MALWARE = {
         "type": "malware"
     },
     'map_result': {'stixaliases': ['Wiarp'],
-                   'description': '[Wiarp](https://attack.mitre.org/software/S0206)',
+                   'stixdescription': '[Wiarp](https://attack.mitre.org/software/S0206)',
                    'firstseenbysource': '2018-04-18T17:59:24.739Z',
                    'mitreid': 'S0206',
                    'modified': '2021-01-06T19:32:28.378Z',
@@ -497,7 +497,7 @@ STIX_TOOL = {
         "id": "tool--13cd9151-83b7-410d-9f98-25d0f0d1d80d"
     },
     'map_result': {'stixaliases': ['PowerSploit'],
-                   'description': '[PowerSploit](https://attack.mitre.org/software/S0194)',
+                   'stixdescription': '[PowerSploit](https://attack.mitre.org/software/S0194)',
                    'firstseenbysource': '2018-04-18T17:59:24.739Z',
                    'mitreid': 'S0194',
                    'modified': '2021-02-09T14:00:16.093Z',
