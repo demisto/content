@@ -17,14 +17,19 @@ from demisto_sdk.commands.common.tools import str2bool, run_command
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
+ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER', './artifacts')
 UNITTESTS_TYPE = 'unittests'
 TEST_PLAYBOOK_TYPE = 'test_playbooks'
 SDK_UNITTESTS_TYPE = 'sdk_unittests'
-SDK_FAILED_STEPS_TYPE = 'sdk_faild_steps'
+SDK_FAILED_STEPS_TYPE = 'sdk_failed_steps'
 SDK_RUN_AGAINST_FAILED_STEPS_TYPE = 'sdk_run_against_failed_steps'
 SDK_BUILD_TITLE = 'SDK Nightly Build'
 SDK_XSOAR_BUILD_TITLE = 'Demisto SDK Nightly - Run Against Cortex XSOAR'
 CONTENT_CHANNEL = 'dmst-content-team'
+DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX = 'demisto-sdk-nightly'
+SDK_NIGHTLY_CIRCLE_OPTS = {
+    SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE
+}
 
 
 def get_failed_steps_list():
@@ -60,13 +65,12 @@ def get_gitlab_failed_steps(ci_token, build_number, server_url, project_id):
     failed_steps_list = []
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
     project = gitlab_client.projects.get(int(project_id))
-    pipeline = project.pipelines.get(int(build_number))
-    jobs = pipeline.jobs.list()
-
-    for job in jobs:
-        if job.status == 'failed':
-            logging.info(f'collecting failed job {job.name}')
-            failed_steps_list.append(f'{job.name}')
+    job = project.jobs.get(int(build_number))
+    logging.info(f'status of gitlab job with id {job.id} and name {job.name} is {job.status}')
+    if job.status == 'failed':
+        logging.info(f'collecting failed job {job.name}')
+        logging.info(f'pipeline associated with failed job is {job.pipeline.get("web_url")}')
+        failed_steps_list.append(f'{job.name}')
 
     return failed_steps_list
 
@@ -91,7 +95,7 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-c', '--ci_token', help='The token for circleci/gitlab', required=True)
-    parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_faild_steps'
+    parser.add_argument('-t', '--test_type', help='unittests or test_playbooks or sdk_unittests or sdk_failed_steps'
                                                   'or bucket_upload')
     parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address')
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', required=True, type=str2bool)
@@ -108,9 +112,9 @@ def options_handler():
 
 
 def get_failing_unit_tests_file_data():
+    failing_ut_list = None
     try:
-        failing_ut_list = None
-        file_name = './artifacts/failed_lint_report.txt'
+        file_name = f'{ARTIFACTS_FOLDER}/failed_lint_report.txt'
         if os.path.isfile(file_name):
             logging.info('Extracting lint_report')
             with open(file_name, 'r') as failed_unittests_file:
@@ -335,7 +339,23 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
                 build_url=build_url, job_name=job_name, packs_results_file_path=packs_results_file
             )
         elif test_type == SDK_RUN_AGAINST_FAILED_STEPS_TYPE:
+            logging.info("Starting Slack notifications about SDK nightly build - run against an xsoar instance")
             content_team_attachments = get_attachments_for_all_steps(build_url, build_title=SDK_XSOAR_BUILD_TITLE)
+        elif job_name and test_type == job_name:
+            if job_name.startswith(DMST_SDK_NIGHTLY_GITLAB_JOBS_PREFIX):
+                # We run the various circleci sdk nightly builds in a single pipeline in GitLab
+                # as different jobs so it requires different handling
+                logging.info(f"Starting Slack notifications for {job_name}")
+                if 'unittest' in job_name:
+                    content_team_attachments = get_attachments_for_unit_test(build_url, is_sdk_build=True)
+                    # override the 'title' from the attachment to be the job name
+                    content_team_attachments[0]['title'] = content_team_attachments[0]['title'].replace(
+                        'SDK Nightly Unit Tests', job_name
+                    )
+                else:
+                    content_team_attachments = get_attachments_for_all_steps(build_url, build_title=job_name)
+                    # override the 'fields' from the attachment since any failure will be the same as the job name
+                    content_team_attachments[0]['fields'] = []
         else:
             raise NotImplementedError('The test_type parameter must be only \'test_playbooks\' or \'unittests\'')
         logging.info(f'Content team attachments:\n{content_team_attachments}')
@@ -363,15 +383,19 @@ def main():
     ci_artifacts_path = options.ci_artifacts
     job_name = options.job_name
     slack_channel = options.slack_channel or CONTENT_CHANNEL
+    gitlab_server = options.gitlab_server
     if nightly:
         slack_notifier(url, slack, test_type, env_results_file_name)
     elif bucket_upload:
         slack_notifier(url, slack, test_type,
                        packs_results_file=os.path.join(
                            ci_artifacts_path, BucketUploadFlow.PACKS_RESULTS_FILE), job_name=job_name,
-                       slack_channel=slack_channel, gitlab_server=options.gitlab_server)
-    elif test_type in (SDK_UNITTESTS_TYPE, SDK_FAILED_STEPS_TYPE, SDK_RUN_AGAINST_FAILED_STEPS_TYPE):
-        slack_notifier(url, slack, test_type)
+                       slack_channel=slack_channel, gitlab_server=gitlab_server)
+    elif test_type in SDK_NIGHTLY_CIRCLE_OPTS or test_type == job_name:
+        slack_notifier(
+            url, slack, test_type, job_name=job_name,
+            slack_channel=slack_channel, gitlab_server=gitlab_server
+        )
     else:
         logging.error("Not nightly build, stopping Slack Notifications about Content build")
 
