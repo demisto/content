@@ -43,7 +43,6 @@ configuration:
   name: maxFetch
   required: false
   type: 0
-defaultclassifier: 'null'
 description: The Freshdesk integration allows you to create, update, and delete tickets;
   reply to and create notes for tickets as well as view Groups, Agents and Contacts.
 display: Freshdesk
