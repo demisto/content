@@ -1105,12 +1105,17 @@ def delete_user(client, args):
 
 
 def test_module(client, args):
-    results = json.loads(client.get_transactionlog(None, None, None))['results']
-
-    if results is not None:
-        return 'ok'
-    else:
-        return 'Failed to run the test'
+    """
+    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    Args:
+        client: HelloWorld client
+    Returns:
+        'ok' if test passed, anything else will fail the test.
+    """
+    args
+    uri = 'users/me'
+    client._http_request(method='GET', url_suffix=uri)
+    return 'ok', None, None
 
 
 def main():
