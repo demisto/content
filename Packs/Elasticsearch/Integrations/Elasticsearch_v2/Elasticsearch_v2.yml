@@ -51,6 +51,11 @@ configuration:
   name: fetch_size
   required: false
   type: 0
+- defaultvalue: '60'
+  display: Request time (in seconds).
+  name: timeout
+  required: false
+  type: 0
 - display: Incident type
   name: incidentType
   required: false
@@ -286,7 +291,7 @@ script:
     execution: false
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.14274
+  dockerimage: demisto/elasticsearch:1.0.0.19300
   feed: false
   isfetch: true
   longRunning: false
