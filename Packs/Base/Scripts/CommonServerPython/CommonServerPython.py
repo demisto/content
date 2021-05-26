@@ -6271,6 +6271,9 @@ def is_demisto_version_ge(version, build_number=''):
         return \
             server_version.get('version') >= version and \
             (not build_number or int(server_version.get('buildNumber')) >= int(build_number))
+    except ValueError:
+        # dev editions are not comparable
+        return True
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":

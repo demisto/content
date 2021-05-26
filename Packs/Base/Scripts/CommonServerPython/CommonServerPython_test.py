@@ -1177,7 +1177,6 @@ def test_get_demisto_version(mocker, clear_version_cache):
     assert not is_demisto_version_ge('5.5.0')
     assert get_demisto_version_as_str() == '5.0.0-50000'
 
-
 def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
     get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
     get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
@@ -1186,6 +1185,13 @@ def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
     with raises(AttributeError, match='simulate missing demistoVersion'):
         is_demisto_version_ge('4.5.0')
 
+def test_is_demisto_version_ge_dev_version(mocker):
+    current_version = '<Enter Version Here>'
+    get_version_patch = mocker.patch(
+        'CommonServerPython.get_demisto_version', 
+        return_value=current_version
+        )
+    assert is_demisto_version_ge
 
 def test_is_demisto_version_build_ge(mocker):
     mocker.patch.object(
