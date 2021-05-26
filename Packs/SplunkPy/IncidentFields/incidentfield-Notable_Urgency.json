@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Notable Generic"
+    ],
+    "caseInsensitive": true,
+    "cliName": "notableurgency",
+    "closeForm": false,
+    "content": true,
+    "description": "The urgency of the notable.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_notableurgency",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Notable Urgency",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "Informational",
+        "low",
+        "medium",
+        "high",
+        "critical"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
