@@ -653,7 +653,7 @@ script:
   - name: safewalk-get-users-associations-indicators
     arguments: []
     description: safewalk-get-users-associations-indicators
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   feed: true
   runonce: false
