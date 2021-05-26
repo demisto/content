@@ -1,10 +1,6 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-# flake8: noqa
-import json
-from botocore.parsers import ResponseParserError
 import urllib3.util
 from datetime import timezone
 from dateparser import parse
@@ -814,9 +810,6 @@ def main():  # pragma: no cover
             return
         return_outputs(human_readable, outputs, response)
 
-    except ResponseParserError as e:
-        return_error('Could not connect to the AWS endpoint. Please check that the region is valid. {error}'.format(
-            error=type(e)), error=e)
     except Exception as e:
         return_error('Error has occurred in the AWS securityhub Integration: {code} {message}'.format(
             code=type(e), message=e), error=e)
