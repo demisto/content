@@ -37,6 +37,69 @@ def test_fetch_incidents(mocker):
     assert fetch_events == EVENT_RESULTS
 
 
+def test_fetch_incidents_email_change(requests_mock, mocker):
+    """
+    Given
+    - A workday full report of employees.
+    When
+    - An email address change is detected for the user rrahardj@paloaltonetworks.com.
+    Then
+    - Make sure the IAM - Update User event is returned as expected.
+    """
+    from test_data.fetch_incidents_email_change_mock_data import full_report, mapped_workday_user, \
+        employee_id_to_user_profile, email_to_user_profile, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(employee_id_to_user_profile, email_to_user_profile))
+    mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
+    client = Client(base_url="", verify="verify", headers={}, proxy=False, ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    assert fetch_events == event_data
+
+
+def test_fetch_incidents_employee_id_change(requests_mock, mocker):
+    """
+    Given
+    - A workday full report of employees.
+    When
+    - An employee id change is detected for the user rrahardj@paloaltonetworks.com.
+    Then
+    - Make sure the IAM - Update User event is returned as expected.
+    """
+    from test_data.fetch_incidents_employee_id_change_mock_data import full_report, mapped_workday_user, \
+        employee_id_to_user_profile, email_to_user_profile, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=(employee_id_to_user_profile, email_to_user_profile))
+    mocker.patch.object(demisto, 'mapObject', return_value=mapped_workday_user)
+    client = Client(base_url="", verify="verify", headers={}, proxy=False,
+                    ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    assert fetch_events == event_data
+
+
+def test_fetch_incidents_orphan_user(requests_mock, mocker):
+    """
+    Given
+    - An empty workday report of employees.
+    When
+    - A user profile with email rrahardjo@paloaltonetworks.com exists on XSOAR.
+    Then
+    - Ensure an IAM - Terminate User event is returned for this user.
+    """
+    from test_data.fetch_incidents_orphan_user_mock_data import full_report, email_to_user_profile, event_data
+
+    requests_mock.get('https://test.com', json=full_report)
+    mocker.patch('Workday_IAM.get_all_user_profiles', return_value=({}, email_to_user_profile))
+    client = Client(base_url="", verify="verify", headers={}, proxy=False,
+                    ok_codes=(200, 204), auth=None)
+
+    fetch_events = fetch_incidents(client, {}, "https://test.com", "%m/%d/%Y", LAST_DAY_OF_WORK_FIELD, None, None)
+    assert fetch_events == event_data
+
+
 @pytest.mark.parametrize(
     'demisto_user, workday_user, expected_result',
     [
