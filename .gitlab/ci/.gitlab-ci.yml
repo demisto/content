@@ -33,6 +33,7 @@ variables:
   SKIP_PRIVATE_BUILD: "true"
   ENV_RESULTS_PATH: "/builds/xsoar/content/artifacts/env_results.json"
   GCS_PRODUCTION_BUCKET: "marketplace-dist" # change to marketplace-dist this after testing period
+  DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
 
 
 include:
