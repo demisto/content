@@ -601,9 +601,27 @@ script:
     execution: false
     name: fireeye-cm-download-quarantined-emails
     outputs:
-    - contextPath: FireEyeCM.QuarantinedEmail.TODO
-      description: a.
-      type: string
+    - contextPath: File.Name
+      description: The name of the email.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the email.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the email.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the email.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.Size
+      description: The size of the email in bytes.
+      type: Number
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the email.
+      type: String
   - arguments:
     - default: false
       description: "The report type. Requests for ipsTopNAttack, ipsTopNAttacker, ipsTopNVictim, or ipsTopNMvxVerified reports must be used with the limit parameter set to either 25, 50, 75, or 100. You must have an Intrusion Prevention System (IPS)-enabled appliance to be able to generate the IPS reports."

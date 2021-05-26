@@ -3,9 +3,10 @@ import json
 
 import pytest
 
+from CommonServerPython import DemistoException
 from FireEyeCM import Client, get_alerts, get_alert_details, alert_acknowledge, get_quarantined_emails, \
-    get_artifacts_metadata_by_uuid, get_events, get_reports, alert_severity_to_dbot_score, fetch_incidents, \
-    to_fe_datetime_converter
+    get_artifacts_metadata_by_uuid, get_events, get_reports, release_quarantined_emails, delete_quarantined_emails, \
+    alert_severity_to_dbot_score, fetch_incidents, to_fe_datetime_converter
 from test_data.result_constants import QUARANTINED_EMAILS_CONTEXT, GET_ALERTS_CONTEXT, GET_ALERTS_DETAILS_CONTEXT, \
     GET_ARTIFACTS_METADATA_CONTEXT, GET_EVENTS_CONTEXT
 
@@ -235,6 +236,74 @@ def test_get_events(mocker):
     command_results = get_events(client=client, args={'end_time': '2021-05-19T23:00:00.000-00:00',
                                                       'duration': '48_hours', 'limit': '3'})
     assert command_results.outputs == GET_EVENTS_CONTEXT
+
+
+def test_release_quarantined_emails(mocker):
+    """Unit test
+    Given
+    - release_quarantined_emails command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's release_quarantined_emails_request response.
+    Then
+    - Validate that an error is raised from the command
+    """
+    def mocked_release_quarantined_emails_requests(*args):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+
+            def json(self):
+                return self.json_data
+
+            def text(self):
+                return '1234'
+
+        return MockResponse({"1234": "Unable to release the email:quarantined email does not exist\\n"}, 200)
+
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'release_quarantined_emails_request',
+                        side_effect=mocked_release_quarantined_emails_requests)
+    with pytest.raises(DemistoException):
+        release_quarantined_emails(client=client, args={'sensor_name': 'FireEyeEX', 'queue_ids': '1234'})
+
+
+def test_delete_quarantined_emails(mocker):
+    """Unit test
+    Given
+    - delete_quarantined_emails command
+    - command args
+    - command raw response
+    When
+    - mock the Client's token generation.
+    - mock the Client's delete_quarantined_emails_request response.
+    Then
+    - Validate that an error is raised from the command
+    """
+    def mocked_delete_quarantined_emails_requests(*args):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+
+            def json(self):
+                return self.json_data
+
+            def text(self):
+                return '1234'
+
+        return MockResponse({"1234": "Unable to delete the email:quarantined email does not exist\\n"}, 200)
+
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(base_url="https://fireeye.cm.com/", username='user', password='pass', verify=False, proxy=False)
+    mocker.patch.object(Client, 'delete_quarantined_emails_request',
+                        side_effect=mocked_delete_quarantined_emails_requests)
+    with pytest.raises(DemistoException):
+        delete_quarantined_emails(client=client, args={'sensor_name': 'FireEyeEX', 'queue_ids': '1234'})
 
 
 def test_fetch_incidents(mocker):

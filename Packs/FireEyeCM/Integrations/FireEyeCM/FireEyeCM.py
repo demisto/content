@@ -89,7 +89,7 @@ class Client(BaseClient):
                                   url_suffix='emailmgmt/quarantine/release',
                                   params={'sensorName': sensor_name},
                                   json_data={"queue_ids": queue_ids},
-                                  resp_type='json')
+                                  resp_type='resp')
 
     @logger
     def delete_quarantined_emails_request(self, sensor_name: str, queue_ids: list):
@@ -97,7 +97,7 @@ class Client(BaseClient):
                                   url_suffix='emailmgmt/quarantine/delete',
                                   params={'sensorName': sensor_name},
                                   json_data={"queue_ids": queue_ids},
-                                  resp_type='json')
+                                  resp_type='resp')
 
     @logger
     def download_quarantined_emails_request(self, sensor_name: str, queue_id: str, timeout: str):
@@ -386,16 +386,12 @@ def release_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandR
 
     raw_response = client.release_quarantined_emails_request(sensor_name, queue_ids)
 
-    if not raw_response:
-        md_ = 'No emails were released.'
+    if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
+        raise DemistoException(raw_response.json())
     else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Released emails:', t=raw_response, removeNull=True)
-
+        md_ = f'{INTEGRATION_NAME} released emails successfully.'
     return CommandResults(
         readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
-        outputs_key_field='email_uuid',
-        outputs=raw_response,
         raw_response=raw_response
     )
 
@@ -406,41 +402,26 @@ def delete_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandRe
     queue_ids = argToList(args.get('queue_ids', ''))
 
     raw_response = client.delete_quarantined_emails_request(sensor_name, queue_ids)
-
-    if not raw_response:
-        md_ = 'No emails were deleted.'
+    if raw_response.text:  # returns 200 either way. if operation is successful than resp is empty
+        raise DemistoException(raw_response.json())
     else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Deleted emails:', t=raw_response, removeNull=True)
+        md_ = f'{INTEGRATION_NAME} deleted emails successfully.'
 
     return CommandResults(
         readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
-        outputs_key_field='email_uuid',
-        outputs=raw_response,
         raw_response=raw_response
     )
 
 
 @logger
-def download_quarantined_emails(client: Client, args: Dict[str, Any]) -> CommandResults:
+def download_quarantined_emails(client: Client, args: Dict[str, Any]):
     sensor_name = args.get('sensor_name', '')
     queue_id = args.get('queue_id', '')
     timeout = int(args.get('timeout', '120'))
 
     raw_response = client.download_quarantined_emails_request(sensor_name, queue_id, timeout)
 
-    if not raw_response:
-        md_ = 'No emails were deleted.'
-    else:
-        md_ = tableToMarkdown(name=f'{INTEGRATION_NAME} Deleted emails:', t=raw_response, removeNull=True)
-
-    return CommandResults(
-        readable_output=md_,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.QuarantinedEmail',
-        outputs_key_field='email_uuid',
-        outputs=raw_response,
-        raw_response=raw_response
-    )
+    demisto.results(fileResult(f'quarantined_email_{queue_id}.eml', data=raw_response, file_type=EntryType.FILE))
 
 
 @logger
@@ -599,6 +580,8 @@ def main() -> None:
             get_artifacts_by_uuid(client, args)
         elif command == f'{INTEGRATION_COMMAND_NAME}-get-reports':
             get_reports(client, args)
+        elif command == f'{INTEGRATION_COMMAND_NAME}-download-quarantined-emails':
+            download_quarantined_emails(client, args)
         elif command in commands:
             return_results(commands[command](client, args))
         else:
