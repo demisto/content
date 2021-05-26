@@ -1,6 +1,6 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
-<p>Cortex XSOAR Lock is a mechanism that enables users to prevent concurrent execution of tasks. This is a native integration, which does not require configuration.</p>
+<p>Demisto Lock is a mechanism that enables users to prevent concurrent execution of tasks. This is a native integration, which does not require configuration.</p>
 <hr>
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
