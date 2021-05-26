@@ -10,7 +10,7 @@ SECRET_CONF_PATH="./conf_secret.json"
 
 # ====== BUCKET CONFIGURATION ======
 
-if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
+if [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]]; then
   STORAGE_BASE_PATH="upload-flow/builds/$BRANCH/$CI_PIPELINE_ID/content/packs"
 fi
 

@@ -145,3 +145,30 @@ def test_command_url(mocker):
     assert output.get(dbot_key, [])[0].get('Score') == 3
     assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.B
     assert url_command[0].to_context().get('Contents') == URL_CONTENTS
+
+
+def test_url_not_found(mocker):
+    """
+        Given:
+        - A url to check with no results
+
+    When:
+        - Running the url_command and mocking no results
+
+    Then:
+        - validating that the IOC score is as expected
+        - validating the the Reliability is as expected
+        - validating the the Contents is as expected
+    """
+    from GoogleSafeBrowsingV2 import url_command
+    client = create_client(base_url="https://safebrowsing.googleapis.com/v4/threatMatches:find")
+    mocker.patch.object(client, '_http_request', return_value={})
+
+    url_command = url_command(client, {'url': ['test.com']})
+    # print(url_command.to_context())
+    output = url_command.to_context().get('EntryContext', {})
+    dbot_key = 'DBotScore(val.Indicator && val.Indicator == obj.Indicator && ' \
+               'val.Vendor == obj.Vendor && val.Type == obj.Type)'
+    assert output.get(dbot_key, [])[0].get('Score') == 0
+    assert output.get(dbot_key, [])[0].get('Reliability') == DBotScoreReliability.B
+    assert url_command.readable_output == "No information was found for url ['test.com']"
