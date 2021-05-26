@@ -60,6 +60,7 @@ create-instances-upload-flow:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+    when: always
   variables:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -101,6 +102,7 @@ upload-packs-to-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+    when: always
   variables:
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
