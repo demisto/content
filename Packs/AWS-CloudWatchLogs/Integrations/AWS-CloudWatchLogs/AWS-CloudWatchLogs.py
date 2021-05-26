@@ -431,49 +431,51 @@ def main():
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                            retries)
+    command = demisto.command()
+    args = demisto.args()
 
-    if demisto.command() == 'test-module':
+    if command == 'test-module':
         # This is the call made when pressing the integration test button.
         result = test_function(aws_client)
 
-    if demisto.command() == 'aws-logs-create-log-group':
-        result = create_log_group(demisto.args(), aws_client)
+    if command == 'aws-logs-create-log-group':
+        result = create_log_group(args, aws_client)
 
-    if demisto.command() == 'aws-logs-create-log-stream':
-        result = create_log_stream(demisto.args(), aws_client)
+    if command == 'aws-logs-create-log-stream':
+        result = create_log_stream(args, aws_client)
 
-    if demisto.command() == 'aws-logs-delete-log-group':
-        result = delete_log_group(demisto.args(), aws_client)
+    if command == 'aws-logs-delete-log-group':
+        result = delete_log_group(args, aws_client)
 
-    if demisto.command() == 'aws-logs-delete-log-stream':
-        result = delete_log_stream(demisto.args(), aws_client)
+    if command == 'aws-logs-delete-log-stream':
+        result = delete_log_stream(args, aws_client)
 
-    if demisto.command() == 'aws-logs-filter-log-events':
-        result = filter_log_events(demisto.args(), aws_client)
+    if command == 'aws-logs-filter-log-events':
+        result = filter_log_events(args, aws_client)
 
-    if demisto.command() == 'aws-logs-describe-log-groups':
-        result = describe_log_groups(demisto.args(), aws_client)
+    if command == 'aws-logs-describe-log-groups':
+        result = describe_log_groups(args, aws_client)
 
-    if demisto.command() == 'aws-logs-describe-log-streams':
-        result = describe_log_streams(demisto.args(), aws_client)
+    if command == 'aws-logs-describe-log-streams':
+        result = describe_log_streams(args, aws_client)
 
-    if demisto.command() == 'aws-logs-put-retention-policy':
-        result = put_retention_policy(demisto.args(), aws_client)
+    if command == 'aws-logs-put-retention-policy':
+        result = put_retention_policy(args, aws_client)
 
-    if demisto.command() == 'aws-logs-delete-retention-policy':
-        result = delete_retention_policy(demisto.args(), aws_client)
+    if command == 'aws-logs-delete-retention-policy':
+        result = delete_retention_policy(args, aws_client)
 
-    if demisto.command() == 'aws-logs-put-log-events':
-        result = put_log_events(demisto.args(), aws_client)
+    if command == 'aws-logs-put-log-events':
+        result = put_log_events(args, aws_client)
 
-    if demisto.command() == 'aws-logs-put-metric-filter':
-        result = put_metric_filter(demisto.args(), aws_client)
+    if command == 'aws-logs-put-metric-filter':
+        result = put_metric_filter(args, aws_client)
 
-    if demisto.command() == 'aws-logs-delete-metric-filter':
-        result = delete_metric_filter(demisto.args(), aws_client)
+    if command == 'aws-logs-delete-metric-filter':
+        result = delete_metric_filter(args, aws_client)
 
-    if demisto.command() == 'aws-logs-describe-metric-filters':
-        result = describe_metric_filters(demisto.args(), aws_client)
+    if command == 'aws-logs-describe-metric-filters':
+        result = describe_metric_filters(args, aws_client)
 
     demisto.results(result)
 
