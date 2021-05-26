@@ -15,7 +15,6 @@ configuration:
   defaultvalue: 'true'
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
-  defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
