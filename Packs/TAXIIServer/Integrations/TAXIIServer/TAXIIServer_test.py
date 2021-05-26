@@ -367,20 +367,6 @@ INDICATOR_QUERY = 'type:IP and sourceBrands:"Bambenek Consulting Feed"' \
                   ' sourcetimestamp:<="2020-02-20T11:32:32 +0000"'
 
 
-def test_get_https_hostname(mocker):
-    from TAXIIServer import get_https_hostname
-    # Set
-    mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
-
-    host_name = 'demistoserver.works'
-
-    # Arrange
-    host_name = get_https_hostname(host_name)
-
-    # Assert
-    assert host_name == 'demistoserver.works/instance/execute/eyy'
-
-
 def test_find_indicators_by_time_frame(mocker):
     import datetime
     import pytz
@@ -440,7 +426,7 @@ def test_validate_indicators(indicator):
 @pytest.mark.parametrize('request_headers, url_scheme, expected',
                          [
                              ({}, 'http', 'http://host:9000'),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https', 'https://host/instance/execute')
+                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https', 'https://host/instance/execute/eyy')
                          ]
                          )
 def test_get_url(mocker, request_headers, url_scheme, expected):
@@ -462,9 +448,6 @@ def test_get_url(mocker, request_headers, url_scheme, expected):
         certificate='', private_key='', http_server=False, credentials={}
     )
     TAXIIServer.SERVER = taxii_server
-    request_mock = mocker.MagicMock()
-    request_mock.environ = {'wsgi.url_scheme': url_scheme}
-    mocker.patch('TAXIIServer.request', request_mock)
-    set_url_scheme_wrapper = TAXIIServer.set_url_scheme(lambda *args: None)
-    set_url_scheme_wrapper(lambda *args: None)
+    if request_headers:
+        mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
     assert taxii_server.get_url(request_headers) == expected

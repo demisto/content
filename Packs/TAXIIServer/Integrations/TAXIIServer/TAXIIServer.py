@@ -688,24 +688,6 @@ def taxii_check(f: Callable) -> Callable:
     return check
 
 
-def set_url_scheme(f: Callable) -> Callable:
-    """
-    Wrapper function of HTTP requests to set the URL scehme
-    Args:
-        f: The wrapped function.
-
-    Returns:
-        The function result (if the headers are valid).
-    """
-    @functools.wraps(f)
-    def _set(*args, **kwargs):
-        if url_scheme := request.environ.get('wsgi.url_scheme'):
-            SERVER.url_scheme = url_scheme
-        return f(*args, **kwargs)
-
-    return _set
-
-
 def get_port(params: dict = demisto.params()) -> int:
     """
     Gets port from the integration parameters.
@@ -814,7 +796,6 @@ def taxii_make_response(taxii_message: TAXIIMessage):
 @APP.route('/taxii-discovery-service', methods=['POST'])
 @taxii_check
 @validate_credentials
-# @set_url_scheme
 def taxii_discovery_service() -> Response:
     """
     Route for discovery service.
@@ -833,7 +814,6 @@ def taxii_discovery_service() -> Response:
 @APP.route('/taxii-collection-management-service', methods=['POST'])
 @taxii_check
 @validate_credentials
-# @set_url_scheme
 def taxii_collection_management_service() -> Response:
     """
     Route for collection management.
