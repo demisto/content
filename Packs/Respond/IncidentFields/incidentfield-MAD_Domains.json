@@ -8,7 +8,7 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "name",
+            "displayName": "Name",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
