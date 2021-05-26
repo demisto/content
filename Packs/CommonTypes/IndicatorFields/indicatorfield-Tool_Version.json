@@ -1,0 +1,43 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Tool"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "toolversion",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_toolversion",
+    "isReadOnly": false,
+    "itemVersion": "",
+    "locked": false,
+    "name": "Tool Version",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "",
+    "selectValues": null,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "fromVersion": "6.2.0",
+    "version": -1
+}
