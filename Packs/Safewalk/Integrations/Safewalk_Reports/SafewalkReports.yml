@@ -182,12 +182,12 @@ script:
     description: safewalk-get-users-associations-indicators
   dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
-  feed: true
+  feed: false
   runonce: false
   script: '-'
   subtype: python3
   type: python  
-  ismappable: true
+  ismappable: false
   isFetchSamples: true
 fromversion: 5.5.0
 tests:
