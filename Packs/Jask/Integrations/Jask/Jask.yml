@@ -41,7 +41,7 @@ configuration:
   required: false
   type: 0
 description: Freeing the analyst with autonomous decisions
-display: Jask
+display: Jask (Deprecated)
 name: Jask
 script:
   commands:
@@ -638,3 +638,4 @@ script:
 tests:
 - No test
 fromversion: 5.0.0
+deprecated: true
