@@ -186,7 +186,8 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  type: python  ismappable: true
+  type: python  
+  ismappable: true
   isFetchSamples: true
 fromversion: 5.5.0
 tests:
