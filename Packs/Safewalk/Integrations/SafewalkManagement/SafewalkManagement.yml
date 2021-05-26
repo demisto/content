@@ -9,6 +9,16 @@ detaileddescription: |2
    ### Safewalk XSOAR Integration
    #### Integration Author: Altipeak
 configuration:
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: 7 days
+  required: false
+  type: 0
+- display: Max fetch 
+  defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
   defaultvalue: https://safewalk-server.company.com:8443/
@@ -428,11 +438,12 @@ script:
     description: Update user group
   dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
-  feed: true
+  feed: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
   isFetchSamples: true
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
