@@ -311,7 +311,7 @@ script:
   - name: safewalk-delete-user
     arguments:
     - name: username
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   feed: true
   runonce: false
