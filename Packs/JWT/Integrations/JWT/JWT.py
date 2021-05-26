@@ -5,6 +5,8 @@ from CommonServerUserPython import *  # noqa
 import requests
 import traceback
 from typing import Dict, Any
+import jwt
+import uuid
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -18,39 +20,54 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def request_access_token(self, headers, body):
+        response = self._http_request('post', headers=headers, json_data=body)
+        return response
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=None, scp=None, iat=None, exp=None, nbf=None,
+                                token_timeout=None, additional_claims=None):
+    token_id = str(uuid.uuid4())
+    jti = jti or token_id
+
+    token_timeout = token_timeout or '300'
+    now = datetime.utcnow()
+    timeout_datetime = now + timedelta(seconds=int(token_timeout))
+    epoch_time = int((now - datetime(1970, 1, 1)).total_seconds())
+    epoch_timeout = int((timeout_datetime - datetime(1970, 1, 1)).total_seconds())
+    exp = exp or epoch_timeout
+    iat = iat or epoch_time
+
+    claims = {
+        'exp': exp,
+        'iat': iat,
+        'jti': jti
+    }
+
+    if iss:
+        claims['iss'] = iss
+    if aud:
+        claims['aud'] = aud
+    if sub:
+        claims['sub'] = sub
+    if scp:
+        claims['iss'] = scp
+    if additional_claims:
+        claims.update(json.loads(additional_claims))
+
+    payload = jwt.encode(claims, secret_key, algorithm='HS256')
+
+    return jti, payload
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client):
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -64,85 +81,118 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    return message
+    return 'ok'
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def jwt_generate_authentication_payload_command(args, params):
+    secret_key = params['key']
+    jti = args.get('jti')
+    iss = args.get('iss') or params.get('iss', params['url'])
+    aud = args.get('aud') or params.get('aud')
+    sub = args.get('sub')
+    scp = args.get('scp')
+    iat = args.get('iat')
+    exp = args.get('exp')
+    nbf = args.get('nbf')
+    additional_claims = args.get('additionalClaims')
+    token_timeout = args.get('tokenTimeout')
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    jti, payload = encode_authentication_token(secret_key=secret_key, jti=jti, iss=iss, aud=aud, sub=sub, scp=scp,
+                                               iat=iat, exp=exp, nbf=nbf, token_timeout=token_timeout,
+                                               additional_claims=additional_claims)
+    result = {
+        "ID": jti,
+        "AuthenticationToken": payload
+    }
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
+        outputs_prefix='JWT.Token',
+        outputs_key_field='ID',
         outputs=result,
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+
+
+def jwt_generate_access_token_command(client, args, params):
+    secret_key = params['key']
+    jti = args.get('jti')
+    iss = args.get('iss') or params.get('iss', params['url'])
+    aud = args.get('aud') or params.get('aud')
+    sub = args.get('sub')
+    scp = args.get('scp')
+    iat = args.get('iat')
+    exp = args.get('exp')
+    nbf = args.get('nbf')
+    additional_claims = args.get('additionalClaims')
+    token_timeout = args.get('tokenTimeout')
+
+    jti, payload = encode_authentication_token(secret_key=secret_key, jti=jti, iss=iss, aud=aud, sub=sub, scp=scp,
+                                               iat=iat, exp=exp, nbf=nbf, token_timeout=token_timeout,
+                                               additional_claims=additional_claims)
+    payload = {'auth_token': payload}
+    headers = {'Content-Type': 'application/json; charset=utf-8'}
+    res = client.request_access_token(headers=headers, body=payload)
+    access_token = res['access_token']
+
+    result = {
+        "ID": jti,
+        "AuthenticationToken": payload['auth_token'],
+        "AccessToken": access_token
+    }
+
+    return CommandResults(
+        outputs_prefix='JWT.Token',
+        outputs_key_field='ID',
+        outputs=result,
+    )
+
+
+def jwt_decode_token_command(client, args):
+    token = args.get('token')
+    secret = args.get('secret', 'nosecret')
+    result = jwt.decode(token, secret, algorithms="HS256", options={"verify_signature": False})
+    return CommandResults(
+        outputs_prefix='JWT.DecodedToken',
+        outputs_key_field='ID',
+        outputs=result,
+    )
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
-    """main function, parses params and runs command functions
+def main():
 
-    :return:
-    :rtype:
-    """
+    base_url = urljoin(demisto.params()['url'])
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('apikey')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         headers: Dict = {}
-
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
-
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'jwt-generate-authentication-payload':
+            return_results(jwt_generate_authentication_payload_command(demisto.args(), demisto.params()))
+        elif demisto.command() == 'jwt-generate-access-token':
+            return_results(jwt_generate_access_token_command(client, demisto.args(), demisto.params()))
+        elif demisto.command() == 'jwt-decode-token':
+            return_results(jwt_decode_token_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

@@ -1,8 +1,6 @@
-## BaseIntegration Help
+## JWT Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+JSON Web Tokens are an open, industry standard RFC 7519 method for representing claims securely between two parties.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+This integration allows you to decode, verify and generate JWT. For more information:
+https://jwt.io
