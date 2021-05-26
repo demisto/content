@@ -114,7 +114,7 @@ def incident_data_to_demisto_format(inc_data):
         'Status': properties.get('status'),
         'AssigneeName': properties.get('owner', {}).get('assignedTo'),
         'AssigneeEmail': properties.get('owner', {}).get('email'),
-        'Labels': [{
+        'Label': [{
             'Name': label.get('labelName'),
             'Type': label.get('labelType')
         } for label in properties.get('labels', [])],

@@ -74,12 +74,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Timeout
-  name: timeout
-  additionalinfo: in seconds
-  hidden: false
-  required: false
-  type: 0
 description: Use the Azure Sentinel integration to get and manage incidents and get
   related entity information for incidents.
 display: Azure Sentinel (Beta)
@@ -336,7 +330,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Email of the incident assignee. Note it shows as owner in the API.
+      description: The email address of the incident assignee. Note that the updated API field is `owner.email`.
       isArray: false
       name: assignee_email
       required: false
