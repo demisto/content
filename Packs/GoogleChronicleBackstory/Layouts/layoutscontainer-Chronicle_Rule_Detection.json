@@ -441,15 +441,6 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "chronicleversionid",
-                                "height": 53,
-                                "id": "2e7b7f30-1504-11eb-9b4e-a35aa939990c",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "chronicledetectionwindowstarttime",
