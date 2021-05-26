@@ -1,6 +1,8 @@
 import base64
 import json
 import pytest
+from exchangelib import Message
+from freezegun import freeze_time
 
 from EWSO365 import (
     find_folders,
@@ -11,7 +13,9 @@ from EWSO365 import (
     add_additional_headers,
     handle_transient_files,
     handle_html,
+    fetch_last_emails
 )
+from exchangelib import EWSDateTime
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -258,3 +262,93 @@ def test_handle_html(mocker, html_input, expected_output):
     import EWSO365 as ewso365
     mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
     assert handle_html(html_input) == expected_output
+
+
+@freeze_time('2021-05-23 13:18:14.901293+00:00')
+@pytest.mark.parametrize('since_datetime, filter_arg, expected_result',
+                         [('', 'last_modified_time__gte', EWSDateTime.from_string('2021-05-23 13:08:14.901293+00:00')),
+                          ('2021-05-23 21:28:14.901293+00:00', 'datetime_received__gte',
+                           '2021-05-23 21:28:14.901293+00:00')
+                          ])
+def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
+    """
+    Given:
+        - First fetch timestamp - no last_run
+        - Not the first time fetching - last_run with a date
+
+    When:
+        - Fetching last emails
+
+    Then:
+        - Verify last_modified_time__gte is ten minutes earlier
+        - Verify datetime_received__gte according to the datetime received
+    """
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.get_folder_by_path = mock_get_folder_by_path
+    mocker.patch.object(MockObject, 'filter')
+
+    fetch_last_emails(client, since_datetime=since_datetime)
+    assert MockObject.filter.call_args[1].get(filter_arg) == expected_result
+
+
+@freeze_time('2021-05-23 18:28:14.901293+00:00')
+@pytest.mark.parametrize('max_fetch, expected_result',
+                         [(6, 5),
+                          (2, 2),
+                          (5, 5)])
+def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
+    """
+    Given:
+        - Max fetch is 6
+        - Max fetch is 2
+        - Max fetch is 5
+
+    When:
+        - Fetching last emails - need to make sure to return emails according to the max_fetch param.
+
+    Then:
+        - Return 5 emails (Cause we only have 5 emails)
+        - Return 2 emails
+        - Return 5 emails
+    """
+    class MockObject:
+        def filter(self, last_modified_time__gte='', datetime_received__gte=''):
+            return MockObject2()
+
+    class MockObject2:
+        def filter(self):
+            return MockObject2()
+
+        def only(self, *args):
+            return self
+
+        def order_by(self, *args):
+            # Return a list of emails
+            return [Message(), Message(), Message(), Message(), Message()]
+
+    def mock_get_folder_by_path(path, account=None, is_public=False):
+        return MockObject()
+
+    client = TestNormalCommands.MockClient()
+    client.max_fetch = max_fetch
+    client.get_folder_by_path = mock_get_folder_by_path
+
+    emails = fetch_last_emails(client, since_datetime='')
+    assert len(emails) == expected_result
