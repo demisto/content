@@ -515,31 +515,35 @@ def category_add_url(category_id, url):
             found_category = True
             break
     if found_category:
+        demisto.info('The category exists, lets upload the urls')
         url_list = argToList(url)
-        response = add_or_remove_urls_from_category(ADD, url_list, category_data)[0]
-        context = {
-            'ID': category_id,
-            'CustomCategory': response.get('customCategory'),
-            'URL': response.get('urls')
-        }
-        if 'description' in category_data and category_data['description']:  # Custom might not have description
-            context['Description'] = category_data['description']
-        ec = {
-            'Zscaler.Category(val.ID && val.ID === obj.ID)': context
-        }
-        urls = ''
-        for url in url_list:
-            urls += '- ' + url + '\n'
-        hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
-        entry = {
-            'Type': entryTypes['note'],
-            'Contents': ec,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': hr,
-            'EntryContext': ec
-        }
-        return entry
+        response = add_or_remove_urls_from_category(ADD, url_list, category_data)
+        # print("jsoned response: \n"+response)
+        if response:
+            response = response[0]
+            context = {
+                'ID': category_id,
+                'CustomCategory': response.get('customCategory'),
+                'URL': response.get('urls')
+            }
+            if 'description' in category_data and category_data['description']:  # Custom might not have description
+                context['Description'] = category_data['description']
+            ec = {
+                'Zscaler.Category(val.ID && val.ID === obj.ID)': context
+            }
+            urls = ''
+            for url in url_list:
+                urls += '- ' + url + '\n'
+            hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
+            entry = {
+                'Type': entryTypes['note'],
+                'Contents': ec,
+                'ContentsFormat': formats['json'],
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': hr,
+                'EntryContext': ec
+            }
+            return entry
     else:
         return return_error('Category could not be found.')
 
@@ -708,8 +712,9 @@ def add_or_remove_urls_from_category(action, urls, category_data):
     if 'configuredName' in category_data:
         data['configuredName'] = category_data['configuredName']
     json_data = json.dumps(data)
-    response = http_request('PUT', cmd_url, json_data).json()
-    return response
+    response = http_request('PUT', cmd_url, json_data)
+    print("raw response: \n"+response)
+    return response.json()
 
 
 def url_quota_command():
