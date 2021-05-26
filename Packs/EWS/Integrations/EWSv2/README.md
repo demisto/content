@@ -51,6 +51,7 @@
 <li><strong>Has impersonation rights</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>
+<li><strong>First fetch timestamp</strong></li>
 <li><strong>Mark fetched emails as read</strong></li>
 <li>
 <strong>Incident type</strong><br> ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉<br> ‎ Manual Mode<br> <code>In case the auto-discovery process failed, you will need to configure manually the exchange server endpoint, domain\username for exchange on-premise and enter exchange server version</code>
@@ -71,6 +72,8 @@
 <p>The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.</p>
 <p>To use Fetch incidents, configure a new instance and select the<span> </span><code>Fetches incidents</code><span> </span>option in the instance settings.</p>
 <p>IMPORTANT: The initial fetch interval is the previous 10 minutes. If no emails were fetched before from the destination folder- all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched. Additionally moving messages manually to the destination folder will not trigger fetch incident. Define rules on phishing/target mailbox instead of moving messages manually.</p>
+<p>You can configure the ``First fetch timestamp`` field to determine how much time back you want to fetch incidents.
+<p>Notice that it might required to set the ``Timeout`` field to a higher value.</p>
 <p>Pay special attention to the following fields in the instance settings:</p>
 <p><code>Email address from which to fetch incidents</code><span> </span>– mailbox to fetch incidents from.<br> <code>Name of the folder from which to fetch incidents</code><span> </span>– use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.<br> <code>Has impersonation rights</code><span> </span>– mark this option if you set the target mailbox to an account different than your personal account. Otherwise Delegation access will be used instead of Impersonation.<br> Find more information on impersonation or delegation rights at ‘Additional Info’ section below.</p>
 <h2>Commands</h2>
