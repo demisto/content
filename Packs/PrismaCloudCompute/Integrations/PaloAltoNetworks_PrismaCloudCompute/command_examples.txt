@@ -1,0 +1,5 @@
+!prismacloudcompute-alert-profiles-names
+!prismacloudcompute-current-collections
+!prismacloudcompute-defenders-names 
+!prismacloudcompute-defenders-restart id=ip-10-0-37-80.us-west-2.compute.internal
+!prismacloudcompute-defenders-summary

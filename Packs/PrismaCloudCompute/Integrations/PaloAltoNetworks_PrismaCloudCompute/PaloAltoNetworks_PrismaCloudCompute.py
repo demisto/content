@@ -130,8 +130,10 @@ class Client(BaseClient):
 
         return response
 
-
     def api_v1_images_names_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+        """
+        Get all container image names
+        """
         params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, id=id_, hostname=hostname, repository=repository, registry=registry, name=name, layers=layers, filterBaseImage=filterBaseImage, compact=compact, trustStatuses=trustStatuses, clusters=clusters)
 
         headers = self._headers
@@ -139,7 +141,11 @@ class Client(BaseClient):
         response = self._http_request('get', 'images/names', params=params, headers=headers)
 
         return response
+
     def api_v1_images_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+        """
+        Get details for a given image
+        """
         params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, id=id_, hostname=hostname, repository=repository, registry=registry, name=name, layers=layers, filterBaseImage=filterBaseImage, compact=compact, trustStatuses=trustStatuses, clusters=clusters)
 
         headers = self._headers
@@ -149,6 +155,7 @@ class Client(BaseClient):
         return response
 
     def api_v1_images_download_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+        
         params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, id=id_, hostname=hostname, repository=repository, registry=registry, name=name, layers=layers, filterBaseImage=filterBaseImage, compact=compact, trustStatuses=trustStatuses, clusters=clusters)
 
         headers = self._headers
@@ -157,6 +164,107 @@ class Client(BaseClient):
 
         return response
 
+    def api_v1_alert_profiles_names_request(self):
+        """
+        Get the alert profiles names
+        """
+        headers = self._headers
+
+        response = self._http_request('get', 'alert-profiles/names', headers=headers)
+
+        return response
+
+
+    def api_v1_current_collections_request(self):
+        """
+        Get the current collections
+        """
+        headers = self._headers
+
+        response = self._http_request('get', 'current/collections', headers=headers)
+
+        return response
+
+    def api_v1_defenders_image_name_request(self):
+        """
+        Return the full defender image name
+        """
+        headers = self._headers
+
+        response = self._http_request('get', 'defenders/image-name', headers=headers)
+
+        return response
+
+    def api_v1_defenders_install_bundle_request(self, consoleaddr, defenderType, interpreter):
+        """
+        Return details on the defender install bundle
+        """
+        params = assign_params(consoleaddr=consoleaddr, defenderType=defenderType, interpreter=interpreter)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'defenders/install-bundle', params=params, headers=headers)
+
+        return response
+
+    def api_v1_defenders_restart_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('post', f'defenders/{id_}/restart', headers=headers, resp_type="response")
+
+        return response
+    def api_v1_defenders_names_request(self, hostname, role, cluster, tasClusterIDs):
+        params = assign_params(hostname=hostname, role=role, cluster=cluster, tasClusterIDs=tasClusterIDs)
+        headers = self._headers
+
+        response = self._http_request('get', 'defenders/names', params=params, headers=headers, resp_type="response")
+
+        return response
+    def api_v1_defenders_summary_request(self):
+        headers = self._headers
+
+        response = self._http_request('get', 'defenders/summary', headers=headers)
+
+        return response
+
+    def api_v1_deployment_host_progress_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'deployment/host/progress', headers=headers)
+
+        return response
+    def api_v1_deployment_host_scan_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'deployment/host/scan', headers=headers, resp_type="response")
+
+        return response
+
+    def api_v1_deployment_host_stop_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'deployment/host/stop', headers=headers, resp_type="response")
+
+        return response
+
+    def api_v1_deployment_serverless_scan_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'deployment/serverless/scan', headers=headers, resp_type="response")
+
+        return response
+    def api_v1_deployment_serverless_stop_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'deployment/serverless/stop', headers=headers, resp_type="response")
+
+        return response
 
 def str_to_bool(s):
     """
@@ -461,6 +569,238 @@ def api_v1_images_download_command(client, args):
     return fileResult("images.csv", response.content)
 
 
+def api_v1_alert_profiles_names_command(client, args):
+    """
+    List all alert profiles
+    Args:
+        None
+    Returns:
+        List of profiles names
+    """
+    response = client.api_v1_alert_profiles_names_request()
+    markdown = tableToMarkdown('Profiles', response, headers="response")
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='PrismaCloudCompute.Profiles',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_current_collections_command(client, args):
+    """
+    List all collections
+    Args:
+        None
+    Returns:
+        A list of collection objects
+    """
+    response = client.api_v1_current_collections_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Collections.Current',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_defenders_image_name_command(client, args):
+    """
+    Returns the defenders image names
+    Args:
+        None
+    Returns:
+        A list of image names
+    """
+
+    response = client.api_v1_defenders_image_name_request()
+
+    entry = {
+        "Images": response
+    }
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Defenders',
+        outputs_key_field='Images',
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_defenders_install_bundle_command(client, args):
+    """
+    Returns the defenders certificate bundle
+    Args:
+        consoleaddr: the address of the console
+        defenderType: the defender type
+        interpreter: custom interpreter
+    Returns:
+        object describing the install bundle
+    """
+    consoleaddr = str(args.get('consoleaddr', ''))
+    defenderType = str(args.get('defenderType', ''))
+    interpreter = str(args.get('interpreter', ''))
+
+    response = client.api_v1_defenders_install_bundle_request(consoleaddr, defenderType, interpreter)
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Defenders.Bundles',
+        outputs_key_field='wsAddress',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_defenders_restart_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.api_v1_defenders_restart_request(id_)
+    if response.status_code == 200:
+        msg = "Restart successful"
+    else:
+        msg = "Restart failed"
+    
+    entry = {
+        "Results": msg,
+        "Hostname": id_
+    }
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Restart',
+        outputs_key_field='Hostname',
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_defenders_names_command(client, args):
+    hostname = str(args.get('hostname', ''))
+    role = str(args.get('role', ''))
+    cluster = str(args.get('cluster', ''))
+    tasClusterIDs = str(args.get('tasClusterIDs', ''))
+
+    response = client.api_v1_defenders_names_request(hostname, role, cluster, tasClusterIDs)
+
+    entry = {
+        "PrismaCloudCompute.Defenders": response.json()
+    }
+
+    command_results = CommandResults(
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_defenders_summary_command(client, args):
+
+    response = client.api_v1_defenders_summary_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.DefendersSummary',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def api_v1_deployment_host_progress_command(client, args):
+
+    response = client.api_v1_deployment_host_progress_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.HostDeploymentProgress',
+        outputs_key_field='hostname',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_deployment_host_scan_command(client, args):
+
+    response = client.api_v1_deployment_host_scan_request()
+    if response.status_code == 200:
+        msg = "Success"
+    else:
+        msg = "Failure"
+    entry = {
+        "Status Code": response.status_code,
+        "Message": msg
+    }
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute',
+        outputs_key_field='',
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_deployment_host_stop_command(client, args):
+
+    response = client.api_v1_deployment_host_stop_request()
+    if response.status_code == 200:
+        msg = "Host scan stopped successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_deployment_serverless_scan_command(client, args):
+
+    response = client.api_v1_deployment_serverless_scan_request()
+
+    if response.status_code == 200:
+        msg = "Serverless scan started successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_deployment_serverless_stop_command(client, args):
+
+    response = client.api_v1_deployment_serverless_stop_request()
+    if response.status_code == 200:
+        msg = "Serverless scan stopped successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -508,7 +848,19 @@ def main():
            "prismacloudcompute-containers-scan": api_v1_containers_scan_command,
            "prismacloudcompute-images-names": api_v1_images_names_command,
            "prismacloudcompute-images": api_v1_images_command,
-           "prismacloudcompute-images-download": api_v1_images_download_command
+           "prismacloudcompute-images-download": api_v1_images_download_command,
+           "prismacloudcompute-alert-profiles-names": api_v1_alert_profiles_names_command,
+           "prismacloudcompute-current-collections": api_v1_current_collections_command,
+           "prismacloudcompute-defenders-image-name": api_v1_defenders_image_name_command,
+           "prismacloudcompute-defenders-install-bundle": api_v1_defenders_install_bundle_command,
+           "prismacloudcompute-defenders-restart": api_v1_defenders_restart_command,
+           "prismacloudcompute-defenders-names": api_v1_defenders_names_command,
+           "prismacloudcompute-defenders-summary": api_v1_defenders_summary_command,
+           "prismacloudcompute-deployment-host-progress": api_v1_deployment_host_progress_command,
+           "prismacloudcompute-deployment-host-scan": api_v1_deployment_host_scan_command,
+           "prismacloudcompute-deployment-host-stop": api_v1_deployment_host_stop_command,
+           "prismacloudcompute-deployment-serverless-scan": api_v1_deployment_serverless_scan_command,
+           "prismacloudcompute-deployment-serverless-stop": api_v1_deployment_serverless_stop_command
         }
 
         if demisto.command() == 'test-module':

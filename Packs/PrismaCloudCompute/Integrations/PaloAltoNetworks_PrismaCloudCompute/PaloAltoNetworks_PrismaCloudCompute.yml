@@ -219,6 +219,72 @@ script:
     - name: clusters
       description: 'Clusters is a list of cluster names to query by '
     description: 'DownloadImages downloads the image data '
+  - name: prismacloudcompute-alert-profiles-names
+    arguments: []
+    description: 'AlertProfileNames returns the all alert profile names '
+  - name: prismacloudcompute-current-collections
+    arguments: []
+    description: 'UserCollections returns collections in the current project that
+      the user has permission to access '
+  - name: prismacloudcompute-defenders-image-name
+    arguments: []
+    description: 'DefenderImage returns the path to the official defender image '
+  - name: prismacloudcompute-defenders-install-bundle
+    arguments:
+    - name: consoleaddr
+      description: 'consoleaddr is the remote console address '
+    - name: defenderType
+      description: 'DefenderType is the type of the defender to create the install
+        bundle for '
+    - name: interpreter
+      description: 'Interpreter is a custom interpreter set by the user to run the
+        fargate defender entrypoint script '
+    outputs:
+    - contextPath: PrismaCloudCompute.sharedDefenderInstallBundle.installBundle
+      description: 'InstallBundle is the base64 bundle of certificates used to communicate
+        with the console '
+      type: String
+    - contextPath: PrismaCloudCompute.sharedDefenderInstallBundle.wsAddress
+      description: 'WSAddress is the websocket address (console ) the TAS defender
+        connects to '
+      type: String
+    description: 'DefenderInstallBundle returns the install bundle according to the
+      provided configuration '
+  - name: prismacloudcompute-defenders-restart
+    arguments:
+    - name: id
+      required: true
+    description: 'RestartDefender restarts a specific defender '
+  - name: prismacloudcompute-defenders-names
+    arguments:
+    - name: hostname
+      description: 'Hostname indicates the query should fetch a specific defender '
+    - name: role
+      description: 'Roles are the defender api.Roles to filter '
+    - name: cluster
+      description: 'Clusters are the defender clusters to filter '
+    - name: tasClusterIDs
+      description: 'TASClusterIDs is used to fetch defenders that belong to the TAS
+        cluster IDs '
+    description: 'DefenderNames returns the defenders names by the query specification '
+  - name: prismacloudcompute-defenders-summary
+    arguments: []
+    description: 'DefendersSummary returns the number of defenders in each defender
+      category '
+  - name: prismacloudcompute-deployment-host-scan
+    arguments: []
+    description: 'StartHostAutoDeploy starts a host auto-deploy '
+  - name: prismacloudcompute-deployment-host-stop
+    arguments: []
+    description: 'StopHostAutoDeploy stops the host auto-deploy auto-deploy scan '
+  - name: prismacloudcompute-deployment-serverless-scan
+    arguments: []
+    description: 'StartServerlessAutoDeploy starts a serverless auto-deploy scan '
+  - name: prismacloudcompute-deployment-serverless-stop
+    arguments: []
+    description: 'StopServerlessAutoDeploy stops a serverless auto-deploy scan '
+
+
 tests:
 - No test
 fromversion: 5.0.0
