@@ -153,7 +153,7 @@ class Client(BaseClient):
     def send_user_virtualtoken(self, username, token_devicetype, token_serialnumber) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
-            url_suffix='/devices/<device_type>/<serial_number>/code/' % (token_devicetype, token_serialnumber),
+            url_suffix='/devices/%s/%s/code/' % (token_devicetype, token_serialnumber),
             resp_type = 'text'
         )
 
@@ -954,6 +954,20 @@ def update_user_group(client, args):
         client.remove_user_group(username, old_group_name)
         client.add_user_group(username, new_group_name)
 
+    result = {'message':'Successfully updated'}
+
+    readable_output = f'## {result}'
+
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='UpdateUserGroup.Result',
+        outputs_key_field='',
+        outputs=result,
+        raw_response=result
+    )
+
+    return command_results
+
 
 def add_user_group(client, args):
     username = args.get('username')
@@ -1105,17 +1119,12 @@ def delete_user(client, args):
 
 
 def test_module(client, args):
-    """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-    Args:
-        client: HelloWorld client
-    Returns:
-        'ok' if test passed, anything else will fail the test.
-    """
-    args
-    uri = 'users/me'
-    client._http_request(method='GET', url_suffix=uri)
-    return 'ok', None, None
+    results = json.loads(client.get_transactionlog(None, None, None))['results']
+
+    if results is not None:
+        return 'ok'
+    else:
+        return 'Failed to run the test'
 
 
 def main():
