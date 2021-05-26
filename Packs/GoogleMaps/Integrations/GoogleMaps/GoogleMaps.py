@@ -32,6 +32,7 @@ class Client(BaseClient):
         coordinate_dict = response[0]['geometry']['location']
         return_results(CommandResults(outputs_prefix='GoogleMaps',
                                       outputs_key_field=['lat', 'lon'],
+                                      entry_type=EntryType.MAP_ENTRY_TYPE,
                                       outputs=coordinate_dict,
                                       raw_response=response))
 
