@@ -69,6 +69,7 @@ class Client(BaseClient):
         if count_params > 0:
             for key, value in kwargs.items():
                 key = key.replace('_', '.')
+                key = key.replace("sortBy_", "sortBy[0]_")
                 params[key] = value
 
         response = self._http_request("GET", url_suffix="/api/v1/secrets", params=params).get("records")
@@ -194,6 +195,7 @@ class Client(BaseClient):
         if count_params > 0:
             for key, value in kwargs.items():
                 key = key.replace('_', '.')
+                key = key.replace("sortBy_", "sortBy[0]_")
                 params[key] = value
 
         return (self._http_request("GET", url_suffix="/api/v1/users", params=params)).get('records')

@@ -416,19 +416,19 @@ script:
     - default: false
       description: Sort direction
       isArray: false
-      name: sortBy[0]_direction
+      name: sortBy_direction
       required: false
       secret: false
     - default: false
       description: Sort field name
       isArray: false
-      name: sortBy[0]_name
+      name: sortBy_name
       required: false
       secret: false
     - default: false
       description: Priority index. Sorts with lower values are executed earlier
       isArray: false
-      name: sortBy[0]_priority
+      name: sortBy_priority
       required: false
       secret: false
     - default: false
@@ -864,19 +864,19 @@ script:
     - default: false
       description: Sort direction
       isArray: false
-      name: sortBy[0]_direction
+      name: sortBy_direction
       required: false
       secret: false
     - default: false
       description: Sort field name
       isArray: false
-      name: sortBy[0]_name
+      name: sortBy_name
       required: false
       secret: false
     - default: false
       description: Priority index. Sorts with lower values are executed earlier (integer)
       isArray: false
-      name: sortBy[0]_priority
+      name: sortBy_priority
       required: false
       secret: false
     - default: false
