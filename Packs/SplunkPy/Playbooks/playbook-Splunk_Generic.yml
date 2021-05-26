@@ -52,7 +52,7 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: 'Adjustment/Exclusion for offense '
+    simple: 'Adjustment/Exclusion for notable '
 name: Splunk Generic
 outputs: []
 starttaskid: "0"
@@ -766,88 +766,83 @@ tasks:
       }
   "23":
     id: "23"
-    ignoreworker: false
+    taskid: ed40e798-d16a-4f53-80ce-efd3b06cb023
+    type: regular
+    task:
+      id: ed40e798-d16a-4f53-80ce-efd3b06cb023
+      version: -1
+      name: Send email to SIEM admin
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
-    note: false
-    quietmode: 0
     scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
       body:
         complex:
-          accessor: Answers
-          root: Data for rule adjustment by the SIEM admin
+          root: inputs.SiemAdminEmailAddress
           transformers:
-          - operator: Stringify
-          - args:
-              regex:
+          - operator: substringTo
+            args:
+              to:
                 value:
-                  simple: (.*)
-              replaceWith:
-                value:
-                  simple: |
-                    Link to offense
-            operator: replaceMatch
-          - args:
-              prefix: {}
-              suffix:
-                iscontext: true
-                value:
-                  simple: incident.linktooffense
-            operator: concat
-          - args:
+                  simple: '@'
+          - operator: concat
+            args:
               prefix: {}
               suffix:
                 value:
                   simple: "\nRules to adjust - "
-            operator: concat
-          - args:
+          - operator: concat
+            args:
               prefix: {}
               suffix:
-                iscontext: true
                 value:
                   simple: Data for rule adjustment by the SIEM admin.Answers.0
-            operator: concat
-          - args:
+                iscontext: true
+          - operator: concat
+            args:
               prefix: {}
               suffix:
                 value:
                   simple: "\nValues to exclude - "
-            operator: concat
-          - args:
+          - operator: concat
+            args:
               prefix: {}
               suffix:
-                iscontext: true
                 value:
                   simple: Data for rule adjustment by the SIEM admin.Answers.1
-            operator: concat
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Dear '
+              suffix: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
       subject:
         complex:
           root: inputs.SiemAdminMailSubject
           transformers:
-          - args:
+          - operator: concat
+            args:
               prefix: {}
               suffix:
-                iscontext: true
                 value:
-                  simple: incident.idoffense
-            operator: concat
+                  simple: incident.notableid
+                iscontext: true
       to:
         simple: ${inputs.SiemAdminEmailAddress}
     separatecontext: false
-    skipunavailable: true
-    task:
-      brand: ""
-      description: Sends an email using EWS.
-      id: 75317a1a-1b21-43d7-8ed1-eab2b3d7bd67
-      iscommand: true
-      name: Send email to SIEM admin
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: 75317a1a-1b21-43d7-8ed1-eab2b3d7bd67
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -855,6 +850,11 @@ tasks:
           "y": 2540
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
   "28":
     id: "28"
     ignoreworker: false
@@ -1019,10 +1019,5 @@ view: |-
     }
   }
 tests:
-- Splunk Indicator Hunting Test
-- SplunkPy parse-raw - Test
-- Splunk-Test
-- SplunkPy KV commands
-- SplunkPy-Test-V2
-- SplunkPySearch_Test
+- no test
 fromversion: 6.0.0
