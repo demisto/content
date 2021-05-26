@@ -1,0 +1,58 @@
+{
+    "name": "Cybersixgill-DVE",
+    "description": "## FILL MANDATORY FIELD ##",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cybersixgill",
+    "url": "https://www.cybersixgill.com/",
+    "email": "getstarted@cybersixgill.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence",
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Dark Web",
+        "Malware"
+    ],
+    "useCases": [
+        "Threat Intelligence Management",
+        "Incident Response",
+        "Malware",
+        "Hunting"
+    ],
+    "keywords": [
+        "sixgill",
+        "darkfeed",
+        "feed",
+        "IOC",
+        "IOCs",
+        "indicators",
+        "threat intelligence",
+        "dark web",
+        "darkweb",
+        "darknet",
+        "dark net",
+        "deep web",
+        "cti",
+        "cyber threat intelligence",
+        "malware",
+        "compromised",
+        "rdp",
+        "Botnet",
+        "virus total",
+        "virustotal",
+        "emotet",
+        "trickbot",
+        "ursnif",
+        "recorded future",
+        "flashpoint",
+        "intel471",
+        "intsights",
+        "digital shadows",
+        "C2",
+        "command and control",
+        "DDoS"
+    ],
+    "githubUser": []
+}
