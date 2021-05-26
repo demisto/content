@@ -309,8 +309,7 @@ def checkpoint_list_hosts_command(client: Client, limit: int, offset: int) -> Co
     demisto.info(result)
     if result:
         if result.get('total') == 0:
-            readable_output = tableToMarkdown('CheckPoint data for all hosts:', ['no_more_output'],
-                                              DEFAULT_LIST_FIELD, removeNull=True)
+            readable_output = 'No hosts objects were found.'
         else:
             result = result.get('objects')
             for element in result:
@@ -1476,6 +1475,9 @@ def checkpoint_list_package_command(client: Client, identifier: str) -> CommandR
                 printable_result.append(current_printable_result)
             readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
                                               headers, removeNull=True)
+        else:
+            readable_output = 'No package objects were found.'
+
     command_results = CommandResults(
         outputs_prefix='CheckPoint.Package',
         outputs_key_field='target-uid',
