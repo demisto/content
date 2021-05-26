@@ -9,7 +9,7 @@ description: Mock Feed
 configuration:
 - display: Indicator Type
   name: indicator_type
-  type: 15
+  type: 16
   required: true
   options:
   - Domain

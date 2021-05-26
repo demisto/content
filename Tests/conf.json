@@ -3318,12 +3318,7 @@
                 "EDL",
                 "Create-Mock-Feed-Relationships"
             ],
-            "instance_names": [
-                "edl_performance",
-                "mock_feed_domain",
-                "mock_feed_url",
-                "mock_feed_ip"
-            ]
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
