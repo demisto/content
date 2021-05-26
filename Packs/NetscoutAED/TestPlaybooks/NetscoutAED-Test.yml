@@ -1,5 +1,5 @@
 id: NetscoutAED-Test
-version: 8
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: NetscoutAED-Test
 starttaskid: "0"

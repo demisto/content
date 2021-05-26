@@ -69,7 +69,7 @@ def test_serialize_protection_groups():
     """
 
         Given:
-            - A valid list of objects
+            - A valid object
 
         When:
             - When the api expects a different format
@@ -80,15 +80,16 @@ def test_serialize_protection_groups():
     """
     from NetscoutAED import serialize_protection_groups
 
-    protection_groups_list = [{'active': 'true', 'protectionLevel': "low"},
-                              {'active': 'false', 'protectionLevel': "medium"},
-                              {'active': 'false', 'protectionLevel': "high"}]
-    serialize_protection_groups(protection_groups_list)
+    protection_groups_list = [{'active': True, 'protectionLevel': "low"},
+                              {'active': False, 'protectionLevel': "medium"},
+                              {'active': False, 'protectionLevel': "high"}]
     expected_output = [{'active': 1, 'protectionLevel': 1},
                        {'active': 0, 'protectionLevel': 2},
-                       {'active': 0, 'protectionLevel': 3}]
-    assert len(protection_groups_list) == len(expected_output)
-    assert all([x == y for x, y in zip(protection_groups_list, expected_output)])
+                       {'active': 0, 'protectionLevel': 3}
+                       ]
+    for i, protection_group in enumerate(protection_groups_list):
+        serialize_protection_groups(protection_group)
+        assert protection_groups_list[i] == expected_output[i]
 
 
 def test_deserialize_protection_groups():
@@ -109,12 +110,12 @@ def test_deserialize_protection_groups():
     protection_groups_list = [
         {'active': 1, 'protectionLevel': 1},
         {'active': 0, 'protectionLevel': 2},
-        {'active': 0, 'protectionLevel': 3}
+        {'active': 0, 'protectionLevel': 3},
     ]
     expected_output = [
         {'active': True, 'protectionLevel': "low"},
         {'active': False, 'protectionLevel': "medium"},
-        {'active': False, 'protectionLevel': "high"}
+        {'active': False, 'protectionLevel': "high"},
     ]
     deserialize_protection_groups(protection_groups_list)
     assert len(protection_groups_list) == len(expected_output)
@@ -240,7 +241,7 @@ def test_handle_country_addition_commands_no_country_given():
 
     """
     from NetscoutAED import handle_country_addition_commands
-    with pytest.raises(DemistoException, match="You must provide country code in order to add"):
+    with pytest.raises(DemistoException, match="A country code must be provided in order to add"):
         handle_country_addition_commands(client, {}, outbound_blacklisted)
 
 
@@ -287,7 +288,7 @@ def test_handle_country_deletion_commands_no_country_given():
 
     """
     from NetscoutAED import handle_country_deletion_commands
-    with pytest.raises(DemistoException, match="You must provide country code in order to remove"):
+    with pytest.raises(DemistoException, match="A country code must be provided in order to add"):
         handle_country_deletion_commands(client, {}, outbound_blacklisted)
 
 
@@ -423,7 +424,7 @@ def test_handle_host_addition_commands_no_host_given():
 
     """
     from NetscoutAED import handle_host_addition_and_replacement_commands
-    with pytest.raises(DemistoException, match="You must provide host in order to add/update"):
+    with pytest.raises(DemistoException, match="A host address must be provided in order to add/update"):
         handle_host_addition_and_replacement_commands(client, {}, outbound_blacklisted)
 
 
@@ -483,7 +484,7 @@ def test_handle_host_deletion_commands_no_host_given():
 
     """
     from NetscoutAED import handle_host_deletion_commands
-    with pytest.raises(DemistoException, match="You must provide host in order to remove"):
+    with pytest.raises(DemistoException, match="A host address must be provided in order to remove"):
         handle_host_deletion_commands(client, {}, outbound_blacklisted)
 
 
@@ -600,7 +601,7 @@ def test_handle_protection_groups_update_commands_no_pgid_given(mocker):
 
     """
     from NetscoutAED import handle_protection_groups_update_commands
-    with pytest.raises(DemistoException, match="You must provide pgid in order to update"):
+    with pytest.raises(DemistoException, match="A pgid must be provided in order to update"):
         handle_protection_groups_update_commands(client, {})
 
 
@@ -683,7 +684,7 @@ def test_handle_domain_addition_commands_no_domain_given():
 
     """
     from NetscoutAED import handle_domain_addition_commands
-    with pytest.raises(DemistoException, match="You must provide domain in order to add"):
+    with pytest.raises(DemistoException, match="A domain must be provided in order to add"):
         handle_domain_addition_commands(client, {})
 
 
@@ -725,7 +726,7 @@ def test_handle_domain_deletion_commands_no_domain_given():
     """
     from NetscoutAED import handle_domain_deletion_commands
 
-    with pytest.raises(DemistoException, match="You must provide domain in order to remove"):
+    with pytest.raises(DemistoException, match="A domain must be provided in order to remove"):
         handle_domain_deletion_commands(client, {})
 
 
@@ -808,7 +809,7 @@ def test_handle_url_addition_commands_no_url_given():
 
    """
     from NetscoutAED import handle_url_addition_commands
-    with pytest.raises(DemistoException, match="You must provide url in order to add"):
+    with pytest.raises(DemistoException, match="A URL must be provided in order to add"):
         handle_url_addition_commands(client, {})
 
 
@@ -832,7 +833,7 @@ def test_handle_url_deletion_commands(url):
     with requests_mock.Mocker() as m:
         m.delete(f"{MOCK_URL}/protection-groups/blacklisted-urls/", status_code=204)
         result = handle_url_deletion_commands(client, {"url": url})
-    assert "Urls were successfully removed" in result
+    assert "URLs were successfully removed" in result
 
 
 def test_handle_url_deletion_commands_no_url_given():
@@ -850,5 +851,5 @@ def test_handle_url_deletion_commands_no_url_given():
     """
     from NetscoutAED import handle_url_deletion_commands
 
-    with pytest.raises(DemistoException, match="You must provide url in order to remove"):
+    with pytest.raises(DemistoException, match="A URL must be provided in order to remove"):
         handle_url_deletion_commands(client, {})

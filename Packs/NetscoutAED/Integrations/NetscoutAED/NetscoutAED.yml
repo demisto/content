@@ -1,3 +1,4 @@
+beta: false
 category: Utilities
 commonfields:
   id: NetscoutAED
@@ -16,9 +17,7 @@ configuration:
   required: false
   type: 8
 - name: User
-  displaypassword: API Key
   required: false
-  hiddenusername: true
   type: 9
 description: Use the Netscout Arbor Edge Defense Integration to detect and stop both
   inbound threats and outbound communication from internal compromised hosts.
@@ -106,7 +105,7 @@ script:
     - default: false
       description: An ISO standardized country code or a comma-separated list of country
         codes. Can be retrieved by running the "na-aed-country-code-list" command.
-      isArray: false
+      isArray: true
       name: country
       required: true
       secret: false
@@ -136,7 +135,7 @@ script:
       description: An ISO-standardized country code or a comma-separated list of ISO-standardized
         country codes to remove. Can be retrieved by running the "na-aed-country-code-list"
         command.
-      isArray: false
+      isArray: true
       name: country
       required: true
       secret: false
@@ -147,22 +146,21 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of central configuration IDs. Cannot be
-        used with the pgid parameter. with the pgid parameter.
-      isArray: false
+        used with the pgid parameter.
+      isArray: true
       name: cid
       required: false
       secret: false
     - default: false
       description: A comma-separated list of protection group IDs. Cannot be used
         with the cid parameter.
-      isArray: false
+      isArray: true
       name: pgid
       required: false
       secret: false
     - default: false
       description: An ISO-standardized country code to get a specific country in the
-        results. Can be retrieved by running the "na-aed-country-code-list"command
-        .
+        results. Can be retrieved by running the "na-aed-country-code-list"command.
       isArray: false
       name: country
       required: false
@@ -235,7 +233,7 @@ script:
     - default: false
       description: ISO standardized country code or a comma-separated list of country
         codes. Can be retrieved by running the "na-aed-country-code-list" command.
-      isArray: false
+      isArray: true
       name: country
       required: true
       secret: false
@@ -277,7 +275,7 @@ script:
     - default: false
       description: ISO standardized country code or a comma-separated list of country
         codes. Can be retrieved by running the "na-aed-country-code-list" command.
-      isArray: false
+      isArray: true
       name: country
       required: true
       secret: false
@@ -289,7 +287,7 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of IPv4 host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: false
       secret: false
@@ -340,7 +338,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -362,7 +360,7 @@ script:
     - default: false
       description: A single IPv4 host address or CIDR or a comma-separated list of
         IPv4 host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -370,7 +368,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -392,7 +390,7 @@ script:
     - default: false
       description: A single IPv4 host address or CIDR to remove, or a comma-separated
         list of IPv4 host addresses or CIDRs to remove.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -403,7 +401,7 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of IPv4 host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: false
       secret: false
@@ -446,7 +444,7 @@ script:
     - default: false
       description: A single IPv4 host address or CIDR or a comma-separated list of
         IPv4 host addresses or CIDRs to add.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -454,7 +452,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -476,7 +474,7 @@ script:
     - default: false
       description: A single IPv4 host address or CIDR or a comma-separated list of
         IPv4 host addresses or CIDRs to update.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -484,7 +482,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -510,7 +508,8 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: false
+      default: true
+      defaultValue: 'true'
       description: 'Set the protection group mode to active (true) or inactive (false).
         Default: true.'
       isArray: false
@@ -521,13 +520,13 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: false
+      default: true
+      defaultValue: low
       description: 'The protection level (None = use the global protection level,
         low, medium, high). Default: low'
       isArray: false
       name: protection_level
       predefined:
-      - None
       - low
       - medium
       - high
@@ -586,7 +585,7 @@ script:
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bytes_passed
       description: Number of passed bytes.
-      type: Unknown
+      type: Number
     - contextPath: NetscoutAED.Protection_Group.description
       description: Description of the protection group.
       type: String
@@ -627,7 +626,7 @@ script:
     - contextPath: NetscoutAED.Protection_Group.protection_level
       description: The protection level (None = use the global protection level, low,
         medium, high).
-      type: Unknown
+      type: String
     - contextPath: NetscoutAED.Protection_Group.server_name
       description: The protection group’s server name.
       type: String
@@ -686,7 +685,7 @@ script:
       type: Number
     - contextPath: NetscoutAED.Protection_Group.bytes_passed
       description: Number of passed bytes.
-      type: Unknown
+      type: Number
     - contextPath: NetscoutAED.Protection_Group.description
       description: Description of the protection group.
       type: String
@@ -727,7 +726,7 @@ script:
     - contextPath: NetscoutAED.Protection_Group.protection_level
       description: The protection level (None = use the global protection level, low,
         medium, high).
-      type: Unknown
+      type: String
     - contextPath: NetscoutAED.Protection_Group.server_name
       description: The protection group’s server name.
       type: String
@@ -743,7 +742,7 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of IPv4 host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: false
       secret: false
@@ -794,7 +793,7 @@ script:
     - default: false
       description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
         list of host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -802,7 +801,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -830,7 +829,7 @@ script:
     - default: false
       description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
         list of host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -838,7 +837,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -866,7 +865,7 @@ script:
     - default: false
       description: A single IPv4 or IPv6 host address or CIDR, or a comma-separated
         list of host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -878,7 +877,7 @@ script:
   - arguments:
     - default: false
       description: A comma-separated list of IPv4 or IPv6 host addresses or CIDRs.
-      isArray: false
+      isArray: true
       name: host_address
       required: false
       secret: false
@@ -930,7 +929,7 @@ script:
     - default: false
       description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
         list of host addresses or CIDRs to add.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -938,7 +937,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -967,7 +966,7 @@ script:
     - default: false
       description: A single IPv4 or IPv6 host address or CIDR or a comma-separated
         list of host addresses or CIDRs to update.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -975,7 +974,7 @@ script:
       description: A single description that applies to all of the specified hosts
         or a comma-separated list of descriptions, each of which applies to a specific
         host.
-      isArray: false
+      isArray: true
       name: annotation
       required: false
       secret: false
@@ -1004,7 +1003,7 @@ script:
     - default: false
       description: A single IPv4 or IPv6 host address or CIDR, or a comma-separated
         list of host addresses or CIDRs to remove.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -1017,20 +1016,20 @@ script:
     - default: false
       description: A comma-separated list of central configuration IDs. Cannot be
         used with the pgid parameter.
-      isArray: false
+      isArray: true
       name: cid
       required: false
       secret: false
     - default: false
       description: A comma-separated list of protection group IDs. Cannot be used
         with the cid parameter.
-      isArray: false
+      isArray: true
       name: pgid
       required: false
       secret: false
     - default: false
       description: A comma-separated list of domains.
-      isArray: false
+      isArray: true
       name: domain
       required: false
       secret: false
@@ -1094,7 +1093,7 @@ script:
       secret: false
     - default: false
       description: Domain name or a comma-separated list of domain names.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -1123,11 +1122,11 @@ script:
       type: Unknown
     - contextPath: NetscoutAED.InboundBlacklistDomain.update_time
       description: The time that the domain was added to the list.
-      type: Unknown
+      type: Date
   - arguments:
     - default: false
       description: Domain name or a comma-separated list of domain names.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -1140,20 +1139,20 @@ script:
     - default: false
       description: A comma-separated list of central configuration IDs. Cannot be
         used with the pgid parameter.
-      isArray: false
+      isArray: true
       name: cid
       required: false
       secret: false
     - default: false
       description: A comma-separated list of protection group IDs. Cannot be used
         with the cid parameter.
-      isArray: false
+      isArray: true
       name: pgid
       required: false
       secret: false
     - default: false
       description: A comma-separated list of URLs.
-      isArray: false
+      isArray: true
       name: url
       required: false
       secret: false
@@ -1217,7 +1216,7 @@ script:
       secret: false
     - default: false
       description: URL or a comma-separated list of URLs to add.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -1250,7 +1249,7 @@ script:
   - arguments:
     - default: false
       description: URL or a comma-separated list of URLs.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -1263,7 +1262,7 @@ script:
     - default: false
       description: A single IPv4 host address or CIDR, or a comma-separated list of
         IPv4 host addresses or CIDRs to remove.
-      isArray: false
+      isArray: true
       name: host_address
       required: true
       secret: false
@@ -1281,6 +1280,6 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- NetscoutAED-Test
 defaultclassifier: 'null'
 fromversion: 5.5.0
