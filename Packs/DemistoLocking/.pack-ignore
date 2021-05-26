@@ -1,0 +1,5 @@
+[file:integration-DemistoLocking.yml]
+ignore=DS106
+
+[file:README.md]
+ignore=RM105

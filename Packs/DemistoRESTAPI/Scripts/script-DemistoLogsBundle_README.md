@@ -1,4 +1,4 @@
-Gets the Cortex XSOAR Log Bundle to the War Room.
+Gets the Demisto Log Bundle to the War Room.
 
 ## Script Data
 ---
@@ -6,13 +6,13 @@ Gets the Cortex XSOAR Log Bundle to the War Room.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | javascript |
-| Tags | XSOARAPI |
+| Tags | DemistoAPI |
 
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* XSOAR-api-download
+* demisto-api-download
 
 ## Inputs
 ---

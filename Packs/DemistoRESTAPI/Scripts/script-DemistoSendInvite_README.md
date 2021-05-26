@@ -1,4 +1,4 @@
-Sends an invitation to join Cortex XSOAR.
+Sends an invitation to join Demisto.
 
 ## Script Data
 ---
@@ -6,14 +6,14 @@ Sends an invitation to join Cortex XSOAR.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | javascript |
-| Tags | XSOARAPI |
+| Tags | DemistoAPI |
 
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* XSOAR-api-post
-* XSOAR-api-get
+* demisto-api-post
+* demisto-api-get
 
 ## Inputs
 ---

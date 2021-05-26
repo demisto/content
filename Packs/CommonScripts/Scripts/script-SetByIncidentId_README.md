@@ -6,7 +6,7 @@ Sets a value into the context with the given context key. By default this will n
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python |
-| Tags | XSOARAPI |
+| Tags | DemistoAPI |
 
 
 ## Inputs
