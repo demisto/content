@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Deprecated. Use Sumo Logic Cloud SIEM integration from Sumo Logic Cloud SIEM pack instead.</p>
+<p>Deprecated. Use Sumo Logic Cloud SIEM integration instead.</p>
 <h2>Overview</h2>
 <hr>
 <p>Use the JASK integration to manage entities, signals, and insights.</p>
