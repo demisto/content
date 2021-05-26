@@ -2,28 +2,15 @@ import base64
 import json
 
 import pytest
-
-from freezegun import freeze_time
-from exchangelib import EWSDate
+from exchangelib import EWSDate, EWSDateTime
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
+from freezegun import freeze_time
 
 from EWSO365 import (ExpandGroup, GetSearchableMailboxes,
-                     add_additional_headers, find_folders, get_expanded_group,
-                     get_searchable_mailboxes, handle_html,
+                     add_additional_headers, fetch_last_emails, find_folders,
+                     get_expanded_group, get_searchable_mailboxes, handle_html,
                      handle_transient_files, parse_incident_from_item)
-from EWSO365 import (
-    find_folders,
-    get_searchable_mailboxes,
-    GetSearchableMailboxes,
-    ExpandGroup,
-    get_expanded_group,
-    add_additional_headers,
-    handle_transient_files,
-    handle_html,
-    fetch_last_emails
-)
-from exchangelib import EWSDateTime
 
 with open("test_data/commands_outputs.json", "r") as f:
     COMMAND_OUTPUTS = json.load(f)
