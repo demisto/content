@@ -60,7 +60,7 @@ def check_incidents_ids_in_campaigns_list(campaigns_ids_list: List[str], inciden
         campaign_context = campaign_context['context']
         connected_incidents_list = demisto.get(campaign_context, 'EmailCampaign.incidents')
         if incidents_list:
-            campaign_incidents_ids = {incident.get('id') for incident in incidents_list}
+            connected_campaign_incidents_ids = {incident.get('id') for incident in incidents_list}
             is_incidents_in_campaign = bool(incidents_ids_set & campaign_incidents_ids)
             if is_incidents_in_campaign:
                 return campaign_id
