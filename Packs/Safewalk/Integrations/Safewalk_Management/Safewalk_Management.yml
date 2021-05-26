@@ -315,7 +315,9 @@ script:
   isfetch: true
   feed: true
   runonce: false
+  script: '-'
   subtype: python3
+  type: python
   isFetchSamples: true
 tests:
 - No tests (auto formatted)
