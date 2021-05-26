@@ -2043,3 +2043,32 @@ Get pull requests corresponding to the given branch name.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| MEMBER | Label: demisto:master<br/>Ref: master<br/>SHA: 9adf770fb981ec8bc9d6e87669be75da23176693<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | Updated Docker Images For Integrations | 2021-05-03T14:29:25Z | false | Label: demisto:Update-Docker-Image<br/>Ref: Update-Docker-Image<br/>SHA: baee6e30aaa0f52e676987c1968ffd3ce11d7e57<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | 629143674 | {'ID': 1523790036, 'NodeID': 'MDU6TGFiZWwxNTIzNzkwMDM2', 'Name': 'docs-approved', 'Description': '', 'Color': None, 'Default': False} | false | 5854633d909c5672ba6ccf118c4dae68eb4e38c0 | MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0 | 12510 | open | 2021-05-03T14:48:58Z | Login: content-bot<br/>ID: 55035720<br/>NodeID: MDQ6VXNlcjU1MDM1NzIw<br/>Type: User<br/>SiteAdmin: false |
 
+### Github-commit-file
+***
+Commits a given file.
+
+
+#### Base Command
+
+`Github-commit-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| commit_message | Commit message. | Required | 
+| path_to_file | Path to the file in the Github repo (including file name and file ending). | Required | 
+| entry_id | Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| file_text | Plain text for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| branch_name | The branch name. | Required | 
+| file_sha | The blob SHA of the file being replaced. Use the Github-list-files command to get the SHA value of the file.  Required if you are updating a file. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!Github-commit-file commit_message="test commit" path_to_file="TEST.md" branch_name=branch-for-pr file_sha=hjashd878ad file_text=Test```
+
+#### Human Readable Output
+The file TEST.md committed successfully. Link to the commit: https://github.com/content-bot/hello-world/commit/7678213ghg72136
