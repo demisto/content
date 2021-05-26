@@ -54,14 +54,17 @@ def check_incidents_ids_in_campaigns_list(campaigns_ids_list: List[str], inciden
         Campaign incident's id where at least one id from the incidents_ids_set is linked to that campaign incident.
     """
     for campaign_id in campaigns_ids_list:
-        campaign_context = demisto.executeCommand("getContext", {'id': campaign_id})[0]['Contents']
-        if isinstance(campaign_context, str):  # item not found
+        campaign_context = demisto.executeCommand("getContext", {'id': campaign_id})
+
+        try:
+            campaign_context = campaign_context[0]['Contents']['context']
+        except (TypeError, KeyError, IndexError):  # ensure that the received context is from the type we expect
             continue
-        campaign_context = campaign_context['context']
+
         connected_incidents_list = demisto.get(campaign_context, 'EmailCampaign.incidents')
-        if incidents_list:
-            connected_campaign_incidents_ids = {incident.get('id') for incident in incidents_list}
-            is_incidents_in_campaign = bool(incidents_ids_set & campaign_incidents_ids)
+        if connected_incidents_list:
+            connected_campaign_incidents_ids = {incident.get('id') for incident in connected_incidents_list}
+            is_incidents_in_campaign = bool(incidents_ids_set & connected_campaign_incidents_ids)
             if is_incidents_in_campaign:
                 return campaign_id
 
