@@ -142,7 +142,7 @@ class Client(BaseClient):
         fields = intel_map[entity_type]
         if entity_type == "ip" and not risky:
             fields.remove("riskyCIDRIPs")
-        if not related and not profile == 'All':
+        if not related and profile != 'All':
             fields.remove("relatedEntities")
         req_fields = ",".join(fields)
         params = {"fields": req_fields}
