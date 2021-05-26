@@ -4,12 +4,13 @@ import json
 
 
 MOCK_PARAMS = {
-        'credentials': {
-            'identifier': 'TEST',
-            'password': 'TEST'
-        },
-        'url': 'https://MOCK_URL',
-    }
+    'credentials': {
+        'identifier': 'TEST',
+        'password': 'TEST'
+    },
+    'url': 'https://MOCK_URL',
+}
+
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
