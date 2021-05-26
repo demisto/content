@@ -8,20 +8,6 @@
   variables:
     GCS_PRODUCTION_BUCKET: "marketplace-dist-dev" # remove this after testing period
 
-.start_tunnel: &start_tunnel
-  - section_start "Start Tunnel"
-  - echo "Open an ssh tunnel to the demisto servers and wait until the tunnels are established"
-  - echo "Add ssh configurations"
-  - |
-    if [ -z $INSTANCE_CREATED ]; then
-      echo "Skipping - instance was not created"
-    else
-      cat $SSH_CONFIGURATION >> ~/.ssh/config
-    fi
-  - echo "Open SSH Tunnel"
-  - ./Tests/scripts/open_ssh_tunnel.sh
-  - section_end "Start Tunnel"
-
 .check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
   - section_start "Check User Permissions to Upload Packs" # if bucket upload and uploading to marketplace-dist
   - |
@@ -29,7 +15,7 @@
       CONTENT_LEADERS=$(curl -sS "https://api.github.com/orgs/demisto/teams/content-leaders/members" -H "Authorization: token ${GITHUB_TOKEN}")
       echo "recieved content leaders"
       LEADER_NAMES=$(echo $CONTENT_LEADERS | jq -r ".[].login")
-      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" )
+      LEADER_NAMES=$(echo "${LEADER_NAMES}" "content-bot" "svc-xsoar-gitlab-mirror" )
       if [[ -z "$GITLAB_USER_NAME" ]] || [[ -z "`echo $LEADER_NAMES | grep -w "$GITLAB_USER_NAME"`" ]]; then
         echo -e "User '$GITLAB_USER_NAME' is not allowed to trigger this build, only one of:\n${LEADER_NAMES}"
         exit 1
@@ -60,6 +46,7 @@ create-instances-upload-flow:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+    when: always
   variables:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
@@ -72,7 +59,7 @@ create-instances-upload-flow:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - section_end "Download configuration"
-    - *start_tunnel
+    - !reference [.open-ssh-tunnel]
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
     - echo INSTANCE_CREATED="$INSTANCE_CREATED"
@@ -101,6 +88,7 @@ upload-packs-to-marketplace:
     expire_in: 48 hrs
     paths:
       - /builds/xsoar/content/artifacts/*
+    when: always
   variables:
     INSTANCE_ROLE: "Server Master"
     INSTANCE_CREATED: "true"
@@ -110,7 +98,7 @@ upload-packs-to-marketplace:
     - .bucket-upload-rule
     - .default-job-settings
   script:
-    - *start_tunnel
+    - !reference [.open-ssh-tunnel]
     - *check_user_permissions_to_upload_packs
     - section_start "Upload Packs To Marketplace Storage"
     - |
