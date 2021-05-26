@@ -283,6 +283,43 @@ script:
   - name: prismacloudcompute-deployment-serverless-stop
     arguments: []
     description: 'StopServerlessAutoDeploy stops a serverless auto-deploy scan '
+  - name: prismacloudcompute-groups-names
+    arguments: []
+    description: 'GroupNames returns all group names '
+  - name: prismacloudcompute-get-users
+    arguments: []
+    description: 'Users returns all users, if request was sent from secondary project
+      - only project''s users are returned '
+  - name: prismacloudcompute-get-groups
+    arguments: []
+    description: 'Groups returns all user groups, if request was sent from secondary
+      project - only project''s groups are returned '
+  - name: prismacloudcompute-get-projects
+    arguments: []
+    description: 'Projects returns the project list that are viewable by the given
+      user '
+  - name: prismacloudcompute-get-collections
+    arguments: []
+    description: 'Collections returns a list of references to the used collections '
+  - name: prismacloudcompute-get-backups
+    arguments: []
+    description: 'List returns the available backups '
+  - name: prismacloudcompute-get-backups-by-id
+    arguments:
+    - name: id
+      required: true
+    description: 'DownloadBackup downloads the given backup file '
+  - name: prismacloudcompute-get-alert-profiles
+    arguments: []
+    description: 'AlertProfiles returns the all alert profiles '
+  - name: prismacloudcompute-version
+    arguments: []
+    description: 'Version returns the Console version '
+
+
+
+
+
 
 
 tests:

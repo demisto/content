@@ -266,6 +266,79 @@ class Client(BaseClient):
 
         return response
 
+    def api_v1_groups_names_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'groups/names', headers=headers)
+
+        return response
+
+
+    def get_api_v1_users_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'users', headers=headers)
+
+        return response
+
+    def get_api_v1_groups_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'groups', headers=headers)
+
+        return response
+
+    def get_api_v1_projects_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'projects', headers=headers)
+
+        return response
+
+    def get_api_v1_collections_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'collections', headers=headers)
+
+        return response
+
+    def get_api_v1_backups_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'backups', headers=headers)
+
+        return response
+
+    def get_api_v1_backups_by_id_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('get', f'backups/{id_}', headers=headers, resp_type="response")
+
+        return response
+
+    def get_api_v1_alert_profiles_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'alert-profiles', headers=headers)
+
+        return response
+
+    def api_v1_version_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'version', headers=headers)
+
+        return response
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -801,6 +874,110 @@ def api_v1_deployment_serverless_stop_command(client, args):
 
     return command_results
 
+def api_v1_groups_names_command(client, args):
+
+    response = client.api_v1_groups_names_request()
+    entry = { 
+        "PrismaCloudCompute.Groups": response
+    }
+    command_results = CommandResults(
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+def get_api_v1_users_command(client, args):
+    response = client.get_api_v1_users_request()
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Users',
+        outputs_key_field='username',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_groups_command(client, args):
+
+    response = client.get_api_v1_groups_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Groups',
+        outputs_key_field='_id',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_projects_command(client, args):
+
+    response = client.get_api_v1_projects_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Projects',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_collections_command(client, args):
+
+    response = client.get_api_v1_collections_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Collections',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_backups_command(client, args):
+
+    response = client.get_api_v1_backups_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Backups',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_backups_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.get_api_v1_backups_by_id_request(id_)
+    command_results = fileResult("backup.zip", response.content)
+
+    return command_results
+
+def get_api_v1_alert_profiles_command(client, args):
+
+    response = client.get_api_v1_alert_profiles_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.AlertProfiles',
+        outputs_key_field='_id',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_version_command(client, args):
+
+    response = client.api_v1_version_request()
+    entry = {"Version": response}
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Version',
+        outputs=entry,
+        raw_response=entry
+    )
+
+    return command_results
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -860,7 +1037,16 @@ def main():
            "prismacloudcompute-deployment-host-scan": api_v1_deployment_host_scan_command,
            "prismacloudcompute-deployment-host-stop": api_v1_deployment_host_stop_command,
            "prismacloudcompute-deployment-serverless-scan": api_v1_deployment_serverless_scan_command,
-           "prismacloudcompute-deployment-serverless-stop": api_v1_deployment_serverless_stop_command
+           "prismacloudcompute-deployment-serverless-stop": api_v1_deployment_serverless_stop_command,
+           "prismacloudcompute-groups-names": api_v1_groups_names_command,
+           "prismacloudcompute-get-users": get_api_v1_users_command,
+           "prismacloudcompute-get-groups": get_api_v1_groups_command,
+           "prismacloudcompute-get-projects": get_api_v1_projects_command,
+           "prismacloudcompute-get-collections": get_api_v1_collections_command,
+           "prismacloudcompute-get-backups": get_api_v1_backups_command,
+           "prismacloudcompute-get-backups-by-id": get_api_v1_backups_by_id_command,
+           "prismacloudcompute-get-alert-profiles": get_api_v1_alert_profiles_command,
+           "prismacloudcompute-version": api_v1_version_command
         }
 
         if demisto.command() == 'test-module':
