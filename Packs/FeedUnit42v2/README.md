@@ -6,7 +6,7 @@ The newest Unit42 Feed V2 Pack introduces the STIX format and ingests more Threa
 - Each Campaign has its specific Attack Patterns, Course of Actions and IOCs 
 - Starting with version 6.2 - RELATIONSHIPS between objects is now supported!
 
-In order to access the Unit42 feed, you need to sign up.
+In order to access the Unit42 feed, you first must register for an account.
 
 1. Go to https://stix2.unit42.org/ to sign up.
 2. Log in and create an API key for the service using the 'API Keys' page.
