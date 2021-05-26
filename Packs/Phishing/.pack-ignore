@@ -14,7 +14,7 @@ ignore=BA101
 ignore=BA101
 
 [file:Phishing.yml]
-ignore=BA101
+ignore=BA101,BA110
 
 [file:incidentfield-Email_Return_Path.json]
 ignore=IF107

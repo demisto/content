@@ -1,2 +1,8 @@
 [file:README.md]
 ignore=RM102
+
+[file:RiskSenseDisplayCVEChartScript.yml]
+ignore=BA110
+
+[file:RiskSenseGetRansomewareCVEScript.yml]
+ignore=BA110

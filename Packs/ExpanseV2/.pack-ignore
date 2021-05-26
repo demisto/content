@@ -3,3 +3,6 @@ ignore=BA101
 
 [file:layoutscontainer-Expanse_Issue_Layout.json]
 ignore=BA101
+
+[file:ExpanseGenerateIssueMapWidgetScript.yml]
+ignore=BA110
