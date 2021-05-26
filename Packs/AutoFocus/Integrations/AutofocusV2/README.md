@@ -100,7 +100,7 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 | --- | --- | --- |
 | AutoFocus.SamplesSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
 | AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| AutoFocus.SamplesResults.Size | String | The file size in bytes. |
+| AutoFocus.SamplesResults.Size | String | The file size in bytes. | 
 | AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. | 
 | AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. | 
 | AutoFocus.SamplesResults.Created | Date | The date that the file was created. | 
@@ -147,7 +147,7 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 
 ### Search for sessions
 ---
-Searches for sessions. To view the resultsprovide polling=true, or run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
+Searches for sessions. To view the results provide polling=true, or run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
 
 ##### Base Command
 
@@ -167,7 +167,7 @@ Searches for sessions. To view the resultsprovide polling=true, or run the `auto
 | url | The URL to search. | Optional | 
 | time_range | The date range in which to search for sessions. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | time_after | The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
-| time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
+| time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
 
 ##### Using polling
@@ -203,7 +203,7 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 | AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Tags | String | The tags of the file. |
+| File.Tags | String | The tags of the file. | 
 
 
 ##### Command Example
