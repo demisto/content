@@ -126,7 +126,7 @@ script:
     - contextPath: Rubrik.CDM.Cluster.ConnectionState
       description: The Connection State of the Rubrik CDM Cluster.
       type: String
-  dockerimage: demisto/python3:3.9.4.19849
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   runonce: false
   script: ''
