@@ -107,7 +107,7 @@ class Client:
 
         return indicator_obj
 
-    def build_iterator(self, create_relationships=False, is_up_to_6_2=True, limit: int = -1) -> List:
+    def build_iterator(self, create_relationships=False, is_up_to_6_2=True, limit: int = -1):
         """Retrieves all entries from the feed.
 
         Returns:
@@ -155,8 +155,7 @@ class Client:
                         if item_type == 'Relationship' and create_relationships:
                             if mitre_item_json.get('relationship_type') == 'revoked-by':
                                 continue
-                            relation_obj = create_relationship(mitre_item_json, id_to_name)
-                            relationships_list.append(relation_obj.to_indicator()) if relation_obj else None
+                            relationships_list.append(mitre_item_json)
 
                         else:
                             if is_indicator_deprecated_or_revoked(mitre_item_json):
@@ -167,15 +166,7 @@ class Client:
                             counter += 1
                         mitre_id_list.add(mitre_item_json.get('id'))
 
-        if create_relationships and limit > 0:
-            dummy_indicator_for_relations = {
-                "value": "$$DummyIndicator$$",
-                "relationships": relationships_list
-            }
-
-            indicators.append(dummy_indicator_for_relations)
-
-        return indicators
+        return indicators, relationships_list, id_to_name
 
 
 def get_item_type(mitre_type, is_up_to_6_2):
@@ -268,6 +259,15 @@ def map_fields_by_type(indicator_type: str, indicator_json: dict):
     return generic_mapping_fields
 
 
+def create_relationship_list(mitre_relationships_list, id_to_name):
+    relationships_list = []
+    for mitre_relationship in mitre_relationships_list:
+        relation_obj = create_relationship(mitre_relationship, id_to_name)
+        relationships_list.append(relation_obj.to_indicator()) if relation_obj else None
+
+    return relationships_list
+
+
 def create_relationship(item_json, id_to_name):
     """
     Create a single relation with the given arguments.
@@ -324,7 +324,17 @@ def test_module(client):
 
 def fetch_indicators(client, create_relationships):
     is_up_to_6_2 = is_demisto_version_ge('6.2.0')
-    indicators = client.build_iterator(create_relationships, is_up_to_6_2)
+    indicators, mitre_relationships_list, id_to_name = client.build_iterator(create_relationships, is_up_to_6_2)
+    relationships = create_relationship_list(mitre_relationships_list, id_to_name)
+
+    if create_relationships and mitre_relationships_list:
+        dummy_indicator_for_relations = {
+            "value": "$$DummyIndicator$$",
+            "relationships": relationships
+        }
+
+        indicators.append(dummy_indicator_for_relations)
+
     return indicators
 
 

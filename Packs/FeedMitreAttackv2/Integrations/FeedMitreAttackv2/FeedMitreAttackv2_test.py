@@ -23,7 +23,6 @@ def mock_create_relations(original):
     ([INTRUSION_SET.get('response')], INTRUSION_SET.get('indicator')),
     ([MALWARE.get('response')], MALWARE.get('indicator')),
     ([TOOL.get('response')], TOOL.get('indicator')),
-    ([RELATION.get('response')], RELATION.get('indicator'))
 ])
 def test_fetch_indicators(mocker, indicator, expected_result):
     """
@@ -135,3 +134,8 @@ def test_get_item_type():
     assert get_item_type('malware', False) == 'STIX Malware'
     assert get_item_type('intrusion-set', True) == 'Intrusion Set'
     assert get_item_type('intrusion-set', False) == 'Intrusion Set'
+
+
+def test_create_relationship_list():
+    from FeedMitreAttackv2 import create_relationship_list
+    assert create_relationship_list([RELATION.get('response')], ID_TO_NAME) == RELATION.get('indicator')
