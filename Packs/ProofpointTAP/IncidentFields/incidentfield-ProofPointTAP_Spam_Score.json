@@ -21,7 +21,7 @@
         "ProofPointTAP - Click Blocked",
         "ProofPointTAP - Click Permitted",
         "ProofPointTAP - Message Blocked",
-        "ProofPointTAP - Message Delievered"
+        "ProofPointTAP - Message Delivered"
     ],
     "associatedToAll": false,
     "unmapped": false,

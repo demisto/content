@@ -109,7 +109,7 @@
           "type"
         ],
         "filter": {
-          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delievered\"",
+          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delivered\"",
           "period": {
             "by": "",
             "byTo": "",
@@ -564,7 +564,7 @@
           "name": "ProofPoint Message Events",
           "dataType": "incidents",
           "widgetType": "pie",
-          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delievered\"",
+          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delivered\"",
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",

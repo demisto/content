@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "12f4446e-b1e5-47b4-8230-735f9ab0d463",
+    "id": "ProofPointTAP Mapper",
     "mapping": {
         "ProofPointTAP - Click Blocked": {
             "dontMapEventToLabels": false,
@@ -418,7 +418,7 @@
                 }
             }
         },
-        "ProofPointTAP - Message Delievered": {
+        "ProofPointTAP - Message Delivered": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "ProofPointTAP Cluster": {

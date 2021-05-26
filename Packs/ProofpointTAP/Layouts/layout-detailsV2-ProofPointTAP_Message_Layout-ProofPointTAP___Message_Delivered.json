@@ -5,7 +5,7 @@
         "name": "ProofPointTAP Message Layout",
         "version": -1,
         "kind": "detailsV2",
-        "typeId": "ProofPointTAP - Message Delievered",
+        "typeId": "ProofPointTAP - Message Delivered",
         "tabs": [
             {
                 "id": "summary",
@@ -706,6 +706,6 @@
     },
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
-    "typeId": "ProofPointTAP - Message Delievered",
+    "typeId": "ProofPointTAP - Message Delivered",
     "version": -1
 }

@@ -374,7 +374,7 @@
                 "prevName": "ProofPoint Message Events",
                 "dataType": "incidents",
                 "widgetType": "pie",
-                "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delievered\"",
+                "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"ProofPointTAP - Message Blocked\" or type:\"ProofPointTAP - Message Delivered\"",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
