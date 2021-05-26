@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Targeted Malware",
+        "GIB OSI Git Leak",
+        "GIB Compromised Card",
+        "GIB Compromised Account"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gibsource",
+    "closeForm": false,
+    "content": true,
+    "description": "Where the feed comes from to GIB",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibsource",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Source",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

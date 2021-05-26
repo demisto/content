@@ -21,7 +21,7 @@
   "file": false,
   "updateAfter": 0,
   "mergeContext": false,
-  "formatScript": "",
+  "formatScript": "ExtractEmailV2",
   "contextPath": "Account.Email(val.Address \u0026\u0026 val.Address === obj.Address)",
   "contextValue": "Address",
   "excludedBrands": [],

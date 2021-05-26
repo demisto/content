@@ -709,6 +709,15 @@ script:
     execution: false
     name: domain
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Name
       description: 'The domain name, for example: ''google.com''.'
       type: String
@@ -934,7 +943,7 @@ script:
     - contextPath: PassiveTotal.Domain.techTelephone
       description: The telephone number of the domain tech.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false
