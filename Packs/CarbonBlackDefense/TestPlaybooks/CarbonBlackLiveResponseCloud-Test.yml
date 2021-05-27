@@ -114,8 +114,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     separatecontext: false
@@ -151,8 +151,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     separatecontext: false
@@ -190,7 +190,7 @@ tasks:
         simple: "True"
       reg_path:
         simple: ${inputs.reg_key}\test_val
-      sensor_id:
+      device_id:
         simple: "3925348"
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
@@ -231,8 +231,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}\test_sub_key
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
     separatecontext: false
     view: |-
       {
@@ -266,8 +266,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
     separatecontext: false
     view: |-
       {
@@ -301,8 +301,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}\test_val
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     separatecontext: false
@@ -340,8 +340,8 @@ tasks:
         simple: C:\Windows\System32\cmd.exe /c  C:\\test\CarbonBlackLiveResponseProcessForTest.bat
       command_string:
         simple: C:\test\a_test_process.exe /c C:\test\loop.bat
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
       wait_for_completion:
@@ -382,8 +382,8 @@ tasks:
     scriptarguments:
       pid:
         simple: ${CarbonBlackDefenseLR.ExecuteProcess.[2].return_value}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     separatecontext: false
@@ -417,8 +417,8 @@ tasks:
       '#none#':
       - "69"
     scriptarguments:
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
       target_path:
@@ -457,8 +457,8 @@ tasks:
     scriptarguments:
       directory_path:
         simple: ${inputs.memdump_dir}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
     separatecontext: false
     view: |-
       {
@@ -494,8 +494,8 @@ tasks:
         simple: "True"
       reg_path:
         simple: ${inputs.reg_key}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     continueonerror: true
@@ -531,8 +531,8 @@ tasks:
       '#none#':
       - "104"
     scriptarguments:
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
     separatecontext: false
     view: |-
       {
@@ -564,8 +564,8 @@ tasks:
       '#none#':
       - "96"
     scriptarguments:
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       source_path:
         simple: ${inputs.test_file_path}
     separatecontext: false
@@ -600,8 +600,8 @@ tasks:
       '#none#':
       - "94"
     scriptarguments:
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       source_path:
         simple: ${inputs.test_file_path}
     continueonerror: true
@@ -678,8 +678,8 @@ tasks:
       file_id:
         simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID
           : val.File.EntryID)}'
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
     separatecontext: false
     view: |-
       {
@@ -714,8 +714,8 @@ tasks:
     scriptarguments:
       file_path:
         simple: c:\test\test.txt
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       source_path:
         simple: ${inputs.test_file_path}
     separatecontext: false
@@ -792,8 +792,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
     separatecontext: false
     view: |-
       {
@@ -866,8 +866,8 @@ tasks:
     scriptarguments:
       reg_path:
         simple: ${inputs.reg_key}\test_sub_key
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
     separatecontext: false
@@ -944,8 +944,8 @@ tasks:
       '#none#':
       - "46"
     scriptarguments:
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       source_path:
         simple: ${inputs.memdump_file_path}
     continueonerror: true
@@ -1023,8 +1023,8 @@ tasks:
     scriptarguments:
       command_string:
         simple: ${inputs.get_pid_cmd}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       wait_for_completion:
         simple: "True"
       wait_for_output:
@@ -1064,8 +1064,8 @@ tasks:
     scriptarguments:
       command_string:
         simple: ${inputs.get_pid_cmd}
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       wait_for_completion:
         simple: "True"
       wait_for_output:
@@ -1151,8 +1151,8 @@ tasks:
         simple: C:\Windows\System32\cmd.exe /c  C:\\test\CarbonBlackLiveResponseProcessForTest.bat
       command_string:
         simple: cmd.exe /c taskkill /f /t /im a_test_process.exe
-      sensor_id:
-        simple: ${inputs.sensor_id}
+      device_id:
+        simple: ${inputs.device_id}
       session_id:
         simple: ${CarbonBlackDefenseLR.Session.id}
       wait_for_output:
@@ -1221,7 +1221,7 @@ view: |-
     }
   }
 inputs:
-- key: sensor_id
+- key: device_id
   value:
     simple: "3925348"
   required: false

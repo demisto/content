@@ -13,11 +13,11 @@ Allows security operators to collect information and take action on remote endpo
 6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and created API Secret Key and API ID
 
 
-**Getting the sensor id**
+**Getting the device id**
 
-To get the sensor id you can run the command ``cbd-device-search`` (should have an instance of Carbon Black Defense integration) and find it according the name,
-or manually, in Carbon Black Cloud web page go to Endpoints > search for the sensor name > click > 
-the sensor id will appear in the top of the page in the format ``device_id:<the device id>``. 
+To get the device id you can run the command ``cbd-device-search`` (should have an instance of Carbon Black Defense integration) and find it according the name,
+or manually, in Carbon Black Cloud web page go to Endpoints > search for the device name > click > 
+the device id will appear in the top of the page in the format ``device_id:<the device id>``. 
 
 **Set up integration instance**
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -49,7 +49,7 @@ Create a new file on the remote machine with the specified data
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | destination_path | File path to create on the remote endpoint. | Required | 
 | file_id | The file entry id in the War Room. | Required | 
 
@@ -59,7 +59,7 @@ Create a new file on the remote machine with the specified data
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-file-put sensor_id="the actually sensor id" destination_path="C:\test\test.txt" file_id=142@5```
+```!cbd-lr-file-put device_id="1234567" destination_path="C:\test\test.txt" file_id=142@5```
 
 #### Human Readable Output
 
@@ -78,7 +78,7 @@ Retrieve contents of the specified file on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | source_path | Path of the file to be retrieved. | Required | 
 | timeout | Timeout for the operation. | Optional | 
 | delay | Delay in seconds to wait before command complete. | Optional | 
@@ -104,7 +104,7 @@ Retrieve contents of the specified file on the remote machine
 ```
 
 #### Command Example
-``` !cbd-lr-file-get sensor_id="the actually sensor id" source_path="C:\\test\\test_file.txt" delay=2 timeout=30```
+``` !cbd-lr-file-get device_id="the actually device id" source_path="C:\\test\\test_file.txt" delay=2 timeout=30```
 
 #### Human Readable Output
 
@@ -122,7 +122,7 @@ Delete the specified file name on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | source_path | Path of the file to be deleted. | Required | 
 
 
@@ -131,7 +131,7 @@ Delete the specified file name on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-file-delete sensor_id="the actually sensor id" source_path="C:\test\test_file.txt"```
+```!cbd-lr-file-delete device_id="the actually device id" source_path="C:\test\test_file.txt"```
 
 #### Human Readable Output
 
@@ -149,7 +149,7 @@ List the contents of a directory on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | directory_path | Directory to list. This parameter should end with the path separator or have some filter pattern e.g *.txt | Required | 
 
 
@@ -158,12 +158,12 @@ List the contents of a directory on the remote machine
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefenseLR.Directory.content | Data | list of dicts, each one describing a directory entry | 
-| CarbonBlackDefenseLR.Directory.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.Directory.device_id | String | The device \(endpoint\) id | 
 | CarbonBlackDefenseLR.Directory.directory_path | String | The path of the listed directory | 
 
 
 #### Command Example
-```!cbd-lr-directory-listing sensor_id="the actually sensor id" directory_path="C:\test\"```
+```!cbd-lr-directory-listing device_id="the actually device id" directory_path="C:\test\"```
 
 #### Context Example
 ```json
@@ -216,7 +216,7 @@ List the contents of a directory on the remote machine
                     "size": 0
                 }
             ],
-            "sensor_id": "the actually sensor id"
+            "device_id": "the actually device id"
         }
     }
 }
@@ -245,7 +245,7 @@ Enumerate subkeys of the specified registry key on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | reg_path | The registry key to enumerate. | Required | 
 
 
@@ -255,11 +255,11 @@ Enumerate subkeys of the specified registry key on the remote machine
 | --- | --- | --- |
 | CarbonBlackDefenseLR.RegistrySubKeys.key | String | The parent registry key | 
 | CarbonBlackDefenseLR.RegistrySubKeys.sub_keys | Data | The sub keys | 
-| CarbonBlackDefenseLR.RegistrySubKeys.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.RegistrySubKeys.device_id | String | The device \(endpoint\) id | 
 
 
 #### Command Example
-```!cbd-lr-reg-sub-keys reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST sensor_id="the actually sensor id"```
+```!cbd-lr-reg-sub-keys reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device id"```
 
 #### Human Readable Output
 
@@ -277,7 +277,7 @@ Enumerate all registry values from the specified registry key on the remote mach
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | reg_path | The registry key to enumerate. | Required | 
 
 
@@ -287,11 +287,11 @@ Enumerate all registry values from the specified registry key on the remote mach
 | --- | --- | --- |
 | CarbonBlackDefenseLR.RegistryValues.key | String | The registry key | 
 | CarbonBlackDefenseLR.RegistryValues.values | Data | The registry values of the given key | 
-| CarbonBlackDefenseLR.RegistryValues.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.RegistryValues.device_id | String | The device \(endpoint\) id | 
 
 
 #### Command Example
-```!cbd-lr-reg-get-values reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST sensor_id="the actually sensor id"```
+```!cbd-lr-reg-get-values reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device id"```
 
 #### Context Example
 ```json
@@ -299,7 +299,7 @@ Enumerate all registry values from the specified registry key on the remote mach
     "CarbonBlackDefenseLR": {
         "RegistryValues": {
             "key": "HKEY_LOCAL_MACHINE\SOFTWARE\TEST",
-            "sensor_id": "the actually sensor id",
+            "device_id": "the actually device id",
             "values": [
                 {
                     "value_data": "val_1,val_2",
@@ -332,7 +332,7 @@ Create a new registry key on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | reg_path | The registry key to create. | Required | 
 
 
@@ -341,7 +341,7 @@ Create a new registry key on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-key-create sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST```
+```!cbd-lr-reg-key-create device_id="the actually device id" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST```
 
 #### Human Readable Output
 
@@ -359,7 +359,7 @@ Delete a registry key on the remote machine, the key must be without any sub key
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | reg_path | The registry key to delete. | Required | 
 
 
@@ -368,7 +368,7 @@ Delete a registry key on the remote machine, the key must be without any sub key
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST sensor_id="the actually sensor id"```
+```!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device id"```
 
 #### Human Readable Output
 
@@ -386,7 +386,7 @@ Delete a registry value on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | reg_path | The registry value to delete. | Required | 
 
 
@@ -395,7 +395,7 @@ Delete a registry value on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-value-delete sensor_id="the actually sensor id" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL```
+```!cbd-lr-reg-value-delete device_id="the actually device id" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL```
 
 #### Human Readable Output
 
@@ -413,7 +413,7 @@ Set a registry value on the specified registry key on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | reg_path | The path of the key + the path of the value e.g. HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue. | Required | 
 | value_data | The value data. | Required | 
 | value_type | The type of value. Examples: REG_DWORD, REG_MULTI_SZ, REG_SZ. Possible values are: REG_BINARY, REG_DWORD, REG_QWORD, REG_EXPAND_SZ, REG_MULTI_SZ, REG_SZ, REG_SZ. | Required | 
@@ -425,7 +425,7 @@ Set a registry value on the specified registry key on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-value-set reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL sensor_id="the actually sensor id" value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ```
+```!cbd-lr-reg-value-set reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL device_id="the actually device id" value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ```
 
 #### Human Readable Output
 
@@ -443,7 +443,7 @@ List currently running processes on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 
 
 #### Context Output
@@ -451,11 +451,11 @@ List currently running processes on the remote machine
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefenseLR.Processes.processes | String | A list of dicts describing the processes | 
-| CarbonBlackDefenseLR.Processes.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.Processes.device_id | String | The device \(endpoint\) id | 
 
 
 #### Command Example
-```!cbd-lr-ps sensor_id="the actually sensor id"```
+```!cbd-lr-ps device_id="the actually device id"```
 
 #### Context Example
 ```json
@@ -494,7 +494,7 @@ List currently running processes on the remote machine
                     "username": "NT AUTHORITY\SYSTEM"
                 }
             ],
-            "sensor_id": "the actually sensor id"
+            "device_id": "the actually device id"
         }
     }
 }
@@ -523,7 +523,7 @@ Terminate a process on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | pid | Process ID to be terminated. | Required | 
 
 
@@ -532,7 +532,7 @@ Terminate a process on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-kill pid=4592 sensor_id="the actually sensor id" ```
+```!cbd-lr-kill pid=4592 device_id="the actually device id" ```
 
 #### Human Readable Output
 
@@ -551,7 +551,7 @@ Create a new process on the remote machine with the specified command string
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | command_string | Command string used for the create process operation. | Required | 
 | wait_for_output |  True to block on output from the new process (execute in foreground). This will also set wait_for_completion (below). Default is True. | Optional | 
 | working_directory | The working directory of the create process operation. | Optional | 
@@ -565,12 +565,12 @@ Create a new process on the remote machine with the specified command string
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefenseLR.ExecuteProcess.return_value | String | The output of the process | 
-| CarbonBlackDefenseLR.ExecuteProcess.sensor_id | String | The sensor \(endpoint\) id | 
+| CarbonBlackDefenseLR.ExecuteProcess.device_id | String | The device \(endpoint\) id | 
 | CarbonBlackDefenseLR.ExecuteProcess.command_string | String | The command string used for the create process operation |
 
 
 #### Command Example
-```!cbd-lr-execute sensor_id="the actually sensor id" command_string="cmd.exe"```
+```!cbd-lr-execute device_id="the actually device id" command_string="cmd.exe"```
 
 #### Human Readable Output
 
@@ -590,7 +590,7 @@ Perform a memory dump operation on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sensor_id | The sensor (endpoint) id. | Required | 
+| device_id | The device (endpoint) id. | Required | 
 | target_path | Path of the file the memory dump will be stored in on the remote machine. | Required | 
 
 
@@ -599,7 +599,7 @@ Perform a memory dump operation on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-memdump sensor_id="the actually sensor id" target_path=C:\test\memdump\dumped_file```
+```!cbd-lr-memdump device_id="the actually device id" target_path=C:\test\memdump\dumped_file```
 
 #### Human Readable Output
 

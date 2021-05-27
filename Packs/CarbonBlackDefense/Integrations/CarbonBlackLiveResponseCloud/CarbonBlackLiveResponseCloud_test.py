@@ -1,7 +1,7 @@
 import functools
 
 import pytest
-from cbapi.live_response_api import LiveResponseMemdump
+from cbc_sdk.live_response_api import *
 from CarbonBlackLiveResponseCloud import *
 import demistomock as demisto
 
@@ -20,29 +20,29 @@ commands_with_args = {
     },
     put_file_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'destination_path': 'test_destination_path',
         'file_id': 'test_file_id'
     },
     get_file_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'source_path': 'test_source_path',
         'timeout': '900', 'delay': '900'
     },
     delete_file_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'source_path': 'test_source_path'
     },
     create_reg_key_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'reg_path': 'test_reg_path'
     },
     set_reg_value_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'reg_path': 'test_reg_path',
         'value_data': 'test_value_data',
         'value_type': 'test_value_type',
@@ -50,74 +50,74 @@ commands_with_args = {
     },
     delete_reg_key_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'reg_path': 'test_reg_path',
     },
     delete_reg_value_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'reg_path': 'test_reg_path',
     },
     list_directory_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'directory_path': 'test_directory_path',
         'limit': 5
     },
     list_reg_sub_keys_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'reg_path': 'test_reg_path',
         'limit': '5'
     },
     get_reg_values_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'reg_path': 'test_reg_path',
         'limit': '5'
     },
 
     list_processes_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'limit': 5
     },
     kill_process_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'pid': '100'
     },
     create_process_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'command_string': 'test_cmd_line_path',
         'wait_for_output': 'True',
         'wait_for_completion': True
     },
     memdump_command: {
         'api_client': api_client,
-        'sensor_id': 'test_sensor_id',
+        'device_id': 'test_device_id',
         'target_path': 'test_target_path'
     }
 }
 
 TEST_REG_VALUES = [
-    dict(value_type=f'test_pbREG_SZ_{i}',
-         value_name=f'test_val_{i}',
-         value_data=f'value_data_{i}')
+    dict(registry_type=f'test_pbREG_SZ_{i}',
+         registry_name=f'test_val_{i}',
+         registry_data=f'value_data_{i}')
     for i in range(10)]
 
 TEST_DIR_LIST = [
     dict(size=25600, attributes=['TEST_ARCHIVE'],
          create_time=123, last_access_time=123,
-         last_write_time='100000', filename=f'test_{i}.xls',
+         last_write_time='1970-01-02T03:46:40.000Z', filename=f'test_{i}.xls',
          alternate_name='test_$9EE1B~1.XLS')
     for i in range(10)]
 
 TEST_PROCESSES = [
-    dict(path=f'test_path_{i}', pid=i,
-         command_line=f'test_command_line_{i}',
-         username=f'test_user_{i}')
+    dict(process_path=f'test_path_{i}', process_pid=i,
+         process_cmdline=f'test_command_line_{i}',
+         process_username=f'test_user_{i}')
     for i in range(10)]
 
 SUB_KEY_LEN = 10
@@ -185,8 +185,8 @@ class MockedLRObject:
 MOCKED_LR_SESSION = MockedLRObject()
 
 
-def raise_exception(exception_to_raise, **kwargs):
-    raise exception_to_raise('test_uri')
+def raise_exception(exception_to_raise, *args):
+    raise exception_to_raise
 
 
 def mock_method_in_lr_session(mocker, method_name, mocked_results=None):
@@ -322,7 +322,7 @@ class TestCommands:
 
         """
         # prepare
-        mocker.patch('cbapi.live_response_api.LiveResponseMemdump.wait')
+        mocker.patch('cbc_sdk.live_response_api.LiveResponseMemdump.wait')
         mock_method_in_lr_session(
             mocker=mocker,
             method_name='start_memdump',
@@ -376,8 +376,7 @@ class TestCommands:
         """
         # prepare
         kwargs = commands_with_args[command_test_module]
-        api = kwargs['api_client']
-        mocker.patch.object(api, 'api_json_request')
+        mocker.patch.object(LiveResponseSessionManager, 'request_session')
 
         # run
         res = command_test_module(**kwargs)
@@ -386,8 +385,9 @@ class TestCommands:
         res == 'ok'
 
     RAISE_EXCEPTION_PARAMS = [
-        (errors.UnauthorizedError, AUTHORIZATION_ERROR_MSG),
-        (errors.ConnectionError, CONNECTION_ERROR_MSG)
+        (errors.UnauthorizedError(''), AUTHORIZATION_ERROR_MSG),
+        (errors.ConnectionError(''), CONNECTION_ERROR_MSG),
+        (errors.ObjectNotFoundError('wrong org_id'), ORG_ID_ERROR_MSG)
     ]
 
     @pytest.mark.parametrize('exception_to_raise, expected_res', RAISE_EXCEPTION_PARAMS)
@@ -405,11 +405,12 @@ class TestCommands:
         """
 
         # prepare
-        kwargs = commands_with_args[command_test_module]
-        api = kwargs['api_client']
-        mocker.patch.object(api, 'api_json_request', side_effect=functools.partial(raise_exception, exception_to_raise))
+        mocker.patch.object(LiveResponseSessionManager,
+                            'request_session',
+                            side_effect=functools.partial(raise_exception, exception_to_raise))
 
         # run
+        kwargs = commands_with_args[command_test_module]
         with pytest.raises(DemistoException) as exc_info:
             command_test_module(**kwargs)
 

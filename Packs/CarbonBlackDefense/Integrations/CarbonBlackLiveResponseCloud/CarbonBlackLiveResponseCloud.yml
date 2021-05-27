@@ -46,9 +46,9 @@ script:
   commands:
   - name: cbd-lr-file-put
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: destination_path
       required: true
       description: File path to create on the remote endpoint
@@ -59,9 +59,9 @@ script:
     execution: true
   - name: cbd-lr-file-get
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: source_path
       required: true
       description: Path of the file to be retrieved
@@ -72,9 +72,9 @@ script:
     description: Retrieve contents of the specified file on the remote machine
   - name: cbd-lr-file-delete
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: source_path
       required: true
       description: Path of the file to be deleted
@@ -83,9 +83,9 @@ script:
     execution: true
   - name: cbd-lr-directory-listing
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: directory_path
       required: true
       description: Directory to list. This parameter should end with the path separator or have some filter pattern e.g *.txt
@@ -96,8 +96,8 @@ script:
     - contextPath: CarbonBlackDefenseLR.Directory.content
       description: list of dicts, each one describing a directory entry
       type: Data
-    - contextPath: CarbonBlackDefenseLR.Directory.sensor_id
-      description: The sensor (endpoint) id
+    - contextPath: CarbonBlackDefenseLR.Directory.device_id
+      description: The device (endpoint) id
       type: String
     - contextPath: CarbonBlackDefenseLR.Directory.directory_path
       description: The path of the listed directory
@@ -105,9 +105,9 @@ script:
     description: List the contents of a directory on the remote machine
   - name: cbd-lr-reg-sub-keys
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: reg_path
       required: true
       description: The registry key to enumerate
@@ -121,15 +121,15 @@ script:
     - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.sub_keys
       description: The sub keys
       type: Data
-    - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.sensor_id
-      description: The sensor (endpoint) id
+    - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.device_id
+      description: The device (endpoint) id
       type: String
     description: Enumerate subkeys of the specified registry key on the remote machine
   - name: cbd-lr-reg-get-values
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: reg_path
       required: true
       description: The registry key to enumerate
@@ -143,16 +143,16 @@ script:
     - contextPath: CarbonBlackDefenseLR.RegistryValues.values
       description: The registry values of the given key
       type: Data
-    - contextPath: CarbonBlackDefenseLR.RegistryValues.sensor_id
-      description: The sensor (endpoint) id
+    - contextPath: CarbonBlackDefenseLR.RegistryValues.device_id
+      description: The device (endpoint) id
       type: String
     description: 'Enumerate all registry values from the specified registry key on the remote machine,
       due to API limitation - binary values will not shown'
   - name: cbd-lr-reg-key-create
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: reg_path
       required: true
       description: The registry key to create
@@ -161,9 +161,9 @@ script:
     execution: true
   - name: cbd-lr-reg-key-delete
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: reg_path
       required: true
       description: The registry key to delete
@@ -179,9 +179,9 @@ script:
     execution: true
   - name: cbd-lr-reg-value-delete
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: reg_path
       required: true
       description: The registry value to delete
@@ -190,9 +190,9 @@ script:
     execution: true
   - name: cbd-lr-reg-value-set
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: reg_path
       required: true
       description: The path of the key + the path of the value e.g. HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue
@@ -223,9 +223,9 @@ script:
     execution: true
   - name: cbd-lr-ps
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: limit
       description: Limit the number of returned processes
       defaultValue: "100"
@@ -233,16 +233,16 @@ script:
     - contextPath: CarbonBlackDefenseLR.Processes.processes
       description: A list of dicts describing the processes
       type: String
-    - contextPath: CarbonBlackDefenseLR.Processes.sensor_id
-      description: The sensor (endpoint) id
+    - contextPath: CarbonBlackDefenseLR.Processes.device_id
+      description: The device (endpoint) id
       type: String
     description: List currently running processes on the remote machine
     execution: true
   - name: cbd-lr-kill
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: pid
       required: true
       description: Process ID to be terminated
@@ -251,9 +251,9 @@ script:
     execution: true
   - name: cbd-lr-execute
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: command_string
       required: true
       description: Command string used for the create process operation
@@ -283,8 +283,8 @@ script:
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.return_value
       description: The output of the process
       type: String
-    - contextPath: CarbonBlackDefenseLR.ExecuteProcess.sensor_id
-      description: The sensor (endpoint) id
+    - contextPath: CarbonBlackDefenseLR.ExecuteProcess.device_id
+      description: The device (endpoint) id
       type: String
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.command_string
       description: The command string used for the create process operation
@@ -294,15 +294,15 @@ script:
     execution: true
   - name: cbd-lr-memdump
     arguments:
-    - name: sensor_id
+    - name: device_id
       required: true
-      description: The sensor (endpoint) id
+      description: The device (endpoint) id
     - name: target_path
       required: true
       description: Path of the file the memory dump will be stored in on the remote machine
     description: Perform a memory dump operation on the remote machine
     execution: true
     outputs:
-  dockerimage: demisto/carbon-black-cloud:1.0.0.19362
+  dockerimage: devdemisto/carbon-black-cloud:1.0.0.20489
   runonce: false
   subtype: python3
