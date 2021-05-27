@@ -256,7 +256,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param index_folder_path: index folder full path.
     :param extract_destination_path: extract folder full path.
     :param index_blob: google cloud storage object that represents index.zip blob.
-    :param build_number: circleCI build number, used as an index revision.
+    :param build_number: CI build number, used as an index revision.
     :param private_packs: List of private packs and their price.
     :param current_commit_hash: last commit hash of head.
     :param index_generation: downloaded index generation.
@@ -264,7 +264,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
     :param force_upload: Indicates if force upload or not.
     :param previous_commit_hash: The previous commit hash to diff with.
     :param landing_page_sections: landingPage sections.
-    :param artifacts_dir: The CircleCI artifacts directory to upload the index.json to.
+    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
     :param storage_bucket: The storage bucket object
     :returns None.
 
@@ -794,7 +794,7 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-bu', '--bucket_upload', help='is bucket upload build?', type=str2bool, required=True)
     parser.add_argument('-pb', '--private_bucket_name', help="Private storage bucket name", required=False)
-    parser.add_argument('-c', '--circle_branch', help="CircleCi branch of current build", required=True)
+    parser.add_argument('-c', '--ci_branch', help="CI branch of current build", required=True)
     parser.add_argument('-f', '--force_upload', help="is force upload build?", type=str2bool, required=True)
     # disable-secrets-detection-end
     return parser.parse_args()
@@ -940,7 +940,7 @@ def main():
     remove_test_playbooks = option.remove_test_playbooks
     is_bucket_upload_flow = option.bucket_upload
     private_bucket_name = option.private_bucket_name
-    circle_branch = option.circle_branch
+    ci_branch = option.ci_branch
     force_upload = option.force_upload
 
     # google cloud storage client initialized
@@ -961,7 +961,7 @@ def main():
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
-                                                                        is_bucket_upload_flow, circle_branch)
+                                                                        is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
     pack_names = get_packs_names(target_packs, previous_commit_hash)

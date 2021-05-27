@@ -1,6 +1,6 @@
-id: ExtractEmail-Test
+id: ExtractEmailV2-Test
 version: -1
-name: ExtractEmail-Test
+name: ExtractEmailV2-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -94,10 +94,10 @@ tasks:
     task:
       id: b0f2b0ee-bd7c-4d80-8e90-5956f2fd645c
       version: -1
-      name: ExtractEmail
+      name: ExtractEmailV2
       description: Verifies that an email address is valid and only returns the address
         if so.
-      scriptName: ExtractEmail
+      scriptName: ExtractEmailV2
       type: regular
       iscommand: false
       brand: ""
@@ -251,10 +251,10 @@ tasks:
     task:
       id: 17fbdf9e-6297-43fa-87a7-fd8c08ce3cd5
       version: -1
-      name: ExtractEmail-Invalid
+      name: ExtractEmailV2-Invalid
       description: Verifies that an email address is valid and only returns the address
         if so.
-      scriptName: ExtractEmail
+      scriptName: ExtractEmailV2
       type: regular
       iscommand: false
       brand: ""

@@ -1,0 +1,73 @@
+{
+  "data": {
+    "hasNextPage": true,
+    "objects": [
+      {
+        "activityScore": 0,
+        "firstSeen": null,
+        "hostname": "myhost-ad.b.test.com",
+        "id": "_hostname-myhost--ad.b.test.com",
+        "inventory": [
+          {
+            "computerName": "myhost-AD",
+            "groups": [],
+            "hostname": "myhost-ad.b.test.com",
+            "ip": [],
+            "location": null,
+            "mac": null,
+            "metadata": {},
+            "natIp": [],
+            "normalizedComputerName": null,
+            "normalizedHostname": "myhost-ad.b.test.com",
+            "os": "Windows Server 2016 Standard",
+            "osVersion": "10.0 (14393)",
+            "parsedTime": "2021-05-21 17:12:35.214000",
+            "source": "Active Directory",
+            "timestamp": "2021-05-21 17:12:35.214000",
+            "uniqueId": "{528315b7-50bd-4156-8822-b8994c6c28fa}"
+          }
+        ],
+        "isWhitelisted": false,
+        "lastSeen": "2021-04-21T14:32:09.763000",
+        "name": "myhost-ad.b.test.com",
+        "os": null,
+        "relatedEntities": [],
+        "tags": []
+      },
+      {
+        "activityScore": 0,
+        "firstSeen": null,
+        "hostname": "myhost-ad2.b.test.com",
+        "id": "_hostname-myhost--ad2.b.test.com",
+        "inventory": [
+          {
+            "computerName": "myhost-AD2",
+            "groups": [],
+            "hostname": "myhost-ad2.b.test.com",
+            "ip": [],
+            "location": null,
+            "mac": null,
+            "metadata": {},
+            "natIp": [],
+            "normalizedComputerName": null,
+            "normalizedHostname": "myhost-ad2.b.test.com",
+            "os": "Windows Server 2016 Standard",
+            "osVersion": "10.0 (14393)",
+            "parsedTime": "2021-05-21 17:12:35.753000",
+            "source": "Active Directory",
+            "timestamp": "2021-05-21 17:12:35.753000",
+            "uniqueId": "{af375a9d-79cf-4123-ad60-fe4a291a0e91}"
+          }
+        ],
+        "isWhitelisted": false,
+        "lastSeen": "2021-04-21T17:24:11.173000",
+        "name": "myhost-ad2.b.test.com",
+        "os": null,
+        "relatedEntities": [],
+        "tags": []
+      }
+    ],
+    "total": 9
+  },
+  "errors": []
+}

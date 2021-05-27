@@ -1,7 +1,7 @@
 commonfields:
-  id: ExtractEmail
+  id: ExtractEmailV2
   version: -1
-name: ExtractEmail
+name: ExtractEmailV2
 script: '-'
 type: python
 tags:
@@ -19,4 +19,4 @@ runonce: false
 dockerimage: demisto/python3:3.9.5.20070
 fromversion: 5.5.0
 tests:
-  - ExtractEmail-Test
+  - ExtractEmailV2-Test

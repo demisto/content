@@ -11,11 +11,8 @@ test_instances:
   dependencies:
     - create-instances
   script:
-    - echo "======= Download configuration ========"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
-    - mv $SSH_CONFIGURATION ~/.ssh/config
-    - chmod 700 ~/.ssh/config
-    - Tests/scripts/open_ssh_tunnel.sh
+    - !reference [.download-demisto-conf]
+    - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/instance_test.sh
     - python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $CIRCLE_ARTIFACTS/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
