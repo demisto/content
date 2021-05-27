@@ -118,7 +118,7 @@ script:
       type: String
   - arguments:
     - description: |
-        The id of the CDM cluster.  When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise it is a required value.
+        The id of the CDM cluster. When used in combination with "Rubrik Radar Anomaly" incidents, this value will automatically be looked up using the incident context. Otherwise, it is a required value.
       name: clusterId
     description: Find the CDM Connection State of a CDM Cluster.
     name: rubrik-cdm-cluster-connection-state
