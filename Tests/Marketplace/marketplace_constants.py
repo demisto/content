@@ -27,6 +27,9 @@ class BucketUploadFlow(object):
     INTEGRATIONS = 'integrations'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
+    # Different upload job names relate to different CI platforms:
+    # "Upload Packs To Marketplace" - CircleCI
+    # "upload-packs-to-marketplace" - Gitlab
     UPLOAD_JOB_NAMES = ["Upload Packs To Marketplace", "upload-packs-to-marketplace"]
     LATEST_VERSION = 'latest_version'
     INTEGRATION_DIR_REGEX = r"^integration-(.+).yml$"

@@ -532,7 +532,7 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
 
 
 def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str,
-                         display_fields: List[str]) -> str:
+                         display_fields: List[str], fields_for_clustering: List[str]) -> str:
     """
 
     :param model_processed: Postprocessing
@@ -554,7 +554,8 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
              'pivot': "clusterId:" + str(cluster_number),
              'incidents_ids': [x for x in incidents_df[  # type: ignore
                  clustering.model.labels_ == cluster_number].id.values.tolist()],  # type: ignore
-             'incidents': incidents_df[clustering.model.labels_ == cluster_number][display_fields].to_json(  # type: ignore
+             'incidents': incidents_df[clustering.model.labels_ == cluster_number]  # type: ignore
+             [display_fields + fields_for_clustering].to_json(  # type: ignore
                  orient='records'),  # type: ignore
              'query': 'type:%s' % type,  # type: ignore
              'data': [int(model_processed.stats[cluster_number]['number_samples'])]}
@@ -963,7 +964,8 @@ def main():
             model_processed.summary_description = msg
 
         # return Entry and summary
-        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields)
+        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields,
+                                                      fields_for_clustering)
         model_processed.json = output_clustering_json
         return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
         if store_model:

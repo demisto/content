@@ -1,0 +1,76 @@
+{
+  "alerts": [
+    {
+      "id": "2160",
+      "reference": "CAS-4-20210328-1",
+      "severity": "Low",
+      "title": "Spam Email Reported By a User (admin@org.com)  x",
+      "false_positive": "Yes",
+      "status": "Active",
+      "tlp": "RED",
+      "acknowledged": "No",
+      "notes": "",
+      "description": "Spam email reported by the user direcetly from Outlook ",
+      "assignee": "SOC Coordinator X",
+      "owner": "SOAR",
+      "role": "Analyst",
+      "type": "Case",
+      "category": "SOC Monitoring",
+      "sub_category": "DLP Monitoring",
+      "last_update": "2021-04-05T16:04:26Z",
+      "last_update_sec": "1617627866",
+      "created": "2021-03-28T13:42:39Z",
+      "created_sec": "1616928159",
+      "assets": [
+        {
+          "Type": "Email Receipient ID",
+          "Value": "admin@org.com"
+        },
+        {
+          "Type": "User Name",
+          "Value": "ahmed"
+        }
+      ],
+      "iocs": [
+        {
+          "Type": "Email Sender ID",
+          "Value": "evile@gmail.com"
+        },
+        {
+          "Type": "Email Source Domain",
+          "Value": "gmail.com"
+        },
+        {
+          "Type": "File Extension",
+          "Value": "doc"
+        },
+        {
+          "Type": "File Name",
+          "Value": "null123.doc"
+        },
+        {
+          "Type": "Hash MD5",
+          "Value": "272f0fde35dbdfccbca1e33373b3570d"
+        }
+      ],
+      "custom_attributes": [
+        {
+          "Type": "Text",
+          "Title": "ArcSight Event ID",
+          "Value": "3438874663"
+        },
+        {
+          "Type": "Text",
+          "Title": "User",
+          "Value": "admin@org.com) "
+        }
+      ],
+      "tags": [
+        "Email Gateway Bypassed",
+        "Gmail",
+        "Public Email Services",
+        "User Vigilance"
+      ]
+    }
+  ]
+}

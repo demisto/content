@@ -3,10 +3,6 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
 
 
-.download-configuration: &download_demisto_conf
-  - echo "======= Download configuration ========"
-  - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
-
 trigger-private-build:
   needs: []
   stage: unittests-and-validations
@@ -33,13 +29,11 @@ create-instances:
     - if: '$INSTANCE_TESTS'
   cache:
     policy: pull-push
-    when: always
   needs: []
   stage: create-instances
   script:
-    - *download_demisto_conf
-    - demisto-sdk create-id-set -o ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_id_set.log
-    - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+    - !reference [.download-demisto-conf]
+    - !reference [.create-id-set]
     - python3 Utils/release_notes_generator.py $CONTENT_VERSION $CI_COMMIT_SHA $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
     - cp content-descriptor.json $ARTIFACTS_FOLDER
     - ./Documentation/commonServerDocs.sh
@@ -62,35 +56,27 @@ create-instances:
       fi
     - python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - |
-      if [[ -n "${CONTRIB_BRANCH}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
+      if [[ -n "${CONTRIB_BRANCH}" ]]; then
         echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
       else
         echo "====== Preparing Content Packs For Testing ======"
         ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
       fi
     - |
-      if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
+      if [[ $CI_COMMIT_BRANCH != master ]] && [[ $CI_COMMIT_BRANCH != 20\.* ]] && [[ $CI_COMMIT_BRANCH != 21\.* ]]; then
         echo "Skipping packs download to artifact on non master or release branch"
       else
         ZIP_FOLDER=$(mktemp -d)
         python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
       fi
     - |
-      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        echo "====== Creating instances ======"
-        [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
-        python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
-      fi
+      echo "====== Creating instances ======"
+      [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
+      python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
   after_script:
     - |
-      if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        echo "====== Uploading artifacts to GCP ======"
-        ./Tests/scripts/upload_artifacts.sh
-      fi
+      echo "====== Uploading artifacts to GCP ======"
+      ./Tests/scripts/upload_artifacts.sh
 
 .test_content_on_server_instances_base:
   extends:
@@ -101,7 +87,8 @@ create-instances:
   variables:
     DESTROY_INSTANCES: "true"
   script:
-    - *download_demisto_conf
+    - EXIT_CODE=0
+    - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
 # If instance was not created
     - |
@@ -109,12 +96,10 @@ create-instances:
         echo "Instance with role $INSTANCE_ROLE was not created"
         exit 0
       fi
-    - mv $SSH_CONFIGURATION ~/.ssh/config
-    - chmod 700 ~/.ssh/config
-    - Tests/scripts/open_ssh_tunnel.sh
+    - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
@@ -162,7 +147,3 @@ run-validations:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .push-rule
-#   variables:
-#     SLACK_TEST_TYPE: "unittests"
-#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
-#     SLACK_ONLY_IF: $BUCKET_UPLOAD

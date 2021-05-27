@@ -139,7 +139,7 @@ tasks:
       - "3"
     scriptarguments:
       foldersPathsGlobal:
-        simple: inbox,inbox\TESTATTACH
+        simple: inbox
       limit:
         simple: "10"
       listName:
