@@ -31,7 +31,7 @@ This playbook does not use any integrations.
 | SocMailSubject | The subject of the email to send to the SOC. | XSOAR Summary report, ID -  | Optional |
 | SiemAdminEmailAddress | The SIEM admin's email address. |  | Optional |
 | UseCalculateSeverity | Determines whether to use the Calculate Severity playbook to calculate the incident severity. Default is True. If the playbook isn't used, the severity is determined by the Splunk severity value. | true | Optional |
-| SiemAdminMailSubject | The subject of the email to send to the SIEM admin. | Adjustment/Exclusion for offense  | Optional |
+| SiemAdminMailSubject | The subject of the email to send to the SIEM admin. | Adjustment/Exclusion for notable  | Optional |
 
 ## Playbook Outputs
 ---
