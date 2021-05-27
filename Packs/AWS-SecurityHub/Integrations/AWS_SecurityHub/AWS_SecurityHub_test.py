@@ -1,8 +1,6 @@
 import pytest
-from botocore.config import Config
 
-from CommonServerPython import handle_proxy
-#from Packs.AWS_DynamoDB.Integrations.AWS_DynamoDB.AWS_DynamoDB import aws_session
+from Packs.AWS_DynamoDB.Integrations.AWS_DynamoDB.AWS_DynamoDB import aws_session
 from AWS_SecurityHub import get_findings_command, aws_session
 
 FILTER_FIELDS_TEST_CASES = [
