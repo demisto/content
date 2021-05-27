@@ -1,0 +1,46 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Sixgill_DVE_Enrichment
+  version: -1
+configuration:
+- display: Sixgill API client ID
+  name: client_id
+  required: true
+  type: 0
+- display: Sixgill API client secret
+  name: client_secret
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+description: CVE enrichment
+display: Sixgill_DVE_Enrichment
+name: Sixgill_DVE_Enrichment
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: true
+      name: cve_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: cve
+  dockerimage: demisto/sixgill:1.0.0.18412
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
