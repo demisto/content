@@ -2,11 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-''' IMPORTS '''
-
-import json
-import requests
-import dateparser
+""" IMPORTS """
 import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
@@ -15,8 +11,8 @@ from sixgill.sixgill_enrich_client import SixgillEnrichClient
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+""" CONSTANTS """
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 def test_module_command(client_id, client_secret, channel_code, session, verify):
@@ -24,9 +20,7 @@ def test_module_command(client_id, client_secret, channel_code, session, verify)
     Performs basic Auth request
     """
     response = session.send(
-        request=SixgillAuthRequest(
-            client_id, client_secret, channel_code
-        ).prepare(),
+        request=SixgillAuthRequest(client_id, client_secret, channel_code).prepare(),
         verify=verify,
     )
     if not response.ok:
@@ -63,7 +57,7 @@ def create_fields(stix_obj, event_obj, nvd_obj, nvd_obj_v2, nvd_obj_v3, score_ob
             "NVD Vector - V3.1": nvd_obj_v3.get("vector", ""),
         }
     except Exception as err:
-        err_msg = f'Error in DVE Enrichment Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        err_msg = f"Error in DVE Enrichment Integration [{err}]\nTrace:\n{traceback.format_exc()}"
         raise DemistoException(err_msg)
     return fields
 
@@ -86,7 +80,7 @@ def stix_to_indicator(stix_obj):
         indicator["rawJSON"] = {"value": ext_id, "type": "CVE"}
         indicator["rawJSON"].update(stix_obj)
     except Exception as err:
-        err_msg = f'Error in DVE Enrichment Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        err_msg = f"Error in DVE Enrichment Integration [{err}]\nTrace:\n{traceback.format_exc()}"
         raise DemistoException(err_msg)
     return indicator
 
@@ -127,19 +121,21 @@ def main():
         demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, demisto, session, verify
     )
 
-    LOG(f'Command being called is {demisto.command()}')
+    LOG(f"Command being called is {demisto.command()}")
     try:
 
-        if demisto.command() == 'cve':
+        if demisto.command() == "cve":
             return_results(cve_enrich_command(client, demisto.args()))
         else:
             return_results(
-                test_module_command(demisto.params()["client_id"], demisto.params()["client_secret"], channel_code,
-                                    session, verify))
+                test_module_command(
+                    demisto.params()["client_id"], demisto.params()["client_secret"], channel_code, session, verify
+                )
+            )
     # Log exceptions
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
