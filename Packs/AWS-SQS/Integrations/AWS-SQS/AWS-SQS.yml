@@ -278,5 +278,5 @@ script:
   isfetch: true
   runonce: false
 tests:
-- No test
+- AWS - SQS Test Playbook
 fromversion: 5.0.0
