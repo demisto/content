@@ -1,5 +1,21 @@
 Use the Cofense Intelligence integration to check the reputation of URLs, IP addresses, file hashes, and email addresses.
 This integration was integrated and tested with version 02 of CofenseIntelligenceV2
+
+
+Search for threats associated with an indicator.
+The verdict (Unknown, Benign, Suspicious, Malicious) of each threat is determined by the impact (None, Minor, Moderate, Major) of its associated web locations as detected in cofense ,  along with a threshold value that is being set by the user (when configuring the instance):
+For each Threat: Verdict = if indicator_found: the_impact_of_the_indicator, 
+else max ( list of all the related indicators’ impact)
+
+Example: 
+Threshold = Major (Default value)
+
+| **Threat ID** | **Impact** | **Dbot score** | **Adjusted Verdict** |
+| --- | --- | --- | --- |
+| 1 | Minor | Suspicious | Suspicious |
+| 2 | Moderate | Suspicious | Suspicious |
+| 3  | Major | Bad | Malicious |
+
 ## Configure CofenseIntelligenceV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,7 +24,7 @@ This integration was integrated and tested with version 02 of CofenseIntelligenc
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://www.threathq.com/apiv1) | Cofense Intelligence base API url | True |
+    | Server URL  | Cofense Intelligence base API url | True |
     | Token Name | API token user name | True |
     | Password  | API token password | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
@@ -20,6 +36,8 @@ This integration was integrated and tested with version 02 of CofenseIntelligenc
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
