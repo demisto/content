@@ -96,7 +96,7 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
                 raise AuthorizationError(res.content)
             elif res.status_code == 400 and method == 'PUT' and '/urlCategories/' in url_suffix:
                 raise Exception('Bad request, This could be due to reaching your organizations quota.'
-                                ' For more info about your quota usage, run the command zscaler-url-quota.' )
+                                ' For more info about your quota usage, run the command zscaler-url-quota.')
             else:
                 raise Exception('Your request failed with the following error: ' + ERROR_CODES_DICT[res.status_code])
     except Exception as e:
@@ -865,15 +865,16 @@ def test_module():
     return 'ok'
 
 
-''' EXECUTION CODE '''
-
-
 def get_category_by_id(category_id):
     categories = get_categories()
     for category in categories:
         if category['id'] == category_id:
             return category
     return None
+
+
+''' EXECUTION CODE '''
+
 
 def main():
     command = demisto.command()
