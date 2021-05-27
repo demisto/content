@@ -385,7 +385,7 @@ def test_module(client, max_fetch):
     try:
         result = client.get_incidents(ts_from, ts_to)
         if not result.get('success'):
-            msg = result['message']
+            msg = result.get('message')
             if msg == 'Authentication Failed':
                 return "LogPoint authentication failed. Please make sure that the API Key is correct."
             else:
@@ -412,7 +412,7 @@ def get_incidents_command(client, args):
             raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
     result = client.get_incidents(ts_from, ts_to)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     incidents = result.get('incidents', [])
     table_header = []
     display_title = 'Incidents'
@@ -445,7 +445,7 @@ def get_incident_data_command(client, args):
     date = args.get('date')
     result = client.get_incident_data(incident_obj_id, incident_id, date)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     incident_data = result.get('rows', [])
     table_header = []
     if incident_data and len(incident_data) > 0:
@@ -470,7 +470,7 @@ def get_incident_states_command(client, args):
             raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
     result = client.get_incident_states(ts_from, ts_to)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     incident_states = result.get('states', [])
     table_header = []
     display_title = 'Incident States'
@@ -497,7 +497,7 @@ def add_incident_comment_command(client, args):
     comment = args.get('comment')
     result = client.add_incident_comment(incident_obj_id, comment)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     msg = result.get('message', 'Comment added!')
     markdown = "### " + msg
     results = CommandResults(
@@ -514,7 +514,7 @@ def assign_incidents_command(client, args):
     new_assignee = args.get('new_assignee')
     result = client.assign_incidents(incident_obj_ids, new_assignee)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     msg = result.get('message')
     markdown = "### " + msg
     results = CommandResults(
@@ -530,7 +530,7 @@ def resolve_incidents_command(client, args):
     incident_obj_ids = argToList(args.get('incident_obj_ids'))
     result = client.resolve_incidents(incident_obj_ids)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     msg = result.get('message')
     markdown = "### " + msg
     return CommandResults(
@@ -545,7 +545,7 @@ def close_incidents_command(client, args):
     incident_obj_ids = argToList(args.get('incident_obj_ids'))
     result = client.close_incidents(incident_obj_ids)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     msg = result.get('message')
     markdown = "### " + msg
     return CommandResults(
@@ -560,7 +560,7 @@ def reopen_incidents_command(client, args):
     incident_obj_ids = argToList(args.get('incident_obj_ids'))
     result = client.reopen_incidents(incident_obj_ids)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     msg = result.get('message')
     markdown = "### " + msg
     return CommandResults(
@@ -574,7 +574,7 @@ def reopen_incidents_command(client, args):
 def get_users_command(client):
     result = client.get_users()
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     users = result.get('users')
     table_header = []
     if users and len(users) > 0:
@@ -591,7 +591,7 @@ def get_users_command(client):
 def get_users_preference_command(client):
     result = client.get_users_preference()
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     del result['success']
     table_header = list(result.keys())
     display_title = "User's Preference"
@@ -606,7 +606,7 @@ def get_users_preference_command(client):
 def get_logpoints_command(client):
     result = client.get_logpoints()
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     table_header = []
     display_title = "LogPoints"
     allowed_loginspects = result.get('allowed_loginspects')
@@ -624,7 +624,7 @@ def get_logpoints_command(client):
 def get_repos_command(client):
     result = client.get_repos()
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     table_header = []
     display_title = "LogPoint Repos"
     allowed_repos = result.get('allowed_repos')
@@ -667,7 +667,7 @@ def get_devices_command(client):
 def get_livesearches_command(client):
     result = client.get_livesearches()
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     display_title = "Live Searches"
     livesearches = result.get('livesearches')
     markdown = tableToMarkdown(display_title, livesearches, headers=None)
@@ -690,11 +690,11 @@ def search_logs_command(client, args):
             raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
     result = client.get_search_id(query, time_range, limit, repos)
     if not result.get('success'):
-        raise DemistoException(result['message'])
+        raise DemistoException(result.get('message'))
     search_id = result.get('search_id')
     search_result = client.get_search_results(search_id)
     if not search_result.get('success'):
-        raise DemistoException(search_result['message'])
+        raise DemistoException(search_result.get('message'))
     rows = search_result.get('rows', [])
     display_title = f"Found {len(rows)} logs"
     markdown = tableToMarkdown(display_title, rows, headers=None)
@@ -719,7 +719,7 @@ def fetch_incidents(client, first_fetch, max_fetch):
             last_run = datetime.timestamp(datetime.utcnow() - timedelta(days=1))
     result = client.get_incidents(last_run, now)
     if not result.get('success'):
-        raise DemistoException(f"ERROR: {result['message']}; last_run: {last_run}; now: {now}")
+        raise DemistoException(f"ERROR: {result.get('message')}; last_run: {last_run}; now: {now}")
     lp_incidents = result.get('incidents')
     incidents = []
     if len(lp_incidents) > max_fetch:
