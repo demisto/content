@@ -24,7 +24,7 @@ DEFAULT_HEADERS = {
     'content-type': 'application/json'
 }
 EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 30
+MAX_SECONDS_TO_WAIT = 100
 SESSION_ID_KEY = 'session_id'
 ERROR_CODES_DICT = {
     400: 'Invalid or bad request',
@@ -505,45 +505,43 @@ def lookup_request(ioc, multiple=True):
     return response
 
 
-def category_add_url(category_id, url):
-    category_data = {}
+def get_category_by_id(category_id):
     categories = get_categories()
-    found_category = False
     for category in categories:
         if category['id'] == category_id:
-            category_data = category
-            found_category = True
-            break
-    if found_category:
-        demisto.info('The category exists, lets upload the urls')
+            return category
+    return None
+
+
+def category_add_url(category_id, url):
+    category_data = get_category_by_id(category_id)
+    if category_data:  # check if the category exists
         url_list = argToList(url)
-        response = add_or_remove_urls_from_category(ADD, url_list, category_data)
-        # print("jsoned response: \n"+response)
-        if response:
-            response = response[0]
-            context = {
-                'ID': category_id,
-                'CustomCategory': response.get('customCategory'),
-                'URL': response.get('urls')
-            }
-            if 'description' in category_data and category_data['description']:  # Custom might not have description
-                context['Description'] = category_data['description']
-            ec = {
-                'Zscaler.Category(val.ID && val.ID === obj.ID)': context
-            }
-            urls = ''
-            for url in url_list:
-                urls += '- ' + url + '\n'
-            hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
-            entry = {
-                'Type': entryTypes['note'],
-                'Contents': ec,
-                'ContentsFormat': formats['json'],
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': hr,
-                'EntryContext': ec
-            }
-            return entry
+        add_or_remove_urls_from_category(ADD, url_list, category_data)  # add the urls to the category
+        category_data = get_category_by_id(category_id)  # calling again to get the updated url list under this category
+        context = {
+            'ID': category_id,
+            'CustomCategory': category_data.get('customCategory'),
+            'URL': category_data.get('urls')
+        }
+        if category_data.get('description'):  # Custom might not have description
+            context['Description'] = category_data['description']
+        ec = {
+            'Zscaler.Category(val.ID && val.ID === obj.ID)': context
+        }
+        urls = ''
+        for url in url_list:
+            urls += '- ' + url + '\n'
+        hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
+        entry = {
+            'Type': entryTypes['note'],
+            'Contents': ec,
+            'ContentsFormat': formats['json'],
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': hr,
+            'EntryContext': ec
+        }
+        return entry
     else:
         return return_error('Category could not be found.')
 
@@ -590,25 +588,20 @@ def category_add_ip(category_id, ip):
 
 
 def category_remove_url(category_id, url):
-    categories = get_categories()
-    found_category = False
-    for category in categories:
-        if category['id'] == category_id:
-            category_data = category
-            found_category = True
-            break
-    if found_category:
+    category_data = get_category_by_id(category_id)  # check if the category exists
+    if category_data:
         url_list = argToList(url)
         updated_urls = [url for url in category_data['urls'] if url not in url_list]  # noqa
         if updated_urls == category_data['urls']:
             return return_error('Could not find given URL in the category.')
-        response = add_or_remove_urls_from_category(REMOVE, url_list, category_data)[0]
+        add_or_remove_urls_from_category(REMOVE, url_list, category_data)  # remove the urls from list
+        category_data = get_category_by_id(category_id)  # calling again to get the updated url list under this category
         context = {
             'ID': category_id,
-            'CustomCategory': response.get('customCategory'),
-            'URL': response.get('urls')
+            'CustomCategory': category_data.get('customCategory'),
+            'URL': category_data.get('urls')
         }
-        if 'description' in category_data and category_data['description']:  # Custom might not have description
+        if category_data.get('description'):  # Custom might not have description
             context['Description'] = category_data['description']
         ec = {
             'Zscaler.Category(val.ID && val.ID === obj.ID)': context
@@ -619,7 +612,7 @@ def category_remove_url(category_id, url):
         hr = 'Removed the following URL addresses to category {}:\n{}'.format(category_id, urls)
         entry = {
             'Type': entryTypes['note'],
-            'Contents': response,
+            'Contents': category_data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
@@ -713,7 +706,6 @@ def add_or_remove_urls_from_category(action, urls, category_data):
         data['configuredName'] = category_data['configuredName']
     json_data = json.dumps(data)
     response = http_request('PUT', cmd_url, json_data)
-    print("raw response: \n"+response)
     return response.json()
 
 
