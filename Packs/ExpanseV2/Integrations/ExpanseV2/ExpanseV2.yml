@@ -587,6 +587,11 @@ script:
       name: cloud_management_status
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+        - NotApplicable
+        - ManagedCloud
+        - UnmanagedCloud
     - default: false
       description: Sort by specified properties.
       isArray: false
@@ -1092,6 +1097,11 @@ script:
       name: cloud_management_status
       required: false
       secret: false
+      auto: PREDEFINED
+      predefined:
+        - NotApplicable
+        - ManagedCloud
+        - UnmanagedCloud
     - default: false
       description: Sort by specified properties.
       isArray: true

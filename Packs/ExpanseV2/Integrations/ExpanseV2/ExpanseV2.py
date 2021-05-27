@@ -2376,7 +2376,7 @@ def ip_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
             hostname=ip_data.get('domain', None)
         )
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New IP indicator was found", ip_standard_context.to_context()),
+            readable_output=tableToMarkdown("New IP indicator was found", {"IP": ip, "Domain": ip_data.get('domain')}),
             indicator=ip_standard_context
         ))
         ip_context_excluded_fields: List[str] = []
