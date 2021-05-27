@@ -2177,6 +2177,11 @@
             "playbookID": "Active Directory - ad-get-user limit check"
         },
         {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
+            "playbookID": "active directory search user with parentheses test"
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
