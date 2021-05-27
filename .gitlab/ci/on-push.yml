@@ -87,6 +87,7 @@ create-instances:
   variables:
     DESTROY_INSTANCES: "true"
   script:
+    - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - export TEMP=$(cat $ARTIFACTS_FOLDER/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
 # If instance was not created
@@ -98,7 +99,7 @@ create-instances:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
-    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE"
+    - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
