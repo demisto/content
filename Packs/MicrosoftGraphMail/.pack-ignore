@@ -5,4 +5,4 @@ ignore=IN126
 ignore=auto-test
 
 [file:README.md]
-ignore=RM105
+ignore=RM106

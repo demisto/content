@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:layoutscontainer-Prisma_Cloud_Compute_Vulnerability.json]
 ignore=BA101
+
+[file:READNE.md]
+ignore=RM106
