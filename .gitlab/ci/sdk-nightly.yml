@@ -147,3 +147,12 @@ demisto-sdk-nightly:run-commands-against-instance:
     - demisto-sdk lint -i Packs/HelloWorld/
     - section_end "Run Lint"
     - *upload-entities-to-cortex-xsoar
+    - section_start "Destroy instances"
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+    - section_end "Destroy instances"
+
+
+demisto-sdk-nightly:trigger-slack-notify:
+  extends:
+    - .trigger-slack-notify
+    - .sdk-nightly-schedule-rule

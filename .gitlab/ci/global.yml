@@ -95,31 +95,42 @@
     - demisto-sdk --version
     - section_end "Build Parameters"
 
-.default-after-script:
-  after_script:
-    - *clone_and_export_variables
-    - *install_venv
-    - *install_ssh_keys
-    - section_start "Notify Slack"
-    - |
-      if [ -n "${SLACK_ONLY_IF}" ]; then
-        ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
-      else
-        echo "Skipping Slack"
-      fi
-    - section_end "Notify Slack"
-    - section_start "Destroy instances"
-    - |
-      if [ -n "${DESTROY_INSTANCES}" ]; then
-        python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-      fi
-    - section_end "Destroy instances"
+# .default-after-script:
+#   after_script:
+#     - *clone_and_export_variables
+#     - *install_venv
+#     - *install_ssh_keys
+#     # - section_start "Notify Slack"
+#     # - |
+#     #   if [ -n "${SLACK_ONLY_IF}" ]; then
+#     #     ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
+#     #   else
+#     #     echo "Skipping Slack"
+#     #   fi
+#     # - section_end "Notify Slack"
+#     - section_start "Destroy instances"
+#     - |
+#       if [ -n "${DESTROY_INSTANCES}" ]; then
+#         python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+#       fi
+#     - section_end "Destroy instances"
 
 .default-job-settings:
   extends:
     - .default-cache
     - .default-before-script
-    - .default-after-script
+    # - .default-after-script
+
+
+.trigger-slack-notification:
+  stage: .post
+  variables:
+    PIPELINE_TO_QUERY: ''
+  trigger:
+    include:
+      - local: .gitlab/ci/slack-nightly.yml
+      - artifact: $ENV_RESULTS_PATH
+
 
 .run-unittests-and-lint:
   needs: []

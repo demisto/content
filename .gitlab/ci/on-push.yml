@@ -84,8 +84,8 @@ create-instances:
     - .push-rule
   needs: ["create-instances"]
   stage: run-instances
-  variables:
-    DESTROY_INSTANCES: "true"
+  # variables:
+  #   DESTROY_INSTANCES: "true"
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
@@ -104,6 +104,7 @@ create-instances:
       if [ -f ./Tests/failed_tests.txt ]; then
         cp ./Tests/failed_tests.txt $ARTIFACTS_FOLDER/failed_tests.txt
       fi
+    - python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
     - exit $EXIT_CODE
 
 server_5_0:

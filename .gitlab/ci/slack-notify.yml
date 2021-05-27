@@ -1,0 +1,17 @@
+workflow:
+  rules:
+    - if: $SLACK_NOTIFY
+
+
+stages:
+  - notify
+
+
+include:
+  - local: .gitlab/ci/global.yml
+
+
+slack-notify:
+  stage: notify
+  extends: .default-job-settings
+  script: ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
