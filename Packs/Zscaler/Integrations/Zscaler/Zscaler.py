@@ -505,14 +505,6 @@ def lookup_request(ioc, multiple=True):
     return response
 
 
-def get_category_by_id(category_id):
-    categories = get_categories()
-    for category in categories:
-        if category['id'] == category_id:
-            return category
-    return None
-
-
 def category_add_url(category_id, url):
     category_data = get_category_by_id(category_id)
     if category_data:  # check if the category exists
@@ -875,6 +867,13 @@ def test_module():
 
 ''' EXECUTION CODE '''
 
+
+def get_category_by_id(category_id):
+    categories = get_categories()
+    for category in categories:
+        if category['id'] == category_id:
+            return category
+    return None
 
 def main():
     command = demisto.command()
