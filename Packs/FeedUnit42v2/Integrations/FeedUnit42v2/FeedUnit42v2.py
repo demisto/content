@@ -94,9 +94,13 @@ class Client(BaseClient):
 
 
 def get_ioc_value_from_ioc_name(ioc_obj):
+    """
+    Extract SHA-256 from string:
+    ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '4f75622c2dd839f'])" -> 4f75622c2dd839f
+    """
     ioc_value = ioc_obj.get('name')
     try:
-        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value).group(0)  # type:ignore
+        ioc_value = re.search("(?<='SHA-256' = ').*?(?=')", ioc_value).group(0)  # type:ignore # guardrails-disable-line
     except AttributeError:
         ioc_value = None
     return ioc_value
