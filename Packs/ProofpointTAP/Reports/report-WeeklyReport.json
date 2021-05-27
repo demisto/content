@@ -50,7 +50,7 @@
           "type"
         ],
         "filter": {
-          "query": "sourceBrand:\"Proofpoint TAP v3\"",
+          "query": "sourceBrand:\"Proofpoint TAP v2\"",
           "period": {
             "by": "",
             "byTo": "",
@@ -109,7 +109,7 @@
           "type"
         ],
         "filter": {
-          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"Proofpoint TAP - Message Blocked\" or type:\"Proofpoint TAP - Message Delivered\"",
+          "query": "sourceBrand:\"Proofpoint TAP v2\" type:\"Proofpoint TAP - Message Blocked\" or type:\"Proofpoint TAP - Message Delivered\"",
           "period": {
             "by": "",
             "byTo": "",
@@ -168,7 +168,7 @@
           "type"
         ],
         "filter": {
-          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"Proofpoint TAP - Click Blocked\" or type:\"Proofpoint TAP - Click Permitted\"",
+          "query": "sourceBrand:\"Proofpoint TAP v2\" type:\"Proofpoint TAP - Click Blocked\" or type:\"Proofpoint TAP - Click Permitted\"",
           "period": {
             "by": "",
             "byTo": "",
@@ -465,7 +465,7 @@
           "name": "Proofpoint Total Events",
           "dataType": "incidents",
           "widgetType": "pie",
-          "query": "sourceBrand:\"Proofpoint TAP v3\"",
+          "query": "sourceBrand:\"Proofpoint TAP v2\"",
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
@@ -564,7 +564,7 @@
           "name": "ProofPoint Message Events",
           "dataType": "incidents",
           "widgetType": "pie",
-          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"Proofpoint TAP - Message Blocked\" or type:\"Proofpoint TAP - Message Delivered\"",
+          "query": "sourceBrand:\"Proofpoint TAP v2\" type:\"Proofpoint TAP - Message Blocked\" or type:\"Proofpoint TAP - Message Delivered\"",
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
@@ -663,7 +663,7 @@
           "name": "Proofpoint TAP Clicks Events",
           "dataType": "incidents",
           "widgetType": "pie",
-          "query": "sourceBrand:\"Proofpoint TAP v3\" type:\"Proofpoint TAP - Click Blocked\" or type:\"Proofpoint TAP - Click Permitted\"",
+          "query": "sourceBrand:\"Proofpoint TAP v2\" type:\"Proofpoint TAP - Click Blocked\" or type:\"Proofpoint TAP - Click Permitted\"",
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
