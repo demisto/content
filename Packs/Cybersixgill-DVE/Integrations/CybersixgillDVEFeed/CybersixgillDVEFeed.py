@@ -130,7 +130,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: Optional[str] = None
         indicator["type"] = "CVE"
         indicator["rawJSON"] = {"value": ext_id, "type": "CVE"}
         indicator["rawJSON"].update(stix_obj)
-        indicator["score"] = "3"
+        indicator["score"] = 3
         indicator["fields"] = fields
         if tlp_color:
             indicator["fields"]["trafficlightprotocol"] = str(tlp_color)
