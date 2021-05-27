@@ -149,7 +149,8 @@
         {
             "integrations": "Microsoft Advanced Threat Analytics",
             "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Zimperium",
@@ -1748,19 +1749,7 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_prod",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
             "instance_names": "microsoft_defender_atp_dev",
-            "is_mockable": false
-        },
-        {
-            "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": "Microsoft Defender - ATP - Indicators Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
             "is_mockable": false
         },
         {
@@ -2312,7 +2301,11 @@
             ],
             "playbookID": "TAXII_Feed_Test",
             "fromversion": "5.5.0",
-            "timeout": 300
+            "timeout": 300,
+            "instance_names": [
+                "non_https_cert",
+                "instance_execute"
+            ]
         },
         {
             "integrations": "TAXII 2 Feed",
@@ -3315,8 +3308,14 @@
             "is_mockable": false
         },
         {
+            "integrations": "ThreatExchange v2",
+            "playbookID": "ThreatExchangeV2-test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "NetscoutAED",
-            "playbookID": "NetscoutAED-Test"
+            "playbookID": "NetscoutAED-Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3415,7 +3414,8 @@
         "AWS-securityhub Test": "Issue 29796",
         "McAfeeWebGatewayTest": "Issue 37020",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
-        "Microsoft Advanced Threat Analytics - Test": "Issue 29593"
+        "Service Desk Plus - Generic Polling Test": "Issue 30798",
+        "Pwned v2 test": "Issue 26601"
     },
     "skipped_integrations": {
         
