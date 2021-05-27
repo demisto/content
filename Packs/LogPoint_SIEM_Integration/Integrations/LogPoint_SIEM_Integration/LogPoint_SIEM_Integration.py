@@ -680,9 +680,9 @@ def get_livesearches_command(client):
 
 def search_logs_command(client, args):
     query = args.get('query')
-    time_range = args.get('time_range') if args.get('time_range') else 'Last 5 minutes'
-    limit = args.get('limit') if args.get('limit') else 100
-    repos = argToList(args.get('repos')) if args.get('repos') else []
+    time_range = args.get('time_range', 'Last 5 minutes')
+    limit = args.get('limit', '100')
+    repos = argToList(args.get('repos'))
     if limit:
         try:
             limit = int(limit)
