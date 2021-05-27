@@ -64,6 +64,22 @@ class Client(BaseClient):
 
         return self._http_request(method='POST', url_suffix='/apiv1/threat/search', params=params)
 
+def remove_false_vendors_detections_from_threat(threats):
+    """remove false vendor detections from report
+        Args:
+            - threats (Array): threats reports from cofense raw response
+    """
+    for threat in threats:
+        for exe in threat.get('executableSet'):
+            detections = []
+            for detection in exe.get('vendorDetections', []):
+                if detection.get('detected') == True:
+                    detections.append(detection)
+            exe['vendorDetections'] = detections
+
+
+
+
 
 def create_threat_md_row(threat: Dict, severity_level: int = None):
     """ generate dict representing a single row in the human readable markdown format
@@ -80,7 +96,7 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
                   "Executive Summary": threat.get("executiveSummary", ""),
                   "Campaign": threat.get("label", ""),
                   "Last Published": epochToTimestamp(threat.get("lastPublished")),
-                  "Threat Report": threat.get("reportURL", "")}
+                  "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})"}
 
     if severity_level:
         threat_row["Verdict"] = DBOT_TO_VERDICT.get(DBOT_SCORE.get(severity_level))
@@ -275,6 +291,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> list[Com
     for url in urls:
         result = client.threat_search_call(url=url)
         threats = result.get('data', {}).get('threats', [])
+        remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': url, 'Threats': threats}
         md_data, dbot_score = threats_analysis(threats, indicator=url, threshold=params.get('url_threshold'))
 
@@ -322,6 +339,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> list[Comma
         # Call the Client function and get the raw response
         result = client.threat_search_call(ip=ip)
         threats = result.get('data', {}).get('threats', [])
+        remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': ip, 'Threats': threats}
         dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME, score=0,
@@ -368,6 +386,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> list[Co
         # Call the Client function and get the raw response
         result = client.threat_search_call(email=email)
         threats = result.get('data', {}).get('threats', [])
+        remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': email, 'Threats': threats}
         md_data, dbot_score = threats_analysis(threats, indicator=email, threshold=params.get('email_threshold'))
 
@@ -408,6 +427,7 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> list[Comm
         # Call the Client function and get the raw response
         result = client.threat_search_call(file=file)
         threats = result.get('data', {}).get('threats', [])
+        remove_false_vendors_detections_from_threat(threats)
         outputs = {'Data': file, 'Threats': threats}
         dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
                                           integration_name=INTEGRATION_NAME, score=0,
@@ -462,7 +482,7 @@ def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
                 md_data.append(create_threat_md_row(threat))
                 if count_threats == limit:
                     break
-
+    remove_false_vendors_detections_from_threat(threats)
     return CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.Threats',
         outputs_key_field='id',

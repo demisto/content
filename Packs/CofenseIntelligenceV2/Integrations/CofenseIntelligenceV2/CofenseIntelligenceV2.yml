@@ -75,18 +75,11 @@ configuration:
   - Moderate
   - Major
   additionalinfo: Threshold for email reletad threats' severity.
-- display: Number of threats' reports
-  name: threats_limit
-  type: 15
-  required: false
-  options:
-  - "1"
-  - "2"
-  - "3"
-  - "4"
-  - "5"
-  - "6"
-  additionalinfo: Limit the number of  threats that will be displayed
+- display: Number of Reports to show
+  name: Threats_limit
+  defaultvalue: 1
+  type: 0
+  additionalinfo: Limit the number of threats' reports that will be displayed in the command results
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -156,7 +149,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.blockSet.confidence
-      description: 'level of confidence in the threats block'
+      description: 'The level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.IP.Threats.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -245,7 +238,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.executableSet.executableSubtype.description
-      description: 'description of the executable file'
+      description: 'The description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.IP.Threats.senderIpSet.totalCount
       description: 'Count of the instances of each item named'
@@ -338,7 +331,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Threats.blockSet.confidence
-      description: 'level of confidence in the threats block'
+      description: 'The level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Threats.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -406,10 +399,10 @@ script:
       description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.fileNameExtension
-      description: 'extension of the file'
+      description: 'The extension of the file'
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.md5Hex
-      description: 'The md5 hash of the file'
+      description: 'The MD5 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.sha384Hex
       description: 'The SHA-384 hash of the file'
@@ -427,7 +420,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Threats.executableSet.executableSubtype.description
-      description: 'description of the executable file'
+      description: 'The description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Threats.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -487,7 +480,7 @@ script:
     - name: file
       required: true
       default: true
-      description: A file md5 hash to check.
+      description: A file MD5 hash to check.
       isArray: false
     outputs:
     - contextPath: DBotScore.Indicator
@@ -538,7 +531,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.File.Threats.blockSet.confidence
-      description: 'level of confidence in the threats block'
+      description: 'The level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.File.Threats.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -606,10 +599,10 @@ script:
       description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.fileNameExtension
-      description: 'extension of the file'
+      description: 'The extension of the file'
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.md5Hex
-      description: 'The md5 hash of the file'
+      description: 'The MD5 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.sha384Hex
       description: 'The SHA-384 hash of the file'
@@ -627,7 +620,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.File.Threats.executableSet.executableSubtype.description
-      description: 'description of the executable file'
+      description: 'The description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.File.Threats.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -739,7 +732,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.blockSet.confidence
-      description: 'level of confidence in the threats block'
+      description: 'The level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.Email.Threats.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -807,10 +800,10 @@ script:
       description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.fileNameExtension
-      description: 'extension of the file'
+      description: 'The extension of the file'
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.md5Hex
-      description: 'The md5 hash of the file'
+      description: 'The MD5 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.sha384Hex
       description: 'The SHA-384 hash of the file'
@@ -828,7 +821,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.executableSet.executableSubtype.description
-      description: 'description of the executable file'
+      description: 'The description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.Email.Threats.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
@@ -939,7 +932,7 @@ script:
       description: 'Values borrowed from stixVocabs:ImpactRatingVocab-1.0'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.blockSet.confidence
-      description: 'level of confidence in the threats block'
+      description: 'The level of confidence in the threats block'
       type: Number
     - contextPath: CofenseIntelligence.URL.Threats.blockSet.blockType
       description: 'Data type of the watchlist item'
@@ -1007,10 +1000,10 @@ script:
       description: 'The malware infection severity level'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.fileNameExtension
-      description: 'extension of the file'
+      description: 'The extension of the file'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.md5Hex
-      description: 'The md5 hash of the file'
+      description: 'The MD5 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.sha384Hex
       description: 'The SHA-384 hash of the file'
@@ -1028,7 +1021,7 @@ script:
       description: 'The SHA-256 hash of the file'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.executableSet.executableSubtype.description
-      description: 'description of the executable file'
+      description: 'The description of the executable file'
       type: String
     - contextPath: CofenseIntelligence.URL.Threats.senderIpSet.totalCount
       description: 'Count of the instances of each item named.'
