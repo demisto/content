@@ -4,7 +4,7 @@
  "fromVersion": "5.0.0",
  "name": "Image",
  "widgetType": "image",
- "category": "utility",
+ "category": "utilities",
  "isPredefined": true,
  "params": {
   "text": ""
