@@ -2788,7 +2788,7 @@
 <tr>
 <td style="width: 256px;">filter</td>
 <td style="width: 438px;">
-<p>Useful for performing structured queries where constraints on <a href="https://developer.okta.com/okta-sdk-php/1.0.0/Okta/Generated/Logs/LogEvent.html"><em>LogEvent</em></a> attribute values can be explicitly targeted.</p>
+<p>Useful for performing structured queries where constraints on <a href="https://developer.okta.com/docs/reference/api/system-log/#logevent-object"><em>LogEvent</em></a> attribute values can be explicitly targeted.</p>
 <p>For more information about filtering, visit <a href="https://developer.okta.com/docs/api/getting_started/design_principles#filtering" rel="nofollow">Okta Support on Filtering</a></p>
 </td>
 <td style="width: 624px;">
