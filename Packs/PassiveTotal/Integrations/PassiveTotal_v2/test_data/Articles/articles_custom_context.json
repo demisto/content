@@ -1,0 +1,29 @@
+[
+  {
+    "guid": "12e123b1",
+    "title": "Free PlayStations on the Internet are Probably an Online Scam",
+    "summary": "Did you know that you can get all kinds of free stuff, just by giving out your personal information? The internet is full of these fake reward scams which RiskIQ's sytems surface every hour of the day.",
+    "type": "public",
+    "publishedDate": "Mon Aug 29 20:00:00 VET 2016",
+    "link": "https://community.riskiq.com/article/12e123b1",
+    "categories": [
+      "Categories 1",
+      "Categories 2"
+    ],
+    "tags": [
+      "fake rewards",
+      "playstation",
+      "scam"
+    ],
+    "indicators": [
+      {
+        "type": "domain",
+        "count": 1,
+        "values": [
+          "dummy.com"
+        ],
+        "source": "public"
+      }
+    ]
+  }
+]
