@@ -3319,7 +3319,8 @@
                 "EDL",
                 "Create-Mock-Feed-Relationships"
             ],
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "timeout": 6000
         }
     ],
     "skipped_tests": {
