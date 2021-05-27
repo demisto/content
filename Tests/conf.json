@@ -149,7 +149,8 @@
         {
             "integrations": "Microsoft Advanced Threat Analytics",
             "playbookID": "Microsoft Advanced Threat Analytics - Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Zimperium",
@@ -3334,7 +3335,6 @@
         "Test-Shodan_v2": "Issue 23370",
         "Symantec Deepsight Test": "Issue 22971",
         "TestProofpointFeed": "Issue 22229",
-        "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
         "InfoArmorVigilanteATITest": "Test issue 17358",
@@ -3413,7 +3413,6 @@
         "AWS-securityhub Test": "Issue 29796",
         "McAfeeWebGatewayTest": "Issue 37020",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
-        "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
         "Pwned v2 test": "Issue 26601"
     },
@@ -3621,7 +3620,8 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "MISP V2": "Cleanup process isn't performed as expected.",
-        "Azure Network Security Groups": "Has a command that sends parameters in the path"
+        "Azure Network Security Groups": "Has a command that sends parameters in the path",
+        "GitHub": "Cannot use proxy"
     },
     "parallel_integrations": [
         "AWS - EC2",
