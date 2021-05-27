@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Cybersixgill_DVE_Feed
+  id: Sixgill_DVE_Feed
   version: -1
 configuration:
 - display: Client Id
