@@ -576,10 +576,11 @@ def get_users_command(client):
     if not result.get('success'):
         raise DemistoException(result.get('message'))
     users = result.get('users')
-    table_header = []
     if users and len(users) > 0:
         table_header = list(users[0].keys())
-    markdown = tableToMarkdown('Incident Users', users, headers=table_header)
+        markdown = tableToMarkdown('Incident Users', users, headers=table_header)
+    else:
+        markdown = 'No users record found.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents.users',
@@ -593,9 +594,12 @@ def get_users_preference_command(client):
     if not result.get('success'):
         raise DemistoException(result.get('message'))
     del result['success']
-    table_header = list(result.keys())
-    display_title = "User's Preference"
-    markdown = tableToMarkdown(display_title, result, headers=table_header)
+    if not result or len(result) == 0:
+        markdown = 'No users preference found.'
+    else:
+        table_header = list(result.keys())
+        display_title = "User's Preference"
+        markdown = tableToMarkdown(display_title, result, headers=table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.User.Preference',
@@ -607,12 +611,13 @@ def get_logpoints_command(client):
     result = client.get_logpoints()
     if not result.get('success'):
         raise DemistoException(result.get('message'))
-    table_header = []
-    display_title = "LogPoints"
     allowed_loginspects = result.get('allowed_loginspects')
     if allowed_loginspects and len(allowed_loginspects) > 0:
         table_header = list(allowed_loginspects[0].keys())
-    markdown = tableToMarkdown(display_title, allowed_loginspects, headers=table_header)
+        display_title = "LogPoints"
+        markdown = tableToMarkdown(display_title, allowed_loginspects, headers=table_header)
+    else:
+        markdown = 'No LogPoints found.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.LogPoints',
@@ -625,12 +630,13 @@ def get_repos_command(client):
     result = client.get_repos()
     if not result.get('success'):
         raise DemistoException(result.get('message'))
-    table_header = []
-    display_title = "LogPoint Repos"
     allowed_repos = result.get('allowed_repos')
     if allowed_repos and len(allowed_repos) > 0:
         table_header = list(allowed_repos[0].keys())
-    markdown = tableToMarkdown(display_title, allowed_repos, headers=table_header)
+        display_title = "LogPoint Repos"
+        markdown = tableToMarkdown(display_title, allowed_repos, headers=table_header)
+    else:
+        markdown = 'No repos found.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Repos',
@@ -668,9 +674,12 @@ def get_livesearches_command(client):
     result = client.get_livesearches()
     if not result.get('success'):
         raise DemistoException(result.get('message'))
-    display_title = "Live Searches"
     livesearches = result.get('livesearches')
-    markdown = tableToMarkdown(display_title, livesearches, headers=None)
+    if livesearches and len(livesearches) > 0:
+        display_title = "Live Searches"
+        markdown = tableToMarkdown(display_title, livesearches, headers=None)
+    else:
+        markdown = 'No Live Searches data found.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.LiveSearches',
@@ -696,8 +705,11 @@ def search_logs_command(client, args):
     if not search_result.get('success'):
         raise DemistoException(search_result.get('message'))
     rows = search_result.get('rows', [])
-    display_title = f"Found {len(rows)} logs"
-    markdown = tableToMarkdown(display_title, rows, headers=None)
+    if rows and len(rows) > 0:
+        display_title = f"Found {len(rows)} logs"
+        markdown = tableToMarkdown(display_title, rows, headers=None)
+    else:
+        markdown = 'No records found for the given search parameters.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.SearchLogs',
