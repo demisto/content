@@ -1,11 +1,11 @@
 {
     "kind": "detailsV2",
     "layout": {
-        "id": "ProofPointTAP Clicks Layout",
-        "name": "ProofPointTAP Clicks Layout",
+        "id": "Proofpoint TAP Clicks Layout",
+        "name": "Proofpoint TAP Clicks Layout",
         "version": -1,
         "kind": "detailsV2",
-        "typeId": "ProofPointTAP - Click Permitted",
+        "typeId": "Proofpoint TAP - Click Permitted",
         "tabs": [
             {
                 "id": "summary",
@@ -330,7 +330,7 @@
             {
                 "hidden": false,
                 "id": "vewmjsl5lu",
-                "name": "ProofPointTAP Message",
+                "name": "Proofpoint TAP Message",
                 "sections": [
                     {
                         "displayType": "CARD",
@@ -545,7 +545,7 @@
                         "minH": 1,
                         "minW": 2,
                         "moved": false,
-                        "name": "ProofPointTAP Threat",
+                        "name": "Proofpoint TAP Threat",
                         "static": false,
                         "w": 2,
                         "x": 1,
@@ -600,6 +600,6 @@
     },
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9",
-    "typeId": "ProofPointTAP - Click Permitted",
+    "typeId": "Proofpoint TAP - Click Permitted",
     "version": -1
 }
