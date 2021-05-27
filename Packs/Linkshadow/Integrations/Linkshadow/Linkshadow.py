@@ -124,14 +124,14 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
     return next_run, incidents
 
 
-def fetch_entity_anomalies(client, args):
+def fetch_entity_anomalies(client, args, arg):
     apiKey = args.get('apiKey'),
     username = args.get('api_username')
     plugin_id = args.get('plugin_id')
     action = args.get('action')
 
     time_frame = arg_to_number(
-        arg=args.get('time_frame'),
+        arg=arg.get('time_frame'),
         arg_name='time_frame',
         required=False
     )
@@ -144,8 +144,16 @@ def fetch_entity_anomalies(client, args):
         time_frame=time_frame
     )
 
+    alert = []
+    for dic in alerts.get('data'):
+        alert.append(dic)
+    
+    if len(alert) == 0:
+        alert = [{"message":"Linkshadow Anomaly already acknowledged!!"}]
+           
     results = CommandResults(
         outputs_prefix='Linkshadow.data',
+        outputs_key_field='GlobalID',
         outputs=alerts
     )
 
@@ -193,7 +201,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif demisto.command() == 'Linkshadow-fetch-entity-anomalies':
-            return_results(fetch_entity_anomalies(client, demisto.params()))
+            return_results(fetch_entity_anomalies(client, demisto.params(), demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command', e)

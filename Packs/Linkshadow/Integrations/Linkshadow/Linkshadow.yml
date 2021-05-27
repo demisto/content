@@ -81,21 +81,6 @@ script:
   commands:
   - name: Linkshadow-fetch-entity-anomalies
     arguments:
-    - name: apiKey
-      required: true
-      description: API KEY of Linkshadow
-    - name: username
-      required: true
-      description: API Username of Linkshadow
-      defaultValue: lsadmin
-    - name: plugin_id
-      required: true
-      description: ID of the Plugin
-      defaultValue: xsoar_integration_1604211382
-    - name: action
-      required: true
-      description: Action send to XSOAR
-      defaultValue: fetch_entity_anomalies
     - name: time_frame
       required: true
       description: Period of minutes, to be fetched from Linkshadow
