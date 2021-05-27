@@ -373,6 +373,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
             indicator['fields']['trafficlightprotocol'] = tlp_color
 
         if not is_up_to_6_2:
+            # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
             indicator = change_attack_pattern_to_stix_attack_pattern(indicator)
 
         attack_pattern_indicators.append(indicator)
