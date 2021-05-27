@@ -15,19 +15,19 @@ configuration:
   name: credentials
   required: true
   type: 9
+- additionalinfo: Whether to use OAuth 2.0 or basic authentication. If checked, use
+    OAuth 2.0 authentication, else use basic authentication.
+  display: Use OAuth 2.0
+  hidden: false
+  name: use_oauth
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  required: false
-  type: 8
-- additionalinfo: Whether to use OAuth 2.0 or basic authentication. If checked, use
-    OAuth 2.0 authentication, else use basic authentication.
-  display: Use OAuth 2.0
-  hidden: false
-  name: use_oauth
   required: false
   type: 8
 description: Tanium endpoint security and systems management

@@ -46,9 +46,9 @@ class Client(BaseClient):
                 return self.do_request(method, url_suffix, data)
             self.retried_access_token = False
 
-            err_msg = f'Unauthorized request - if using OAuth 2.0, verify that the IP of the client is listed in ' \
-                      f'the api_token_trusted_ip_address_list global setting. See Detailed Description (?) for ' \
-                      f'more information.'
+            err_msg = 'Unauthorized request - if using OAuth 2.0, verify that the IP of the client is listed in ' \
+                      'the api_token_trusted_ip_address_list global setting. See Detailed Description (?) for ' \
+                      'more information.'
             try:
                 err_msg += str(res.json())
             except ValueError:
@@ -77,7 +77,6 @@ class Client(BaseClient):
         # Check if there is an existing valid access token. All time comparisons are in UTC time
         if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.utcnow()):
             access_token = previous_token.get('access_token')
-            print("Retrieved Saved Token")  # todo: delete
         else:  # If there is no valid access token, create a new session and generate a new access token
             self.update_session()
             headers = {
@@ -95,7 +94,6 @@ class Client(BaseClient):
                         'expiry_time': date_to_timestamp(token_info.get('expiration'),
                                                          date_format='%Y-%m-%dT%H:%M:%SZ') - 10
                     }
-                    print("Generated New Token")  # todo: delete
                     demisto.setIntegrationContext(new_token)
                 else:  # if the response didn't include an access token, raise an error:
                     raise Exception(f'Response from Tanium: {str(res)}')
