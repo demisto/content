@@ -100,8 +100,8 @@ def test_search_url_command(mocker):
     response = search_url_command(client, mock_args, mock_params)
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
-    assert mock_outputs == str(response.outputs)
-    assert mock_readable_outputs == response.readable_output
+    assert mock_outputs == str(response[0].outputs)
+    assert mock_readable_outputs == response[0].readable_output
 
 
 def test_check_email_command(mocker):
@@ -122,8 +122,8 @@ def test_check_email_command(mocker):
     response = check_email_command(client, mock_args, mock_params)
     mock_output = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
-    assert mock_output == str(response.outputs)
-    assert mock_readable_outputs == response.readable_output
+    assert mock_output == str(response[0].outputs)
+    assert mock_readable_outputs == response[0].readable_output
 
 
 def test_check_ip_command(mocker):
@@ -144,8 +144,8 @@ def test_check_ip_command(mocker):
     response = check_ip_command(client, mock_args, mock_params)
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
-    assert mock_outputs == str(response.outputs)
-    assert mock_readable_outputs == response.readable_output
+    assert mock_outputs == str(response[0].outputs)
+    assert mock_readable_outputs == response[0].readable_output
 
 
 def test_check_md5_command(mocker):
@@ -166,5 +166,5 @@ def test_check_md5_command(mocker):
     response = check_md5_command(client, mock_args, mock_params)
     mock_outputs = test_data.get('mock_output')
     mock_readable_outputs = test_data.get('mock_readable')
-    assert mock_outputs == str(response.outputs)
-    assert mock_readable_outputs == response.readable_output
+    assert mock_outputs == str(response[0].outputs)
+    assert mock_readable_outputs == response[0].readable_output
