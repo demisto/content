@@ -6268,9 +6268,14 @@ def is_demisto_version_ge(version, build_number=''):
     """
     try:
         server_version = get_demisto_version()
-        return \
-            server_version.get('version') >= version and \
-            (not build_number or int(server_version.get('buildNumber')) >= int(build_number))
+        if server_version.get('version') > version:
+            return True
+        elif server_version.get('version') == version:
+            if build_number:
+                return int(server_version.get('buildNumber')) >= int(build_number)
+            return True  # No build number
+        else:
+            return False
     except ValueError:
         # dev editions are not comparable
         return True
@@ -6279,6 +6284,8 @@ def is_demisto_version_ge(version, build_number=''):
         if version >= "5.0.0":
             return False
         raise
+    except Exception as e:
+        pass
 
 
 class DemistoHandler(logging.Handler):

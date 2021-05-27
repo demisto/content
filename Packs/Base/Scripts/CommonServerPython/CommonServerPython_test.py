@@ -39,7 +39,6 @@ INFO = {'b': 1,
         }
         }
 
-
 @pytest.fixture()
 def clear_version_cache():
     """
@@ -1148,66 +1147,6 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
         except:
             return_error(err_msg)
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
-
-
-def test_get_demisto_version(mocker, clear_version_cache):
-    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
-    mocker.patch.object(
-        demisto,
-        'demistoVersion',
-        return_value={
-            'version': '5.0.0',
-            'buildNumber': '50000'
-        }
-    )
-    assert get_demisto_version() == {
-        'version': '5.0.0',
-        'buildNumber': '50000'
-    }
-    # call again to check cache
-    assert get_demisto_version() == {
-        'version': '5.0.0',
-        'buildNumber': '50000'
-    }
-    # call count should be 1 as we cached
-    assert demisto.demistoVersion.call_count == 1
-    # test is_demisto_version_ge
-    assert is_demisto_version_ge('5.0.0')
-    assert is_demisto_version_ge('4.5.0')
-    assert not is_demisto_version_ge('5.5.0')
-    assert get_demisto_version_as_str() == '5.0.0-50000'
-
-def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
-    get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
-    get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
-    assert not is_demisto_version_ge('5.0.0')
-    assert not is_demisto_version_ge('6.0.0')
-    with raises(AttributeError, match='simulate missing demistoVersion'):
-        is_demisto_version_ge('4.5.0')
-
-def test_is_demisto_version_ge_dev_version(mocker):
-    current_version = '<Enter Version Here>'
-    get_version_patch = mocker.patch(
-        'CommonServerPython.get_demisto_version', 
-        return_value=current_version
-        )
-    assert is_demisto_version_ge
-
-def test_is_demisto_version_build_ge(mocker):
-    mocker.patch.object(
-        demisto,
-        'demistoVersion',
-        return_value={
-            'version': '6.0.0',
-            'buildNumber': '50000'
-        }
-    )
-    assert is_demisto_version_ge('6.0.0', '49999')
-    assert is_demisto_version_ge('6.0.0', '50000')
-    assert is_demisto_version_ge('6.0.0', '6')  # Added with the fix of https://github.com/demisto/etc/issues/36876
-    assert not is_demisto_version_ge('6.0.0', '50001')
-    assert not is_demisto_version_ge('6.1.0', '49999')
-    assert not is_demisto_version_ge('5.5.0', '50001')
 
 
 def test_assign_params():
@@ -3549,7 +3488,6 @@ def test_warnings_handler(mocker):
     assert 'This is a test' in msg
     assert 'python warning' in msg
 
-
 def test_get_schedule_metadata():
     """
         Given
@@ -4662,3 +4600,88 @@ class TestEntityRelationship:
                                )
         except ValueError as exception:
             assert "Invalid entity B type: DomainTest" in str(exception)
+
+class TestIsDemistoServerGE:
+    def setup_function():
+        get_demisto_version._version = None
+    
+    def teardown_function():
+        get_demisto_version._version = None
+        
+    def test_get_demisto_version(self, mocker):
+        # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '5.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert get_demisto_version() == {
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+        # call again to check cache
+        assert get_demisto_version() == {
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+        # call count should be 1 as we cached
+        assert demisto.demistoVersion.call_count == 1
+        # test is_demisto_version_ge
+        assert is_demisto_version_ge('5.0.0')
+        assert is_demisto_version_ge('4.5.0')
+        assert not is_demisto_version_ge('5.5.0')
+        assert get_demisto_version_as_str() == '5.0.0-50000'
+
+    def test_is_demisto_version_ge_4_5(self, mocker, clear_version_cache):
+        get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
+        get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
+        assert not is_demisto_version_ge('5.0.0')
+        assert not is_demisto_version_ge('6.0.0')
+        with raises(AttributeError, match='simulate missing demistoVersion'):
+            is_demisto_version_ge('4.5.0')
+
+    def test_is_demisto_version_ge_dev_version(self, mocker, clear_version_cache):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert is_demisto_version_ge('6.0.0', '1-dev')
+
+    @pytest.mark.parametrize('version, build', [
+        ('6.0.0', '49999'),
+        ('6.0.0', '50000'),
+        ('6.0.0', '6'), # Added with the fix of https://github.com/demisto/etc/issues/36876,
+        ('5.5.0', '50001')
+    ])
+    def test_is_demisto_version_build_ge(self, mocker, version, build, clear_version_cache):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert is_demisto_version_ge(version, build)
+
+    @pytest.mark.parametrize('version, build', [
+        ('6.0.0', '50001'),
+        ('6.1.0', '49999')
+    ])    
+    def test_is_demisto_version_build_ge(self, mocker, version, build, clear_version_cache):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert not is_demisto_version_ge(version, build)
