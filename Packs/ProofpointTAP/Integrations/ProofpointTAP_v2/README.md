@@ -1155,7 +1155,7 @@ Get details for a given campaign.
                 }
             ],
             "info": {
-                "description": "Messages purporting to be e.g.\r\n\r\n* from &lt;hari@alwasit.com&gt;' and subject \"Re: New Order From customer\".\r\n\r\nThese messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:\r\n\r\n<pre>C2_Email_Address: concerts@techie.com\r\nC2_Email_Password: \r\nC2_Email_Server: smtp.mail.com</pre>",
+                "description": "Messages purporting to be e.g.\r\n\r\n* from &lt;&gt;' and subject \"Re: New Order From customer\".\r\n\r\nThese messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:\r\n\r\n<pre>C2_Email_Address: """\r\nC2_Email_Password: \r\nC2_Email_Server: smtp.mail.com</pre>",
                 "id": "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f",
                 "name": "AgentTesla | Compressed Executables | \"techie\" | 25 March 2021",
                 "notable": false,
@@ -1183,7 +1183,7 @@ Get details for a given campaign.
 >### Campaign Information
 >|Id|Name|Description|Start Date|Notable|
 >|---|---|---|---|---|
->| f3ff0874-85ef-475e-b3fe-d05f97b2ed3f | AgentTesla \| Compressed Executables \| "techie" \| 25 March 2021 | Messages purporting to be e.g.<br/><br/>* from &lt;hari@alwasit.com&gt;' and subject "Re: New Order From customer".<br/><br/>These messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:<br/><br/><pre>C2_Email_Address: concerts@techie.com<br/>C2_Email_Password: <br/>C2_Email_Server: smtp.mail.com</pre> | 2021-03-25T00:00:00.000Z | false |
+>| f3ff0874-85ef-475e-b3fe-d05f97b2ed3f | AgentTesla \| Compressed Executables \| "techie" \| 25 March 2021 | Messages purporting to be e.g.<br/><br/>* from &lt;&gt;' and subject "Re: New Order From customer".<br/><br/>These messages contain compressed executables that lead to the installation of AgentTesla with the following example configuration:<br/><br/><pre>C2_Email_Address: ""<br/>C2_Email_Password: <br/>C2_Email_Server: smtp.mail.com</pre> | 2021-03-25T00:00:00.000Z | false |
 >
 >### Campaign Members
 >**No entries.**
