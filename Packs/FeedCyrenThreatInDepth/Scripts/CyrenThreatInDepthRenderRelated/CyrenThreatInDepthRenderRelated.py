@@ -83,7 +83,9 @@ def cyren_feed_relationship(args) -> CommandResults:
 
     for item in relationships:
         ioc_value = item.get("value", "")
-        results = demisto.searchIndicators(value=ioc_value).get("iocs", [])
+        search_indicators = IndicatorsSearcher()
+
+        results = search_indicators.search_indicators_by_version(value=ioc_value).get("iocs", [])
 
         if results:
             result = results[0]

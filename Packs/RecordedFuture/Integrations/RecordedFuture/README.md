@@ -1005,6 +1005,8 @@ Get threat intelligence for an IP, Domain, CVE, URL or File.
 | RecordedFuture.CVE.relatedEntities.RelatedCompany.id | String | Recorded Future Related ID |
 | RecordedFuture.CVE.relatedEntities.RelatedCompany.name | String | Recorded Future Related Name |
 | RecordedFuture.CVE.relatedEntities.RelatedCompany.type | String | Recorded Future Related Type |
+| RecordedFuture.CVE.cpe | String | Recorded Future  CPE information |
+| RecordedFuture.CVE.relatedLinks | String | Recorded Future CVE Related Links |
 | RecordedFuture.File.criticality | number | Risk Criticality |
 | RecordedFuture.File.criticalityLabel | string | Risk Criticality Label |
 | RecordedFuture.File.riskString | string | Risk String |

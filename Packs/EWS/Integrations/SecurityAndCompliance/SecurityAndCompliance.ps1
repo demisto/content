@@ -234,16 +234,18 @@ function ParseResults([string]$results, [int]$limit = -1, [string]$type = "Previ
         }
    }
     if ($type -eq "Purge"){
-        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*)[},]"  -InputObject $results).Matches
+        $results_matches_purge = (Select-String -AllMatches "\{?Location: (.*); Item count: (.*); Total size: (.*); Failed count: (.*); [},]"  -InputObject $results).Matches
         $parsed_results = New-Object System.Collections.Generic.List[System.Object]
         foreach ($match in $results_matches_purge)
         {
             if ($parsed_results.Count -ge $limit -and $limit -ne -1){
                 break
             }
-
             $parsed_results.Add(@{
                 "Location" = $match.Groups[1].Value
+                "ItemCount" = $match.Groups[2].Value
+                "TotalSize" = $match.Groups[3].Value
+                "FailedCount" = $match.Groups[4].Value
             })
         }
     }
@@ -1214,7 +1216,8 @@ function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
-2. Run the following command **!$script:COMMAND_PREFIX-auth-complete** in the War Room."
+2. Run the **!$script:COMMAND_PREFIX-auth-complete** command in the War Room.
+3. Run the **!$script:COMMAND_PREFIX-auth-test** command in the War Room to test the completion of the authorization process and the configured parameters."
     $entry_context = @{}
 
     return $human_readable, $entry_context, $raw_response

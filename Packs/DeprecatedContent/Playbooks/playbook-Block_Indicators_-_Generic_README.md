@@ -1,4 +1,4 @@
-Blocks malicious indicators using all integrations that are enabled.
+Deprecated. Blocks malicious indicators using all integrations that are enabled.
 
 Supported integrations for this playbook:
 * Active Directory

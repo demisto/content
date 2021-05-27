@@ -1,0 +1,1023 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This is a generic playbook to be executed for the Splunk Notable Generic
+  incident type. The playbook performs all the common parts of the investigation,
+  including notifying the SOC, enriching the data for indicators and users, calculating
+  the severity, assigning the incident, notifying the SIEM admin for false positives
+  and more.
+id: Splunk Generic
+inputs:
+- description: Determines whether to enrich all indicators in the incident. Default
+    is True.
+  key: Enrich
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+- description: Set to true to assign only the user that is currently on shift. Default
+    is False. Requires Cortex XSOAR v5.5 or later.
+  key: OnCall
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "false"
+- description: The SOC team's email address.
+  key: SocEmailAddress
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The subject of the email to send to the SOC.
+  key: SocMailSubject
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'XSOAR Summary report, ID - '
+- description: The SIEM admin's email address.
+  key: SiemAdminEmailAddress
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Determines whether to use the Calculate Severity playbook to calculate
+    the incident severity. Default is True. If the playbook isn't used, the severity
+    is determined by the Splunk severity value.
+  key: UseCalculateSeverity
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "true"
+- description: The subject of the email to send to the SIEM admin.
+  key: SiemAdminMailSubject
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'Adjustment/Exclusion for notable '
+name: Splunk Generic
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 08854949-08a5-4873-8f01-b3935c78675f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 08854949-08a5-4873-8f01-b3935c78675f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -440
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Enrich
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the Enrich playbook input is set to True.
+      id: a04c8331-e7c5-4107-8605-b6ee82d4639d
+      iscommand: false
+      name: Should indicators be extracted and enriched?
+      type: condition
+      version: -1
+    taskid: a04c8331-e7c5-4107-8605-b6ee82d4639d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -305
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assigns a random analyst to this incident.
+      id: c74d18c6-9939-4701-828f-149cddba2b8d
+      iscommand: false
+      name: Start Remediation SLA Timer
+      type: title
+      version: -1
+    taskid: c74d18c6-9939-4701-828f-149cddba2b8d
+    timertriggers:
+    - action: start
+      fieldname: remediationsla
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 690
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aca20665-33d5-4e20-866b-0b8f73cd90fc
+      iscommand: false
+      name: Enrich Data
+      type: title
+      version: -1
+      description: ''
+    taskid: aca20665-33d5-4e20-866b-0b8f73cd90fc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": -120
+        }
+      }
+  "7":
+    form:
+      description: Provide notes regarding the investigation.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Investigation Notes
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Investigation Notes
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manually review and investigate this incident.
+      id: e3efbacf-f8e3-4291-8ab7-459037ce9a64
+      iscommand: false
+      name: Manually review the incident
+      type: collection
+      version: -1
+    taskid: e3efbacf-f8e3-4291-8ab7-459037ce9a64
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          Closed By: ${Investigation Notes.Answers.name}
+          ${Investigation Notes.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Closes the current incident.
+      id: 4b1a5788-3cef-4857-8023-dcd01dfa8793
+      iscommand: true
+      name: Close investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 4b1a5788-3cef-4857-8023-dcd01dfa8793
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3390
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Extracts all indicators from the incident and enriches the indicators
+        by using the reputation command defined for each indicator type.
+      id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
+      iscommand: true
+      name: Extract indicators from incident
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 354e53b0-0132-44d6-895e-0f6e0a248cd9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 10
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6df7983-dd60-487d-8fce-70f7f5766175
+      iscommand: false
+      name: Entity Enrichment - Generic v2
+      playbookId: Entity Enrichment - Generic v2
+      type: playbook
+      version: -1
+      description: ''
+    taskid: e6df7983-dd60-487d-8fce-70f7f5766175
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 170
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3540
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      attachIDs:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: InfoFile.Name
+              operator: containsGeneral
+              right:
+                value:
+                  simple: report_Investigation_Summary
+          root: InfoFile
+      body:
+        complex:
+          accessor: investigation}
+          root: ${demistoUrls
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: |
+                    Link to the incident
+              suffix: {}
+            operator: concat
+      subject:
+        complex:
+          root: inputs.SocMailSubject
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: incident.id
+            operator: concat
+      to:
+        simple: ${inputs.SocEmailAddress}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: fd2276ce-b8ca-43f2-8d91-1ad091484e27
+      iscommand: true
+      name: Send investigation report to SOC
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: fd2276ce-b8ca-43f2-8d91-1ad091484e27
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 3210
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      False Positive:
+      - "29"
+      True Positive:
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 1b3aae31-8d82-401d-87cf-d0148d0b278b
+      iscommand: false
+      name: Was this a true positive?
+      type: condition
+      version: -1
+    taskid: 1b3aae31-8d82-401d-87cf-d0148d0b278b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1540
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incidentId:
+        complex:
+          accessor: id
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        A script to generate the investigation summary report automatically
+        can be used in the post-processing flow as well.
+      id: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
+      iscommand: false
+      name: Generate Investigation Summary Report
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      version: -1
+    taskid: ff1b9850-ef10-4d42-80e3-39b72d8d01f8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2720
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.UseCalculateSeverity
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: b419c44d-1762-4553-8493-f9d7606af7bc
+      iscommand: false
+      name: Use Calculate Severity?
+      type: condition
+      version: -1
+    taskid: b419c44d-1762-4553-8493-f9d7606af7bc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 562.5,
+          "y": 350
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SocEmailAddress
+          operator: isNotEmpty
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 670d8449-b528-465d-8b3f-6e22cda63229
+      iscommand: false
+      name: Was the SOC email address provided?
+      type: condition
+      version: -1
+    taskid: 670d8449-b528-465d-8b3f-6e22cda63229
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2870
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SiemAdminEmailAddress
+          operator: isNotEmpty
+      label: "yes"
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: ''
+      id: 355b3075-9035-4285-82b0-c4d63679b10c
+      iscommand: false
+      name: Was the SIEM admin email address provided?
+      type: condition
+      version: -1
+    taskid: 355b3075-9035-4285-82b0-c4d63679b10c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2050
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assignBy:
+        simple: random
+      onCall:
+        complex:
+          root: inputs.OnCall
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Assigns a random analyst to this incident.
+      id: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
+      iscommand: false
+      name: Assign an analyst to the incident
+      scriptName: AssignAnalystToIncident
+      type: regular
+      version: -1
+    taskid: 0c7b3033-c209-4a87-8ef5-63fbd907f68d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1015
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 381f98db-b60a-4514-89d8-959cd9189cb3
+      iscommand: false
+      name: Post Incident Activity
+      type: title
+      version: -1
+      description: ''
+    taskid: 381f98db-b60a-4514-89d8-959cd9189cb3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1380
+        }
+      }
+  "22":
+    form:
+      description: Provide what should be adjusted in the rule
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Which rules need to be adjusted?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Which indicators need to be excluded?
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Data for rule adjustment by the SIEM admin
+      totalanswers: 0
+    id: "22"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Provide data to adjust the rule in order to avoid similar false
+        positives in the future.
+      id: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
+      iscommand: false
+      name: Provide data for rule adjustment
+      type: collection
+      version: -1
+    taskid: 4dfa75fe-917f-4eed-894a-3f2dfda362fc
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1890
+        }
+      }
+  "23":
+    id: "23"
+    taskid: ed40e798-d16a-4f53-80ce-efd3b06cb023
+    type: regular
+    task:
+      id: ed40e798-d16a-4f53-80ce-efd3b06cb023
+      version: -1
+      name: Send email to SIEM admin
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          root: inputs.SiemAdminEmailAddress
+          transformers:
+          - operator: substringTo
+            args:
+              to:
+                value:
+                  simple: '@'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: "\nRules to adjust - "
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Data for rule adjustment by the SIEM admin.Answers.0
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: "\nValues to exclude - "
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Data for rule adjustment by the SIEM admin.Answers.1
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Dear '
+              suffix: {}
+      cc: {}
+      htmlBody: {}
+      replyTo: {}
+      subject:
+        complex:
+          root: inputs.SiemAdminMailSubject
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: incident.notableid
+                iscontext: true
+      to:
+        simple: ${inputs.SiemAdminEmailAddress}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 226309cb-824c-486f-8b8a-f977f03bba67
+      iscommand: false
+      name: Investigation
+      type: title
+      version: -1
+      description: ''
+    taskid: 226309cb-824c-486f-8b8a-f977f03bba67
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 860
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the incident status as false positive.
+      id: d8d79caa-94a4-4f02-8bda-d306a1357b34
+      iscommand: true
+      name: Set as false positive
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: d8d79caa-94a4-4f02-8bda-d306a1357b34
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1740
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 88147dfd-8093-46f6-8a63-5ef810b03328
+      iscommand: false
+      name: SIEM Admin
+      type: title
+      version: -1
+      description: ''
+    taskid: 88147dfd-8093-46f6-8a63-5ef810b03328
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2400
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e02854a2-f41b-444b-8953-067035e160ca
+      iscommand: false
+      name: SOC Summary
+      type: title
+      version: -1
+      description: ''
+    taskid: e02854a2-f41b-444b-8953-067035e160ca
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3070
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+      iscommand: false
+      name: Calculate Severity - Standard
+      playbookId: Calculate Severity - Standard
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b6008b80-dc3e-4381-8c5f-5ead8aa3debe
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 520
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_True Positive": 0.62,
+      "18_15_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4045,
+        "width": 1360,
+        "x": -220,
+        "y": -440
+      }
+    }
+  }
+tests:
+- no test
+fromversion: 6.0.0

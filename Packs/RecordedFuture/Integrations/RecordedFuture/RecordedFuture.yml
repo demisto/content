@@ -67,7 +67,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.2.17246
+  dockerimage: demisto/python3:3.9.4.19537
   commands:
   - name: domain
     arguments:
@@ -1500,6 +1500,12 @@ script:
       type: string
     - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCompany.type
       description: Recorded Future Related Type
+      type: string
+    - contextPath: RecordedFuture.CVE.cpe
+      description: Recorded Future CPE information
+      type: string
+    - contextPath: RecordedFuture.CVE.relatedLinks
+      description: Recorded Future CVE Related Links
       type: string
     - contextPath: RecordedFuture.File.criticality
       description: Risk Criticality

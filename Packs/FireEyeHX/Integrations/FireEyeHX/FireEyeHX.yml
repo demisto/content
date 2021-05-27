@@ -280,8 +280,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter that returns only records with an AlertId field value great
-        than the minId value
+      description: Filter that returns only records with an AlertId field value great than the minId value.
       isArray: false
       name: minId
       required: false
@@ -317,12 +316,6 @@ script:
       name: MALsource
       predefined:
       - 'yes'
-      required: false
-      secret: false
-    - default: false
-      description: Return only records with id greater than minId
-      isArray: false
-      name: minId
       required: false
       secret: false
     - default: false
