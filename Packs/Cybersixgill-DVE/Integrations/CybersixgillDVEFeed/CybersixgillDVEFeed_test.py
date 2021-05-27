@@ -896,7 +896,7 @@ def test_test_module_command_raise_exception(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(400, "error"))
 
-    from Cybersixgill_DVE_Feed import module_command_test
+    from CybersixgillDVEFeed import module_command_test
 
     with pytest.raises(Exception):
         module_command_test()
@@ -918,7 +918,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Cybersixgill_DVE_Feed import fetch_indicators_command
+    from CybersixgillDVEFeed import fetch_indicators_command
     from sixgill.sixgill_feed_client import SixgillFeedClient
     from sixgill.sixgill_constants import FeedStream
 
@@ -945,7 +945,7 @@ def test_get_indicators_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Cybersixgill_DVE_Feed import get_indicators_command
+    from CybersixgillDVEFeed import get_indicators_command
     from sixgill.sixgill_feed_client import SixgillFeedClient
     from sixgill.sixgill_constants import FeedStream
 
@@ -981,7 +981,7 @@ def test_feed_tags_and_tlp_color(mocker, tlp_color):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Cybersixgill_DVE_Feed import fetch_indicators_command
+    from CybersixgillDVEFeed import fetch_indicators_command
     from sixgill.sixgill_feed_client import SixgillFeedClient
     from sixgill.sixgill_constants import FeedStream
 
