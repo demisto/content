@@ -25,6 +25,7 @@ USER_SUFFIX: str
 ISSUE_SUFFIX: str
 RELEASE_SUFFIX: str
 PULLS_SUFFIX: str
+FILE_SUFFIX: str
 HEADERS: dict
 
 BASE_URL = 'https://api.github.com'
@@ -1514,6 +1515,40 @@ def list_files_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=res)
 
 
+def commit_file_command():
+    args = demisto.args()
+    commit_message = args.get('commit_message')
+    path_to_file = args.get('path_to_file')
+    branch = args.get('branch_name')
+    entry_id = args.get('entry_id')
+    file_text = args.get('file_text')
+    file_sha = args.get('file_sha')
+
+    if not entry_id and not file_text:
+        raise DemistoException('You must specify either the "file_text" or the "entry_id" of the file.')
+    elif entry_id:
+        file_path = demisto.getFilePath(entry_id).get('path')
+        with open(file_path, 'rb') as f:
+            content = f.read()
+    else:
+        content = bytes(file_text, encoding='utf8')
+
+    data = {
+        'message': commit_message,
+        'content': base64.b64encode(content).decode("utf-8"),
+        'branch': branch,
+    }
+    if file_sha:
+        data['sha'] = file_sha
+    res = http_request(method='PUT', url_suffix='{}/{}'.format(FILE_SUFFIX, path_to_file), data=data)
+
+    return_results(CommandResults(
+        readable_output=f"The file {path_to_file} committed successfully. Link to the commit:"
+                        f" {res['commit'].get('html_url')}",
+        raw_response=res
+    ))
+
+
 def list_check_runs(owner_name, repository_name, run_id, commit_id):
     url_suffix = None
 
@@ -1665,7 +1700,7 @@ COMMANDS = {
     'GitHub-list-team-members': list_team_members_command,
     'GitHub-list-branch-pull-requests': list_branch_pull_requests_command,
     'Github-get-check-run': get_github_get_check_run,
-
+    'Github-commit-file': commit_file_command,
 }
 
 
@@ -1682,6 +1717,7 @@ def main():
     global ISSUE_SUFFIX
     global RELEASE_SUFFIX
     global PULLS_SUFFIX
+    global FILE_SUFFIX
     global HEADERS
 
     params = demisto.params()
@@ -1699,6 +1735,7 @@ def main():
     ISSUE_SUFFIX = USER_SUFFIX + '/issues'
     RELEASE_SUFFIX = USER_SUFFIX + '/releases'
     PULLS_SUFFIX = USER_SUFFIX + '/pulls'
+    FILE_SUFFIX = USER_SUFFIX + '/contents'
 
     if TOKEN == '' and PRIVATE_KEY != '':
         try:
