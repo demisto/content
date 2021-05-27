@@ -17,7 +17,7 @@
         "dmac": "f8:2f:a8:ed:c2:ff",
         "sport": "5353",
         "data": {
-            "pcap_waiting": False,
+            "pcap_waiting": false,
             "scanCount": 15,
             "scan_type": "Undefined",
             "scannedIPs": [
