@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "identitytable",
+    "closeForm": false,
+    "content": true,
+    "description": "A table view of all identities related to the incident.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_identitytable",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Identity Table",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

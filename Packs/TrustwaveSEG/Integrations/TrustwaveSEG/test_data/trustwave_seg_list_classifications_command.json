@@ -1,0 +1,26 @@
+[
+    {
+        "code": 1022,
+        "id": 53,
+        "name": "Policy Breaches - HIPAA",
+        "type": 1
+    },
+    {
+        "code": 1023,
+        "id": 54,
+        "name": "Spam - Confirmed",
+        "type": 1
+    },
+    {
+        "code": 1,
+        "id": 1,
+        "name": "Folders",
+        "type": 1
+    },
+    {
+        "code": 1024,
+        "id": 55,
+        "name": "Spam - Scams",
+        "type": 1
+    }
+]

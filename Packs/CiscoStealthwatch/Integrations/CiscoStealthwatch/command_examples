@@ -1,0 +1,12 @@
+!cisco-stealthwatch-list-tenants
+!cisco-stealthwatch-list-tenants tenant_id=102
+!cisco-stealthwatch-list-tags tenant_id=102
+!cisco-stealthwatch-get-tag tenant_id=102 tag_id=1
+!cisco-stealthwatch-get-tag-hourly-traffic-report tenant_id=102 tag_id=1
+!cisco-stealthwatch-get-top-alarming-tags tenant_id=102
+!cisco-stealthwatch-query-flows-initialize tenant_id=102 limit=3 time_range="1 week"
+!cisco-stealthwatch-query-flows-status tenant_id=102 search_id=604f64afe4b0bbedc8c77a9d
+!cisco-stealthwatch-query-flows-results tenant_id=102 search_id=604f64afe4b0bbedc8c77a9d
+!cisco-stealthwatch-list-security-events-initialize tenant_id=102 time_range="5 minute"
+!cisco-stealthwatch-list-security-events-status tenant_id=102 search_id=604f64e1e4b0bbedc8c77aa4
+!cisco-stealthwatch-list-security-events-results tenant_id=102 limit=5 search_id=604f64e1e4b0bbedc8c77aa4

@@ -890,6 +890,15 @@ script:
     execution: false
     name: domain
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the DBot score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     - contextPath: Domain.Name
       description: 'The domain name, for example: ''google.com''.'
       type: String
@@ -1439,7 +1448,7 @@ script:
     - contextPath: PassiveTotal.Cookie.lastSeen
       description: The date and time when the cookie was most recently observed.
       type: Date
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   longRunning: false

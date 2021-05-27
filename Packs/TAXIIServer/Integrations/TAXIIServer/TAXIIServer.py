@@ -760,14 +760,14 @@ def find_indicators_loop(indicator_query: str):
     """
     iocs: List[dict] = []
     total_fetched = 0
-    next_page = 0
     last_found_len = PAGE_SIZE
+    search_indicators = IndicatorsSearcher()
+
     while last_found_len == PAGE_SIZE:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-        next_page += 1
     return iocs
 
 
@@ -886,7 +886,7 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        wsgi_server = WSGIServer(('', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        wsgi_server = WSGIServer(('0.0.0.0', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=wsgi_server.serve_forever)
             server_process.start()

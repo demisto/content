@@ -1096,13 +1096,54 @@
       ]
      },
      "simple": ""
+    },
+    "severity": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "magnitude",
+            "transformers": [
+                {
+                    "args": {
+                        "input_values": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "1,2,3,4,5,6,7,8,9,10"
+                            }
+                        },
+                        "mapped_values": {
+                            "isContext": false,
+                            "value": {
+                                "complex": null,
+                                "simple": "1,1,1,2,2,2,2,3,3,3"
+                            }
+                        }
+                    },
+                    "operator": "MapValuesTransformer"
+                }
+            ]
+        },
+        "simple": ""
     }
-   }
-  },
+}
+    },
+    
   "dbot_classification_incident_type_all": {
    "dontMapEventToLabels": false,
    "internalMapping": {
-
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "mirror_instance"
+    }
    }
   }
  },

@@ -1,0 +1,33 @@
+{
+  "listAssetsResults": [
+    {
+      "asset": {
+        "name": "name",
+        "securityCenterProperties": {
+          "resourceName": "resourceName",
+          "resourceType": "resourceType",
+          "resourceDisplayName": "resourceDisplayName"
+        },
+        "resourceProperties": {
+          "organizationId": "organizationId",
+          "name": "name",
+          "owner": "{\"directoryCustomerId\":\"C6u\"}",
+          "lifecycleState": "ACTIVE",
+          "displayName": "displayName",
+          "creationTime": "2017-01-23T08:50:47.212Z"
+        },
+        "securityMarks": {
+          "name": "name1",
+          "marks": {
+            "dummykey": "dummyValue1"
+          }
+        },
+        "createTime": "2020-07-22T07:10:02.782Z",
+        "updateTime": "2021-01-05T05:16:11.963Z"
+      }
+    }
+  ],
+  "readTime": "2021-02-01T12:27:24.419Z",
+  "nextPageToken": "pageToken",
+  "totalSize": 941
+}

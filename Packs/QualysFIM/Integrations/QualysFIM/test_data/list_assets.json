@@ -1,0 +1,317 @@
+[
+    {
+        "data": {
+            "activationDate": 1610279920980,
+            "agentService": {
+                "driverVersion": "4.1.0.744",
+                "httpStatus": null,
+                "osStatus": null,
+                "status": "FIM_EVENTS_UPLOADED",
+                "statusCode": 2007,
+                "updatedDate": 1612292820206
+            },
+            "agentUuid": "b1caea93-0d21-4343-801c-92009f036c79",
+            "agentVersion": "1.1.1.1",
+            "assetId": 20032549,
+            "created": 1610279920980,
+            "customerId": 524090,
+            "customerUuid": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+            "ec2": null,
+            "hostId": 15855913,
+            "id": "b1caea93-0d21-4343-801c-92009f036c79",
+            "interfaces": [
+                {
+                    "address": "1.1.1.1",
+                    "hostname": "DESKTOP-F16FQS2",
+                    "interfaceName": "Hyper-V Virtual Ethernet Adapter",
+                    "macAddress": "00:15:5D:DB:DA:B0"
+                },
+                {
+                    "address": "1.1.1.1",
+                    "hostname": "DESKTOP-F16FQS2",
+                    "interfaceName": "Hyper-V Virtual Ethernet Adapter #2",
+                    "macAddress": "00:15:5D:C7:40:39"
+                },
+                {
+                    "address": "1.1.1.1",
+                    "hostname": "DESKTOP-F16FQS2",
+                    "interfaceName": "Intel(R) Dual Band Wireless-AC 8265",
+                    "macAddress": "04:33:C2:64:45:B5"
+                },
+                {
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+                    "hostname": "DESKTOP-F16FQS2",
+                    "interfaceName": "Hyper-V Virtual Ethernet Adapter #2",
+                    "macAddress": "00:15:5D:C7:40:39"
+                },
+                {
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+                    "hostname": "DESKTOP-F16FQS2",
+                    "interfaceName": "Hyper-V Virtual Ethernet Adapter",
+                    "macAddress": "00:15:5D:DB:DA:B0"
+                },
+                {
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+                    "hostname": "DESKTOP-F16FQS2",
+                    "interfaceName": "Intel(R) Dual Band Wireless-AC 8265",
+                    "macAddress": "04:33:C2:64:45:B5"
+                }
+            ],
+            "lastCheckedIn": 1612340325000,
+            "lastLoggedOnUser": "Gill",
+            "manifest": {
+                "id": "4bca8be5-4b84-473c-998d-16fbcbd08761",
+                "status": "FIM_MANIFEST_ASSIGNED",
+                "updatedDate": 1610978060927
+            },
+            "name": "DESKTOP-F16FQS2",
+            "netbiosName": "DESKTOP-F16FQS2",
+            "operatingSystem": "Microsoft Windows 10 Pro 10.0.18363 64-bit N/A Build 18363",
+            "profiles": [
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610279901826,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "810dbed0-7314-4531-b7a0-7f2733f1be10",
+                    "name": "Gill_02",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "1.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610895239253,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "ca93db3b-6e8a-4b22-b394-c436caf5f7cd",
+                    "name": "Monitoring Profile for Windows",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "2.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610895240533,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "53f22775-6ea6-4bde-a2e4-ade0b8754a6c",
+                    "name": "Monitoring Profile for Oracle Database on Windows",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "1.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610895241659,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "142a5071-183d-4359-a7dd-e6b3a766c1ad",
+                    "name": "Lightweight Monitoring Profile for Windows",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "2.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610226039643,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "b5ff2d41-1c38-4c5f-bdf9-d94dee15b027",
+                    "name": "Gill",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "1.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610894881272,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
+                    "name": "test_01",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "1.0"
+                }
+            ],
+            "system": {
+                "lastBoot": 1612340325000
+            },
+            "tags": [
+                "fde350b6-c5c3-4764-8060-185269d93109",
+                "89bec2e4-9046-44b4-ba35-6098af65aca2"
+            ]
+        },
+        "sortValues": []
+    },
+    {
+        "data": {
+            "activationDate": 1610899301086,
+            "agentService": {
+                "driverVersion": "1.1.1.1",
+                "httpStatus": null,
+                "osStatus": null,
+                "status": "FIM_EVENTS_UPLOADED",
+                "statusCode": 2007,
+                "updatedDate": 1610900638754
+            },
+            "agentUuid": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+            "agentVersion": "4.0.0.411",
+            "assetId": 20234688,
+            "created": 1610899301086,
+            "customerId": 524090,
+            "customerUuid": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+            "ec2": null,
+            "hostId": 15994867,
+            "id": "f2d2341f-7398-410f-ae36-a28ad4e30a6d",
+            "interfaces": [
+                {
+                    "address": "1.1.1.1",
+                    "hostname": "DC",
+                    "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
+                    "macAddress": "00:0C:29:9B:A9:5E"
+                },
+                {
+                    "address": "aa00:0:0:0:00aa:0a00:a00a:00a0",
+                    "hostname": "DC",
+                    "interfaceName": "Intel(R) 82574L Gigabit Network Connection #2",
+                    "macAddress": "00:0C:29:9B:A9:5E"
+                }
+            ],
+            "lastCheckedIn": 1610900217057,
+            "lastLoggedOnUser": "QMASTERS\\support",
+            "manifest": {
+                "id": "3aff4a9e-d8f0-4df2-b345-74d05b9a3200",
+                "status": "FIM_MANIFEST_ASSIGNED",
+                "updatedDate": 1610900110706
+            },
+            "name": "DC.qmasters.local",
+            "netbiosName": "DC",
+            "operatingSystem": "Microsoft Windows Server 2016 Standard Evaluation 10.0.14393 64-bit N/A Build 14393",
+            "profiles": [
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610895239253,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "ca93db3b-6e8a-4b22-b394-c436caf5f7cd",
+                    "name": "Monitoring Profile for Windows",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "2.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610894881272,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "432b8f93-c610-4c8f-9e7d-6cdae41f2dc5",
+                    "name": "test_01",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "1.0"
+                },
+                {
+                    "category": {
+                        "id": "2dab5022-2fdd-11e7-93ae-92361f002671",
+                        "name": "PCI"
+                    },
+                    "createdBy": {
+                        "date": 1610279901826,
+                        "user": {
+                            "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e",
+                            "name": "Gregori Nazarovsky"
+                        }
+                    },
+                    "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+                    "id": "810dbed0-7314-4531-b7a0-7f2733f1be10",
+                    "name": "Gill_02",
+                    "osVersions": [],
+                    "status": "ACTIVATED",
+                    "type": "WINDOWS",
+                    "version": "1.0"
+                }
+            ],
+            "system": {
+                "lastBoot": 1610900217057
+            },
+            "tags": [
+                "fde350b6-c5c3-4764-8060-185269d93109"
+            ]
+        },
+        "sortValues": []
+    }
+]

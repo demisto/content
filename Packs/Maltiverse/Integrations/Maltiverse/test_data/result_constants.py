@@ -35,7 +35,8 @@ EXPECTED_IP_RESULT = {
             'Indicator': '1.1.1.0',
             'Type': 'ip',
             'Vendor': 'Maltiverse',
-            'Score': 3
+            'Score': 3,
+            'Reliability': 'C - Fairly reliable'
         }
     ]
 }
@@ -60,7 +61,8 @@ EXPECTED_URL_RESULT = {
             'Indicator': 'https://dv-expert.org',
             'Type': 'Url',
             'Vendor': 'Maltiverse',
-            'Score': 3
+            'Score': 3,
+            'Reliability': 'C - Fairly reliable'
         }
     ],
     'Maltiverse.URL(val.Data && val.Data == obj.Data)': [
@@ -105,7 +107,8 @@ EXPECTED_DOMAIN_RESULT = {
             'Indicator': 'google.com',
             'Type': 'Domain',
             'Vendor': 'Maltiverse',
-            'Score': 2
+            'Score': 2,
+            'Reliability': 'C - Fairly reliable'
         }
     ],
     'Maltiverse.Domain(val.Name && val.Name == obj.Name)': [
@@ -173,7 +176,8 @@ EXPECTED_FILE_RESULT = {
             'Indicator': 'edb2f88c29844117cd74acf8bb357edf92487a1b142fe6f60b6ac5e15d2d718f',
             'Type': 'File',
             'Vendor': 'Maltiverse',
-            'Score': 3
+            'Score': 3,
+            'Reliability': 'C - Fairly reliable'
         }
     ],
     'Maltiverse.File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == '

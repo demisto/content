@@ -1,3 +1,5 @@
+Import-Module SelfSignedCertificate
+
 function CreateCertificate
 {
     [CmdletBinding()]

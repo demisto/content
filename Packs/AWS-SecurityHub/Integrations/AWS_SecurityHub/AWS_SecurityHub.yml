@@ -30,6 +30,8 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
+  - us-gov-east-1
+  - us-gov-west-1
   required: false
   type: 15
 - display: Role Session Duration
@@ -3554,7 +3556,7 @@ script:
     description: Deprecated, use aws-securityhub-batch-update-findings instead.
     execution: false
     name: aws-securityhub-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.16892
+  dockerimage: demisto/boto3py3:1.0.0.19032
   feed: false
   isfetch: true
   longRunning: false

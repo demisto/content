@@ -221,7 +221,7 @@
             }
         ]
     },
-    "name": "PassiveTotal Email Indicator",
+    "name": "PassiveTotal Email Indicator Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0"

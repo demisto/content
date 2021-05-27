@@ -2338,7 +2338,7 @@ tasks:
       query_expression:
         complex:
           root: File
-          accessor: SHA1
+          accessor: MD5
           transformers:
           - operator: replaceMatch
             args:

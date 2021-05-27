@@ -1,4 +1,5 @@
 import gzip
+import json
 
 from CommonServerPython import *
 # IMPORTS
@@ -158,6 +159,8 @@ class Client(BaseClient):
     def get_batches_from_file(self, limit):
 
         file_stream = open("response.txt", 'rt')
+        columns = file_stream.readline()  # get the headers from the csv file.
+        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
 
         batch_size = limit if limit else BATCH_SIZE
         while True:
@@ -169,7 +172,7 @@ class Client(BaseClient):
                 os.remove("response.txt")
                 return
 
-            yield csv.DictReader(feed_batch)
+            yield csv.DictReader(feed_batch, fieldnames=columns)
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -344,12 +347,14 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
                 lower_case_evidence_details_keys = []
-                evidence_details = json.loads(item.get('EvidenceDetails', '{}')).get('EvidenceDetails', [])
-                if evidence_details:
-                    raw_json['EvidenceDetails'] = evidence_details
-                    for rule in evidence_details:
-                        rule = dict((key.lower(), value) for key, value in rule.items())
-                        lower_case_evidence_details_keys.append(rule)
+                evidence_details_value = item.get('EvidenceDetails', '{}')
+                if evidence_details_value:
+                    evidence_details = json.loads(evidence_details_value).get('EvidenceDetails', [])
+                    if evidence_details:
+                        raw_json['EvidenceDetails'] = evidence_details
+                        for rule in evidence_details:
+                            rule = dict((key.lower(), value) for key, value in rule.items())
+                            lower_case_evidence_details_keys.append(rule)
                 risk_string = item.get('RiskString')
                 if isinstance(risk_string, str):
                     raw_json['RiskString'] = format_risk_string(risk_string)
@@ -455,5 +460,5 @@ def main():
         return_error(err_msg)
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

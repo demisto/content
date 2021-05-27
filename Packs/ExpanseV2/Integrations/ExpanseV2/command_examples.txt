@@ -26,3 +26,15 @@
 !expanse-get-associated-domains ip="1.1.1.1"
 !expanse-list-risk-rules limit-3
 !expanse-get-risky-flows limit=1
+!expanse-get-services limit="1" provider="Amazon Web Services"
+!expanse-get-service service_id="99ea2dce-248a-3adb-937b-b46841825581"
+!expanse-list-pocs limit=1
+!expanse-create-poc email="analyst@expanseinc.com"
+!expanse-assign-pocs-to-asset asset_type="IpRange" asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"
+!expanse-unassign-pocs-to-asset asset_type="IpRange" asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"
+!expanse-assign-pocs-to-iprange asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"
+!expanse-unassign-pocs-from-iprange asset_id="9847aa57-3c5d-4308-91d6-ee0fd5435785" poc_emails="analyst@expanseinc.com"
+!expanse-assign-pocs-to-domain asset_id="3e65e20d-51eb-364c-bfa9-c54746131098" poc_emails="analyst@expanseinc.com"
+!expanse-unassign-pocs-from-domain asset_id="3e65e20d-51eb-364c-bfa9-c54746131098" poc_emails="analyst@expanseinc.com"
+!expanse-assign-pocs-to-certificate asset_id="1834b291-7be6-3161-a5f5-78207a548596" poc_emails="analyst@expanseinc.com"
+!expanse-unassign-pocs-from-certificate asset_id="1834b291-7be6-3161-a5f5-78207a548596" poc_emails="analyst@expanseinc.com"
