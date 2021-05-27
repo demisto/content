@@ -569,7 +569,3 @@ def test_cve_enrich_command(mocker):
 
     output = cve_enrich_command(client, demisto.args())
     assert output == expected_enrich_output
-
-
-if __name__ == "__main__":
-    test_cve_enrich_command()
