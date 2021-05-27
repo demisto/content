@@ -328,7 +328,7 @@ expected_ioc_output = [
                 },
             },
         },
-        "score": "3",
+        "score": 3,
         "fields": {
             "description": """Description: Trend of Github commits related to CVE-2020-15392
 Created: 2020-09-06T20:33:33.538Z
@@ -421,7 +421,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N
                 },
             },
         },
-        "score": "3",
+        "score": 3,
         "fields": {
             "description": """Description: CVE-2020-2021 is trending on Twitter.
 Created: 2020-08-19T23:08:05.709Z
@@ -514,7 +514,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H
                 },
             },
         },
-        "score": "3",
+        "score": 3,
         "fields": {
             "description": """Description: CVE-2020-12828 is trending on Twitter.
 Created: 2020-08-19T23:08:05.709Z
@@ -603,7 +603,7 @@ NVD Vector - V3.1: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
                 "score": {"current": None, "highest": {"date": None, "value": None}, "previouslyExploited": None},
             },
         },
-        "score": "3",
+        "score": 3,
         "fields": {
             "description": """Description: CVE-2020-9771 is trending on Twitter.
 Created: 2020-08-19T23:08:05.709Z
@@ -697,7 +697,7 @@ NVD Vector - V3.1: None
                 },
             },
         },
-        "score": "3",
+        "score": 3,
         "fields": {
             "description": """Description: Sixgill Current score of CVE-2015-6086 changed from Low to None.
 Created: 2020-08-25T17:16:52.536Z
@@ -791,7 +791,7 @@ NVD Vector - V3.1: None
                 },
             },
         },
-        "score": "3",
+        "score": 3,
         "fields": {
             "description": """Description: Sixgill Current score of CVE-2015-6086 changed from Low to None.
 Created: 2020-08-25T17:16:52.536Z
