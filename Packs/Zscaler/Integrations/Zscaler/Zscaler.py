@@ -517,8 +517,10 @@ def category_add_url(category_id, url):
     category_data = get_category_by_id(category_id)
     if category_data:  # check if the category exists
         url_list = argToList(url)
+        all_urls = url_list[:]
+        all_urls.extend(list(map(lambda x: x.strip(), category_data['urls'])))
+        category_data['urls'] = all_urls
         add_or_remove_urls_from_category(ADD, url_list, category_data)  # add the urls to the category
-        category_data = get_category_by_id(category_id)  # calling again to get the updated url list under this category
         context = {
             'ID': category_id,
             'CustomCategory': category_data.get('customCategory'),
@@ -535,7 +537,7 @@ def category_add_url(category_id, url):
         hr = 'Added the following URL addresses to category {}:\n{}'.format(category_id, urls)
         entry = {
             'Type': entryTypes['note'],
-            'Contents': ec,
+            'Contents': category_data,
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': hr,
@@ -595,7 +597,7 @@ def category_remove_url(category_id, url):
         if updated_urls == category_data['urls']:
             return return_error('Could not find given URL in the category.')
         add_or_remove_urls_from_category(REMOVE, url_list, category_data)  # remove the urls from list
-        category_data = get_category_by_id(category_id)  # calling again to get the updated url list under this category
+        category_data['urls'] = updated_urls
         context = {
             'ID': category_id,
             'CustomCategory': category_data.get('customCategory'),
