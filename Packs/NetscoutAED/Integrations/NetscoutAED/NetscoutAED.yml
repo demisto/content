@@ -84,7 +84,7 @@ script:
       secret: false
     - default: false
       description: Maximal number of results to retrieve. Also sets the size of the
-        returned page (default 10)
+        returned page.
       isArray: false
       name: limit
       required: false
@@ -508,7 +508,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: 'Set the protection group mode to active (true) or inactive (false).
         Default: true.'
@@ -520,7 +520,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: low
       description: 'The protection level (None = use the global protection level,
         low, medium, high). Default: low'
