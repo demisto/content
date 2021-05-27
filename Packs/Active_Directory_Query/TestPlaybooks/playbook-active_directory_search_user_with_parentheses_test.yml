@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 528e1282-ff89-420e-8ff3-3778e1ec47d0
+    taskid: 8378214b-b94c-4306-87b9-5a57a8e9da14
     type: regular
     task:
-      id: 528e1282-ff89-420e-8ff3-3778e1ec47d0
+      id: 8378214b-b94c-4306-87b9-5a57a8e9da14
       version: -1
       name: ad-get-user by dn
       description: Retrieves detailed information about a user account. The user can
@@ -53,7 +53,7 @@ tasks:
       - "4"
     scriptarguments:
       dn:
-        simple: '"CN=Administrator,CN=Users,DC=demisto,DC=local"'
+        simple: CN=Admi"nistrator,CN=Users,DC=demisto,DC=local
     separatecontext: false
     view: |-
       {
@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 57aa7420-0244-4c94-8516-2e12f7ff2deb
+    taskid: 75b2feb3-34c5-47c4-838d-3cb9504bb7cc
     type: regular
     task:
-      id: 57aa7420-0244-4c94-8516-2e12f7ff2deb
+      id: 75b2feb3-34c5-47c4-838d-3cb9504bb7cc
       version: -1
       name: ad-get-user by name
       description: Retrieves detailed information about a user account. The user can
@@ -116,7 +116,7 @@ tasks:
       - "5"
     scriptarguments:
       name:
-        simple: '"Administrator"'
+        simple: Admin"istrator
     separatecontext: false
     view: |-
       {
@@ -170,10 +170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6f30965e-9728-4c95-8b0f-453d10d979b9
+    taskid: c202a57f-26a3-43bd-8739-668c2de6bf50
     type: regular
     task:
-      id: 6f30965e-9728-4c95-8b0f-453d10d979b9
+      id: c202a57f-26a3-43bd-8739-668c2de6bf50
       version: -1
       name: ad-get-user by username
       description: Retrieves detailed information about a user account. The user can
@@ -188,7 +188,7 @@ tasks:
       - "3"
     scriptarguments:
       username:
-        simple: '"Administrator"'
+        simple: Administrator"
     separatecontext: false
     view: |-
       {
