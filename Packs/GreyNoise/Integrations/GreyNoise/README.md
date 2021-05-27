@@ -41,7 +41,7 @@ Runs reputation on IPs.
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| IP.address | string | IP address. | 
+| IP.Address | string | IP address. | 
 | IP.ASN | string | The autonomous system name for the IP address. | 
 | IP.Hostname | string | The hostname that is mapped to IP address. | 
 | IP.Geo.Country | string | The country in which the IP address is located. | 
@@ -188,7 +188,7 @@ For more information on the syntax to write GNQL of argument `advanced_query`, c
 | GreyNoise.Query.message | string | Message from the API response. | 
 | GreyNoise.Query.query | string | Query which was used to filter the records. | 
 | GreyNoise.Query.scroll | string | Scroll token to paginate through results. | 
-
+| GreyNoise.IP.bot | boolean | Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks. |
 
 #### Command Example
 ``` !greynoise-query spoofable=true size=1 advanced_query="spoofable:false" ```
@@ -310,3 +310,48 @@ Get aggregate statistics for the top organizations, actors, tags, ASNs, countrie
 | AS4837 | 252542 |
 | AS4134 | 244603 |
 
+
+
+### greynoise-riot
+***
+Identify IPs from known benign services and organizations that commonly cause false positives in network security and threat intelligence products. The collection of IPs in RIOT is continually curated and verified to provide accurate results. These IPs are extremely unlikely to pose a threat to your network.
+
+#### Base Command
+
+`greynoise-riot`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The IP address to be checked if it is potentially harmful or not. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GreyNoise.Riot.ip | string | The IP given to check riot information about. | 
+| GreyNoise.Riot.riot | string | The riot of the IP. "True" or "False" | 
+| GreyNoise.Riot.category | string | The category of the IP if riot is "True". | 
+| GreyNoise.Riot.name | string | The name of the IP if the riot is "True". | 
+| GreyNoise.Riot.description | string | The description of the IP if riot is "True". | 
+| GreyNoise.Riot.explanation | date | The explanation of the IP if riot is "True". | 
+| GreyNoise.Riot.last_updated | string | The last updated time of the IP if the riot is "True". | 
+| GreyNoise.Riot.reference | string | The reference of the IP if riot is "True". | 
+
+#### Command Example
+``` !greynoise-riot ip="8.8.8.8" ```
+
+#### Human Readable Output
+### Benign IP
+|IP|RIOT|Category|Name|Description|Last Updated|
+|---|---|---|---|---|---|
+| [8.8.8.8](https://viz.greynoise.io/riot/8.8.8.8) | true | public_dns | Google Public DNS | Google's global domain name system (DNS) resolution service.|2021-04-12T05:55:35Z|
+
+``` !greynoise-riot ip="114.119.130.178" ```
+
+#### Human Readable Output
+### Potentially Harmful IP
+|IP|RIOT|
+|---|---|
+| [114.119.130.178](https://viz.greynoise.io/riot/114.119.130.178) | false |

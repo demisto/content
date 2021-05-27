@@ -28,7 +28,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_reference_set_delete_command, qradar_reference_set_value_upsert_command, \
     qradar_reference_set_value_delete_command, qradar_domains_list_command, qradar_geolocations_for_ip_command, \
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
-    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command
+    flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip
 
 client = Client(
     server='https://192.168.0.1',
@@ -344,16 +344,16 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
     """
     if status_exception:
         requests_mock.get(
-            f'{client.server}/ariel/searches/{search_id}',
+            f'{client.server}/api/ariel/searches/{search_id}',
             exc=status_exception
         )
     else:
         requests_mock.get(
-            f'{client.server}/ariel/searches/{search_id}',
+            f'{client.server}/api/ariel/searches/{search_id}',
             json=status_response
         )
     requests_mock.get(
-        f'{client.server}/ariel/searches/{search_id}/results',
+        f'{client.server}/api/ariel/searches/{search_id}/results',
         json=results_response
     )
     assert poll_offense_events_with_retry(client, search_id, 1, 1) == expected
@@ -968,3 +968,20 @@ def test_get_remote_data_command_6_1_and_higher(mocker, params, offense: Dict, e
     result = get_remote_data_command(client, params, {'id': offense.get('id'), 'lastUpdate': 1})
     assert result.mirrored_object == expected.mirrored_object
     assert result.entries == expected.entries
+
+
+@pytest.mark.parametrize('ip_address, expected', [('1.2.3.4', True), ('1.2.3.4.765', False), ('', False),
+                                                  ('192.0.0.1', True), ('::1', True),
+                                                  ('2001:0db8:0a0b:12f0:0000:0000:0000:0001', True), ('1', False)])
+def test_is_valid_ip(ip_address: str, expected: bool):
+    """
+    Given:
+     - IP address returned by QRadar, could be valid and could be invalid.
+
+    When:
+     - Checking whether IP is valid or not.
+
+    Then:
+     - Ensure expected bool is returned indicating whether IP is valid.
+    """
+    assert is_valid_ip(ip_address) == expected

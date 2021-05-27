@@ -698,39 +698,51 @@ class MsClient:
         cmd_url = f'/files/{file_hash}'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def list_indicators(self, indicator_id: Optional[str] = None) -> List:
+    def list_indicators(self, indicator_id: Optional[str] = None, page_size: str = '50', limit: int = 50) -> List:
         """Lists indicators. if indicator_id supplied, will get only that indicator.
 
         Args:
             indicator_id: if provided, will get only this specific id.
+            page_size: specify the page size of the result set.
+            limit: Limit the returned results.
 
         Returns:
             List of responses.
         """
+        results = {}
         cmd_url = urljoin(self.indicators_endpoint, indicator_id) if indicator_id else self.indicators_endpoint
         # For getting one indicator
         # TODO: check in the future if the filter is working. Then remove the filter function.
         # params = {'$filter': 'targetProduct=\'Microsoft Defender ATP\''}
+        params = {'$top': page_size}
         resp = self.indicators_http_request(
-            'GET', full_url=cmd_url, url_suffix=None, timeout=1000,
+            'GET', full_url=cmd_url, url_suffix=None, params=params, timeout=1000,
             ok_codes=(200, 204, 206, 404), resp_type='response'
         )
         # 404 - No indicators found, an empty list.
         if resp.status_code == 404:
             return []
         resp = resp.json()
+        results.update(resp)
+
+        while next_link := resp.get('@odata.nextLink'):
+            resp = self.indicators_http_request('GET', full_url=next_link, url_suffix=None, timeout=1000)
+            results['value'].extend(resp.get('value'))
+            if len(results['value']) >= limit:
+                break
+
         # If 'value' is in the response, should filter and limit. The '@odata.context' key is in the root which we're
         # not returning
-        if 'value' in resp:
-            resp['value'] = list(
-                filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', resp.get('value', []))
+        if 'value' in results:
+            results['value'] = list(
+                filter(lambda item: item.get('targetProduct') == 'Microsoft Defender ATP', results.get('value', []))
             )
-            resp = resp['value']
+            results = results['value']
         # If a single object - should remove the '@odata.context' key.
-        else:
-            resp.pop('@odata.context')
-            resp = [resp]
-        return [assign_params(values_to_ignore=[None], **item) for item in resp]
+        elif not isinstance(results, list):
+            results.pop('@odata.context')
+            results = [results]  # type: ignore
+        return [assign_params(values_to_ignore=[None], **item) for item in results]
 
     def create_indicator(self, body: Dict) -> Dict:
         """Creates indicator from the given body.
@@ -2021,13 +2033,13 @@ def list_indicators_command(client: MsClient, args: Dict[str, str]) -> Tuple[str
 
     Args:
         client: MsClient
-        args: arguments from CortexSOAR. May include 'indicator_id'
+        args: arguments from CortexSOAR. May include 'indicator_id' and 'page_size'
 
     Returns:
         human_readable, outputs.
     """
-    raw_response = client.list_indicators(args.get('indicator_id'))
     limit = int(args.get('limit', 50))
+    raw_response = client.list_indicators(args.get('indicator_id'), args.get('page_size', '50'), limit)
     raw_response = raw_response[:limit]
     if raw_response:
         indicators = list()

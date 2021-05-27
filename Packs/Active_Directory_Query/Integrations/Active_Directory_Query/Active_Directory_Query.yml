@@ -677,7 +677,7 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/ldap:1.0.0.17947
+  dockerimage: demisto/ldap:1.0.0.19143
   runonce: false
   ismappable: true
   isremotesyncout: true

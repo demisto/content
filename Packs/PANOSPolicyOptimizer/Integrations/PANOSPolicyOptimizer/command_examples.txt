@@ -1,0 +1,5 @@
+pan-os-po-get-stats
+pan-os-po-get-rules usage=Any
+pan-os-po-no-apps
+pan-os-po-unused-apps
+pan-os-po-app-and-usage rule_uuid={uuid}
