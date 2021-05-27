@@ -441,6 +441,14 @@ def test_get_devices_command(requests_mock):
         """
     from LogPoint_SIEM_Integration import Client, get_devices_command
     mock_response = util_load_json('test_data/sample_get_devices_response.json')
+    allowed_devices = mock_response['allowed_devices']
+    device_list = []
+    for device in allowed_devices:
+        for key, value in device.items():
+            device_list.append({
+                'name': value,
+                'address': key,
+            })
     requests_mock.post(
         'https://test.com/getalloweddata',
         json=mock_response)
@@ -456,7 +464,7 @@ def test_get_devices_command(requests_mock):
     )
     response = get_devices_command(client)
     assert response.outputs_prefix == 'LogPoint.Devices'
-    assert response.outputs == mock_response['allowed_devices']
+    assert response.outputs == device_list
 
 
 def test_get_livesearches_command(requests_mock):

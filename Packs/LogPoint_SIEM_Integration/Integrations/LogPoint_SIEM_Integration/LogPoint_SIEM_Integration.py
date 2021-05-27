@@ -642,17 +642,25 @@ def get_repos_command(client):
 def get_devices_command(client):
     result = client.get_devices()
     if not result.get('success'):
-        raise DemistoException(result['message'])
-    table_header = []
+        raise DemistoException(result.get('message'))
     display_title = "Devices"
     allowed_devices = result.get('allowed_devices')
     if allowed_devices and len(allowed_devices) > 0:
-        table_header = list(allowed_devices[0].keys())
-    markdown = tableToMarkdown(display_title, allowed_devices, headers=table_header)
+        device_list = []
+        for device in allowed_devices:
+            for key, value in device.items():
+                device_list.append({
+                    'name': value,
+                    'address': key,
+                })
+        table_header = ['name', 'address']
+        markdown = tableToMarkdown(display_title, device_list, headers=table_header)
+    else:
+        markdown = 'Devices not found.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Devices',
-        outputs=allowed_devices
+        outputs=device_list
     )
 
 

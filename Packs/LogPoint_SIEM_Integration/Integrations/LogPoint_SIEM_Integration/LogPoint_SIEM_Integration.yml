@@ -52,7 +52,8 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-description: Use this Content Pack to search logs, fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
+description: Use this Content Pack to search logs, fetch incident logs from LogPoint,
+  analyze them for underlying threats, and respond to these threats in real-time.
 display: LogPoint SIEM Integration
 name: LogPoint SIEM Integration
 script:
@@ -769,9 +770,12 @@ script:
     execution: false
     name: lp-get-devices
     outputs:
-    - contextPath: LogPoint.Devices
-      description: Devices in LogPoint.
+    - contextPath: LogPoint.Devices.name
+      description: Device name
       type: String
+    - contextPath: LogPoint.Devices.address
+      description: Device IP address
+      type: Unknown
   - deprecated: false
     description: Get live searches.
     execution: false

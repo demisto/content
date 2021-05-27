@@ -924,7 +924,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogPoint.Devices | String | Devices in LogPoint. | 
+| LogPoint.Devices.name | String | Device name | 
+| LogPoint.Devices.address | Unknown | Device IP address | 
 
 
 #### Command Example
@@ -936,9 +937,16 @@ There are no input arguments for this command.
     "LogPoint": {
         "Devices": [
             {
-                "127.0.0.1/192.168.1.20": "Windows Server",
-                "127.0.0.1/127.0.0.1": "localhost",
-                "127.0.0.1/::1": "localhost"
+                "address": "127.0.0.1/127.0.0.1",
+                "name": "localhost"
+            },
+            {
+                "address": "127.0.0.1/::1",
+                "name": "localhost"
+            },
+            {
+                "address": "127.0.0.1/192.168.1.20",
+                "name": "Windows Server"
             }
         ]
     }
@@ -948,9 +956,11 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Devices
->|127.0.0.1/127.0.0.1|127.0.0.1/::1|127.0.0.1/192.168.1.20|
->|---|---|---|
->| localhost | localhost | Windows Server|
+>|name|address|
+>|---|---|
+>| localhost | 127.0.0.1/127.0.0.1 |
+>| localhost | 127.0.0.1/::1 |
+>| Windows Server | 127.0.0.1/192.168.1.20 |
 
 
 ### lp-get-livesearches
