@@ -133,4 +133,4 @@ Execute a mutation request to the GraphQL server.
 >| reaction: {"content": "HOORAY"}<br/>subject: {"id": "MDU6SXNzdWUyMzEzOTE1NTE="} |
 
 ## Troubleshooting
-  - If you are encountering the error `GraphQLError: Cannot query field`, uncheck the **Fetch the schema from the transport** integration parameter.
+  - If you are encountering the error `GraphQLError: Cannot query field`, you may be failing because of a schema validation error. Uncheck the **Fetch the schema from the transport** integration parameter to disable the schema validation.
