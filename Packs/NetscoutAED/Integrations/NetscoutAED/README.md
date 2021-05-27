@@ -26,21 +26,21 @@ Using the Netscout AED integration you can:
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### na-aed-outbound-blacklisted-countries-list
+### na-ed-outbound-blacklisted-countries-list
 ***
 Gets the countries on the outbound blacklist. By default, 10 blacklisted countries are returned.
 
 
 #### Base Command
 
-### na-aed-country-code-list
+### na-ed-country-code-list
 ***
 Gets a country or list of countries (country name and ISO-standardized country code).
 
 
 #### Base Command
 
-`na-aed-country-code-list`
+`na-ed-country-code-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,7 +59,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 #### Command Example
-```!na-aed-country-code-list limit=5```
+```!na-ed-country-code-list limit=5```
 
 #### Context Example
 ```json
@@ -104,12 +104,12 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 
-`na-aed-outbound-blacklisted-countries-list`
+`na-ed-outbound-blacklisted-countries-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the "na-aed-country-code-list" command. | Optional | 
+| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the "na-ed-country-code-list" command. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
 | limit | The maximum number of results returned per page. Default: 10. | Optional | 
@@ -125,7 +125,7 @@ Gets a country or list of countries (country name and ISO-standardized country c
 
 
 #### Command Example
-```!na-aed-outbound-blacklisted-countries-list```
+```!na-ed-outbound-blacklisted-countries-list```
 
 #### Context Example
 ```json
@@ -156,19 +156,19 @@ Gets a country or list of countries (country name and ISO-standardized country c
 >| IS | 2021-04-19T15:28:13.000Z | example2 |
 
 
-### na-aed-outbound-blacklisted-countries-add
+### na-ed-outbound-blacklisted-countries-add
 ***
 Adds one or more countries to the outbound blacklist.
 
 
 #### Base Command
 
-`na-aed-outbound-blacklisted-countries-add`
+`na-ed-outbound-blacklisted-countries-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | An ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
+| country | An ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-ed-country-code-list" command. | Required | 
 | annotation | A message to associate with each country that you add to the outbound blacklist. | Optional | 
 
 
@@ -182,7 +182,7 @@ Adds one or more countries to the outbound blacklist.
 
 
 #### Command Example
-```!na-aed-outbound-blacklisted-countries-add country=AU```
+```!na-ed-outbound-blacklisted-countries-add country=AU```
 
 #### Context Example
 ```json
@@ -206,19 +206,19 @@ Adds one or more countries to the outbound blacklist.
 >| AU | 2021-05-24T08:58:03.000Z |
 
 
-### na-aed-outbound-blacklisted-countries-remove
+### na-ed-outbound-blacklisted-countries-remove
 ***
 Removes one or more countries from the outbound blacklist.
 
 
 #### Base Command
 
-`na-aed-outbound-blacklisted-countries-remove`
+`na-ed-outbound-blacklisted-countries-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| country | An ISO-standardized country code or a comma-separated list of ISO-standardized country codes to remove. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
+| country | An ISO-standardized country code or a comma-separated list of ISO-standardized country codes to remove. Can be retrieved by running the "na-ed-country-code-list" command. | Required | 
 
 
 #### Context Output
@@ -226,27 +226,27 @@ Removes one or more countries from the outbound blacklist.
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-outbound-blacklisted-countries-remove country=AU```
+```!na-ed-outbound-blacklisted-countries-remove country=AU```
 
 #### Human Readable Output
 
 >Countries were successfully removed from the outbound blacklisted list
 
-### na-aed-inbound-blacklisted-countries-list
+### na-ed-inbound-blacklisted-countries-list
 ***
 Gets the inbound blacklisted countries. By default, 10 blacklisted countries are returned. To return blacklisted countries for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects countries that are globally blacklisted.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-countries-list`
+`na-ed-inbound-blacklisted-countries-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cid | A comma-separated list of central configuration IDs. Cannot be used with the pgid parameter.| Optional | 
 | pgid | A comma-separated list of protection group IDs. Cannot be used with the cid parameter. | Optional | 
-| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the "na-aed-country-code-list" command. | Optional | 
+| country | An ISO-standardized country code to get a specific country in the results. Can be retrieved by running the "na-ed-country-code-list" command. | Optional | 
 | query | Search strings, separated by “+” to filter the results. (For example: "AZ+BS"). | Optional | 
 | page | The page of the results to return. | Optional | 
 | limit | The maximum number of results returned per page. Default: 10. | Optional | 
@@ -264,7 +264,7 @@ Gets the inbound blacklisted countries. By default, 10 blacklisted countries are
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-countries-list country=AM```
+```!na-ed-inbound-blacklisted-countries-list country=AM```
 
 #### Context Example
 ```json
@@ -293,14 +293,14 @@ Gets the inbound blacklisted countries. By default, 10 blacklisted countries are
 >| AM | 2021-04-19T15:36:00.000Z | example1 | 52 |
 
 
-### na-aed-inbound-blacklisted-countries-add
+### na-ed-inbound-blacklisted-countries-add
 ***
 Adds one or more countries to the inbound blacklist by pgid or cid.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-countries-add`
+`na-ed-inbound-blacklisted-countries-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -308,7 +308,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
 | annotation | A message to associate with each country that you add to the blacklist. | Optional | 
-| country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
+| country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-ed-country-code-list" command. | Required | 
 
 
 #### Context Output
@@ -323,7 +323,7 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-countries-add country=AU```
+```!na-ed-inbound-blacklisted-countries-add country=AU```
 
 #### Context Example
 ```json
@@ -353,21 +353,21 @@ Adds one or more countries to the inbound blacklist by pgid or cid.
 >| AU | -1 | -1 | 2021-05-24T08:57:58.000Z |
 
 
-### na-aed-inbound-blacklisted-countries-remove
+### na-ed-inbound-blacklisted-countries-remove
 ***
 Removes one or more countries from the blacklist for a specific protection group or for all protection groups.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-countries-remove`
+`na-ed-inbound-blacklisted-countries-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cid | A specific central configuration ID or -1 for global. Cannot be used with the pgid parameter. | Optional | 
 | pgid | A specific protection group ID or -1 for global. Cannot be used with the cid parameter. | Optional | 
-| country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-aed-country-code-list" command. | Required | 
+| country | ISO-standardized country code or a comma-separated list of country codes. Can be retrieved by running the "na-ed-country-code-list" command. | Required | 
 
 
 #### Context Output
@@ -375,20 +375,20 @@ Removes one or more countries from the blacklist for a specific protection group
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-inbound-blacklisted-countries-remove country=AU```
+```!na-ed-inbound-blacklisted-countries-remove country=AU```
 
 #### Human Readable Output
 
 >Countries were successfully removed from the inbound blacklisted list
 
-### na-aed-outbound-blacklisted-hosts-list
+### na-ed-outbound-blacklisted-hosts-list
 ***
 Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are returned.
 
 
 #### Base Command
 
-`na-aed-outbound-blacklisted-hosts-list`
+`na-ed-outbound-blacklisted-hosts-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -409,7 +409,7 @@ Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are return
 
 
 #### Command Example
-```!na-aed-outbound-blacklisted-hosts-list```
+```!na-ed-outbound-blacklisted-hosts-list```
 
 #### Context Example
 ```json
@@ -440,14 +440,14 @@ Gets the outbound blacklisted hosts. By default, 10 blacklisted hosts are return
 >| 2.2.2.2 | 2021-05-24T08:58:07.000Z |
 
 
-### na-aed-outbound-blacklisted-hosts-add
+### na-ed-outbound-blacklisted-hosts-add
 ***
 Adds one or more hosts to the outbound blacklist.
 
 
 #### Base Command
 
-`na-aed-outbound-blacklisted-hosts-add`
+`na-ed-outbound-blacklisted-hosts-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -466,7 +466,7 @@ Adds one or more hosts to the outbound blacklist.
 
 
 #### Command Example
-```!na-aed-outbound-blacklisted-hosts-add host_address=1.2.3.4```
+```!na-ed-outbound-blacklisted-hosts-add host_address=1.2.3.4```
 
 #### Context Example
 ```json
@@ -490,14 +490,14 @@ Adds one or more hosts to the outbound blacklist.
 >| 1.2.3.4 | 2021-05-24T08:58:07.000Z |
 
 
-### na-aed-outbound-blacklisted-hosts-replace
+### na-ed-outbound-blacklisted-hosts-replace
 ***
 Replaces all the hosts on the outbound blacklisted list.
 
 
 #### Base Command
 
-`na-aed-outbound-blacklisted-hosts-replace`
+`na-ed-outbound-blacklisted-hosts-replace`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -516,7 +516,7 @@ Replaces all the hosts on the outbound blacklisted list.
 
 
 #### Command Example
-```!na-aed-outbound-blacklisted-hosts-replace host_address=5.2.3.4```
+```!na-ed-outbound-blacklisted-hosts-replace host_address=5.2.3.4```
 
 #### Context Example
 ```json
@@ -540,14 +540,14 @@ Replaces all the hosts on the outbound blacklisted list.
 >| 5.2.3.4 | 2021-05-24T08:58:08.000Z |
 
 
-### na-aed-outbound-blacklisted-hosts-remove
+### na-ed-outbound-blacklisted-hosts-remove
 ***
 Removes one or more hosts or CIDRS from the outbound blacklist.
 
 
 #### Base Command
 
-`na-aed-outbound-blacklisted-hosts-remove`
+`na-ed-outbound-blacklisted-hosts-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -560,20 +560,20 @@ Removes one or more hosts or CIDRS from the outbound blacklist.
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-outbound-blacklisted-hosts-remove host_address=5.2.3.4```
+```!na-ed-outbound-blacklisted-hosts-remove host_address=5.2.3.4```
 
 #### Human Readable Output
 
 >Hosts were successfully removed from the outbound blacklist list
 
-### na-aed-outbound-whitelisted-hosts-list
+### na-ed-outbound-whitelisted-hosts-list
 ***
 Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are returned.
 
 
 #### Base Command
 
-`na-aed-outbound-whitelisted-hosts-list`
+`na-ed-outbound-whitelisted-hosts-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -594,7 +594,7 @@ Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are return
 
 
 #### Command Example
-```!na-aed-outbound-whitelisted-hosts-list```
+```!na-ed-outbound-whitelisted-hosts-list```
 
 #### Context Example
 ```json
@@ -617,14 +617,14 @@ Gets the outbound whitelisted hosts. By default, 10 whitelisted hosts are return
 >| 4.4.4.4 | 2021-05-24T08:53:20.000Z |
 
 
-### na-aed-outbound-whitelisted-hosts-add
+### na-ed-outbound-whitelisted-hosts-add
 ***
 Adds one or more hosts to the outbound whitelisted list.
 
 
 #### Base Command
 
-`na-aed-outbound-whitelisted-hosts-add`
+`na-ed-outbound-whitelisted-hosts-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -643,7 +643,7 @@ Adds one or more hosts to the outbound whitelisted list.
 
 
 #### Command Example
-```!na-aed-outbound-whitelisted-hosts-add host_address=3.3.3.3```
+```!na-ed-outbound-whitelisted-hosts-add host_address=3.3.3.3```
 
 #### Context Example
 ```json
@@ -667,14 +667,14 @@ Adds one or more hosts to the outbound whitelisted list.
 >| 3.3.3.3 | 2021-05-24T08:58:19.000Z |
 
 
-### na-aed-outbound-whitelisted-hosts-replace
+### na-ed-outbound-whitelisted-hosts-replace
 ***
 Replaces all the hosts on the outbound whitelisted list.
 
 
 #### Base Command
 
-`na-aed-outbound-whitelisted-hosts-replace`
+`na-ed-outbound-whitelisted-hosts-replace`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -693,7 +693,7 @@ Replaces all the hosts on the outbound whitelisted list.
 
 
 #### Command Example
-```!na-aed-outbound-whitelisted-hosts-replace host_address=3.3.3.3,4.4.4.4```
+```!na-ed-outbound-whitelisted-hosts-replace host_address=3.3.3.3,4.4.4.4```
 
 #### Context Example
 ```json
@@ -725,14 +725,14 @@ Replaces all the hosts on the outbound whitelisted list.
 >| 4.4.4.4 | 2021-05-24T08:58:21.000Z |
 
 
-### na-aed-protection-groups-update
+### na-ed-protection-groups-update
 ***
 Updates the settings for one or more protection groups.
 
 
 #### Base Command
 
-`na-aed-protection-groups-update`
+`na-ed-protection-groups-update`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -771,7 +771,7 @@ Updates the settings for one or more protection groups.
 
 
 #### Command Example
-```!na-aed-protection-groups-update pgid=52 active=false```
+```!na-ed-protection-groups-update pgid=52 active=false```
 
 #### Context Example
 ```json
@@ -814,14 +814,14 @@ Updates the settings for one or more protection groups.
 >| test2 | 52 | global protection level | false | test2 | false | 0 | 2021-04-13T14:41:23.000Z |
 
 
-### na-aed-protection-groups-list
+### na-ed-protection-groups-list
 ***
 Gets a list of the protection groups.
 
 
 #### Base Command
 
-`na-aed-protection-groups-list`
+`na-ed-protection-groups-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -860,7 +860,7 @@ Gets a list of the protection groups.
 
 
 #### Command Example
-```!na-aed-protection-groups-list active=true```
+```!na-ed-protection-groups-list active=true```
 
 #### Context Example
 ```json
@@ -901,14 +901,14 @@ Gets a list of the protection groups.
 >|---|---|---|---|---|---|---|---|
 >| test2 | 52 | global protection level | true | test2 | false | 0 | 2021-04-13T14:41:23.000Z |
 
-### na-aed-inbound-blacklisted-hosts-list
+### na-ed-inbound-blacklisted-hosts-list
 ***
 Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returned. To return blacklisted hosts for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally blacklisted.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-hosts-list`
+`na-ed-inbound-blacklisted-hosts-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -931,7 +931,7 @@ Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returne
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-hosts-list```
+```!na-ed-inbound-blacklisted-hosts-list```
 #### Context Example
 ```json
 {
@@ -961,14 +961,14 @@ Gets the inbound blacklisted hosts. By default, 10 blacklisted hosts are returne
 >| 1.1.1.1 | -1 | -1 | 2021-05-24T08:58:13.000Z |  |
 
 
-### na-aed-inbound-blacklisted-hosts-add
+### na-ed-inbound-blacklisted-hosts-add
 ***
 Adds one or more hosts to the inbound blacklisted list.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-hosts-add`
+`na-ed-inbound-blacklisted-hosts-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -989,7 +989,7 @@ Adds one or more hosts to the inbound blacklisted list.
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-hosts-add host_address=1.2.3.4```
+```!na-ed-inbound-blacklisted-hosts-add host_address=1.2.3.4```
 
 #### Context Example
 ```json
@@ -1021,14 +1021,14 @@ Adds one or more hosts to the inbound blacklisted list.
 >| 1.2.3.4 | -1 | -1 | 2021-05-24T08:58:13.000Z |  |
 
 
-### na-aed-inbound-blacklisted-hosts-replace
+### na-ed-inbound-blacklisted-hosts-replace
 ***
 Replaces all the hosts on the inbound blacklist.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-hosts-replace`
+`na-ed-inbound-blacklisted-hosts-replace`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1049,7 +1049,7 @@ Replaces all the hosts on the inbound blacklist.
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-hosts-replace host_address=5.2.3.4```
+```!na-ed-inbound-blacklisted-hosts-replace host_address=5.2.3.4```
 
 #### Context Example
 ```json
@@ -1081,14 +1081,14 @@ Replaces all the hosts on the inbound blacklist.
 >| 5.2.3.4 | -1 | -1 | 2021-05-24T08:58:15.000Z |  |
 
 
-### na-aed-inbound-blacklisted-hosts-remove
+### na-ed-inbound-blacklisted-hosts-remove
 ***
 Removes one or more hosts or CIDRs from the blacklist for a specific protection group or for all protection groups.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-hosts-remove`
+`na-ed-inbound-blacklisted-hosts-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1101,20 +1101,20 @@ Removes one or more hosts or CIDRs from the blacklist for a specific protection 
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-inbound-blacklisted-hosts-remove host_address=5.2.3.4```
+```!na-ed-inbound-blacklisted-hosts-remove host_address=5.2.3.4```
 
 #### Human Readable Output
 
 >Hosts were successfully removed from the inbound blacklist list
 
-### na-aed-inbound-whitelisted-hosts-list
+### na-ed-inbound-whitelisted-hosts-list
 ***
 Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To return whitelisted hosts for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects hosts that are globally whitelisted.
 
 
 #### Base Command
 
-`na-aed-inbound-whitelisted-hosts-list`
+`na-ed-inbound-whitelisted-hosts-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1137,7 +1137,7 @@ Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To ret
 
 
 #### Command Example
-```!na-aed-inbound-whitelisted-hosts-list```
+```!na-ed-inbound-whitelisted-hosts-list```
 
 ```json
 {
@@ -1167,14 +1167,14 @@ Get the whitelisted hosts. By default, 10 whitelisted hosts are returned. To ret
 >| 2.2.2.2 | -1 | -1 | 2021-05-24T08:58:25.000Z |  |
 
 
-### na-aed-inbound-whitelisted-hosts-add
+### na-ed-inbound-whitelisted-hosts-add
 ***
 Adds one or more hosts to the inbound whitelisted list.
 
 
 #### Base Command
 
-`na-aed-inbound-whitelisted-hosts-add`
+`na-ed-inbound-whitelisted-hosts-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1195,7 +1195,7 @@ Adds one or more hosts to the inbound whitelisted list.
 
 
 #### Command Example
-```!na-aed-inbound-whitelisted-hosts-add host_address=1.2.3.4```
+```!na-ed-inbound-whitelisted-hosts-add host_address=1.2.3.4```
 
 #### Context Example
 ```json
@@ -1227,14 +1227,14 @@ Adds one or more hosts to the inbound whitelisted list.
 >| 1.2.3.4 | -1 | -1 | 2021-05-24T08:58:25.000Z |  |
 
 
-### na-aed-inbound-whitelisted-hosts-replace
+### na-ed-inbound-whitelisted-hosts-replace
 ***
 Replaces all the hosts on the inbound whitelist.
 
 
 #### Base Command
 
-`na-aed-inbound-whitelisted-hosts-replace`
+`na-ed-inbound-whitelisted-hosts-replace`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1255,7 +1255,7 @@ Replaces all the hosts on the inbound whitelist.
 
 
 #### Command Example
-```!na-aed-inbound-whitelisted-hosts-replace host_address=5.2.3.4```
+```!na-ed-inbound-whitelisted-hosts-replace host_address=5.2.3.4```
 
 #### Context Example
 ```json
@@ -1287,14 +1287,14 @@ Replaces all the hosts on the inbound whitelist.
 >| 5.2.3.4 | -1 | -1 | 2021-05-24T08:58:26.000Z |  |
 
 
-### na-aed-inbound-whitelisted-hosts-remove
+### na-ed-inbound-whitelisted-hosts-remove
 ***
 Removes one or more hosts or CIDRs from the whitelist for a specific protection group or for all protection groups.
 
 
 #### Base Command
 
-`na-aed-inbound-whitelisted-hosts-remove`
+`na-ed-inbound-whitelisted-hosts-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1307,20 +1307,20 @@ Removes one or more hosts or CIDRs from the whitelist for a specific protection 
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-inbound-whitelisted-hosts-remove host_address=5.2.3.4```
+```!na-ed-inbound-whitelisted-hosts-remove host_address=5.2.3.4```
 
 #### Human Readable Output
 
 >Hosts were successfully removed from the inbound whitelist list
 
-### na-aed-inbound-blacklisted-domains-list
+### na-ed-inbound-blacklisted-domains-list
 ***
 Gets the blacklisted domains. By default, 10 blacklisted domains are returned. To return blacklisted domains for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects domains that are globally blacklisted.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-domains-list`
+`na-ed-inbound-blacklisted-domains-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1345,7 +1345,7 @@ Gets the blacklisted domains. By default, 10 blacklisted domains are returned. T
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-domains-list```
+```!na-ed-inbound-blacklisted-domains-list```
 
 #### Context Example
 ```json
@@ -1402,14 +1402,14 @@ Gets the blacklisted domains. By default, 10 blacklisted domains are returned. T
 >| ynet.com | -1 | -1 | 2021-03-18T16:49:50.000Z |  |
 
 
-### na-aed-inbound-blacklisted-domains-add
+### na-ed-inbound-blacklisted-domains-add
 ***
 Adds one or more domains to the blacklist by pgid or cid.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-domains-add`
+`na-ed-inbound-blacklisted-domains-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1432,7 +1432,7 @@ Adds one or more domains to the blacklist by pgid or cid.
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-domains-add domain=goo.com```
+```!na-ed-inbound-blacklisted-domains-add domain=goo.com```
 
 #### Context Example
 ```json
@@ -1462,14 +1462,14 @@ Adds one or more domains to the blacklist by pgid or cid.
 >| goo.com | -1 | -1 | 2021-05-24T08:58:34.000Z |
 
 
-### na-aed-inbound-blacklisted-domains-remove
+### na-ed-inbound-blacklisted-domains-remove
 ***
 Removes one or more domains from the blacklist for a specific protection group or for all protection groups.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-domains-remove`
+`na-ed-inbound-blacklisted-domains-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1482,20 +1482,20 @@ Removes one or more domains from the blacklist for a specific protection group o
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-inbound-blacklisted-domains-remove domain=goo.com```
+```!na-ed-inbound-blacklisted-domains-remove domain=goo.com```
 
 #### Human Readable Output
 
 >Domains were successfully removed from the inbound blacklisted list
 
-### na-aed-inbound-blacklisted-urls-list
+### na-ed-inbound-blacklisted-urls-list
 ***
 Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To return blacklisted URLs for specific protection groups, specify a list of protection group IDs or central configuration IDs. An ID of -1 selects URLs that are globally blacklisted.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-urls-list`
+`na-ed-inbound-blacklisted-urls-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1520,7 +1520,7 @@ Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To retu
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-urls-list limit=3```
+```!na-ed-inbound-blacklisted-urls-list limit=3```
 
 #### Context Example
 ```json
@@ -1579,14 +1579,14 @@ Gets the blacklisted URLs. By default, 10 blacklisted URLs are returned. To retu
 >| maps.google.com/sport.com | -1 | -1 | 2021-03-18T18:08:27.000Z | Google Maps |
 
 
-### na-aed-inbound-blacklisted-urls-add
+### na-ed-inbound-blacklisted-urls-add
 ***
 Adds one or more URLs to the blacklist by pgid or cid.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-urls-add`
+`na-ed-inbound-blacklisted-urls-add`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1609,7 +1609,7 @@ Adds one or more URLs to the blacklist by pgid or cid.
 
 
 #### Command Example
-```!na-aed-inbound-blacklisted-urls-add url=www.goo.com```
+```!na-ed-inbound-blacklisted-urls-add url=www.goo.com```
 
 #### Context Example
 ```json
@@ -1639,14 +1639,14 @@ Adds one or more URLs to the blacklist by pgid or cid.
 >| www.goo.com | -1 | -1 | 2021-05-24T08:58:39.000Z |
 
 
-### na-aed-inbound-blacklisted-urls-remove
+### na-ed-inbound-blacklisted-urls-remove
 ***
 Removes one or more URLs from the blacklist for a specific protection group or for all protection groups.
 
 
 #### Base Command
 
-`na-aed-inbound-blacklisted-urls-remove`
+`na-ed-inbound-blacklisted-urls-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1659,20 +1659,20 @@ Removes one or more URLs from the blacklist for a specific protection group or f
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-inbound-blacklisted-urls-remove url=www.goo.com```
+```!na-ed-inbound-blacklisted-urls-remove url=www.goo.com```
 
 #### Human Readable Output
 
 >Urls were successfully removed from the inbound blacklisted list
 
-### na-aed-outbound-whitelisted-hosts-remove
+### na-ed-outbound-whitelisted-hosts-remove
 ***
 Removes one or more hosts or CIDRs from the outbound whitelist.
 
 
 #### Base Command
 
-`na-aed-outbound-whitelisted-hosts-remove`
+`na-ed-outbound-whitelisted-hosts-remove`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1685,7 +1685,7 @@ Removes one or more hosts or CIDRs from the outbound whitelist.
 There is no context output for this command.
 
 #### Command Example
-```!na-aed-outbound-whitelisted-hosts-remove host_address=3.3.3.3```
+```!na-ed-outbound-whitelisted-hosts-remove host_address=3.3.3.3```
 
 #### Human Readable Output
 
