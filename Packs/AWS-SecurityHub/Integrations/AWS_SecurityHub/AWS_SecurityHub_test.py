@@ -1,4 +1,9 @@
 import pytest
+from botocore.config import Config
+
+from CommonServerPython import handle_proxy
+#from Packs.AWS_DynamoDB.Integrations.AWS_DynamoDB.AWS_DynamoDB import aws_session
+from AWS_SecurityHub import get_findings_command, aws_session
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -114,3 +119,36 @@ def test_parse_resource_ids(test_input, expected_output):
     """
     from AWS_SecurityHub import parse_resource_ids
     assert parse_resource_ids(test_input) == expected_output
+
+
+class MockClient:
+
+    def get_findings(self, **kwargs):
+        return {'Findings': [
+                            {'ProductArn': 'Test',
+                             'Description': 'Test',
+                             'SchemaVersion': '2021-05-27'}
+                        ]
+                }
+
+
+def test_aws_securityhub_get_findings_command():
+    """
+    Given:
+        - A dictionary that represents response body of aws_securityhub_get_findings API call without pagination -
+        i.e doesn't have 'NextToken' key.
+    When:
+        - Running get_findings_command
+    Then:
+        Verify returned value is as expected - i.e the findings list.
+    """
+    client = MockClient()
+    human_readable, outputs, findings = get_findings_command(client, {})
+    expected_output = [
+        {
+            'ProductArn': 'Test',
+            'Description': 'Test',
+            'SchemaVersion': '2021-05-27'}
+    ]
+
+    assert findings == expected_output
