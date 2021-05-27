@@ -99,12 +99,19 @@ def main():
         aggregate(tp, "Threatpost")
     else:
         raise NotImplementedError('Command %s was not implemented.' % demisto.command())
-    demisto.results({
+
+    result = {
         'ContentsFormat': formats['table'],
         'Type': entryTypes['note'],
         'Contents': TABLE,
-        'EntryContext': {"News": TABLE},
-        'IgnoreAutoExtract': True})
+        'EntryContext': {},
+        'IgnoreAutoExtract': True,
+    }
+
+    if TABLE:
+        result['EntryContext'] = {"News": TABLE}
+
+    demisto.results(result)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

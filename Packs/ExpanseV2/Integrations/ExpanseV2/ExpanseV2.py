@@ -122,7 +122,7 @@ class Client(BaseClient):
         hdr = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "Expanse_XSOAR/1.2.0",
+            "User-Agent": "Expanse_XSOAR/1.4.0",
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
@@ -783,9 +783,9 @@ def find_indicator_md5_by_hash(h: str) -> Optional[str]:
     if field is None:
         return None
 
-    fetched_iocs = demisto.searchIndicators(
-        query=f'{field}:{h} and type:Certificate and -md5:""',
-        page=0, size=1  # we just take the first one
+    search_indicators = IndicatorsSearcher()
+    fetched_iocs = search_indicators.search_indicators_by_version(
+        query=f'{field}:{h} and type:Certificate and -md5:""', size=1  # we just take the first one
     ).get('iocs')
     if fetched_iocs is None or len(fetched_iocs) == 0:
         return None

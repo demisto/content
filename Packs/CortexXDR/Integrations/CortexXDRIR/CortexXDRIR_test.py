@@ -312,11 +312,36 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'page': 0,
         'sort_order': 'asc'
     }
-
     _, outputs, _ = get_endpoints_command(client, args)
     expected_endpoint = get_endpoints_response.get('reply')[0]
 
     assert [expected_endpoint] == outputs['PaloAltoNetworksXDR.Endpoint(val.endpoint_id == obj.endpoint_id)']
+
+
+def test_endpoint_command(requests_mock):
+    from CortexXDRIR import endpoint_command, Client
+
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {'id': 'identifier'}
+
+    outputs = endpoint_command(client, args)
+
+    get_endpoints_response = {
+        Common.Endpoint.CONTEXT_PATH: [{'ID': '1111',
+                                        'Hostname': 'ip-3.3.3.3',
+                                        'IPAddress': '3.3.3.3',
+                                        'OS': 'Linux',
+                                        'Vendor': 'Cortex XDR - IR',
+                                        'Status': 'Offline',
+                                        'IsIsolated': 'No'}]}
+
+    results = outputs[0].to_context()
+    assert results.get("EntryContext") == get_endpoints_response
 
 
 def test_insert_parsed_alert(requests_mock):
@@ -2120,7 +2145,7 @@ def test_run_script_command_empty_params(requests_mock):
                 'operator': 'in',
                 'value': endpoint_ids.split(',')
             }],
-            'parameters_values': parameters
+            'parameters_values': {}
         }
     }
 

@@ -544,10 +544,11 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         )
 
         if not entries.get('flat'):
-            iam_user_profile.set_result(success=False,
-                                        error_message="No user was found",
-                                        action=IAMActions.GET_USER
-                                        )
+            error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+            iam_user_profile.set_result(action=IAMActions.GET_USER,
+                                        success=False,
+                                        error_code=error_code,
+                                        error_message=error_message)
         else:
             user_account_control = get_user_activity_by_samaccountname(default_base_dn, value)
             ad_user["userAccountControl"] = user_account_control
@@ -562,7 +563,9 @@ def get_user_iam(default_base_dn, args, mapper_in, mapper_out):
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.GET_USER
                                     )
@@ -605,20 +608,24 @@ def search_computers(default_base_dn, page_size):
     )
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries['flat']]
+    readable_output = tableToMarkdown("Active Directory - Get Computers", entries['flat'])
 
-    demisto_entry = {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': entries['raw'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Active Directory - Get Computers", entries['flat']),
-        'EntryContext': {
-            'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
-            # 'backward compatability' with ADGetComputer script
-            'Endpoint(obj.ID == val.ID)': endpoints
-        }
-    }
-    demisto.results(demisto_entry)
+    if endpoints:
+        results = CommandResults(
+            readable_output=readable_output,
+            outputs={
+                'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
+                # 'backward compatability' with ADGetComputer script
+                'Endpoint(obj.ID == val.ID)': endpoints,
+            },
+            raw_response=entries['raw'],
+        )
+    else:
+        results = CommandResults(
+            readable_output=readable_output,
+        )
+
+    return_results(results)
 
 
 def search_group_members(default_base_dn, page_size):
@@ -764,7 +771,13 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
 
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
+            raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
+                                   "exists in \"" + mapper_out + "\" outgoing mapper.")
+        if not ad_user.get('ou'):
+            raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
+                                   "transformer script which determines the OU of the user "
+                                   "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
+                                   "and schema type, under the \"ou\" field.")
 
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if user_exists:
@@ -782,18 +795,19 @@ def create_user_iam(default_base_dn, args, mapper_out, disabled_users_group_cn):
                                             username=ad_user.get('name'),
                                             details=ad_user,
                                             action=IAMActions.CREATE_USER,
-                                            active=True)
+                                            active=False)  # the user should be activated with the IAMInitADUser script
 
             else:
-                iam_user_profile.set_result(success=False,
-                                            error_message="Failed to create user",
-                                            action=IAMActions.CREATE_USER
-                                            )
+                error_msg = 'Please validate your instance configuration and make sure all of the ' \
+                            'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.'
+                raise DemistoException(error_msg)
 
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.CREATE_USER,
                                     )
@@ -822,7 +836,13 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         # check it user exists and if it doesn't, create it
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
+            raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
+                                   "exists in \"" + mapper_out + "\" outgoing mapper.")
+        if not ad_user.get('ou'):
+            raise DemistoException("User must have an Organizational Unit (OU). Please make sure you've added a "
+                                   "transformer script which determines the OU of the user "
+                                   "in \"" + mapper_out + "\" outgoing mapper, in the User Profile incident type "
+                                   "and schema type, under the \"ou\" field.")
 
         new_ou = ad_user.get("ou")
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
@@ -857,11 +877,8 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
 
             if fail_to_modify:
                 error_list = '\n'.join(fail_to_modify)
-                error_message = f"Fail to modify the following attributes: {error_list}"
-                iam_user_profile.set_result(success=False,
-                                            error_message=error_message,
-                                            action=IAMActions.UPDATE_USER,
-                                            )
+                error_message = f"Failed to modify the following attributes: {error_list}"
+                raise DemistoException(error_message)
 
             else:
                 active = get_user_activity_by_samaccountname(default_base_dn, sam_account_name)
@@ -874,7 +891,9 @@ def update_user_iam(default_base_dn, args, create_if_not_exists, mapper_out, dis
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.UPDATE_USER
                                     )
@@ -1059,9 +1078,12 @@ def expire_user_password(default_base_dn):
     demisto.results(demisto_entry)
 
 
-def set_user_password(default_base_dn):
+def set_user_password(default_base_dn, port):
     assert conn is not None
     args = demisto.args()
+
+    if port != 636:
+        raise DemistoException('Port 636 is required for this action.')
 
     # get user DN
     sam_account_name = args.get('username')
@@ -1159,7 +1181,8 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
 
         sam_account_name = ad_user.get("samaccountname")
         if not sam_account_name:
-            raise DemistoException("User must have SAMAccountName")
+            raise DemistoException("User must have a sAMAccountName, please make sure a mapping "
+                                   "exists in \"" + mapper_out + "\" outgoing mapper.")
 
         user_exists = check_if_user_exists_by_samaccountname(default_base_dn, sam_account_name)
         if not user_exists:
@@ -1174,31 +1197,34 @@ def disable_user_iam(default_base_dn, disabled_users_group_cn, args, mapper_out)
             'userAccountControl': [('MODIFY_REPLACE', DISABLED_ACCOUNT)]
         }
 
-        command_failed = False
-        modify_object(dn, modification)
+        try:
+            modify_object(dn, modification)
+        except Exception as e:
+            error_msg = 'Please validate your instance configuration and make sure all of the ' \
+                        'required attributes are mapped correctly in "' + mapper_out + '" outgoing mapper.\n' \
+                        'Error is: ' + str(e)
+            raise DemistoException(error_msg)
+
         if disabled_users_group_cn:
 
             grp_dn = group_dn(disabled_users_group_cn, default_base_dn)
             success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [dn], [grp_dn])
             if not success:
-                command_failed = True
-                e = 'Failed to remove user from {} group'.format(disabled_users_group_cn)
-                iam_user_profile.set_result(success=False,
-                                            error_message=e,
-                                            action=IAMActions.DISABLE_USER,
-                                            )
-        if not command_failed:
-            iam_user_profile.set_result(success=True,
-                                        email=ad_user.get('email'),
-                                        username=ad_user.get('name'),
-                                        action=IAMActions.DISABLE_USER,
-                                        details=ad_user,
-                                        active=False)
+                raise DemistoException('Failed to remove user from the group "' + disabled_users_group_cn + '".')
+
+        iam_user_profile.set_result(success=True,
+                                    email=ad_user.get('email'),
+                                    username=ad_user.get('name'),
+                                    action=IAMActions.DISABLE_USER,
+                                    details=ad_user,
+                                    active=False)
 
         return iam_user_profile
 
     except Exception as e:
+        error_code, _ = IAMErrors.BAD_REQUEST
         iam_user_profile.set_result(success=False,
+                                    error_code=error_code,
                                     error_message=str(e),
                                     action=IAMActions.DISABLE_USER
                                     )
@@ -1359,8 +1385,9 @@ def get_mapping_fields_command(search_base):
 
 
 def main():
-    ''' INSTANCE CONFIGURATION '''
+    """ INSTANCE CONFIGURATION """
     params = demisto.params()
+    command = demisto.command()
 
     SERVER_IP = params.get('server_ip')
     USERNAME = params.get('credentials')['identifier']
@@ -1435,7 +1462,7 @@ def main():
 
         ''' COMMAND EXECUTION '''
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             if conn.user == '':
                 # Empty response means you have no authentication status on the server, so you are an anonymous user.
                 raise Exception("Failed to authenticate user")
@@ -1443,82 +1470,82 @@ def main():
 
         args = demisto.args()
 
-        if demisto.command() == 'ad-search':
+        if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-expire-password':
+        if command == 'ad-expire-password':
             expire_user_password(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-set-new-password':
-            set_user_password(DEFAULT_BASE_DN)
+        if command == 'ad-set-new-password':
+            set_user_password(DEFAULT_BASE_DN, PORT)
 
-        if demisto.command() == 'ad-unlock-account':
+        if command == 'ad-unlock-account':
             unlock_account(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-disable-account':
+        if command == 'ad-disable-account':
             disable_user(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-enable-account':
+        if command == 'ad-enable-account':
             enable_user(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-remove-from-group':
+        if command == 'ad-remove-from-group':
             remove_member_from_group(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-add-to-group':
+        if command == 'ad-add-to-group':
             add_member_to_group(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-create-user':
+        if command == 'ad-create-user':
             create_user()
 
-        if demisto.command() == 'ad-delete-user':
+        if command == 'ad-delete-user':
             delete_user()
 
-        if demisto.command() == 'ad-update-user':
+        if command == 'ad-update-user':
             update_user(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-modify-computer-ou':
+        if command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-create-contact':
+        if command == 'ad-create-contact':
             create_contact()
 
-        if demisto.command() == 'ad-update-contact':
+        if command == 'ad-update-contact':
             update_contact()
 
-        if demisto.command() == 'ad-get-user':
+        if command == 'ad-get-user':
             search_users(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-get-computer':
+        if command == 'ad-get-computer':
             search_computers(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-get-group-members':
+        if command == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-create-group':
+        if command == 'ad-create-group':
             create_group()
 
-        if demisto.command() == 'ad-delete-group':
+        if command == 'ad-delete-group':
             delete_group()
 
         # IAM commands
-        if demisto.command() == 'iam-get-user':
+        if command == 'iam-get-user':
             user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
             return return_results(user_profile)
 
-        if demisto.command() == 'iam-create-user':
+        if command == 'iam-create-user':
             user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out, disabled_users_group_cn)
             return return_results(user_profile)
 
-        if demisto.command() == 'iam-update-user':
+        if command == 'iam-update-user':
             user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out,
                                            disabled_users_group_cn)
             return return_results(user_profile)
 
-        if demisto.command() == 'iam-disable-user':
+        if command == 'iam-disable-user':
             user_profile = disable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
 
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             mapping_fields = get_mapping_fields_command(DEFAULT_BASE_DN)
             return return_results(mapping_fields)
 
@@ -1540,5 +1567,5 @@ def main():
 from IAMApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

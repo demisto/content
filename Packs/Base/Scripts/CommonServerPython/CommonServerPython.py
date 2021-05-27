@@ -98,6 +98,18 @@ entryTypes = {
     'widget': 17
 }
 
+ENDPOINT_STATUS_OPTIONS = [
+    'Online',
+    'Offline'
+]
+
+ENDPOINT_ISISOLATED_OPTIONS = [
+    'Yes',
+    'No',
+    'Pending isolation',
+    'Pending unisolation'
+]
+
 
 class EntryType(object):
     """
@@ -391,6 +403,69 @@ class FeedIndicatorType(object):
             return None
 
 
+# -------------------------------- Threat Intel Objects ----------------------------------- #
+
+class ThreatIntel:
+    """
+    XSOAR Threat Intel Objects
+    :return: None
+    :rtype: ``None``
+    """
+
+    class ObjectsNames(object):
+        """
+        Enum: Threat Intel Objects names.
+        :return: None
+        :rtype: ``None``
+        """
+        CAMPAIGN = 'Campaign'
+        ATTACK_PATTERN = 'Attack Pattern'
+        REPORT = 'Report'
+        MALWARE = 'Malware'
+        COURSE_OF_ACTION = 'Course of Action'
+        INTRUSION_SET = 'Intrusion Set'
+        TOOL = 'Tool'
+
+    class ObjectsScore(object):
+        """
+        Enum: Threat Intel Objects Score.
+        :return: None
+        :rtype: ``None``
+        """
+        CAMPAIGN = 3
+        ATTACK_PATTERN = 2
+        REPORT = 3
+        MALWARE = 3
+        COURSE_OF_ACTION = 0
+        INTRUSION_SET = 3
+        TOOL = 2
+
+    class KillChainPhases(object):
+        """
+        Enum: Kill Chain Phases names.
+        :return: None
+        :rtype: ``None``
+        """
+        BUILD_CAPABILITIES = "Build Capabilities"
+        PRIVILEGE_ESCALATION = "Privilege Escalation"
+        ADVERSARY_OPSEC = "Adversary Opsec"
+        CREDENTIAL_ACCESS = "Credential Access"
+        EXFILTRATION = "Exfiltration"
+        LATERAL_MOVEMENT = "Lateral Movement"
+        DEFENSE_EVASION = "Defense Evasion"
+        PERSISTENCE = "Persistence"
+        COLLECTION = "Collection"
+        IMPACT = "Impact"
+        INITIAL_ACCESS = "Initial Access"
+        DISCOVERY = "Discovery"
+        EXECUTION = "Execution"
+        INSTALLATION = "Installation"
+        DELIVERY = "Delivery"
+        WEAPONIZATION = "Weaponization"
+        ACT_ON_OBJECTIVES = "Actions on Objectives"
+        COMMAND_AND_CONTROL = "Command \u0026 Control"
+
+
 def is_debug_mode():
     """Return if this script/command was passed debug-mode=true option
 
@@ -399,6 +474,30 @@ def is_debug_mode():
     """
     # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
     return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
+def get_schedule_metadata(context):
+    """
+        Get the entry schedule metadata if available
+
+        :type context: ``dict``
+        :param context: Context in which the command was executed.
+
+        :return: Dict with metadata of scheduled entry
+        :rtype: ``dict``
+    """
+    schedule_metadata = {}
+    parent_entry = context.get('ParentEntry', {})
+    if parent_entry:
+        schedule_metadata = assign_params(
+            is_polling=True if parent_entry.get('polling') else False,
+            polling_command=parent_entry.get('pollingCommand'),
+            polling_args=parent_entry.get('pollingArgs'),
+            times_ran=int(parent_entry.get('timesRan', 0)) + 1,
+            start_date=parent_entry.get('startDate'),
+            end_date=parent_entry.get('endingDate')
+        )
+    return schedule_metadata
 
 
 def auto_detect_indicator_type(indicator_value):
@@ -2282,6 +2381,54 @@ class Common(object):
         :type asn: ``str``
         :param asn: The autonomous system name for the IP address, for example: "AS8948".
 
+        :type as_owner: ``str``
+        :param as_owner: The autonomous system owner of the IP.
+
+        :type region: ``str``
+        :param region: The region in which the IP is located.
+
+        :type port: ``str``
+        :param port: Ports that are associated with the IP.
+
+        :type internal: ``bool``
+        :param internal: Whether or not the IP is internal or external.
+
+        :type updated_date: ``date``
+        :param updated_date: The date that the IP was last updated.
+
+        :type registrar_abuse_name: ``str``
+        :param registrar_abuse_name: The name of the contact for reporting abuse.
+
+        :type registrar_abuse_address: ``str``
+        :param registrar_abuse_address: The address of the contact for reporting abuse.
+
+        :type registrar_abuse_country: ``str``
+        :param registrar_abuse_country: The country of the contact for reporting abuse.
+
+        :type registrar_abuse_network: ``str``
+        :param registrar_abuse_network: The network of the contact for reporting abuse.
+
+        :type registrar_abuse_phone: ``str``
+        :param registrar_abuse_phone: The phone number of the contact for reporting abuse.
+
+        :type registrar_abuse_email: ``str``
+        :param registrar_abuse_email: The email address of the contact for reporting abuse.
+
+        :type campaign: ``str``
+        :param campaign: The campaign associated with the IP.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the IP.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes: Notes on the IP that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: Publications on the ip that was published.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
         :type hostname: ``str``
         :param hostname: The hostname that is mapped to this IP address.
 
@@ -2318,6 +2465,9 @@ class Common(object):
         :type feed_related_indicators: ``FeedRelatedIndicators``
         :param feed_related_indicators: List of indicators that are associated with the IP.
 
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If IP has a score then create and set a DBotScore object.
 
@@ -2326,12 +2476,33 @@ class Common(object):
         """
         CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
+        def __init__(self, ip, dbot_score, asn=None, as_owner=None, region=None, port=None, internal=None,
+                     updated_date=None, registrar_abuse_name=None, registrar_abuse_address=None,
+                     registrar_abuse_country=None, registrar_abuse_network=None, registrar_abuse_phone=None,
+                     registrar_abuse_email=None, campaign=None, traffic_light_protocol=None,
+                     community_notes=None, publications=None, threat_types=None,
+                     hostname=None, geo_latitude=None, geo_longitude=None,
                      geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
                      organization_name=None, organization_type=None, feed_related_indicators=None, tags=None,
-                     malware_family=None):
+                     malware_family=None, relationships=None):
             self.ip = ip
             self.asn = asn
+            self.as_owner = as_owner
+            self.region = region
+            self.port = port
+            self.internal = internal
+            self.updated_date = updated_date
+            self.registrar_abuse_name = registrar_abuse_name
+            self.registrar_abuse_address = registrar_abuse_address
+            self.registrar_abuse_country = registrar_abuse_country
+            self.registrar_abuse_network = registrar_abuse_network
+            self.registrar_abuse_phone = registrar_abuse_phone
+            self.registrar_abuse_email = registrar_abuse_email
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.community_notes = community_notes
+            self.publications = publications
+            self.threat_types = threat_types
             self.hostname = hostname
             self.geo_latitude = geo_latitude
             self.geo_longitude = geo_longitude
@@ -2344,6 +2515,7 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.tags = tags
             self.malware_family = malware_family
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2357,6 +2529,61 @@ class Common(object):
 
             if self.asn:
                 ip_context['ASN'] = self.asn
+
+            if self.as_owner:
+                ip_context['ASOwner'] = self.as_owner
+
+            if self.region:
+                ip_context['Region'] = self.region
+
+            if self.port:
+                ip_context['Port'] = self.port
+
+            if self.internal:
+                ip_context['Internal'] = self.internal
+
+            if self.updated_date:
+                ip_context['UpdatedDate'] = self.updated_date
+
+            if self.registrar_abuse_name or self.registrar_abuse_address or self.registrar_abuse_country or \
+                    self.registrar_abuse_network or self.registrar_abuse_phone or self.registrar_abuse_email:
+                ip_context['Registrar'] = {'Abuse': {}}
+                if self.registrar_abuse_name:
+                    ip_context['Registrar']['Abuse']['Name'] = self.registrar_abuse_name
+                if self.registrar_abuse_address:
+                    ip_context['Registrar']['Abuse']['Address'] = self.registrar_abuse_address
+                if self.registrar_abuse_country:
+                    ip_context['Registrar']['Abuse']['Country'] = self.registrar_abuse_country
+                if self.registrar_abuse_network:
+                    ip_context['Registrar']['Abuse']['Network'] = self.registrar_abuse_network
+                if self.registrar_abuse_phone:
+                    ip_context['Registrar']['Abuse']['Phone'] = self.registrar_abuse_phone
+                if self.registrar_abuse_email:
+                    ip_context['Registrar']['Abuse']['Email'] = self.registrar_abuse_email
+
+            if self.campaign:
+                ip_context['Campaign'] = self.campaign
+
+            if self.traffic_light_protocol:
+                ip_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                ip_context['CommunityNotes'] = community_notes
+
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                ip_context['Publications'] = publications
+
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                ip_context['ThreatTypes'] = threat_types
 
             if self.hostname:
                 ip_context['Hostname'] = self.hostname
@@ -2382,10 +2609,10 @@ class Common(object):
                 if self.organization_type:
                     ip_context['Organization']['Type'] = self.organization_type
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 ip_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_engines:
+            if self.positive_engines is not None:
                 ip_context['PositiveDetections'] = self.positive_engines
 
             if self.feed_related_indicators:
@@ -2405,6 +2632,11 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                ip_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.IP.CONTEXT_PATH: ip_context
@@ -2482,6 +2714,120 @@ class Common(object):
                 'description': self.description
             }
 
+    class CommunityNotes(object):
+        """
+        CommunityNotes class
+         Implements Subject Community Notes of a indicator
+
+        :type note: ``str``
+        :param note: Notes on the indicator that were given by the community.
+
+        :type timestamp: ``Timestamp``
+        :param timestamp: The time in which the note was published.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, note=None, timestamp=None):
+            self.note = note
+            self.timestamp = timestamp
+
+        def to_context(self):
+            return {
+                'note': self.note,
+                'timestamp': self.timestamp,
+            }
+
+    class Publications(object):
+        """
+        Publications class
+         Implements Subject Publications of a indicator
+
+        :type source: ``str``
+        :param source: The source in which the article was published.
+
+        :type title: ``str``
+        :param title: The name of the article.
+
+        :type link: ``str``
+        :param link: A link to the original article.
+
+        :type timestamp: ``Timestamp``
+        :param timestamp: The time in which the article was published.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, source=None, title=None, link=None, timestamp=None):
+            self.source = source
+            self.title = title
+            self.link = link
+            self.timestamp = timestamp
+
+        def to_context(self):
+            return {
+                'source': self.source,
+                'title': self.title,
+                'link': self.link,
+                'timestamp': self.timestamp,
+            }
+
+    class Behaviors(object):
+        """
+        Behaviors class
+         Implements Subject Behaviors of a indicator
+
+        :type details: ``str``
+        :param details:
+
+        :type action: ``str``
+        :param action:
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, details=None, action=None):
+            self.details = details
+            self.action = action
+
+        def to_context(self):
+            return {
+                'details': self.details,
+                'title': self.action,
+            }
+
+    class ThreatTypes(object):
+        """
+        ThreatTypes class
+         Implements Subject ThreatTypes of a indicator
+
+        :type threat_category: ``str``
+        :param threat_category: The threat category associated to this indicator by the source vendor. For example,
+         Phishing, Control, TOR, etc.
+
+        :type threat_category_confidence: ``str``
+        :param threat_category_confidence: Threat Category Confidence is the confidence level provided by the vendor
+         for the threat type category
+         For example a confidence of 90 for threat type category "malware" means that the vendor rates that this
+         is 90% confidence of being a malware.
+
+        :return: None
+        :rtype: ``None``
+        """
+
+        def __init__(self, threat_category=None, threat_category_confidence=None):
+            self.threat_category = threat_category
+            self.threat_category_confidence = threat_category_confidence
+
+        def to_context(self):
+            return {
+                'threatcategory': self.threat_category,
+                'threatcategoryconfidence': self.threat_category_confidence,
+            }
+
     class File(Indicator):
         """
         File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
@@ -2545,6 +2891,39 @@ class Common(object):
         :type malware_family: ``str``
         :param malware_family: The malware family associated with the File.
 
+        :type campaign: ``str``
+        :param campaign:
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol:
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  Notes on the file that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: Publications on the file that was published.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
+        :type imphash: ``str``
+        :param imphash: The Imphash hash of the file.
+
+        :type quarantined: ``bool``
+        :param quarantined: Is the file quarantined or not.
+
+        :type organization: ``str``
+        :param organization: The organization of the file.
+
+        :type associated_file_names: ``str``
+        :param associated_file_names: File names that are known as associated to the file.
+
+        :type behaviors: ``Behaviors``
+        :param behaviors: list of behaviors associated with the file.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
@@ -2559,7 +2938,9 @@ class Common(object):
         def __init__(self, dbot_score, name=None, entry_id=None, size=None, md5=None, sha1=None, sha256=None,
                      sha512=None, ssdeep=None, extension=None, file_type=None, hostname=None, path=None, company=None,
                      product_name=None, digital_signature__publisher=None, signature=None, actor=None, tags=None,
-                     feed_related_indicators=None, malware_family=None):
+                     feed_related_indicators=None, malware_family=None, imphash=None, quarantined=None, campaign=None,
+                     associated_file_names=None, traffic_light_protocol=None, organization=None, community_notes=None,
+                     publications=None, threat_types=None, behaviors=None, relationships=None):
 
             self.name = name
             self.entry_id = entry_id
@@ -2581,6 +2962,17 @@ class Common(object):
             self.tags = tags
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.community_notes = community_notes
+            self.publications = publications
+            self.threat_types = threat_types
+            self.imphash = imphash
+            self.quarantined = quarantined
+            self.organization = organization
+            self.associated_file_names = associated_file_names
+            self.behaviors = behaviors
+            self.relationships = relationships
 
             self.dbot_score = dbot_score
 
@@ -2635,11 +3027,49 @@ class Common(object):
             if self.malware_family:
                 file_context['MalwareFamily'] = self.malware_family
 
+            if self.campaign:
+                file_context['Campaign'] = self.campaign
+            if self.traffic_light_protocol:
+                file_context['TrafficLightProtocol'] = self.traffic_light_protocol
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                file_context['CommunityNotes'] = community_notes
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                file_context['Publications'] = publications
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                file_context['ThreatTypes'] = threat_types
+            if self.imphash:
+                file_context['Imphash'] = self.imphash
+            if self.quarantined:
+                file_context['Quarantined'] = self.quarantined
+            if self.organization:
+                file_context['Organization'] = self.organization
+            if self.associated_file_names:
+                file_context['AssociatedFileNames'] = self.associated_file_names
+            if self.behaviors:
+                behaviors = []
+                for behavior in self.behaviors:
+                    behaviors.append(behavior.to_context())
+                file_context['Behavior'] = behaviors
+
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 file_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                file_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.File.CONTEXT_PATH: file_context
@@ -2663,12 +3093,14 @@ class Common(object):
         :param modified: The timestamp of when the CVE was last modified.
         :type description: ``str``
         :param description: A description of the CVE.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
         :return: None
         :rtype: ``None``
         """
         CONTEXT_PATH = 'CVE(val.ID && val.ID == obj.ID)'
 
-        def __init__(self, id, cvss, published, modified, description):
+        def __init__(self, id, cvss, published, modified, description, relationships=None):
             # type (str, str, str, str, str) -> None
 
             self.id = id
@@ -2682,6 +3114,7 @@ class Common(object):
                 integration_name=None,
                 score=Common.DBotScore.NONE
             )
+            self.relationships = relationships
 
         def to_context(self):
             cve_context = {
@@ -2699,6 +3132,11 @@ class Common(object):
 
             if self.description:
                 cve_context['Description'] = self.description
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                cve_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -2718,17 +3156,20 @@ class Common(object):
         :param domain: The domain of the Email.
         :type blocked: ``bool``
         :param blocked: Whether the email address is blocked.
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'EMAIL(val.Address && val.Address == obj.Address)'
+        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
 
-        def __init__(self, address, dbot_score, domain=None, blocked=None):
+        def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None):
             # type (str, str, bool) -> None
             self.address = address
             self.domain = domain
             self.blocked = blocked
             self.dbot_score = dbot_score
+            self.relationships = relationships
 
         def to_context(self):
             email_context = {
@@ -2738,6 +3179,12 @@ class Common(object):
                 email_context['Domain'] = self.domain
             if self.blocked:
                 email_context['Blocked'] = self.blocked
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                email_context['Relationships'] = relationships_context
+
             ret_value = {
                 Common.EMAIL.CONTEXT_PATH: email_context
             }
@@ -2769,6 +3216,42 @@ class Common(object):
         :type tags: ``str``
         :param tags: Tags of the URL.
 
+        :type port: ``str``
+        :param port: Ports that are associated with the URL.
+
+        :type internal: ``bool``
+        :param internal: Whether or not the URL is internal or external.
+
+        :type campaign: ``str``
+        :param campaign: The campaign associated with the URL.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the URL.
+
+        :type threat_types: ``ThreatTypes``
+        :param threat_types: Threat types that are associated with the file.
+
+        :type asn: ``str``
+        :param asn: The autonomous system name for the URL, for example: 'AS8948'.
+
+        :type as_owner: ``str``
+        :param as_owner: The autonomous system owner of the URL.
+
+        :type geo_country: ``str``
+        :param geo_country: The country in which the URL is located.
+
+        :type organization: ``str``
+        :param organization: The organization of the URL.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  List of notes on the URL that were given by the community.
+
+        :type publications: ``Publications``
+        :param publications: List of publications on the URL that was published.
+
+        :type relationships: ``list of EntityRelationship``
+        :param relationships: List of relationships of the indicator.
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If URL has reputation then create DBotScore object
 
@@ -2778,7 +3261,9 @@ class Common(object):
         CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
 
         def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
-                     feed_related_indicators=None, tags=None, malware_family=None):
+                     feed_related_indicators=None, tags=None, malware_family=None, port=None, internal=None,
+                     campaign=None, traffic_light_protocol=None, threat_types=None, asn=None, as_owner=None,
+                     geo_country=None, organization=None, community_notes=None, publications=None, relationships=None):
             self.url = url
             self.detection_engines = detection_engines
             self.positive_detections = positive_detections
@@ -2786,6 +3271,18 @@ class Common(object):
             self.feed_related_indicators = feed_related_indicators
             self.tags = tags
             self.malware_family = malware_family
+            self.port = port
+            self.internal = internal
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.threat_types = threat_types
+            self.asn = asn
+            self.as_owner = as_owner
+            self.geo_country = geo_country
+            self.organization = organization
+            self.community_notes = community_notes
+            self.publications = publications
+            self.relationships = relationships
 
             self.dbot_score = dbot_score
 
@@ -2794,10 +3291,10 @@ class Common(object):
                 'Data': self.url
             }
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 url_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_detections:
+            if self.positive_detections is not None:
                 url_context['PositiveDetections'] = self.positive_detections
 
             if self.category:
@@ -2815,11 +3312,48 @@ class Common(object):
             if self.malware_family:
                 url_context['MalwareFamily'] = self.malware_family
 
+            if self.port:
+                url_context['Port'] = self.port
+            if self.internal:
+                url_context['Internal'] = self.internal
+            if self.campaign:
+                url_context['Campaign'] = self.campaign
+            if self.traffic_light_protocol:
+                url_context['TrafficLightProtocol'] = self.traffic_light_protocol
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                url_context['ThreatTypes'] = threat_types
+            if self.asn:
+                url_context['ASN'] = self.asn
+            if self.as_owner:
+                url_context['ASOwner'] = self.as_owner
+            if self.geo_country:
+                url_context['Geo'] = {'Country': self.geo_country}
+            if self.organization:
+                url_context['Organization'] = self.organization
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                url_context['CommunityNotes'] = community_notes
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                url_context['Publications'] = publications
+
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 url_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                url_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.URL.CONTEXT_PATH: url_context
@@ -2841,7 +3375,13 @@ class Common(object):
                      domain_status=None, name_servers=None, feed_related_indicators=None, malware_family=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None,
+                     domain_idn_name=None, port=None,
+                     internal=None, category=None, campaign=None, traffic_light_protocol=None, threat_types=None,
+                     community_notes=None, publications=None, geo_location=None, geo_country=None,
+                     geo_description=None, tech_country=None, tech_name=None, tech_email=None, tech_organization=None,
+                     billing=None, relationships=None):
+
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2871,6 +3411,24 @@ class Common(object):
             self.name_servers = name_servers
             self.feed_related_indicators = feed_related_indicators
             self.malware_family = malware_family
+            self.domain_idn_name = domain_idn_name
+            self.port = port
+            self.internal = internal
+            self.category = category
+            self.campaign = campaign
+            self.traffic_light_protocol = traffic_light_protocol
+            self.threat_types = threat_types
+            self.community_notes = community_notes
+            self.publications = publications
+            self.geo_location = geo_location
+            self.geo_country = geo_country
+            self.geo_description = geo_description
+            self.tech_country = tech_country
+            self.tech_name = tech_name
+            self.tech_organization = tech_organization
+            self.tech_email = tech_email
+            self.billing = billing
+            self.relationships = relationships
 
             self.dbot_score = dbot_score
 
@@ -2883,10 +3441,10 @@ class Common(object):
             if self.dns:
                 domain_context['DNS'] = self.dns
 
-            if self.detection_engines:
+            if self.detection_engines is not None:
                 domain_context['DetectionEngines'] = self.detection_engines
 
-            if self.positive_detections:
+            if self.positive_detections is not None:
                 domain_context['PositiveDetections'] = self.positive_detections
 
             if self.registrar_name or self.registrar_abuse_email or self.registrar_abuse_phone:
@@ -2958,9 +3516,61 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+            if self.domain_idn_name:
+                domain_context['DomainIDNName'] = self.domain_idn_name
+            if self.port:
+                domain_context['Port'] = self.port
+            if self.internal:
+                domain_context['Internal'] = self.internal
+            if self.category:
+                domain_context['Category'] = self.category
+            if self.campaign:
+                domain_context['Campaign'] = self.campaign
+            if self.traffic_light_protocol:
+                domain_context['TrafficLightProtocol'] = self.traffic_light_protocol
+            if self.threat_types:
+                threat_types = []
+                for threat_type in self.threat_types:
+                    threat_types.append(threat_type.to_context())
+                domain_context['ThreatTypes'] = threat_types
+            if self.community_notes:
+                community_notes = []
+                for community_note in self.community_notes:
+                    community_notes.append(community_note.to_context())
+                domain_context['CommunityNotes'] = community_notes
+            if self.publications:
+                publications = []
+                for publication in self.publications:
+                    publications.append(publication.to_context())
+                domain_context['Publications'] = publications
+            if self.geo_location or self.geo_country or self.geo_description:
+                domain_context['Geo'] = {}
+                if self.geo_location:
+                    domain_context['Geo']['Location'] = self.geo_location
+                if self.geo_country:
+                    domain_context['Geo']['Country'] = self.geo_country
+                if self.geo_description:
+                    domain_context['Geo']['Description'] = self.geo_description
+            if self.tech_country or self.tech_name or self.tech_organization or self.tech_email:
+                domain_context['Tech'] = {}
+                if self.tech_country:
+                    domain_context['Tech']['Country'] = self.tech_country
+                if self.tech_name:
+                    domain_context['Tech']['Name'] = self.tech_name
+                if self.tech_organization:
+                    domain_context['Tech']['Organization'] = self.tech_organization
+                if self.tech_email:
+                    domain_context['Tech']['Email'] = self.tech_email
+            if self.billing:
+                domain_context['Billing'] = self.billing
 
             if whois_context:
                 domain_context['WHOIS'] = whois_context
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                domain_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.Domain.CONTEXT_PATH: domain_context
@@ -2979,7 +3589,8 @@ class Common(object):
 
         def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
                      os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None):
+                     memory=None, processors=None, processor=None, relationships=None, vendor=None, status=None,
+                     is_isolated=None):
             self.id = id
             self.hostname = hostname
             self.ip_address = ip_address
@@ -2993,6 +3604,10 @@ class Common(object):
             self.memory = memory
             self.processors = processors
             self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
+            self.relationships = relationships
 
         def to_context(self):
             endpoint_context = {
@@ -3035,6 +3650,25 @@ class Common(object):
             if self.processor:
                 endpoint_context['Processor'] = self.processor
 
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                endpoint_context['Relationships'] = relationships_context
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
+                endpoint_context['IsIsolated'] = self.is_isolated
+
             ret_value = {
                 Common.Endpoint.CONTEXT_PATH: endpoint_context
             }
@@ -3056,7 +3690,7 @@ class Common(object):
         def __init__(self, id, type=None, username=None, display_name=None, groups=None,
                      domain=None, email_address=None, telephone_number=None, office=None, job_title=None,
                      department=None, country=None, state=None, city=None, street=None, is_enabled=None,
-                     dbot_score=None):
+                     dbot_score=None, relationships=None):
             self.id = id
             self.type = type
             self.username = username
@@ -3073,6 +3707,7 @@ class Common(object):
             self.city = city
             self.street = street
             self.is_enabled = is_enabled
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -3104,6 +3739,11 @@ class Common(object):
                     'Vendor': self.dbot_score.integration_name,
                     'Description': self.dbot_score.malicious_description
                 }
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                account_context['Relationships'] = relationships_context
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
@@ -4200,7 +4840,65 @@ class Common(object):
             return ret_value
 
 
-def camelize_string(src_str, delim='_'):
+class ScheduledCommand:
+    """
+    ScheduledCommand configuration class
+    Holds the scheduled command configuration for the command result - managing the way the command should be polled.
+
+    :type command: ``str``
+    :param command: The command that'll run after next_run_in_seconds has passed.
+
+    :type next_run_in_seconds: ``int``
+    :param next_run_in_seconds: How long to wait before executing the command.
+
+    :type args: ``Optional[Dict[str, Any]]``
+    :param args: Arguments to use when executing the command.
+
+    :type timeout_in_seconds: ``Optional[int]``
+    :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
+
+    :return: None
+    :rtype: ``None``
+    """
+    VERSION_MISMATCH_ERROR = 'This command is not supported by this XSOAR server version. Please update your server ' \
+                             'version to 6.2.0 or later.'
+
+    def __init__(
+            self,
+            command,  # type: str
+            next_run_in_seconds,  # type: int
+            args=None,  # type: Optional[Dict[str, Any]]
+            timeout_in_seconds=None,  # type: Optional[int]
+    ):
+        self.raise_error_if_not_supported()
+        self._command = command
+        if next_run_in_seconds < 10:
+            demisto.info('ScheduledCommandConfiguration provided value for next_run_in_seconds: '
+                         '{} is '.format(next_run_in_seconds) + 'too low - minimum interval is 10 seconds. '
+                                                                'next_run_in_seconds was set to 10 seconds.')
+            next_run_in_seconds = 10
+        self._next_run = str(next_run_in_seconds)
+        self._args = args
+        self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+
+    @staticmethod
+    def raise_error_if_not_supported():
+        if not is_demisto_version_ge('6.2.0'):
+            raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+
+    def to_results(self):
+        """
+        Returns the result dictionary of the polling command
+        """
+        return assign_params(
+            PollingCommand=self._command,
+            NextRun=self._next_run,
+            PollingArgs=self._args,
+            Timeout=self._timeout
+        )
+
+
+def camelize_string(src_str, delim='_', upper_camel=True):
     """
     Transform snake_case to CamelCase
 
@@ -4210,11 +4908,22 @@ def camelize_string(src_str, delim='_'):
     :type delim: ``str``
     :param delim: indicator category.
 
+    :type upper_camel: ``bool``
+    :param upper_camel: When True then transforms string to camel case with the first letter capitalised
+                        (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                        (for example: demisto_content to demistoContent).
+
     :return: A CammelCase string.
     :rtype: ``str``
     """
+    if not src_str:  # empty string
+        return ""
     components = src_str.split(delim)
-    return ''.join(map(lambda x: x.title(), components))
+    camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+    if upper_camel:
+        return components[0].title() + camelize_without_first_char
+    else:
+        return components[0].lower() + camelize_without_first_char
 
 
 class IndicatorsTimeline:
@@ -4394,6 +5103,373 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
         raise ValueError('"{}" is not a valid date'.format(arg))
 
 
+# -------------------------------- Relationships----------------------------------- #
+
+
+class EntityRelationship:
+    """
+    XSOAR entity relationship.
+
+    :type name: ``str``
+    :param name: Relationship name.
+
+    :type relationship_type: ``str``
+    :param relationship_type: Relationship type. (e.g. IndicatorToIndicator...).
+
+    :type entity_a: ``str``
+    :param entity_a: A value, A aka source of the relationship.
+
+    :type entity_a_family: ``str``
+    :param entity_a_family: Entity family of A, A aka source of the relationship. (e.g. Indicator...)
+
+    :type entity_a_type: ``str``
+    :param entity_a_type: Entity A type, A aka source of the relationship. (e.g. IP/URL/...).
+
+    :type entity_b: ``str``
+    :param entity_b: B value, B aka destination of the relationship.
+
+    :type entity_b_family: ``str``
+    :param entity_b_family: Entity family of B, B aka destination of the relationship. (e.g. Indicator...)
+
+    :type entity_b_type: ``str``
+    :param entity_b_type: Entity B type, B aka destination of the relationship. (e.g. IP/URL/...).
+
+    :type source_reliability: ``str``
+    :param source_reliability: Source reliability.
+
+    :type fields: ``dict``
+    :param fields: Custom fields. (Optional)
+
+    :type brand: ``str``
+    :param brand: Source brand name. (Optional)
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    class RelationshipsTypes(object):
+        """
+        Relationships Types objects.
+
+        :return: None
+        :rtype: ``None``
+        """
+        # dict which keys is a relationship type and the value is the reverse type.
+        RELATIONSHIP_TYPES = ['IndicatorToIndicator']
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelationship.RelationshipsTypes.RELATIONSHIP_TYPES
+
+    class RelationshipsFamily(object):
+        """
+        Relationships Family object list.
+
+        :return: None
+        :rtype: ``None``
+
+        """
+
+        INDICATOR = ["Indicator"]
+
+        @staticmethod
+        def is_valid_type(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelationship.RelationshipsFamily.INDICATOR
+
+    class Relationships(object):
+
+        """
+        Enum: Relations names and their reverse
+
+        :return: None
+        :rtype: ``None``
+        """
+        APPLIED = 'applied'
+        ATTACHMENT_OF = 'attachment-of'
+        ATTACHES = 'attaches'
+        ATTRIBUTE_OF = 'attribute-of'
+        ATTRIBUTED_BY = 'attributed-by'
+        ATTRIBUTED_TO = 'attributed-to'
+        AUTHORED_BY = 'authored-by'
+        BEACONS_TO = 'beacons-to'
+        BUNDLED_IN = 'bundled-in'
+        BUNDLES = 'bundles'
+        COMMUNICATED_WITH = 'communicated-with'
+        COMMUNICATED_BY = 'communicated-by'
+        COMMUNICATES_WITH = 'communicates-with'
+        COMPROMISES = 'compromises'
+        CONTAINS = 'contains'
+        CONTROLS = 'controls'
+        CREATED_BY = 'created-by'
+        CREATES = 'creates'
+        DELIVERED_BY = 'delivered-by'
+        DELIVERS = 'delivers'
+        DOWNLOADS = 'downloads'
+        DOWNLOADS_FROM = 'downloads-from'
+        DROPPED_BY = 'dropped-by'
+        DROPS = 'drops'
+        DUPLICATE_OF = 'duplicate-of'
+        EMBEDDED_IN = 'embedded-in'
+        EMBEDS = 'embeds'
+        EXECUTED = 'executed'
+        EXECUTED_BY = 'executed-by'
+        EXFILTRATES_TO = 'exfiltrates-to'
+        EXPLOITS = 'exploits'
+        HAS = 'has'
+        HOSTED_ON = 'hosted-on'
+        HOSTS = 'hosts'
+        IMPERSONATES = 'impersonates'
+        INDICATED_BY = 'indicated-by'
+        INDICATOR_OF = 'indicator-of'
+        INJECTED_FROM = 'injected-from'
+        INJECTS_INTO = 'injects-into'
+        INVESTIGATES = 'investigates'
+        IS_ALSO = 'is-also'
+        MITIGATED_BY = 'mitigated-by'
+        MITIGATES = 'mitigates'
+        ORIGINATED_FROM = 'originated-from'
+        OWNED_BY = 'owned-by'
+        OWNS = 'owns'
+        PART_OF = 'part-of'
+        RELATED_TO = 'related-to'
+        REMEDIATES = 'remediates'
+        RESOLVED_BY = 'resolved-by'
+        RESOLVED_FROM = 'resolved-from'
+        RESOLVES_TO = 'resolves-to'
+        SEEN_ON = 'seen-on'
+        SENT = 'sent'
+        SENT_BY = 'sent-by'
+        SENT_FROM = 'sent-from'
+        SENT_TO = 'sent-to'
+        SIMILAR_TO = 'similar-to'
+        SUB_DOMAIN_OF = 'sub-domain-of'
+        SUB_TECHNIQUE_OF = 'subtechnique-of'
+        PARENT_TECHNIQUE_OF = 'parent-technique-of'
+        SUPRA_DOMAIN_OF = 'supra-domain-of'
+        TARGETED_BY = 'targeted-by'
+        TARGETS = 'targets'
+        TYPES = 'Types'
+        UPLOADED_TO = 'uploaded-to'
+        USED_BY = 'used-by'
+        USED_ON = 'used-on'
+        USES = 'uses'
+        VARIANT_OF = 'variant-of'
+
+        RELATIONSHIPS_NAMES = {'applied': 'applied-on',
+                               'attachment-of': 'attaches',
+                               'attaches': 'attachment-of',
+                               'attribute-of': 'owns',
+                               'attributed-by': 'attributed-to',
+                               'attributed-to': 'attributed-by',
+                               'authored-by': 'author-of',
+                               'beacons-to': 'communicated-by',
+                               'bundled-in': 'bundles',
+                               'bundles': 'bundled-in',
+                               'communicated-with': 'communicated-by',
+                               'communicated-by': 'communicates-with',
+                               'communicates-with': 'communicated-by',
+                               'compromises': 'compromised-by',
+                               'contains': 'part-of',
+                               'controls': 'controlled-by',
+                               'created-by': 'creates',
+                               'creates': 'created-by',
+                               'delivered-by': 'delivers',
+                               'delivers': 'delivered-by',
+                               'downloads': 'downloaded-by',
+                               'downloads-from': 'hosts',
+                               'dropped-by': 'drops',
+                               'drops': 'dropped-by',
+                               'duplicate-of': 'duplicate-of',
+                               'embedded-in': 'embeds',
+                               'embeds': 'embedded-on',
+                               'executed': 'executed-by',
+                               'executed-by': 'executes',
+                               'exfiltrates-to': 'exfiltrated-from',
+                               'exploits': 'exploited-by',
+                               'has': 'seen-on',
+                               'hosted-on': 'hosts',
+                               'hosts': 'hosted-on',
+                               'impersonates': 'impersonated-by',
+                               'indicated-by': 'indicator-of',
+                               'indicator-of': 'indicated-by',
+                               'injected-from': 'injects-into',
+                               'injects-into': 'injected-from',
+                               'investigates': 'investigated-by',
+                               'is-also': 'is-also',
+                               'mitigated-by': 'mitigates',
+                               'mitigates': 'mitigated-by',
+                               'originated-from': 'source-of',
+                               'owned-by': 'owns',
+                               'owns': 'owned-by',
+                               'part-of': 'contains',
+                               'related-to': 'related-to',
+                               'remediates': 'remediated-by',
+                               'resolved-by': 'resolves-to',
+                               'resolved-from': 'resolves-to',
+                               'resolves-to': 'resolved-from',
+                               'seen-on': 'has',
+                               'sent': 'attached-to',
+                               'sent-by': 'sent',
+                               'sent-from': 'received-by',
+                               'sent-to': 'received-by',
+                               'similar-to': 'similar-to',
+                               'sub-domain-of': 'supra-domain-of',
+                               'supra-domain-of': 'sub-domain-of',
+                               'subtechnique-of': 'parent-technique-of',
+                               'parent-technique-of': 'subtechnique-of',
+                               'targeted-by': 'targets',
+                               'targets': 'targeted-by',
+                               'Types': 'Reverse',
+                               'uploaded-to': 'hosts',
+                               'used-by': 'uses',
+                               'used-on': 'targeted-by',
+                               'uses': 'used-by',
+                               'variant-of': 'variant-of'}
+
+        @staticmethod
+        def is_valid(_type):
+            # type: (str) -> bool
+
+            return _type in EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
+
+        @staticmethod
+        def get_reverse(name):
+            # type: (str) -> str
+
+            return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+
+    def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
+                 reverse_name='', relationship_type='IndicatorToIndicator', entity_a_family='Indicator',
+                 entity_b_family='Indicator', source_reliability="", fields=None, brand=""):
+
+        # Relationship
+        if not EntityRelationship.Relationships.is_valid(name):
+            raise ValueError("Invalid relationship: " + name)
+        self._name = name
+
+        if reverse_name:
+            if not EntityRelationship.Relationships.is_valid(reverse_name):
+                raise ValueError("Invalid reverse relationship: " + reverse_name)
+            self._reverse_name = reverse_name
+        else:
+            self._reverse_name = EntityRelationship.Relationships.get_reverse(name)
+
+        if not EntityRelationship.RelationshipsTypes.is_valid_type(relationship_type):
+            raise ValueError("Invalid relationship type: " + relationship_type)
+        self._relationship_type = relationship_type
+
+        # Entity A - Source
+        self._entity_a = entity_a
+
+        self._entity_a_type = entity_a_type
+
+        if not EntityRelationship.RelationshipsFamily.is_valid_type(entity_a_family):
+            raise ValueError("Invalid entity A Family type: " + entity_a_family)
+        self._entity_a_family = entity_a_family
+
+        # Entity B - Destination
+        if not entity_b:
+            demisto.info(
+                "WARNING: Invalid entity B - Relationships will not be created to entity A {} with relationship name {}".format(
+                    str(entity_a), str(name)))
+        self._entity_b = entity_b
+
+        self._entity_b_type = entity_b_type
+
+        if not EntityRelationship.RelationshipsFamily.is_valid_type(entity_b_family):
+            raise ValueError("Invalid entity B Family type: " + entity_b_family)
+        self._entity_b_family = entity_b_family
+
+        # Custom fields
+        if fields:
+            self._fields = fields
+        else:
+            self._fields = {}
+
+        # Source
+        if brand:
+            self._brand = brand
+        else:
+            self._brand = ''
+
+        if source_reliability:
+            if not DBotScoreReliability.is_valid_type(source_reliability):
+                raise ValueError("Invalid source reliability value", source_reliability)
+            self._source_reliability = source_reliability
+        else:
+            self._source_reliability = ''
+
+    def to_entry(self):
+        """ Convert object to XSOAR entry
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        entry = {}
+
+        if self._entity_b:
+            entry = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relationship_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+            }
+            if self._source_reliability:
+                entry["reliability"] = self._source_reliability
+            if self._brand:
+                entry["brand"] = self._brand
+        return entry
+
+    def to_indicator(self):
+        """ Convert object to XSOAR entry
+        :rtype: ``dict``
+        :return: XSOAR entry representation.
+        """
+        indicator_relationship = {}
+
+        if self._entity_b:
+            indicator_relationship = {
+                "name": self._name,
+                "reverseName": self._reverse_name,
+                "type": self._relationship_type,
+                "entityA": self._entity_a,
+                "entityAFamily": self._entity_a_family,
+                "entityAType": self._entity_a_type,
+                "entityB": self._entity_b,
+                "entityBFamily": self._entity_b_family,
+                "entityBType": self._entity_b_type,
+                "fields": self._fields,
+            }
+        return indicator_relationship
+
+    def to_context(self):
+        """ Convert object to XSOAR context
+        :rtype: ``dict``
+        :return: XSOAR context representation.
+        """
+        indicator_relationship_context = {}
+
+        if self._entity_b:
+            indicator_relationship_context = {
+                "Relationship": self._name,
+                "EntityA": self._entity_a,
+                "EntityAType": self._entity_a_type,
+                "EntityB": self._entity_b,
+                "EntityBType": self._entity_b_type,
+            }
+
+        return indicator_relationship_context
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -4430,25 +5506,38 @@ class CommandResults:
     :type ignore_auto_extract: ``bool``
     :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
 
+    :type relationships: ``list of EntityRelationship``
+    :param relationships: List of relationships of the indicator.
+
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
+
+    :type entry_type: ``int`` code of EntryType
+    :param entry_type: type of return value, see EntryType
+
+    :type scheduled_command: ``ScheduledCommand``
+    :param scheduled_command: manages the way the command should be polled.
 
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False,
-                 polling_command=None, polling_args=None, polling_timeout=None, polling_next_run=None):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, str, dict, str, str) -> None  # noqa: E501
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False,
+                 mark_as_note=False, scheduled_command=None, relationships=None, entry_type=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
             raise ValueError('outputs_prefix is missing')
         if indicators and indicator:
             raise ValueError('indicators is DEPRECATED, use only indicator')
+        if entry_type is None:
+            entry_type = EntryType.NOTE
+
         self.indicators = indicators  # type: Optional[List[Common.Indicator]]
         self.indicator = indicator  # type: Optional[Common.Indicator]
+        self.entry_type = entry_type  # type: int
 
         self.outputs_prefix = outputs_prefix
 
@@ -4472,13 +5561,13 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
-        self.polling_command = polling_command
-        self.polling_args = polling_args
-        self.polling_timeout = polling_timeout
-        self.polling_next_run = polling_next_run
+        self.scheduled_command = scheduled_command
+
+        self.relationships = relationships
 
     def to_context(self):
         outputs = {}  # type: dict
+        relationships = []  # type: list
         if self.readable_output:
             human_readable = self.readable_output
         else:
@@ -4518,7 +5607,7 @@ class CommandResults:
                 human_readable = tableToMarkdown('Results', self.outputs)
             if self.outputs_prefix and self._outputs_key_field:
                 # if both prefix and key field provided then create DT key
-                formatted_outputs_key = ' && '.join(['val.{0} == obj.{0}'.format(key_field)
+                formatted_outputs_key = ' && '.join(['val.{0} && val.{0} == obj.{0}'.format(key_field)
                                                      for key_field in self._outputs_key_field])
                 outputs_key = '{0}({1})'.format(self.outputs_prefix, formatted_outputs_key)
                 outputs[outputs_key] = self.outputs
@@ -4528,12 +5617,15 @@ class CommandResults:
             else:
                 outputs.update(self.outputs)  # type: ignore[call-overload]
 
+        if self.relationships:
+            relationships = [relationship.to_entry() for relationship in self.relationships if relationship.to_entry()]
+
         content_format = EntryFormat.JSON
         if isinstance(raw_response, STRING_TYPES) or isinstance(raw_response, int):
             content_format = EntryFormat.TEXT
 
         return_entry = {
-            'Type': EntryType.NOTE,
+            'Type': self.entry_type,
             'ContentsFormat': content_format,
             'Contents': raw_response,
             'HumanReadable': human_readable,
@@ -4541,14 +5633,10 @@ class CommandResults:
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': True if ignore_auto_extract else False,
             'Note': mark_as_note,
+            'Relationships': relationships,
         }
-        if self.polling_command and self.polling_next_run:
-            return_entry.update({
-                'PollingCommand': self.polling_command,
-                'PollingArgs': self.polling_args,
-                'Timeout': self.polling_timeout,
-                'NextRun': self.polling_next_run
-            })
+        if self.scheduled_command:
+            return_entry.update(self.scheduled_command.to_results())
         return return_entry
 
 
@@ -4567,36 +5655,38 @@ def return_results(results):
         demisto.results(None)
         return
 
-    if results and isinstance(results, list) and len(results) > 0 and isinstance(results[0], CommandResults):
+    elif results and isinstance(results, list):
+        result_list = []
         for result in results:
-            demisto.results(result.to_context())
-        return
+            if isinstance(result, (dict, str)):
+                # Results of type dict or str are of the old results format and work with demisto.results()
+                result_list.append(result)
+            else:
+                # The rest are of the new format and have a corresponding function (to_context, to_display, etc...)
+                return_results(result)
+        if result_list:
+            demisto.results(result_list)
 
-    if isinstance(results, CommandResults):
+    elif isinstance(results, CommandResults):
         demisto.results(results.to_context())
-        return
 
-    if isinstance(results, BaseWidget):
+    elif isinstance(results, BaseWidget):
         demisto.results(results.to_display())
-        return
 
-    if isinstance(results, GetMappingFieldsResponse):
+    elif isinstance(results, GetMappingFieldsResponse):
         demisto.results(results.extract_mapping())
-        return
 
-    if isinstance(results, GetRemoteDataResponse):
+    elif isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
-        return
 
-    if isinstance(results, GetModifiedRemoteDataResponse):
+    elif isinstance(results, GetModifiedRemoteDataResponse):
         demisto.results(results.to_entry())
-        return
 
-    if hasattr(results, 'to_entry'):
+    elif hasattr(results, 'to_entry'):
         demisto.results(results.to_entry())
-        return
 
-    demisto.results(results)
+    else:
+        demisto.results(results)
 
 
 # deprecated
@@ -4739,7 +5829,7 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
-def camelize(src, delim=' '):
+def camelize(src, delim=' ', upper_camel=True):
     """
         Convert all keys of a dictionary (or list of dictionaries) to CamelCase (with capital first letter)
 
@@ -4749,6 +5839,11 @@ def camelize(src, delim=' '):
         :type delim: ``str``
         :param delim: The delimiter between two words in the key (e.g. delim=' ' for "Start Date"). Default ' '.
 
+        :type upper_camel: ``bool``
+        :param upper_camel: When True then transforms dictionary keys to camel case with the first letter capitalised
+                            (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                            (for example: demisto_content to demistoContent).
+
         :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
         :rtype: ``dict`` or ``list``
     """
@@ -4757,10 +5852,14 @@ def camelize(src, delim=' '):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
-        return ''.join(map(lambda x: x.title(), components))
+        camelize_without_first_char = ''.join(map(lambda x: x.title(), components[1:]))
+        if upper_camel:
+            return components[0].title() + camelize_without_first_char
+        else:
+            return components[0].lower() + camelize_without_first_char
 
     if isinstance(src, list):
-        return [camelize(phrase, delim) for phrase in src]
+        return [camelize(phrase, delim, upper_camel=upper_camel) for phrase in src]
     return {camelize_str(key): value for key, value in src.items()}
 
 
@@ -4831,12 +5930,17 @@ pascalRegex = re.compile('([A-Z]?[a-z]+)')
 # ############################## REGEX FORMATTING end ###############################
 
 
-def underscoreToCamelCase(s):
+def underscoreToCamelCase(s, upper_camel=True):
     """
        Convert an underscore separated string to camel case
 
        :type s: ``str``
        :param s: The string to convert (e.g. hello_world) (required)
+
+       :type upper_camel: ``bool``
+       :param upper_camel: When True then transforms dictionarykeys to camel case with the first letter capitalised
+                           (for example: demisto_content to DemistoContent), otherwise the first letter will not be capitalised
+                           (for example: demisto_content to demistoContent).
 
        :return: The converted string (e.g. HelloWorld)
        :rtype: ``str``
@@ -4845,7 +5949,11 @@ def underscoreToCamelCase(s):
         return s
 
     components = s.split('_')
-    return ''.join(x.title() for x in components)
+    camel_without_first_char = ''.join(x.title() for x in components[1:])
+    if upper_camel:
+        return components[0].title() + camel_without_first_char
+    else:
+        return components[0].lower() + camel_without_first_char
 
 
 def camel_case_to_underscore(s):
@@ -5162,7 +6270,7 @@ def is_demisto_version_ge(version, build_number=''):
         server_version = get_demisto_version()
         return \
             server_version.get('version') >= version and \
-            (not build_number or server_version.get('buildNumber') >= build_number)
+            (not build_number or int(server_version.get('buildNumber')) >= int(build_number))
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
@@ -5255,6 +6363,15 @@ class DebugLogger(object):
         brand = callingContext.get('IntegrationBrand')
         if brand:
             msg += "\n#### Integration: brand: [{}] instance: [{}]".format(brand, callingContext.get('IntegrationInstance'))
+        sm = get_schedule_metadata(context=callingContext)
+        if sm.get('is_polling'):
+            msg += "\n#### Schedule Metadata: scheduled command: [{}] args: [{}] times ran: [{}] scheduled: [{}] end " \
+                   "date: [{}]".format(sm.get('polling_command'),
+                                       sm.get('polling_args'),
+                                       sm.get('times_ran'),
+                                       sm.get('start_date'),
+                                       sm.get('end_date')
+                                       )
         self.int_logger.write(msg)
 
 
@@ -6453,18 +7570,24 @@ class TableOrListWidget(BaseWidget):
 
 class IndicatorsSearcher:
     """Used in order to search indicators by the paging or serachAfter param
-     :type page: ``int``
+    :type page: ``int``
     :param page: the number of page from which we start search indicators from.
+
+    :type filter_fields: ``str``
+    :param filter_fields: comma separated fields to filter (e.g. "value,type")
 
     :return: No data returned
     :rtype: ``None``
     """
-    def __init__(self, page=0):
+    def __init__(self, page=0, filter_fields=None):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
+        # populateFields merged in https://github.com/demisto/server/pull/18398
+        self._can_use_filter_fields = is_demisto_version_ge('6.1.0', build_number='1095800')
         self._search_after_title = 'searchAfter'
         self._search_after_param = None
         self._page = page
+        self._filter_fields = filter_fields
 
     def search_indicators_by_version(self, from_date=None, query='', size=100, to_date=None, value=''):
         """There are 2 cases depends on the sever version:
@@ -6490,12 +7613,22 @@ class IndicatorsSearcher:
         :rtype: ``dict``
         """
         if self._can_use_search_after:
-            res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, value=value,
-                                           searchAfter=self._search_after_param)
-            if self._search_after_title in res and res[self._search_after_title] is not None:
-                self._search_after_param = res[self._search_after_title]
-            else:
-                demisto.log('Elastic search using searchAfter was not found in searchIndicators')
+            # if search_after_param exists use it for paging, else use the page number
+            search_iocs_params = assign_params(
+                fromDate=from_date,
+                toDate=to_date,
+                query=query,
+                size=size,
+                value=value,
+                searchAfter=self._search_after_param,
+                populateFields=self._filter_fields if self._can_use_filter_fields else None,
+                page=self._page if not self._search_after_param else None
+            )
+            res = demisto.searchIndicators(**search_iocs_params)
+            self._search_after_param = res[self._search_after_title]
+
+            if res[self._search_after_title] is None:
+                demisto.info('Elastic search using searchAfter returned all indicators')
 
         else:
             res = demisto.searchIndicators(fromDate=from_date, toDate=to_date, query=query, size=size, page=self._page,
@@ -6507,3 +7640,25 @@ class IndicatorsSearcher:
     @property
     def page(self):
         return self._page
+
+
+class AutoFocusKeyRetriever:
+    """AutoFocus API Key management class
+    :type api_key: ``str``
+    :param api_key: Auto Focus API key coming from the integration parameters
+    :type override_default_credentials: ``bool``
+    :param override_default_credentials: Whether to override the default credentials and use the
+     Cortex XSOAR given AutoFocus API Key
+    :return: No data returned
+    :rtype: ``None``
+    """
+    def __init__(self, api_key):
+        # demisto.getAutoFocusApiKey() is available from version 6.2.0
+        if not api_key:
+            if not is_demisto_version_ge("6.2.0"):  # AF API key is available from version 6.2.0
+                raise DemistoException('For versions earlier than 6.2.0, configure an API Key.')
+            try:
+                api_key = demisto.getAutoFocusApiKey()  # is not available on tenants
+            except ValueError as err:
+                raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
+        self.key = api_key
