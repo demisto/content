@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
 from pymisp.tools import EMailObject, GenericObjectGenerator
+import copy
 
 from CommonServerPython import *
 
@@ -1042,6 +1043,8 @@ def search_attributes() -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    if 'include_decay_score' in args:
+        args['includeDecayScore'] = 1 if d_args.get('include_decay_score') in ('true', '1', 1) else 0
 
     # Set the controller to attributes to search for attributes and not events
     args['controller'] = 'attributes'
@@ -1049,7 +1052,7 @@ def search_attributes() -> Tuple[dict, Any]:
     response = MISP.search(**args)
 
     if response:
-        response_for_context = build_attribute_context(response)
+        response_for_context = build_attribute_context(copy.deepcopy(response))
 
         md = f'## MISP attributes-search returned {len(response_for_context)} attributes.\n'
 
