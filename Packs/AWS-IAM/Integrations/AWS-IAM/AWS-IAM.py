@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import datetime, date
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
@@ -964,103 +963,99 @@ def main():
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                            retries)
+    command = demisto.command()
+    args = demisto.args()
 
     try:
         LOG('Command being called is {command}'.format(command=demisto.command()))
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_function(aws_client)
-        elif demisto.command() == 'aws-iam-create-user':
-            create_user(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-login-profile':
-            create_login_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-get-user':
-            get_user(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-users':
-            list_users(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-update-user':
-            update_user(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-user':
-            delete_user(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-update-login-profile':
-            update_login_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-group':
-            create_group(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-groups':
-            list_groups(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-groups-for-user':
-            list_groups_for_user(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-access-key':
-            create_access_key(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-update-access-key':
-            update_access_key(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-access-keys-for-user':
-            list_access_key_for_user(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-policies':
-            list_policies(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-roles':
-            list_roles(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-attach-policy':
-            attach_policy(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-detach-policy':
-            detach_policy(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-login-profile':
-            delete_login_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-add-user-to-group':
-            add_user_to_group(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-group':
-            delete_group(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-remove-user-from-group':
-            remove_user_from_group(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-access-key':
-            delete_access_key(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-instance-profile':
-            create_instance_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-instance-profile':
-            delete_instance_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-instance-profiles':
-            list_instance_profiles(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-add-role-to-instance-profile':
-            add_role_to_instance_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-remove-role-from-instance-profile':
-            remove_role_from_instance_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-instance-profiles-for-role':
-            list_instance_profiles_for_role(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-get-instance-profile':
-            get_instance_profile(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-get-role':
-            get_role(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-role':
-            delete_role(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-role':
-            create_role(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-policy':
-            create_policy(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-policy':
-            delete_policy(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-policy-version':
-            create_policy_version(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-policy-version':
-            delete_policy_version(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-list-policy-versions':
-            list_policy_versions(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-get-policy-version':
-            get_policy_version(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-set-default-policy-version':
-            set_default_policy_version(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-create-account-alias':
-            create_account_alias(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-delete-account-alias':
-            delete_account_alias(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-get-account-password-policy':
-            get_account_password_policy(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-iam-update-account-password-policy':
-            update_account_password_policy(demisto.args(), aws_client)
-
-    except ResponseParserError as e:
-        return_error(
-            'Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-                error=type(e)))
-        LOG(str(e))
+        elif command == 'aws-iam-create-user':
+            create_user(args, aws_client)
+        elif command == 'aws-iam-create-login-profile':
+            create_login_profile(args, aws_client)
+        elif command == 'aws-iam-get-user':
+            get_user(args, aws_client)
+        elif command == 'aws-iam-list-users':
+            list_users(args, aws_client)
+        elif command == 'aws-iam-update-user':
+            update_user(args, aws_client)
+        elif command == 'aws-iam-delete-user':
+            delete_user(args, aws_client)
+        elif command == 'aws-iam-update-login-profile':
+            update_login_profile(args, aws_client)
+        elif command == 'aws-iam-create-group':
+            create_group(args, aws_client)
+        elif command == 'aws-iam-list-groups':
+            list_groups(args, aws_client)
+        elif command == 'aws-iam-list-groups-for-user':
+            list_groups_for_user(args, aws_client)
+        elif command == 'aws-iam-create-access-key':
+            create_access_key(args, aws_client)
+        elif command == 'aws-iam-update-access-key':
+            update_access_key(args, aws_client)
+        elif command == 'aws-iam-list-access-keys-for-user':
+            list_access_key_for_user(args, aws_client)
+        elif command == 'aws-iam-list-policies':
+            list_policies(args, aws_client)
+        elif command == 'aws-iam-list-roles':
+            list_roles(args, aws_client)
+        elif command == 'aws-iam-attach-policy':
+            attach_policy(args, aws_client)
+        elif command == 'aws-iam-detach-policy':
+            detach_policy(args, aws_client)
+        elif command == 'aws-iam-delete-login-profile':
+            delete_login_profile(args, aws_client)
+        elif command == 'aws-iam-add-user-to-group':
+            add_user_to_group(args, aws_client)
+        elif command == 'aws-iam-delete-group':
+            delete_group(args, aws_client)
+        elif command == 'aws-iam-remove-user-from-group':
+            remove_user_from_group(args, aws_client)
+        elif command == 'aws-iam-delete-access-key':
+            delete_access_key(args, aws_client)
+        elif command == 'aws-iam-create-instance-profile':
+            create_instance_profile(args, aws_client)
+        elif command == 'aws-iam-delete-instance-profile':
+            delete_instance_profile(args, aws_client)
+        elif command == 'aws-iam-list-instance-profiles':
+            list_instance_profiles(args, aws_client)
+        elif command == 'aws-iam-add-role-to-instance-profile':
+            add_role_to_instance_profile(args, aws_client)
+        elif command == 'aws-iam-remove-role-from-instance-profile':
+            remove_role_from_instance_profile(args, aws_client)
+        elif command == 'aws-iam-list-instance-profiles-for-role':
+            list_instance_profiles_for_role(args, aws_client)
+        elif command == 'aws-iam-get-instance-profile':
+            get_instance_profile(args, aws_client)
+        elif command == 'aws-iam-get-role':
+            get_role(args, aws_client)
+        elif command == 'aws-iam-delete-role':
+            delete_role(args, aws_client)
+        elif command == 'aws-iam-create-role':
+            create_role(args, aws_client)
+        elif command == 'aws-iam-create-policy':
+            create_policy(args, aws_client)
+        elif command == 'aws-iam-delete-policy':
+            delete_policy(args, aws_client)
+        elif command == 'aws-iam-create-policy-version':
+            create_policy_version(args, aws_client)
+        elif command == 'aws-iam-delete-policy-version':
+            delete_policy_version(args, aws_client)
+        elif command == 'aws-iam-list-policy-versions':
+            list_policy_versions(args, aws_client)
+        elif command == 'aws-iam-get-policy-version':
+            get_policy_version(args, aws_client)
+        elif command == 'aws-iam-set-default-policy-version':
+            set_default_policy_version(args, aws_client)
+        elif command == 'aws-iam-create-account-alias':
+            create_account_alias(args, aws_client)
+        elif command == 'aws-iam-delete-account-alias':
+            delete_account_alias(args, aws_client)
+        elif command == 'aws-iam-get-account-password-policy':
+            get_account_password_policy(args, aws_client)
+        elif command == 'aws-iam-update-account-password-policy':
+            update_account_password_policy(args, aws_client)
 
     except Exception as e:
         LOG(str(e))

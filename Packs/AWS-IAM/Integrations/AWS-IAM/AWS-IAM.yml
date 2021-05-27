@@ -1410,7 +1410,7 @@ script:
         has expired. Can be "True" or "False".
     description: Create/update password policy
     execution: true
-  dockerimage: demisto/boto3:2.0.0.20441
+  dockerimage: demisto/boto3:2.0.0.20482
   runonce: false
   subtype: python2
 tests:
