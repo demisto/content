@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Sixgill_DVE_Feed
+  id: Cybersixgill_DVE_Feed
   version: -1
 configuration:
 - display: Client Id
@@ -108,7 +108,7 @@ configuration:
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
   Threat Intelligence indicators. Get CVE Feed straight into the XSOAR platform.
 display: Cybersixgill DVE Feed Threat Intelligence
-name: Sixgill_DVE_Feed
+name: Cybersixgill_DVE_Feed
 script:
   commands:
   - arguments:
@@ -123,7 +123,7 @@ script:
     description: Fetching Sixgill DVE Feed indicators
     execution: false
     name: sixgill-get-dve-feed
-  dockerimage: demisto/sixgill:1.0.0.18412
+  dockerimage: demisto/sixgill:1.0.0.19258
   feed: true
   isfetch: false
   longRunning: false
