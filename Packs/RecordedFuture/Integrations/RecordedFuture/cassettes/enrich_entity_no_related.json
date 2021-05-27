@@ -3,8 +3,8 @@
     "location": {
       "organization": "AS-26496-GO-DADDY-COM-LLC",
       "cidr": {
-        "id": "ip:184.168.220.0/22",
-        "name": "184.168.220.0/22",
+        "id": "ip:184.168.221.96/22",
+        "name": "184.168.221.96/22",
         "type": "IpAddress"
       },
       "location": {
