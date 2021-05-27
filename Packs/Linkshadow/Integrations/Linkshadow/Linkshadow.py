@@ -154,7 +154,7 @@ def fetch_entity_anomalies(client, args, arg):
     return CommandResults(
         outputs_prefix='Linkshadow.data',
         outputs_key_field='GlobalID',
-        outputs=alerts
+        outputs=alert
     )
 
 
