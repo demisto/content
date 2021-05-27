@@ -906,7 +906,7 @@ def test_test_module_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(200, "ok"))
 
-    from Cybersixgill_DVE_Feed import module_command_test
+    from CybersixgillDVEFeed import module_command_test
 
     module_command_test()
 
