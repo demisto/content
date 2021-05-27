@@ -2,14 +2,14 @@ commonfields:
   id: CofenseIntelligenceV2
   version: -1
 name: CofenseIntelligenceV2
-display: CofenseIntelligence v2
+display: Cofense Intelligence v2
 category: Utilities
 description: 'Use the Cofense Intelligence integration to check the reputation of
   URLs, IP addresses, file hashes, and email addresses.'
 configuration:
 - display: Server URL
   name: url
-  defaultvalue: https://www.threathq.com/apiv1
+  defaultvalue: https://www.threathq.com
   type: 0
   required: true
 - display: Token Name
@@ -75,6 +75,18 @@ configuration:
   - Moderate
   - Major
   additionalinfo: Threshold for email reletad threats' severity.
+- display: Number of threats' reports
+  name: threats_limit
+  type: 15
+  required: false
+  options:
+  - "1"
+  - "2"
+  - "3"
+  - "4"
+  - "5"
+  - "6"
+  additionalinfo: Limit the number of  threats that will be displayed
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

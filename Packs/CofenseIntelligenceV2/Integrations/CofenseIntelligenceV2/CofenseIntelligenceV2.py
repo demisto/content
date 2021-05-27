@@ -18,8 +18,9 @@ INTEGRATION_NAME = "CofenseIntelligenceV2"
 OUTPUT_PREFIX = 'CofenseIntelligence'
 RELIABILITY = 'integration_reliability'
 
-SEVERITY_SCORE = {'None': 0, 'Minor': 1, 'Moderate': 2, 'Major': 3}
-VERDICT = {0: 'Unknown', 1: 'Good', 2: 'Suspicious', 3: 'Bad'}
+SEVERITY_SCORE = {'None': 0, 'Minor': 2, 'Moderate': 2, 'Major': 3}
+DBOT_SCORE = {0: 'Unknown', 1: 'Good', 2: 'Suspicious', 3: 'Bad'}
+DBOT_TO_VERDICT = {'Unknown': 'Unknown', 'Good': 'Benign', 'Suspicious': 'Suspicious', 'Bad': 'Malicious'}
 
 EMAIL_REGEX = r'[^@]+@[^@]+\.[^@]+'
 
@@ -61,7 +62,7 @@ class Client(BaseClient):
         elif string:
             params['extractedString'] = string
 
-        return self._http_request(method='POST', url_suffix='/threat/search', params=params)
+        return self._http_request(method='POST', url_suffix='/apiv1/threat/search', params=params)
 
 
 def create_threat_md_row(threat: Dict, severity_level: int = None):
@@ -78,10 +79,11 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
                       [m.get("description", "") for m in threat.get("malwareFamilySet", [])]),
                   "Executive Summary": threat.get("executiveSummary", ""),
                   "Campaign": threat.get("label", ""),
-                  "Last Published": epochToTimestamp(threat.get("lastPublished"))}
+                  "Last Published": epochToTimestamp(threat.get("lastPublished")),
+                  "Threat Report": threat.get("reportURL", "")}
 
     if severity_level:
-        threat_row["Verdict"] = VERDICT.get(severity_level)
+        threat_row["Verdict"] = DBOT_TO_VERDICT.get(DBOT_SCORE.get(severity_level))
 
     return threat_row
 
@@ -244,7 +246,7 @@ def connectivity_testing(client: Client) -> str:
     except DemistoException as e:
         if e.res is not None:
             if e.res.status_code in [401, 403]:
-                message = 'Authorization Error: make sure user name and password are correctly set'
+                message = 'Authorization Error: make sure Token name and password are correctly set'
 
             elif e.res.status_code == 404:
                 message = 'Not Found: make sure server URL is correct'
@@ -255,7 +257,7 @@ def connectivity_testing(client: Client) -> str:
     return message
 
 
-def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def search_url_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given url,
      analyze the response and generates the command result object for the url command
             Args:
@@ -266,34 +268,35 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> CommandR
              CommandResults: results of the url command including outputs, raw response, readable output
     """
 
-    url = args.get('url')
-    if not url:
+    urls = argToList(args.get('url'))
+    if not urls:
         raise ValueError('url not specified')
+    results_list = []
+    for url in urls:
+        result = client.threat_search_call(url=url)
+        threats = result.get('data', {}).get('threats', [])
+        outputs = {'Data': url, 'Threats': threats}
+        md_data, dbot_score = threats_analysis(threats, indicator=url, threshold=params.get('url_threshold'))
 
-    result = client.threat_search_call(url=url)
-    threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': url, 'Threats': threats}
-    md_data, dbot_score = threats_analysis(threats, indicator=url, threshold=params.get('url_threshold'))
+        dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
+                                          integration_name=INTEGRATION_NAME, score=dbot_score,
+                                          reliability=params.get(RELIABILITY))
+        url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj)
 
-    dbot_score_obj = Common.DBotScore(indicator=url, indicator_type=DBotScoreType.URL,
-                                      integration_name=INTEGRATION_NAME, score=dbot_score,
-                                      reliability=params.get(RELIABILITY))
-    url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj)
-
-    return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.URL',
-        outputs_key_field='Data',
-        outputs=outputs,
-        raw_response=result,
-        readable_output=tableToMarkdown(name=f'Cofense URL Reputation for url {url}', t=md_data,
-                                        headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
-                                                 'Campaign', 'Last Published']),
-        indicator=url_indicator,
-
-    )
+        command_results = CommandResults(
+            outputs_prefix=f'{OUTPUT_PREFIX}.URL',
+            outputs_key_field='Data',
+            outputs=outputs,
+            raw_response=result,
+            readable_output=tableToMarkdown(name=f'Cofense URL Reputation for url {url}', t=md_data,
+                                            headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
+                                                     'Campaign', 'Last Published', 'Threat Report']),
+            indicator=url_indicator)
+        results_list.append(command_results)
+    return results_list
 
 
-def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def check_ip_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given ip,
      analyze the response and generates the command result object for the ip command
             Args:
@@ -304,45 +307,46 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> CommandRes
              CommandResults: results of the ip command including outputs, raw response, readable output
     """
 
-    ip = args.get('ip')
-    if not ip:
+    ips = argToList(args.get('ip'))
+    if not ips:
         raise ValueError('IP not specified')
+    results_list = []
+    for ip in ips:
+        try:
+            # verify ip is valid
+            socket.inet_aton(ip)
 
-    try:
-        # verify ip is valid
-        socket.inet_aton(ip)
+        except socket.error:
+            raise ValueError('Invalid IP')
 
-    except socket.error:
-        raise ValueError('Invalid IP')
+        # Call the Client function and get the raw response
+        result = client.threat_search_call(ip=ip)
+        threats = result.get('data', {}).get('threats', [])
+        outputs = {'Data': ip, 'Threats': threats}
+        dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
+                                          integration_name=INTEGRATION_NAME, score=0,
+                                          reliability=params.get(RELIABILITY))
+        md_data, dbot_score, ip_indicator = ip_threats_analysis(threats=threats, ip=ip,
+                                                                threshold=params.get("ip_threshold"),
+                                                                dbot_score_obj=dbot_score_obj)
 
-    # Call the Client function and get the raw response
-    result = client.threat_search_call(ip=ip)
-    threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': ip, 'Threats': threats}
-    dbot_score_obj = Common.DBotScore(indicator=ip, indicator_type=DBotScoreType.IP,
-                                      integration_name=INTEGRATION_NAME, score=0,
-                                      reliability=params.get(RELIABILITY))
-    md_data, dbot_score, ip_indicator = ip_threats_analysis(threats=threats, ip=ip,
-                                                            threshold=params.get("ip_threshold"),
-                                                            dbot_score_obj=dbot_score_obj)
+        dbot_score_obj.score = dbot_score
+        ip_indicator.dbot_score = dbot_score_obj
 
-    dbot_score_obj.score = dbot_score
-    ip_indicator.dbot_score = dbot_score_obj
-
-    return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.IP',
-        outputs_key_field='Data',
-        outputs=outputs,
-        raw_response=result,
-        readable_output=tableToMarkdown(name=f'Cofense IP Reputation for IP {ip}', t=md_data,
-                                        headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
-                                                 'Campaign', 'Last Published', 'ASN', 'Country']),
-        indicator=ip_indicator,
-
-    )
+        command_results = CommandResults(
+            outputs_prefix=f'{OUTPUT_PREFIX}.IP',
+            outputs_key_field='Data',
+            outputs=outputs,
+            raw_response=result,
+            readable_output=tableToMarkdown(name=f'Cofense IP Reputation for IP {ip}', t=md_data,
+                                            headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
+                                                     'Campaign', 'Last Published', 'ASN', 'Country', 'Threat Report']),
+            indicator=ip_indicator, )
+        results_list.append(command_results)
+    return results_list
 
 
-def check_email_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def check_email_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given email,
      analyze the response and generates the command result object for the email command
             Args:
@@ -353,37 +357,40 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> Command
              CommandResults: results of the email command including outputs, raw response, readable output
     """
 
-    email = args.get('email')
-    if not email:
+    emails = argToList(args.get('email'))
+    if not emails:
         raise ValueError('Email not specified')
+    results_list = []
+    for email in emails:
+        if not re.fullmatch(EMAIL_REGEX, email):
+            raise ValueError('Invalid email')
 
-    if not re.fullmatch(EMAIL_REGEX, email):
-        raise ValueError('Invalid email')
+        # Call the Client function and get the raw response
+        result = client.threat_search_call(email=email)
+        threats = result.get('data', {}).get('threats', [])
+        outputs = {'Data': email, 'Threats': threats}
+        md_data, dbot_score = threats_analysis(threats, indicator=email, threshold=params.get('email_threshold'))
 
-    # Call the Client function and get the raw response
-    result = client.threat_search_call(email=email)
-    threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': email, 'Threats': threats}
-    md_data, dbot_score = threats_analysis(threats, indicator=email, threshold=params.get('email_threshold'))
+        dbot_score_obj = Common.DBotScore(indicator=email, indicator_type=DBotScoreType.EMAIL,
+                                          integration_name=INTEGRATION_NAME, score=dbot_score,
+                                          reliability=params.get(RELIABILITY))
 
-    dbot_score_obj = Common.DBotScore(indicator=email, indicator_type=DBotScoreType.EMAIL,
-                                      integration_name=INTEGRATION_NAME, score=dbot_score,
-                                      reliability=params.get(RELIABILITY))
-
-    email_indicator = Common.EMAIL(address=email, dbot_score=dbot_score_obj, domain=email.split('@')[1])
-    return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.Email',
-        outputs=outputs,
-        outputs_key_field='Data',
-        raw_response=result,
-        readable_output=tableToMarkdown(name=f'Cofense email Reputation for email {email}', t=md_data,
-                                        headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
-                                                 'Campaign', 'Last Published']),
-        indicator=email_indicator,
-    )
+        email_indicator = Common.EMAIL(address=email, dbot_score=dbot_score_obj, domain=email.split('@')[1])
+        command_results = CommandResults(
+            outputs_prefix=f'{OUTPUT_PREFIX}.Email',
+            outputs=outputs,
+            outputs_key_field='Data',
+            raw_response=result,
+            readable_output=tableToMarkdown(name=f'Cofense email Reputation for email {email}', t=md_data,
+                                            headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
+                                                     'Campaign', 'Last Published', 'Threat Report']),
+            indicator=email_indicator,
+        )
+        results_list.append(command_results)
+    return results_list
 
 
-def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandResults:
+def check_md5_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given file hash,
      analyze the response and generates the command result object for the file command
             Args:
@@ -393,32 +400,35 @@ def check_md5_command(client: Client, args: Dict[str, Any], params) -> CommandRe
             return:
              CommandResults: results of the file command including outputs, raw response, readable output
     """
-    file = args.get('file', None)
-    if not file:
+    files = argToList(args.get('file', None))
+    if not files:
         raise ValueError('file not specified')
+    results_list = []
+    for file in files:
+        # Call the Client function and get the raw response
+        result = client.threat_search_call(file=file)
+        threats = result.get('data', {}).get('threats', [])
+        outputs = {'Data': file, 'Threats': threats}
+        dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
+                                          integration_name=INTEGRATION_NAME, score=0,
+                                          reliability=params.get(RELIABILITY))
+        md_data, dbot_score, file_indicator = file_threats_analysis(threats=threats, file=file,
+                                                                    threshold=params.get('file_threshold'),
+                                                                    dbot_score_obj=dbot_score_obj)
 
-    # Call the Client function and get the raw response
-    result = client.threat_search_call(file=file)
-    threats = result.get('data', {}).get('threats', [])
-    outputs = {'Data': file, 'Threats': threats}
-    dbot_score_obj = Common.DBotScore(indicator=file, indicator_type=DBotScoreType.FILE,
-                                      integration_name=INTEGRATION_NAME, score=0,
-                                      reliability=params.get(RELIABILITY))
-    md_data, dbot_score, file_indicator = file_threats_analysis(threats=threats, file=file,
-                                                                threshold=params.get('file_threshold'),
-                                                                dbot_score_obj=dbot_score_obj)
-
-    file_indicator.dbot_score = dbot_score_obj
-    dbot_score_obj.score = dbot_score
-    return CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.File',
-        outputs_key_field='Data',
-        outputs=outputs,
-        raw_response=result,
-        readable_output=tableToMarkdown(name=f'Cofense file Reputation for file {file}', t=md_data,
-                                        headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
-                                                 'Campaign', 'Last Published']),
-        indicator=file_indicator)
+        file_indicator.dbot_score = dbot_score_obj
+        dbot_score_obj.score = dbot_score
+        command_results = CommandResults(
+            outputs_prefix=f'{OUTPUT_PREFIX}.File',
+            outputs_key_field='Data',
+            outputs=outputs,
+            raw_response=result,
+            readable_output=tableToMarkdown(name=f'Cofense file Reputation for file {file}', t=md_data,
+                                            headers=['Threat ID', 'Threat Types', 'Verdict', 'Executive Summary',
+                                                     'Campaign', 'Last Published', 'Threat Report']),
+            indicator=file_indicator)
+        results_list.append(command_results)
+    return results_list
 
 
 def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -461,7 +471,7 @@ def extracted_string(client: Client, args: Dict[str, Any]) -> CommandResults:
         readable_output=tableToMarkdown(name=f'There are {count_threats} threats regarding your string search\n',
                                         t=md_data,
                                         headers=['Threat ID', 'Threat Types', 'Executive Summary',
-                                                 'Campaign', 'Last Published']))
+                                                 'Campaign', 'Last Published', 'Threat Report']))
 
 
 def main() -> None:
