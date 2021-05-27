@@ -2,4 +2,4 @@
 ignore=PA116
 
 [file:NTT_Cyber_Threat_Sensor.yml]
-ignore=IN126
+ignore=IN126,BA108,BA109
