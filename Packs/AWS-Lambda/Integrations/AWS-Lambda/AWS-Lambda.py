@@ -1,10 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """IMPORTS"""
 from datetime import date
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
@@ -284,24 +282,25 @@ def main():
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                            retries)
+    command = demisto.command()
+    args = demisto.args()
+
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             test_function(aws_client)
-        elif demisto.command() == 'aws-lambda-get-function':
-            get_function(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-lambda-list-functions':
-            list_functions(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-lambda-list-aliases':
-            list_aliases(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-lambda-invoke':
+        elif command == 'aws-lambda-get-function':
+            get_function(args, aws_client)
+        elif command == 'aws-lambda-list-functions':
+            list_functions(args, aws_client)
+        elif command == 'aws-lambda-list-aliases':
+            list_aliases(args, aws_client)
+        elif command == 'aws-lambda-invoke':
             invoke(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-lambda-remove-permission':
-            remove_permission(demisto.args(), aws_client)
-        elif demisto.command() == 'aws-lambda-get-account-settings':
-            get_account_settings(demisto.args(), aws_client)
-    except ResponseParserError as e:
-        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-            error=type(e)))
+        elif command == 'aws-lambda-remove-permission':
+            remove_permission(args, aws_client)
+        elif command == 'aws-lambda-get-account-settings':
+            get_account_settings(args, aws_client)
+
     except Exception as e:
         return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
             error=type(e), message=str(e)))
