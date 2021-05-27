@@ -3,8 +3,8 @@
     "location": {
       "organization": "AS-26496-GO-DADDY-COM-LLC",
       "cidr": {
-        "id": "ip:184.168.220.0/22",
-        "name": "184.168.220.0/22",
+        "id": "ip:184.168.221.96/22",
+        "name": "184.168.221.96/22",
         "type": "IpAddress"
       },
       "location": {
@@ -277,104 +277,6 @@
           }
         ],
         "type": "RelatedMalwareCategory"
-      },
-      {
-        "entities": [
-          {
-            "count": 2,
-            "entity": {
-              "id": "UTgKBp",
-              "name": "MyNameSucked",
-              "type": "Person"
-            }
-          },
-          {
-            "count": 1,
-            "entity": {
-              "id": "UTJf5x",
-              "name": "leaksquad",
-              "type": "Person"
-            }
-          }
-        ],
-        "type": "RelatedThreatActor"
-      },
-      {
-        "entities": [
-          {
-            "count": 18,
-            "entity": {
-              "id": "KibvTH",
-              "name": "Delf",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 18,
-            "entity": {
-              "id": "Qd_6LX",
-              "name": "Suppobox",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 11,
-            "entity": {
-              "id": "KeKua5",
-              "name": "Matsnu",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 9,
-            "entity": {
-              "id": "K0T3MH",
-              "name": "Bayrob",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 6,
-            "entity": {
-              "id": "KeKudi",
-              "name": "Sefnit",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 3,
-            "entity": {
-              "id": "I8rGpr",
-              "name": "Virut",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 2,
-            "entity": {
-              "id": "KeKucH",
-              "name": "Pykspa",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 2,
-            "entity": {
-              "id": "Kj0APc",
-              "name": "Injector",
-              "type": "Malware"
-            }
-          },
-          {
-            "count": 1,
-            "entity": {
-              "id": "J21f9C",
-              "name": "Zeus",
-              "type": "Malware"
-            }
-          }
-        ],
-        "type": "RelatedMalware"
       }
     ],
     "timestamps": {
