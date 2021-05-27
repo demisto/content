@@ -4605,11 +4605,8 @@ class TestEntityRelationship:
 
 class TestIsDemistoServerGE:
     @classmethod
-    def setup_function(cls):
-        get_demisto_version._version = None
-
-    @classmethod
-    def teardown_function(cls):
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
         get_demisto_version._version = None
 
     def test_get_demisto_version(self, mocker):
@@ -4639,7 +4636,7 @@ class TestIsDemistoServerGE:
         assert not is_demisto_version_ge('5.5.0')
         assert get_demisto_version_as_str() == '5.0.0-50000'
 
-    def test_is_demisto_version_ge_4_5(self, mocker, clear_version_cache):
+    def test_is_demisto_version_ge_4_5(self, mocker):
         get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
         get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
         assert not is_demisto_version_ge('5.0.0')
@@ -4647,7 +4644,7 @@ class TestIsDemistoServerGE:
         with raises(AttributeError, match='simulate missing demistoVersion'):
             is_demisto_version_ge('4.5.0')
 
-    def test_is_demisto_version_ge_dev_version(self, mocker, clear_version_cache):
+    def test_is_demisto_version_ge_dev_version(self, mocker):
         mocker.patch.object(
             demisto,
             'demistoVersion',
@@ -4664,7 +4661,7 @@ class TestIsDemistoServerGE:
         ('6.0.0', '6'),  # Added with the fix of https://github.com/demisto/etc/issues/36876
         ('5.5.0', '50001')
     ])
-    def test_is_demisto_version_build_ge(self, mocker, version, build, clear_version_cache):
+    def test_is_demisto_version_build_ge(self, mocker, version, build):
         mocker.patch.object(
             demisto,
             'demistoVersion',
@@ -4679,7 +4676,7 @@ class TestIsDemistoServerGE:
         ('6.0.0', '50001'),
         ('6.1.0', '49999')
     ])
-    def test_is_demisto_version_build_ge_negative(self, mocker, version, build, clear_version_cache):
+    def test_is_demisto_version_build_ge_negative(self, mocker, version, build):
         mocker.patch.object(
             demisto,
             'demistoVersion',
