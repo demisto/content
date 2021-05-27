@@ -2347,7 +2347,7 @@ script:
 
         ID of current slot.'
       type: string
-  dockerimage: demisto/ansible-runner:1.0.0.20246
+  dockerimage: demisto/ansible-runner:1.0.0.20435
   runonce: false
   script: ''
   subtype: python3
