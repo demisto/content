@@ -339,6 +339,115 @@ class Client(BaseClient):
 
         return response
 
+    def get_api_v1_settings_alerts_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'settings/alerts', headers=headers)
+
+        return response
+
+    def get_api_v1_settings_defender_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'settings/defender', headers=headers)
+
+        return response
+
+    def get_api_v1_settings_logging_request(self):
+
+        headers = self._headers
+
+        response = self._http_request('get', 'settings/logging', headers=headers)
+
+        return response
+
+    def api_v1_logs_console_request(self, lines):
+        params = assign_params(lines=lines)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'logs/console', params=params, headers=headers)
+
+        return response
+
+    def api_v1_logs_defender_request(self, hostname, lines):
+        params = assign_params(hostname=hostname, lines=lines)
+
+        headers = self._headers
+
+        response = self._http_request('get', 'logs/defender', params=params, headers=headers)
+
+        return response
+
+    def delete_api_v1_users_by_id_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('delete', f'users/{id_}', headers=headers, resp_type="response")
+
+        return response
+
+    def delete_api_v1_groups_by_id_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('delete', f'groups/{id_}', headers=headers, resp_type="response")
+
+        return response
+
+    def delete_api_v1_collections_by_id_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('delete', f'collections/{id_}', headers=headers, resp_type="response")
+        
+        return response
+
+    def delete_api_v1_alert_profiles_by_id_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('delete', f'alert-profiles/{id_}', headers=headers, resp_type="response")
+
+        return response
+
+    def delete_api_v1_backups_by_id_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('delete', f'backups/{id_}', headers=headers, resp_type="response")
+
+        return response
+
+    def api_v1_backups_restore_request(self, id_):
+
+        headers = self._headers
+
+        response = self._http_request('post', f'backups/{id_}/restore', headers=headers, resp_type="response")
+
+        return response
+
+
+    def post_api_v1_backups_request(self, name, project):
+
+        headers = self._headers
+        params = {
+            "project": project
+        }
+        response = self._http_request('post', 'backups', headers=headers, data=f"\"{name}\"", params=params, resp_type="response")
+
+        return response
+
+    def patch_api_v1_backups_by_id_request(self, id_, name):
+
+        headers = self._headers
+
+        response = self._http_request('patch', f'backups/{id_}', headers=headers, data=f"\"{name}\"", resp_type="response")
+
+        return response
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -757,14 +866,17 @@ def api_v1_defenders_names_command(client, args):
     tasClusterIDs = str(args.get('tasClusterIDs', ''))
 
     response = client.api_v1_defenders_names_request(hostname, role, cluster, tasClusterIDs)
-
-    entry = {
-        "PrismaCloudCompute.Defenders": response.json()
-    }
-
+    entries = []
+    for defender in response.json():
+        entry = {
+            "Hostname": defender
+        }
+        entries.append(entry)
     command_results = CommandResults(
-        outputs=entry,
-        raw_response=entry
+        outputs_prefix="PrismaCloudCompute.Defenders",
+        outputs_key_field="Hostname",   
+        outputs=entries,
+        raw_response=entries
     )
 
     return command_results
@@ -827,7 +939,7 @@ def api_v1_deployment_host_stop_command(client, args):
     }
 
     command_results = CommandResults(
-        outputs=entry,
+        readable_output=tableToMarkdown("Deployment", entry),
         raw_response=entry
     )
 
@@ -848,7 +960,7 @@ def api_v1_deployment_serverless_scan_command(client, args):
     }
 
     command_results = CommandResults(
-        outputs=entry,
+        readable_output=tableToMarkdown("Serverless", entry),
         raw_response=entry
     )
 
@@ -868,7 +980,7 @@ def api_v1_deployment_serverless_stop_command(client, args):
     }
 
     command_results = CommandResults(
-        outputs=entry,
+        readable_output=tableToMarkdown("Serverless", entry),
         raw_response=entry
     )
 
@@ -978,6 +1090,235 @@ def api_v1_version_command(client, args):
 
     return command_results
 
+def get_api_v1_settings_alerts_command(client, args):
+
+    response = client.get_api_v1_settings_alerts_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.AlertSettings',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_settings_defender_command(client, args):
+
+    response = client.get_api_v1_settings_defender_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.DefenderSettings',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def get_api_v1_settings_logging_command(client, args):
+
+    response = client.get_api_v1_settings_logging_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.LoggingSettings',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_logs_console_command(client, args):
+    lines = args.get('lines', None)
+
+    response = client.api_v1_logs_console_request(lines)
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.ConsoleLogs',
+        readable_output=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def api_v1_logs_defender_command(client, args):
+    hostname = str(args.get('hostname', ''))
+    lines = args.get('lines', None)
+
+    response = client.api_v1_logs_defender_request(hostname, lines)
+    entry = {
+        "Hostname": hostname,
+        "Logs": response
+    }
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Defenders',
+        outputs=entry,
+        outputs_key_field='Hostname',
+        raw_response=entry,
+        readable_output=tableToMarkdown("Logs", entry.get("Logs"))
+    )
+
+    return command_results
+
+def delete_api_v1_users_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.delete_api_v1_users_by_id_request(id_)
+    if response.status_code == 200:
+        msg = f"User {id_} deleted successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("User Deletion", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def delete_api_v1_groups_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.delete_api_v1_groups_by_id_request(id_)
+    if response.status_code == 200:
+        msg = f"Group {id_} deleted successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Group Deletion", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def delete_api_v1_collections_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.delete_api_v1_collections_by_id_request(id_)
+    if response.status_code == 200:
+        msg = f"Collection {id_} deleted successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Collection Deletion", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def delete_api_v1_alert_profiles_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+    
+    response = client.delete_api_v1_alert_profiles_by_id_request(id_)
+    
+    if response.status_code == 200:
+        msg = f"Alert Profile {id_} deleted successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Alert Profile Deletion", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+
+def delete_api_v1_backups_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.delete_api_v1_backups_by_id_request(id_)
+    if response.status_code == 200:
+        msg = f"Backup {id_} deleted successfully"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Backup Deletion", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def api_v1_backups_restore_command(client, args):
+    id_ = str(args.get('id', ''))
+
+    response = client.api_v1_backups_restore_request(id_)
+    if response.status_code == 200:
+        msg = f"Backup {id_} restored"
+    else:
+        msg = "Command Failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Backup Restored", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def post_api_v1_backups_command(client, args):
+    name = str(args.get("name", ''))
+    project = str(args.get("project", ''))
+
+    response = client.post_api_v1_backups_request(name, project)
+    if response.status_code == 200:
+        msg = "Backup successfully created"
+    else:
+        msg = "Backup failed"
+
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": msg
+    }
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Backup", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def patch_api_v1_backups_by_id_command(client, args):
+    id_ = str(args.get('id', ''))
+    name = str(args.get('name', ''))
+
+    response = client.patch_api_v1_backups_by_id_request(id_, name)
+    entry = {
+        "StatusCode": response.status_code,
+        "Message": f"Successful rename of {id_} to {name}"
+    }
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Backups", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1046,7 +1387,20 @@ def main():
            "prismacloudcompute-get-backups": get_api_v1_backups_command,
            "prismacloudcompute-get-backups-by-id": get_api_v1_backups_by_id_command,
            "prismacloudcompute-get-alert-profiles": get_api_v1_alert_profiles_command,
-           "prismacloudcompute-version": api_v1_version_command
+           "prismacloudcompute-version": api_v1_version_command,
+           "prismacloudcompute-get-settings-alerts": get_api_v1_settings_alerts_command,
+           "prismacloudcompute-get-settings-defender": get_api_v1_settings_defender_command,
+           "prismacloudcompute-get-settings-logging": get_api_v1_settings_logging_command,
+           "prismacloudcompute-logs-console": api_v1_logs_console_command,
+           "prismacloudcompute-logs-defender": api_v1_logs_defender_command,
+           "prismacloudcompute-delete-users-by-id": delete_api_v1_users_by_id_command,
+           "prismacloudcompute-delete-groups-by-id": delete_api_v1_groups_by_id_command,
+           "prismacloudcompute-delete-collections-by-id": delete_api_v1_collections_by_id_command,
+           "prismacloudcompute-delete-alert-profiles-by-id": delete_api_v1_alert_profiles_by_id_command,
+           "prismacloudcompute-delete-backups-by-id": delete_api_v1_backups_by_id_command,
+           "prismacloudcompute-backups-restore": api_v1_backups_restore_command,
+           "prismacloudcompute-post-backups": post_api_v1_backups_command,
+           "prismacloudcompute-patch-backups-by-id": patch_api_v1_backups_by_id_command
         }
 
         if demisto.command() == 'test-module':

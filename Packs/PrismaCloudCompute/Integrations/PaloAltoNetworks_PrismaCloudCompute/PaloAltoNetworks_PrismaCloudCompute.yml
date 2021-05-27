@@ -315,6 +315,78 @@ script:
   - name: prismacloudcompute-version
     arguments: []
     description: 'Version returns the Console version '
+  - name: prismacloudcompute-get-settings-alerts
+    arguments: []
+    description: 'AlertsSettings returns the alert settings '
+  - name: prismacloudcompute-get-settings-defender
+    arguments: []
+    description: 'DefenderSettings returns the defenders settings '
+  - name: prismacloudcompute-get-settings-logging
+    arguments: []
+    description: 'LoggingSettings returns the event logger settings '
+  - name: prismacloudcompute-logs-console
+    arguments:
+    - name: lines
+      required: true
+      description: 'Lines is the number of lines to fetch '
+    description: 'ConsoleLogs returns the last console logs '
+  - name: prismacloudcompute-logs-defender
+    arguments:
+    - name: hostname
+      description: 'Hostname is the target defender hostname '
+      required: true
+    - name: lines
+      required: true
+      description: 'Lines is the number of lines to fetch'
+    description: 'DefenderLogs returns the last defender logs'
+  - name: prismacloudcompute-delete-users-by-id
+    arguments:
+    - name: id
+      required: true
+    description: 'DeleteUser deletes the given user '
+  - name: prismacloudcompute-delete-groups-by-id
+    arguments:
+    - name: id
+      required: true
+    description: 'DeleteGroup deletes the given group name '
+  - name: prismacloudcompute-delete-collections-by-id
+    arguments:
+    - name: id
+      required: true
+    description: 'DeleteCollection deletes a collection '
+  - name: prismacloudcompute-delete-alert-profiles-by-id
+    arguments:
+    - name: id
+      required: true
+    description: 'DeleteAlertProfile deletes an alert profile '
+  - name: prismacloudcompute-delete-backups-by-id
+    arguments:
+    - name: id
+      required: true
+    description: 'DeleteBackup deletes the given backup '
+  - name: prismacloudcompute-backups-restore
+    arguments:
+    - name: id
+      required: true
+    description: 'Restore invokes a mongo restore process '
+  - name: prismacloudcompute-post-backups
+    arguments:
+    - name: name
+      required: true
+      description: the name of the backup to create
+    - name: project
+      required: true
+      description: the project name
+    description: 'Backup invokes a mongo backup (dump) process '
+  - name: prismacloudcompute-patch-backups-by-id
+    arguments:
+    - name: id
+      required: true
+    - name: name
+      required: true
+      description: the name to update the backup to
+    description: 'RenameBackup deletes the given backup '
+
 
 
 
