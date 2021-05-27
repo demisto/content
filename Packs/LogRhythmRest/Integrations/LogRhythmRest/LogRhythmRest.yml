@@ -19,650 +19,1026 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Search API cluster ID.
-  name: cluster-id
+- display: Fetch incidents
+  name: isFetch
   required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Entity ID
+  name: entity-id
+  required: true
   type: 0
-description: LogRhythm security intelligence.
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: LogRhythm7.x with case fetch and raw log search. This integrations support
+  MSSP with multiple entities.
 display: LogRhythmRest
 name: LogRhythmRest
 script:
   commands:
   - arguments:
-    - default: false
-      description: Filter log messages by this argument.
-      isArray: false
-      name: keyword
+    - description: Number of dates to search
+      name: number-of-date
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
-      description: Number of logs to return.
-      isArray: false
-      name: page-size
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: Custom
-      description: If time_frame is "Custom", specify the start time for the time range.
-      isArray: false
-      name: time-frame
+      defaultValue: all
+      description: Log source type
+      name: source-type
       predefined:
-      - Today
-      - Last2Days
-      - LastWeek
-      - LastMonth
-      - Custom
-      required: false
-      secret: false
-    - default: false
-      description: 'Start date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
-      isArray: false
-      name: start-date
-      required: false
-      secret: false
-    - default: false
-      description: 'End date for the data query, for example: "2018-04-20". Only use this argument if the time-frame argument is "Custom".'
-      isArray: false
-      name: end-date
-      required: false
-      secret: false
-    deprecated: false
-    description: Executes a query for logs that match query parameters.
-    execution: false
-    name: lr-execute-query
-    outputs:
-    - contextPath: Logrhythm.Log.Channel
-      description: Channel
-      type: string
-    - contextPath: Logrhythm.Log.Computer
-      description: Computer
-      type: string
-    - contextPath: Logrhythm.Log.EventData
-      description: Event data
-      type: string
-    - contextPath: Logrhythm.Log.EventID
-      description: Event ID
-      type: string
-    - contextPath: Logrhythm.Log.Keywords
-      description: Keywords
-      type: string
-    - contextPath: Logrhythm.Log.Level
-      description: Level
-      type: string
-    - contextPath: Logrhythm.Log.Opcode
-      description: Opcode
-      type: string
-    - contextPath: Logrhythm.Log.Task
-      description: Task
-      type: string
+      - API - AWS CloudTrail
+      - API - AWS CloudWatch Alarm
+      - API - AWS Config Event
+      - API - AWS S3 Flat File
+      - API - AWS S3 Server Access Event
+      - API - BeyondTrust Retina Vulnerability Management
+      - API - Box Event
+      - API - Cisco IDS/IPS
+      - API - Cradlepoint ECM
+      - API - IP360 Vulnerability Scanner
+      - API - Metasploit Penetration Scanner
+      - API - Nessus Vulnerability Scanner
+      - API - NetApp CIFS Security Audit Event Log
+      - API - NeXpose Vulnerability Scanner
+      - API - Office 365 Management Activity
+      - API - Office 365 Message Tracking
+      - API - Okta Event
+      - API - Qualys Vulnerability Scanner
+      - API - Salesforce EventLogFile
+      - API - Sourcefire eStreamer
+      - API - Tenable SecurityCenter
+      - API - Tenable.io Scanner
+      - Flat File - ActivIdentity CMS
+      - Flat File - Airwatch MDM
+      - Flat File - Alfresco
+      - Flat File - AllScripts
+      - Flat File - Apache Access Log
+      - Flat File - Apache Error Log
+      - Flat File - Apache SSL Access Log
+      - Flat File - Apache SSL Error Log
+      - Flat File - Apache Tomcat Access Log
+      - Flat File - Apache Tomcat Console Log
+      - Flat File - Avaya Secure Access Link Remote Access Log
+      - Flat File - Avaya Voice Mail Log
+      - Flat File - Axway SFTP
+      - Flat File - Beacon Endpoint Profiler
+      - Flat File - Bind 9
+      - Flat File - BlackBerry Enterprise Server
+      - Flat File - Blue Coat Proxy BCREPORTERMAIN Format
+      - Flat File - Blue Coat Proxy CSV Format
+      - Flat File - Blue Coat Proxy SQUID-1 Format
+      - Flat File - Blue Coat Proxy W3C Format
+      - Flat File - Bro IDS Critical Stack Intel Log
+      - Flat File - Broadcom SiteMinder
+      - Flat File - CA ACF2 for z/OS - ACFRPTDS
+      - Flat File - CA ACF2 for z/OS - ACFRPTEL
+      - Flat File - CA ACF2 for z/OS - ACFRPTJL
+      - Flat File - CA ACF2 for z/OS - ACFRPTLL
+      - Flat File - CA ACF2 for z/OS - ACFRPTNV
+      - Flat File - CA ACF2 for z/OS - ACFRPTOM
+      - Flat File - CA ACF2 for z/OS - ACFRPTPW
+      - Flat File - CA ACF2 for z/OS - ACFRPTRL
+      - Flat File - CA ACF2 for z/OS - ACFRPTRV
+      - Flat File - CA ControlMinder
+      - Flat File - Cerberus FTP Server
+      - Flat File - Cerner
+      - Flat File - Cisco AMP for Endpoints
+      - Flat File - Cisco Email Security Appliance
+      - Flat File - Cisco LMS (cwcli)
+      - Flat File - Cisco LMS (Syslog)
+      - Flat File - Cisco NGFW
+      - Flat File - Cisco Secure ACS CSV File
+      - Flat File - Cisco Security Agent
+      - Flat File - Cisco Umbrella DNS
+      - Flat File - Cisco Web Security aclog
+      - Flat File - Citrix Access Gateway IIS Format
+      - Flat File - Citrix Access Gateway NCSA Common Format
+      - Flat File - Citrix Access Gateway W3C Format
+      - Flat File - Citrix Presentation Server
+      - Flat File - Citrix Secure Gateway
+      - Flat File - ClamAV Anti-Virus
+      - Flat File - ColdFusion Application Log
+      - Flat File - ColdFusion Exception Log
+      - Flat File - ColdFusion Mail Log
+      - Flat File - ColdFusion Mailsent Log
+      - Flat File - ColdFusion Server Log
+      - Flat File - Cornerstone Managed File Transfer
+      - Flat File - Coyote Point Equalizer
+      - Flat File - DB2 Audit Log
+      - Flat File - DB2 via BMC Log Master
+      - Flat File - Defender Server
+      - Flat File - DocWorks
+      - Flat File - eClinicalWorks Audit Log
+      - Flat File - EMC Isilon
+      - Flat File - Epicor Coalition
+      - Flat File - FairWarning Ready-For-Healthcare
+      - Flat File - FileZilla System Log
+      - Flat File - FireEye Web MPS
+      - Flat File - Forcepoint Web Security CEF Cloud Format
+      - Flat File - Forescout CounterACT
+      - Flat File - FoxT BoKS Server Access Control
+      - Flat File - FundsXpress
+      - Flat File - Gene6 FTP
+      - Flat File - GlobalSCAPE EFT
+      - Flat File - Hadoop
+      - Flat File - HMC
+      - Flat File - HP-UX Audit Log
+      - Flat File - IBM 4690 POS
+      - Flat File - IBM Informix Application Log
+      - Flat File - IBM Informix Audit Log
+      - Flat File - IBM Tivoli Storage Manager
+      - Flat File - IBM WebSphere App Server v7 Audit Log
+      - Flat File - IBM WebSphere Cast Iron Cloud Integration
+      - Flat File - IBM ZOS Batch Decryption Log
+      - Flat File - IBM ZOS CICS Decryption Log
+      - Flat File - IBM ZOS RACF Access Log
+      - Flat File - IBM ZOS RACF SMF Type 80
+      - Flat File - IPSwitch WS_FTP
+      - Flat File - Irix Audit Logs
+      - Flat File - IT-CUBE AgileSI
+      - Flat File - JBoss Log File
+      - Flat File - Juniper Steel Belted Radius Server
+      - Flat File - Kerio Mail Server
+      - Flat File - KERISYS Doors Event Export Format
+      - Flat File - Kippo Honeypot
+      - Flat File - Linux Audit ASCII
+      - Flat File - Linux Audit Log
+      - Flat File - Linux Host Secure Log
+      - Flat File - LOGbinder EX
+      - Flat File - LogRhythm Alarm Reingest
+      - Flat File - LogRhythm Data Indexer Monitor
+      - Flat File - LogRhythm Oracle Log
+      - Flat File - LogRhythm System Monitor
+      - Flat File - LogRhythm System Monitor Log File
+      - Flat File - LogRhythm Trebek Log
+      - Flat File - LogRhythm Zeus Log
+      - Flat File - Lotus Domino Client Log
+      - Flat File - McAfee Cloud Proxy_do_not_use
+      - Flat File - McAfee ePO HIPS
+      - Flat File - McAfee Foundstone
+      - Flat File - McAfee Proxy Cloud
+      - Flat File - McAfee SaaS Web Protection
+      - Flat File - McAfee Web Gateway Audit Log
+      - Flat File - Merak
+      - Flat File - Meridian
+      - Flat File - Microsoft ActiveSync 2010
+      - Flat File - Microsoft CRM
+      - Flat File - Microsoft DHCP Server Log
+      - Flat File - Microsoft Forefront TMG
+      - Flat File - Microsoft Forefront TMG Web Proxy
+      - Flat File - Microsoft IIS (IIS Format) File
+      - Flat File - Microsoft IIS 7.x W3C Extended Format
+      - Flat File - Microsoft IIS Error Log V6
+      - Flat File - Microsoft IIS FTP IIS Log File Format
+      - Flat File - Microsoft IIS FTP W3C Extended Format
+      - Flat File - Microsoft IIS NCSA Common Format File
+      - Flat File - Microsoft IIS SMTP W3C Format
+      - Flat File - Microsoft IIS URL Scan Log
+      - Flat File - Microsoft IIS W3C File
+      - Flat File - Microsoft ISA Server 2004
+      - Flat File - Microsoft ISA Server W3C File
+      - Flat File - Microsoft Netlogon
+      - Flat File - Microsoft Port Reporter PR-PORTS Log
+      - Flat File - Microsoft Semantic Logging
+      - Flat File - Microsoft SQL Server 2000 Error Log
+      - Flat File - Microsoft SQL Server 2005 Error Log
+      - Flat File - Microsoft SQL Server 2008 Error Log
+      - Flat File - Microsoft SQL Server 2012 Error Log
+      - Flat File - Microsoft SQL Server 2014 Error Log
+      - Flat File - Microsoft Windows 2003 DNS
+      - Flat File - Microsoft Windows 2008 DNS
+      - Flat File - Microsoft Windows 2012 DNS
+      - Flat File - Microsoft Windows Firewall
+      - Flat File - MicroStrategy
+      - Flat File - Mimecast Audit
+      - Flat File - Mimecast Email
+      - Flat File - Monetra
+      - Flat File - MongoDB
+      - Flat File - MS Exchange 2003 Message Tracking Log
+      - Flat File - MS Exchange 2007 Message Tracking Log
+      - Flat File - MS Exchange 2010 Message Tracking Log
+      - Flat File - MS Exchange 2013 Message Tracking Log
+      - Flat File - MS Exchange 2016 Message Tracking Log
+      - Flat File - MS Exchange RPC Client Access
+      - Flat File - MS IAS/RAS Server NPS DB Log Format
+      - Flat File - MS IAS/RAS Server Standard Log Format
+      - Flat File - MS ISA Server 2006 ISA All Fields
+      - Flat File - MS ISA Server 2006 W3C All Fields
+      - Flat File - MS SQL Server Reporting Services 2008
+      - Flat File - MySQL
+      - Flat File - MySQL error.log
+      - Flat File - MySQL mysql.log
+      - Flat File - MySQL mysql-slow.log
+      - Flat File - Nessus System Log
+      - Flat File - NetApp Cluster
+      - Flat File - Nginx Log
+      - Flat File - Novell Audit
+      - Flat File - Novell GroupWise
+      - Flat File - Novell LDAP
+      - Flat File - ObserveIT Enterprise
+      - Flat File - Office 365 Message Tracking
+      - Flat File - OpenDJ
+      - Flat File - OpenVMS
+      - Flat File - OpenVPN
+      - Flat File - Oracle 11g Fine Grained Audit Trail
+      - Flat File - Oracle 9i
+      - Flat File - Oracle BRM CM Log
+      - Flat File - Oracle BRM DM Log
+      - Flat File - Oracle Listener Audit Trail
+      - Flat File - Oracle SunOne Directory Server
+      - Flat File - Oracle SunOne Web Server Access Log
+      - Flat File - Oracle Virtual Directory
+      - Flat File - Oracle WebLogic 11g Access Log
+      - Flat File - Other
+      - Flat File - PeopleSoft
+      - Flat File - PhpMyAdmin Honeypot
+      - Flat File - Postfix
+      - Flat File - PowerBroker Servers
+      - Flat File - Princeton Card Secure
+      - Flat File - ProFTPD
+      - Flat File - PureMessage For Exchange SMTP Log
+      - Flat File - PureMessage For UNIX Blocklist Log
+      - Flat File - PureMessage For UNIX Message Log
+      - Flat File - RACF (SMF)
+      - Flat File - Radmin
+      - Flat File - Restic Backup Log
+      - Flat File - RL Patient Feedback
+      - Flat File - RSA Adaptive Authentication
+      - Flat File - RSA Authentication Manager 6.1
+      - Flat File - S2 Badge Reader
+      - Flat File - Safenet
+      - Flat File - Sendmail File
+      - Flat File - Sharepoint ULS
+      - Flat File - ShoreTel VOIP
+      - Flat File - Siemens Radiology Information System
+      - Flat File - Snort Fast Alert File
+      - Flat File - Solaris - Sulog
+      - Flat File - Solaris Audit Log
+      - Flat File - SpamAssassin
+      - Flat File - Squid Proxy
+      - Flat File - Subversion
+      - Flat File - Sudo.Log
+      - Flat File - Swift Alliance
+      - Flat File - Symantec Antivirus 10.x Corporate Edtn
+      - Flat File - Symantec Antivirus 12.x Corporate Edtn
+      - Flat File - Symitar Episys Console Log
+      - Flat File - Symitar Episys Sysevent Log
+      - Flat File - Tandem EMSOUT Log File
+      - Flat File - Tandem XYGATE
+      - Flat File - Tectia SSH Server
+      - Flat File - Trade Innovations CSCS
+      - Flat File - Trend Micro IMSS
+      - Flat File - Trend Micro Office Scan
+      - Flat File - Tumbleweed Mailgate Server
+      - Flat File - Verint Audit Trail File
+      - Flat File - VMWare Virtual Machine
+      - Flat File - Voltage Securemail
+      - Flat File - Vormetric Log File
+      - Flat File - vsFTP Daemon Log
+      - Flat File - Vyatta Firewall Kernel Log
+      - Flat File - WordPot Honeypot
+      - Flat File - X-NetStat Log
+      - Flat File - XPient POS CCA Manager
+      - Flat File - XPIENT POS POSLOG
+      - Flat File - XPIENT POS Shell Log
+      - IPFIX - IP Flow Information Export
+      - J-Flow - Juniper J-Flow Version 5
+      - J-Flow - Juniper J-Flow Version 9
+      - LogRhythm CloudAI
+      - LogRhythm Data Loss Defender
+      - LogRhythm Demo File - Application Server Log
+      - LogRhythm Demo File - Content Inspection Log
+      - LogRhythm Demo File - Database Audit Log
+      - LogRhythm Demo File - Ecom Server Log
+      - LogRhythm Demo File - File Server Log
+      - LogRhythm Demo File - Firewall Log
+      - LogRhythm Demo File - FTP Log
+      - LogRhythm Demo File - IDS Alarms Log
+      - LogRhythm Demo File - Mail Server Log
+      - LogRhythm Demo File - Netflow Log
+      - LogRhythm Demo File - Network Device Log
+      - LogRhythm Demo File - Network Server Log
+      - LogRhythm Demo File - VPN Log
+      - LogRhythm Demo File - Web Access Log
+      - LogRhythm File Monitor (AIX)
+      - LogRhythm File Monitor (HP-UX)
+      - LogRhythm File Monitor (Linux)
+      - LogRhythm File Monitor (Solaris)
+      - LogRhythm File Monitor (Windows)
+      - LogRhythm Filter
+      - LogRhythm Network Connection Monitor (AIX)
+      - LogRhythm Network Connection Monitor (HP-UX)
+      - LogRhythm Network Connection Monitor (Linux)
+      - LogRhythm Network Connection Monitor (Solaris)
+      - LogRhythm Network Connection Monitor (Windows)
+      - LogRhythm Process Monitor (AIX)
+      - LogRhythm Process Monitor (HP-UX)
+      - LogRhythm Process Monitor (Linux)
+      - LogRhythm Process Monitor (Solaris)
+      - LogRhythm Process Monitor (Windows)
+      - LogRhythm Registry Integrity Monitor
+      - LogRhythm SQL Server 2000 C2 Audit Log
+      - LogRhythm SQL Server 2005 C2 Audit Log
+      - LogRhythm SQL Server 2008 C2 Audit Log
+      - LogRhythm SQL Server 2012+ C2 Audit Log
+      - LogRhythm User Activity Monitor (AIX)
+      - LogRhythm User Activity Monitor (HP-UX)
+      - LogRhythm User Activity Monitor (Linux)
+      - LogRhythm User Activity Monitor (Solaris)
+      - LogRhythm User Activity Monitor (Windows)
+      - MS Event Log for XP/2000/2003 - Application
+      - MS Event Log for XP/2000/2003 - Application - Espa√±ol
+      - MS Event Log for XP/2000/2003 - BioPassword
+      - MS Event Log for XP/2000/2003 - DFS
+      - MS Event Log for XP/2000/2003 - Directory Service
+      - MS Event Log for XP/2000/2003 - DNS
+      - MS Event Log for XP/2000/2003 - DotDefender
+      - MS Event Log for XP/2000/2003 - EMC Celerra NAS
+      - MS Event Log for XP/2000/2003 - File Rep Service
+      - MS Event Log for XP/2000/2003 - HA
+      - MS Event Log for XP/2000/2003 - Kaspersky
+      - MS Event Log for XP/2000/2003 - Micros POS
+      - MS Event Log for XP/2000/2003 - PatchLink
+      - MS Event Log for XP/2000/2003 - SafeWord 2008
+      - MS Event Log for XP/2000/2003 - SCE
+      - MS Event Log for XP/2000/2003 - Security
+      - MS Event Log for XP/2000/2003 - Security - Espa√±ol
+      - MS Event Log for XP/2000/2003 - SMS 2003
+      - MS Event Log for XP/2000/2003 - System
+      - MS Event Log for XP/2000/2003 - System - Espa√±ol
+      - MS Event Log for XP/2000/2003 - Virtual Server
+      - MS Windows Event Logging - ADFS Admin
+      - MS Windows Event Logging - Application
+      - MS Windows Event Logging - AppLockerApp
+      - MS Windows Event Logging - Backup
+      - MS Windows Event Logging - Citrix Delivery Services
+      - MS Windows Event Logging - Citrix XenApp
+      - MS Windows Event Logging - DFS
+      - MS Windows Event Logging - DHCP Admin
+      - MS Windows Event Logging - DHCP Operational
+      - MS Windows Event Logging - Diagnosis-PLA
+      - MS Windows Event Logging - Digital Persona
+      - MS Windows Event Logging - Dir Service
+      - MS Windows Event Logging - DNS
+      - MS Windows Event Logging - Dot Defender
+      - MS Windows Event Logging - ESD Data Flow Track
+      - MS Windows Event Logging - Exchange Mailbox DB Failures
+      - MS Windows Event Logging - FailoverClustering/Operational
+      - MS Windows Event Logging - Firewall With Advanced Security
+      - MS Windows Event Logging - Forefront AV
+      - MS Windows Event Logging - Group Policy Operational
+      - MS Windows Event Logging - Hyper-V Hvisor
+      - MS Windows Event Logging - Hyper-V IMS
+      - MS Windows Event Logging - Hyper-V Network
+      - MS Windows Event Logging - Hyper-V SynthSt
+      - MS Windows Event Logging - Hyper-V VMMS
+      - MS Windows Event Logging - Hyper-V Worker
+      - MS Windows Event Logging - Kaspersky
+      - MS Windows Event Logging - Kernel PnP Configuration
+      - MS Windows Event Logging - Lync Server
+      - MS Windows Event Logging - MSExchange Management
+      - MS Windows Event Logging - Operations Manager
+      - MS Windows Event Logging - PowerShell
+      - MS Windows Event Logging - Print Services
+      - MS Windows Event Logging - Quest ActiveRoles EDM Server
+      - MS Windows Event Logging - Replication
+      - MS Windows Event Logging - SafeWord 2008
+      - MS Windows Event Logging - Security
+      - MS Windows Event Logging - Setup
+      - MS Windows Event Logging - Sysmon
+      - MS Windows Event Logging - System
+      - MS Windows Event Logging - Task Scheduler
+      - MS Windows Event Logging - TS Gateway
+      - MS Windows Event Logging - TS Licensing
+      - MS Windows Event Logging - TS Local Session Manager
+      - MS Windows Event Logging - TS Remote Connection Manager
+      - MS Windows Event Logging - TS Session Broker
+      - MS Windows Event Logging - TS Session Broker Client
+      - MS Windows Event Logging - VisualSVN
+      - 'MS Windows Event Logging : Deutsch - Security'
+      - 'MS Windows Event Logging : Espa√±ol - Application'
+      - 'MS Windows Event Logging : Espa√±ol - Security'
+      - 'MS Windows Event Logging : Espa√±ol - System'
+      - 'MS Windows Event Logging : Fran√ßais - System'
+      - MS Windows Event Logging :Fran√ßais - Security
+      - MS Windows Event Logging XML - ADFS
+      - MS Windows Event Logging XML - Application
+      - MS Windows Event Logging XML - Forwarded Events
+      - MS Windows Event Logging XML - Generic
+      - MS Windows Event Logging XML ‚Äì LRTracer
+      - MS Windows Event Logging XML - Microsoft-Windows-NTLM/Operational
+      - MS Windows Event Logging XML - Security
+      - MS Windows Event Logging XML - Sysmon
+      - MS Windows Event Logging XML - Sysmon 7.01
+      - MS Windows Event Logging XML - Sysmon 8/9/10
+      - MS Windows Event Logging XML - System
+      - MS Windows Event Logging XML - Unisys Stealth
+      - MS Windows Event Logging XML - Windows Defender
+      - Netflow - Cisco Netflow Version 1
+      - Netflow - Cisco Netflow Version 5
+      - Netflow - Cisco Netflow Version 9
+      - Netflow - Palo Alto Version 9
+      - Netflow - SonicWALL Version 5
+      - Netflow - SonicWALL Version 9
+      - OPSEC LEA - Checkpoint Firewall
+      - OPSEC LEA - Checkpoint Firewall Audit Log
+      - OPSEC LEA - Checkpoint For LR 7.4.1+
+      - OPSEC LEA - Checkpoint Log Server
+      - sFlow - Version 5
+      - SNMP Trap - Audiolog
+      - SNMP Trap - Autoregistered
+      - SNMP Trap - Brocade Switch
+      - SNMP Trap - Cisco 5508 Wireless Controller
+      - SNMP Trap - Cisco IP SLA
+      - SNMP Trap - Cisco Prime
+      - SNMP Trap - Cisco Router-Switch
+      - SNMP Trap - CyberArk
+      - SNMP Trap - Dell OpenManage
+      - SNMP Trap - HP Network Node Manager
+      - SNMP Trap - IBM TS3000 Series Tape Drive
+      - SNMP Trap - Riverbed SteelCentral NetShark
+      - SNMP Trap - RSA Authentication Manager
+      - SNMP Trap - Swift Alliance
+      - SNMP Trap - Trend Micro Control Manager
+      - Syslog - 3Com Switch
+      - Syslog - A10 Networks AX1000 Load Balancer
+      - Syslog - A10 Networks Web Application Firewall
+      - Syslog - Accellion Secure File Transfer Application
+      - Syslog - Active Scout IPS
+      - Syslog - Adallom
+      - Syslog - Adtran Switch
+      - Syslog - Aerohive Access Point
+      - Syslog - Aerohive Firewall
+      - Syslog - AIMIA Tomcat
+      - Syslog - AirDefense Enterprise
+      - Syslog - Airmagnet Wireless IDS
+      - Syslog - AirTight IDS/IPS
+      - Syslog - AirWatch MDM
+      - Syslog - Airwave Management System Log
+      - Syslog - AIX Host
+      - Syslog - Alcatel-Lucent Switch
+      - Syslog - Alcatel-Lucent Wireless Controller
+      - Syslog - AlertLogic
+      - Syslog - AMX AV Controller
+      - Syslog - Apache Access Log
+      - Syslog - Apache Error Log
+      - Syslog - Apache Tomcat Request Parameters
+      - Syslog - Apache Tomcat Service Clients Log
+      - Syslog - APC ATS
+      - Syslog - APC NetBotz Environmental Monitoring
+      - Syslog - APC PDU
+      - Syslog - APC UPS
+      - Syslog - Apcon Network Monitor
+      - Syslog - Apex One
+      - Syslog - Arbor Networks Peakflow
+      - Syslog - Arbor Networks Spectrum
+      - Syslog - Arbor Pravail APS
+      - Syslog - Arista Switch
+      - Syslog - Array TMX Load Balancer
+      - Syslog - Arris CMTS
+      - Syslog - Aruba Clear Pass
+      - Syslog - Aruba Mobility Controller
+      - Syslog - Aruba Wireless Access Point
+      - Syslog - AS/400 via Powertech Interact
+      - Syslog - Asus WRT Router
+      - Syslog - Avatier Identity Management Suite (AIMS)
+      - Syslog - Avaya Communications Manager
+      - Syslog - Avaya Ethernet Routing Switch
+      - Syslog - Avaya G450 Media Gateway
+      - Syslog - Avaya Router
+      - Syslog - Aventail SSL/VPN
+      - Syslog - Avocent Cyclades Terminal Server
+      - Syslog - Azul Java Appliance
+      - Syslog - Barracuda Load Balancer
+      - Syslog - Barracuda Mail Archiver
+      - Syslog - Barracuda NG Firewall
+      - Syslog - Barracuda NG Firewall 6.x
+      - Syslog - Barracuda Spam Firewall
+      - Syslog - Barracuda Web Application Firewall
+      - Syslog - Barracuda Webfilter
+      - Syslog - BeyondTrust BeyondInsight LEEF
+      - Syslog - Bind DNS
+      - Syslog - Bit9 Parity Suite
+      - Syslog - Bit9 Security Platform CEF
+      - Syslog - Bit9+Carbon Black (Deprecated)
+      - Syslog - BitDefender
+      - Syslog - Black Diamond Switch
+      - Syslog - Blue Coat CAS
+      - Syslog - Blue Coat Forward Proxy
+      - Syslog - Blue Coat PacketShaper
+      - Syslog - Blue Coat ProxyAV ISA W3C Format
+      - Syslog - Blue Coat ProxyAV MS Proxy 2.0 Format
+      - Syslog - Blue Coat ProxySG
+      - Syslog - Blue Socket Wireless Controller
+      - Syslog - Bluecat Adonis
+      - Syslog - BlueCedar
+      - Syslog - BluVector
+      - Syslog - Bomgar
+      - Syslog - Bradford Networks NAC
+      - Syslog - Bradford Remediation & Registration Svr
+      - Syslog - Bro IDS
+      - Syslog - Brocade Switch
+      - Syslog - Bromium vSentry CEF
+      - Syslog - BSD Host
+      - Syslog - CA Privileged Access Manager
+      - Syslog - Cb Defense CEF
+      - Syslog - Cb Protection CEF
+      - Syslog - Cb Response LEEF
+      - Syslog - Cell Relay
+      - Syslog - Certes Networks CEP
+      - Syslog - Check Point Log Exporter
+      - Syslog - Checkpoint Site-to-Site VPN
+      - Syslog - Cisco ACS
+      - Syslog - Cisco Aironet WAP
+      - Syslog - Cisco APIC
+      - Syslog - Cisco Application Control Engine
+      - Syslog - Cisco ASA
+      - Syslog - Cisco Clean Access (CCA) Appliance
+      - Syslog - Cisco CSS Load Balancer
+      - Syslog - Cisco Email Security Appliance
+      - Syslog - Cisco FirePOWER
+      - Syslog - Cisco Firepower Threat Defense
+      - Syslog - Cisco FireSIGHT
+      - Syslog - Cisco FWSM
+      - Syslog - Cisco Global Site Selector
+      - Syslog - Cisco ISE
+      - Syslog - Cisco Meraki
+      - Syslog - Cisco Nexus Switch
+      - Syslog - Cisco PIX
+      - Syslog - Cisco Prime Infrastructure
+      - Syslog - Cisco Router
+      - Syslog - Cisco Secure ACS 5
+      - Syslog - Cisco Session Border Controller
+      - Syslog - Cisco Switch
+      - Syslog - Cisco Telepresence Video Communications Server
+      - Syslog - Cisco UCS
+      - Syslog - Cisco Unified Comm Mgr (Call Mgr)
+      - Syslog - Cisco VPN Concentrator
+      - Syslog - Cisco WAAS
+      - Syslog - Cisco Web Security
+      - Syslog - Cisco Wireless Access Point
+      - Syslog - Cisco Wireless Control System
+      - Syslog - CiscoWorks
+      - Syslog - Citrix Access Gateway Server
+      - Syslog - Citrix Netscaler
+      - Syslog - Citrix XenServer
+      - Syslog - Claroty CTD CEF
+      - Syslog - Clearswift Secure Email Gateway
+      - Syslog - CloudLock
+      - Syslog - CodeGreen Data Loss Prevention
+      - Syslog - Cofense Triage CEF
+      - Syslog - Consentry NAC
+      - Syslog - Corero IPS
+      - Syslog - Corero SmartWall DDoS
+      - Syslog - CoyotePoint Equalizer
+      - Syslog - Crowdstrike Falconhost CEF
+      - Syslog - CyberArk
+      - Syslog - CyberArk Privileged Threat Analytics
+      - Syslog - Cylance CEF
+      - Syslog - CylancePROTECT
+      - Syslog - DarkTrace CEF
+      - Syslog - Dell Force 10
+      - Syslog - Dell PowerConnect Switch
+      - Syslog - Dell Remote Access Controller
+      - Syslog - Dell SecureWorks iSensor IPS
+      - Syslog - Dialogic Media Gateway
+      - Syslog - Digital Guardian CEF
+      - Syslog - D-Link Switch
+      - Syslog - Don not use
+      - Syslog - Dragos Platform CEF
+      - Syslog - Ecessa ShieldLink
+      - Syslog - EfficientIP
+      - Syslog - EMC Avamar
+      - Syslog - EMC Centera
+      - Syslog - EMC Data Domain
+      - Syslog - EMC Isilon
+      - Syslog - EMC Unity Array
+      - Syslog - EMC VNX
+      - Syslog - Ensilo NGAV
+      - Syslog - Enterasys Dragon IDS
+      - Syslog - Enterasys Router
+      - Syslog - Enterasys Switch
+      - Syslog - Entrust Entelligence Messaging Server
+      - Syslog - Entrust IdentityGuard
+      - Syslog - Epic Hyperspace CEF
+      - Syslog - EqualLogic SAN
+      - Syslog - eSafe Email Security
+      - Syslog - ESET Remote Administrator (ERA) LEEF
+      - Syslog - Event Reporter (Win 2000/XP/2003)
+      - Syslog - Exabeam
+      - Syslog - Exchange Message Tracking
+      - Syslog - ExtraHop
+      - Syslog - Extreme Wireless LAN
+      - Syslog - ExtremeWare
+      - Syslog - ExtremeXOS
+      - Syslog - F5 BIG-IP Access Policy Manager
+      - Syslog - F5 BIG-IP AFM
+      - Syslog - F5 BIG-IP ASM
+      - Syslog - F5 BIG-IP ASM Key-Value Pairs
+      - Syslog - F5 BIG-IP ASM v12
+      - Syslog - F5 Big-IP GTM & DNS
+      - Syslog - F5 Big-IP LTM
+      - Syslog - F5 FirePass Firewall
+      - Syslog - F5 Silverline DDoS Protection
+      - Syslog - Fargo HDP Card Printer and Encoder
+      - Syslog - Fat Pipe Load Balancer
+      - Syslog - Fidelis XPS
+      - Syslog - FireEye E-Mail MPS
+      - Syslog - FireEye EX
+      - Syslog - FireEye Web MPS/CMS/ETP/HX
+      - Syslog - Forcepoint DLP
+      - Syslog - Forcepoint Email Security Gateway
+      - Syslog - Forcepoint Stonesoft NGFW
+      - Syslog - Forcepoint SureView Insider Threat
+      - Syslog - Forcepoint Web Security
+      - Syslog - Forcepoint Web Security CEF Format
+      - Syslog - Forescout CounterACT NAC
+      - Syslog - Fortinet FortiAnalyzer
+      - Syslog - Fortinet FortiAuthenticator
+      - Syslog - Fortinet FortiDDoS
+      - Syslog - Fortinet FortiGate
+      - Syslog - Fortinet FortiGate v4.0
+      - Syslog - Fortinet FortiGate v5.0
+      - Syslog - Fortinet FortiGate v5.2
+      - Syslog - Fortinet FortiGate v5.4/v5.6
+      - Syslog - Fortinet FortiGate v5.6 CEF
+      - Syslog - Fortinet Fortigate v6.0
+      - Syslog - Fortinet FortiMail
+      - Syslog - Fortinet FortiWeb
+      - Syslog - Foundry Switch
+      - Syslog - Gene6 FTP
+      - Syslog - Generic CEF
+      - Syslog - Generic ISC DHCP
+      - Syslog - Generic LEEF
+      - Syslog - Guardium Database Activity Monitor
+      - Syslog - H3C Router
+      - Syslog - Hitachi Universal Storage Platform
+      - Syslog - HP BladeSystem
+      - Syslog - HP iLO
+      - Syslog - HP Procurve Switch
+      - Syslog - HP Router
+      - Syslog - HP Switch
+      - Syslog - HP Unix Tru64
+      - Syslog - HP Virtual Connect Switch
+      - Syslog - HP-UX Host
+      - Syslog - Huawei Access Router
+      - Syslog - IBM Blade Center
+      - Syslog - IBM Security Network Protection
+      - Syslog - IBM Virtual Tape Library Server
+      - Syslog - IBM WebSphere DataPower Integration
+      - Syslog - IBM zSecure Alert for ACF2 2.1.0
+      - Syslog - IceWarp Server
+      - Syslog - Imperva Incapsula CEF
+      - Syslog - Imperva SecureSphere
+      - Syslog - Imprivata OneSign SSO
+      - Syslog - InfoBlox
+      - Syslog - Invincea (LEEF)
+      - Syslog - iPrism Proxy Log
+      - Syslog - IPSWITCH MOVEit Server
+      - Syslog - IPTables
+      - Syslog - IRIX Host
+      - Syslog - iSeries via Powertech Interact
+      - Syslog - Ivanti FileDirector
+      - Syslog - JetNexus Load Balancer
+      - Syslog - Juniper DX Application Accelerator
+      - Syslog - Juniper Firewall
+      - Syslog - Juniper Firewall 3400
+      - Syslog - Juniper Host Checker
+      - Syslog - Juniper IDP
+      - Syslog - Juniper NSM
+      - Syslog - Juniper Router
+      - Syslog - Juniper SSL VPN
+      - Syslog - Juniper SSL VPN WELF Format
+      - Syslog - Juniper Switch
+      - Syslog - Juniper Trapeze
+      - Syslog - Juniper vGW Virtual Gateway
+      - Syslog - Kaspersky Security Center
+      - Syslog - Kea DHCP Server
+      - Syslog - Kemp Load Balancer
+      - Syslog - KFSensor Honeypot
+      - Syslog - KFSensor Honeypot CEF
+      - Syslog - Lancope StealthWatch
+      - Syslog - Lancope StealthWatch CEF
+      - Syslog - Layer 7 SecureSpan SOA Gateway
+      - Syslog - Legacy Checkpoint Firewall (Not Log Exporter)
+      - Syslog - Legacy Checkpoint IPS (Not Log Exporter)
+      - Syslog - Lieberman Enterprise Random Password Manager
+      - Syslog - Linux Audit
+      - Syslog - Linux Host
+      - Syslog - Linux TACACS Plus
+      - Syslog - LOGbinder EX
+      - Syslog - LOGbinder SP
+      - Syslog - LOGbinder SQL
+      - Syslog - LogRhythm Data Indexer Monitor
+      - Syslog - LogRhythm Inter Deployment Data Sharing
+      - Syslog - LogRhythm Log Distribution Services
+      - Syslog - LogRhythm Network Monitor
+      - Syslog - LogRhythm Syslog Generator
+      - Syslog - Lumension
+      - Syslog - MacOS X
+      - Syslog - Malwarebytes Endpoint Security CEF
+      - Syslog - Mandiant MIR
+      - Syslog - McAfee Advanced Threat Defense
+      - Syslog - McAfee Email And Web Security
+      - Syslog - McAfee ePO
+      - Syslog - McAfee Firewall Enterprise
+      - Syslog - McAfee Network Security Manager
+      - Syslog - McAfee Secure Internet Gateway
+      - Syslog - McAfee SecureMail
+      - Syslog - McAfee Skyhigh for Shadow IT LEEF
+      - Syslog - McAfee Web Gateway
+      - Syslog - mGuard Firewall
+      - Syslog - Microsoft Advanced Threat Analytics (ATA) CEF
+      - Syslog - Microsoft Azure Log Integration
+      - Syslog - Microsoft Azure MFA
+      - Syslog - Microsoft Forefront UAG
+      - Syslog - Mirapoint
+      - Syslog - MobileIron
+      - Syslog - Motorola Access Point
+      - Syslog - MS IIS Web Log W3C Format (Snare)
+      - Syslog - MS Windows Event Logging XML - Application
+      - Syslog - MS Windows Event Logging XML - Security
+      - Syslog - MS Windows Event Logging XML - System
+      - Syslog - Nagios
+      - Syslog - nCircle Configuration Compliance Manager
+      - Syslog - NetApp Filer
+      - Syslog - NETASQ Firewall
+      - Syslog - NetGate Router
+      - Syslog - NetMotion VPN
+      - Syslog - Netscout nGenius InfiniStream
+      - Syslog - NetScreen Firewall
+      - Syslog - Netskope
+      - Syslog - Netskope CEF
+      - Syslog - Network Chemistry RFprotect
+      - Syslog - Nginx Web Log
+      - Syslog - Nimble Storage
+      - Syslog - Nortel 8600 Switch
+      - Syslog - Nortel BayStack Switch
+      - Syslog - Nortel Contivity
+      - Syslog - Nortel Firewall
+      - Syslog - Nortel IP 1220
+      - Syslog - Nortel Passport Switch
+      - Syslog - Nozomi Networks Guardian CEF
+      - Syslog - NuSecure Gateway
+      - Syslog - Nutanix
+      - Syslog - Open Collector
+      - Syslog - Open Collector - AWS CloudTrail
+      - Syslog - Open Collector - AWS CloudWatch
+      - Syslog - Open Collector - AWS Config Events
+      - Syslog - Open Collector - AWS Guard Duty
+      - Syslog - Open Collector - AWS S3
+      - Syslog - Open Collector - Azure Event Hub
+      - Syslog - Open Collector - Carbon Black Cloud
+      - Syslog - Open Collector - CarbonBlackBeat Heartbeat
+      - Syslog - Open Collector - Cisco AMP
+      - Syslog - Open Collector - Cisco Umbrella
+      - Syslog - Open Collector - CiscoAMPBeat Heartbeat
+      - Syslog - Open Collector - Duo Authentication Security
+      - Syslog - Open Collector - DuoBeat Heartbeat
+      - Syslog - Open Collector - EventHubBeat Heartbeat
+      - Syslog - Open Collector - GCP Audit
+      - Syslog - Open Collector - GCP Cloud Key Management Service
+      - Syslog - Open Collector - GCP Http Load Balancer
+      - Syslog - Open Collector - GCP Pub Sub
+      - Syslog - Open Collector - GCP Security Command Center
+      - Syslog - Open Collector - GCP Virtual Private Cloud
+      - Syslog - Open Collector - Gmail Message Tracking
+      - Syslog - Open Collector - GMTBeat Heartbeat
+      - Syslog - Open Collector - GSuite
+      - Syslog - Open Collector - GSuiteBeat Heartbeat
+      - Syslog - Open Collector - Metricbeat
+      - Syslog - Open Collector - Okta System Log
+      - Syslog - Open Collector - OktaSystemLogBeat Heartbeat
+      - Syslog - Open Collector - PubSubBeat Heartbeat
+      - Syslog - Open Collector - S3Beat Heartbeat
+      - Syslog - Open Collector - Sophos Central
+      - Syslog - Open Collector - SophosCentralBeat Heartbeat
+      - Syslog - Open Collector - Webhook
+      - Syslog - Open Collector - Webhook OneLogin
+      - Syslog - Open Collector - Webhook Zoom
+      - Syslog - Open Collector - WebhookBeat Heartbeat
+      - Syslog - Opengear Console
+      - Syslog - OpenLDAP
+      - Syslog - Oracle 10g Audit Trail
+      - Syslog - Oracle 11g Audit Trail
+      - Syslog - OSSEC Alerts
+      - Syslog - Other
+      - Syslog - Outpost24
+      - Syslog - Palo Alto Cortex XDR
+      - Syslog - Palo Alto Custom Pipe
+      - Syslog - Palo Alto Firewall
+      - Syslog - Palo Alto Traps CEF
+      - Syslog - Palo Alto Traps Management Service
+      - Syslog - Password Manager Pro
+      - Syslog - pfSense Firewall
+      - Syslog - PingFederate 7.2
+      - Syslog - PingFederate CEF
+      - Syslog - Polycom
+      - Syslog - Postfix
+      - Syslog - Procera PacketLogic
+      - Syslog - Proofpoint Spam Firewall
+      - Syslog - Protegrity Defiance DPS
+      - Syslog - QLogic Infiniband Switch
+      - Syslog - Quest Defender
+      - Syslog - Radiator Radius
+      - Syslog - RADiFlow 3180 Switch
+      - Syslog - Radware Alteon Load Balancer
+      - Syslog - Radware DefensePro
+      - Syslog - Radware Web Server Director Audit Log
+      - Syslog - Raritan KVM
+      - Syslog - Raz-Lee
+      - Syslog - RedSeal
+      - Syslog - Riverbed
+      - Syslog - RSA ACE
+      - Syslog - RSA Authentication Manager v7.1
+      - Syslog - RSA Authentication Manager v8.x
+      - Syslog - RSA Web Threat Detection
+      - Syslog - RSA Web Threat Detection 5.1
+      - Syslog - RuggedRouter
+      - Syslog - Safenet
+      - Syslog - Sailpoint
+      - Syslog - Sauce Labs
+      - Syslog - SecureAuth IdP
+      - Syslog - SecureAuth IdP v9
+      - Syslog - SecureLink
+      - Syslog - SecureTrack
+      - Syslog - SEL 3610 Port Switch
+      - Syslog - SEL 3620 Ethernet Security Gateway
+      - Syslog - Sentinel IPS
+      - Syslog - SentinelOne CEF
+      - Syslog - Sguil
+      - Syslog - Siemens Scalance X400
+      - Syslog - Smoothwall Firewall
+      - Syslog - SnapGear Firewall
+      - Syslog - Snare Windows 2003 Event Log
+      - Syslog - Snare Windows 2008 Event Log
+      - Syslog - Snort IDS
+      - Syslog - Solaris (Snare)
+      - Syslog - Solaris Host
+      - Syslog - SonicWALL
+      - Syslog - SonicWALL SSL-VPN
+      - Syslog - Sophos Email Encryption Appliance
+      - Syslog - Sophos UTM
+      - Syslog - Sophos Web Proxy
+      - Syslog - Sophos XG Firewall
+      - Syslog - Sourcefire IDS 3D
+      - Syslog - Sourcefire RNA
+      - Syslog - Spectracom Network Time Server
+      - Syslog - Splunk API - Checkpoint Firewall
+      - Syslog - Splunk API - Cisco Netflow V9
+      - Syslog - Splunk API - Nessus Vulnerability Scanner
+      - Syslog - Squid Proxy
+      - Syslog - StealthBits Activity Monitor
+      - Syslog - STEALTHbits StealthINTERCEPT
+      - Syslog - StoneGate Firewall
+      - Syslog - Stonesoft IPS
+      - Syslog - Stormshield Network Security Firewall
+      - Syslog - Sycamore Networks DNX-88
+      - Syslog - Sygate Firewall
+      - Syslog - Symantec Advanced Threat Protection (ATP) CEF
+      - Syslog - Symantec DLP CEF
+      - Syslog - Symantec Endpoint Server
+      - Syslog - Symantec Messaging Gateway
+      - Syslog - Symantec PGP Gateway
+      - Syslog - Symbol Wireless Access Point
+      - Syslog - Tanium
+      - Syslog - Temporary LST-2
+      - Syslog - Tenable SecurityCenter
+      - Syslog - Thycotic Secret Server
+      - Syslog - Tipping Point IPS
+      - Syslog - Tipping Point SSL Reverse Proxy
+      - Syslog - Top Layer IPS
+      - Syslog - Townsend Alliance LogAgent
+      - Syslog - Trend Micro Control Manager CEF
+      - Syslog - Trend Micro Deep Discovery Inspector
+      - Syslog - Trend Micro Deep Security CEF
+      - Syslog - Trend Micro Deep Security LEEF
+      - Syslog - Trend Micro IWSVA
+      - Syslog - Trend Micro Vulnerability Protection Manager
+      - Syslog - Tripwire
+      - Syslog - Trustwave NAC
+      - Syslog - Trustwave Secure Web Gateway
+      - Syslog - Trustwave Web Application Firewall
+      - Syslog - Tufin
+      - Syslog - Tumbleweed Mailgate Server
+      - Syslog - Ubiquiti UniFi Security Gateway
+      - Syslog - Ubiquiti UniFi Switch
+      - Syslog - Ubiquiti UniFi WAP
+      - Syslog - Untangle
+      - Syslog - Vamsoft ORF
+      - Syslog - Vanguard Active Alerts
+      - Syslog - Varonis DatAlert
+      - Syslog - Vasco Digipass Identikey Server
+      - Syslog - Vectra Networks
+      - Syslog - Versa Networks SD-WAN
+      - Syslog - VMWare ESX/ESXi Server
+      - Syslog - VMware Horizon View
+      - Syslog - VMWare NSX/NSX-T
+      - Syslog - VMWare Unified Access Gateway
+      - Syslog - VMWare vCenter Server
+      - Syslog - VMWare vShield
+      - Syslog - Voltage Securemail
+      - Syslog - Vormetric CoreGuard
+      - Syslog - Vormetric Data Security Manager
+      - Syslog - WALLIX Bastion
+      - Syslog - Watchguard FireBox
+      - Syslog - WS2000 Wireless Access Point
+      - Syslog - Wurldtech SmartFirewall
+      - Syslog - Xirrus Wireless Array
+      - Syslog - Zimbra System Log
+      - Syslog - Zix E-mail Encryption
+      - Syslog - Zscaler Nano Streaming Service
+      - Syslog - ZXT Load Balancer
+      - Syslog - ZyWALL VPN Firewall
+      - Syslog Avaya G450 Media Gateway
+      - Syslog File - AIX Host
+      - Syslog File - BSD Format
+      - Syslog File - HP-UX Host
+      - Syslog File - IRIX Host
+      - Syslog File - Linux Host
+      - Syslog File - LogRhythm Syslog Generator
+      - Syslog File - MS 2003 Event Log (Snare)
+      - Syslog File - Oracle 10g Audit Trail
+      - Syslog File - Oracle 11g Audit Trail
+      - Syslog File - Solaris Host
+      - UDLA - CA Single Sign-On
+      - UDLA - Deepnet DualShield
+      - UDLA - Drupal
+      - UDLA - Finacle Core
+      - UDLA - Finacle Treasury Logs
+      - UDLA - Forcepoint
+      - UDLA - Gallagher Command Centre
+      - UDLA - iManage Worksite
+      - UDLA - ISS Proventia SiteProtector - IPS
+      - UDLA - LogRhythm Enterprise Monitoring Solution
+      - UDLA - LREnhancedAudit
+      - UDLA - McAfee ePolicy Orchestrator - Universal ePOEvents
+      - UDLA - McAfee ePolicy Orchestrator 3.6 - Events
+      - UDLA - McAfee ePolicy Orchestrator 4.0 - ePOEvents
+      - UDLA - McAfee ePolicy Orchestrator 4.5 - ePOEvents
+      - UDLA - McAfee ePolicy Orchestrator 5.0 - ePOEvents
+      - UDLA - McAfee ePolicy Orchestrator 5.1 - ePOEvents
+      - UDLA - McAfee ePolicy Orchestrator 5.3 - ePOEvents
+      - UDLA - McAfee ePolicy Orchestrator 5.9 - ePOEvents
+      - UDLA - McAfee Network Access Control
+      - UDLA - McAfee Network Security Manager
+      - UDLA - Microsoft System Center 2012 Endpoint Protection
+      - UDLA - ObserveIT
+      - UDLA - Oracle 10g Audit Trail
+      - UDLA - Oracle 11g Audit Trail
+      - UDLA - Oracle 12C Unified Auditing
+      - UDLA - Oracle 9i Audit Trail
+      - UDLA - Other
+      - UDLA - SEL 3530 RTAC
+      - UDLA - SharePoint 2007 AuditData
+      - UDLA - SharePoint 2010 EventData
+      - UDLA - SharePoint 2013 EventData
+      - UDLA - Siemens Invision
+      - UDLA - Sophos Anti-Virus
+      - UDLA - Sophos Endpoint Security and Control
+      - UDLA - Symantec CSP
+      - UDLA - Symantec SEP
+      - UDLA - Symmetry Access Control
+      - UDLA - VMWare vCenter Server
+      - UDLA - VMWare vCloud
+      - VLS - Syslog - Infoblox - DNS RPZ
+      - VLS - Syslog - Infoblox - Threat Protection
+    - description: Impacted Host name
+      name: host-name
+    - description: Username
+      name: username
+    - description: Email Subject
+      name: subject
+    - description: Email sender
+      name: sender
+    - description: Email recipient
+      name: recipient
+    - description: Hash value of file or process
+      name: hash
+    - description: Full URL
+      name: URL
+    - description: Process name
+      name: process-name
+    - description: Log object
+      name: object
+    description: Execute search query for logs
+    name: lr-search-data
   - arguments:
-    - default: false
-      description: The entity name.
-      isArray: false
-      name: entity-name
+    - name: case-id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '100'
-      description: Number of hosts to return.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a list of hosts for a given entity, or an empty list if none is found.
-    execution: false
-    name: lr-get-hosts-by-entity
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
-      type: String
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
-      type: String
-    - contextPath: Logrhythm.Host.OS
-      description: The host OS.
-      type: String
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: String
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials
-      type: String
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: String
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: The last update date of the host.
-      type: String
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: String
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
-      type: String
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: String
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: String
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: String
-    - contextPath: Logrhythm.Host.OSType
-      description: The type of the host OS.
-      type: String
-  - arguments:
-    - default: false
-      description: The entity ID.
-      isArray: false
-      name: entity-id
-      required: true
-      secret: false
-    - default: false
-      description: The entity name.
-      isArray: false
-      name: entity-name
-      required: true
-      secret: false
-    - default: false
-      description: The LogRhythm host name.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      defaultValue: None
-      description: The short description.
-      isArray: false
-      name: short-description
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
-      description: The long description.
-      isArray: false
-      name: long-description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: The host risk level.
-      description: The short description.
-      isArray: false
-      name: risk-level
-      predefined:
-      - None
-      - Low-Low
-      - Low-Medium
-      - Low-High
-      - Medium-Low
-      - Medium-Medium
-      - Medium-High
-      - High-Low
-      - High-Medium
-      - High-High
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: None
-      description: The host threat level.
-      isArray: false
-      name: threat-level
-      predefined:
-      - None
-      - Low-Low
-      - Low-Medium
-      - Low-High
-      - Medium-Low
-      - Medium-Medium
-      - Medium-High
-      - High-Low
-      - High-Medium
-      - High-High
-      required: false
-      secret: false
-    - default: false
-      defaultValue: None
-      description: Comments for the host threat level.
-      isArray: false
-      name: threat-level-comments
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The host status.
-      isArray: false
-      name: host-status
-      predefined:
-      - New
-      - Retired
-      - Active
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The host zone.
-      isArray: false
-      name: host-zone
-      predefined:
-      - Unknown
-      - Internal
-      - DMZ
-      - External
-      required: true
-      secret: false
-    - default: false
-      description: The host OS.
-      isArray: false
-      name: os
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Use eventlog credentials.
-      isArray: false
-      name: use-eventlog-credentials
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Unknown
-      description: The host OS.
-      isArray: false
-      name: os-type
-      predefined:
-      - Unknown
-      - Other
-      - WindowsNT4
-      - Windows2000Professional
-      - Windows2000Server
-      - Windows2003Standard
-      - Windows2003Enterprise
-      - Windows95
-      - WindowsXP
-      - WindowsVista
-      - Linux
-      - Solaris
-      - AIX
-      - HPUX
-      - Windows
-      required: false
-      secret: false
-    deprecated: false
-    description: Add a new host to an entity.
-    execution: false
-    name: lr-add-host
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
-      type: string
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
-      type: string
-    - contextPath: Logrhythm.Host.OS
-      description: The host OS.
-      type: string
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: string
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials
-      type: string
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: string
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: The last update date of the host.
-      type: string
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: string
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
-      type: string
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: string
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: string
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: string
-    - contextPath: Logrhythm.Host.OSType
-      description: The type of the host OS.
-      type: string
-  - arguments:
-    - default: false
-      description: The unique ID of the host.
-      isArray: false
-      name: host-id
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The enumeration status of the host.
-      isArray: false
-      name: status
-      predefined:
-      - Retired
-      - Active
-      required: true
-      secret: false
-    deprecated: false
-    description: Updates an host status.
-    execution: false
-    name: lr-update-host-status
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
-      type: string
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
-      type: string
-    - contextPath: Logrhythm.Host.OS
-      description: The host OS.
-      type: string
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: string
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials
-      type: string
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: string
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: The last update date of the host.
-      type: string
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: string
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
-      type: string
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: string
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: string
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: string
-    - contextPath: Logrhythm.Host.OSType
-      description: The type of the host OS.
-      type: string
-  - arguments:
-    - default: false
-      description: The LogRhythm person ID.
-      isArray: false
-      name: person-id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Number of persons to return. Default is 30.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a list of persons.
-    execution: false
-    name: lr-get-persons
-    outputs:
-    - contextPath: Logrhythm.Person.DateUpdated
-      description: Date that the person was updated.
-      type: String
-    - contextPath: Logrhythm.Person.FirstName
-      description: First name.
-      type: String
-    - contextPath: Logrhythm.Person.LastName
-      description: Last name.
-      type: String
-    - contextPath: Logrhythm.Person.HostStatus
-      description: Host status.
-      type: string
-    - contextPath: Logrhythm.Person.ID
-      description: Person ID.
-      type: String
-    - contextPath: Logrhythm.Person.IsAPIPerson
-      description: Whether the API is a person.
-      type: Boolean
-    - contextPath: Logrhythm.Person.UserID
-      description: User ID.
-      type: String
-    - contextPath: Logrhythm.Person.UserLogin
-      description: User login.
-      type: String
-  - arguments:
-    - default: false
-      description: The LogRhythm network ID.
-      isArray: false
-      name: network-id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Number of networks to return.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Retrieves a list of networks.
-    execution: false
-    name: lr-get-networks
-    outputs:
-    - contextPath: Logrhythm.Network.BIP
-      description: Began IP address.
-      type: String
-    - contextPath: Logrhythm.Network.ThreatLevel
-      description: Threat level.
-      type: String
-    - contextPath: Logrhythm.Network.Name
-      description: Network name.
-      type: String
-    - contextPath: Logrhythm.Network.EIP
-      description: End IP address.
-      type: String
-    - contextPath: Logrhythm.Network.DateUpdated
-      description: Date updated.
-      type: String
-    - contextPath: Logrhythm.Network.EntityName
-      description: Entity name.
-      type: String
-    - contextPath: Logrhythm.Network.HostZone
-      description: Host zone.
-      type: String
-    - contextPath: Logrhythm.Network.RiskLevel
-      description: Risk level.
-      type: String
-    - contextPath: Logrhythm.Network.Location
-      description: Network location.
-      type: String
-    - contextPath: Logrhythm.Network.HostStatus
-      description: Host status.
-      type: String
-    - contextPath: Logrhythm.Network.ID
-      description: Network ID.
-      type: String
-    - contextPath: Logrhythm.Network.EntityId
-      description: Entity ID.
-      type: String
-  - arguments:
-    - default: false
-      description: The LogRhythm host ID.
-      isArray: false
-      name: host-id
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '30'
-      description: Number of hosts to return. Default is 30.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a list of hosts.
-    execution: false
-    name: lr-get-hosts
-    outputs:
-    - contextPath: Logrhythm.Host.EntityId
-      description: The entity ID.
-      type: String
-    - contextPath: Logrhythm.Host.EntityName
-      description: The entity name.
-      type: String
-    - contextPath: Logrhythm.Host.OS
-      description: The host OS.
-      type: String
-    - contextPath: Logrhythm.Host.ThreatLevel
-      description: The host threat level.
-      type: String
-    - contextPath: Logrhythm.Host.UseEventlogCredentials
-      description: Use event log credentials.
-      type: String
-    - contextPath: Logrhythm.Host.Name
-      description: The name of the host.
-      type: String
-    - contextPath: Logrhythm.Host.DateUpdated
-      description: Date that the host was last updated.
-      type: String
-    - contextPath: Logrhythm.Host.HostZone
-      description: The host zone.
-      type: String
-    - contextPath: Logrhythm.Host.RiskLevel
-      description: The risk level.
-      type: String
-    - contextPath: Logrhythm.Host.Location
-      description: The host location.
-      type: String
-    - contextPath: Logrhythm.Host.Status
-      description: The host status.
-      type: String
-    - contextPath: Logrhythm.Host.ID
-      description: The unique ID of the host object.
-      type: String
-    - contextPath: Logrhythm.Host.OSType
-      description: Host OS type.
-      type: String
-  - arguments:
-    - default: false
-      description: The alarm ID.
-      isArray: false
-      name: alarm-id
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns data for an alarm.
-    execution: false
-    name: lr-get-alarm-data
-    outputs:
-    - contextPath: Logrhythm.Alarm.Status
-      description: The alarm status.
-      type: String
-    - contextPath: Logrhythm.Alarm.EventID
-      description: The alarm event ID.
-      type: String
-    - contextPath: Logrhythm.Alarm.LastDxTimeStamp
-      description: The timestamp when the drilldown returned new results from the Data Indexer.
-      type: String
-    - contextPath: Logrhythm.Alarm.DateInserted
-      description: The alarm date inserted.
-      type: String
-    - contextPath: Logrhythm.Alarm.AIERuleName
-      description: The alarm AI engine (AIE) rule.
-      type: String
-    - contextPath: Logrhythm.Alarm.Priority
-      description: The alarm priority.
-      type: String
-    - contextPath: Logrhythm.Alarm.AIERuleID
-      description: The alarm AI engine (AIE) rule ID.
-      type: String
-    - contextPath: Logrhythm.Alarm.ID
-      description: The alarm ID.
-      type: String
-    - contextPath: Logrhythm.Alarm.NotificationSent
-      description: Whether an alarm notification was sent.
-      type: Boolean
-    - contextPath: Logrhythm.Alarm.AlarmGuid
-      description: The alarm GUID.
-      type: String
-    - contextPath: Logrhythm.Alarm.RetryCount
-      description: The alarm retry count.
-      type: String
-    - contextPath: Logrhythm.Alarm.NormalMessageDate
-      description: The alarm message date.
-      type: String
-    - contextPath: Logrhythm.Alarm.WebConsoleIds
-      description: The alarm web console IDs.
-      type: String
-    - contextPath: Logrhythm.Alarm.Summary.PIFType
-      description: Alarm Primary Inspection Field (the original name for "Summary Field").
-      type: String
-    - contextPath: Logrhythm.Alarm.Summary.DrillDownSummaryLogs
-      description: Drill down summary logs.
-      type: String
-  - arguments:
-    - default: false
-      description: The alarm ID.
-      isArray: false
-      name: alarm-id
-      required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: Number of events to return. Default is 10.
-      isArray: false
-      name: count
-      required: false
-      secret: false
-    - default: false
-      description: A CSV list of fields (outputs) to return to the context. If empty, all fields are returned.
-      isArray: false
-      name: fields
-      predefined:
-      - ''
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'False'
-      description: Returns the log message from the event.
-      isArray: false
-      name: get-log-message
-      predefined:
-      - 'True'
-      - 'False'
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns a list of events, by alarm ID.
-    execution: false
-    name: lr-get-alarm-events
-    outputs:
-    - contextPath: Logrhythm.Alarm.Event
-      description: Alarm event information.
-      type: String
-    - contextPath: Logrhythm.Alarm.ID
-      description: The alarm ID.
-      type: String
-  isfetch: false
+    description: Query for case evidence details
+    name: lr-case-query
+  isFetchSamples: true
+  isfetch: true
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python3
+  type: python
+fromversion: 5.0.0
 tests:
 - LogRhythm REST test
-fromversion: 5.0.0

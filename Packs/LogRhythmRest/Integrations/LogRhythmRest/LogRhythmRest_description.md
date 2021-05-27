@@ -10,3 +10,6 @@ The credentials entered here should be those created in the LogRhythm console fo
 
 **Search API cluster ID**  
 Enter `http://localhost:8500/ui/#/dc1/services/lr-legacy-search-api` in LogRhythm host, the cluster ID is under `TAGS` header
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/log-rhythm-rest)
