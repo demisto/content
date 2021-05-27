@@ -80,7 +80,6 @@
 								"startCol": 0
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -142,7 +141,6 @@
 								"startCol": 1
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 3,
@@ -227,7 +225,6 @@
 								"startCol": 2
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 2,
@@ -242,7 +239,6 @@
 						"h": 1,
 						"i": "caseinfoid-ee9b7f20-a255-11eb-86d3-ed6ff0cf2050",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -260,7 +256,6 @@
 						"h": 1,
 						"i": "caseinfoid-fafdf7c0-a255-11eb-86d3-ed6ff0cf2050",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -278,7 +273,6 @@
 						"h": 1,
 						"i": "caseinfoid-2f160900-a6a5-11eb-aa9a-55967479e045",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -296,7 +290,6 @@
 						"h": 1,
 						"i": "caseinfoid-e449ae90-a6a9-11eb-aa9a-55967479e045",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -314,7 +307,6 @@
 						"h": 1,
 						"i": "caseinfoid-f0b3c850-a6a9-11eb-aa9a-55967479e045",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -332,7 +324,6 @@
 						"h": 1,
 						"i": "caseinfoid-fb65d1d0-a6a9-11eb-aa9a-55967479e045",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
@@ -397,15 +388,14 @@
 						"items": [
 							{
 								"endCol": 6,
-								"fieldId": "rubrikpolarismessage",
+								"fieldId": "rubrikpolarisanalysispipeline",
 								"height": 106,
-								"id": "5f7cfd80-a14e-11eb-a966-5fbb5aa7e80a",
+								"id": "422e74f0-bf28-11eb-adf0-1dd6a5e74ad5",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 3,
@@ -420,7 +410,6 @@
 						"h": 4,
 						"i": "rubrikPolaris-344948e0-9e37-11eb-ac95-f33fbce9c16e",
 						"items": [],
-						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"minW": 3,
@@ -457,8 +446,8 @@
 				"name": "Canvas",
 				"type": "canvas"
 			}
-		 ]
-    },
+		]
+	},
     "group": "incident",
     "id": "7e540e7c-3ff5-4176-88a6-21511516d9fb",
     "name": "Rubrik Polaris Radar",
