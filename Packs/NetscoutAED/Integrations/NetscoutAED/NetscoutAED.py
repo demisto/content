@@ -76,11 +76,13 @@ class Client(BaseClient):
                                   headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     def inbound_blacklisted_host_add_update_command(self, body: dict, http_method: str) -> dict:
-        return self._http_request(method=http_method, url_suffix='/protection-groups/blacklisted-hosts/', json_data=body,
+        return self._http_request(method=http_method, url_suffix='/protection-groups/blacklisted-hosts/',
+                                  json_data=body,
                                   headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     def inbound_whitelisted_host_add_update_command(self, body: dict, http_method: str) -> dict:
-        return self._http_request(method=http_method, url_suffix='/protection-groups/whitelisted-hosts/', json_data=body,
+        return self._http_request(method=http_method, url_suffix='/protection-groups/whitelisted-hosts/',
+                                  json_data=body,
                                   headers=merge_dicts(self._headers, {'Content-Type': 'application/json'}))
 
     # host deletion handlers
@@ -190,68 +192,68 @@ def init_commands_dict() -> dict:
 
         # outbound blacklisted countries
         'na-ed-outbound-blacklisted-countries-list': {'func': handle_country_list_commands,
-                                                       'meta_data': outbound_blacklisted},
-        'na-ed-outbound-blacklisted-countries-add': {'func': handle_country_addition_commands,
                                                       'meta_data': outbound_blacklisted},
+        'na-ed-outbound-blacklisted-countries-add': {'func': handle_country_addition_commands,
+                                                     'meta_data': outbound_blacklisted},
         'na-ed-outbound-blacklisted-countries-remove': {'func': handle_country_deletion_commands,
-                                                         'meta_data': outbound_blacklisted},
+                                                        'meta_data': outbound_blacklisted},
 
         # inbound blacklisted countries
         'na-ed-inbound-blacklisted-countries-list': {'func': handle_country_list_commands,
-                                                      'meta_data': inbound_blacklisted},
-        'na-ed-inbound-blacklisted-countries-add': {'func': handle_country_addition_commands,
                                                      'meta_data': inbound_blacklisted},
+        'na-ed-inbound-blacklisted-countries-add': {'func': handle_country_addition_commands,
+                                                    'meta_data': inbound_blacklisted},
         'na-ed-inbound-blacklisted-countries-remove': {'func': handle_country_deletion_commands,
-                                                        'meta_data': inbound_blacklisted},
+                                                       'meta_data': inbound_blacklisted},
 
         # outbound blacklisted hosts
         'na-ed-outbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
-                                                   'meta_data': outbound_blacklisted},
+                                                  'meta_data': outbound_blacklisted},
         'na-ed-outbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                  'meta_data':
-                                                      merge_dicts(outbound_blacklisted, {'http_method': 'POST'})},
+                                                 'meta_data':
+                                                     merge_dicts(outbound_blacklisted, {'http_method': 'POST'})},
 
         'na-ed-outbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                      'meta_data':
-                                                          merge_dicts(outbound_blacklisted, {'http_method': 'PUT'})},
+                                                     'meta_data':
+                                                         merge_dicts(outbound_blacklisted, {'http_method': 'PUT'})},
         'na-ed-outbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                     'meta_data': outbound_blacklisted},
+                                                    'meta_data': outbound_blacklisted},
 
         # inbound blacklisted hosts
         'na-ed-inbound-blacklisted-hosts-list': {'func': handle_host_list_commands,
-                                                  'meta_data': inbound_blacklisted},
+                                                 'meta_data': inbound_blacklisted},
         'na-ed-inbound-blacklisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                 'meta_data':
-                                                     merge_dicts(inbound_blacklisted, {'http_method': 'POST'})},
+                                                'meta_data':
+                                                    merge_dicts(inbound_blacklisted, {'http_method': 'POST'})},
         'na-ed-inbound-blacklisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                     'meta_data':
-                                                         merge_dicts(inbound_blacklisted, {'http_method': 'PUT'})},
+                                                    'meta_data':
+                                                        merge_dicts(inbound_blacklisted, {'http_method': 'PUT'})},
         'na-ed-inbound-blacklisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                    'meta_data': inbound_blacklisted},
+                                                   'meta_data': inbound_blacklisted},
 
         # outbound whitelisted hosts
         'na-ed-outbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
-                                                   'meta_data': outbound_whitelisted},
+                                                  'meta_data': outbound_whitelisted},
         'na-ed-outbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                  'meta_data':
-                                                      merge_dicts(outbound_whitelisted, {'http_method': 'POST'})},
+                                                 'meta_data':
+                                                     merge_dicts(outbound_whitelisted, {'http_method': 'POST'})},
         'na-ed-outbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                      'meta_data':
-                                                          merge_dicts(outbound_whitelisted, {'http_method': 'PUT'})},
+                                                     'meta_data':
+                                                         merge_dicts(outbound_whitelisted, {'http_method': 'PUT'})},
         'na-ed-outbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                     'meta_data': outbound_whitelisted},
+                                                    'meta_data': outbound_whitelisted},
 
         # inbound whitelisted hosts
         'na-ed-inbound-whitelisted-hosts-list': {'func': handle_host_list_commands,
-                                                  'meta_data': inbound_whitelisted},
+                                                 'meta_data': inbound_whitelisted},
         'na-ed-inbound-whitelisted-hosts-add': {'func': handle_host_addition_and_replacement_commands,
-                                                 'meta_data':
-                                                     merge_dicts(inbound_whitelisted, {'http_method': 'POST'})},
+                                                'meta_data':
+                                                    merge_dicts(inbound_whitelisted, {'http_method': 'POST'})},
         'na-ed-inbound-whitelisted-hosts-replace': {'func': handle_host_addition_and_replacement_commands,
-                                                     'meta_data':
-                                                         merge_dicts(inbound_whitelisted, {'http_method': 'PUT'})},
+                                                    'meta_data':
+                                                        merge_dicts(inbound_whitelisted, {'http_method': 'PUT'})},
         'na-ed-inbound-whitelisted-hosts-remove': {'func': handle_host_deletion_commands,
-                                                    'meta_data': inbound_whitelisted},
+                                                   'meta_data': inbound_whitelisted},
 
         # inbound blacklisted domains
         'na-ed-inbound-blacklisted-domains-list': {'func': handle_domain_list_commands},
