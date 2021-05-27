@@ -29,8 +29,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=None, scp=None, iat=None, exp=None, nbf=None,
-                                token_timeout=None, additional_claims=None):
+def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=None, scp=None, iat=None, exp=None,
+                                nbf=None, token_timeout=None, additional_claims=None):
     token_id = str(uuid.uuid4())
     jti = jti or token_id
 
@@ -56,6 +56,8 @@ def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=No
         claims['sub'] = sub
     if scp:
         claims['iss'] = scp
+    if scp:
+        claims['nbf'] = nbf
     if additional_claims:
         claims.update(json.loads(additional_claims))
 
@@ -171,7 +173,7 @@ def main():
         elif demisto.command() == 'jwt-generate-access-token':
             return_results(jwt_generate_access_token_command(client, demisto.args(), demisto.params()))
         elif demisto.command() == 'jwt-decode-token':
-            return_results(jwt_decode_token_command(client, demisto.args()))
+            return_results(jwt_decode_token_command(demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
