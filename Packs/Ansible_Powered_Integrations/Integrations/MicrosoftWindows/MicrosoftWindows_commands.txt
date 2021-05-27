@@ -70,6 +70,5 @@
 !win-stat host="123.123.123.123" path="C:/logs.zip" 
 !win-robocopy host="123.123.123.123" src="C:/temp" dest="C:/temp2" 
 !win-regmerge host="123.123.123.123" path="C:/temp/firefox.reg" 
-!win-pester host="123.123.123.123" path="C:\Pester"
 !win-say host="123.123.123.123" msg="Warning, deployment commencing in 5 minutes, please log out." 
 !win-share host="123.123.123.123" name="internal" description="top secret share" path="C:/temp" list="False" full="Administrators,bob" read="fed-phil" deny="Guest" 
