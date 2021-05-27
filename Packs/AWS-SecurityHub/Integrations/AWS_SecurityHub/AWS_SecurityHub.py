@@ -584,8 +584,8 @@ def get_master_account_command(client, args):
 
 def get_findings_command(client, args):
     kwargs = generate_kwargs_for_get_findings(args)
-    findings = []
     response = client.get_findings(**kwargs)
+    findings = response.get('Findings')
     next_token = response.get('NextToken')
     while next_token:
         kwargs['NextToken'] = next_token

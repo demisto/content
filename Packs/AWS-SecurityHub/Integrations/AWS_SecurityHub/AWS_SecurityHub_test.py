@@ -1,7 +1,7 @@
 import pytest
 
-from Packs.AWS_DynamoDB.Integrations.AWS_DynamoDB.AWS_DynamoDB import aws_session
-from AWS_SecurityHub import get_findings_command, aws_session
+
+from AWS_SecurityHub import get_findings_command
 
 FILTER_FIELDS_TEST_CASES = [
     (
@@ -123,11 +123,11 @@ class MockClient:
 
     def get_findings(self, **kwargs):
         return {'Findings': [
-                            {'ProductArn': 'Test',
-                             'Description': 'Test',
-                             'SchemaVersion': '2021-05-27'}
-                        ]
-                }
+            {
+                'ProductArn': 'Test',
+                'Description': 'Test',
+                'SchemaVersion': '2021-05-27'}
+        ]}
 
 
 def test_aws_securityhub_get_findings_command():
