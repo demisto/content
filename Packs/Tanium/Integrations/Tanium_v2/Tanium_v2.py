@@ -17,30 +17,91 @@ DEFAULT_COMPLETION_PERCENTAGE = "95"
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, domain, **kwargs):
+    def __init__(self, base_url, username, password, domain, use_oauth=False, **kwargs):
         self.username = username
         self.password = password
         self.domain = domain
         self.session = ''
+        self.use_oauth = use_oauth
+        self.retried_access_token = False
         super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None):
-        if not self.session:
-            self.update_session()
+        if self.use_oauth:
+            auth_param = self.get_access_token()
+        else:
+            if not self.session:
+                self.update_session()
+            auth_param = self.session
 
-        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 resp_type='response', ok_codes=[200, 400, 403, 404])
+        res = self._http_request(method, url_suffix, headers={'session': auth_param}, json_data=data,
+                                 resp_type='response', ok_codes=(200, 400, 401, 403, 404))
+
+        if res.status_code == 401:
+            # In case the access token was deleted but still exists in the integration context, remove it from the
+            # context and make the request again, this will create a new access token:
+            if self.use_oauth and not self.retried_access_token:
+                demisto.setIntegrationContext({})
+                self.retried_access_token = True
+                return self.do_request(method, url_suffix, data)
+            self.retried_access_token = False
+
+            err_msg = f'Unauthorized request - if using OAuth 2.0, verify that the IP of the client is listed in ' \
+                      f'the api_token_trusted_ip_address_list global setting. See Detailed Description (?) for ' \
+                      f'more information.'
+            try:
+                err_msg += str(res.json())
+            except ValueError:
+                err_msg += str(res)
+            raise DemistoException(err_msg)
 
         if res.status_code == 403:
-            self.update_session()
-            res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                     ok_codes=[200, 400, 404])
+            if self.use_oauth:
+                auth_param = self.get_access_token()
+            else:
+                auth_param = self.update_session()
+            res = self._http_request(method, url_suffix, headers={'session': auth_param}, json_data=data,
+                                     ok_codes=(200, 400, 404))
             return res
 
         if res.status_code == 404 or res.status_code == 400:
             raise requests.HTTPError(res.json().get('text'))
 
         return res.json()
+
+    def get_access_token(self, data='{}'):
+        """
+        Gets an access token that was previously created if it is still valid, else, generates a new access token.
+        """
+        previous_token = demisto.getIntegrationContext()
+        # Check if there is an existing valid access token. All time comparisons are in UTC time
+        if previous_token.get('access_token') and previous_token.get('expiry_time') > date_to_timestamp(datetime.utcnow()):
+            access_token = previous_token.get('access_token')
+            print("Retrieved Saved Token")  # todo: delete
+        else:  # If there is no valid access token, create a new session and generate a new access token
+            self.update_session()
+            headers = {
+                'session': self.session,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+            try:
+                res = self._http_request('POST', url_suffix='api_tokens', headers=headers, data=data)
+                if res.get('data'):
+                    token_info = res.get('data')
+                    access_token = token_info.get('token_string')
+                    new_token = {
+                        'access_token': access_token,
+                        'expiry_time': date_to_timestamp(token_info.get('expiration'),
+                                                         date_format='%Y-%m-%dT%H:%M:%SZ') - 10
+                    }
+                    print("Generated New Token")  # todo: delete
+                    demisto.setIntegrationContext(new_token)
+                else:  # if the response didn't include an access token, raise an error:
+                    raise Exception(f'Response from Tanium: {str(res)}')
+            except Exception as e:
+                return_error(f'Error occurred while creating an access token. \n\n{e.args[0]}')
+        return access_token
 
     def update_session(self):
         body = {
@@ -55,6 +116,8 @@ class Client(BaseClient):
         return self.session
 
     def login(self):
+        if self.use_oauth:
+            return self.get_access_token()
         return self.update_session()
 
     def parse_sensor_parameters(self, parameters):
@@ -1035,11 +1098,12 @@ def main():
     base_url = server + '/api/v2/'
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
+    use_oauth = params.get('use_oauth', False)
 
     # Remove proxy if not set to true in params
     handle_proxy()
     command = demisto.command()
-    client = Client(base_url, username, password, domain, verify=use_ssl)
+    client = Client(base_url, username, password, domain, use_oauth=use_oauth, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = {
