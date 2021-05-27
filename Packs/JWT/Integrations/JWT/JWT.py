@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict
 import jwt
 import uuid
 
@@ -67,28 +67,7 @@ def encode_authentication_token(secret_key, jti=None, iss=None, aud=None, sub=No
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client):
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message = ''
-    try:
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
+def test_module():
     return 'ok'
 
 
@@ -154,7 +133,7 @@ def jwt_generate_access_token_command(client, args, params):
     )
 
 
-def jwt_decode_token_command(client, args):
+def jwt_decode_token_command(args):
     token = args.get('token')
     secret = args.get('secret', 'nosecret')
     result = jwt.decode(token, secret, algorithms="HS256", options={"verify_signature": False})
@@ -184,7 +163,7 @@ def main():
             headers=headers,
             proxy=proxy)
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module()
             return_results(result)
 
         elif demisto.command() == 'jwt-generate-authentication-payload':

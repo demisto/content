@@ -1,5 +1,5 @@
 JSON Web Token (JWT) is a compact, URL-safe means of representing claims to be transferred between two parties. This Integration can be used to Generate New JWT Tokens, Encode and Decode Existing Ones.
-This integration was integrated and tested with version xx of JWT
+This integration was integrated and tested with generic JWT authentication service.
 ## Configure JWT on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -152,7 +152,7 @@ A command to decode JWT tokens
 There is no context output for this command.
 
 #### Command Example
-```!jwt-decode-token token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2MjIwNTA1ODMsImlhdCI6MTYyMjA1MDI4MywianRpIjoiMDA5ZWIwMzYtMWU2MC00M2U1LWFhZDItMTE4NzQ2MmRiMGJlIiwiaXNzIjoiaHR0cDovL2V4YW1wbGUuY29tIiwic3ViIjoiMzIzMy0yMzQ0LTRiNTItMjMyMy1mYzBiZmIxMWU2NzMiLCJwYXJhbWV0ZXIxIjoiMjMzMjMtMzIzLTQ4NTQtODkzYy1iNTk2MTA0MjNhZCJ9.13zCwNhvt8fCuyHBcmdbDSaXUIpDRI95Q5-m1EbPQmk"```
+```!jwt-decode-token token="************************************.*********************************************************************************************************************************************************************************************************************************************************************.******************************************"```
 
 #### Context Example
 ```json
