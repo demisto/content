@@ -147,10 +147,10 @@ def fetch_entity_anomalies(client, args, arg):
     alert = []
     for dic in alerts.get('data'):
         alert.append(dic)
-    
+
     if len(alert) == 0:
-        alert = [{"message":"Linkshadow Anomaly already acknowledged!!"}]
-           
+        alert = [{"message": "Linkshadow Anomaly already acknowledged!!"}]
+
     return CommandResults(
         outputs_prefix='Linkshadow.data',
         outputs_key_field='GlobalID',
