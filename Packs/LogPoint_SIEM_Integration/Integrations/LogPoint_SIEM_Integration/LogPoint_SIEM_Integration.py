@@ -687,7 +687,7 @@ def get_livesearches_command(client):
     )
 
 
-def search_logs_command(client, args):
+def get_searchid_command(client, args):
     query = args.get('query')
     time_range = args.get('time_range', 'Last 5 minutes')
     limit = args.get('limit', '100')
@@ -701,6 +701,19 @@ def search_logs_command(client, args):
     if not result.get('success'):
         raise DemistoException(result.get('message'))
     search_id = result.get('search_id')
+    if search_id:
+        markdown = f"### Search Id: {search_id}"
+    else:
+        markdown = 'Could not get Search Id.'
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix='LogPoint.search_id',
+        outputs=search_id
+    )
+
+
+def search_logs_command(client, args):
+    search_id = args.get('search_id')
     search_result = client.get_search_results(search_id)
     if not search_result.get('success'):
         raise DemistoException(search_result.get('message'))
@@ -709,7 +722,7 @@ def search_logs_command(client, args):
         display_title = f"Found {len(rows)} logs"
         markdown = tableToMarkdown(display_title, rows, headers=None)
     else:
-        markdown = 'No records found for the given search parameters.'
+        markdown = 'No results found for the given search parameters.'
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.SearchLogs',
@@ -840,6 +853,8 @@ def main():
             return_results(get_devices_command(client))
         elif command == 'lp-get-livesearches':
             return_results(get_livesearches_command(client))
+        elif command == 'lp-get-searchid':
+            return_results(get_searchid_command(client, args))
         elif command == 'lp-search-logs':
             return_results(search_logs_command(client, args))
         elif command == 'fetch-incidents':

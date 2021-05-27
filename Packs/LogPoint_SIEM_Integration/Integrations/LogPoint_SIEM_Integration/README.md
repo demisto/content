@@ -1034,14 +1034,14 @@ There are no input arguments for this command.
 >|  | false | alert | c4e38a6fe8226ec0975ee5ed935a733003bd1f11 | 25 | "use"> 86 col_type=filesystem  | fieldsToExtract: use,<br/>col_type<br/>aliases: <br/>success: true<br/>query_filter: "use"> 86 col_type=filesystem<br/>columns: <br/>query_type: simple<br/>lucene_query: (_num_use:{86 TO *} AND col_type:filesystem)<br/>grouping:  | Memory greater than 86 |  | 0 | 1 | 0 | 0 |  |
 
 
-### lp-search-logs
+### lp-get-searchid
 ***
-Search logs in LogPoint.
+Gets Search Id based on the provided search parameters.
 
 
 #### Base Command
 
-`lp-search-logs`
+`lp-get-searchid`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1056,11 +1056,49 @@ Search logs in LogPoint.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| LogPoint.search_id | String | Search Id. Use this Id in lp-search-logs command to get the search result. | 
+
+
+#### Command Example
+```!lp-get-searchid query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "search_id": "97df79d3-b2b8-4260-bd12-805b69434591"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Search Id: 97df79d3-b2b8-4260-bd12-805b69434591
+
+### lp-search-logs
+***
+Gets LogPoint search result. Takes search_id as an argument.
+
+
+#### Base Command
+
+`lp-search-logs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | Search Id obtained from lp-get-searchid command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
 | LogPoint.SearchLogs | String | Search results | 
 
 
 #### Command Example
-```!lp-search-logs query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"```
+```!lp-search-logs search_id=29023c62-12f4-4771-b988-067284a0e0c5```
 
 #### Context Example
 ```json
@@ -1075,7 +1113,7 @@ Search logs in LogPoint.
                 "_type_num": " count()",
                 "_type_str": " col_type count()",
                 "col_type": "office365",
-                "count()": 206
+                "count()": 312
             },
             {
                 "_group": [
@@ -1085,7 +1123,7 @@ Search logs in LogPoint.
                 "_type_num": " count()",
                 "_type_str": " col_type count()",
                 "col_type": "filesystem",
-                "count()": 2304
+                "count()": 3658
             }
         ]
     }
@@ -1097,6 +1135,7 @@ Search logs in LogPoint.
 >### Found 2 logs
 >|_group|_type_ip|_type_num|_type_str|col_type|count()|
 >|---|---|---|---|---|---|
->| office365 |  |  count() |  col_type count() | office365 | 206 |
->| filesystem |  |  count() |  col_type count() | filesystem | 2304 |
+>| office365 |  |  count() |  col_type count() | office365 | 312 |
+>| filesystem |  |  count() |  col_type count() | filesystem | 3658 |
+
 

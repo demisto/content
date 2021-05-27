@@ -494,6 +494,39 @@ def test_get_livesearches_command(requests_mock):
     assert response.outputs == mock_response['livesearches']
 
 
+def test_get_searchid_command(requests_mock):
+    """Tests lp-get-repos command function.
+
+        Configures requests_mock instance to generate the appropriate
+        /getalloweddata API response, loaded from a json file. Checks
+        the output of the command function with the expected output.
+        """
+    from LogPoint_SIEM_Integration import Client, get_searchid_command
+    mock_response = util_load_json('test_data/sample_get_searchid_response.json')
+    requests_mock.post(
+        'https://test.com/getsearchlogs',
+        json=mock_response)
+    client = Client(
+        base_url='https://test.com',
+        verify=False,
+        proxy=False,
+        username='username',
+        apikey='apikey',
+        headers={
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    )
+    args = {
+        "query": '| chart count() by col_type',
+        "time_range": 'Last 30 minutes',
+        "limit": 10,
+        "repos": []
+    }
+    response = get_searchid_command(client, args)
+    assert response.outputs_prefix == 'LogPoint.search_id'
+    assert response.outputs == mock_response['search_id']
+
+
 def test_search_logs_command(requests_mock):
     """Tests lp-get-repos command function.
 
@@ -517,10 +550,7 @@ def test_search_logs_command(requests_mock):
         }
     )
     args = {
-        "query": '| chart count() by col_type',
-        "time_range": 'Last 30 minutes',
-        "limit": 10,
-        "repos": []
+        "search_id": mock_response.get('search_id')
     }
     response = search_logs_command(client, args)
     assert response.outputs_prefix == 'LogPoint.SearchLogs'

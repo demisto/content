@@ -825,7 +825,23 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search logs in LogPoint.
+    description: Gets Search Id based on the provided search parameters.
+    execution: false
+    name: lp-get-searchid
+    outputs:
+    - contextPath: LogPoint.search_id
+      description: Search Id. Use this Id in lp-search-logs command to get the search
+        result.
+      type: String
+  - arguments:
+    - default: false
+      description: Search Id obtained from lp-get-searchid command.
+      isArray: false
+      name: search_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets LogPoint search result. Takes search_id as an argument.
     execution: false
     name: lp-search-logs
     outputs:
