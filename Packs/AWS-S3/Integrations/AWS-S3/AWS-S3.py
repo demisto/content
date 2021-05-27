@@ -1,12 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 import io
 import math
 import json
 from datetime import datetime, date
-from botocore.parsers import ResponseParserError
 import urllib3.util
 
 # Disable insecure warnings
@@ -250,44 +248,43 @@ def main():
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
+
+        command = demisto.command()
+        args = demisto.args()
+
         LOG('Command being called is {command}'.format(command=demisto.command()))
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             client = aws_client.aws_session(service='s3')
             response = client.list_buckets()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
 
-        elif demisto.command() == 'aws-s3-create-bucket':
-            create_bucket_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-create-bucket':
+            create_bucket_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-delete-bucket':
-            delete_bucket_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-delete-bucket':
+            delete_bucket_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-list-buckets':
-            list_buckets_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-list-buckets':
+            list_buckets_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-get-bucket-policy':
-            get_bucket_policy_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-get-bucket-policy':
+            get_bucket_policy_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-put-bucket-policy':
-            put_bucket_policy_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-put-bucket-policy':
+            put_bucket_policy_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-delete-bucket-policy':
-            delete_bucket_policy_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-delete-bucket-policy':
+            delete_bucket_policy_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-download-file':
-            download_file_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-download-file':
+            download_file_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-list-bucket-objects':
-            list_objects_command(demisto.args(), aws_client)
+        elif command == 'aws-s3-list-bucket-objects':
+            list_objects_command(args, aws_client)
 
-        elif demisto.command() == 'aws-s3-upload-file':
-            upload_file_command(demisto.args(), aws_client)
-
-    except ResponseParserError as e:
-        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-            error=type(e)))
-        LOG(e.message)
+        elif command == 'aws-s3-upload-file':
+            upload_file_command(args, aws_client)
 
     except Exception as e:
         return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(
