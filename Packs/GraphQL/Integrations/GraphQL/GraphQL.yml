@@ -17,7 +17,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: true
-  additionalinfo: Whether to fetch the schema from the transport using an introspection query
+  additionalinfo: Whether to fetch the schema from the transport using an introspection query. When set to false, schema validation will not be performed.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
