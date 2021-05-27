@@ -589,9 +589,6 @@ def fetch_incidents():
 
     last_run = demisto.getLastRun()
 
-    day_ago = datetime.now() - timedelta(days=1)
-    start_time = day_ago.time()
-
     #Check if first run. If not, continue running from the last case dateCreated field.
     if last_run and 'start_time' in last_run:
         start_time = last_run.get('start_time')
@@ -609,14 +606,6 @@ def fetch_incidents():
             'start_time': cases[len(cases)-1]['dateCreated']
         })
 
-
-    events = [
-      {
-          'name': 'event_1',
-          'create_time': '2019-10-23T10:11:00Z',
-          'event_id': 100
-      }
-    ]
 
     ##Generate incidents
     incidents = []
@@ -658,12 +647,6 @@ def lr_search_data(data_args):
 
 
     #Mapping type and name fields
-    #Map your entity Name and ID here (optional)
-    source_entity_map = {
-        "entity1": 1,
-        "entity2": 2,
-        "entity3": 3,
-    }
 
     source_type_map = {
         "API - AWS CloudTrail":1000598,
