@@ -4282,6 +4282,7 @@ class TestIndicatorsSearcher:
         assert search_indicators_obj_search_after._search_after_param == 200
         assert search_indicators_obj_search_after._page == 17
 
+
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
         """
@@ -4601,13 +4602,16 @@ class TestEntityRelationship:
         except ValueError as exception:
             assert "Invalid entity B type: DomainTest" in str(exception)
 
+
 class TestIsDemistoServerGE:
-    def setup_function():
+    @classmethod
+    def setup_function(cls):
         get_demisto_version._version = None
-    
-    def teardown_function():
+
+    @classmethod
+    def teardown_function(cls):
         get_demisto_version._version = None
-        
+
     def test_get_demisto_version(self, mocker):
         # verify expected server version and build returned in case Demisto class has attribute demistoVersion
         mocker.patch.object(
@@ -4657,7 +4661,7 @@ class TestIsDemistoServerGE:
     @pytest.mark.parametrize('version, build', [
         ('6.0.0', '49999'),
         ('6.0.0', '50000'),
-        ('6.0.0', '6'), # Added with the fix of https://github.com/demisto/etc/issues/36876,
+        ('6.0.0', '6'),  # Added with the fix of https://github.com/demisto/etc/issues/36876
         ('5.5.0', '50001')
     ])
     def test_is_demisto_version_build_ge(self, mocker, version, build, clear_version_cache):
@@ -4674,8 +4678,8 @@ class TestIsDemistoServerGE:
     @pytest.mark.parametrize('version, build', [
         ('6.0.0', '50001'),
         ('6.1.0', '49999')
-    ])    
-    def test_is_demisto_version_build_ge(self, mocker, version, build, clear_version_cache):
+    ])
+    def test_is_demisto_version_build_ge_negative(self, mocker, version, build, clear_version_cache):
         mocker.patch.object(
             demisto,
             'demistoVersion',
