@@ -6284,8 +6284,6 @@ def is_demisto_version_ge(version, build_number=''):
         if version >= "5.0.0":
             return False
         raise
-    except Exception as e:
-        pass
 
 
 class DemistoHandler(logging.Handler):
