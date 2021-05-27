@@ -1,0 +1,217 @@
+{
+  "name": "FireEye Central Management NX Alerts - Mapper",
+  "id": "FireEye Central Management NX Alerts - Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "description": "Maps FireEye Central Management alerts.",
+  "mapping": {
+    "FireEye NX Alert": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "FireEye Alert Acknowledgement": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "ack",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye Alert Attack Time": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "attackTime",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye Alert Infection ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "rootInfection",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye Alert Malicious": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "malicious",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye Alert Sensor IP": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "sensorIp",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye Alert Sensor Name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "sensor",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye Alert Vlan": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "vlan",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Action": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "action",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "id",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Malware Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "explanation.malwareDetected.malware",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert SC Version": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "scVersion",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Target IP": {
+          "complex": {
+            "accessor": "ip",
+            "filters": [],
+            "root": "dst",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Target MAC Address": {
+          "complex": {
+            "accessor": "mac",
+            "filters": [],
+            "root": "dst",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Target Port": {
+          "complex": {
+            "accessor": "port",
+            "filters": [],
+            "root": "dst",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Type": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "name",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert URL": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alertUrl",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert UUID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "uuid",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Victim IP": {
+          "complex": {
+            "accessor": "ip",
+            "filters": [],
+            "root": "src",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Victim MAC Address": {
+          "complex": {
+            "accessor": "mac",
+            "filters": [],
+            "root": "src",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "FireEye NX Alert Victim Port": {
+          "complex": {
+            "accessor": "port",
+            "filters": [],
+            "root": "src",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "occurred": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "occurred",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {}
+    }
+  }
+}

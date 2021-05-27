@@ -12,37 +12,39 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "Compliance": {
-            "mandatory": false,
-            "display_name": "Compliance"
-        },
-        "SplunkPy": {
-            "mandatory": false,
-            "display_name": "Splunk"
-        },
         "Phishing": {
             "mandatory": false,
             "display_name": "Phishing"
         },
         "CommonScripts": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Common Scripts"
         },
         "Malware": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "Malware"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
         },
         "CVESearch": {
             "mandatory": false,
             "display_name": "CVE Search"
+        },
+        "Compliance": {
+            "mandatory": true,
+            "display_name": "Compliance"
         }
     },
     "displayedImages": [
-        "Compliance",
-        "SplunkPy",
         "Phishing",
         "CommonScripts",
         "Malware",
-        "CVESearch"
+        "SplunkPy",
+        "SANS",
+        "CVESearch",
+        "NIST",
+        "Compliance"
     ]
 }

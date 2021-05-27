@@ -1,0 +1,13 @@
+!fireeye-cm-get-alerts
+!fireeye-cm-get-alert-details alert_id=563,564,34800
+!fireeye-cm-alert-acknowledge uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
+!fireeye-cm-get-artifacts-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
+!fireeye-cm-get-artifacts-metadata-by-uuid uuid=b38b83a0-4b96-408c-999f-4e97a5099f61
+!fireeye-cm-get-events duration="48_hours" end_time="2021-05-14T01:08:04.000-02:00" mvx_correlated_only="true"
+!fireeye-cm-get-quarantined-emails start_time="1 year" limit=4
+!fireeye-cm-release-quarantined-emails queue_ids=<queue_id> sensor_name=<sensor_name>
+!fireeye-cm-delete-download-emails queue_ids=<queue_id> sensor_name=<sensor_name>
+!fireeye-cm-download-quarantined-emails sensor_name=FireEyeEX queue_id=4FpWV31wpbzTgF9
+!fireeye-cm-get-reports report_type=alertDetailsReport alert_id=564
+!fireeye-cm-get-reports report_type=ipsExecutiveSummary start_time="1 year"
+!fireeye-cm-get-reports report_type=mpsCallBackServer start_time="1 year"
