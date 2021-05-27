@@ -1,0 +1,288 @@
+{
+  "data": {
+    "location": {
+      "organization": "AS-26496-GO-DADDY-COM-LLC",
+      "cidr": {
+        "id": "ip:184.168.221.96/22",
+        "name": "184.168.221.96/22",
+        "type": "IpAddress"
+      },
+      "location": {
+        "continent": "North America",
+        "country": "United States",
+        "city": "None"
+      },
+      "asn": "AS26496"
+    },
+    "risk": {
+      "criticalityLabel": "Unusual",
+      "riskString": "8/54",
+      "rules": 8,
+      "criticality": 1,
+      "riskSummary": "8 of 54 Risk Rules currently observed.",
+      "score": 24,
+      "evidenceDetails": [
+        {
+          "mitigationString": "",
+          "evidenceString": "79 sightings on 5 sources: PasteBin, OSINT Master Feeds, @DGAFeedAlerts, GhostBin, ReversingLabs. 15 related intrusion methods including Trojan, Pykspa, Sefnit, Injector, bit flipping. Most recent tweet: New pykspa Dom: sskiss[.]com IP: 184[.]168[.]221[.]96 NS: https://t.co/zommKwQ5WR https://t.co/htzRjH5gHE. Most recent link (May 25, 2019): https://twitter.com/DGAFeedAlerts/statuses/1132075914026782721",
+          "rule": "Historically Linked to Intrusion Method",
+          "criticality": 1,
+          "timestamp": "2019-05-25T00:08:25.000Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "21 sightings on 3 sources: BlackHatWorld Forum, A Network Security Forum, Nulled Forum. Most recent link (Dec 14, 2015): https://nulled.to(Obfuscated)/topic/133863-5k-proxies-mixed-prizm-/?p=3167369",
+          "rule": "Historical Open Proxies",
+          "criticality": 1,
+          "timestamp": "2015-12-14T08:03:43.000Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "3 sightings on 1 source: DHS Automated Indicator Sharing. 3 reports including STIX Package, from Anomali, Inc., Information Technology Sector, NCCIC:STIX_Package-c54f9e41-d304-4384-92e0-c950fa2a4ca3 (Nov 20, 2018).",
+          "rule": "Historically Reported by DHS AIS",
+          "criticality": 1,
+          "timestamp": "2018-11-20T09:58:14.000Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "21 sightings on 2 sources: @DGAFeedAlerts, Hostgeni. Most recent tweet: New pykspa Dom: sskiss[.]com IP: 184[.]168[.]221[.]96 NS: https://t.co/zommKwQ5WR https://t.co/htzRjH5gHE. Most recent link (May 25, 2019): https://twitter.com/DGAFeedAlerts/statuses/1132075914026782721",
+          "rule": "Historical Threat Researcher",
+          "criticality": 1,
+          "timestamp": "2019-05-25T00:08:25.000Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "238 sightings on 1 source: hpHosts Latest Additions. Most recent link (Oct 9, 2018): http://hosts-file.net/?s=www.vbstechsupport.com",
+          "rule": "Historical Multicategory Blocklist",
+          "criticality": 1,
+          "timestamp": "2018-10-09T14:10:00.000Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "6 sightings on 1 source: AbuseIP Database. Most recent link (Jun 21, 2018): https://www.abuseipdb.com/check/184.168.221.96",
+          "rule": "Historical SSH/Dictionary Attacker",
+          "criticality": 1,
+          "timestamp": "2018-06-21T15:16:57.197Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "2 sightings on 1 source: @DGAFeedAlerts. Most recent tweet: New pykspa Dom: sskiss[.]com IP: 184[.]168[.]221[.]96 NS: https://t.co/zommKwQ5WR https://t.co/htzRjH5gHE. Most recent link (May 25, 2019): https://twitter.com/DGAFeedAlerts/statuses/1132075914026782721",
+          "rule": "Historically Reported as a Defanged IP",
+          "criticality": 1,
+          "timestamp": "2019-05-25T00:08:25.000Z",
+          "criticalityLabel": "Unusual"
+        },
+        {
+          "mitigationString": "",
+          "evidenceString": "Previous sightings on 3 sources: University of Science and Technology of China Black IP List, Bambenek Consulting C&C Blocklist, Recorded Future Analyst Community Trending Indicators. Observed between May 21, 2019, and Apr 27, 2021.",
+          "rule": "Historically Reported in Threat List",
+          "criticality": 1,
+          "timestamp": "2021-05-08T16:47:40.455Z",
+          "criticalityLabel": "Unusual"
+        }
+      ]
+    },
+    "intelCard": "https://app.recordedfuture.com/live/sc/entity/ip%3A184.168.221.96",
+    "entity": {
+      "id": "ip:184.168.221.96",
+      "name": "184.168.221.96",
+      "type": "IpAddress"
+    },
+    "metrics": [
+      {
+        "type": "defangedSightings",
+        "value": 2
+      },
+      {
+        "type": "totalHits",
+        "value": 28443
+      },
+      {
+        "type": "dhsAis",
+        "value": 1
+      },
+      {
+        "type": "c2Subscore",
+        "value": 0
+      },
+      {
+        "type": "phishingSubscore",
+        "value": 0
+      },
+      {
+        "type": "multiBlacklistSightings",
+        "value": 238
+      },
+      {
+        "type": "threatResearcher",
+        "value": 2
+      },
+      {
+        "type": "multiBlacklist",
+        "value": 1
+      },
+      {
+        "type": "linkedIntrusionSightings",
+        "value": 79
+      },
+      {
+        "type": "sixtyDaysHits",
+        "value": 0
+      },
+      {
+        "type": "openProxiesSightings",
+        "value": 21
+      },
+      {
+        "type": "sevenDaysHits",
+        "value": 0
+      },
+      {
+        "type": "whitlistedCount",
+        "value": 0
+      },
+      {
+        "type": "linkedIntrusion",
+        "value": 5
+      },
+      {
+        "type": "dhsAisSightings",
+        "value": 3
+      },
+      {
+        "type": "oneDayHits",
+        "value": 0
+      },
+      {
+        "type": "trendVolume",
+        "value": 0
+      },
+      {
+        "type": "historicalThreatListMembershipSightings",
+        "value": -1
+      },
+      {
+        "type": "socialMediaHits",
+        "value": 57
+      },
+      {
+        "type": "undergroundForumHits",
+        "value": 2
+      },
+      {
+        "type": "infoSecHits",
+        "value": 25507
+      },
+      {
+        "type": "historicalThreatListMembership",
+        "value": 3
+      },
+      {
+        "type": "maliciousHits",
+        "value": 36
+      },
+      {
+        "type": "darkWebHits",
+        "value": 4
+      },
+      {
+        "type": "publicSubscore",
+        "value": 24
+      },
+      {
+        "type": "sshDictAttacker",
+        "value": 1
+      },
+      {
+        "type": "pasteHits",
+        "value": 181
+      },
+      {
+        "type": "mitigatedCount",
+        "value": 0
+      },
+      {
+        "type": "criticality",
+        "value": 1
+      },
+      {
+        "type": "technicalReportingHits",
+        "value": 25106
+      },
+      {
+        "type": "openProxies",
+        "value": 3
+      },
+      {
+        "type": "sshDictAttackerSightings",
+        "value": 6
+      },
+      {
+        "type": "threatResearcherSightings",
+        "value": 21
+      },
+      {
+        "type": "defanged",
+        "value": 1
+      }
+    ],
+    "relatedEntities": [
+      {
+        "entities": [
+          {
+            "count": 30,
+            "entity": {
+              "id": "0edUR",
+              "name": "Botnet",
+              "type": "MalwareCategory"
+            }
+          },
+          {
+            "count": 23,
+            "entity": {
+              "id": "0efpT",
+              "name": "Trojan",
+              "type": "MalwareCategory"
+            }
+          },
+          {
+            "count": 3,
+            "entity": {
+              "id": "0eXiO",
+              "name": "Computer Worm",
+              "type": "MalwareCategory"
+            }
+          },
+          {
+            "count": 2,
+            "entity": {
+              "id": "QCqLhE",
+              "name": "Backdoor",
+              "type": "MalwareCategory"
+            }
+          },
+          {
+            "count": 1,
+            "entity": {
+              "id": "J31vQ6",
+              "name": "Banking Trojan",
+              "type": "MalwareCategory"
+            }
+          }
+        ],
+        "type": "RelatedMalwareCategory"
+      }
+    ],
+    "timestamps": {
+      "lastSeen": "2019-09-02T08:57:59.455Z",
+      "firstSeen": "2013-03-20T05:24:17.816Z"
+    },
+    "threatLists": []
+  }
+}
