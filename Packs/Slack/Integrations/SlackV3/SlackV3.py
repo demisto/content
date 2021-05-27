@@ -11,7 +11,6 @@ from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.web.async_client import AsyncSlackResponse
 
 ''' MAIN FUNCTION '''
 
@@ -739,11 +738,6 @@ def test_module():
         return_error('Dedicated channel not found.')
     message = 'Hi there! This is a test message.'
 
-    body = {
-        'text': message,
-        'channel': channel.get('id')
-    }
-
     CLIENT.chat_postMessage(channel=channel.get('id'), text=message)
 
     demisto.results('ok')
@@ -913,7 +907,6 @@ def slack_send():
             severity = int(severity)
         except Exception:
             severity = None
-            pass
 
     channel = original_channel
     if original_channel == INCIDENT_NOTIFICATION_CHANNEL or (not original_channel and message_type == INCIDENT_OPENED):
