@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Sixgill_DVE_Enrichment
+  id: Cybersixgill_DVE_Enrichment
   version: -1
 configuration:
 - display: Sixgill API client ID
@@ -22,8 +22,8 @@ configuration:
   required: false
   type: 8
 description: CVE enrichment
-display: Sixgill_DVE_Enrichment
-name: Sixgill_DVE_Enrichment
+display: Cybersixgill_DVE_Enrichment
+name: Cybersixgill_DVE_Enrichment
 script:
   commands:
   - arguments:

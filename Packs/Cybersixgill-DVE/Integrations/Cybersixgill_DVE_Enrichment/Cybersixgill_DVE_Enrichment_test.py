@@ -527,7 +527,7 @@ def test_test_module_command_raise_exception(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(400, "error"))
 
-    from Sixgill_DVE_Enrichment import test_module_command
+    from Cybersixgill_DVE_Enrichment import test_module_command
 
     with pytest.raises(Exception):
         test_module_command()
@@ -537,7 +537,7 @@ def test_test_module_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", return_value=MockedResponse(200, "ok"))
 
-    from Sixgill_DVE_Enrichment import test_module_command
+    from Cybersixgill_DVE_Enrichment import test_module_command
 
     test_module_command("client_id", "client_secret", "channel_code", requests.Session(), "verify")
 
@@ -546,7 +546,7 @@ def test_stix_to_indicator(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_DVE_Enrichment import stix_to_indicator
+    from Cybersixgill_DVE_Enrichment import stix_to_indicator
 
     output = []
     cve_data = stix_to_indicator(cve_enrich)
@@ -558,7 +558,7 @@ def test_cve_enrich_command(mocker):
     mocker.patch.object(demisto, "params", return_value=init_params())
     mocker.patch("requests.sessions.Session.send", new=mocked_request)
 
-    from Sixgill_DVE_Enrichment import cve_enrich_command
+    from Cybersixgill_DVE_Enrichment import cve_enrich_command
     from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
     client = SixgillEnrichClient(
