@@ -6,7 +6,8 @@ DESCRIPTION = [
     "{res['busy']} busy workers has reached 50% of total workers"
 ]
 
-RESOLUTION = ["Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"]
+RESOLUTION = ["Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+              "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"]
 
 
 def analyzeData(res):
@@ -27,7 +28,7 @@ def analyzeData(res):
 
 args = demisto.args()
 isWidget = argToBoolean(args.get('isWidget', True))
-if isWidget == True:
+if isWidget is True:
     workers = demisto.executeCommand("demisto-api-get", {"uri": "/workers/status"})[0]['Contents']
     table = []
 

@@ -12,10 +12,13 @@ DESCRIPTION = [
 
 RESOLUTION = [
     "Consider using out of the box playbooks",
-    "Consider changing it to prefered methods such as: https://xsoar.pan.dev/docs/playbooks/generic-polling https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPOaCAO",
+    "Consider changing it to prefered methods such as: https://xsoar.pan.dev/docs/playbooks/generic-polling "
+    "https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPOaCAO",
     "Consider joining some of the setIncident tasks",
-    "Communication Tasks: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/playbooks/playbook-tasks/communication-tasks",
-    "Sub-playbook Tutorial: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial"
+    "Communication Tasks: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+    "cortex-xsoar-admin/playbooks/playbook-tasks/communication-tasks",
+    "Sub-playbook Tutorial: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+    "cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial"
 ]
 
 thresholds = args['Thresholds']

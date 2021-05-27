@@ -11,7 +11,7 @@ entryID = demisto.args()['entryID']
 res = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
 file_path = res[0]['Contents']['path']
 file_name = res[0]['Contents']['name']
-file_sufix = re.findall(r"re:|tar|gz", file_name)
+file_suffix = re.findall(r"re:|tar|gz", file_name)
 
 
 def extractFiles(path, action):
@@ -43,13 +43,12 @@ def extractFiles(path, action):
         tar = res[0]['Contents']['path']
 
 
-if "gz" in file_sufix and "tar" in file_sufix:
+if "gz" in file_suffix and "tar" in file_suffix:
     tar_action = "r:gz"
-elif "tar" in file_sufix:
+elif "tar" in file_suffix:
     tar_action = "r:"
 else:
     demisto.results('no')
-    exit()
 
 if res[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')

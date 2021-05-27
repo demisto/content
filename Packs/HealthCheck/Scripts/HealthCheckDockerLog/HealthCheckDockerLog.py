@@ -7,7 +7,8 @@ DESCRIPTION = [
     "Container {0} version {1} was last updated {2}, consider updating it"
 ]
 
-RESOLUTION = ["Docker containers overloaded: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"]
+RESOLUTION = ["Docker containers overloaded: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+              "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"]
 
 
 def containerAnalytics(containers):
@@ -16,14 +17,13 @@ def containerAnalytics(containers):
         if float(container['cpu_usage']) > 80.0:
             res.append({"category": "Docker", "severity": "High",
                         "description": "Container {} uses more then 80% of the CPU".format(container['containerid']),
-                        "resolution": f"RESOLUTION[0]"
+                        "resolution": f"{RESOLUTION[0]}"
                         })
     return lres
 
 
 def imageAnalytics(images):
     lres = []
-    watcher = ['months', 'years']
     for image in images:
         if "month" in image['last_update']:
             res.append({"category": "Docker", "severity": "Medium",
@@ -53,8 +53,8 @@ if path[0]['Type'] == entryTypes['error']:
     return_results('File not found')
 else:
     getimages = re.compile(
-        r'(?P<repository>[\w*\/\.\-\<\>]*)\s+(?P<tag>\d[\.|\d]*|\blatest\b|\b\<none\>\b|\b1\.[0-9]\-alpine\b)\s+(?P<ImageID>\w+)\s+(?P<Created>\d{0,2}\s(?:\byears\b|\bmonths\b|weeks\b) ago)\s+(?P<size>\d+.*B)', re.MULTILINE)
-    getcontainers = re.compile(r'^(?P<container>[\w]+)\s+(?P<name>[\w\d\-\.]+)\s+(?P<cpu>[\d\.]+)\%\s+(?P<memusage>[\d\.]+(?:MiB|GiB))\s+\/\s+(?P<memlimit>[\d\.]+(?:MiB|GiB))\s+(?P<mempercent>[\d\.]+)%\s+(?P<netI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<netO>[\d\.]+(?:B|kB|MB))\s+(?P<blockI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<blockO>[\d\.]+(?:B|kB|MB))\s+(?P<pids>\d+)', re.MULTILINE)
+        r'(?P<repository>[\w*\/\.\-\<\>]*)\s+(?P<tag>\d[\.|\d]*|\blatest\b|\b\<none\>\b|\b1\.[0-9]\-alpine\b)\s+(?P<ImageID>\w+)\s+(?P<Created>\d{0,2}\s(?:\byears\b|\bmonths\b|weeks\b) ago)\s+(?P<size>\d+.*B)', re.MULTILINE) #regex
+    getcontainers = re.compile(r'^(?P<container>[\w]+)\s+(?P<name>[\w\d\-\.]+)\s+(?P<cpu>[\d\.]+)\%\s+(?P<memusage>[\d\.]+(?:MiB|GiB))\s+\/\s+(?P<memlimit>[\d\.]+(?:MiB|GiB))\s+(?P<mempercent>[\d\.]+)%\s+(?P<netI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<netO>[\d\.]+(?:B|kB|MB))\s+(?P<blockI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<blockO>[\d\.]+(?:B|kB|MB))\s+(?P<pids>\d+)', re.MULTILINE) #regex
     usage = re.compile(r'(\d+[.]\d+)%', re.MULTILINE)
     config = re.compile(r'([ \w]+)[:] ([-., \d\w]+)', re.MULTILINE)
     image_array = []

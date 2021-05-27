@@ -26,7 +26,7 @@ stats = demisto.executeCommand(
     })
 
 
-if isWidget == True:
+if isWidget is True:
     data = {
         "Type": 17,
         "ContentsFormat": "number",

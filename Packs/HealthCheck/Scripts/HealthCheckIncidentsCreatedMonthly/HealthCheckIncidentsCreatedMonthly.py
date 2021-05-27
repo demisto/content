@@ -7,9 +7,6 @@ stats = demisto.executeCommand(
         "body": {
             "size": 13,
             "dataType": "incidents",
-            "params": {
-                "timeFrame": "months"
-            },
             "query": "",
             "dateRange": {
                 "period": {

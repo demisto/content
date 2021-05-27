@@ -49,7 +49,7 @@ else:
                     demisto.executeCommand("setIncident", {"devprodgit": result})
                     git = True
 
-                if ver == True and git == False:
+                if ver is True and git is False:
                     demisto.executeCommand("setIncident", {"devprodgit": line[:-1]})
                     ver = False
                 if ('Git version:' in line) or ('Version:' in line):

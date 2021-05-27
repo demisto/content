@@ -7,104 +7,110 @@ suggestions = []
 knownerrors = [
     {
         "Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get": [
-            "*Found Error:* `Got permission denied while trying to connect to the Docker daemon socket at unix`",
+            "Error Found: `Got permission denied while trying to connect to the Docker daemon socket at unix`",
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u000000HB4oCAG"
         ]
     },
     {
         '[Errno 13] Permission denied:': [
-            '*Found Error:* `[Errno 13] Permission denied`',
+            'Error Found: `[Errno 13] Permission denied`',
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u000000HB4ZCAW"
         ]
     },
     {
         'config.json: permission denied': [
-            '*Found Error:* `config.json: permission denied`',
+            'Error Found: `config.json: permission denied`',
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u000000HB4tCAG"
         ]
     },
     {
         'Error response from daemon: OCI runtime create failed:': [
-            '*Found Error:* `Error response from daemon: OCI runtime create failed`',
+            'Error Found: `Error response from daemon: OCI runtime create failed`',
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u000000HB4eCAG"
         ]
     },
     {
         'proxyconnect tcp: tls: oversized record received with length 20527': [
-            '*Found Error:* `proxyconnect tcp: tls: oversized record received with length 20527`',
+            'Error Found: `proxyconnect tcp: tls: oversized record received with length 20527`',
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PNhpCAG"
         ]
     },
     {
         "error: websocket: not a websocket handshake: 'upgrade' token not found in 'Connection' header": [
-            '*Found Error:* `websocket: not a websocket handshake: upgrade token not found in Connection header`',
+            'Error Found: `websocket: not a websocket handshake: upgrade token not found in Connection header`',
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PNiOCAW"
         ]
     },
     {
         "Create more free space in thin pool or use dm.min_free_space": [
-            '*Found Error:* `Create more free space in thin pool or use dm.min_free_space`',
+            'Error Found: `Create more free space in thin pool or use dm.min_free_space`',
             "Please refer to https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PNhQCAW"
         ]
     },
     {
         "in pool reached high watermark": [
-            "*Found Error:* `amount of active containers in pool reached high watermark`",
-            "Check and increase high watermark for docker: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
+            "Error Found: `amount of active containers in pool reached high watermark`",
+            "Check and increase high watermark for docker: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+            "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
         ]
     },
     {
         "no space left on device": [
-            "*Found Error:* `no space left on device`",
-            "Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"
+            "Error Found: `no space left on device`",
+            "Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+            "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"
         ]
     },
     {
         "ImportError: No module named": [
-            "*Found Error:* `ImportError: No module named`",
+            "Error Found: `ImportError: No module named`",
             "Python environment missing dependency or docker image outdated."
         ]
     },
     {
         "(error: websocket: close 1006 (abnormal closure): unexpected EOF)": [
-            " *Found Error:* `error: websocket: close 1006 (abnormal closure): unexpected EOF`",
-            "WebSocket Configuration: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-1/cortex-xsoar-admin/installation/post-installation-checklist/websocket-configuration.html#idee004eaa-34d9-41a1-a8d0-aba3bf9f91bb"
+            " Error Found: `error: websocket: close 1006 (abnormal closure): unexpected EOF`",
+            "WebSocket Configuration: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-1/cortex-xsoar-admin/installation/"
+            "post-installation-checklist/websocket-configuration.html#idee004eaa-34d9-41a1-a8d0-aba3bf9f91bb"
         ]
     },
     {
         "fatal error: runtime: out of memory": [
-            "*Found Error:* `fatal error: runtime: out of memory.`",
-            "Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
+            "Error Found: `fatal error: runtime: out of memory.`",
+            "Performance Tuning of Cortex XSOAR Server: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+            "cortex-xsoar-admin/cortex-xsoar-overview/performance-tuning-of-cortex-xsoar-server"
         ]
     },
     {
         "error Wrong schedule format": [
-            "*Found Error:* `error Wrong schedule format`",
+            "Error Found: `error Wrong schedule format`",
             "Change jobs.serverSiemIncidents.schedule=<time in minutes> to Xm. for example 5 minuets should be 5m"
         ]
     },
     {
         "error Failed on ensure function for": [
-            "*Found Error:* `error Failed on ensure function for`",
-            "Reindex the Entire Database: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-data/reindex-the-database"
+            "Error Found: `error Failed on ensure function for`",
+            "Reindex the Entire Database: "
+            "https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-data/reindex-the-database"
         ]
     },
     {
         "Version didnt change": [
-            "*Found Error:* `Version didnt change`",
+            "Error Found: `Version didnt change`",
             "Upgrade used an older version, Re-run the upgrade with the latest version."
         ]
     },
     {
         "layout-edit-.json: invalid argument": [
-            "*Found Error:* `layout-edit-.json: invalid argument`",
+            "Error Found: `layout-edit-.json: invalid argument`",
             "Please contact customer support"
         ]
     },
     {
         "error: unsupported mode": [
-            "*Found Error:* `error: unsupported mode`",
-            "Remove old index files under /usr/local/demisto/dist. and do a hard refresh in the browser. No service restart needed"
+            "Error Found: `error: unsupported mode`",
+            "Remove old index files under /usr/local/demisto/dist. and do a hard refresh in the browser. "
+            "No service restart needed"
         ]
     }
 ]

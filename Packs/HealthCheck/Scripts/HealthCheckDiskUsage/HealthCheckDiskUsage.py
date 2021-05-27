@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
+RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+              "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
 
 
 def analyzeData(res):
@@ -17,14 +18,15 @@ def analyzeData(res):
                            'description': "Disk usage has reached 70%", "resolution": f"{RESOLUTION[0]}"})
     if (res[len(res) - 1]['data'][0] - res[0]['data'][0]) > 1:
         addActions.append({'category': 'Disk usage analysis', 'severity': 'High',
-                           'description': "Disk usage was increased significantly in the last 24 hours", "resolution": f"{RESOLUTION[0]}"})
+                           'description': "Disk usage was increased significantly in the last 24 hours",
+                           "resolution": f"{RESOLUTION[0]}"})
     return addActions
 
 
 incident = demisto.incidents()[0]
 args = demisto.args()
 isWidget = argToBoolean(args.get('isWidget', True))
-widgetType = "number" if isWidget == True else "line"
+widgetType = "number" if isWidget is True else "line"
 
 
 partition = "/"
