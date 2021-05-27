@@ -60,7 +60,7 @@ def test_fetch_entity_anomalies(requests_mock):
     }
     integration_response = fetch_entity_anomalies(client, params, args)
     expected_response = util_load_json('test_data/formatted_fetch_anomaly.json')
-    raise ValueError(integration_response, integration_response.outputs_key_field,":::::", expected_response)
+    # raise ValueError(integration_response, integration_response.outputs_key_field,":::::", expected_response)
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_key_field == 'GlobalID'
     assert integration_response.outputs_prefix == 'Linkshadow.data'
