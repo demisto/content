@@ -42,7 +42,7 @@
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
       <li><strong>Hostname, IP address, or server URL.</strong></li>
       <li><strong>Domain</strong></li>
-      <li><strong>Credentials</strong></li>
+      <li><strong>Credentials OR API Token</strong></li>
       <li><strong>Trust any certificate (not secure)</strong></li>
       <li><strong>Use system proxy settings</strong></li>
     </ul>
@@ -50,6 +50,35 @@
   <li>
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
+</ol>
+<h2>Authentication Options</h2>
+<ol>
+    <li><strong>Basic Authentication -</strong> to authenticate using basic authentication fill in the username and
+     password
+     into the corresponding fields and leave the API Token field empty. The username and password should be the same
+      as the Tanium client.</li>
+    <li>
+    <strong>OAuth 2.0 Authentication -</strong> To use OAuth 2.0 follow the next steps:
+    <ol>
+    <li>Login to the Tanium client and navigate to <strong>Administration</strong> -> <strong>API Tokens</strong></li>
+    <li>Click <strong>New API Token</strong> to create a new API Token.</li>
+    <li>In the pop-up window, modify the expiration time and trusted IP addresses if needed and click save.</li>
+    <li>In the next pop-up window, fill in the Tanium credentials and copy the generated API token.
+        Notice! The API Token cannot be copied after closing the window, so make sure to save it for future use.</li>
+    <li>Paste the generated API Token into the <strong>API Token</strong> parameter in the instance configuration, and leave the username
+        and password fields empty.</li>
+    <li>Press the <strong>Test</strong> button to validate the instance configuration.</li>
+    </ol>
+    </li>
+</ol>
+<h5>Notes:</h5>
+<ol>
+    <li><strong>Trusted IP Addresses:</strong> by default, the Tanium Server blocks API tokens from all addresses except
+     registered Tanium Module Servers. To add additional allowed IP addresses for any API token, add the IP addresses to the api_token_trusted_ip_address_list global setting. To add allowed IP addresses for an individual API token, specify the IP addresses in the trusted_ip_addresses field of the api_token object.</li>
+    <li><strong>Expiration Time:</strong> by default, an api_token is valid for seven days. To change the expiration timeframe, edit
+     the api_token_expiration_in_days global setting (minimum value is 1), or include a value with the expire_in_days field when you create the token.</li>
+    <li>To edit a global setting in the Tanium platform, go to <strong>Administration</strong> -> <strong>Global
+     Settings</strong> and search for the setting you would like to edit.</li>
 </ol>
 <h2>Commands</h2>
 <p>
