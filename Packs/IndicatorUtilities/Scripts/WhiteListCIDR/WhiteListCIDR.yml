@@ -1,0 +1,35 @@
+args:
+- default: false
+  description: CIDR Indicator query that returns a list of CIDR blocks to use as whitelist.
+  isArray: false
+  name: cidr_whitelist_query
+  required: true
+  secret: false
+- default: false
+  description: Tag to add to indicators that fall within the whitelist CIDR blocks
+  isArray: false
+  name: add_tag
+  required: true
+  secret: false
+- default: false
+  description: Query that returns the indicators to verify
+  isArray: false
+  name: indicator_query
+  required: true
+  secret: false
+comment: Add the provided tag to indicators that match the given indicator query.
+commonfields:
+  id: 7b7aaff3-f95c-4068-8d9f-26b6ad9753c8
+  version: -1
+enabled: true
+name: WhiteListCIDR
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.4.18682
+runas: DBotWeakRole
+runonce: false
+pswd: ''
+vcShouldKeepItemLegacyProdMachine: false

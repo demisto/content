@@ -1,0 +1,238 @@
+[
+  {
+    "Contents": [
+      {
+        "id": "32694",
+        "version": 4,
+        "modified": "2021-05-06T00:49:46.033831195Z",
+        "sortValues": null,
+        "comments": [
+          {
+            "id": "30ec639d-912e-4e08-8bcb-962704d8435b",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Created",
+            "user": "@DBot",
+            "created": "2021-05-04T10:06:09.171194034Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "Cofense Feed.Cofense Feed_instance_1",
+            "entryId": "",
+            "category": "Sighting"
+          },
+          {
+            "id": "48cfc0e0-6d86-48ab-8812-98a48e8dc67e",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Expiration status changed from Active to Expired",
+            "user": "@DBot",
+            "created": "2021-05-05T17:33:15.158890658Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "Cofense Feed.Cofense Feed_instance_1",
+            "entryId": "",
+            "category": "Indicator Update"
+          },
+          {
+            "id": "0304d952-9a90-4fb1-84c2-eed86c8704d6",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Removed from feed",
+            "user": "@DBot",
+            "created": "2021-05-05T17:33:16.412917439Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "Cofense Feed.Cofense Feed_instance_1",
+            "entryId": "",
+            "category": "Sighting"
+          },
+          {
+            "id": "4b15f649-ac0e-4fac-8416-edc24ca8b852",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "The value of field ASN changed to 14618",
+            "user": "@DBot",
+            "created": "2021-05-06T00:49:44.335915608Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "@DBot",
+            "entryId": "",
+            "category": "Indicator Update"
+          },
+          {
+            "id": "004c807a-0ce1-4d15-8377-37e652f7e148",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Reputation changed from None to Good",
+            "user": "@DBot",
+            "created": "2021-05-06T00:49:44.335980913Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "@DBot",
+            "entryId": "",
+            "category": "Indicator Update"
+          }
+        ],
+        "account": "",
+        "timestamp": "2021-05-04T10:06:09.356454681Z",
+        "indicator_type": "IP",
+        "value": "18.208.124.7",
+        "sourceInstances": [
+          "Cofense Feed_instance_1",
+          "VirusTotal"
+        ],
+        "sourceBrands": [
+          "Cofense Feed",
+          "VirusTotal"
+        ],
+        "investigationIDs": [
+          "5353994c-b717-44a7-863c-b36814c10ec3"
+        ],
+        "relatedIncCount": 0,
+        "lastSeen": "2021-05-06T00:49:45.713207121Z",
+        "firstSeen": "2021-05-06T00:49:45.713207421Z",
+        "lastSeenEntryID": "252@5353994c-b717-44a7-863c-b36814c10ec3",
+        "firstSeenEntryID": "API",
+        "score": 1,
+        "manualScore": false,
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "CustomFields": {
+          "asn": "14618",
+          "confidence": "1",
+          "description": "null",
+          "geocountry": "US",
+          "geolocation": "42.3646,-71.1028",
+          "malwarefamily": null,
+          "name": "171270",
+          "sourceoriginalseverity": "Minor",
+          "tags": [
+            "phishme_Intelligence_90DayAge"
+          ],
+          "threattypes": [
+            {
+              "threatcategory": "C2",
+              "threatcategoryconfidence": 1
+            }
+          ]
+        }
+      },
+      {
+        "id": "32695",
+        "version": 4,
+        "modified": "2021-05-06T00:49:46.033831195Z",
+        "sortValues": null,
+        "comments": [
+          {
+            "id": "30ec639d-912e-4e08-8bcb-962704d8435b",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Created",
+            "user": "@DBot",
+            "created": "2021-05-04T10:06:09.171194034Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "Cofense Feed.Cofense Feed_instance_1",
+            "entryId": "",
+            "category": "Sighting"
+          },
+          {
+            "id": "48cfc0e0-6d86-48ab-8812-98a48e8dc67e",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Expiration status changed from Active to Expired",
+            "user": "@DBot",
+            "created": "2021-05-05T17:33:15.158890658Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "Cofense Feed.Cofense Feed_instance_1",
+            "entryId": "",
+            "category": "Indicator Update"
+          },
+          {
+            "id": "0304d952-9a90-4fb1-84c2-eed86c8704d6",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Removed from feed",
+            "user": "@DBot",
+            "created": "2021-05-05T17:33:16.412917439Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "Cofense Feed.Cofense Feed_instance_1",
+            "entryId": "",
+            "category": "Sighting"
+          },
+          {
+            "id": "4b15f649-ac0e-4fac-8416-edc24ca8b852",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "The value of field ASN changed to 14618",
+            "user": "@DBot",
+            "created": "2021-05-06T00:49:44.335915608Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "@DBot",
+            "entryId": "",
+            "category": "Indicator Update"
+          },
+          {
+            "id": "004c807a-0ce1-4d15-8377-37e652f7e148",
+            "version": 0,
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "content": "Reputation changed from None to Good",
+            "user": "@DBot",
+            "created": "2021-05-06T00:49:44.335980913Z",
+            "type": "IndicatorCommentTimeLine",
+            "source": "@DBot",
+            "entryId": "",
+            "category": "Indicator Update"
+          }
+        ],
+        "account": "",
+        "timestamp": "2021-05-04T10:06:09.356454681Z",
+        "indicator_type": "IP",
+        "value": "18.208.124.8",
+        "sourceInstances": [
+          "Cofense Feed_instance_1",
+          "VirusTotal"
+        ],
+        "sourceBrands": [
+          "Cofense Feed",
+          "VirusTotal"
+        ],
+        "investigationIDs": [
+          "5353994c-b717-44a7-863c-b36814c10ec3"
+        ],
+        "relatedIncCount": 0,
+        "lastSeen": "2021-05-06T00:49:45.713207121Z",
+        "firstSeen": "2021-05-06T00:49:45.713207421Z",
+        "lastSeenEntryID": "252@5353994c-b717-44a7-863c-b36814c10ec3",
+        "firstSeenEntryID": "API",
+        "score": 1,
+        "manualScore": false,
+        "manualSetTime": "0001-01-01T00:00:00Z",
+        "CustomFields": {
+          "asn": "14618",
+          "confidence": "1",
+          "description": "null",
+          "geocountry": "US",
+          "geolocation": "42.3646,-71.1028",
+          "malwarefamily": null,
+          "name": "171270",
+          "sourceoriginalseverity": "Minor",
+          "tags": [
+            "phishme_Intelligence_90DayAge",
+            "test_tag"
+          ],
+          "threattypes": [
+            {
+              "threatcategory": "C2",
+              "threatcategoryconfidence": 1
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
+

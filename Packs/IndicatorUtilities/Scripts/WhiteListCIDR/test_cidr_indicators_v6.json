@@ -1,0 +1,155 @@
+[
+  {
+    "Contents": [
+      {
+        "CustomFields": {
+          "office365category": "Allow",
+          "office365expressroute": false,
+          "office365required": false,
+          "riskiqassettype": "",
+          "tags": [
+            "tag-CIDR"
+          ],
+          "trafficlightprotocol": ""
+        },
+        "account": "",
+        "aggregatedReliability": "",
+        "calculatedTime": "2021-05-05T05:48:42.699914985Z",
+        "comment": "",
+        "comments": [
+          {
+            "category": "Sighting",
+            "content": "Created",
+            "created": "2021-05-05T05:48:42.699862881Z",
+            "entryId": "",
+            "id": "ec6a18d5-75f2-44e6-8860-ae3d94513ebe",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          },
+          {
+            "category": "Indicator Update",
+            "content": "The value of field Expiration changed to 2021-05-12 05:48:42.699914185 +0000 UTC",
+            "created": "2021-05-05T05:55:28.130936533Z",
+            "entryId": "",
+            "id": "5afb4074-fbae-44bb-8a7a-a9808bbf506d",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          },
+          {
+            "category": "Indicator Update",
+            "content": "The value tag-CIDR was added to field Tags",
+            "created": "2021-05-05T05:55:28.131175855Z",
+            "entryId": "",
+            "id": "8fe1ef50-a72a-4703-8c37-a9a3d2267fb7",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          },
+          {
+            "category": "Indicator Update",
+            "content": "Reputation changed from None to Good",
+            "created": "2021-05-05T06:44:25.190194979Z",
+            "entryId": "",
+            "id": "d46cdf3e-127d-481b-84ba-41998686416d",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          },
+          {
+            "category": "Indicator Update",
+            "content": "The value of field Expiration changed to 2021-05-12 05:48:42.699914185 +0000 UTC",
+            "created": "2021-05-05T06:44:25.190258386Z",
+            "entryId": "",
+            "id": "b56d6fe0-3d9a-4c27-8d73-e9d19dafe0d3",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          },
+          {
+            "category": "Indicator Update",
+            "content": "The value of field Expiration changed to 2021-05-12 05:48:42.699914185 +0000 UTC",
+            "created": "2021-05-05T07:13:30.967954395Z",
+            "entryId": "",
+            "id": "4dff8865-3560-4041-8b41-f5cdd8ef2e59",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          },
+          {
+            "category": "Indicator Update",
+            "content": "The value of field Office365Category changed to Allow",
+            "created": "2021-05-05T07:13:30.968170712Z",
+            "entryId": "",
+            "id": "fd00e27e-09a5-4a1d-872a-ff8a0b0139f7",
+            "modified": "0001-01-01T00:00:00Z",
+            "sortValues": null,
+            "source": "@admin",
+            "type": "IndicatorCommentTimeLine",
+            "user": "@admin",
+            "version": 0
+          }
+        ],
+        "deletedFeedFetchTime": "0001-01-01T00:00:00Z",
+        "expiration": "2021-05-12T05:48:42.699914185Z",
+        "expirationSource": {
+          "brand": "",
+          "expirationInterval": 10080,
+          "expirationPolicy": "indicatorType",
+          "instance": "",
+          "moduleId": "",
+          "setTime": "2021-05-05T05:48:42.699914185Z",
+          "source": "indicatorType",
+          "user": ""
+        },
+        "expirationStatus": "active",
+        "firstSeen": "2021-05-05T05:48:42.699914985Z",
+        "firstSeenEntryID": "API",
+        "id": "41994",
+        "indicator_type": "CIDR",
+        "insightCache": null,
+        "investigationIDs": [],
+        "isShared": false,
+        "lastReputationRun": "0001-01-01T00:00:00Z",
+        "lastSeen": "2021-05-05T05:48:42.699914985Z",
+        "lastSeenEntryID": "API",
+        "manualExpirationTime": "0001-01-01T00:00:00Z",
+        "manualScore": true,
+        "manualSetTime": "2021-05-05T06:44:25.190109069Z",
+        "manuallyEditedFields": [
+          "indicator_type",
+          "tags",
+          "office365category"
+        ],
+        "modified": "2021-05-05T07:13:30.968344326Z",
+        "modifiedTime": "0001-01-01T00:00:00Z",
+        "relatedIncCount": 0,
+        "score": 1,
+        "setBy": "admin",
+        "sortValues": null,
+        "timestamp": "2021-05-05T05:48:42.700003794Z",
+        "value": "2506::/16",
+        "version": 4
+      }
+    ]
+  }
+]
