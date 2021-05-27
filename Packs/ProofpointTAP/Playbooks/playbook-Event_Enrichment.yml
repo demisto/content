@@ -1,6 +1,6 @@
-id: Event Enrichment
+id: ProofPointTAP - Event Enrichment
 version: -1
-name: Event Enrichment
+name: ProofPointTAP - Event Enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -198,10 +198,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 8f9c207b-7d3b-4b6a-8965-af68cc2d5920
+    taskid: befc1e11-e334-4f6e-8318-e21f3f47f31f
     type: regular
     task:
-      id: 8f9c207b-7d3b-4b6a-8965-af68cc2d5920
+      id: befc1e11-e334-4f6e-8318-e21f3f47f31f
       version: -1
       name: Get Campaign Information given ID
       description: Get details for a given campaign.
@@ -217,7 +217,7 @@ tasks:
     scriptarguments:
       campaign_id:
         complex:
-          root: ProofPointTAP
+          root: Proofpoint
           accessor: campaignid
           transformers:
           - operator: uniq
@@ -237,10 +237,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 8a736af5-f5bf-489b-8700-fa51e06caea6
+    taskid: 69368a3a-c9c4-4f8d-8794-2d8710907a27
     type: regular
     task:
-      id: 8a736af5-f5bf-489b-8700-fa51e06caea6
+      id: 69368a3a-c9c4-4f8d-8794-2d8710907a27
       version: -1
       name: Get forensics given Campaign ID
       description: Returns forensics evidence.
@@ -256,7 +256,7 @@ tasks:
     scriptarguments:
       campaignId:
         complex:
-          root: ProofPointTAP
+          root: Proofpoint
           accessor: campaignid
           transformers:
           - operator: uniq
@@ -278,10 +278,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 35d2c547-db00-429c-893d-0869932001df
+    taskid: b9734d02-8df3-4459-8978-f1b2522996c4
     type: regular
     task:
-      id: 35d2c547-db00-429c-893d-0869932001df
+      id: b9734d02-8df3-4459-8978-f1b2522996c4
       version: -1
       name: Get forensics Information given ThreatID
       description: Returns forensics evidence.
@@ -299,7 +299,7 @@ tasks:
       includeCampaignForensics: {}
       threatId:
         complex:
-          root: ProofPointTAP
+          root: Proofpoint
           accessor: threatid
           transformers:
           - operator: uniq
@@ -319,10 +319,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: d3b0b130-58fe-4073-8cdf-da4d4917932f
+    taskid: 715f3623-1813-4465-85d8-6a32f92aa512
     type: regular
     task:
-      id: d3b0b130-58fe-4073-8cdf-da4d4917932f
+      id: 715f3623-1813-4465-85d8-6a32f92aa512
       version: -1
       name: Extract CampaignID to Context
       description: Sets key/value pair in incident's context
@@ -335,7 +335,7 @@ tasks:
       - "14"
     scriptarguments:
       key:
-        simple: ProofPointTAP.campaignid
+        simple: Proofpoint.campaignid
       value:
         complex:
           root: incident.proofpointtapthreatinfomap
@@ -357,10 +357,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 3c2ef72f-1875-415c-8c4a-7f02190378ee
+    taskid: 2204be9e-f4e2-4e4a-8822-782cfa238320
     type: regular
     task:
-      id: 3c2ef72f-1875-415c-8c4a-7f02190378ee
+      id: 2204be9e-f4e2-4e4a-8822-782cfa238320
       version: -1
       name: Extract CampaignID to Context
       description: Sets key/value pair in incident's context
@@ -373,7 +373,7 @@ tasks:
       - "16"
     scriptarguments:
       key:
-        simple: ProofPointTAP.campaignid
+        simple: Proofpoint.campaignid
       value:
         complex:
           root: incident
@@ -435,10 +435,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 6b0ea10b-0313-4f41-8621-651a62cfd7d6
+    taskid: 749e8a02-2629-4df3-889a-2aef645c7923
     type: regular
     task:
-      id: 6b0ea10b-0313-4f41-8621-651a62cfd7d6
+      id: 749e8a02-2629-4df3-889a-2aef645c7923
       version: -1
       name: Extract ThreatID to Context
       description: Sets key/value pair in incident's context
@@ -451,7 +451,7 @@ tasks:
       - "15"
     scriptarguments:
       key:
-        simple: ProofPointTAP.threatid
+        simple: Proofpoint.threatid
       value:
         complex:
           root: incident.proofpointtapthreatinfomap
@@ -513,10 +513,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 54f00b3a-ef0b-4400-8961-c673d1c7d9c8
+    taskid: d6d7e345-7742-401e-8095-1d641d27d4e6
     type: regular
     task:
-      id: 54f00b3a-ef0b-4400-8961-c673d1c7d9c8
+      id: d6d7e345-7742-401e-8095-1d641d27d4e6
       version: -1
       name: Extract ThreatID to Context
       description: Sets key/value pair in incident's context
@@ -529,7 +529,7 @@ tasks:
       - "15"
     scriptarguments:
       key:
-        simple: ProofPointTAP.threatid
+        simple: Proofpoint.threatid
       value:
         complex:
           root: incident
@@ -659,16 +659,16 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 8c2eefe5-2298-4c20-8c47-7f5fe5fb97cc
+    taskid: 114b02d4-48e8-4458-859d-7b70279b473f
     type: condition
     task:
-      id: 8c2eefe5-2298-4c20-8c47-7f5fe5fb97cc
+      id: 114b02d4-48e8-4458-859d-7b70279b473f
       version: -1
       name: What Information have been fetched?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: ""
     nexttasks:
       'Campaign ID ':
       - "6"
@@ -684,14 +684,14 @@ tasks:
           left:
             value:
               complex:
-                root: ProofPointTAP
+                root: Proofpoint
                 accessor: threatid
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: ProofPointTAP
+                root: Proofpoint
                 accessor: campaignid
             iscontext: true
     - label: 'Campaign ID '
@@ -700,7 +700,7 @@ tasks:
           left:
             value:
               complex:
-                root: ProofPointTAP
+                root: Proofpoint
                 accessor: campaignid
             iscontext: true
     - label: ThreatID
@@ -709,7 +709,7 @@ tasks:
           left:
             value:
               complex:
-                root: ProofPointTAP
+                root: Proofpoint
                 accessor: threatid
             iscontext: true
     view: |-
@@ -726,10 +726,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 13201885-5bd2-41fb-8d04-e38d7b31d42e
+    taskid: fbc5a4bb-37f7-4d22-874a-27f2be8d99cf
     type: regular
     task:
-      id: 13201885-5bd2-41fb-8d04-e38d7b31d42e
+      id: fbc5a4bb-37f7-4d22-874a-27f2be8d99cf
       version: -1
       name: Get forensics Information given ThreatID
       description: Returns forensics evidence.
@@ -747,7 +747,7 @@ tasks:
       includeCampaignForensics: {}
       threatId:
         complex:
-          root: ProofPointTAP
+          root: Proofpoint
           accessor: threatid
           transformers:
           - operator: uniq
