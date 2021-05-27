@@ -56,7 +56,7 @@ def test_fetch_entity_anomalies(requests_mock):
         'action' : 'fetch_entity_anomalies',
     }
     args = {
-        'time_frame' : '10'
+        'time_frame' : '01'
     }
     integration_response = fetch_entity_anomalies(client, params, args)
     expected_response = util_load_json('test_data/formatted_fetch_anomaly.json')
