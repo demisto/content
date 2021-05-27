@@ -10,6 +10,7 @@ Generic GraphQL client to interact with any GraphQL server API.
 | --- | --- | --- |
 | url | GraphQL Server URL \(e.g. https://api.github.com/graphql\) | True |
 | credentials | Username / Header Name | False |
+| fetch_schema_from_transport | Fetch the schema from the transport | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -131,3 +132,5 @@ Execute a mutation request to the GraphQL server.
 >|---|
 >| reaction: {"content": "HOORAY"}<br/>subject: {"id": "MDU6SXNzdWUyMzEzOTE1NTE="} |
 
+## Troubleshooting
+  - If you are encountering the error `GraphQLError: Cannot query field`, you may be failing because of a schema validation error. Uncheck the **Fetch the schema from the transport** integration parameter to disable the schema validation.
