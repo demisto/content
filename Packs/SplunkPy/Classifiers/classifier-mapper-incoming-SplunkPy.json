@@ -1,49 +1,67 @@
 {
-	"id": "SplunkPy-mapper",
-    "name": "Splunk - Incoming Mapper",
-    "type": "mapping-incoming",
-    "description": "Maps Splunk logs fields.",
-	"version": -1,
-	"defaultIncidentType": "",
-	"mapping": {
-		"Access": {
-			"internalMapping": {
-				"App": {
-					"simple": "app",
-					"complex": null
-				},
-				"Dest": {
-					"simple": "dest",
-					"complex": null
-				},
-				"Dest NT Domain": {
-					"simple": "dest_pci_domain",
-					"complex": null
-				},
-				"Src": {
-					"simple": "src",
-					"complex": null
-				},
-				"Src NT Domain": {
-					"simple": "src_pci_domain",
-					"complex": null
-				}
-			},
-			"dontMapEventToLabels": false
-		},
-		"Malware": {
-			"internalMapping": {
-				"Dest": {
-					"simple": "dest",
-					"complex": null
-				},
-				"Signature": {
-					"simple": "signature",
-					"complex": null
-				}
-			},
-			"dontMapEventToLabels": false
-		}
-	},
-	"fromVersion": "6.0.0"
+  "id": "SplunkPy-mapper",
+  "name": "Splunk - Incoming Mapper",
+  "type": "mapping-incoming",
+  "description": "Maps Splunk logs fields.",
+  "version": -1,
+  "defaultIncidentType": "",
+  "feed": false,
+  "mapping": {
+    "Access": {
+      "internalMapping": {
+        "App": {
+          "simple": "app",
+          "complex": null
+        },
+        "Dest": {
+          "simple": "dest",
+          "complex": null
+        },
+        "Dest NT Domain": {
+          "simple": "dest_pci_domain",
+          "complex": null
+        },
+        "Src": {
+          "simple": "src",
+          "complex": null
+        },
+        "Src NT Domain": {
+          "simple": "src_pci_domain",
+          "complex": null
+        }
+      },
+      "dontMapEventToLabels": false
+    },
+    "Malware": {
+      "internalMapping": {
+        "Dest": {
+          "simple": "dest",
+          "complex": null
+        },
+        "Signature": {
+          "simple": "signature",
+          "complex": null
+        }
+      },
+      "dontMapEventToLabels": false
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "dbotMirrorDirection": {
+          "complex": null,
+          "simple": "mirror_direction"
+        },
+        "dbotMirrorId": {
+          "complex": null,
+          "simple": "event_id"
+        },
+        "dbotMirrorInstance": {
+          "complex": null,
+          "simple": "mirror_instance"
+        }
+      }
+    }
+  },
+  "fromVersion": "6.0.0"
 }

@@ -1,0 +1,247 @@
+id: AlphaVantage Test Playbook
+name: AlphaVantage Test Playbook
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '043e07c0-8583-49d4-98e4-8d7054bbd1a5'
+    type: start
+    task:
+      id: '043e07c0-8583-49d4-98e4-8d7054bbd1a5'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '63c1bb26-4a52-4ab3-b991-372d97f36634'
+    type: regular
+    task:
+      id: '63c1bb26-4a52-4ab3-b991-372d97f36634'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '64443ccf-7f29-4685-aa50-48a7a41eeaaf'
+    type: regular
+    task:
+      id: '64443ccf-7f29-4685-aa50-48a7a41eeaaf'
+      version: -1
+      name: alphavantage-stock-data-get
+      description: ''
+      script: '|||alphavantage-stock-data-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '2415e547-f411-4e96-b96b-4364467296bc'
+    type: condition
+    task:
+      id: '2415e547-f411-4e96-b96b-4364467296bc'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.symbol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.open
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.high
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.low
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.price
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.volume
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.latest trading day
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.previous close
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.change
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockData.change percent
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '5f51eb70-16a6-4880-b00a-5a709a7902ec'
+    type: regular
+    task:
+      id: '5f51eb70-16a6-4880-b00a-5a709a7902ec'
+      version: -1
+      name: alphavantage-stock-history-get
+      description: ''
+      script: '|||alphavantage-stock-history-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5438fcc2-f63c-4710-b5f6-cade2fca5e10'
+    type: condition
+    task:
+      id: '5438fcc2-f63c-4710-b5f6-cade2fca5e10'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockHistory.Information
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockHistory.Interval
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockHistory.Last Refreshed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockHistory.Output Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockHistory.Symbol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlphaVantage.StockHistory.Time Series
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '6bde9665-2e54-44ca-abe5-aae96422f601'
+    type: title
+    task:
+      id: '6bde9665-2e54-44ca-abe5-aae96422f601'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: Test Playbook

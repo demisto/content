@@ -36,8 +36,8 @@ configuration:
   - Medium
   - High
   - Critical
-  additionalinfo: "Argus Cases with priority lower than this value will
-    be excluded by fetch incidents."
+  additionalinfo: "Argus Cases with priority lower than this value will be excluded\
+    \ by fetch incidents."
 - display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
@@ -49,16 +49,16 @@ configuration:
   defaultvalue: "0"
   type: 0
   required: false
-  additionalinfo: "Maximum number of cases to be fetched from Argus.
-    0 means up to system limit (100 000)"
+  additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to\
+    \ system limit (100 000)"
 - display: Fetch incidents exclude tag
   name: exclude_tag
   type: 0
   required: false
   additionalinfo: 'Excludes fetching incidents with the optional tag. May be used
     to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
-    pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a
-    comma-separated string.'
+    pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated
+    string.'
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: Incoming And Outgoing
@@ -75,8 +75,22 @@ configuration:
   type: 0
   required: false
   defaultvalue: "argus_mirror"
-  additionalinfo: "Names of tags used to mark incident entries to be mirrored.
-    Comma separated."
+  additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma\
+    \ separated."
+- display: Close Argus Case
+  name: close_argus_case
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored
+    Argus Case'
+- display: Close XSOAR Incident
+  name: close_incident
+  defaultvalue: "true"
+  type: 8
+  required: false
+  additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR
+    Incident'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -91,6 +105,106 @@ script:
   script: ''
   type: python
   commands:
+  - name: argus-add-attachment
+    arguments:
+    - name: case_id
+      required: true
+      description: ID of Argus case
+    - name: file_id
+      required: true
+      description: ID of attachement
+    outputs:
+    - contextPath: Argus.Attachment.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Attachment.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Attachment.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Attachment.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Attachment.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Attachment.messages.message
+      description: Attachment Messages Message
+      type: String
+    - contextPath: Argus.Attachment.messages.messageTemplate
+      description: Attachment Messages Message Template
+      type: String
+    - contextPath: Argus.Attachment.messages.type
+      description: Attachment Messages Type
+      type: String
+    - contextPath: Argus.Attachment.messages.field
+      description: Attachment Messages Field
+      type: String
+    - contextPath: Argus.Attachment.messages.timestamp
+      description: Attachment Messages Timestamp
+      type: Number
+    - contextPath: Argus.Attachment.data.id
+      description: Attachment ID
+      type: String
+    - contextPath: Argus.Attachment.data.addedTimestamp
+      description: Attachment Added Timestamp
+      type: Number
+    - contextPath: Argus.Attachment.data.addedByUser.id
+      description: Attachment Added By User ID
+      type: Number
+    - contextPath: Argus.Attachment.data.addedByUser.customerID
+      description: Attachment Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Attachment.data.addedByUser.customer.id
+      description: Attachment Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Attachment.data.addedByUser.customer.name
+      description: Attachment Added By User Customer Name
+      type: String
+    - contextPath: Argus.Attachment.data.addedByUser.customer.shortName
+      description: Attachment Added By User Customer Short Name
+      type: String
+    - contextPath: Argus.Attachment.data.addedByUser.customer.domain.id
+      description: Attachment Added By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Attachment.data.addedByUser.customer.domain.name
+      description: Attachment Added By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Attachment.data.addedByUser.domain.id
+      description: Attachment Added By User Domain ID
+      type: Number
+    - contextPath: Argus.Attachment.data.addedByUser.domain.name
+      description: Attachment Added By User Domain Name
+      type: String
+    - contextPath: Argus.Attachment.data.addedByUser.userName
+      description: Attachment Added By User User Name
+      type: String
+    - contextPath: Argus.Attachment.data.addedByUser.name
+      description: Attachment Added By User Name
+      type: String
+    - contextPath: Argus.Attachment.data.addedByUser.type
+      description: Attachment Added By User Type
+      type: String
+    - contextPath: Argus.Attachment.data.name
+      description: Attachment Name
+      type: String
+    - contextPath: Argus.Attachment.data.mimeType
+      description: Attachment Mime Type
+      type: String
+    - contextPath: Argus.Attachment.data.flags
+      description: Attachment Flags
+      type: String
+    - contextPath: Argus.Attachment.data.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Attachment.data.originEmailAddress
+      description: Attachment Origin Email Address
+      type: String
+    - contextPath: Argus.Attachment.data.addedTime
+      description: Attachment Added Time
+      type: String
+    description: Add attachment to case (Max 50 MB, should be an archive)
   - name: argus-add-case-tag
     arguments:
     - name: case_id
@@ -5934,8 +6048,8 @@ script:
     - name: sort_by
       auto: PREDEFINED
       predefined:
-        - ascending
-        - descending
+      - ascending
+      - descending
       description: Sort ordering. Default is ascending
     description: Print case comments as notes
   - name: argus-print-case-metadata-by-id
@@ -5952,7 +6066,7 @@ script:
       required: true
       description: Case ID
     description: Download all attachments related to Argus Case.
-  dockerimage: demisto/argus-toolbelt:2.0.0.16706
+  dockerimage: demisto/argus-toolbelt:2.0.0.17621
   isfetch: true
   runonce: false
   subtype: python3

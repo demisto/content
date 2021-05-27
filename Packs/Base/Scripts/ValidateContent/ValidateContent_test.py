@@ -1,6 +1,7 @@
 import os
+import pytest
 
-from ValidateContent import get_content_modules
+from ValidateContent import get_content_modules, adjust_linter_row_and_col
 
 
 def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
@@ -48,3 +49,38 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     assert os.path.isfile(content_tmp_dir / 'Tests/demistomock/demistomock.ps1')
     assert os.path.isfile(content_tmp_dir / 'tox.ini')
     assert os.path.isfile(content_tmp_dir / 'Tests/scripts/dev_envs/pytest/conftest.py')
+
+
+row_and_column_adjustment_test_data = [
+    (
+        {'message': 'blah'}, {'message': 'blah'}
+    ),
+    (
+        {'message': 'blah', 'row': '1'}, {'message': 'blah', 'row': '1'}
+    ),
+    (
+        {'message': 'blah', 'row': '2'}, {'message': 'blah', 'row': '1'}
+    ),
+    (
+        {'message': 'blah', 'col': '0'}, {'message': 'blah', 'col': '0'}
+    ),
+    (
+        {'message': 'blah', 'col': '1'}, {'message': 'blah', 'col': '0'}
+    ),
+    (
+        {'message': 'blah', 'row': '456'}, {'message': 'blah', 'row': '454'}
+    ),
+    (
+        {'message': 'blah', 'col': '50'}, {'message': 'blah', 'col': '49'}
+    ),
+    (
+        {'message': 'blah', 'row': '30', 'col': '30'}, {'message': 'blah', 'row': '28', 'col': '29'}
+    )
+]
+
+
+@pytest.mark.parametrize('original_validation_result,expected_output', row_and_column_adjustment_test_data)
+def test_adjust_linter_row_and_col(original_validation_result, expected_output):
+    adjust_linter_row_and_col(original_validation_result)
+    # after adjustment, the original validation result should match the expected
+    assert original_validation_result == expected_output

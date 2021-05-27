@@ -1,0 +1,55 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.24.0
+      X-RF-User-Agent:
+      - Cortex_XSOAR/2.0 Cortex_XSOAR_unittest_0.1
+      X-RFToken:
+      - XXXXXX
+    method: GET
+    uri: https://api.recordedfuture.com/v2/alert/rule?limit=10
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAK2SzU8CMRDF/5VJD56WBIPRyI0vDQqIsH7FGDPsDjrSbZe2iyLZ/92CIPXgzetk
+        fm/ee+1KpOhQ1FfCkC2ks6L+uBKcirp4sZVO90pEwrGT5AcjVFZn72gogttCKjI4YcmOycKIElJO
+        LqHHakYpOA37dVFGO810Po7PAs2+p1grC3oKYzILTgjabE2Rb8YB+WCTRjUgezrBb3SyhBHbGfRo
+        QTKClvGWEpR7dlp7zWthku4QGmnqE1vYGQi2JzVuDf7IPcRl5gkYs/OpUaXQOmhBW2fIvzRwenKX
+        BBpDoz3gLLAChJ33AHj4vH7W/1u214yP54Fm06wN7ytXMNCq0l9bd4Ywg7EuTEJhjpulO1Lhe2nv
+        giD2WaACTVQzVi+bHrbN2OhnGhv95m1F0Ij70Ef5HabzkUvNDi7Zt7Gd7g/SfbOTpcHBC8xRRdBV
+        lmcOzo0uclE+lZFIdKHW33X9c11hFHn8sOpB7fzb109PyvILwptbXN0CAAA=
+    headers:
+      Cache-Control:
+      - no-cache, no-store, private, must-revalidate, max-age=0, no-transform
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Tue, 12 Jan 2021 14:33:58 GMT
+      Expires:
+      - Thu, 01 Jan 1970 00:00:00 GMT
+      Pragma:
+      - no-cache
+      Set-Cookie:
+      - JSESSIONID=node015l1iz2v1dy0q149ur3sw1l5420753.node0; Path=/rfq
+      Strict-Transport-Security:
+      - max-age=86400; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

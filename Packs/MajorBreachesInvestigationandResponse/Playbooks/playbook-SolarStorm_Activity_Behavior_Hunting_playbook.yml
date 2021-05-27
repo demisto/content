@@ -1,7 +1,7 @@
 id: SolarStorm Activity Behavior Hunting playbook
 version: -1
 name: SolarStorm Activity Behavior Hunting playbook
-description: "This manual playbook helps you to discover SolarStorm activity behavior.\
+description: "This manual playbook should be used as a sub-playbook in the 'SolarStorm and SUNBURST Hunting and Response' playbook and it helps you hunt for suspicious behavior related to SolarStorm activity.\
   \ \n\nSources:\n- https://www.fireeye.com/blog/threat-research/2020/12/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor.html\n\
   - https://unit42.paloaltonetworks.com/fireeye-solarstorm-sunburst/3/\n- https://www.splunk.com/en_us/blog/security/sunburst-backdoor-detections-in-splunk.html"
 starttaskid: "0"

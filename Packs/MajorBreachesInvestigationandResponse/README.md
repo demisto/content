@@ -6,6 +6,8 @@ This pack contains the response playbooks for the following breaches:
 - [Sunburst and SolarStorm Hunting and Response](https://xsoar.pan.dev/docs/reference/playbooks/solar-storm-and-sunburst-hunting-and-response-playbook)
 - [FireEye Red Team Tools Investigation and Response](https://xsoar.pan.dev/docs/reference/playbooks/fire-eye-red-team-tools-investigation-and-response)
 - [HAFNIUM - Exchange 0-day Exploits](https://xsoar.pan.dev/docs/reference/playbooks/hafnium---exchange-0-day-exploits)
+- [Codecov Breach - Bash Uploader](https://xsoar.pan.dev/docs/reference/playbooks/codecov-breach---bash-uploader)
+- CVE-2021-22893 - Pulse Connect Secure RCE
 
 ##### How to enable it?
 

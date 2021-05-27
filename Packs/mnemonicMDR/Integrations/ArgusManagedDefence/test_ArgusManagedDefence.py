@@ -292,15 +292,13 @@ def test_update_remote_system_command(requests_mock):
                 "type:": 1,  # Note
                 "user": "user",
                 "created": "2020-01-01 00:00:00",
-                "contents": "comment"
+                "contents": "comment",
             }
         ],
         "remoteId": str(CASE_ID),
         "status": 2,  # Done
-        "delta": {
-            "severity": 2
-        },
-        "incidentChanged": True
+        "delta": {"severity": 2},
+        "incidentChanged": True,
     }
     assert update_remote_system_command(args) == str(CASE_ID)
 
@@ -314,7 +312,7 @@ def test_update_remote_system_command_no_change(requests_mock):
         "remoteId": str(CASE_ID),
         "status": "",
         "delta": {},
-        "incidentChanged": False
+        "incidentChanged": False,
     }
     assert update_remote_system_command(args) == str(CASE_ID)
 

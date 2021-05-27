@@ -20,6 +20,8 @@ This integration was integrated and tested with version 5.1.1 argus-toolbelt ([P
     | Fetch incidents exclude tag | Excludes fetching incidents with the optional tag. May be used to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value pairs. You may exclude with tag key, or key: value pairs by a comma-separated string. | False |
     | Incident Mirroring Direction | Which direction should the integration mirror incidents. | False |
     | Mirroring tag | Names of tags used to mark incident entries to be mirrored. Comma separated. | False |
+    | Close Argus Case | If true, when an incident is closed in XSOAR: close the mirrored Argus Case | False |
+    | Close XSOAR Incident | If true, when mirrored Argus Case is closed: also close the XSOAR Incident | False |
     | Trust any certificate (not secure) | Skip HTTPS certification verification. | False |
     | Use system proxy settings | Use system proxy settings. | False |
 
@@ -45,6 +47,63 @@ An example use case could be that you are running an XSOAR incident for a while 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### argus-get-attachment
+***
+Fetch specific attachment metadata
+
+
+#### Base Command
+
+`argus-add-attachment`
+Add attachment to case (Max 50 MB, should be an archive)
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | ID of Argus case. | Required | 
+| file_id | ID of attachment. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Argus.Attachment.responseCode | Number | API response metadata, response code of this request | 
+| Argus.Attachment.limit | Number | API response metadata, limit of results this request ran with | 
+| Argus.Attachment.offset | Number | API response metadata, the offset into the result-set of this query | 
+| Argus.Attachment.count | Number | API response metadata, total number of results this query has | 
+| Argus.Attachment.size | Number | API response metadata, the number of results returned in this request | 
+| Argus.Attachment.messages.message | String | Attachment Messages Message | 
+| Argus.Attachment.messages.messageTemplate | String | Attachment Messages Message Template | 
+| Argus.Attachment.messages.type | String | Attachment Messages Type | 
+| Argus.Attachment.messages.field | String | Attachment Messages Field | 
+| Argus.Attachment.messages.timestamp | Number | Attachment Messages Timestamp | 
+| Argus.Attachment.data.id | String | Attachment ID | 
+| Argus.Attachment.data.addedTimestamp | Number | Attachment Added Timestamp | 
+| Argus.Attachment.data.addedByUser.id | Number | Attachment Added By User ID | 
+| Argus.Attachment.data.addedByUser.customerID | Number | Attachment Added By User Customer ID | 
+| Argus.Attachment.data.addedByUser.customer.id | Number | Attachment Added By User Customer ID | 
+| Argus.Attachment.data.addedByUser.customer.name | String | Attachment Added By User Customer Name | 
+| Argus.Attachment.data.addedByUser.customer.shortName | String | Attachment Added By User Customer Short Name | 
+| Argus.Attachment.data.addedByUser.customer.domain.id | Number | Attachment Added By User Customer Domain ID | 
+| Argus.Attachment.data.addedByUser.customer.domain.name | String | Attachment Added By User Customer Domain Name | 
+| Argus.Attachment.data.addedByUser.domain.id | Number | Attachment Added By User Domain ID | 
+| Argus.Attachment.data.addedByUser.domain.name | String | Attachment Added By User Domain Name | 
+| Argus.Attachment.data.addedByUser.userName | String | Attachment Added By User User Name | 
+| Argus.Attachment.data.addedByUser.name | String | Attachment Added By User Name | 
+| Argus.Attachment.data.addedByUser.type | String | Attachment Added By User Type | 
+| Argus.Attachment.data.name | String | Attachment Name | 
+| Argus.Attachment.data.mimeType | String | Attachment Mime Type | 
+| Argus.Attachment.data.flags | String | Attachment Flags | 
+| Argus.Attachment.data.size | Number | API response metadata, the number of results returned in this request | 
+| Argus.Attachment.data.originEmailAddress | String | Attachment Origin Email Address | 
+| Argus.Attachment.data.addedTime | String | Attachment Added Time | 
+
+#### Command Example
+``` !argus-add-attachment case_id=123 file_id=1@1 ```
+
 ### argus-add-case-tag
 ***
 Adds a key, value tag to an Argus case

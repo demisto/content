@@ -104,7 +104,6 @@ def ssh_execute(command: str):
 
 
 def scp_execute(file_name: str, file_path: str):
-
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
             file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
@@ -263,9 +262,11 @@ def edl_update_external_file_command():
     edl_update_external_file(file_path, list_name, verbose)
 
 
-def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
+def edl_update_internal_list(list_name: str, list_items: list, add: bool, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
+
     if not dict_of_lists:
+        demisto.debug('PAN-OS EDL Management integration context is empty.')
         dict_of_lists = {list_name: list_items}
         if verbose:
             md = tableToMarkdown('List items:', list_items, headers=[list_name])
@@ -273,7 +274,8 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
             md = 'Instance context updated successfully.'
     else:
         if not dict_of_lists.get(list_name, None) and not add:
-            return_error('Cannot remove items from an empty list.')
+            raise Exception(f'Cannot remove items from an empty list: {list_name}.')
+
         if dict_of_lists.get(list_name, None):
             if add:
                 chosen_list = dict_of_lists.get(list_name)
@@ -281,19 +283,26 @@ def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
                     chosen_list = [chosen_list]
 
                 list_items = list(set(chosen_list + list_items))
-            else:
+            else:  # remove
                 list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
 
-        if len(list_items) == 0:  # delete list from instance context
+        if not add and len(list_items) == 0:
+            # delete list from instance context, can happen only upon remove of objects
+            demisto.debug(f'PAN-OS EDL Management deleting {list_name} from the integration context.')
             dict_of_lists.pop(list_name, None)
             md = 'List is empty, deleted from instance context.'
         else:
+            # update list in instance context, can happen upon removal or addition of objects
             dict_of_lists.update({list_name: list_items})
             if verbose:
                 md = tableToMarkdown('List items:', list_items, headers=[list_name])
             else:
                 md = 'Instance context updated successfully.'
 
+    if not dict_of_lists:  # to be removed, debugging purposes only
+        demisto.debug('PAN-OS EDL Management updating an empty object to the integration context.')
+
+    demisto.debug(f'PAN-OS EDL Management updating {list_name} with {len(list_items)} in the integration context.')
     demisto.setIntegrationContext(dict_of_lists)
 
     demisto.results({
@@ -310,7 +319,7 @@ def edl_update_internal_list_command():
     list_name = demisto.args().get('list_name')
     list_items = argToList(demisto.args().get('list_items'))
     if demisto.args().get('add_or_remove') not in ['add', 'remove']:
-        return_error('add_or_remove argument is not \'add\' neither \'remove\'.')
+        raise Exception('add_or_remove argument is not \'add\' neither \'remove\'.')
     add = demisto.args().get('add_or_remove') == 'add'
     verbose = demisto.args().get('verbose') == 'true'
 
@@ -615,53 +624,54 @@ def edl_get_external_file_metadata_command():
 
 
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    command = demisto.command()
+    LOG(f'command is {command}')
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             ssh_execute('echo 1')
             demisto.results('ok')
 
-        elif demisto.command() == 'pan-os-edl-get-external-file':
+        elif command == 'pan-os-edl-get-external-file':
             edl_get_external_file_command()
 
-        elif demisto.command() == 'pan-os-edl-search-external-file':
+        elif command == 'pan-os-edl-search-external-file':
             edl_search_external_file_command()
 
-        elif demisto.command() == 'pan-os-edl-update-internal-list':
+        elif command == 'pan-os-edl-update-internal-list':
             edl_update_internal_list_command()
 
-        elif demisto.command() == 'pan-os-edl-update-external-file':
+        elif command == 'pan-os-edl-update-external-file':
             edl_update_external_file_command()
 
-        elif demisto.command() == 'pan-os-edl-update':
+        elif command == 'pan-os-edl-update':
             edl_update()
 
-        elif demisto.command() == 'pan-os-edl-update-from-external-file':
+        elif command == 'pan-os-edl-update-from-external-file':
             edl_update_from_external_file_command()
 
-        elif demisto.command() == 'pan-os-edl-delete-external-file':
+        elif command == 'pan-os-edl-delete-external-file':
             edl_delete_external_file_command()
 
-        elif demisto.command() == 'pan-os-edl-list-internal-lists':
+        elif command == 'pan-os-edl-list-internal-lists':
             edl_list_internal_lists_command()
 
-        elif demisto.command() == 'pan-os-edl-search-internal-list':
+        elif command == 'pan-os-edl-search-internal-list':
             edl_search_internal_list_command()
 
-        elif demisto.command() == 'pan-os-edl-print-internal-list':
+        elif command == 'pan-os-edl-print-internal-list':
             edl_print_internal_list_command()
 
-        elif demisto.command() == 'pan-os-edl-dump-internal-list':
+        elif command == 'pan-os-edl-dump-internal-list':
             edl_dump_internal_list_command()
 
-        elif demisto.command() == 'pan-os-edl-compare':
+        elif command == 'pan-os-edl-compare':
             edl_compare_command()
 
-        elif demisto.command() == 'pan-os-edl-get-external-file-metadata':
+        elif command == 'pan-os-edl-get-external-file-metadata':
             edl_get_external_file_metadata_command()
 
         else:
-            return_error('Unrecognized command: ' + demisto.command())
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as ex:
         if str(ex).find('warning') != -1:

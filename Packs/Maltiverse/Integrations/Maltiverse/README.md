@@ -16,6 +16,7 @@ This integration was integrated and tested with version 1.0.0-oas3 of Maltiverse
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __API Key__
+    * __Source Reliability__: Reliability of the source providing the intelligence data. The default value is C - Fairly reliable.  
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.

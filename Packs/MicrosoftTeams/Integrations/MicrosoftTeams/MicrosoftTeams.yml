@@ -83,7 +83,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Display name or email address of the team member to send the message to.
+      description: Display name or email address of the team member to send the message
+        to.
       isArray: false
       name: team_member
       required: false
@@ -242,12 +243,12 @@ script:
     deprecated: false
     description: 'Ring a user''s Teams account. Note: This is a ring only! no media
       will play in case the generated call is answered. To use this make sure your
-      Bot has the following premissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
+      Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
     execution: false
     name: microsoft-teams-ring-user
   - arguments:
     - default: false
-      description: The channel to which to add the add the member to this channel
+      description: The channel to which to add the member.
       isArray: false
       name: channel
       required: true
@@ -291,7 +292,58 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-channel
-  dockerimage: demisto/teams:1.0.0.13080
+  - arguments:
+    - default: false
+      description: The meeting start time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: The meeting end time in ISO 8601 format e.g., "2019-07-12T14:30:34.2444915-07:00".
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: The meeting subject.
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: Display name/mail/UPN of user who created the meeting, e.g., Adam Smith.
+      isArray: false
+      name: member
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new meeting in Microsoft Teams.
+    execution: false
+    name: microsoft-teams-create-meeting
+    outputs:
+    - contextPath: MicrosoftTeams.CreateMeeting.creationDateTime
+      description: Meeting creation time.
+      type: Date
+    - contextPath: MicrosoftTeams.CreateMeeting.threadId
+      description: Meeting thread ID.
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.messageId
+      description: Meeting message ID.
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.id
+      description: Meeting ID.
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.joinWebUrl
+      description: The URL to join the meeting.
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.participantId
+      description: The meeting participants.
+      type: String
+    - contextPath: MicrosoftTeams.CreateMeeting.participantDisplayName
+      description: The display name of the participants.
+      type: String
+  dockerimage: demisto/teams:1.0.0.19340
   feed: false
   isfetch: false
   longRunning: true

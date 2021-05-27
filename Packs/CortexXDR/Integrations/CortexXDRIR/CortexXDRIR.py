@@ -1,16 +1,16 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-from datetime import timezone
+import copy
+import hashlib
 import secrets
 import string
-import hashlib
-from typing import Any, Dict, Tuple
-import dateparser
-import urllib3
 import traceback
+from datetime import timezone
 from operator import itemgetter
-import copy
+from typing import Any, Dict, Tuple
+
+import dateparser
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,6 +21,7 @@ API_KEY_LENGTH = 128
 
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident'
+INTEGRATION_NAME = 'Cortex XDR - IR'
 
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
@@ -125,7 +126,7 @@ class Client(BaseClient):
         self.get_incidents(lte_creation_time=last_one_day, limit=1)
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, sort_by_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
                       sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
         """
         Filters and returns incidents
@@ -135,6 +136,7 @@ class Client(BaseClient):
         :param gte_modification_time: string of time format "2019-12-31T23:59:00"
         :param lte_creation_time: string of time format "2019-12-31T23:59:00"
         :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param status: string of status
         :param sort_by_modification_time: optional - enum (asc,desc)
         :param sort_by_creation_time: optional - enum (asc,desc)
         :param page_number: page number
@@ -205,6 +207,13 @@ class Client(BaseClient):
                 'field': 'creation_time',
                 'operator': 'gte',
                 'value': gte_creation_time_milliseconds
+            })
+
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
             })
 
         if len(filters) > 0:
@@ -359,7 +368,7 @@ class Client(BaseClient):
 
             if alias_name:
                 filters.append({
-                    'field': 'alias_name',
+                    'field': 'alias',
                     'operator': 'in',
                     'value': alias_name
                 })
@@ -764,7 +773,7 @@ class Client(BaseClient):
         )
         return reply.get('reply')
 
-    def endpoint_scan(self, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
+    def endpoint_scan(self, url_suffix, endpoint_id_list=None, dist_name=None, gte_first_seen=None, gte_last_seen=None,
                       lte_first_seen=None,
                       lte_last_seen=None, ip_list=None, group_name=None, platform=None, alias=None, isolate=None,
                       hostname: list = None):
@@ -808,7 +817,7 @@ class Client(BaseClient):
 
         if alias:
             filters.append({
-                'field': 'alias_name',
+                'field': 'alias',
                 'operator': 'in',
                 'value': alias
             })
@@ -863,7 +872,7 @@ class Client(BaseClient):
         self._headers['content-type'] = 'application/json'
         reply = self._http_request(
             method='POST',
-            url_suffix='/endpoints/scan/',
+            url_suffix=url_suffix,
             json_data={'request_data': request_data},
             ok_codes=(200, 201),
             timeout=self.timeout
@@ -973,17 +982,31 @@ class Client(BaseClient):
 
         return reply.get('reply')
 
-    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list) -> Dict[str, Any]:
+    def generate_files_dict_with_specific_os(self, windows: list, linux: list, macos: list) -> Dict[str, list]:
+        if not windows and not linux and not macos:
+            raise ValueError('You should enter at least one path.')
+
         files = {}
         if windows:
             files['windows'] = windows
         if linux:
             files['linux'] = linux
         if macos:
-            files['linux'] = macos
+            files['macos'] = macos
 
-        if not windows and not linux and not macos:
-            raise ValueError('You should enter at least one path.')
+        return files
+
+    def retrieve_file(self, endpoint_id_list: list, windows: list, linux: list, macos: list, file_path_list: list) \
+            -> Dict[str, Any]:
+        # there are 2 options, either the paths are given with separation to a specific os or without
+        # it using generic_file_path
+        if file_path_list:
+            files = self.generate_files_dict(
+                endpoint_id_list=endpoint_id_list,
+                file_path_list=file_path_list
+            )
+        else:
+            files = self.generate_files_dict_with_specific_os(windows=windows, linux=linux, macos=macos)
 
         request_data: Dict[str, Any] = {
             'filters': [
@@ -1003,6 +1026,33 @@ class Client(BaseClient):
             timeout=self.timeout
         )
         return reply.get('reply')
+
+    def generate_files_dict(self, endpoint_id_list: list, file_path_list: list) -> Dict[str, Any]:
+        files: dict = {"windows": [], "linux": [], "macos": []}
+
+        if len(endpoint_id_list) != len(file_path_list):
+            raise ValueError("The endpoint_ids list must be in the same length as the generic_file_path")
+
+        for endpoint_id, file_path in zip(endpoint_id_list, file_path_list):
+            endpoints = self.get_endpoints(endpoint_id_list=[endpoint_id])
+
+            if len(endpoints) == 0 or not isinstance(endpoints, list):
+                raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
+
+            endpoint = endpoints[0]
+            endpoint_os_type = endpoint.get('os_type')
+
+            if 'windows' in endpoint_os_type.lower():
+                files['windows'].append(file_path)
+            elif 'linux' in endpoint_os_type.lower():
+                files['linux'].append(file_path)
+            elif 'macos' in endpoint_os_type.lower():
+                files['macos'].append(file_path)
+
+        # remove keys with no value
+        files = {k: v for k, v in files.items() if v}
+
+        return files
 
     def retrieve_file_details(self, action_id: int) -> Dict[str, Any]:
         request_data: Dict[str, Any] = {
@@ -1226,6 +1276,8 @@ def get_incidents_command(client, args):
     if since_creation_time:
         gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
 
+    statuses = argToList(args.get('status', ''))
+
     sort_by_modification_time = args.get('sort_by_modification_time')
     sort_by_creation_time = args.get('sort_by_creation_time')
 
@@ -1234,21 +1286,42 @@ def get_incidents_command(client, args):
 
     # If no filters were given, return a meaningful error message
     if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
-                                 and not lte_creation_time and not gte_creation_time and not since_creation_time):
+                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
+                                 and not statuses):
         raise ValueError("Specify a query for the incidents.\nFor example:"
                          " !xdr-get-incidents since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
 
-    raw_incidents = client.get_incidents(
-        incident_id_list=incident_id_list,
-        lte_modification_time=lte_modification_time,
-        gte_modification_time=gte_modification_time,
-        lte_creation_time=lte_creation_time,
-        gte_creation_time=gte_creation_time,
-        sort_by_creation_time=sort_by_creation_time,
-        sort_by_modification_time=sort_by_modification_time,
-        page_number=page,
-        limit=limit
-    )
+    if statuses:
+        raw_incidents = []
+
+        for status in statuses:
+            raw_incidents += client.get_incidents(
+                incident_id_list=incident_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status
+            )
+
+        if len(raw_incidents) > limit:
+            raw_incidents[:limit]
+    else:
+        raw_incidents = client.get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+        )
 
     return (
         tableToMarkdown('Incidents', raw_incidents),
@@ -1358,7 +1431,8 @@ def get_indicators_context(incident):
         file_details = {
             'Name': alert.get('action_file_name'),
             'Path': alert.get('action_file_path'),
-            'SHA265': alert.get('action_file_sha256'),
+            'SHA265': alert.get('action_file_sha256'),  # Here for backward compatibility
+            'SHA256': alert.get('action_file_sha256'),
             'MD5': alert.get('action_file_md5'),
         }
         remove_nulls_from_dictionary(file_details)
@@ -1420,7 +1494,7 @@ def get_last_mirrored_in_time(args):
 
     else:  # handling 6.0 version
         last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
-        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+        last_mirrored_in_timestamp = (last_mirrored_in_time - (120 * 1000))
 
     return last_mirrored_in_timestamp
 
@@ -1608,9 +1682,16 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
+
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, False)
+    endpoint_context_list = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        endpoint_context_list.append(endpoint_context)
+
     context = {
         f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+        Common.Endpoint.CONTEXT_PATH: endpoint_context_list
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -1622,17 +1703,77 @@ def get_endpoints_command(client, args):
     )
 
 
-def return_endpoint_standard_context(endpoints):
-    endpoints_context_list = []
-    for endpoint in endpoints:
-        endpoints_context_list.append(assign_params(**{
-            "Hostname": (endpoint['host_name'] if endpoint.get('host_name', '') else endpoint.get('endpoint_name')),
-            "ID": endpoint.get('endpoint_id'),
-            "IPAddress": endpoint.get('ip'),
-            "Domain": endpoint.get('domain'),
-            "OS": endpoint.get('os_type'),
-        }))
-    return endpoints_context_list
+def convert_os_to_standard(endpoint_os):
+    os_type = ''
+    endpoint_os = endpoint_os.lower()
+    if 'windows' in endpoint_os:
+        os_type = "Windows"
+    elif 'linux' in endpoint_os:
+        os_type = "Linux"
+    elif 'macos' in endpoint_os:
+        os_type = "Macos"
+    elif 'android' in endpoint_os:
+        os_type = "Android"
+    return os_type
+
+
+def generate_endpoint_by_contex_standard(endpoints, ip_as_string):
+    standard_endpoints = []
+    for single_endpoint in endpoints:
+        status = 'Online' if single_endpoint.get('endpoint_status') == 'connected' else 'Offline'
+        is_isolated = 'No' if 'unisolated' in single_endpoint.get('is_isolated', '').lower() else 'Yes'
+        hostname = single_endpoint['host_name'] if single_endpoint.get('host_name', '') else single_endpoint.get(
+            'endpoint_name')
+        ip = single_endpoint.get('ip')
+        # in the `xdr-get-endpoints` command the ip is returned as list, in order not to break bc we will keep it
+        # in the `endpoint` command we use the standard
+        if ip_as_string and isinstance(ip, list):
+            ip = ip[0]
+        os_type = convert_os_to_standard(single_endpoint.get('os_type', ''))
+        endpoint = Common.Endpoint(
+            id=single_endpoint.get('endpoint_id'),
+            hostname=hostname,
+            ip_address=ip,
+            os=os_type,
+            status=status,
+            is_isolated=is_isolated,
+            mac_address=single_endpoint.get('mac_address'),
+            domain=single_endpoint.get('domain'),
+            vendor=INTEGRATION_NAME)
+
+        standard_endpoints.append(endpoint)
+    return standard_endpoints
+
+
+def endpoint_command(client, args):
+    endpoint_id_list = argToList(args.get('id'))
+    endpoint_ip_list = argToList(args.get('ip'))
+    endpoint_hostname_list = argToList(args.get('hostname'))
+
+    endpoints = client.get_endpoints(
+        endpoint_id_list=endpoint_id_list,
+        ip_list=endpoint_ip_list,
+        hostname=endpoint_hostname_list,
+    )
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True)
+    command_results = []
+    if standard_endpoints:
+        for endpoint in standard_endpoints:
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+            hr = tableToMarkdown('Cortex XDR Endpoint', endpoint_context)
+
+            command_results.append(CommandResults(
+                readable_output=hr,
+                raw_response=endpoints,
+                indicator=endpoint
+            ))
+
+    else:
+        command_results.append(CommandResults(
+            readable_output="No endpoints were found",
+            raw_response=endpoints,
+        ))
+    return command_results
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -2155,20 +2296,23 @@ def get_quarantine_status_command(client, args):
 
 
 def endpoint_scan_command(client, args):
-    endpoint_id_list = args.get('endpoint_id_list')
-    dist_name = args.get('dist_name')
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
     gte_first_seen = args.get('gte_first_seen')
     gte_last_seen = args.get('gte_last_seen')
     lte_first_seen = args.get('lte_first_seen')
     lte_last_seen = args.get('lte_last_seen')
-    ip_list = args.get('ip_list')
-    group_name = args.get('group_name')
-    platform = args.get('platform')
-    alias = args.get('alias')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
     isolate = args.get('isolate')
     hostname = argToList(args.get('hostname'))
 
+    validate_args_scan_commands(args)
+
     reply = client.endpoint_scan(
+        url_suffix='/endpoints/scan/',
         endpoint_id_list=argToList(endpoint_id_list),
         dist_name=dist_name,
         gte_first_seen=gte_first_seen,
@@ -2185,13 +2329,95 @@ def endpoint_scan_command(client, args):
 
     action_id = reply.get("action_id")
 
+    context = {
+        "actionId": action_id,
+        "aborted": False
+    }
+
     return (
         tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
         {
-            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan.actionId(val.actionId == obj.actionId)': action_id
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
         },
         reply
     )
+
+
+def endpoint_scan_abort_command(client, args):
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
+    isolate = args.get('isolate')
+    hostname = argToList(args.get('hostname'))
+
+    validate_args_scan_commands(args)
+
+    reply = client.endpoint_scan(
+        url_suffix='endpoints/abort_scan/',
+        endpoint_id_list=argToList(endpoint_id_list),
+        dist_name=dist_name,
+        gte_first_seen=gte_first_seen,
+        gte_last_seen=gte_last_seen,
+        lte_first_seen=lte_first_seen,
+        lte_last_seen=lte_last_seen,
+        ip_list=ip_list,
+        group_name=group_name,
+        platform=platform,
+        alias=alias,
+        isolate=isolate,
+        hostname=hostname
+    )
+
+    action_id = reply.get("action_id")
+
+    context = {
+        "actionId": action_id,
+        "aborted": True
+    }
+
+    return (
+        tableToMarkdown('Endpoint abort scan', {'Action Id': action_id}, ['Action Id']),
+        {
+            f'{INTEGRATION_CONTEXT_BRAND}.endpointScan(val.actionId == obj.actionId)': context
+        },
+        reply
+    )
+
+
+def validate_args_scan_commands(args):
+    endpoint_id_list = argToList(args.get('endpoint_id_list'))
+    dist_name = argToList(args.get('dist_name'))
+    gte_first_seen = args.get('gte_first_seen')
+    gte_last_seen = args.get('gte_last_seen')
+    lte_first_seen = args.get('lte_first_seen')
+    lte_last_seen = args.get('lte_last_seen')
+    ip_list = argToList(args.get('ip_list'))
+    group_name = argToList(args.get('group_name'))
+    platform = argToList(args.get('platform'))
+    alias = argToList(args.get('alias'))
+    hostname = argToList(args.get('hostname'))
+    all_ = argToBoolean(args.get('all', 'false'))
+
+    # to prevent the case where an empty filtered command will trigger by default a scan on all the endpoints.
+    err_msg = 'To scan/abort scan all the endpoints run this command with the \'all\' argument as True ' \
+              'and without any other filters. This may cause performance issues.\n' \
+              'To scan/abort scan some of the endpoints, please use the filter arguments.'
+    if all_:
+        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
+                or ip_list or group_name or platform or alias or hostname:
+            raise Exception(err_msg)
+    else:
+        if not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
+                and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
+                and not alias and not hostname:
+            raise Exception(err_msg)
 
 
 def sort_by_key(list_to_sort, main_key, fallback_key):
@@ -2319,7 +2545,8 @@ def get_modified_remote_data_command(client, args):
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
-    last_update_without_ms = last_update_utc.isoformat().split('.')[0]
+    if last_update_utc:
+        last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 
     raw_incidents = client.get_incidents(gte_modification_time=last_update_without_ms, limit=100)
 
@@ -2434,9 +2661,9 @@ def handle_user_unassignment(update_args):
 
 def handle_outgoing_issue_closure(update_args, inc_status):
     if inc_status == 2:
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason'))
+        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
         demisto.debug(f"Closing Remote XDR incident with status {update_args['status']}")
-        update_args['resolve_comment'] = update_args.get('closeNotes')
+        update_args['resolve_comment'] = update_args.get('closeNotes', '')
 
 
 def get_update_args(delta, inc_status):
@@ -2450,10 +2677,12 @@ def get_update_args(delta, inc_status):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+
+    if remote_args.delta:
+        demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
+                      f'incident {remote_args.remote_incident_id}')
     try:
-        if remote_args.delta and remote_args.incident_changed:
-            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update XDR '
-                          f'incident {remote_args.remote_incident_id}')
+        if remote_args.incident_changed:
             update_args = get_update_args(remote_args.delta, remote_args.inc_status)
 
             update_args['incident_id'] = remote_args.remote_incident_id
@@ -2473,11 +2702,13 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10):
+def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
+                    statuses: List = []):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
                                                                                                 dict) else []
+
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(first_fetch_time, to_timestamp=True)
@@ -2486,8 +2717,15 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
     else:
-        raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
-                                             limit=max_fetch, sort_by_creation_time='asc')
+        if statuses:
+            raw_incidents = []
+            for status in statuses:
+                raw_incidents += client.get_incidents(gte_creation_time_milliseconds=last_fetch, status=status,
+                                                      limit=max_fetch, sort_by_creation_time='asc')
+            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['creation_time'])
+        else:
+            raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
+                                                 sort_by_creation_time='asc')
 
     # save the last 100 modified incidents to the integration context - for mirroring purposes
     client.save_modified_incidents_to_integration_context()
@@ -2496,6 +2734,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     non_created_incidents: list = raw_incidents.copy()
     next_run = dict()
     try:
+        # The count of incidents, so as not to pass the limit
+        count_incidents = 0
+
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
 
@@ -2527,11 +2768,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
+            count_incidents += 1
+            if count_incidents == max_fetch:
+                break
+
     except Exception as e:
         if "Rate limit exceeded" in str(e):
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
                          f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
-
         else:
             raise
 
@@ -2630,13 +2874,16 @@ def retrieve_files_command(client: Client, args: Dict[str, str]) -> Tuple[str, d
     windows: list = argToList(args.get('windows_file_paths'))
     linux: list = argToList(args.get('linux_file_paths'))
     macos: list = argToList(args.get('mac_file_paths'))
+    file_path_list: list = argToList(args.get('generic_file_path'))
 
     reply = client.retrieve_file(
         endpoint_id_list=endpoint_id_list,
         windows=windows,
         linux=linux,
-        macos=macos
+        macos=macos,
+        file_path_list=file_path_list
     )
+
     result = {'action_id': reply.get('action_id')}
     return (
         tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
@@ -2796,6 +3043,8 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
             parameters = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'The parameters argument is not in a valid JSON structure:\n{e}')
+    else:
+        parameters = {}
     response = client.run_script(script_uid, endpoint_ids, parameters, timeout)
     reply = response.get('reply')
     return CommandResults(
@@ -2936,6 +3185,8 @@ def main():
     base_url = urljoin(demisto.params().get('url'), '/public_api/v1')
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
+    statuses = demisto.params().get('status')
+
     try:
         timeout = int(demisto.params().get('timeout', 120))
     except ValueError as e:
@@ -2978,7 +3229,7 @@ def main():
         elif demisto.command() == 'fetch-incidents':
             integration_instance = demisto.integrationInstance()
             next_run, incidents = fetch_incidents(client, first_fetch_time, integration_instance, demisto.getLastRun(),
-                                                  max_fetch)
+                                                  max_fetch, statuses)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
@@ -3041,6 +3292,9 @@ def main():
 
         elif demisto.command() == 'xdr-endpoint-scan':
             return_outputs(*endpoint_scan_command(client, args))
+
+        elif demisto.command() == 'xdr-endpoint-scan-abort':
+            return_outputs(*endpoint_scan_abort_command(client, args))
 
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
@@ -3110,6 +3364,9 @@ def main():
 
         elif demisto.command() == 'xdr-run-script-kill-process':
             return_results(run_script_kill_process_command(client, args))
+
+        elif demisto.command() == 'endpoint':
+            return_results(endpoint_command(client, args))
 
     except Exception as err:
         if demisto.command() == 'fetch-incidents':

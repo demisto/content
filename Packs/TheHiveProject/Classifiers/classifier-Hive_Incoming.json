@@ -1,0 +1,122 @@
+{
+  "description": "Default incoming mapper for TheHive Project cases",
+  "feed": false,
+  "id": "TheHive - Incoming Mapper",
+  "mapping": {
+    "TheHive": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "TheHive Case PAP": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "pap",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0,1,2,3"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "WHITE,GREEN,AMBER,RED"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "TheHive Case Resolution Status": {
+          "complex": null,
+          "simple": "resolutionStatus"
+        },
+        "TheHive Case Status": {
+          "complex": null,
+          "simple": "status"
+        },
+        "TheHive Case Summary": {
+          "complex": null,
+          "simple": "summary"
+        },
+        "TheHive Case TLP": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "tlp",
+            "transformers": [
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0,1,2,3"
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "WHITE,GREEN,AMBER,RED"
+                    }
+                  }
+                },
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
+        },
+        "TheHive Flag": {
+          "complex": null,
+          "simple": "flag"
+        },
+        "TheHive Observables": {
+          "complex": null,
+          "simple": "observables"
+        },
+        "TheHive Tasks": {
+          "complex": null,
+          "simple": "tasks"
+        },
+        "dbotMirrorDirection": {
+          "complex": null,
+          "simple": "dbotMirrorDirection"
+        },
+        "dbotMirrorId": {
+          "complex": null,
+          "simple": "id"
+        },
+        "dbotMirrorInstance": {
+          "complex": null,
+          "simple": "dbotMirrorInstance"
+        },
+        "details": {
+          "complex": null,
+          "simple": "description"
+        },
+        "name": {
+          "complex": null,
+          "simple": "title"
+        },
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        }
+      }
+    }
+  },
+  "name": "TheHive - Incoming Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

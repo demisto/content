@@ -11,6 +11,7 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>API Key (v2).</strong></li>
+<li><strong>Source Reliability</strong>: Reliability of the source providing the intelligence data.</li>
 <li><strong>IP Threshold. Minimum score from AbuseIPDB analysis to consider the IP malicious. (&gt;20).</strong></li>
 <li><strong>Max reports age.</strong></li>
 <li><strong>Disregard quota errors.</strong></li>
