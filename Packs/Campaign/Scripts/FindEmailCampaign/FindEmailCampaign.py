@@ -371,7 +371,7 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
     context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
 
-    demisto.executeCommand('setIncident', {'rmailcampaignsummary': hr})
+    demisto.executeCommand('setIncident', {'emailcampaignsummary': hr})
     return return_outputs_custom(hr, context, tag='campaign_details')
 
 
