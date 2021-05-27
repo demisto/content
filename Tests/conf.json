@@ -1938,6 +1938,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AWS-SQS",
+            "playbookID": "AWS - SQS Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AbuseIPDB",
             "playbookID": "AbuseIPDB Test"
         },
