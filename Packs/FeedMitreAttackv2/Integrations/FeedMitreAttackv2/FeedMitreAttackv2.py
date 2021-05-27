@@ -171,6 +171,8 @@ class Client:
 
 def get_item_type(mitre_type, is_up_to_6_2):
     item_type = MITRE_TYPE_TO_DEMISTO_TYPE.get(mitre_type)
+
+    # For versions less than 6.2 - that only support STIX and not the newer types - Malware, Tool, etc.
     if not is_up_to_6_2 and item_type in ['Malware', 'Tool', 'Attack Pattern']:
         return f'STIX {item_type}'
     return item_type
