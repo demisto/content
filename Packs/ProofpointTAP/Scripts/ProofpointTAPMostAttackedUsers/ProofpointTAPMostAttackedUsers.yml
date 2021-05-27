@@ -1,7 +1,7 @@
 commonfields:
-  id: ProofPointTAPMostAttackedUsers
+  id: ProofpointTAPMostAttackedUsers
   version: -1
-name: ProofPointTAPMostAttackedUsers
+name: ProofpointTAPMostAttackedUsers
 script: ''
 type: python
 tags:

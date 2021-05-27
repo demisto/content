@@ -272,7 +272,7 @@
                 "prevName": "Most Attacked Mailboxed based on Proofpoint TAP AttackIndex",
                 "dataType": "scripts",
                 "widgetType": "column",
-                "query": "ProofPointTAPMostAttackedUsers",
+                "query": "ProofpointTAPMostAttackedUsers",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {
@@ -323,7 +323,7 @@
                 "prevName": "Proofpoint TAP Top Clickers",
                 "dataType": "scripts",
                 "widgetType": "column",
-                "query": "ProofPointTapTopClickers",
+                "query": "ProofpointTapTopClickers",
                 "sort": null,
                 "isPredefined": false,
                 "dateRange": {

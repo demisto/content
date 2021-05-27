@@ -224,7 +224,7 @@
       "query": {
         "type": "scripts",
         "filter": {
-          "query": "ProofPointTapTopClickers",
+          "query": "ProofpointTapTopClickers",
           "period": {
             "by": "",
             "byTo": "",
@@ -762,7 +762,7 @@
           "name": "Most Attacked Mailboxed based on Proofpoint AttackIndex",
           "dataType": "scripts",
           "widgetType": "column",
-          "query": "ProofPointTAPMostAttackedUsers",
+          "query": "ProofpointTAPMostAttackedUsers",
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",
@@ -797,7 +797,7 @@
           "name": "Proofpoint TAP Top Clickers",
           "dataType": "scripts",
           "widgetType": "column",
-          "query": "ProofPointTapTopClickers",
+          "query": "ProofpointTapTopClickers",
           "isPredefined": false,
           "dateRange": {
             "fromDate": "0001-01-01T00:00:00Z",

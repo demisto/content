@@ -1,7 +1,7 @@
 commonfields:
-  id: ProofPointTapTopClickers
+  id: ProofpointTapTopClickers
   version: -1
-name: ProofPointTapTopClickers
+name: ProofpointTapTopClickers
 script: ''
 type: python
 tags:
