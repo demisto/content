@@ -96,7 +96,7 @@ class Client(BaseClient):
 def get_ioc_value_from_ioc_name(ioc_obj):
     """
     Extract SHA-256 from string:
-    ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '4f75622c2dd839f'])" -> 4f75622c2dd839f
+    ([file:name = 'blabla' OR file:name = 'blabla'] AND [file:hashes.'SHA-256' = '1111'])" -> 1111
     """
     ioc_value = ioc_obj.get('name')
     try:
