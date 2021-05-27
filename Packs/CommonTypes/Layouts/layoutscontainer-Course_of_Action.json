@@ -243,7 +243,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "stixdescription",
+                                "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 0,
@@ -487,7 +487,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "stixdescription",
+                                "fieldId": "description",
                                 "height": 22,
                                 "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
                                 "index": 0,

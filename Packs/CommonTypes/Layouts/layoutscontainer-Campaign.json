@@ -90,7 +90,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "stixaliases",
+                                "fieldId": "aliases",
                                 "height": 22,
                                 "id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 1,
@@ -254,7 +254,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "stixdescription",
+                                "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 0,
@@ -451,7 +451,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "stixaliases",
+                                "fieldId": "aliases",
                                 "height": 22,
                                 "id": "28289290-d183-11ea-b1ee-39abdac77dba",
                                 "index": 1,
@@ -507,7 +507,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "stixdescription",
+                                "fieldId": "description",
                                 "height": 22,
                                 "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
                                 "index": 0,
