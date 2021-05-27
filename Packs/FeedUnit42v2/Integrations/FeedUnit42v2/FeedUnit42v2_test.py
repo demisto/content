@@ -2,7 +2,8 @@ import pytest
 from FeedUnit42v2 import Client, fetch_indicators, get_indicators_command, handle_multiple_dates_in_one_field, \
     get_indicator_publication, get_attack_id_and_value_from_name, parse_indicators, parse_campaigns, \
     parse_reports_and_report_relationships, create_attack_pattern_indicator, create_course_of_action_indicators, \
-    get_ioc_type, get_ioc_value, create_list_relationships, get_ioc_value_from_ioc_name, add_stix_prefix_to_indicator
+    get_ioc_type, get_ioc_value, create_list_relationships, get_ioc_value_from_ioc_name, \
+    change_attack_pattern_to_stix_attack_pattern
 
 from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DATA, RELATIONSHIP_DATA, REPORTS_DATA, \
     REPORTS_INDICATORS, ID_TO_OBJECT, INDICATORS_RESULT, CAMPAIGN_RESPONSE, CAMPAIGN_INDICATOR, COURSE_OF_ACTION_DATA, \
@@ -268,7 +269,7 @@ def test_get_ioc_value_from_ioc_name():
                                        "[file:hashes.'SHA-256' = '4f75622c2dd839f'])"}) == "4f75622c2dd839f"
 
 
-def test_add_stix_prefix_to_indicator():
-    assert add_stix_prefix_to_indicator({"type": "ind", "fields":
-                                        {"killchainphases": "kill chain", "description": "des"}}) == \
+def test_change_attack_pattern_to_stix_attack_pattern():
+    assert change_attack_pattern_to_stix_attack_pattern({"type": "ind", "fields":
+                                                        {"killchainphases": "kill chain", "description": "des"}}) == \
         {"type": "STIX ind", "fields": {"stixkillchainphases": "kill chain", "stixdescription": "des"}}

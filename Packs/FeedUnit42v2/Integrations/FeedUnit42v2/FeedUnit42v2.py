@@ -310,7 +310,7 @@ def get_attack_id_and_value_from_name(attack_indicator):
     return ind_id, value
 
 
-def add_stix_prefix_to_indicator(indicator: dict):
+def change_attack_pattern_to_stix_attack_pattern(indicator: dict):
     kill_chain_phases = indicator['fields']['killchainphases']
     del indicator['fields']['killchainphases']
     description = indicator['fields']['description']
@@ -369,7 +369,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
             indicator['fields']['trafficlightprotocol'] = tlp_color
 
         if not is_up_to_6_2:
-            indicator = add_stix_prefix_to_indicator(indicator)
+            indicator = change_attack_pattern_to_stix_attack_pattern(indicator)
 
         attack_pattern_indicators.append(indicator)
     return attack_pattern_indicators
