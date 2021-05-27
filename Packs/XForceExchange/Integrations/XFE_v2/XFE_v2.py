@@ -407,21 +407,21 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
         if client.create_relationships:
             malware = dict_safe_get(hash_info, ['external', 'family'], [])[0]
             if malware:
-                relationship = [EntityRelation(name=EntityRelation.Relations.RELATED_TO,
-                                               entity_a=file_hash,
-                                               entity_a_type=FeedIndicatorType.File,
-                                               entity_b=malware,
-                                               entity_b_type="STIX Malware",
-                                               source_reliability=client.reliability,
-                                               brand='XFE')]
+                relationship = [EntityRelationship(name=EntityRelationship.Relationships.RELATED_TO,
+                                                   entity_a=file_hash,
+                                                   entity_a_type=FeedIndicatorType.File,
+                                                   entity_b=malware,
+                                                   entity_b_type="STIX Malware",
+                                                   source_reliability=client.reliability,
+                                                   brand='XFE')]
 
         hash_type = get_hash_type(file_hash)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
-            file = Common.File(md5=file_hash, dbot_score=dbot_score, relations=relationship)
+            file = Common.File(md5=file_hash, dbot_score=dbot_score, relationships=relationship)
         elif hash_type == 'sha1':
-            file = Common.File(sha1=file_hash, dbot_score=dbot_score, relations=relationship)
+            file = Common.File(sha1=file_hash, dbot_score=dbot_score, relationships=relationship)
         elif hash_type == 'sha256':
-            file = Common.File(sha256=file_hash, dbot_score=dbot_score, relations=relationship)
+            file = Common.File(sha256=file_hash, dbot_score=dbot_score, relationships=relationship)
 
         context[f'XFE.{outputPaths["file"]}'] = hash_info
 
@@ -439,7 +439,7 @@ def file_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
             outputs=context,
             indicator=file,
             raw_response=report,
-            relations=relationship
+            relationships=relationship
         ))
     return command_results
 

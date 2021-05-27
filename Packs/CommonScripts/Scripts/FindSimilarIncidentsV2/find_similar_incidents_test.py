@@ -428,6 +428,27 @@ def test_similar_context_missing_key(mocker):
         main()
 
 
+def test_build_incident_query():
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('type="test"', True, '826', 'name:incident1')
+
+    assert res == '(-id:826) and (type="test" and -status:Closed) and (name:incident1)'
+
+
+def test_build_incident_query_without_similar_keys_query():
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('', True, '826', 'name:incident1')
+
+    assert res == '(-id:826) and (-status:Closed) and (name:incident1)'
+
+
+def test_build_incident_query_without_extra_query():
+    from FindSimilarIncidentsV2 import build_incident_query
+    res = build_incident_query('', True, '826', '')
+
+    assert res == '(-id:826) and (-status:Closed)'
+
+
 def dt_res(context, keys_to_search):
 
     keys_list = keys_to_search.split('.')

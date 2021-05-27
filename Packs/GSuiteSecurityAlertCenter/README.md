@@ -15,6 +15,6 @@ As an administrator, use the G Suite Security Alert Center pack to:
 - Provide feedback for alerts.
 - Fetch existing feedback for a particular alert.
 
-This pack includes the [G Suite Security Alert Center integration](https://xsoar.pan.dev/docs/reference/integrations/GSuiteSecurityAlertCenter).
+This pack includes the [G Suite Security Alert Center integration](https://xsoar.pan.dev/docs/reference/integrations/g-suite-security-alert-center).
 
 

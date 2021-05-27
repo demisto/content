@@ -17,5 +17,11 @@
         "HIPAA Breach Notification",
         "Compliance"
     ],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "Compliance": {
+            "mandatory": true,
+            "display_name": "Compliance"
+        }
+    }
 }

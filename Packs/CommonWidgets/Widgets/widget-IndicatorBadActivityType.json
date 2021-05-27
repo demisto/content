@@ -19,7 +19,7 @@
  },
  "params": {
   "groupBy": [
-   "calculatedTime(d)",
+   "calculatedTime",
    "type"
   ]
  },
