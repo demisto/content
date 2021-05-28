@@ -49,7 +49,7 @@ tasks:
     task:
       id: 924a5666-825f-4f13-8528-78606e876b61
       version: -1
-      name: Collect Indicators of Compromised to Hunt
+      name: Collect Indicators of Compromised
       type: title
       iscommand: false
       brand: ""
