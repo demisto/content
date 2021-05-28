@@ -126,7 +126,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Folder name
+      description: Name for new folder
       isArray: false
       name: foldername
       required: true
@@ -186,7 +186,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Folder name
+      description: Search folder name
       isArray: false
       name: foldername
       required: true
@@ -774,7 +774,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: IsApplicationAccount
+      description: IsApplicationAccount, true - if this is account usage for SDK
       isArray: false
       name: isapplicationaccount
       predefined:
@@ -1001,7 +1001,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Password
+      description: Password for update object
       isArray: false
       name: password
       required: false

@@ -86,9 +86,6 @@ class Client(BaseClient):
 
     def secret_checkout(self, secret_id: str) -> str:
         url_suffix = "/api/v1/secrets/" + str(secret_id) + "/check-out"
-#        self._http_request("POST", url_suffix)
-#        return self._http_request("GET", url_suffix="/api/v1/secrets/" + str(secret_id) + "/summary")
-#        return self._http_request("POST", url_suffix)
         return self._http_request("POST", url_suffix)
 
     def secret_checkin(self, secret_id: str) -> str:
