@@ -131,6 +131,18 @@
             ]
         },
         {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "no_fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
             "instance_names": "azure_nsg_prod",
@@ -1939,6 +1951,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AWS - SQS",
+            "playbookID": "AWS - SQS Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AbuseIPDB",
             "playbookID": "AbuseIPDB Test"
         },
@@ -2310,6 +2327,19 @@
             "instance_names": [
                 "non_https_cert",
                 "instance_execute"
+            ]
+        },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
+                "https_cert",
+                "local_https"
             ]
         },
         {
