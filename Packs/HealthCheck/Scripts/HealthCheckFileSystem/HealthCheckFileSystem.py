@@ -65,9 +65,9 @@ def read_section(section):
     return path, files, large_files
 
 
-RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/"
-              cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
-largefiles = []
+RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
+              "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
+
 res = []
 path = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
 if is_error(path):
@@ -89,17 +89,17 @@ with open(path[0]['Contents']['path'], 'rb') as fh:
     for file in large:
         res.append({'category': 'File system', 'severity': 'Medium',
                     'description': f"The file: {file['path']}/{file['name']} has a size of: {file['size']}\n",
-                    'resolution': f"{RESOLUTION[0]}"
+                    'resolution': RESOLUTION[0]
                     })
     if numberOfPartitions > 12:
         res.append({'category': 'File system', 'severity': 'Medium',
                     'description': f"You have {numberOfPartitions} months data, consider to archive old data",
-                    'resolution': f"{RESOLUTION[0]}"
+                    'resolution': RESOLUTION[0]
                     })
     elif numberOfPartitions > 6:
         res.append({'category': 'File system', 'severity': 'Low',
                     'description': f"You have {numberOfPartitions} months data, consider to archive old data",
-                    'resolution': f"{RESOLUTION[0]}"
+                    'resolution': RESOLUTION[0]
                     })
 
 results = CommandResults(

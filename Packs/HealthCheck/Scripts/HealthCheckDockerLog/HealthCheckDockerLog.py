@@ -26,15 +26,15 @@ def imageAnalytics(images):
     lres = []
     for image in images:
         if "month" in image['last_update']:
-            res.append({"category": "Docker", "severity": "Medium",
-                        "description": f"{DESCRIPTION[0]}".format(image['image'], image['last_update']),
-                        "resolution": f"{RESOLUTION[0]}"
-                        })
+            lres.append({"category": "Docker", "severity": "Medium",
+                         "description": f"{DESCRIPTION[0]}".format(image['image'], image['last_update']),
+                         "resolution": f"{RESOLUTION[0]}"
+                         })
         elif "years" in image['last_update']:
-            res.append({"category": "Docker", "severity": "High",
-                        "description": f"{DESCRIPTION[0]}".format(image['image'], image['version'], image['last_update']),
-                        "resolution": f"{RESOLUTION[0]}"
-                        })
+            lres.append({"category": "Docker", "severity": "High",
+                         "description": f"{DESCRIPTION[0]}".format(image['image'], image['version'], image['last_update']),
+                         "resolution": f"{RESOLUTION[0]}"
+                         })
     return lres
 
 
@@ -89,7 +89,7 @@ else:
             return_outputs(readable_output=tableToMarkdown("Containers", container_array,
                                                            ['containerid', 'name', 'cpu_usage', 'mem_percent']))
             return_outputs(readable_output=tableToMarkdown("Images", image_array, [
-                           'imageid', 'image', 'version', 'last_update', 'size']))
+                'imageid', 'image', 'version', 'last_update', 'size']))
 
             getconfig = [m.groups() for m in config.finditer(ALL_LINES)]
             for m in getconfig:
@@ -109,10 +109,12 @@ else:
 
             if countCPU:
                 res.append({"category": "Docker", "severity": "Medium",
-                            "description": "There are {} containers that are running with over 10% CPU Usage - Please check docker.log".format(countCPU)})
+                            "description": "There are {} containers that are running with over 10% CPU Usage - Please check docker.log".format(
+                                countCPU)})
             if countMEM:
                 res.append({"category": "Docker", "severity": "Medium",
-                            "description": "There are {} containers that are running with over 10% RAM Usage - Please check docker.log".format(countMEM)})
+                            "description": "There are {} containers that are running with over 10% RAM Usage - Please check docker.log".format(
+                                countMEM)})
 
         res = res + imageAnalytics(image_array)
         res = res + containerAnalytics(container_array)
