@@ -1,7 +1,6 @@
 import pytest
 from Tanium_v2 import Client, get_question_result
 import json
-import demistomock as demisto
 
 
 BASE_URL = 'https://test.com/'
@@ -367,6 +366,3 @@ def test_update_session(mocker):
     client = Client(BASE_URL, username='', password='', domain='domain', api_token='oauth authentication')
     client.update_session()
     assert client.session == 'oauth authentication'
-
-
-
