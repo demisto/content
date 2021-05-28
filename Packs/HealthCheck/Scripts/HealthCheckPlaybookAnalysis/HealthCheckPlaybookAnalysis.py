@@ -28,7 +28,7 @@ Thresholds = {
     "CustomPlaybookDeprecatedScriptIds": ["Sleep", "EmailAskUser"],
     "CustomPlaybookLength": 30,
 }
-thresholds = args.get('Thresholds', Thresholds)
+thresholds: Dict[str, Union[list, int]] = args.get('Thresholds', Thresholds)
 
 customPlaybooks = demisto.executeCommand(
     "demisto-api-post", {"uri": "/playbook/search", "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]

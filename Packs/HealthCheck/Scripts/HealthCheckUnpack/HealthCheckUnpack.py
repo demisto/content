@@ -19,7 +19,11 @@ def extractFiles(path, action):
         tar = tarfile.open(path, action)
 
         for tar_file in tar.getnames():
-            data = tar.extractfile(tar_file).read()
+            extracted_file = tar.extractfile(tar_file)
+            if not extracted_file:
+                continue
+
+            data = extracted_file.read()
             tar_file = tar_file.rsplit('/', 1)[1]
 
             demisto.results(fileResult(tar_file, data))

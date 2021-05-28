@@ -53,8 +53,13 @@ if path[0]['Type'] == entryTypes['error']:
     return_results('File not found')
 else:
     getimages = re.compile(
-        r'(?P<repository>[\w*\/\.\-\<\>]*)\s+(?P<tag>\d[\.|\d]*|\blatest\b|\b\<none\>\b|\b1\.[0-9]\-alpine\b)\s+(?P<ImageID>\w+)\s+(?P<Created>\d{0,2}\s(?:\byears\b|\bmonths\b|weeks\b) ago)\s+(?P<size>\d+.*B)', re.MULTILINE) #regex
-    getcontainers = re.compile(r'^(?P<container>[\w]+)\s+(?P<name>[\w\d\-\.]+)\s+(?P<cpu>[\d\.]+)\%\s+(?P<memusage>[\d\.]+(?:MiB|GiB))\s+\/\s+(?P<memlimit>[\d\.]+(?:MiB|GiB))\s+(?P<mempercent>[\d\.]+)%\s+(?P<netI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<netO>[\d\.]+(?:B|kB|MB))\s+(?P<blockI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<blockO>[\d\.]+(?:B|kB|MB))\s+(?P<pids>\d+)', re.MULTILINE) #regex
+        r'(?P<repository>[\w*\/\.\-\<\>]*)\s+(?P<tag>\d[\.|\d]*|\blatest\b|\b\<none\>\b|\b1\.[0-9]\-alpine\b)'
+        r'\s+(?P<ImageID>\w+)\s+(?P<Created>\d{0,2}\s(?:\byears\b|\bmonths\b|weeks\b) ago)\s+(?P<size>\d+.*B)', re.MULTILINE)
+    getcontainers = re.compile(
+        r'^(?P<container>[\w]+)\s+(?P<name>[\w\d\-\.]+)\s+(?P<cpu>[\d\.]+)\%\s+(?P<memusage>[\d\.]+(?:MiB|GiB))\s+\/\s+'
+        r'(?P<memlimit>[\d\.]+(?:MiB|GiB))\s+(?P<mempercent>[\d\.]+)%\s+(?P<netI>[\d\.]+(?:B|kB|MB))\s+\/\s+'
+        r'(?P<netO>[\d\.]+(?:B|kB|MB))\s+(?P<blockI>[\d\.]+(?:B|kB|MB))\s+\/\s+(?P<blockO>[\d\.]+(?:B|kB|MB))\s+(?P<pids>\d+)',
+        re.MULTILINE)
     usage = re.compile(r'(\d+[.]\d+)%', re.MULTILINE)
     config = re.compile(r'([ \w]+)[:] ([-., \d\w]+)', re.MULTILINE)
     image_array = []

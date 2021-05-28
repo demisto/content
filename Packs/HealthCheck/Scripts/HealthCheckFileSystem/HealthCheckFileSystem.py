@@ -3,9 +3,9 @@ from CommonServerPython import *  # noqa: F401
 import os
 import sys
 import re
-from datetime import datetime
 
-LS_RE = br'(?P<type>^[d-])(?P<u>...)(?P<g>...)(?P<o>...)(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+(?P<gid>\S+)\s+(?P<size>[\w\d.]+)\s+(?P<modified>\w+\s+\d+\s+\d+:?\d+)\s+(?P<name>.*)'
+LS_RE = br'(?P<type>^[d-])(?P<u>...)(?P<g>...)(?P<o>...)(?P<S>[.\s]+)(?P<hlinks>\d+)\s+(?P<uid>\S+)\s+(?P<gid>\S+)\s+' \
+        br'(?P<size>[\w\d.]+)\s+(?P<modified>\w+\s+\d+\s+\d+:?\d+)\s+(?P<name>.*)'
 UNITS = {'B': 1, 'K': 10**3, 'M': 10**6, 'G': 10**9, 'T': 10**12}
 
 
@@ -65,7 +65,8 @@ def read_section(section):
     return path, files, large_files
 
 
-RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
+RESOLUTION = ["Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/5-5/"
+              cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"]
 largefiles = []
 res = []
 path = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})

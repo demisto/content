@@ -14,15 +14,15 @@ def analyzeData(res):
     addActions = []
     if res['Busy'] > res['Total'] * 0.9:
         addActions.append({'category': 'Workers analysis', 'severity': 'High',
-                           'description': f"DESCRIPTION[0]", 'resolution': f"{RESOLUTION[0]}"})
+                           'description': DESCRIPTION[0], 'resolution': f"{RESOLUTION[0]}"})
 
     elif res['Busy'] > res['Total'] * 0.8:
         addActions.append({'category': 'Workers analysis', 'severity': 'Medium',
-                           'description': f"DESCRIPTION[1]", 'resolution': f"{RESOLUTION[0]}"})
+                           'description': DESCRIPTION[1], 'resolution': f"{RESOLUTION[0]}"})
 
     elif res['Busy'] > res['Total'] * 0.5:
         addActions.append({'category': 'Workers analysis', 'severity': 'Low',
-                           'description': f"DESCRIPTION[2]", 'resolution': f"{RESOLUTION[0]}"})
+                           'description': DESCRIPTION[2], 'resolution': f"{RESOLUTION[0]}"})
     return addActions
 
 
