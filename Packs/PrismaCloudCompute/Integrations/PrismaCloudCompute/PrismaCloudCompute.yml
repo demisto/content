@@ -43,7 +43,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.5.20070
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -253,6 +253,7 @@ script:
   - name: prismacloudcompute-defenders-restart
     arguments:
     - name: id
+      description: The defender id
       required: true
     description: 'RestartDefender restarts a specific defender '
   - name: prismacloudcompute-defenders-names
@@ -308,6 +309,7 @@ script:
     arguments:
     - name: id
       required: true
+      description: The backup id
     description: 'DownloadBackup downloads the given backup file '
   - name: prismacloudcompute-get-alert-profiles
     arguments: []
@@ -343,31 +345,37 @@ script:
     arguments:
     - name: id
       required: true
+      description: The user ID to delete
     description: 'DeleteUser deletes the given user '
   - name: prismacloudcompute-delete-groups-by-id
     arguments:
     - name: id
       required: true
+      description: The id of the group to delete
     description: 'DeleteGroup deletes the given group name '
   - name: prismacloudcompute-delete-collections-by-id
     arguments:
     - name: id
       required: true
+      description: The id of the collection to delete
     description: 'DeleteCollection deletes a collection '
   - name: prismacloudcompute-delete-alert-profiles-by-id
     arguments:
     - name: id
       required: true
+      description: The id of the alert profile to delete
     description: 'DeleteAlertProfile deletes an alert profile '
   - name: prismacloudcompute-delete-backups-by-id
     arguments:
     - name: id
       required: true
+      description: The id of the backup to delete
     description: 'DeleteBackup deletes the given backup '
   - name: prismacloudcompute-backups-restore
     arguments:
     - name: id
       required: true
+      description: The ID of the backup to restore
     description: 'Restore invokes a mongo restore process '
   - name: prismacloudcompute-post-backups
     arguments:
@@ -381,6 +389,7 @@ script:
   - name: prismacloudcompute-patch-backups-by-id
     arguments:
     - name: id
+      description: The id of the backup to modify
       required: true
     - name: name
       required: true
