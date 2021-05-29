@@ -21,14 +21,13 @@ RESOLUTION = [
     "cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial"
 ]
 
-thresholds = args['Thresholds']
 
 Thresholds = {
     "CustomPlaybookSetIncidentCount": 4,
-    "CustomPlaybookDeprecatedScriptIds": ["Sleep", "EmailAskUser"],
     "CustomPlaybookLength": 30,
 }
-thresholds: Dict[str, Union[list, int]] = args.get('Thresholds', Thresholds)
+
+thresholds = args.get('Thresholds', Thresholds)
 
 customPlaybooks = demisto.executeCommand(
     "demisto-api-post", {"uri": "/playbook/search", "body": {"query": "system:F"}})[0]["Contents"]["response"]["playbooks"]
@@ -62,7 +61,7 @@ for customPlaybook in customPlaybooks:
                     "resolution": f"{RESOLUTION[2]}"
                     })
 
-    if "EmailAskUser" in thresholds["CustomPlaybookDeprecatedScriptIds"]:
+    if "EmailAskUser" in customPlaybook["scriptIds"]:
         res.append({"category": "Playbooks", "severity": "Low",
                     "description": f"{DESCRIPTION[3]}".format(customPlaybook["name"]),
                     "resolution": f"{RESOLUTION[3]}"

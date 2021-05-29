@@ -116,8 +116,8 @@ knownerrors = [
 ]
 
 res = []
-last_line = None
-since = None
+last_line: List
+since: List
 path = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
 if path[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')

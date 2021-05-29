@@ -1,21 +1,30 @@
 args:
-- description: Define the thresholds
+- default: false
+  description: Define the thresholds
+  isArray: false
   name: Thresholds
-  required: true
+  required: false
+  secret: false
+- default: false
+  description: un
+  isArray: false
+  name: Inadvisable
+  required: false
+  secret: false
 comment: Parsing playbooks
 commonfields:
   id: HealthCheckPlaybookAnalysis
   version: -1
-dockerimage: demisto/python3:3.9.5.20070
 enabled: true
 name: HealthCheckPlaybookAnalysis
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.5.20070
 runas: DBotWeakRole
 runonce: false
-script: ''
-scripttarget: 0
-subtype: python3
-tags: []
-type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

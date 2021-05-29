@@ -4,7 +4,9 @@ import re
 
 DESCRIPTION = [
     "Container {0} was last updated {1}, consider updating it",
-    "Container {0} version {1} was last updated {2}, consider updating it"
+    "Container {0} version {1} was last updated {2}, consider updating it",
+    "There are {} containers that are running with over 10% CPU Usage - Please check docker.log",
+    "There are {} containers that are running with over 10% RAM Usage - Please check docker.log"
 ]
 
 RESOLUTION = ["Docker containers overloaded: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
@@ -12,7 +14,7 @@ RESOLUTION = ["Docker containers overloaded: https://docs.paloaltonetworks.com/c
 
 
 def containerAnalytics(containers):
-    lres = []
+    lres: List
     for container in containers:
         if float(container['cpu_usage']) > 80.0:
             res.append({"category": "Docker", "severity": "High",
@@ -109,12 +111,10 @@ else:
 
             if countCPU:
                 res.append({"category": "Docker", "severity": "Medium",
-                            "description": "There are {} containers that are running with over 10% CPU Usage - Please check docker.log".format(
-                                countCPU)})
+                            "description": DESCRIPTION[2].format(countCPU)})
             if countMEM:
                 res.append({"category": "Docker", "severity": "Medium",
-                            "description": "There are {} containers that are running with over 10% RAM Usage - Please check docker.log".format(
-                                countMEM)})
+                            "description": DESCRIPTION[3].format(countMEM)})
 
         res = res + imageAnalytics(image_array)
         res = res + containerAnalytics(container_array)
