@@ -42,4 +42,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![NOBELIUM - wide scale APT29 spear-phishing](https://raw.githubusercontent.com/demisto/content/e28d77714f65d818638848948b956ed3ed04792c/Packs/MajorBreachesInvestigationandResponse/doc_files/NOBELIUM_-_wide_scale_APT29_spear-phishing.png)
+![NOBELIUM - wide scale APT29 spear-phishing](https://raw.githubusercontent.com/demisto/content/6b83f79a696de22d675adc63c7dd3329dfc67837/Packs/MajorBreachesInvestigationandResponse/doc_files/NOBELIUM_-_wide_scale_APT29_spear-phishing.png)
