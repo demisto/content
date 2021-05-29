@@ -8,7 +8,8 @@ import re
 import copy
 import types
 import urllib3
-from taxii2client import v20, v21
+from taxii2client.v20 import Server as v20_Server, Collection as v20_Collection, as_pages as v20_as_pages
+from taxii2client.v21 import Server as v21_Server, Collection as v21_Collection
 from taxii2client.common import TokenAuth, _HTTPConnection
 
 # disable insecure warnings
@@ -152,11 +153,11 @@ class Taxii2FeedClient:
                 ),
             )
         if version is TAXII_VER_2_0:
-            self.server = v20.Server(
+            self.server = v20_Server(
                 server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
             )
         else:
-            self.server = v21.Server(
+            self.server = v21_Server(
                 server_url, verify=self.verify, proxies=self.proxies, conn=self._conn,
             )
 
@@ -192,7 +193,7 @@ class Taxii2FeedClient:
         Tries to initialize `collection_to_fetch` if possible
         """
         if collection_to_fetch is None and isinstance(self.collection_to_fetch, str):
-            # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
+            # self.collection_to_fetch will be changed from str -> Union[v20_Collection, v21_Collection]
             collection_to_fetch = self.collection_to_fetch
         if not self.collections:
             raise DemistoException(ERR_NO_COLL)
@@ -221,7 +222,7 @@ class Taxii2FeedClient:
         :param limit: max amount of indicators to fetch
         :return: Cortex indicators list
         """
-        if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
+        if not isinstance(self.collection_to_fetch, (v20_Collection, v21_Collection)):
             raise DemistoException(
                 "Could not find a collection to fetch from. "
                 "Please make sure you provided a collection."
@@ -308,8 +309,8 @@ class Taxii2FeedClient:
         :param page_size: size of the request page
         """
         get_objects = self.collection_to_fetch.get_objects
-        if isinstance(self.collection_to_fetch, v20.Collection):
-            envelope = v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        if isinstance(self.collection_to_fetch, v20_Collection):
+            envelope = v20_as_pages(get_objects, per_request=page_size, **kwargs)
         else:
             envelope = get_objects(limit=page_size, **kwargs)
         return envelope
