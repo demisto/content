@@ -34,7 +34,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": -440
+          "y": -770
         }
       }
     note: false
@@ -44,10 +44,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 924a5666-825f-4f13-8528-78606e876b61
+    taskid: ec9e48f1-8c12-4c45-8190-e402ac8f2b72
     type: title
     task:
-      id: 924a5666-825f-4f13-8528-78606e876b61
+      id: ec9e48f1-8c12-4c45-8190-e402ac8f2b72
       version: -1
       name: Collect Indicators of Compromise
       type: title
@@ -56,6 +56,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
+      - "3"
       - "2"
       - "3"
     separatecontext: false
@@ -63,7 +64,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": -310
+          "y": -620
         }
       }
     note: false
@@ -73,10 +74,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: d853d46c-b823-4656-8f7c-a4cf537e3b3d
+    taskid: 8f9863ec-f861-4198-8b1b-b842e219ee7e
     type: regular
     task:
-      id: d853d46c-b823-4656-8f7c-a4cf537e3b3d
+      id: 8f9863ec-f861-4198-8b1b-b842e219ee7e
       version: -1
       name: Retrieve IOCs file from Azure GitHub repository
       description: Sends http request. Returns the response as json.
@@ -99,15 +100,15 @@ tasks:
       saveAsFile: {}
       unsecure: {}
       url:
-        simple: https://github.com/Azure/Azure-Sentinel/blob/master/Detections/MultipleDataSources/NOBELIUM_IOCsMay2021.yaml
+        simple: https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Detections/MultipleDataSources/NOBELIUM_IOCsMay2021.yaml
       username: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": -160
+          "x": 790,
+          "y": -480
         }
       }
     note: false
@@ -117,14 +118,13 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 1374eb6f-2b47-4913-86a8-026f2bdbb80d
+    taskid: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
     type: regular
     task:
-      id: 1374eb6f-2b47-4913-86a8-026f2bdbb80d
+      id: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
       version: -1
       name: Retrieve Volexity blog
-      description: Sends http request. Returns the response as json.
-      scriptName: http
+      scriptName: RapidBreachResponseParseBlog
       type: regular
       iscommand: false
       brand: ""
@@ -132,25 +132,14 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      body: {}
-      filename: {}
-      headers: {}
-      insecure: {}
-      method:
-        simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile: {}
-      unsecure: {}
       url:
         simple: https://www.volexity.com/blog/2021/05/27/suspected-apt29-operation-launches-election-fraud-themed-phishing-campaigns/
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": -160
+          "x": 110,
+          "y": -480
         }
       }
     note: false
@@ -190,10 +179,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: f8952faa-e87a-465f-82bc-04da2abf4525
+    taskid: 394d0fc1-05b4-4879-87cf-fc592ea938a9
     type: regular
     task:
-      id: f8952faa-e87a-465f-82bc-04da2abf4525
+      id: 394d0fc1-05b4-4879-87cf-fc592ea938a9
       version: -1
       name: Extract IOCS from Volexity blog
       description: commands.local.cmd.extract.indicators
@@ -203,21 +192,21 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "21"
+      - "29"
     scriptarguments:
       entryID: {}
       filePath: {}
       investigationID: {}
       text:
         complex:
-          root: HttpRequest
-          accessor: Response
+          root: http
+          accessor: parsedBlog
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 15
+          "x": 110,
+          "y": -305
         }
       }
     note: false
@@ -227,10 +216,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f6ebd855-0775-4d66-81b7-dbe2bb3440db
+    taskid: 0a26694f-dada-468d-8793-fc08ff10605c
     type: regular
     task:
-      id: f6ebd855-0775-4d66-81b7-dbe2bb3440db
+      id: 0a26694f-dada-468d-8793-fc08ff10605c
       version: -1
       name: Extract IOCs from Azure GitHub repository
       description: commands.local.cmd.extract.indicators
@@ -240,21 +229,21 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "21"
+      - "29"
     scriptarguments:
       entryID: {}
       filePath: {}
       investigationID: {}
       text:
         complex:
-          root: HttpRequest
-          accessor: Response
+          root: HttpRequest.Response
+          accessor: Body
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": 15
+          "x": 790,
+          "y": -305
         }
       }
     note: false
@@ -264,17 +253,24 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: def46558-c905-4390-80a9-02fafcd7d15d
+    taskid: 496638ea-6a52-4039-8b8e-74aab5fc73ec
     type: playbook
     task:
-      id: def46558-c905-4390-80a9-02fafcd7d15d
+      id: 496638ea-6a52-4039-8b8e-74aab5fc73ec
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
+      description: "This is a multipurpose playbook used for hunting and threat detection.\
+        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
+        \ provided manually or from outputs by other playbooks. \nWith the received\
+        \ indicators, the playbook leverages data received by PANW products including,\
+        \ Cortex Data Lake, Autofocus and Pan-OS to search for IP addresses, host\
+        \ names and users related to the provided indicators.\nThe output provided\
+        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
+        \ or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -283,6 +279,8 @@ tasks:
         complex:
           root: ExtractedIndicators
           accessor: IP
+          transformers:
+          - operator: uniq
       InternalDomainName: {}
       InternalHostRegex: {}
       InternalRange: {}
@@ -298,6 +296,8 @@ tasks:
               right:
                 value:
                   simple: "32"
+          transformers:
+          - operator: uniq
       SHA1:
         complex:
           root: ExtractedIndicators.File
@@ -310,6 +310,8 @@ tasks:
               right:
                 value:
                   simple: "40"
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: ExtractedIndicators.File
@@ -322,16 +324,30 @@ tasks:
               right:
                 value:
                   simple: "64"
+          transformers:
+          - operator: uniq
       URLDomain:
         complex:
-          root: ExtractedIndicators
-          accessor: URL
-          transformers:
-          - operator: append
-            args:
-              item:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: notContainsGeneral
+              left:
                 value:
-                  simple: ${ExtractedIndicators.Domain}
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: github
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -461,17 +477,18 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: d427c14b-b557-4966-851d-e48aa790bd43
+    taskid: fe836de4-2f79-46c8-8375-80c4eb9b6b24
     type: playbook
     task:
-      id: d427c14b-b557-4966-851d-e48aa790bd43
+      id: fe836de4-2f79-46c8-8375-80c4eb9b6b24
       version: -1
       name: QRadar Indicator Hunting V2
+      description: 'The Playbook queries QRadar SIEM for indicators such as file hashes,
+        IP addresses, domains, or urls. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -480,6 +497,8 @@ tasks:
         complex:
           root: ExtractedIndicators
           accessor: IP
+          transformers:
+          - operator: uniq
       InternalRange: {}
       InvestigationIPFields:
         simple: sourceip,destinationip
@@ -497,6 +516,8 @@ tasks:
               right:
                 value:
                   simple: "32"
+          transformers:
+          - operator: uniq
       QradarIPfield:
         simple: sourceip,destinationip
       QradarMD5Field: {}
@@ -515,6 +536,8 @@ tasks:
               right:
                 value:
                   simple: "40"
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: ExtractedIndicators.File
@@ -527,18 +550,30 @@ tasks:
               right:
                 value:
                   simple: "64"
+          transformers:
+          - operator: uniq
       TimeFrame:
         simple: LAST 7 DAYS
       URLDomain:
         complex:
-          root: ExtractedIndicators
-          accessor: URL
-          transformers:
-          - operator: append
-            args:
-              item:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: notContainsGeneral
+              left:
                 value:
-                  simple: ${ExtractedIndicators.Domain}
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: github
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
     separatecontext: true
     loop:
       iscommand: false
@@ -559,17 +594,19 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: be4c29f0-bc78-43ca-8c0c-58b272b67112
+    taskid: 224aad59-c312-4aa3-8957-b87a979ef585
     type: playbook
     task:
-      id: be4c29f0-bc78-43ca-8c0c-58b272b67112
+      id: 224aad59-c312-4aa3-8957-b87a979ef585
       version: -1
       name: Splunk Indicator Hunting
+      description: This playbook queries Splunk for indicators such as file hashes,
+        IP addresses, domains, or urls. It outputs detected users, ip addresses, and
+        hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -579,6 +616,8 @@ tasks:
         complex:
           root: ExtractedIndicators
           accessor: IP
+          transformers:
+          - operator: uniq
       IPFieldsToReturn: {}
       IndexName:
         simple: '*'
@@ -597,6 +636,8 @@ tasks:
               right:
                 value:
                   simple: "32"
+          transformers:
+          - operator: uniq
       SHA1:
         complex:
           root: ExtractedIndicators.File
@@ -609,6 +650,8 @@ tasks:
               right:
                 value:
                   simple: "40"
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: ExtractedIndicators.File
@@ -621,6 +664,8 @@ tasks:
               right:
                 value:
                   simple: "64"
+          transformers:
+          - operator: uniq
       SelectFields:
         simple: source,timestamp
       SplunkIPField: {}
@@ -630,14 +675,26 @@ tasks:
       SplunkURLDomainField: {}
       URLDomain:
         complex:
-          root: ExtractedIndicators
-          accessor: URL
-          transformers:
-          - operator: append
-            args:
-              item:
+          root: ExtractedIndicators.Domain
+          filters:
+          - - operator: notContainsGeneral
+              left:
                 value:
-                  simple: ${ExtractedIndicators.Domain}
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: github
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: microsoft.com
+          transformers:
+          - operator: uniq
       UserFieldsToReturn: {}
       earliest_time:
         simple: -1d
@@ -743,17 +800,17 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 5806e42d-9a16-4f37-89df-d915544f1e85
+    taskid: 0899455f-bc13-4cc6-8882-93b754e40c6c
     type: playbook
     task:
-      id: 5806e42d-9a16-4f37-89df-d915544f1e85
+      id: 0899455f-bc13-4cc6-8882-93b754e40c6c
       version: -1
       name: Search Endpoints By Hash - Generic V2
+      description: Hunt using available tools
       playbookName: Search Endpoints By Hash - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -770,6 +827,8 @@ tasks:
               right:
                 value:
                   simple: "32"
+          transformers:
+          - operator: uniq
       SHA1Hash:
         complex:
           root: ExtractedIndicators.File
@@ -782,6 +841,8 @@ tasks:
               right:
                 value:
                   simple: "40"
+          transformers:
+          - operator: uniq
       SHA256Hash:
         complex:
           root: ExtractedIndicators.File
@@ -794,6 +855,8 @@ tasks:
               right:
                 value:
                   simple: "64"
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -1072,10 +1135,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 4833acc6-f750-4015-8b1e-26a3b9601d39
+    taskid: f3de12ee-dc2b-4b18-873c-ec8669683860
     type: regular
     task:
-      id: 4833acc6-f750-4015-8b1e-26a3b9601d39
+      id: f3de12ee-dc2b-4b18-873c-ec8669683860
       version: -1
       name: Search for emails from spoofed accounts
       description: Searches for items in the specified mailbox. Specific permissions
@@ -1141,10 +1204,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 3c416a31-8118-429f-87f2-67ad8a5a898a
+    taskid: 93501313-aaf9-45b5-8003-06b40ec570cc
     type: playbook
     task:
-      id: 3c416a31-8118-429f-87f2-67ad8a5a898a
+      id: 93501313-aaf9-45b5-8003-06b40ec570cc
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -1173,80 +1236,27 @@ tasks:
       EDLServerIP: {}
       IP:
         complex:
-          root: ExtractedIndicators.IP
-          filters:
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 21.15.46.55
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 1.5.75.75
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 1.23.82.72
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 2.2.82.64
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 2.12.51.56
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 1.7.75.75
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.IP
-                iscontext: true
-              right:
-                value:
-                  simple: 3.95.29.25
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
       IPBlacklistMiner: {}
       IPListName: {}
       LogForwarding: {}
       MD5:
         complex:
-          root: ExtractedIndicators
+          root: ExtractedIndicators.File
           filters:
           - - operator: stringHasLength
               left:
                 value:
-                  simple: ExtractedIndicators
+                  simple: ExtractedIndicators.File
                 iscontext: true
               right:
                 value:
                   simple: "32"
-          accessor: File
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: ExtractedIndicators.File
@@ -1259,118 +1269,6 @@ tasks:
               right:
                 value:
                   simple: "64"
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: be5b171e15c0a196872e95a02357b275c8b7ba4d6520ecb5941074607c0f1c63
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: d07d25265f731ca25312e97375bdea1a7b2b0b1c162aeb0f3edb5008842cc8bd
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 71fd905a9cbd99908ad63074073a5c8e3d9b207508bfef79aefd1efaaafb7982
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 08148764a30b275f8ab61e041b66d5672f6fb0b02292b3f6f95a53a706f97a8f
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 93a73d59fcf503239dd6be9ba5635c531776c0d9951a0c734d8b1ab3965088b1
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 15c4772a18b8c655408eceb4269df2a9098044936c5c23dd3f4b5934f097f474
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: f9b4430c623f1176c4b39733b1fc9250d472b6e41e5c24865afa7331b86ef46c
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: f5c22e80dc02da5205756c63aa757774a56124d1523fad63849336a6facc3534
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 3ad06b1134fed972071beb21d70262d01ad5d34394f7b40ddd56d25fe7eda092
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: bcda6feb6da004b0e4ddadc8139cd6f66bcb832421782f4efe7612b13b82104f
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 849bcda9ef9b54b8c1a689f0fe2a8b769f6754d6fb770491ced2f3de0d4c5f01
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: b041efb8ba2a88a3d172f480efa098d72eef13e42af6aa5fb838e6ccab500a7c
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 2d2fa32f928f8abf31b9e79153422d65fe72cd5ad0d1f815a9d2ffa42fc8d224
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.File
-                iscontext: true
-              right:
-                value:
-                  simple: 7d34f25ad8099bd069c5a04799299f17d127a3866b77ee34ffb59cfd36e29673
           transformers:
           - operator: uniq
       StaticAddressGroup: {}
@@ -1394,79 +1292,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: volexity
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: virustotal
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: fireeye
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: google.com
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: googletagmanager.com
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: opensource.guide
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: w.org
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: dni.gov
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: exactmetrics.com
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ExtractedIndicators.URL
-                iscontext: true
-              right:
-                value:
-                  simple: schema.org
+                  simple: microsoft.com
           transformers:
           - operator: uniq
       URLBlacklistMiner: {}
@@ -1590,6 +1416,189 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "29":
+    id: "29"
+    taskid: bfcc9bc3-ba7c-41bd-890e-17700c270c58
+    type: title
+    task:
+      id: bfcc9bc3-ba7c-41bd-890e-17700c270c58
+      version: -1
+      name: Tag Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+      - "31"
+      - "32"
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: e92b6ba2-4c59-44f9-895a-888c000c5bce
+    type: regular
+    task:
+      id: e92b6ba2-4c59-44f9-895a-888c000c5bce
+      version: -1
+      name: Tag File indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 0096abb8-0558-41a4-8124-7e4a563b2f36
+    type: regular
+    task:
+      id: 0096abb8-0558-41a4-8124-7e4a563b2f36
+      version: -1
+      name: Tag IP indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: ed2b4e8b-7cc1-4ff7-8890-f9ff9fdb2c75
+    type: regular
+    task:
+      id: ed2b4e8b-7cc1-4ff7-8890-f9ff9fdb2c75
+      version: -1
+      name: Tag Domain indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: af4e37fb-4077-4654-8258-587de5dd4139
+    type: regular
+    task:
+      id: af4e37fb-4077-4654-8258-587de5dd4139
+      version: -1
+      name: Tag URL indicators
+      description: commands.local.cmd.set.indicators
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+      tags:
+        simple: NOBELIUM, APT29
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -1598,17 +1607,17 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2685,
+        "height": 3015,
         "width": 2870,
         "x": -690,
-        "y": -440
+        "y": -770
       }
     }
   }
 inputs:
 - key: EWSSearchQuery
   value:
-    simple: From:ashainfo@usaid.gov OR From:mhillary@usaid.gov
+    simple: From:*usaid.gov or From:*in.constantcontact.com
   required: false
   description: The EWS query to find malicious emails related to NOBELIUM spear-phishing.
   playbookInputQuery:
