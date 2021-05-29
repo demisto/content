@@ -1,5 +1,5 @@
 import pytest
-from PaloAltoNetworks_PrismaCloudCompute import Client, camel_case_transformer, fetch_incidents, get_headers, \
+from PrismaCloudCompute import Client, camel_case_transformer, fetch_incidents, get_headers, \
     HEADERS_BY_NAME
 
 from CommonServerPython import DemistoException

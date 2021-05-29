@@ -394,7 +394,7 @@ script:
     - name: name
       required: true
       description: the name to update the backup to
-    description: 'RenameBackup deletes the given backup '
+    description: 'RenameBackup renames the given backup '
   - name: prismacloudcompute-post-settings-alerts
     arguments:
     - name: aggregationPeriodMs
@@ -445,7 +445,7 @@ script:
       required: true
       description: 'The JSON string. ofthe settings object for the collection. Reference:
         https://cdn.twistlock.com/docs/api/20.12/twistlock_api.html#groups_post'
-    description: 'UpgradeDefender upgrades a specific defender '
+    description: 'Update a group'
   - name: prismacloudcompute-put-collections-by-id
     arguments:
     - name: hosts

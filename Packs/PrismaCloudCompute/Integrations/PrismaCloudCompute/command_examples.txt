@@ -1,5 +1,45 @@
 !prismacloudcompute-alert-profiles-names
 !prismacloudcompute-current-collections
 !prismacloudcompute-defenders-names 
-!prismacloudcompute-defenders-restart id=ip-10-0-37-80.us-west-2.compute.internal
+!prismacloudcompute-defenders-restart id=1234-.us-west-2.compute.internal
 !prismacloudcompute-defenders-summary
+!prismacloudcompute-containers-scan
+!prismacloudcompute-current-collections
+!prismacloudcompute-defenders-image-name
+!prismacloudcompute-defenders-install-bundle consoleaddr=`https://0.0.0.0:8083/`
+!prismacloudcompute-delete-alert-profiles-by-id id=Test
+!prismacloudcompute-get-backups
+!prismacloudcompute-delete-backups-by-id id=turkeyday-20.12.531-1622081347.tar.gz
+!prismacloudcompute-get-collections
+!prismacloudcompute-delete-collections-by-id id=`my-collection`
+!prismacloudcompute-get-groups
+!prismacloudcompute-delete-groups-by-id id=TestGrouop
+!prismacloudcompute-get-users
+!prismacloudcompute-delete-users-by-id id=SomeUser
+!prismacloudcompute-deployment-host-scan
+!prismacloudcompute-deployment-host-stop
+!prismacloudcompute-deployment-serverless-scan
+!prismacloudcompute-deployment-serverless-stop
+!prismacloudcompute-get-alert-profiles
+!prismacloudcompute-get-backups-by-id id=blah-20.12.531-1622082058.tar.gz
+!prismacloudcompute-get-settings-alerts
+!prismacloudcompute-get-settings-defender
+!prismacloudcompute-get-settings-logging
+!prismacloudcompute-groups-names
+!prismacloudcompute-images
+!prismacloudcompute-images-download id=sha256:48123b484374dd8f750c8fed70effb0f9163e8dfe682b524def8641a71487f7e
+!prismacloudcompute-images-names
+!prismacloudcompute-list-hosts
+!prismacloudcompute-logs-console
+!prismacloudcompute-logs-defender hostname=1234-.us-west-2.compute.internal lines=5
+!prismacloudcompute-logs-defender-download hostname=1234-.us-west-2.compute.internal lines=5
+!prismacloudcompute-patch-backups-by-id id=newname-20.12.531-1622081826.tar.gz name=newname
+!prismacloudcompute-post-backups name=newbackup1 project=`Central Console`
+!prismacloudcompute-post-groups settings=`{"groupName": "wonks2", "user": [{"username": "alice"}],"ldapGroup": false,"samlGroup": false}`
+!prismacloudcompute-post-collections settings=`{"name":"my-collection23", "images":["ubuntu:18.04"]}`
+!prismacloudcompute-post-settings-alerts consoleAddress=`https://0.0.0.0:8083/` aggregationPeriodMs=60000
+!prismacloudcompute-post-settings-defender disconnectPeriodDays=1 listeningPort=9998
+!prismacloudcompute-post-users config=`{ "username":"TestUser345", "password":"SomePassword", "role":"auditor", "authType":"basic" }`
+!prismacloudcompute-put-collections-by-id name=my-collection2 images=centos:8,ubuntu:16
+!prismacloudcompute-put-users settings=`{"username":"SomeUser", "role":"auditor", "authType":"basic", "permissions":[{"project":"Central Console","collections":["All"]}]}`
+!prismacloudcompute-version
