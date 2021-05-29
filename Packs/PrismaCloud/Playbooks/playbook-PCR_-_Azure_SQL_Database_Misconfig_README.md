@@ -36,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Prisma Cloud Remediation - Azure SQL Database Misconfiguration](Insert the link to your image here)
+![Prisma Cloud Remediation - Azure SQL Database Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_SQL_Database_Misconfig.png)

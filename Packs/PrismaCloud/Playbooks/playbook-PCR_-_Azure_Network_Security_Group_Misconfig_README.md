@@ -59,4 +59,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Prisma Cloud Remediation - Azure Network Security Group Misconfiguration](Insert the link to your image here)
+![Prisma Cloud Remediation - Azure Network Security Group Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_Network_Security_Group_Misconfig.png)

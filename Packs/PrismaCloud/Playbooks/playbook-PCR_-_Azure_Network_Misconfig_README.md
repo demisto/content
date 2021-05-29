@@ -60,4 +60,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Prisma Cloud Remediation - Azure Network Misconfiguration](Insert the link to your image here)
+![Prisma Cloud Remediation - Azure Network Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_Network_Misconfig.png)

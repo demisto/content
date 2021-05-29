@@ -36,4 +36,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Prisma Cloud Remediation - Azure AKS Cluster Misconfiguration](Insert the link to your image here)
+![Prisma Cloud Remediation - Azure AKS Cluster Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_AKS_Cluster_Misconfig.png)
