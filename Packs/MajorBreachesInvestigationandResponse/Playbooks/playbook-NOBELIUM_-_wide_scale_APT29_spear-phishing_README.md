@@ -33,7 +33,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| EWSSearchQuery | The EWS query to find malicious emails related to NOBELIUM spear-phishing. | From:ashainfo@usaid.gov OR From:mhillary@usaid.gov | Optional |
+| EWSSearchQuery | The EWS query to find malicious emails related to NOBELIUM spear-phishing. | From:*usaid.gov or From:*in.constantcontact.com | Optional |
 | BlockIndicatorsAutomatically | Whether to automatically indicators involved with NOBELIUM spear-phishing. | False | Optional |
 
 ## Playbook Outputs

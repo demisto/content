@@ -58,7 +58,6 @@ tasks:
       '#none#':
       - "3"
       - "2"
-      - "3"
     separatecontext: false
     view: |-
       {
@@ -124,6 +123,7 @@ tasks:
       id: 0df53f3d-b6a9-455f-8d28-d2404e0fb38c
       version: -1
       name: Retrieve Volexity blog
+      description: Retrieve parsed Volexity blog to extract indicators from
       scriptName: RapidBreachResponseParseBlog
       type: regular
       iscommand: false
