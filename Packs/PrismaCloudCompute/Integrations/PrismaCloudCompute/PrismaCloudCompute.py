@@ -108,11 +108,15 @@ class Client(BaseClient):
 
         return response
 
-    def api_v1_hosts_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, hostname, distro, provider, compact, clusters):
+    def api_v1_hosts_request(self, offset, limit, search, sort, reverse,
+                             collections, accountIDs, fields, hostname, distro, provider, compact, clusters):
         """
         List all available hosts
         """
-        params = assign_params(offset=offset, limit=limit, search=search, sort=sort, reverse=reverse, collections=collections, accountIDs=accountIDs, fields=fields, hostname=hostname, distro=distro, provider=provider, compact=compact, clusters=clusters)
+        params = assign_params(offset=offset, limit=limit, search=search, sort=sort,
+                               reverse=reverse, collections=collections, accountIDs=accountIDs,
+                               fields=fields, hostname=hostname, distro=distro, provider=provider,
+                               compact=compact, clusters=clusters)
 
         headers = self._headers
 
@@ -130,7 +134,9 @@ class Client(BaseClient):
 
         return response
 
-    def api_v1_images_names_request(self, offset, limit, search, sort, reverse, collections, accountIDs, fields, id_, hostname, repository, registry, name, layers, filterBaseImage, compact, trustStatuses, clusters):
+    def api_v1_images_names_request(self, offset, limit, search, sort, reverse, collections,
+                                    accountIDs, fields, id_, hostname, repository, registry,
+                                    name, layers, filterBaseImage, compact, trustStatuses, clusters):
         """
         Get all container image names
         """
