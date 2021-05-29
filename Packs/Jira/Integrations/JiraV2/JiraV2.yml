@@ -41,7 +41,7 @@ configuration:
   name: idOffset
   required: false
   type: 0
-  additionalinfo: This paremeter is dismissed when "Use created field to fetch incidents" is checked.
+  additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
