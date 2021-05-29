@@ -2,7 +2,7 @@ commonfields:
   id: RapidBreachResponseParseBlog
   version: -1
 name: RapidBreachResponseParseBlog
-comment: Parse request blog
+comment: Parse Volexity request blog
 script: ''
 type: python
 tags: []
