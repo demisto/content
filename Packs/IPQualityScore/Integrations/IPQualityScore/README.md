@@ -224,7 +224,7 @@ Runs reputation on email addresses.
         "Type": "email",
         "Vendor": "IPQualityScore"
     },
-    "EMAIL": {
+    "Email": {
         "Address": "noreply@ipqualityscore.com",
         "Domain": "ipqualityscore.com"
     },
