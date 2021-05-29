@@ -386,14 +386,93 @@ script:
       required: true
       description: the name to update the backup to
     description: 'RenameBackup deletes the given backup '
-
-
-
-
-
-
-
-
+  - name: prismacloudcompute-post-settings-alerts
+    arguments:
+    - name: aggregationPeriodMs
+      description: AggregationPeriodMs is the alert aggregation period in milliseconds
+    - name: consoleAddress
+      required: true
+      description: The console to apply the settings to
+    - name: securityAdvisorWebhook
+      description: SecurityAdvisorWebhook is a webhook for IBM security advisor alert
+        wizard, used to authenticate the wizard with the console and to pull data
+    description: 'SetAlertSettings sets the alert settings '
+  - name: prismacloudcompute-post-settings-defender
+    arguments:
+    - name: admissionControlEnabled
+      description: AdmissionControlEnabled specifies if the admission controller is
+        enabled
+    - name: admissionControlWebhookSuffix
+      description: AdmissionControlWebhookSuffix is the relative path to the admission
+        control webhook http endpoint
+    - name: automaticUpgrade
+      description: AutomaticUpgrade indicates defenders should be automatically upgraded
+        to the latest version
+    - name: disconnectPeriodDays
+      description: DisconnectPeriodDays is the amount of consecutive days a defender
+        must stays disconnected for it to be considered decommissioned
+    - name: hostCustomComplianceEnabled
+      description: HostCustomComplianceEnabled indicates the defenders support host
+        custom compliance checks
+    - name: listeningPort
+      description: ListeningPort is the defender listening port
+    description: 'SetDefenderSettings sets the settings of the defenders '
+  - name: prismacloudcompute-post-collections
+    arguments:
+    - name: settings
+      description: 'The JSON string for the desired collection configuration.  Reference:
+        https://cdn.twistlock.com/docs/api/20.12/twistlock_api.html#collections_post'
+    description: 'AddCollection adds the given collection '
+  - name: prismacloudcompute-post-users
+    arguments:
+    - name: config
+      required: true
+      description: The JSON string of the  new user config
+      defaultValue: '{  "username":"TestUser",  "password":"Password123",  "role":"auditor",  "authType":"basic"    }'
+    description: 'CreateUser creates a new user '
+  - name: prismacloudcompute-post-groups
+    arguments:
+    - name: settings
+      required: true
+      description: 'The JSON string. ofthe settings object for the collection. Reference:
+        https://cdn.twistlock.com/docs/api/20.12/twistlock_api.html#groups_post'
+    description: 'UpgradeDefender upgrades a specific defender '
+  - name: prismacloudcompute-put-collections-by-id
+    arguments:
+    - name: hosts
+      description: The comma separated list of hosts
+    - name: images
+      description: The comma separated list of images
+    - name: labels
+      description: The comma separated list of labels
+    - name: containers
+      description: The comma separated list. of containers
+    - name: functions
+      description: The comma separated list of functions
+    - name: namespaces
+      description: The comma separated list of namespaces
+    - name: appIDs
+      description: The comma separated list of appIDs
+    - name: accountIDs
+      description: The comma separated list of accountIDs
+    - name: codeRepos
+      description: The comma separated list of code repos
+    - name: clusters
+      description: The comma separated list of clusters
+    - name: name
+      required: true
+      description: The name of the collection
+    - name: owner
+      description: The owner to set on. thecollection
+    - name: color
+      description: The color. to assign to the collection
+    description: 'UpdateCollection updates a collection '
+  - name: prismacloudcompute-put-users
+    arguments:
+    - name: settings
+      required: true
+      description: 'The JSON string of the users settings object. Reference: https://cdn.twistlock.com/docs/api/20.12/twistlock_api.html#users_put '
+    description: 'UpdateUser updates an existing user '
 tests:
 - No test
 fromversion: 5.0.0

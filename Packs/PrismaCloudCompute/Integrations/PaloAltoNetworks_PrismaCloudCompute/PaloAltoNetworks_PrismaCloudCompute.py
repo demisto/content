@@ -448,6 +448,68 @@ class Client(BaseClient):
 
         return response
 
+    def post_api_v1_settings_alerts_request(self, aggregationPeriodMs, consoleAddress, securityAdvisorWebhook):
+        data = {
+            "aggregationPeriodMs": aggregationPeriodMs,
+            "consoleAddress": consoleAddress,
+            "securityAdvisorWebhook": securityAdvisorWebhook
+        }
+
+        headers = self._headers
+
+        response = self._http_request('post', 'settings/alerts', headers=headers, data=json.dumps(data), resp_type="text" )
+
+        return response
+
+    def post_api_v1_settings_defender_request(self, settings):
+        headers = self._headers
+
+        response = self._http_request('post', 'settings/defender', headers=headers, data=json.dumps(settings), resp_type="text")
+
+        return response
+
+    def post_api_v1_users_request(self, config):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'users', headers=headers, data=config, resp_type="text")
+
+        return response
+
+
+    def post_api_v1_collections_request(self, settings):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'collections', headers=headers, data=settings, resp_type="text")
+
+        return response
+
+
+    def post_api_v1_groups_request(self, settings):
+
+        headers = self._headers
+
+        response = self._http_request('post', 'groups', headers=headers, data=settings, resp_type="text")
+
+        return response
+
+    def put_api_v1_collections_by_id_request(self, id_, settings):
+
+        headers = self._headers
+
+        response = self._http_request('put', f'collections/{id_}', headers=headers, data=json.dumps(settings), resp_type="text")
+
+        return response
+
+    def put_api_v1_users_request(self, settings):
+
+        headers = self._headers
+
+        response = self._http_request('put', 'users', headers=headers, data=settings, resp_type="text")
+
+        return response
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -458,6 +520,16 @@ def str_to_bool(s):
         return False
     else:
         raise ValueError
+
+def format_context(context):
+    """
+    Format the context keys
+    """
+    if context and isinstance(context, dict):
+        context = {pascalToSpace(key).replace(" ", ""): format_context(value) for key, value in context.items()}
+    elif context and isinstance(context, list):
+        context = [format_context(item) for item in context]
+    return context
 
 
 def translate_severity(sev):
@@ -1003,8 +1075,8 @@ def get_api_v1_users_command(client, args):
 
     command_results = CommandResults(
         outputs_prefix='PrismaCloudCompute.Users',
-        outputs_key_field='username',
-        outputs=response,
+        outputs_key_field='Username',
+        outputs=format_context(response),
         raw_response=response
     )
 
@@ -1015,8 +1087,8 @@ def get_api_v1_groups_command(client, args):
     response = client.get_api_v1_groups_request()
     command_results = CommandResults(
         outputs_prefix='PrismaCloudCompute.Groups',
-        outputs_key_field='_id',
-        outputs=response,
+        outputs_key_field='_Id',
+        outputs=format_context(response),
         raw_response=response
     )
 
@@ -1319,6 +1391,157 @@ def patch_api_v1_backups_by_id_command(client, args):
 
     return command_results
 
+def post_api_v1_settings_alerts_command(client, args):
+    aggregationPeriodMs = int(args.get("aggregationPeriodMs", None))
+    consoleAddress = str(args.get("consoleAddress", ""))
+    securityAdvisorWebhook = str(args.get("securityAdvisorWebhook", ""))
+
+    response = client.post_api_v1_settings_alerts_request(aggregationPeriodMs, consoleAddress, securityAdvisorWebhook)
+
+    entry = {
+        "Status": "Alert Settings Updated",
+        "aggregationPeriodMs": aggregationPeriodMs,
+        "consoleAddress": consoleAddress,
+        "securityAdvisorWebhook": securityAdvisorWebhook
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Alert Settings", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def post_api_v1_settings_defender_command(client, args):
+
+    response = client.post_api_v1_settings_defender_request()
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+def post_api_v1_settings_defender_command(client, args):
+    settings = {}
+    for k,v in args.items():
+        if v in ["true", "True", "False", "false"]:
+            settings[k] = argToBoolean(v)
+        elif v.isnumeric():
+            settings[k] = int(v)
+        else:
+            settings[k] = str(v)
+
+
+    response = client.post_api_v1_settings_defender_request(settings)
+
+    entry = {
+        "Status": "Updated Defender Settings",
+        "Settings": settings
+    }
+
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Defender Settings", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def post_api_v1_users_command(client, args):
+    config = args.get("config")
+
+    response = client.post_api_v1_users_request(config)
+    entry = {
+        "Status": "Created New User",
+        "Config": config
+    }
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("User", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def post_api_v1_collections_command(client, args):
+    settings = args.get("settings")
+
+    response = client.post_api_v1_collections_request(settings)
+    entry = {
+        "Status": "Success",
+        "Settings": settings
+    }
+    command_results = CommandResults(
+        readable_output=tableToMarkdown("Collection", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def post_api_v1_groups_command(client, args):
+    settings = args.get("settings")
+
+    response = client.post_api_v1_groups_request(settings)
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Groups',
+        outputs_key_field='groupName',
+        outputs=format_context(json.loads(settings)),
+        raw_response=format_context(json.loads(settings))
+    )
+
+    return command_results
+
+def put_api_v1_collections_by_id_command(client, args):
+    id_ = str(args.get("name"))
+
+    settings = {}
+
+    list_arguments = [
+        "hosts",
+        "images",
+        "labels",
+        "containers",
+        "functions",
+        "namespaces",
+        "appIDs",
+        "accountIDs",
+        "codeRepos",
+        "clusters"
+    ]
+    for k,v in args.items():
+        settings[k] = v.split(",") if k in list_arguments else v
+
+    response = client.put_api_v1_collections_by_id_request(id_, settings)
+
+    entry = {
+        "Status": "Success",
+        "Settings": settings
+    }
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Collections',
+        outputs_key_field='Name',
+        outputs=format_context(settings),
+        readable_output=tableToMarkdown("Collections", entry),
+        raw_response=entry
+    )
+
+    return command_results
+
+def put_api_v1_users_command(client, args):
+    settings = args.get("settings")
+
+    response = client.put_api_v1_users_request(settings)
+
+    command_results = CommandResults(
+        outputs_prefix='PrismaCloudCompute.Users',
+        outputs_key_field='Username',
+        outputs=format_context(json.loads(settings)),
+        raw_response=settings
+    )
+
+    return command_results
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1400,7 +1623,15 @@ def main():
            "prismacloudcompute-delete-backups-by-id": delete_api_v1_backups_by_id_command,
            "prismacloudcompute-backups-restore": api_v1_backups_restore_command,
            "prismacloudcompute-post-backups": post_api_v1_backups_command,
-           "prismacloudcompute-patch-backups-by-id": patch_api_v1_backups_by_id_command
+           "prismacloudcompute-patch-backups-by-id": patch_api_v1_backups_by_id_command,
+           "prismacloudcompute-post-settings-alerts": post_api_v1_settings_alerts_command,
+           "prismacloudcompute-post-settings-defender": post_api_v1_settings_defender_command,
+           "prismacloudcompute-post-settings-defender": post_api_v1_settings_defender_command,
+           "prismacloudcompute-post-users": post_api_v1_users_command,
+           "prismacloudcompute-post-collections": post_api_v1_collections_command,
+           "prismacloudcompute-post-groups": post_api_v1_groups_command,
+           "prismacloudcompute-put-collections-by-id": put_api_v1_collections_by_id_command,
+           "prismacloudcompute-put-users": put_api_v1_users_command
         }
 
         if demisto.command() == 'test-module':
