@@ -16,6 +16,17 @@ script:
       - contextPath: XSOAR.IntegrationContext.Value
         description: Integration context value.
         type: String
+  - deprecated: false
+    description: Get integration versioned context.
+    execution: false
+    name: pwsh-test-get-integration-versioned-context
+    outputs:
+      - contextPath: XSOAR.IntegrationContext.Value
+        description: Integration context object.
+        type: Unknown
+      - contextPath: XSOAR.IntegrationContext.Version
+        description: Integration context version number.
+        type: Unknown
   - arguments:
       - default: false
         description: Value to set in integration context.
@@ -27,7 +38,7 @@ script:
     description: Set integration context.
     execution: false
     name: pwsh-test-set-integration-context
-  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
+  dockerimage: demisto/powershell-ubuntu:7.1.3.20270
   isfetch: false
   longRunning: false
   longRunningPort: false
