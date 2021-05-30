@@ -3720,7 +3720,7 @@
         "ExpireSeconds": 780,
         "HistorySavedQuestionId": 0,
         "ID": 19886,
-        "Name": "Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API",
+        "Name": "Trace - Install Endpoint Certificate [Windows] via Demisto API",
         "PackageId": 1222,
         "PackageName": "Apply Windows IPsec Quarantine",
         "SavedActionId": 642,
@@ -3775,7 +3775,7 @@
         <td> 780 </td>
         <td> 0 </td>
         <td> 19886 </td>
-        <td> Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API </td>
+        <td> Trace - Install Endpoint Certificate [Windows] via Demisto API </td>
         <td> 1222 </td>
         <td> Apply Windows IPsec Quarantine </td>
         <td> 642 </td>
@@ -5217,7 +5217,7 @@ There are no context output for this command.
         "ExpireSeconds": 780,
         "HistorySavedQuestionId": 0,
         "ID": 19881,
-        "Name": "Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API",
+        "Name": "Trace - Install Endpoint Certificate [Windows] via Demisto API",
         "PackageId": 1222,
         "PackageName": "Apply Windows IPsec Quarantine",
         "SavedActionId": 642,
@@ -5272,7 +5272,7 @@ There are no context output for this command.
         <td> 780 </td>
         <td> 0 </td>
         <td> 19881 </td>
-        <td> Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API </td>
+        <td> Trace - Install Endpoint Certificate [Windows] via Demisto API </td>
         <td> 1222 </td>
         <td> Apply Windows IPsec Quarantine </td>
         <td> 642 </td>
