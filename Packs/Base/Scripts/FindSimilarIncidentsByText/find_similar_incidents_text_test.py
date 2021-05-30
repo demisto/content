@@ -200,7 +200,6 @@ incident1_dup = {
 def execute_command(command, args=None):
     if command == 'GetIncidentsByQuery':
         return [{'Contents': json.dumps([incident1_dup, incident3, incident4]), 'Type': 'note'}]
-        find_similar_incidents_text_test
     if command == 'WordTokenizerNLP':
         values = json.loads(args['value'])
         if len(values) == 1:
