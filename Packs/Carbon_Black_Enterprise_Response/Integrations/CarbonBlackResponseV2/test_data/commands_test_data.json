@@ -1,54 +1,58 @@
 {
   "processes_search_command": {
-    "Results": [
+    "terms": [
+      "chrome.exe"
+    ],
+    "results": [
       {
-        "process_md5": "processs_md5",
+        "process_md5": "8698e468bc379e30383a72ce63da7972",
         "sensor_id": 24,
         "filtering_known_dlls": false,
         "modload_count": 0,
         "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
         "emet_count": 0,
         "cmdline": "(unknown)",
-        "filemod_count": 10,
+        "filemod_count": 19,
         "id": "00000018-0000-164c-01d5-9ed472b33472",
         "parent_name": "(unknown)",
         "parent_md5": "000000000000000000000000000000",
         "group": "default group",
         "parent_id": "00000018-ffff-ffff-0000-000000000000",
-        "hostname": "example_hostname",
-        "last_update": "2021-05-20T12:51:27.7Z",
+        "hostname": "host",
+        "last_update": "2021-04-20T12:47:27.187Z",
         "start": "2019-11-19T12:25:37.19Z",
         "comms_ip": 314169177,
         "regmod_count": 0,
         "interface_ip": -1407250960,
         "process_pid": 5708,
-        "username": "example_hostname\\username",
+        "username": "host\\user",
         "terminated": false,
         "process_name": "chrome.exe",
         "emet_config": "",
-        "last_server_update": "2021-05-20T13:00:03.484Z",
+        "last_server_update": "2021-04-20T13:00:03.241Z",
         "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
         "netconn_count": 0,
         "parent_pid": -1,
         "crossproc_count": 0,
-        "segment_id": 1621515603479,
+        "segment_id": 1618923603240,
         "watchlists": [
           {
             "segments_hit": [
-              1621515342039
+              1618923266350,
+              1618922966549
             ],
             "wid": "1870",
-            "value": "2021-05-20T13:00:03.161Z"
+            "value": "2021-04-20T13:00:02.927Z"
           }
         ],
         "host_type": "server",
         "processblock_count": 0,
         "os_type": "windows",
         "childproc_count": 0,
-        "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989dc8e17"
+        "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0178ef5dc528"
       },
       {
-        "process_md5": "process_md5",
+        "process_md5": "8698e468bc379e30383a72ce63da7972",
         "sensor_id": 24,
         "filtering_known_dlls": false,
         "modload_count": 0,
@@ -61,29 +65,72 @@
         "parent_md5": "000000000000000000000000000000",
         "group": "default group",
         "parent_id": "00000018-ffff-ffff-0000-000000000000",
-        "hostname": "ec2amaz-l4c2okc",
-        "last_update": "2021-05-20T13:21:27.726Z",
+        "hostname": "host",
+        "last_update": "2021-04-20T16:20:15.407Z",
         "start": "2019-11-19T12:25:37.19Z",
         "comms_ip": 314169177,
         "regmod_count": 0,
         "interface_ip": -1407250960,
         "process_pid": 5708,
-        "username": "hostname\\user",
+        "username": "host\\user",
         "terminated": false,
         "process_name": "chrome.exe",
         "emet_config": "",
-        "last_server_update": "2021-05-20T13:25:42.096Z",
+        "last_server_update": "2021-04-20T16:24:26.712Z",
         "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
         "netconn_count": 0,
         "parent_pid": -1,
         "crossproc_count": 0,
-        "segment_id": 1621517142090,
+        "segment_id": 1618935866708,
         "host_type": "server",
         "processblock_count": 0,
         "os_type": "windows",
         "childproc_count": 0,
-        "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989f4084a"
+        "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0178f018e554"
       }
-    ]
+    ],
+    "elapsed": 0.05600595474243164,
+    "comprehensive_search": true,
+    "all_segments": true,
+    "total_results": 1922,
+    "highlights": [
+      {
+        "name": "c:\\program files (x86)\\google\\chrome\\application\\PREPREPREchrome.exePOSTPOSTPOST",
+        "ids": [
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef5dc528",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef540e15",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef7418a4",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef58a12e",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef8f901e",
+          "00000018-0000-164c-01d5-9ed472b33472-0178efab0796",
+          "00000018-0000-164c-01d5-9ed472b33472-0178efc67ef7",
+          "00000018-0000-164c-01d5-9ed472b33472-0178efe1f674",
+          "00000018-0000-164c-01d5-9ed472b33472-0178effd6ddd",
+          "00000018-0000-164c-01d5-9ed472b33472-0178f018e554"
+        ]
+      },
+      {
+        "name": "PREPREPREchrome.exePOSTPOSTPOST",
+        "ids": [
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef5dc528",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef540e15",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef7418a4",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef58a12e",
+          "00000018-0000-164c-01d5-9ed472b33472-0178ef8f901e",
+          "00000018-0000-164c-01d5-9ed472b33472-0178efab0796",
+          "00000018-0000-164c-01d5-9ed472b33472-0178efc67ef7",
+          "00000018-0000-164c-01d5-9ed472b33472-0178efe1f674",
+          "00000018-0000-164c-01d5-9ed472b33472-0178effd6ddd",
+          "00000018-0000-164c-01d5-9ed472b33472-0178f018e554"
+        ]
+      }
+    ],
+    "facets": {},
+    "tagged_pids": {},
+    "start": 0,
+    "incomplete_results": false,
+    "filtered": {
+      "hour_of_day": []
+    }
   }
 }

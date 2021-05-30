@@ -23,7 +23,7 @@ def util_load_json(path):
 QUERY_STRING_CASES = [
     (
         {'hostname': 'ec2amaz-l4c2okc', 'query': 'chrome.exe'},  # case both query and params
-        '(chrome.exe) AND hostname:ec2amaz-l4c2okc'  # expected
+        'chrome.exe'  # expected
     ),
     (
         {'hostname': 'ec2amaz-l4c2okc'},  # case only params
@@ -31,7 +31,7 @@ QUERY_STRING_CASES = [
     ),
     (
         {'query': 'chrome.exe'},  # case only query
-        '(chrome.exe)'  # expected
+        'chrome.exe'  # expected
     )
 ]
 
@@ -186,7 +186,8 @@ def test_regmod(data_str, expected):
 
 CROSSPROC_CASES = [
     (
-        "ProcessOpen|2014-01-23 09:19:08.331|00000177-0000-0258-01cf-c209d9f1c431|204f3f58212b3e422c90bd9691a2df28|test_path.exe|1|2097151|false",
+        "ProcessOpen|2014-01-23 09:19:08.331|00000177-0000-0258-01cf-c209d9f1c431|204f3f58212b3e422c90bd9691a2df28|"
+        "test_path.exe|1|2097151|false",
         {'type of cross-process access': 'ProcessOpen', 'event time': '2014-01-23 09:19:08.331',
          'unique_id of the targeted process': '00000177-0000-0258-01cf-c209d9f1c431',
          'md5 of the targeted process': '204f3f58212b3e422c90bd9691a2df28',
@@ -205,25 +206,24 @@ def test_crossproc(data_str, expected):
 
 
 ''' COMMANDS TESTS '''
-CLIENT = {"base_url": "https://content.demisto.works:30035/api",
-          "apitoken": "8bc9122f03757c61b69b189c973f5172147f03f0",
+CLIENT = {"base_url": "example.com",
+          "apitoken": "apikey",
           "use_ssl": False,
           "use_proxy": False}
 
 
 PROCESS_SEARCH_CASES = [
     (
-        {'query':'chrome.exe', 'facet': True, 'facet_field':'hour_of_day'}, ''
-
+        {'query': 'chrome.exe', 'facet': False}, 2
     ),
 ]
 
+
 @pytest.mark.parametrize('args, expected', PROCESS_SEARCH_CASES)
-def test_processes_search_command(args, expected):
+def test_processes_search_command(mocker, args, expected):
     from CarbonBlackResponseV2 import Client, processes_search_command
     client = Client(**CLIENT)
-    mock_res = util_load_json('test_data/commands_test_data')
-
+    mock_res = util_load_json('test_data/commands_test_data.json')
+    mocker.patch.object(Client, '_http_request', return_value=mock_res.get('processes_search_command'))
     res = processes_search_command(client, **args)
-    assert res == expected
-
+    assert len(res.outputs.get('Results', [])) == expected

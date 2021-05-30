@@ -1,14 +1,15 @@
-from typing import Callable, Dict
-
+import dateparser
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
+from typing import Callable, Dict, List, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+INTEGRATION_NAME = 'Carbon Black EDR'
+MAX_INCIDENTS_TO_FETCH = 10
 
 ''' PARSING PROCESS EVENT COMPLEX FIELDS CLASS'''
 
@@ -20,6 +21,9 @@ class ProcessEventDetail:
         if len(data) != len(fields):
             raise Exception("Data from API is in unexpected format.")
         self.fields = dict(zip(fields, data))
+
+    def format(self):
+        return self.fields
 
 
 class filemod_complete(ProcessEventDetail):
@@ -47,9 +51,10 @@ class filemod_complete(ProcessEventDetail):
         super().__init__(piped_version, self.FIELDS)
 
     def format(self):
-        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
-        self.fields['file type'] = self.FILE_TYPE.get(self.fields.get('file type'), '')
+        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type', ''), '')
+        self.fields['file type'] = self.FILE_TYPE.get(self.fields.get('file type', ''), '')
         return self.fields
+
 
 class modload_complete(ProcessEventDetail):
     FIELDS = ['event time', 'MD5 of the loaded module', 'Full path of the loaded module']
@@ -59,6 +64,7 @@ class modload_complete(ProcessEventDetail):
 
     def format(self):
         return self.fields
+
 
 class regmod_complete(ProcessEventDetail):
     FIELDS = ['operation type', 'event time', 'the registry key path']
@@ -71,20 +77,21 @@ class regmod_complete(ProcessEventDetail):
         super().__init__(piped_version, self.FIELDS)
 
     def format(self):
-        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type'), '')
+        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type', ''), '')
         return self.fields
+
 
 class crossproc_complete(ProcessEventDetail):
     FIELDS = ['type of cross-process access', 'event time', 'unique_id of the targeted process',
               'md5 of the targeted process', 'path of the targeted process', 'sub-type for ProcessOpen',
               'requested access priviledges', 'flagged as potential tamper attempt']
-    SUB_TYPES = {'1':'handle open to process', '2': 'handle open to thread in process'}
+    SUB_TYPES = {'1': 'handle open to process', '2': 'handle open to thread in process'}
 
     def __init__(self, piped_version):
         super().__init__(piped_version, self.FIELDS)
 
     def format(self):
-        self.fields['sub-type for ProcessOpen'] = self.SUB_TYPES.get(self.fields.get('sub-type for ProcessOpen'), '')
+        self.fields['sub-type for ProcessOpen'] = self.SUB_TYPES.get(self.fields.get('sub-type for ProcessOpen', ''), '')
         return self.fields
 
 
@@ -97,7 +104,7 @@ class Client(BaseClient):
         super().__init__(base_url, headers=headers, verify=use_ssl, proxy=use_proxy)
 
     def http_request(self, url: str, method: str, params: dict = None, json_data: dict = None,
-                     ok_codes: tuple = (200, 204)):
+                     ok_codes: tuple = (200, 204), resp_type: str = 'json') -> dict:
         """
         initiates a http request to openphish
         """
@@ -106,6 +113,7 @@ class Client(BaseClient):
             ok_codes=ok_codes,
             url_suffix=url,
             params=params,
+            resp_type=resp_type,
             return_empty_response=True,
             json_data=json_data,
             timeout=30,
@@ -119,10 +127,9 @@ class Client(BaseClient):
         query_params: dict = {key: locals().get(key) for key in query_fields if
                               locals().get(key)}
         res = self.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
-        # When querying specific sensor without filters, the api returns dictionary.
-        if not isinstance(res, list):
-            res = [res]
-        return res
+
+        # When querying specific sensor without filters, the api returns dictionary instead of list.
+        return res if isinstance(res, list) else [res]
 
     def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
@@ -130,7 +137,7 @@ class Client(BaseClient):
         query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
-        query_string = _create_query_string(**query_params)
+        query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
                                rows=rows,
                                start=start,
@@ -144,7 +151,7 @@ class Client(BaseClient):
                      hostname: str = None, digsig_publisher: str = None, company_name: str = None, sort: str = None,
                      observed_filename: str = None, query: str = None, facet: str = None,
                      rows: str = None, start: str = None) -> dict:
-        query_fields = ['product_name', 'signed', 'group', 'hostname', 'digsig_publisher', 'company_name',
+        query_fields = ['md5', 'product_name', 'signed', 'group', 'hostname', 'digsig_publisher', 'company_name',
                         'observed_filename', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
@@ -183,7 +190,8 @@ class Client(BaseClient):
         formatted_json = {}
         for field in process_json:
             if field in COMPLEX_FIELDS:
-                formatted_json[field] = COMPLEX_FIELDS[field](process_json.get(field)).format()
+                field_object: ProcessEventDetail = COMPLEX_FIELDS[field](process_json.get(field))
+                formatted_json[field] = field_object.format()
             else:
                 formatted_json[field] = process_json.get(field)
 
@@ -194,10 +202,9 @@ class Client(BaseClient):
 
 
 def _create_query_string(params: dict) -> str:
-    current_query = [f"({params.get('query')})"] if params.get('query') else []
     if 'query' in params:
-        params.pop('query')
-    current_query += [f"{query_field}:{params[query_field]}" for query_field in params]
+        return params['query']
+    current_query = [f"{query_field}:{params[query_field]}" for query_field in params]
     current_query = ' AND '.join(current_query)
 
     if not current_query:
@@ -260,8 +267,27 @@ def sensors_list_command(client: Client, id: str = None, hostname: str = None, i
 
         res = res[:limit]
 
+        human_readable_data = []
+        for sensor_data in res:
+            human_readable_data.append({
+                'Computer Name': sensor_data.get('computer_name'),
+                'Status': sensor_data.get('status'),
+                'OS Version': sensor_data.get('os_type'),
+                'Node Id': sensor_data.get('node_id'),
+                'Sensor Version': sensor_data.get('build_version_string'),
+                'Sensor Id': sensor_data.get('id'),
+                'IP Address/MAC Info': _parse_field(sensor_data.get('network_adapters', ''), index_after_split=1,
+                                                    chars_to_remove='|'),
+                'Group ID': sensor_data.get('group_id'),
+                'Power State': sensor_data.get('power_state'),
+                'Health Score': sensor_data.get('sensor_health_status'),
+                'Is Isolating': sensor_data.get('is_isolating')
+
+            })
         return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Sensor', outputs_key_field='id',
-                              readable_output=tableToMarkdown('Sensors', res), raw_response=res)
+                              readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Sensors', human_readable_data,
+                                                              removeNull=True),
+                              raw_response=res)
     except DemistoException as e:
         if '404' in e.message:
             raise Exception(f'The sensor {id} could not be found. Please try using a different sensor.')
@@ -271,6 +297,7 @@ def sensors_list_command(client: Client, id: str = None, hostname: str = None, i
 
 def watchlist_delete_command(client: Client, id: str) -> CommandResults:
     res = client.http_request(url=f'/v1/watchlist/{id}', method='DELETE')
+    # res contains whether the task successful.
     return CommandResults(readable_output=res.get('result'))
 
 
@@ -278,6 +305,8 @@ def watchlist_update_command(client: Client, id: str, search_query: str, descrip
                              enabled: bool) -> CommandResults:
     params = assign_params(enabled=enabled, search_query=search_query, description=description)
     res = client.http_request(url=f'/v1/watchlist/{id}', method='PUT', json_data=params)
+
+    # res contains whether the task successful.
     return CommandResults(readable_output=res.get('result'))
 
 
@@ -295,23 +324,57 @@ def watchlist_create_command(client: Client, name: str, search_query: str, index
 def get_watchlist_list_command(client: Client, id: str = None) -> CommandResults:
     url = f'/v1/watchlist/{id}' if id else '/v1/watchlist'
     res = client.http_request(url=url, method='GET')
-    return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='id',
-                          readable_output=tableToMarkdown('Watchlists', res))
+
+    human_readable_data = []
+    # Handling case of only one record.
+
+    if id:
+        res = [res]
+    for watchlist in res:
+        human_readable_data.append({
+            'Name': watchlist.get('name'),
+            'ID': watchlist.get('id'),
+            'Description': watchlist.get('description'),
+            'Query': watchlist.get('search_query'),
+            'Total Hits': watchlist.get('total_hits'),
+            'Group ID': watchlist.get('group_id')
+        })
+
+    return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='name',
+                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Watchlists', human_readable_data,
+                                                          removeNull=True))
 
 
-def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str, ban_count: str, last_ban_host: str,
-                       enabled: bool) -> CommandResults:
+def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str = None, ban_count: str = None,
+                       last_ban_host: str = None,
+                       enabled: bool = None) -> CommandResults:
     body = assign_params(md5hash=md5,
                          text=text, last_ban_time=last_ban_time, ban_count=ban_count,
                          last_ban_host=last_ban_host, enabled=enabled)
-    client.http_request(url='/v1/banning/blacklist', method='POST', json_data=body)
+    try:
+        client.http_request(url='/v1/banning/blacklist', method='POST', json_data=body)
+    except DemistoException as e:
+        if '409' in e.message:
+            return CommandResults(readable_output=f'Ban for md5 {md5} already exists')
+        else:
+            raise Exception(f'Error connecting to API. Error: {e.message}')
     return CommandResults(readable_output='hash banned successfully')
 
 
 def binary_bans_list_command(client: Client) -> CommandResults:
     res = client.http_request(url='/v1/banning/blacklist', method='GET')
+    human_readable_data = []
+    for banned in res:
+        human_readable_data.append({
+            'md5': banned.get('md5hash'),
+            'Text': banned.get('text'),
+            'Timestamp': banned.get('timestamp'),
+            'User ID': banned.get('user_id'),
+            'Username': banned.get('username'),
+        })
+
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.BinaryBan', outputs_key_field='md5',
-                          readable_output=tableToMarkdown('Bans list', res))
+                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Banned Hashes', human_readable_data))
 
 
 def alert_update_command(client: Client, alert_ids: str, status: str = None, set_ignored: bool = None,
@@ -330,17 +393,32 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
 
 def alert_search_command(client: Client, status: str = None, username: str = None, feedname: str = None,
                          hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                         facet: str = None, rows: str = None, start: str = None):
+                         facet: str = None, rows: str = None, start: str = None) -> CommandResults:
     res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, rows, start)
     if not res:
         raise Exception('Request cannot be processed.')
 
-    outputs = assign_params(
-        Results=res.get('results', []),
-        Facets=res.get('facets', {})
-    )
+    alerts = res.get('results', [])
+    human_readable_data = []
+    for alert in alerts:
+        human_readable_data.append({
+            'File Name': alert.get('process_name'),
+            'File Path': alert.get('process_path'),
+            'Hostname': alert.get('hostname'),
+            'Source md5': alert.get('md5'),
+            'Segment ID': alert.get('segment_id'),
+            'Severity': alert.get('alert_severity'),
+            'Created Time': alert.get('created_time'),
+            'Status': alert.get('status'),
+        })
 
-    # TODO return
+    outputs = assign_params(Results=alerts, Facets=res.get('facets'))
+
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Alert Search Results', human_readable_data)
+    return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Alert',
+                          outputs_key_field='unique_id',
+                          readable_output=md)
+
 
 def binary_summary_command(client: Client, md5: str) -> CommandResults:
     url = f'/v1/binary/{md5}/summary'
@@ -348,24 +426,38 @@ def binary_summary_command(client: Client, md5: str) -> CommandResults:
     if not res:
         return CommandResults(
             readable_output=f'Could not find data for file {md5}.')
+
+    human_readable_data = {
+        'Host Count': res.get('host_count'),
+        'Group': res.get('group'),
+        'OS Type': res.get('os_type'),
+        'Timestamp': res.get('timestamp'),
+        'md5': res.get('md5'),
+        'Last Seen': res.get('last_seen'),
+        'Is Executable Image': res.get('is_executable_image')
+    }
+
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.BinaryMetadata', outputs_key_field='md5',
-                          readable_output=tableToMarkdown(f'Summary For File {md5}', res))
+                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Summary For File {md5}',
+                                                          human_readable_data,
+                                                          removeNull=True))
+
 
 def binary_download_command(client: Client, md5: str) -> CommandResults:
     url = f'/v1/binary/{md5}'
     try:
-        res = client.http_request(url=url, method='GET', ok_codes=(200, 204, 404))
+        res = client.http_request(url=url, method='GET', ok_codes=(200, 204, 404), resp_type='content')
         if not res:
             return CommandResults(
                 readable_output=f'Could not find data for file {md5}.')
-        # todo: add file to command results
-        return fileResult(f'binary_{md5}', res)
+        return fileResult(f'binary_{md5}.zip', res, file_type=9)
 
     except DemistoException as e:
         if '404' in e.message:
             return CommandResults(readable_output=f'File {md5} could not be found')
         else:
             raise Exception(f'Error connecting to API. Error: {e.message}')
+
 
 def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None,
                           group: str = None, hostname: str = None, publisher: str = None, company_name: str = None,
@@ -378,21 +470,41 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
         raise Exception('Request cannot be processed.')
 
     outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
+    human_readable_data = []
+    for binary_file in res.get('results', []):
+        human_readable_data.append({
+            'Host Count': binary_file.get('host_count'),
+            'Group': binary_file.get('group'),
+            'OS Type': binary_file.get('os_type'),
+            'Timestamp': binary_file.get('timestamp'),
+            'md5': binary_file.get('md5'),
+            'Last Seen': binary_file.get('last_seen'),
+            'Is Executable Image': binary_file.get('is_executable_image')
+        })
 
-    return [
-        CommandResults(outputs=result_section, outputs_prefix='CarbonBlackEDR.BinarySearch',
-                       outputs_key_field='md5',
-                       readable_output=outputs),
-    ]
+    return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
+                          outputs_key_field='md5',
+                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Binary Search Results',
+                                                          human_readable_data))
 
-def process_events_list_command(client: Client, pid: str, segid: str, start: str = None, count: str = None):
-    if not pid or not segid:
+
+def process_events_list_command(client: Client, process_id: str, segment_id: str, start: str = None, count: str = None):
+    if not process_id or not segment_id:
         raise Exception('Please provide both process id and segment id to run this command.')
-    url = f'/v3/process/{pid}/{segid}/event'
+    url = f'/v3/process/{process_id}/{segment_id}/event'
     start = int(start) if start else None
     count = int(count) if count else None
-    res = client.http_request(url=url, method='GET')
-    process = ProcessEventDetail().get_formatted_process(res.get('process',{}))
+    params = {}
+    if start:
+        params['cb.event_start'] = start
+    if count:
+        params['cb.event_count'] = count
+    res = client.http_request(url=url, method='GET', params=params)
+    process = client.get_formatted_ProcessEventDetail(res.get('process', {}))
+    return CommandResults(outputs=process, outputs_prefix='CarbonBlackEDR.Events',
+                          outputs_key_field='id',
+                          readable_output=process, raw_response=res)
+
 
 def process_segments_get_command(client: Client, process_id: str) -> CommandResults:
     url = f'/v1/process/{process_id}/segment'
@@ -401,25 +513,46 @@ def process_segments_get_command(client: Client, process_id: str) -> CommandResu
         return CommandResults(
             readable_output=f'Could not find segment data for process id {process_id}.')
 
-    return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.ProcessSegments',
+    # Human readable is depending on request therefore is not changed.
+    return CommandResults(outputs=res.get('process'), outputs_prefix='CarbonBlackEDR.ProcessSegments',
                           outputs_key_field='unique_id',
-                          readable_output=res)
+                          readable_output=res.get('process', {}).get('segments'))
+
 
 def process_get_command(client: Client, process_id: str, segment_id: str,
                         get_related: bool = False) -> CommandResults:
+    get_related = argToBoolean(get_related)
     url = f"/{'v1' if get_related else 'v2'}/process/{process_id}/{segment_id}"
-    res = client.http_request(url=url, method='GET')
-    if not res:
-        return CommandResults(
-            readable_output=f'Could not find result for process id {process_id} with segment id {segment_id}.')
+    try:
+        res = client.http_request(url=url, method='GET')
+    except DemistoException as e:
+        if "404" in e.message:
+            raise Exception(f'Could not find result for process id {process_id} with segment id {segment_id}.')
+        else:
+            raise Exception(f'Error connecting to API. Error: {e.message}')
+
+    data = res.get('process', {}) if get_related else res
+    human_readable_data = {
+        'Process Path': data.get('path'),
+        'Process md5': data.get('process_md5'),
+        'Process Name': data.get('process_name'),
+        'Process PID': data.get('process_pid'),
+        'Process ID': data.get('id'),
+        'Hostname': data.get('hostname'),
+        'Segment ID': data.get('segment_id'),
+        'Username': data.get('username'),
+        'Last Update': data.get('last_update'),
+        'Is Terminated': data.get('terminated')
+    }
 
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Process', outputs_key_field='id',
-                          readable_output=res)
+                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Process', human_readable_data))
+
 
 def processes_search_command(client: Client, process_name: str = None, group: str = None, hostname: str = None,
                              parent_name: str = None, process_path: str = None, md5: str = None,
                              query: str = None, group_by: str = None, sort: str = None, facet: str = None,
-                             facet_field: str = None, rows: str = None, start: str = None):
+                             facet_field: str = None, limit: str = None, start: str = None):
     res = client.get_processes(process_name, group, hostname, parent_name, process_path, md5, query, group_by, sort,
                                facet, facet_field, rows, start)
 
@@ -428,16 +561,36 @@ def processes_search_command(client: Client, process_name: str = None, group: st
 
     outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
 
+    human_readable_data = []
+    for process in res.get('results'):
+        human_readable_data.append(
+            {
+                'Process Path': process.get('path'),
+                'Process md5': process.get('process_md5'),
+                'Process Name': process.get('process_name'),
+                'Process PID': process.get('process_pid'),
+                'Process ID': process.get('id'),
+                'Hostname': process.get('hostname'),
+                'Segment ID': process.get('segment_id'),
+                'Username': process.get('username'),
+                'Last Update': process.get('last_update'),
+                'Is Terminated': process.get('terminated')
+            })
+
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Process', outputs_key_field='id',
-                          readable_output=res)
+                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Process Search Results',
+                                                          human_readable_data,
+                                                          removeNull=True))
+
 
 def sensor_installer_download_command(client: Client, os_type: str, group_id: str):
     url = f"/v1/group/{group_id}/installer/{os_type.replace('_', '/')}"
-    res = client.http_request(url=url, method='GET')
+    res = client.http_request(url=url, method='GET', resp_type='content')
     if not res:
         return CommandResults(
             readable_output=f'Could not find installer for group id {group_id} which compatible with {os_type}.')
-    fileResult(f'sensor_installer_{group_id}_{os_type}', res)
+    return fileResult(f'sensor_installer_{group_id}_{os_type}.zip', res, file_type=9)
+
 
 def endpoint_command(client: Client, id: str, ip: str, hostname: str):
     if not id or not ip or not hostname:
@@ -447,8 +600,8 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
     endpoints = []
     command_results = []
     for sensor in res:
-        is_isolated = _get_isolation_status_field(sensor.get('network_isolation_enabled'),
-                                                  sensor.get('is_isolating'))
+        is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
+                                                  sensor['is_isolating'])
         endpoint = Common.Endpoint(
             id=id,
             hostname=hostname,
@@ -462,7 +615,7 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
         endpoints.append(endpoint)
 
         endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        md = tableToMarkdown(f'Carbon Black Response Endpoint: {id}', endpoint_context)
+        md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {id}', endpoint_context)
 
         command_results.append(CommandResults(
             readable_output=md,
@@ -470,6 +623,59 @@ def endpoint_command(client: Client, id: str, ip: str, hostname: str):
             indicator=endpoint
         ))
     return command_results
+
+
+def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int, status: str,
+                    feedname: str, hostname: str, query: str):
+    last_fetch = last_run.get('last_fetch', None)
+    # Handle first fetch time
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = int(last_fetch)
+
+    latest_created_time = last_fetch
+
+    incidents: List[Dict[str, Any]] = []
+    res = client.get_alerts(status=status, feedname=feedname, hostname=hostname, query=query)
+    alerts = res.get('results', {})
+
+    for alert in alerts:
+        incident_created_time = dateparser.parse(alert.get('created_time'))
+        incident_created_time_ms = int(incident_created_time.timestamp()) * 1000 if incident_created_time else '0'
+
+        # to prevent duplicates, adding incidents with creation_time > last fetched incident
+        if last_fetch:
+            if incident_created_time <= last_fetch:
+                continue
+
+        # If no name is present it will throw an exception
+        incident_name = alert['process_name']
+
+        incident = {
+            'name': incident_name,
+            # 'details': alert['name'],
+            'occurred': timestamp_to_datestring(incident_created_time_ms),
+            'rawJSON': json.dumps(alert),
+            # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
+            # 'severity': convert_to_demisto_severity(alert.get('alert_severity', 'Low')),
+            # 'CustomFields': {  # Map specific XSOAR Custom Fields
+            #     'helloworldid': alert.get('alert_id'),
+            #     'helloworldstatus': alert.get('alert_status'),
+            #     'helloworldtype': alert.get('alert_type')
+            # }
+        }
+
+        incidents.append(incident)
+
+        # Update last run and add incident if the incident is newer than last fetch
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
+
+    # Save the next_run as a dict with the last_fetch key to be stored
+    next_run = {'last_fetch': latest_created_time}
+    return next_run, incidents
+
 
 def test_module(client: Client) -> str:
     message: str = ''
@@ -483,10 +689,11 @@ def test_module(client: Client) -> str:
             raise e
     return message
 
+
 ''' MAIN FUNCTION '''
 
-def main() -> None:
 
+def main() -> None:
     try:
         api_token = demisto.params().get('apitoken')
         base_url = urljoin(demisto.params()['url'], '/api')
@@ -521,7 +728,7 @@ def main() -> None:
                                          'cb-edr-quarantine-device': quarantine_device_command,
                                          'cb-edr-unquarantine-device': unquarantine_device_command,
                                          'cb-edr-sensor-installer-download': sensor_installer_download_command,
-                                         'fetch-incidents': '',
+                                         'fetch-incidents': fetch_incidents,
                                          'endpoint': endpoint_command
                                          }
 
@@ -530,7 +737,40 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-incidents':
-            return
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            alert_status = demisto.params().get('alert_status', None)
+            alert_feed_name = demisto.params().get('alert_feed_name', None)
+            alert_hostname = demisto.params().get('alert_hostname', None)
+            alert_query = demisto.params().get('alert_query', None)
+
+            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+            max_results = arg_to_number(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+                max_results = MAX_INCIDENTS_TO_FETCH
+            # How much time before the first fetch to retrieve incidents
+            first_fetch_time = arg_to_datetime(
+                arg=demisto.params().get('first_fetch', '3 days'),
+                arg_name='First fetch time',
+                required=True
+            )
+            first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
+            # Using assert as a type guard (since first_fetch_time is always an int when required=True)
+            assert isinstance(first_fetch_timestamp, int)
+
+            next_run, incidents = fetch_incidents(
+                client=client,
+                max_results=max_results,
+                last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
+                first_fetch_time=first_fetch_timestamp,
+                status=alert_status,
+                feedname=alert_feed_name,
+                hostname=alert_hostname,
+                query=alert_query)
+
             # return_results(baseintegration_dummy_command(client, demisto.args()))
         elif command in commands:
             return_results(commands[command](client, **args))
@@ -540,6 +780,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
 
 ''' ENTRY POINT '''
 
