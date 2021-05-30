@@ -5,62 +5,50 @@ name: ShowOnMap
 script: >
   var lat = parseFloat(args.lat);
   var lng = parseFloat(args.lng);
+  val address = args.address;
 
-  val invalidCoordinates = (isNaN(lat) || isNaN(lng));
-  var address = args.address;
 
-  if (invalidCoordinates) {
+  if (isNaN(lat) || isNaN(lng)) {
       val instances = executeCommand("getInstances", {"brand" : "GoogleMaps"});
 
+      // if an instance of GoogleMaps exists, geocoding is possible
       if (("Modules" in instances) && instances["Modules"].length > 0){
-          // Geocoding is possible
-          val geocoded = executeCommand("geocode", {"address" : address});
+          val geocoded = executeCommand("geocode", {"address" : address})[0];
+          lat = geocoded["lat"];
+          lng = geocoded["lng"];
 
+          if (isNaN(lat) || isNaN(lng)){
+              return {
+                      ContentsFormat: formats.text,
+                      Type: entryTypes.error,
+                      Contents: 'Geocoding failed'
+              };
           }
+      }
 
-      else { // Geocoding is not possible
+      // Can't geocode without GoogleMaps
+      else {
           return {
                 ContentsFormat: formats.text,
                 Type: entryTypes.error,
-                Contents: 'No instance of GoogleMaps was found, but coordinates were not provided.\n
-                          please configure an instance one to show addresses.'
+                Contents: 'Coordinates were not provided, and no instance of GoogleMaps was found.
+                          please configure an instance one to show addresses on a map.'
           };
       }
-
-      // Can not geocode address
-      if (address) {
-          return {
-              ContentsFormat: formats.text,
-              Type: entryTypes.error,
-              Contents: 'Invalid coordinates, and no address was provided.'
-      };
-
-      // Geocode the address
-
-
   }
 
-  if(invalidCoordinates) {
-      return {
-          ContentsFormat: formats.text,
-          Type: entryTypes.error,
-          Contents: 'Invalid coordinates'
-      };
-  }
-
-
+  // now lat,lng are not null (whether they were valid arguments or geocoded)
   var locationObj = {
       lat: lat,
       lng: lng
   };
 
-
   return {
-      // type
       Type: entryTypes.map,
-       // contents
-      ContentsFormat: formats.json, Contents: locationObj
+      ContentsFormat: formats.json,
+      Contents: locationObj
   };
+
 type: javascript
 tags:
 - Utility
