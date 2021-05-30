@@ -1149,6 +1149,48 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
+def test_indicator_type_by_server_version_under_6_1(mocker, clear_version_cache):
+    """
+    Given
+    - demisto version mock under 6.2
+
+    When
+    - demisto version mock under 6.2
+
+    Then
+    - Do not remove the STIX indicator type prefix.
+    """
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '6.1.0',
+        }
+    )
+    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "STIX Attack Pattern"
+
+
+def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
+    """
+    Given
+    - demisto version mock set to 6.2
+
+    When
+    - demisto version mock set to 6.2
+
+    Then
+    - Return the STIX indicator type with the STIX prefix
+    """
+    mocker.patch.object(
+        demisto,
+        'demistoVersion',
+        return_value={
+            'version': '6.2.0',
+        }
+    )
+    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "Attack Pattern"
+
+
 def test_assign_params():
     from CommonServerPython import assign_params
     res = assign_params(a='1', b=True, c=None, d='')
@@ -3487,6 +3529,7 @@ def test_warnings_handler(mocker):
     msg = demisto.info.call_args[0][0]
     assert 'This is a test' in msg
     assert 'python warning' in msg
+
 
 def test_get_schedule_metadata():
     """
