@@ -1,5 +1,5 @@
 import uuid
-
+import traceback
 from CommonServerPython import *
 import demistomock as demisto
 
@@ -219,6 +219,7 @@ def main():
         elif demisto.command() == 'smb-directory-remove':
             return_results(smb_rmdir(client, demisto.args()))
     except Exception as e:
+        traceback.print_exc()
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
     finally:
         smbclient.reset_connection_cache()
