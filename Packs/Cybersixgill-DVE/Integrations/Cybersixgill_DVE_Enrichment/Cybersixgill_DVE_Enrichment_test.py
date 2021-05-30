@@ -403,7 +403,6 @@ def mocked_request(*args, **kwargs):
     request = kwargs.get("request", {})
     end_point = request.path_url
     method = request.method
-    # params = request.params
     mock_response = json.dumps(cve_enrich)
     response_dict = {
         "POST": {"/auth/token": MockedResponse(200, mocked_get_token_response)},

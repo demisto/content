@@ -3,6 +3,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """ IMPORTS """
+
+import json
+import requests
+import dateparser
 import requests
 
 from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
@@ -29,17 +33,16 @@ def test_module_command(client_id, client_secret, channel_code, session, verify)
 
 
 def create_fields(stix_obj, event_obj, nvd_obj, nvd_obj_v2, nvd_obj_v3, score_obj, ext_id):
-    fields = {}
     try:
         fields = {
             "Description": stix_obj.get("description", ""),
             "Created": stix_obj.get("created", ""),
             "Modified": stix_obj.get("modified", ""),
             "External id": ext_id,
-            "Sixgill DVE score - current": score_obj.get("current", ""),
-            "Sixgill DVE score - highest ever date": score_obj.get("highest", {}).get("date", ""),
-            "Sixgill DVE score - highest ever": score_obj.get("highest", {}).get("value", ""),
-            "Sixgill - Previously exploited probability": score_obj.get("previouslyExploited", ""),
+            "Cybersixgill DVE score - current": score_obj.get("current", ""),
+            "Cybersixgill DVE score - highest ever date": score_obj.get("highest", {}).get("date", ""),
+            "Cybersixgill DVE score - highest ever": score_obj.get("highest", {}).get("value", ""),
+            "Cybersixgill - Previously exploited probability": score_obj.get("previouslyExploited", ""),
             "Event Name": event_obj.get("name", ""),
             "Event Type": event_obj.get("type", ""),
             "Event Action": event_obj.get("action", ""),
