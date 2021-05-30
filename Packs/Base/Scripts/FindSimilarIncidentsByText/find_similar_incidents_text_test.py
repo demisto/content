@@ -199,8 +199,7 @@ def execute_command(command, args=None):
     if command == 'GetIncidentsByQuery':
         entry = {}
         entry['Type'] = entryTypes['note']
-        entry['Contents'] = {}
-        entry['Contents']['data'] = [incident1_dup, incident3, incident4]
+        entry['Contents'] = [incident1_dup, incident3, incident4]
         return [entry]
         find_similar_incidents_text_test
     if command == 'WordTokenizerNLP':
