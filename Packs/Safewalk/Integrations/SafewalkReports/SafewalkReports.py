@@ -3,17 +3,10 @@ import urllib3
 import json
 import dateparser
 from typing import Any, Dict
-
+from CommonServerPython import *
 
 
 urllib3.disable_warnings()
-
-
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-MAX_INCIDENTS_TO_FETCH = 50
-HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
-
 
 
 class Client(BaseClient):
@@ -133,13 +126,10 @@ class Client(BaseClient):
         )
 
 
-
 def get_associated_users(client, args):
 
     devicetype = args.get('devicetype')
-
     result = client.get_associated_users(devicetype)
-
     readable_output = f'## {result}'
 
     command_results = CommandResults(
@@ -349,24 +339,24 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     last_run_time = last_run.get('last_run_time', first_fetch)
     next_run_time = last_run_time
 
-    #Last run time must be used to filter transaction log
+    # Last run time must be used to filter transaction log
     results = []
-    if query_filter is not None and query_filter != '':
+    if query_filter and query_filter:
         q_list = query_filter.split(',')
         for q in q_list:
-            if q!='':
-                tmp = json.loads(client.list_incidents(None, None, None, q))['results']
+            if q:
+                tmp = json.loads(client.list_incidents(None, None, None, q)).get('results')
                 results.extend([element for element in tmp if element not in results])
     else:
-        results = json.loads(client.list_incidents(None, None, None, query_filter))['results']
+        results = json.loads(client.list_incidents(None, None, None, query_filter)).get('results')
 
     for result in results:
-        incident_time = dateparser.parse(result['timestamp']).strftime(DATE_FORMAT)
+        incident_time = dateparser.parse(result.get('timestamp')).strftime(DATE_FORMAT)
 
-        #This condition is temporal
+        # This condition is temporal
         if incident_time > last_run_time:
             incident = {
-                'name': result['reason_detail'],
+                'name': result.get('reason_detail'),
                 'occurred': incident_time,
                 'rawJSON': json.dumps(result)
             }
@@ -385,19 +375,22 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
 
 def main():
 
-    base_url = demisto.params()['url']
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
+    base_url = params.get('url')
     base_url = base_url + '/api/v1/admin/'
-    demisto.info('BASE_URL' + base_url)
-    verify_certificate = not demisto.params().get('insecure', False)
-    auth_access_token = demisto.params()['apikey']
-    proxy = demisto.params().get('proxy', False)
+    demisto.info(f'BASE_URL: {base_url}')
+    verify_certificate = not params.get('insecure', False)
+    auth_access_token = params.get('apikey')
+    proxy = params.get('proxy', False)
 
-    fetch_limit = (demisto.params().get('max_fetch'))
-    first_fetch_str = demisto.params().get('first_fetch')
-    auto_generate_query_filter = demisto.params().get('auto_generate_query_filter')
-    fetch_query_filter = demisto.params().get('fetch_query_filter')
+    fetch_limit = (params.get('max_fetch'))
+    first_fetch_str = params.get('first_fetch')
+    auto_generate_query_filter = params.get('auto_generate_query_filter')
+    fetch_query_filter = params.get('fetch_query_filter')
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             base_url=base_url,
@@ -405,55 +398,55 @@ def main():
             headers={'Authorization': 'Bearer %s' % auth_access_token},
             proxy=proxy)
 
-        if demisto.command() == 'safewalk-get-associated-users':
-            result = get_associated_users(client, demisto.args())
+        if command == 'safewalk-get-associated-users':
+            result = get_associated_users(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-authentication-methods-distribution':
-            result = get_authentication_methods_distribution(client, demisto.args())
+        if command == 'safewalk-get-authentication-methods-distribution':
+            result = get_authentication_methods_distribution(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-authentication-rate-per-device':
-            result = get_authentication_rate_per_device(client, demisto.args())
+        if command == 'safewalk-get-authentication-rate-per-device':
+            result = get_authentication_rate_per_device(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-least-active-users':
-            result = get_least_active_users(client, demisto.args())
+        if command == 'safewalk-get-least-active-users':
+            result = get_least_active_users(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-licenses-inventory':
-            result = get_licenses_inventory(client, demisto.args())
+        if command == 'safewalk-get-licenses-inventory':
+            result = get_licenses_inventory(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-licenses-usage':
-            result = get_licenses_usage(client, demisto.args())
+        if command == 'safewalk-get-licenses-usage':
+            result = get_licenses_usage(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-most-active-users':
-            result = get_most_active_users(client, demisto.args())
+        if command == 'safewalk-get-most-active-users':
+            result = get_most_active_users(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-physical-tokens-inventory':
-            result = get_physical_tokens_inventory(client, demisto.args())
+        if command == 'safewalk-get-physical-tokens-inventory':
+            result = get_physical_tokens_inventory(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-registered-devices-distribution':
-            result = get_registered_devices_distribution(client, demisto.args())
+        if command == 'safewalk-get-registered-devices-distribution':
+            result = get_registered_devices_distribution(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-registration':
-            result = get_registration(client, demisto.args())
+        if command == 'safewalk-get-registration':
+            result = get_registration(client, args)
             return_results(result)
 
-        if demisto.command() == 'safewalk-get-users-associations-indicators':
-            result = get_users_associations_indicators(client, demisto.args())
+        if command == 'safewalk-get-users-associations-indicators':
+            result = get_users_associations_indicators(client, args)
             return_results(result)
 
-        if demisto.command() == 'test-module':
-            result = test_module(client, demisto.args())
+        if command == 'test-module':
+            result = test_module(client, args)
             return_results(result)
 
-        if demisto.command() == 'fetch-incidents':
+        if command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             context = demisto.getIntegrationContext()
             incidents, next_run = fetch_incidents(client, last_run, first_fetch_str, fetch_limit, fetch_query_filter,
@@ -462,8 +455,7 @@ def main():
             demisto.setLastRun(next_run)
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
