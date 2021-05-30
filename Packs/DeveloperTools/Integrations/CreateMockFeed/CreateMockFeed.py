@@ -84,7 +84,6 @@ def generate_dbotscore(indicator, indicator_type):
 
 def main():
     if demisto.command() == 'fetch-indicators':
-        indicators = []
         indicator_types = argToList(demisto.params().get('indicator_type'))
 
         if not indicator_types:
@@ -92,6 +91,7 @@ def main():
         demisto.info(f'starting feed with types {indicator_types}')
         demisto.info(f'starting feed with types {len(indicator_types)} size')
         for indicator_type in indicator_types:
+            indicators = []
             csv_file = TYPE_TO_FILENAME[indicator_type]
             indicators_csv_file = open(Path('/perf/' + csv_file), newline='')
             fieldnames = argToList(demisto.params().get('fieldnames'))
@@ -110,7 +110,7 @@ def main():
             elif indicator_type == "IP":
                 prev_indicator = "8.8.8.8"
                 prev_type = "IP"
-            elif indicator_type == "IP":
+            elif indicator_type == "File":
                 prev_indicator = "82660430ab3d496ee4c8d4711e23174bbda0dbf7883cb0c0871f80851e1b34e0"
                 prev_type = "File"
             elif indicator_type == "URL":

@@ -13,5 +13,10 @@
     "created": "2020-04-14T00:00:00Z",
     "useCases": [],
     "keywords": [],
-    "dependencies": {}
+    "dependencies": {
+        "GetServerURL": {
+            "mandatory": true,
+            "display_name": "GetServerURL"
+        }
+    }
 }
