@@ -85,7 +85,7 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
                 - threat (Dict): threat data from cofense raw response
                 - sevirity_level (int): threat severity level fot dbot score
             return:
-             Dict: single row in the human readable markdown format
+             Dict: single row in the human  readable markdown format
     """
 
     threat_row = {"Threat ID": threat.get("id", ""),
