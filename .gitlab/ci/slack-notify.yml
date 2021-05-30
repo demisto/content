@@ -1,4 +1,12 @@
 
+default:
+  image: docker-io.artifactory.pan.local/devdemisto/gitlab-content-ci:1.0.0.18999
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - /builds/xsoar/content/artifacts/*
+    when: always
+
 stages:
   - notify
 
@@ -10,8 +18,8 @@ include:
 slack-notify:
   stage: notify
   extends: .default-job-settings
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $SLACK_CHANNEL != "dmst-content-team"
+  # rules:
+  #   - if: $CI_COMMIT_BRANCH == "master" || $SLACK_CHANNEL != "dmst-content-team"
   script: 
     - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ca "$ARTIFACTS_FOLDER" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW"
   needs:
