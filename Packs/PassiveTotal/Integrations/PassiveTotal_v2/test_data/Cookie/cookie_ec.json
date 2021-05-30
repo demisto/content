@@ -1,0 +1,16 @@
+[
+  {
+    "firstSeen": "2018-07-13 14:24:40",
+    "lastSeen": "2021-03-08 21:31:45",
+    "hostname": "dummy hostname",
+    "cookieName": "dummy cookie name",
+    "cookieDomain": "dummy domain"
+  },
+  {
+    "firstSeen": "2018-07-13 14:24:40",
+    "lastSeen": "2021-03-08 21:31:45",
+    "hostname": "dummy hostname",
+    "cookieName": "dummy cookie name",
+    "cookieDomain": "dummy domain"
+  }
+]
