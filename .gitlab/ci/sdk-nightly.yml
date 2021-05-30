@@ -162,4 +162,4 @@ demisto-sdk-nightly:trigger-slack-notify:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Demisto SDK Nightly'
     SLACK_CHANNEL: $SLACK_CHANNEL
-    JOB_NAME: 'demisto-sdk-nightly:trigger-slack-notify'
+    JOB_NAME: 'demisto-sdk-nightly:run-commands-against-instance'
