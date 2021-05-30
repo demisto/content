@@ -22,7 +22,7 @@ You can access the device ID in one of the following ways.
    3. Locate the ID according to its name.
 - From the Carbon Black Cloud web page:
    1. Click **Endpoints**.
-   2. Search for and click the device name. The device ID will appear at the top of the page in the format *device:<the device ID>*. 
+   2. Search for and click the device name. The device ID will appear at the top of the page in the format *device:\<the device ID\>*. 
 
 **Set up integration instance**
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
