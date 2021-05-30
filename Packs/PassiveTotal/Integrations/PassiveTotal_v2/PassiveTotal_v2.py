@@ -7,6 +7,7 @@ from requests import ConnectionError
 from requests.exceptions import MissingSchema, InvalidSchema
 import urllib3
 import traceback
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -40,7 +41,16 @@ MESSAGES: Dict[str, str] = {
     'PROXY_ERROR': 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\' check-box or '
                    'check the host, authentication details and connection details for the proxy.',
     'INVALID_VALUE_IN_FIELD_ARG': 'Invalid field type {}. Valid field types are domain, email, name, organization, '
-                                  'address, phone, nameserver.'
+                                  'address, phone, nameserver.',
+    'INVALID_IP': 'IP is not valid. Please enter a valid IP address.',
+    'EMPTY_GET_WHOIS_ARGUMENT': 'query argument should not be empty.',
+    'INVALID_VALUE_IN_HISTORY_ARG': 'Invalid history value {}. Valid history values are true, false.',
+    'INVALID_WHOLE_NUMBER': 'Argument {} should be 0 or a positive integer.',
+    'INVALID_SINGLE_SELECT': 'Invalid argument {}. Valid values are {}.',
+    'INVALID_QUERY_COOKIE_DOMAIN': 'Argument query should be a valid domain that '
+                                   'does not contain any special characters other than hyphen (-) and full stop (.)',
+    'INVALID_QUERY_COOKIE_NAME': 'Argument query should be a valid cookie name that does not contain '
+                                 'spaces, separator character or tabs.'
 }
 
 URL_SUFFIX: Dict[str, str] = {
@@ -48,9 +58,16 @@ URL_SUFFIX: Dict[str, str] = {
     'SSL_CERT_SEARCH': '/v2/ssl-certificate/search',
     'GET_PDNS_DETAILS': '/v2/dns/passive',
     'WHOIS_SEARCH': '/v2/whois/search',
+    'WHOIS_GET': '/v2/whois',
     'GET_COMPONENTS': '/v2/host-attributes/components',
     'GET_TRACKERS': '/v2/host-attributes/trackers',
-    'GET_HOST_PAIRS': '/v2/host-attributes/pairs'
+    'GET_ARTICLES': '/v2/articles/indicator',
+    'GET_HOST_PAIRS': '/v2/host-attributes/pairs',
+    'GET_SERVICES': '/v2/services',
+    "GET_ADDRESSES_BY_COOKIE_NAME": "v2/cookies/name/{0}/addresses",
+    "GET_ADDRESSES_BY_COOKIE_DOMAIN": "v2/cookies/domain/{0}/addresses",
+    "GET_HOSTS_BY_COOKIE_NAME": "v2/cookies/name/{0}/hosts",
+    "GET_HOSTS_BY_COOKIE_DOMAIN": "v2/cookies/domain/{0}/hosts"
 }
 
 ISO_DATE: Dict[str, str] = {
@@ -61,6 +78,10 @@ ISO_DATE: Dict[str, str] = {
 VALID_DIRECTION_FOR_HOST_PAIRS = ['children', 'parents']
 
 REQUEST_TIMEOUT_MAX_VALUE = 9223372036
+
+COMPANY_NAME = "PaloAltoNetworks"
+
+PRODUCT_NAME = "XSOAR"
 
 
 class Client(BaseClient):
@@ -98,6 +119,10 @@ class Client(BaseClient):
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
         try:
+            if not headers:
+                headers = {}
+            headers['X-RISKIQ'] = f"{COMPANY_NAME}-{PRODUCT_NAME}-{get_demisto_version_as_str()}"
+
             resp = self._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
                                       headers=headers, timeout=self.request_timeout, resp_type='response',
                                       ok_codes=(200, 400, 401, 404, 407, 500), proxies=handle_proxy())
@@ -317,6 +342,23 @@ def get_valid_whois_search_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
     return query, field
 
 
+def get_valid_get_whois_arguments(args: Dict[str, Any]) -> Tuple[str, str]:
+    """
+    Get and Validate arguments for pt-get-whois command.
+
+    :param args: it contain arguments of pt-get-whois command
+    :return: validated arguments 'query' and 'history'
+    """
+    query = args.get('query', '').strip()
+    arg_history = args.get('history', '').strip()
+    history = arg_history.lower()
+    if query == '':
+        raise ValueError(MESSAGES['EMPTY_GET_WHOIS_ARGUMENT'])
+    if history and history not in ('true', 'false'):
+        raise ValueError(MESSAGES['INVALID_VALUE_IN_HISTORY_ARG'].format(arg_history))
+    return query, history
+
+
 def nested_to_flat(src: Dict[str, Any], key: str) -> Dict[str, Any]:
     """
     Convert nested dictionary to flat by contact the keys. Also converts keys in pascal string format.
@@ -408,6 +450,26 @@ def get_context_for_whois_commands(domains: List[Dict[str, Any]]) -> Tuple[list,
     return command_results, createContext(custom_context, removeNull=True)
 
 
+def get_context_for_get_whois_commands(domains: List[Dict[str, Any]]) -> list:
+    """
+    Prepare context for pt-get-whois command.
+
+    :param domains: list of domains return from response
+    :return: command results for custom context for whois command
+    """
+    custom_context: List[Dict[str, Any]] = []
+    # set domain standard context
+    for domain in domains:
+        custom_context.append(
+            prepare_context_dict(
+                response_dict=domain,
+                keys_with_hierarchy=('registrant', 'admin', 'billing', 'tech'),
+                exclude_keys=('zone', 'rawText')
+            )
+        )
+    return createContext(custom_context, removeNull=True)
+
+
 def prepare_hr_cell_for_whois_info(domain_info: Dict[str, Any]) -> str:
     """
     Prepare cell information for Registrant, Admin, Billing and Tech columns.
@@ -459,6 +521,38 @@ def get_human_readable_for_whois_commands(domains: List[Dict[str, Any]], is_repu
         headers=['Domain', 'WHOIS Server', 'Registrar', 'Contact Email', 'Name Servers', 'Registrant', 'Admin',
                  'Billing', 'Tech', 'Creation Date (GMT)', 'Expire Date (GMT)', 'Updated Date (GMT)',
                  'Last Scanned (GMT)'],
+        removeNull=True
+    )
+    return hr
+
+
+def get_human_readable_for_articles_commands(articles: List[Dict[str, Any]]):
+    """
+    Prepare readable output for pt-get-articles command
+
+    :param articles: list of articles return from response
+    :return: markdown of article command based on articles passed
+    """
+    hr_table_content: List[Dict[str, Any]] = []
+    table_name = 'Article(s)'
+    for article in articles:
+        hr_row = {
+            'GUID': article.get('guid', ''),
+            'Title': article.get('title', ''),
+            'Summary': article.get('summary', ''),
+            'Type': article.get('type', ''),
+            'Tags': ', '.join(article.get('tags', [])) if article.get('tags', []) else '',
+            'Categories': ', '.join(article.get('categories', [])) if article.get('categories', []) else '',
+            'Article Link': article.get('link', ''),
+            'Published Date (GMT)': article.get('publishedDate', '')
+        }
+        hr_table_content.append(hr_row)
+
+    hr = '### Total Retrieved Record(s): ' + str(len(articles)) + '\n'
+    hr += tableToMarkdown(
+        name=table_name,
+        t=hr_table_content,
+        headers=['GUID', 'Title', 'Summary', 'Type', 'Tags', 'Categories', 'Article Link', 'Published Date (GMT)'],
         removeNull=True
     )
     return hr
@@ -592,6 +686,105 @@ def create_pdns_standard_context(results: List[Dict[str, Any]]) -> List[CommandR
     return standard_results
 
 
+def get_services_hr(total_records: int, results: list) -> str:
+    services_hr = []
+    for result in results:
+        current_services = result.get("currentServices", [])
+        labels = []
+        for services in current_services:
+            if services.get("label"):
+                labels.append(services.get("label"))
+
+        services_hr.append({
+            "Port Number": result.get("portNumber"),
+            "Protocol": result.get("protocol"),
+            "Status": result.get("status"),
+            "Current Service Labels": ", ".join(labels),
+            "First Seen Date (GMT)": result.get("firstSeen"),
+            "Last Seen Date (GMT)": result.get("lastSeen"),
+            "Last Scanned Date (GMT)": result.get("lastScan")
+        })
+
+    table_output = tableToMarkdown("Services", services_hr,
+                                   headers=["Port Number", "Protocol", "Status", "Current Service Labels",
+                                            "First Seen Date (GMT)", "Last Seen Date (GMT)", "Last Scanned Date (GMT)"],
+                                   removeNull=True)
+
+    return f"### Total Retrieved Record(s) {total_records} \n {table_output}"
+
+
+def validate_get_cookies_arguments(args: Dict[str, Any]) -> None:
+    """
+    Validate arguments for get cookies command, raise ValueError on invalid arguments.
+
+    :param args: stripped arguments provided by user
+    """
+
+    # check if page is a valid whole number
+    try:
+        if int(args.get("page", "0")) < 0:
+            raise ValueError
+    except ValueError:
+        raise ValueError(MESSAGES['INVALID_WHOLE_NUMBER'].format('page'))
+
+    # check if the single-select values of arguments are valid or not
+    valid_values = {
+        'search_by': [
+            'get addresses by cookie domain',
+            'get addresses by cookie name',
+            'get hosts by cookie domain',
+            'get hosts by cookie name'
+        ],
+        'order': [
+            'desc',
+            'asc'
+        ],
+        'sort': [
+            'first seen',
+            'last seen'
+        ]
+    }
+    for argument_name, valid_value in valid_values.items():
+        if args.get(argument_name) not in valid_value:
+            raise ValueError(MESSAGES['INVALID_SINGLE_SELECT'].format(argument_name, ",".join(valid_value)))
+
+    # validate query param based on search_by
+    if "domain" in args['search_by']:
+        # The domain should only contain the characters a-z, A-Z, hyphen (-) and fullstops (.).
+        if not args["query"] or re.search("[^a-zA-Z0-9.-]", args['query']):
+            raise ValueError(MESSAGES['INVALID_QUERY_COOKIE_DOMAIN'])
+    else:
+        """ Valid cookie name can be any US-ASCII characters,
+            except control characters, spaces, separator character or tabs."""
+        if not args["query"] or re.search(r'[?^()<>@,;:/="\[\]{}\\\t\n\s]', args["query"]):
+            raise ValueError(MESSAGES['INVALID_QUERY_COOKIE_NAME'])
+
+
+def get_cookies_hr(results: List[Dict[str, Any]], hostname_header: str, total_records: int):
+    """
+    Retrieved information of cookies and convert it into human-readable markdown string.
+
+    :param results: cookie details
+    :param hostname_header: The header for the hostname column, should be either 'Hostname' or 'IP Address'
+    :param total_records: Total number of available records
+    :return: human-readable string
+    """
+    hr_results = [{
+        hostname_header: result.get("hostname", ''),
+        'Cookie Name': result.get("cookieName", ''),
+        'Cookie Domain': result.get("cookieDomain", ''),
+        'First Seen Date (GMT)': result.get("firstSeen", ''),
+        'Last Seen Date (GMT)': result.get("lastSeen", '')
+    } for result in results]
+
+    table_headers = [hostname_header, 'Cookie Name', 'Cookie Domain', 'First Seen Date (GMT)', 'Last Seen Date (GMT)']
+
+    hr = '### Total Record(s): ' + str(total_records) + '\n'
+    hr += '### Total Retrieved Record(s): ' + str(len(hr_results)) + '\n'
+    hr += tableToMarkdown('Cookies', hr_results, table_headers, removeNull=True)
+    return hr
+
+
 ''' REQUESTS FUNCTIONS '''
 
 
@@ -680,7 +873,7 @@ def pt_whois_search_command(client_obj: Client, args: Dict[str, Any]) -> Union[L
 
     command_results.insert(0, CommandResults(
         outputs_prefix='PassiveTotal.WHOIS',
-        outputs_key_field='domain',
+        outputs_key_field=['domain', 'lastLoadedAt'],
         outputs=custom_ec,
         readable_output=hr,
         raw_response=response
@@ -920,6 +1113,197 @@ def domain_reputation_command(client_obj: Client, args: Dict[str, Any]) -> Union
     return command_results
 
 
+@logger
+def get_services_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the services for the specified IP address.
+
+    :param client: Client object.
+    :param args: The command arguments provided by user.
+    :return: Standard command result or no records found message.
+    """
+
+    # Trim the argument and remove ' quotes surrounding ip
+    ip = args['ip'].strip().strip("'")
+
+    # Checking whether ip is valid or not
+    if not is_ip_valid(ip, accept_v6_ips=True):
+        raise ValueError(MESSAGES['INVALID_IP'])
+
+    # http call
+    resp = client.http_request(method="GET", url_suffix=URL_SUFFIX['GET_SERVICES'], params={'query': ip})
+
+    total_records = resp.get('totalRecords', 0)
+
+    if total_records == 0:
+        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('services'))
+
+    results = [{**response, 'ip': ip} for response in resp.get('results', [])]
+
+    # Creating context
+    context_output = remove_empty_elements(results)
+
+    # Creating human-readable
+    hr = get_services_hr(total_records, results)
+
+    return CommandResults(
+        outputs_prefix='PassiveTotal.Service',
+        outputs_key_field=['ip', 'portNumber'],
+        outputs=context_output,
+        readable_output=hr,
+        raw_response=resp,
+    )
+
+
+@logger
+def pt_get_whois_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets WHOIS information records based on queries
+
+    :param client_obj: client object which is used to get response from API
+    :param args: it contain arguments of pt-get-whois
+    :return: command output
+    """
+    # Retrieve arguments
+    query, history = get_valid_get_whois_arguments(args)
+    params = {
+        'query': query,
+        'history': history
+    }
+
+    # http call
+    response = client_obj.http_request(method='GET', url_suffix=URL_SUFFIX['WHOIS_GET'], params=params)
+
+    domains = response.get('results', [])
+    if len(domains) <= 0 and 'domain' in response:
+        domains = [response]
+
+    if len(domains) <= 0:
+        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('domain information'))
+
+    # Creating entry context
+    custom_context = get_context_for_get_whois_commands(domains)
+
+    # Creating human-readable
+    hr = get_human_readable_for_whois_commands(domains)
+
+    return CommandResults(
+        outputs_prefix='PassiveTotal.WHOIS',
+        outputs_key_field=['domain', 'lastLoadedAt'],
+        outputs=custom_context,
+        readable_output=hr,
+        raw_response=response
+    )
+
+
+@logger
+def get_cookies_command(client: Client, args: Dict[str, str]) -> Union[str, CommandResults]:
+    """
+    Retrieve cookies with hostnames or addresses based on cookie name or cookie domain.
+
+    :param client: Client object
+    :param args: The command arguments provided by user
+
+    :return: Standard command result or no records found message
+    """
+
+    default_values = {
+        'page': "0",
+        'sort': "last seen",
+        'order': 'desc'
+    }
+    # Trim the arguments and fill empty optional args with default values
+    for argument in args:
+        args[argument] = args[argument].strip()
+        if not args[argument] and argument in list(default_values.keys()):
+            args[argument] = default_values[argument]
+
+    # Validate arguments
+    validate_get_cookies_arguments(args)
+
+    # Prepare params for http request
+    params = {
+        "page": args.get("page"),
+        "sort": 'lastSeen' if args.get("sort") == "last seen" else 'firstSeen',
+        "order": args.get("order")
+    }
+
+    # Prepare the url suffix as per search_by and query argument
+    url_suffix = URL_SUFFIX["_".join(args["search_by"].upper().split())].format(args["query"])
+
+    # Make the http request
+    resp = client.http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    # Get results from response
+    results = resp.get("results", [])
+
+    # Get total records from response
+    total_records = resp.get("totalRecords", 0)
+    # return standard no records found message on empty results
+    if len(results) <= 0:
+        return 'Total Record(s): ' + str(total_records) + '\n' + MESSAGES['NO_RECORDS_FOUND'].format('cookies')
+
+    # creating entry context
+    entry_context = createContext(results, removeNull=True)
+
+    # create human readable by providing it results and the first column header name
+    human_readable = get_cookies_hr(results, "Hostname" if "hosts" in url_suffix else "IP Address", total_records)
+
+    # return CommandResults objects
+    return CommandResults(
+        outputs_prefix="PassiveTotal.Cookie",
+        outputs_key_field=['hostname', 'cookieName', 'cookieDomain'],
+        outputs=entry_context,
+        readable_output=human_readable,
+        raw_response=resp
+    )
+
+
+@logger
+def pt_get_articles_command(client_obj: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Gets an article information based on queries
+
+    :param client_obj: client object which is used to get response from API
+    :param args: it contain arguments of pt-get-articles
+    :return: command output
+    """
+    # Retrieve arguments
+    query = args.get('query', '').strip()
+    article_type = args.get('type', '').strip()
+    if query == '':
+        raise ValueError(MESSAGES['EMPTY_GET_WHOIS_ARGUMENT'])
+
+    params = {
+        'query': query
+    }
+
+    if article_type != '':
+        params['type'] = article_type
+
+    # http call
+    response = client_obj.http_request(method='GET', url_suffix=URL_SUFFIX['GET_ARTICLES'], params=params)
+
+    articles = response.get('articles', [])
+
+    if not articles or len(articles) <= 0:
+        return CommandResults(readable_output=MESSAGES['NO_RECORDS_FOUND'].format('articles'))
+
+    # Creating entry context
+    custom_ec_for_articles = remove_empty_elements(articles)
+
+    # Creating human-readable
+    hr = get_human_readable_for_articles_commands(articles)
+
+    return CommandResults(
+        outputs_prefix='PassiveTotal.Article',
+        outputs_key_field='guid',
+        outputs=custom_ec_for_articles,
+        readable_output=hr,
+        raw_response=response
+    )
+
+
 def main() -> None:
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -932,7 +1316,11 @@ def main() -> None:
         'pt-get-components': get_components_command,
         'pt-get-trackers': get_trackers_command,
         'pt-get-host-pairs': get_host_pairs_command,
-        'domain': domain_reputation_command
+        'pt-get-services': get_services_command,
+        'domain': domain_reputation_command,
+        'pt-get-whois': pt_get_whois_command,
+        'pt-get-cookies': get_cookies_command,
+        'pt-get-articles': pt_get_articles_command
     }
 
     command = demisto.command()
