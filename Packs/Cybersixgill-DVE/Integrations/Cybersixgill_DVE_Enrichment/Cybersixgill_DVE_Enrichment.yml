@@ -28,8 +28,15 @@ script:
   commands:
   - arguments:
     - default: false
+      description: 'CVE ID list'
       isArray: true
       name: cve_id
+      required: true
+      secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
       required: true
       secret: false
     deprecated: false
@@ -44,3 +51,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0
