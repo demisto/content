@@ -1693,14 +1693,14 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :param t: The JSON table - List of dictionaries with the same keys or a single dictionary (required)
 
        :type headers: ``list`` or ``string``
-       :keyword headers: A list of headers to be presented in the output table (by order). If string will be passed
+       :param headers: A list of headers to be presented in the output table (by order). If string will be passed
             then table will have single header. Default will include all available headers.
 
        :type headerTransform: ``function``
-       :keyword headerTransform: A function that formats the original data headers (optional)
+       :param headerTransform: A function that formats the original data headers (optional)
 
        :type removeNull: ``bool``
-       :keyword removeNull: Remove empty columns from the table. Default is False
+       :param removeNull: Remove empty columns from the table. Default is False
 
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
@@ -1795,13 +1795,13 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
     :param obj: The data to be added to the context (required)
 
     :type id: ``str``
-    :keyword id: The ID of the context entry
+    :param id: The ID of the context entry
 
     :type keyTransform: ``function``
-    :keyword keyTransform: A formatting function for the markdown table headers
+    :param keyTransform: A formatting function for the markdown table headers
 
     :type removeNull: ``bool``
-    :keyword removeNull: True if empty columns should be removed, false otherwise
+    :param removeNull: True if empty columns should be removed, false otherwise
 
     :return: The converted context list
     :rtype: ``list``
@@ -1833,13 +1833,13 @@ def createContext(data, id=None, keyTransform=None, removeNull=False):
         :param data: The data to be added to the context (required)
 
         :type id: ``str``
-        :keyword id: The ID of the context entry
+        :param id: The ID of the context entry
 
         :type keyTransform: ``function``
-        :keyword keyTransform: A formatting function for the markdown table headers
+        :param keyTransform: A formatting function for the markdown table headers
 
         :type removeNull: ``bool``
-        :keyword removeNull: True if empty columns should be removed, false otherwise
+        :param removeNull: True if empty columns should be removed, false otherwise
 
         :return: The converted context list
         :rtype: ``list``
