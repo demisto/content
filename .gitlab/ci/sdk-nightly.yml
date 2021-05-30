@@ -156,6 +156,7 @@ demisto-sdk-nightly:trigger-slack-notify:
   extends:
     - .trigger-slack-notification
     - .sdk-nightly-schedule-rule
+  when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Demisto SDK Nightly'
