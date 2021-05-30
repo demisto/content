@@ -3308,7 +3308,7 @@
             "is_mockable": false
         },
         {
-            "integrations": "QualysVulnerabilityManagement",
+            "integrations": "QualysVulnerabilityManagementV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
             "timeout": 1800
