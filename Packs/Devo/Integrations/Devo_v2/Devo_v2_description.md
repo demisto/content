@@ -5,14 +5,14 @@ tables but `siem.logtrust.alert.info` is used when fetching alerts.
 
 If writing back to Devo make sure to also create a set of TLS credentials.
 
-### Get your XSOAR OAuth Token
+### Get your Cortex XSOAR OAuth Token
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __Authentication Tokens__.
-3. If a token for XSOAR has not already been  created, Click __CREATE NEW TOKEN__
+3. If a token for Cortex XSOAR has not already been created, Click __CREATE NEW TOKEN__
   * Create the Token with `*.**` table permissions as an `apiv2` token.
 4. Note the generated `Token`
 
-### Get your XSOAR Writer Credentials
+### Get your Cortex XSOAR Writer Credentials
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __X.509 Certificates__.
 3. Click `NEW CERTIFICATE` if you do not already have a set of keys for Cortex XSOAR.

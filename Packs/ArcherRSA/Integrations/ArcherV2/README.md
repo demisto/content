@@ -810,7 +810,7 @@ To associate to a record, must provide all of the following arguments: applicati
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entryId | The entry id of the file in XSOAR's context | Required | 
+| entryId | The entry id of the file in Cortex XSOAR's context | Required | 
 | contentId | The Content (record) ID to update.| Optional | 
 | applicationId | ID of the application which we want to upload the file to. | Optional | 
 | associatedField | Archer field name to associate the file with. | Optional
@@ -833,7 +833,7 @@ There is no context output for this command.
 
 ### archer-get-file
 ***
-Downloads file from Archer to XSOAR's war room context
+Downloads file from Archer to Cortex XSOAR's war room context
 
 
 #### Base Command

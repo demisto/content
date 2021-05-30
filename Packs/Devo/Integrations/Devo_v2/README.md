@@ -22,17 +22,17 @@ of the time that other traditional time series databases can't.
 * OAuth token with the `*.**` permissions.
 * Writer TLS Certificate, Key, and Chain if writing back to Devo.
 
-### Get your XSOAR OAuth Token
+### Get your Cortex XSOAR OAuth Token
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __Authentication Tokens__.
 3. If a token for Cortex XSOAR has not already been  created, Click __CREATE NEW TOKEN__
   * Create the Token with `*.**` table permissions as an `apiv2` token.
 4. Note the generated `Token`
 
-### Get your XSOAR Writer Credentials
+### Get your Cortex XSOAR Writer Credentials
 1. Login to your Devo domain with a user with the ability to create security credentials.
 2. Navigate to __Administration__ > __Credentials__ > __X.509 Certificates__.
-3. Click `NEW CERTIFICATE` if you do not already have a set of keys for XSOAR.
+3. Click `NEW CERTIFICATE` if you do not already have a set of keys for Cortex XSOAR.
 4. Download the following files:
   * `Certificate`
   * `Private Key`
@@ -128,7 +128,7 @@ Queries Devo based on linq query.
 Please refer to to the Devo documentation for building a query with LINQ
 [HERE](https://docs.devo.com/confluence/ndt/searching-data/building-a-query/build-a-query-using-linq)
 ##### Required Permissions
-**A XSOAR instance configured with the correct OAuth token that has permission to query the target tables**
+**A Cortex XSOAR instance configured with the correct OAuth token that has permission to query the target tables**
 ##### Base Command
 
 `devo-run-query`
@@ -239,7 +239,7 @@ Queries multiple tables for a given token and returns relevant results.
 This method is used for when you do not know which columns a specified search token will show up in (Needle in a haystack search)
 Thus querying all columns for the search token and returning a union of the given tables.
 ##### Required Permissions
-**A XSOAR instance configured with the correct OAuth token that has permission to query the target tables**
+**A Cortex XSOAR instance configured with the correct OAuth token that has permission to query the target tables**
 ##### Base Command
 
 `devo-multi-table-query`
@@ -298,7 +298,7 @@ writing to multiple tables in a single operation.
 
 For more information on the way we write to a table please refer to this documentation found [HERE](https://github.com/DevoInc/python-ds-connector#loading-data-into-devo)
 ##### Required Permissions
-**A XSOAR instance configured with the correct write JSON credentials**
+**A Cortex XSOAR instance configured with the correct write JSON credentials**
 ##### Base Command
 
 `devo-write-to-table`
@@ -347,7 +347,7 @@ For more information on lookup tables please refer to documentation found [HERE]
 We can add extra records with incremental lookup additions. Please refer to our Python SDK for more information on how we are
 adding in extra lookup information found [HERE](https://github.com/DevoInc/python-sdk/)
 ##### Required Permissions
-**A XSOAR instance configured with the correct write JSON credentials**
+**A Cortex XSOAR instance configured with the correct write JSON credentials**
 ##### Base Command
 
 `devo-write-to-lookup-table`
@@ -377,9 +377,9 @@ N/A
 
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
-[![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU "Devo XSOAR Demo")
+[![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU "Devo Cortex XSOAR Demo")
 
 ## Known Limitations
 ---
 * Currently the lookup table functionality is in Alpha. Please use at your own risk as behavior is still not fully stable.
-* It is up to the user to make sure your XSOAR instance can handle the amount of data returned by a query.
+* It is up to the user to make sure your Cortex XSOAR instance can handle the amount of data returned by a query.
