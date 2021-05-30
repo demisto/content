@@ -1065,5 +1065,5 @@ def main():
 
 from AWSApiModule import *  # noqa: E402
 
-if __name__ in ("__builtin__", "builtins"):
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
