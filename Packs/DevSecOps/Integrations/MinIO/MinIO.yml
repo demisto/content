@@ -271,7 +271,7 @@ script:
     description: Uploads data from a stream to an object in a bucket.
     execution: false
     name: minio-put-object
-  dockerimage: demisto/minio:1.0.0.18503
+  dockerimage: demisto/minio:1.0.0.19143
   feed: false
   isfetch: false
   longRunning: false
