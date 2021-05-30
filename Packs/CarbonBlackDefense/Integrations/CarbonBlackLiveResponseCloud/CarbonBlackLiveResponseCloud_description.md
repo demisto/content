@@ -1,5 +1,5 @@
 ## Carbon Black Cloud Live Response
-Set up API Keys in the Carbon Black Cloud.
+Set up the API keys in Carbon Black Cloud.
 
 
 #### Create a Custom Access Level
@@ -7,8 +7,9 @@ Set up API Keys in the Carbon Black Cloud.
 1. In the Carbon Black Cloud web page, go to **Settings** > **API Access** > **Access Levels** tab.
 2. Open the *Add Access Level* panel. 
 3. Give the access level a unique name (you will need this for creating your API Key) and a description.
-4. In the table scroll down to the **General information** permission in **Device** category, and click on the checkbox in **READ** column -> save
-5. Scroll down until you see the Live Response category. Configure the required permissions.
+4. In the table, scroll down to the **General information** permission in **Device** category, and click the checkbox in the **READ** column.
+5. Click **Save**.
+6. Scroll down until you see the Live Response category. Configure the required permissions.
 
 #### Create an API Key
 
@@ -21,12 +22,17 @@ Set up API Keys in the Carbon Black Cloud.
    - API Key
  
    Click [here](https://developer.carbonblack.com/reference/carbon-black-cloud/authentication) for more information about authentication.
-5. Go to Settings > API Access and copy the ORG KEY from the top left corner of the page
-6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and created API Secret Key and API ID
+5. Go to **Settings** > **API Access** and copy the ORG KEY from the top left corner of the page
+6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and the API Secret Key and API ID you created.
 
 
-#### Getting the device id
+#### Getting the Device ID
 
-To get the device id you can run the command ``cbd-device-search`` (should have an instance of Carbon Black Defense integration) and find it according the name,
-or manually, in Carbon Black Cloud web page go to Endpoints > search for the device name > click > 
-the device id will appear in the top of the page in the format ``device_id:<the device id>``. 
+To get the device ID:
+- In Cortex XSOAR
+  1. Create an instance of the Carbon Black Defense integration.
+  1. Run the **cbd-device-search** command
+  2. Find the ID according to its name.
+- From the Carbon Black Cloud web page:
+  1. Click **Endpoints**
+  2. Search for and click the device name. The device ID will appear at the top of the page in the format *device_id:<the device id>*. 
