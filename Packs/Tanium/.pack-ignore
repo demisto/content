@@ -9,6 +9,3 @@ ignore=BA108,BA109
 
 [file:script-TaniumFilterComputersByIndexQueryFileDetails_README.md]
 ignore=RM106
-
-[file:playbook-Tanium_Demo.yml]
-ignore=BA110
