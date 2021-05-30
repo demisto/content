@@ -37,7 +37,7 @@
 <strong>Server URI</strong>: for example, <a href="https://216.128.82">https://216.128.82</a>
 </li>
 <li>
-<strong>API Key</strong>: XSOAR creates an API key, <strong>do not</strong> populate this field.</li>
+<strong>API Key</strong>: Cortex XSOAR creates an API key, <strong>do not</strong> populate this field.</li>
 <li><strong>Secret Key (applicable for v1)</strong></li>
 <li>
 <strong>Do not validate server certificate</strong> (insecure)</li>

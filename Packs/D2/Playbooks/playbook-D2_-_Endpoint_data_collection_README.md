@@ -1,4 +1,4 @@
-Uses XSOAR's D2 agent to collect data from an endpoint for IR purposes.
+Uses Cortex XSOAR's D2 agent to collect data from an endpoint for IR purposes.
 
 Input:
 * Hostname (default: ${Endpoint.Hostname})

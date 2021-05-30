@@ -7,7 +7,7 @@ A transformer for simple if-then-else logic. This can potentially reduce the num
 | --- | --- |
 | Script Type | javascript |
 | Tags | transformer, general |
-| Demisto Version | 5.0.0 |
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
 ---
@@ -78,4 +78,3 @@ If the condition is empty, evaluates `value` == `equals` for backward compatibil
 ## Outputs
 ---
 There are no outputs for this script.
-

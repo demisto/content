@@ -27,17 +27,17 @@
 </tr>
 <tr>
 <td style="width: 324px;">help</td>
-<td style="width: 324px;">Displays all options for adding XSOAR, for example [plugin add demisto -help]</td>
+<td style="width: 324px;">Displays all options for adding Cortex XSOAR, for example [plugin add demisto -help]</td>
 <td style="width: 324px;">optional</td>
 </tr>
 <tr>
 <td style="width: 324px;">isAutomated</td>
-<td style="width: 324px;">Simulation results can be sent to XSOAR as incidents. </td>
+<td style="width: 324px;">Simulation results can be sent to Cortex XSOAR as incidents. </td>
 <td style="width: 324px;">optional</td>
 </tr>
 <tr>
 <td style="width: 324px;">isAutomated true</td>
-<td style="width: 324px;"> An automated incident (conatiner) is opened for each simulation that is either not-blocked, or when a blocked simulation result changes to not-blocked. For adding XSOAR with automation, use: [plugins add demisto --url &lt;demistoServerUrl&gt; --default &lt;apiKey&gt; --isAutomated true]. For changing Cortex XSOAR to become automated, use this command [plugins update demisto --isAutomated true]</td>
+<td style="width: 324px;"> An automated incident (conatiner) is opened for each simulation that is either not-blocked, or when a blocked simulation result changes to not-blocked. For adding Cortex XSOAR with automation, use: [plugins add demisto --url &lt;demistoServerUrl&gt; --default &lt;apiKey&gt; --isAutomated true]. For changing Cortex XSOAR to become automated, use this command [plugins update demisto --isAutomated true]</td>
 <td style="width: 324px;"> optional</td>
 </tr>
 <tr>

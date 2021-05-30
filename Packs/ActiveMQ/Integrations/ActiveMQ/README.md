@@ -60,7 +60,7 @@ Sends a message to the specified destination.
 | --- | --- | --- |
 | destination |  The message destination. For example, a message queue in the format: "/queue/test", or a message topic.  | Required | 
 | body | The content of the message to send. | Required | 
-| headers | The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo xsoar:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True} | Optional | 
+| headers | The customer headers for the message, in the format: {XCorrelationId: uid, nosotros generamos XReplyTo demisto:es:connectors, XType com.elevenpaths.sandas.ra.connector.CreateTicketConnectorRequest, XVersion : "3.0", persistent : True} | Optional | 
 
 
 ##### Context Output
