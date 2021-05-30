@@ -118,7 +118,7 @@ Retrieve issues
 | Expanse.Issue.certificate.validNotAfter | Date | The valid not after date in the certificate | 
 | Expanse.Issue.certificate.validNotBefore | Date | The valid not before date in the certificate | 
 | Expanse.Issue.certificate.version | String | The version in the certificate |
-| Expanse.Issue.cloudManagementStatus.id | String | The id of the cloud management status |
+| Expanse.Issue.cloudManagementStatus.id | String | The ID of the cloud management status |
 | Expanse.Issue.cloudManagementStatus.name | String | The friendly name of the cloud management status |
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
@@ -947,7 +947,7 @@ Retrieve Expanse issue by issue ID.
 | Expanse.Issue.certificate.validNotAfter | Date | The valid not after date in the certificate | 
 | Expanse.Issue.certificate.validNotBefore | Date | The valid not before date in the certificate | 
 | Expanse.Issue.certificate.version | String | The version in the certificate | 
-| Expanse.Issue.cloudManagementStatus.id | String | The id of the cloud management status |
+| Expanse.Issue.cloudManagementStatus.id | String | The ID of the cloud management status |
 | Expanse.Issue.cloudManagementStatus.name | String | The friendly name of the cloud management status |
 | Expanse.Issue.created | Date | When the issue instance was created | 
 | Expanse.Issue.domain | String | Domain name of the issue | 
@@ -4057,14 +4057,14 @@ Retrieve Cloud Resource assets from Expanse.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | Maximum number of cloud resources to retrieve. | Optional | 
-| last_observed_date | Last date the cloud resource was observed by Expanse (Format is YYYY-MM-DD). | Optional | 
+| last_observed_date | Last date the cloud resource was observed by Expanse. (Format is YYYY-MM-DD). | Optional | 
 | domain | A domain search string to find related cloud resources. | Optional | 
-| ip | A ip search string to find related cloud resources. | Optional | 
-| providers | A search string of provider ids to find cloud resources hosted by specific providers. | Optional | 
+| ip | An IP search string to find related cloud resources. | Optional | 
+| providers | A search string of provider IDs to find cloud resources hosted by specific providers. | Optional | 
 | provider_names | A search string of provider names to find cloud resources hosted by specific providers. | Optional | 
 | business_units | A search string of business unit ids to find cloud resources belonging to a specific business unit. | Optional | 
 | business_unit_names | A search string of business unit names to find cloud resources belonging to a specific business unit. | Optional | 
-| tags | A search string of tag ids to find cloud resources that have been assigned a specific tag. | Optional | 
+| tags | A search string of tag IDs to find cloud resources that have been assigned a specific tag. | Optional | 
 | tag_names | A search string of tag names to find cloud resources that have been assigned a specific tag. | Optional | 
 | types | A search string of asset types to find cloud resources of a specific type. | Optional | 
 | regions | A search string of regions to find cloud resources that are hosted in a specific region. | Optional | 
@@ -4073,32 +4073,32 @@ Retrieve Cloud Resource assets from Expanse.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Expanse.CloudResource.accountIntegration.id | String | The id of the cloud resource account integration. |
+| Expanse.CloudResource.accountIntegration.id | String | The ID of the cloud resource account integration. |
 | Expanse.CloudResource.accountIntegration.name | String | The name of the cloud resource account integration. |
 | Expanse.CloudResource.annotations.note | String | Note metadata on the cloud resource. |
-| Expanse.CloudResource.businessUnits.id | String | The internal id of the business unit that the cloud resource belongs to. |
+| Expanse.CloudResource.businessUnits.id | String | The internal ID of the business unit that the cloud resource belongs to. |
 | Expanse.CloudResource.businessUnits.name | String | The name of the business unit that the cloud resource belongs to. |
-| Expanse.CloudResource.businessUnits.tenantId | String | The internal tenant id of the business unit that the cloud resource belongs to. |
+| Expanse.CloudResource.businessUnits.tenantId | String | The internal tenant ID of the business unit that the cloud resource belongs to. |
 | Expanse.CloudResource.dateAdded | Date | The date that the cloud resource was added. |
 | Expanse.CloudResource.details | String | Details about the cloud resource. |
 | Expanse.CloudResource.domain | String | Domain name associated with the cloud resource. |
 | Expanse.CloudResource.firstObserved | Date | The date that the cloud resource was first observed. |
-| Expanse.CloudResource.id | String | The internal id for the cloud resource. |
-| Expanse.CloudResource.instanceId | String | The instance id of the cloud resource. |
+| Expanse.CloudResource.id | String | The internal ID for the cloud resource. |
+| Expanse.CloudResource.instanceId | String | The instance ID of the cloud resource. |
 | Expanse.CloudResource.ips | String | IPs associated with the cloud resource. |
 | Expanse.CloudResource.lastObserved | Date | The date that the cloud resource was most recently observed. |
 | Expanse.CloudResource.name | String | The friendly name of the cloud resource. |
-| Expanse.CloudResource.provider.id | String | The id of the provider where the cloud resource is hosted. |
+| Expanse.CloudResource.provider.id | String | The ID of the provider where the cloud resource is hosted. |
 | Expanse.CloudResource.provider.name | String | The name of the provider where the cloud resource is hosted. |
 | Expanse.CloudResource.region | String | The region where the cloud resouce is hosted. |
 | Expanse.CloudResource.serviceStatus | String | Whether the cloud resource has any known associated services. |
 | Expanse.CloudResource.sourceDetails | String | The integration source of the cloud resource. |
-| Expanse.CloudResource.tenant.id | String | The internal tenant id of the cloud resource. |
+| Expanse.CloudResource.tenant.id | String | The internal tenant ID of the cloud resource. |
 | Expanse.CloudResource.tenant.name | String | The tenant name of the cloud resouce |
-| Expanse.CloudResource.tenant.tenantId | String | The internal tenant id of the cloud resource. |
+| Expanse.CloudResource.tenant.tenantId | String | The internal tenant ID of the cloud resource. |
 | Expanse.CloudResource.type | String | The type of cloud resource. |
-| Expanse.CloudResource.vpc.id | String | Any associated vpc ids. |
-| Expanse.CloudResource.vpc.name | String | Any associated vpc names. |
+| Expanse.CloudResource.vpc.id | String | Any associated VPC IDs. |
+| Expanse.CloudResource.vpc.name | String | Any associated VPC names. |
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
