@@ -6281,16 +6281,31 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+    server_version = {}
     try:
         server_version = get_demisto_version()
-        return \
-            server_version.get('version') >= version and \
-            (not build_number or int(server_version.get('buildNumber')) >= int(build_number))
+        if server_version.get('version') > version:
+            return True
+        elif server_version.get('version') == version:
+            if build_number:
+                return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
+            return True  # No build number
+        else:
+            return False
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
         raise
+    except ValueError:
+        # dev editions are not comparable
+        demisto.log(
+            'is_demisto_version_ge: ValueError. \n '
+            'input: server version: {} build number: {}\n'
+            'server version: {}'.format(version, build_number, server_version)
+        )
+
+        return True
 
 
 class DemistoHandler(logging.Handler):
