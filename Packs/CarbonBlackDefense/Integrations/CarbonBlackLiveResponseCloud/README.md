@@ -1,23 +1,28 @@
-Allows security operators to collect information and take action on remote endpoints in real time, These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, execute and terminate processes.
+Enables security operators to collect information and take action on remote endpoints in real time. These actions include the ability to upload, download, and remove files, retrieve and remove registry entries, dump contents of physical memory, and execute and terminate processes.
 ## Configure CarbonBlackLiveResponseCloud on Cortex XSOAR
 
 
 **Creating an API Key**
-1. To create an API Key, go to Settings > API Access > API Keys tab in the Carbon Black Cloud web page.
-2. Select “Add API Key” from the far right.
+1. To create an API Key, go to **Settings > API Access > API Keys** tab in the Carbon Black Cloud web page.
+2. Select **Add API Key** from the far right.
 3. Give the API Key a unique name, and select the Live Response access level.
-4. Hit save, and you will be provided with your API Key Credentials:
+4. Click **Save**. You will be provided with your API Key Credentials:
   - API Secret Key
   - API ID
-5. Go to Settings > API Access and copy the ORG KEY from the top left corner of the page
-6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and created API Secret Key and API ID
+5. Go to **Settings > API Access** and copy the ORG KEY from the top left corner of the page.
+6. Set up Carbon Black Cloud Live Response integration instance with the ORG KEY and created API Secret Key and API ID.
 
 
-**Getting the device id**
+**Getting the device ID**
 
-To get the device id you can run the command ``cbd-device-search`` (should have an instance of Carbon Black Defense integration) and find it according the name,
-or manually, in Carbon Black Cloud web page go to Endpoints > search for the device name > click > 
-the device id will appear in the top of the page in the format ``device_id:<the device id>``. 
+You can access the device ID in one of the following ways.
+- In Cortex XSOAR:
+   1. Create an instance of the Carbon Black Defense integration.
+   2. Run the ***cbd-device-search*** command.
+   3. Locate the ID according to its name.
+- From the Carbon Black Cloud web page:
+   1. Click **Endpoints**.
+   2. Search for and click the device name. The device ID will appear at the top of the page in the format *device:<the device ID>*. 
 
 **Set up integration instance**
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -26,10 +31,10 @@ the device id will appear in the top of the page in the format ``device_id:<the 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Your server URL | The URL used to access the Carbon Black Cloud | True |
-    | Custom Key | The Custom Key to use for connection | True |
-    | Custom Id | The Custom Id to use for connection | True |
-    | Organization Key | The Organization Key to use for connection | True |
+    | Your server URL | The URL used to access the Carbon Black Cloud. | True |
+    | Custom Key | The custom key to use for the connection. | True |
+    | Custom Id | The custom ID to use for the connection. | True |
+    | Organization Key | The organization key to use for the connection. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -39,7 +44,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cbd-lr-file-put
 ***
-Create a new file on the remote machine with the specified data
+Creates a new file on the remote machine with the specified data.
 
 
 #### Base Command
@@ -49,9 +54,9 @@ Create a new file on the remote machine with the specified data
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | destination_path | File path to create on the remote endpoint. | Required | 
-| file_id | The file entry id in the War Room. | Required | 
+| file_id | The file entry ID in the War Room. | Required | 
 
 
 #### Context Output
@@ -68,7 +73,7 @@ There is no context output for this command.
 
 ### cbd-lr-file-get
 ***
-Retrieve contents of the specified file on the remote machine
+Retrieves the contents of the specified file on the remote machine.
 
 
 #### Base Command
@@ -78,10 +83,10 @@ Retrieve contents of the specified file on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | source_path | Path of the file to be retrieved. | Required | 
 | timeout | Timeout for the operation. | Optional | 
-| delay | Delay in seconds to wait before command complete. | Optional | 
+| delay | The amount of time in seconds to wait before a command complete. | Optional | 
 
 
 #### Context Output
@@ -104,7 +109,7 @@ Retrieve contents of the specified file on the remote machine
 ```
 
 #### Command Example
-``` !cbd-lr-file-get device_id="the actually device id" source_path="C:\\test\\test_file.txt" delay=2 timeout=30```
+``` !cbd-lr-file-get device_id="the actually device ID" source_path="C:\\test\\test_file.txt" delay=2 timeout=30```
 
 #### Human Readable Output
 
@@ -112,7 +117,7 @@ Retrieve contents of the specified file on the remote machine
 
 ### cbd-lr-file-delete
 ***
-Delete the specified file name on the remote machine
+Deletes the specified file name on the remote machine.
 
 
 #### Base Command
@@ -122,7 +127,7 @@ Delete the specified file name on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | source_path | Path of the file to be deleted. | Required | 
 
 
@@ -131,7 +136,7 @@ Delete the specified file name on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-file-delete device_id="the actually device id" source_path="C:\test\test_file.txt"```
+```!cbd-lr-file-delete device_id="the actually device ID" source_path="C:\test\test_file.txt"```
 
 #### Human Readable Output
 
@@ -139,7 +144,7 @@ There is no context output for this command.
 
 ### cbd-lr-directory-listing
 ***
-List the contents of a directory on the remote machine
+Lists the contents of a directory on the remote machine.
 
 
 #### Base Command
@@ -149,21 +154,21 @@ List the contents of a directory on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
-| directory_path | Directory to list. This parameter should end with the path separator or have some filter pattern e.g *.txt | Required | 
+| device_id | The device (endpoint) ID. | Required | 
+| directory_path | The directory path. This parameter should end with the path separator or have some filter pattern, e.g., *.txt. | Required | limit | The maximum number of returned directory entries. Default is 100. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackDefenseLR.Directory.content | Data | list of dicts, each one describing a directory entry | 
-| CarbonBlackDefenseLR.Directory.device_id | String | The device \(endpoint\) id | 
-| CarbonBlackDefenseLR.Directory.directory_path | String | The path of the listed directory | 
+| CarbonBlackDefenseLR.Directory.content | Data | List of dicts, each describing a directory entry. | 
+| CarbonBlackDefenseLR.Directory.device_id | String | The device \(endpoint\) ID | 
+| CarbonBlackDefenseLR.Directory.directory_path | String | The path of the listed directory. | 
 
 
 #### Command Example
-```!cbd-lr-directory-listing device_id="the actually device id" directory_path="C:\test\"```
+```!cbd-lr-directory-listing device_id="the actually device ID" directory_path="C:\test\"```
 
 #### Context Example
 ```json
@@ -216,7 +221,7 @@ List the contents of a directory on the remote machine
                     "size": 0
                 }
             ],
-            "device_id": "the actually device id"
+            "device_id": "the actually device ID"
         }
     }
 }
@@ -235,7 +240,7 @@ List the contents of a directory on the remote machine
 
 ### cbd-lr-reg-sub-keys
 ***
-Enumerate subkeys of the specified registry key on the remote machine
+Enumerates the subkeys of the specified registry key on the remote machine.
 
 
 #### Base Command
@@ -245,7 +250,7 @@ Enumerate subkeys of the specified registry key on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | reg_path | The registry key to enumerate. | Required | 
 
 
@@ -253,13 +258,13 @@ Enumerate subkeys of the specified registry key on the remote machine
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackDefenseLR.RegistrySubKeys.key | String | The parent registry key | 
-| CarbonBlackDefenseLR.RegistrySubKeys.sub_keys | Data | The sub keys | 
-| CarbonBlackDefenseLR.RegistrySubKeys.device_id | String | The device \(endpoint\) id | 
+| CarbonBlackDefenseLR.RegistrySubKeys.key | String | The parent registry key. | 
+| CarbonBlackDefenseLR.RegistrySubKeys.sub_keys | Data | The subkeys. | 
+| CarbonBlackDefenseLR.RegistrySubKeys.device_id | String | The device \(endpoint\) ID. | 
 
 
 #### Command Example
-```!cbd-lr-reg-sub-keys reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device id"```
+```!cbd-lr-reg-sub-keys reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device ID"```
 
 #### Human Readable Output
 
@@ -267,7 +272,7 @@ Enumerate subkeys of the specified registry key on the remote machine
 
 ### cbd-lr-reg-get-values
 ***
-Enumerate all registry values from the specified registry key on the remote machine
+Enumerates all registry values from the specified registry key on the remote machine.
 
 
 #### Base Command
@@ -277,7 +282,7 @@ Enumerate all registry values from the specified registry key on the remote mach
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | reg_path | The registry key to enumerate. | Required | 
 
 
@@ -285,13 +290,13 @@ Enumerate all registry values from the specified registry key on the remote mach
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CarbonBlackDefenseLR.RegistryValues.key | String | The registry key | 
-| CarbonBlackDefenseLR.RegistryValues.values | Data | The registry values of the given key | 
-| CarbonBlackDefenseLR.RegistryValues.device_id | String | The device \(endpoint\) id | 
+| CarbonBlackDefenseLR.RegistryValues.key | String | The registry key. | 
+| CarbonBlackDefenseLR.RegistryValues.values | Data | The registry values of the given key. | 
+| CarbonBlackDefenseLR.RegistryValues.device_id | String | The device \(endpoint\) ID. | 
 
 
 #### Command Example
-```!cbd-lr-reg-get-values reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device id"```
+```!cbd-lr-reg-get-values reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device ID"```
 
 #### Context Example
 ```json
@@ -299,7 +304,7 @@ Enumerate all registry values from the specified registry key on the remote mach
     "CarbonBlackDefenseLR": {
         "RegistryValues": {
             "key": "HKEY_LOCAL_MACHINE\SOFTWARE\TEST",
-            "device_id": "the actually device id",
+            "device_id": "the actually device ID",
             "values": [
                 {
                     "value_data": "val_1,val_2",
@@ -322,7 +327,7 @@ Enumerate all registry values from the specified registry key on the remote mach
 
 ### cbd-lr-reg-key-create
 ***
-Create a new registry key on the remote machine
+Creates a new registry key on the remote machine.
 
 
 #### Base Command
@@ -332,7 +337,7 @@ Create a new registry key on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | reg_path | The registry key to create. | Required | 
 
 
@@ -341,7 +346,7 @@ Create a new registry key on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-key-create device_id="the actually device id" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST```
+```!cbd-lr-reg-key-create device_id="the actually device ID" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST```
 
 #### Human Readable Output
 
@@ -349,7 +354,7 @@ There is no context output for this command.
 
 ### cbd-lr-reg-key-delete
 ***
-Delete a registry key on the remote machine, the key must be without any sub keys
+Deletes a registry key on the remote machine. The key must be without any subkeys.
 
 
 #### Base Command
@@ -359,8 +364,9 @@ Delete a registry key on the remote machine, the key must be without any sub key
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
-| reg_path | The registry key to delete. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
+| reg_path | The registry key to delete. | Required |
+| force | True, to force delete the registry key with all subkeys if they exist. Default is False. | Optional |
 
 
 #### Context Output
@@ -368,7 +374,7 @@ Delete a registry key on the remote machine, the key must be without any sub key
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device id"```
+```!cbd-lr-reg-key-delete reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST device_id="the actually device ID"```
 
 #### Human Readable Output
 
@@ -376,7 +382,7 @@ There is no context output for this command.
 
 ### cbd-lr-reg-value-delete
 ***
-Delete a registry value on the remote machine
+Deletes a registry value on the remote machine.
 
 
 #### Base Command
@@ -386,7 +392,7 @@ Delete a registry value on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | reg_path | The registry value to delete. | Required | 
 
 
@@ -395,7 +401,7 @@ Delete a registry value on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-value-delete device_id="the actually device id" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL```
+```!cbd-lr-reg-value-delete device_id="the actually device ID" reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL```
 
 #### Human Readable Output
 
@@ -403,7 +409,7 @@ There is no context output for this command.
 
 ### cbd-lr-reg-value-set
 ***
-Set a registry value on the specified registry key on the remote machine
+Sets a registry value on the specified registry key on the remote machine.
 
 
 #### Base Command
@@ -413,8 +419,8 @@ Set a registry value on the specified registry key on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
-| reg_path | The path of the key + the path of the value e.g. HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
+| reg_path | The path of the key + the path of the value e.g., HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue. | Required | 
 | value_data | The value data. | Required | 
 | value_type | The type of value. Examples: REG_DWORD, REG_MULTI_SZ, REG_SZ. Possible values are: REG_BINARY, REG_DWORD, REG_QWORD, REG_EXPAND_SZ, REG_MULTI_SZ, REG_SZ, REG_SZ. | Required | 
 | overwrite | If True, any existing value will be overwritten. Default is True. | Optional | 
@@ -425,7 +431,7 @@ Set a registry value on the specified registry key on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-reg-value-set reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL device_id="the actually device id" value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ```
+```!cbd-lr-reg-value-set reg_path=HKEY_LOCAL_MACHINE\SOFTWARE\TEST\TEST_VAL device_id="the actually device ID" value_data=[\"val_1\",\"val_2\"] value_type=REG_MULTI_SZ```
 
 #### Human Readable Output
 
@@ -433,7 +439,7 @@ There is no context output for this command.
 
 ### cbd-lr-ps
 ***
-List currently running processes on the remote machine
+Lists the currently running processes on the remote machine.
 
 
 #### Base Command
@@ -443,19 +449,19 @@ List currently running processes on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
-
+| device_id | The device (endpoint) ID. | Required | 
+| limit | The maximum number of returned processes. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefenseLR.Processes.processes | String | A list of dicts describing the processes | 
-| CarbonBlackDefenseLR.Processes.device_id | String | The device \(endpoint\) id | 
+| CarbonBlackDefenseLR.Processes.device_id | String | The device \(endpoint\) ID | 
 
 
 #### Command Example
-```!cbd-lr-ps device_id="the actually device id"```
+```!cbd-lr-ps device_id="the actually device ID"```
 
 #### Context Example
 ```json
@@ -494,7 +500,7 @@ List currently running processes on the remote machine
                     "username": "NT AUTHORITY\SYSTEM"
                 }
             ],
-            "device_id": "the actually device id"
+            "device_id": "the actually device ID"
         }
     }
 }
@@ -513,7 +519,7 @@ List currently running processes on the remote machine
 
 ### cbd-lr-kill
 ***
-Terminate a process on the remote machine
+Terminates a process on the remote machine
 
 
 #### Base Command
@@ -523,7 +529,7 @@ Terminate a process on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | pid | Process ID to be terminated. | Required | 
 
 
@@ -532,7 +538,7 @@ Terminate a process on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-kill pid=4592 device_id="the actually device id" ```
+```!cbd-lr-kill pid=4592 device_id="the actually device ID" ```
 
 #### Human Readable Output
 
@@ -541,7 +547,7 @@ There is no context output for this command.
 
 ### cbd-lr-execute
 ***
-Create a new process on the remote machine with the specified command string
+Creates a new process on the remote machine with the specified command string
 
 
 #### Base Command
@@ -551,11 +557,11 @@ Create a new process on the remote machine with the specified command string
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | command_string | Command string used for the create process operation. | Required | 
-| wait_for_output |  True to block on output from the new process (execute in foreground). This will also set wait_for_completion (below). Default is True. | Optional | 
+| wait_for_output |  True to block on output from the new process (execute in foreground). This will also set the wait_for_completion command. Default is True. | Optional | 
 | working_directory | The working directory of the create process operation. | Optional | 
-| remote_output_file_name | The remote output file name used for process output. | Optional | 
+| remote_output_file_name | The remote output file name used for the process output. | Optional | 
 | wait_timeout | Timeout used for this command. Default is 30. | Optional | 
 | wait_for_completion | True to wait until the process is completed before returning. Default is True. | Optional | 
 
@@ -565,12 +571,12 @@ Create a new process on the remote machine with the specified command string
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackDefenseLR.ExecuteProcess.return_value | String | The output of the process | 
-| CarbonBlackDefenseLR.ExecuteProcess.device_id | String | The device \(endpoint\) id | 
+| CarbonBlackDefenseLR.ExecuteProcess.device_id | String | The device \(endpoint\) ID. | 
 | CarbonBlackDefenseLR.ExecuteProcess.command_string | String | The command string used for the create process operation |
 
 
 #### Command Example
-```!cbd-lr-execute device_id="the actually device id" command_string="cmd.exe"```
+```!cbd-lr-execute device_id="the actually device ID" command_string="cmd.exe"```
 
 #### Human Readable Output
 
@@ -580,7 +586,7 @@ C:\Windows\system32>
 
 ### cbd-lr-memdump
 ***
-Perform a memory dump operation on the remote machine
+Performs a memory dump operation on the remote machine.
 
 
 #### Base Command
@@ -590,7 +596,7 @@ Perform a memory dump operation on the remote machine
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The device (endpoint) id. | Required | 
+| device_id | The device (endpoint) ID. | Required | 
 | target_path | Path of the file the memory dump will be stored in on the remote machine. | Required | 
 
 
@@ -599,7 +605,7 @@ Perform a memory dump operation on the remote machine
 There is no context output for this command.
 
 #### Command Example
-```!cbd-lr-memdump device_id="the actually device id" target_path=C:\test\memdump\dumped_file```
+```!cbd-lr-memdump device_id="the actually device ID" target_path=C:\test\memdump\dumped_file```
 
 #### Human Readable Output
 
