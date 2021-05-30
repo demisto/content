@@ -29,9 +29,10 @@ Set up the API keys in Carbon Black Cloud.
 #### Getting the Device ID
 
 To get the device ID:
-- From an instance of the Carbon Black Defense integration
+- In Cortex XSOAR
+  1. Create an instance of the Carbon Black Defense integration.
   1. Run the **cbd-device-search** command
-  2. Find the ID according to the name.
+  2. Find the ID according to its name.
 - From the Carbon Black Cloud web page:
   1. Click **Endpoints**
   2. Search for and click the device name. The device ID will appear at the top of the page in the format *device_id:<the device id>*. 
