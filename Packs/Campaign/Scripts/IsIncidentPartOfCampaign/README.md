@@ -7,7 +7,7 @@ Get the incident campaign's ID for the campaign that is linked to at least one  
 | --- | --- |
 | Script Type | python3 |
 | Tags | phishing, campaign |
-| Demisto Version | 5.5.0 |
+| Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
 ---
