@@ -33,7 +33,7 @@ script:
     deprecated: false
     description: Returns the coordinates of the given physical address.
     execution: false
-    name: geocode
+    name: google-maps-geocode
     outputs:
     - contextPath: GoogleMaps.lat
       description: Latitude of the provided location.

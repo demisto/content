@@ -105,7 +105,8 @@ class Client(BaseClient):
                          proxy=proxy)
         self.api_key = api_key
 
-    def geocode(self, address: str) -> List[CommandResults]:
+    def google_maps_geocode(self, address: str) -> List[CommandResults]:
+        input_address = address
         address = re.sub(r'\s+', '+', address).strip('+')  # Google Maps API format
 
         # noinspection PyTypeChecker
@@ -116,28 +117,30 @@ class Client(BaseClient):
         response: Dict = DUMMY_RESPONSE  # temporary todo replace with a proper client request
 
         coordinate_dict = response['results'][0]['geometry']['location']
+        response_address = response['results'][0]['formatted_address']
+
+        note_outputs = {**coordinate_dict,
+                        **{'input_address': input_address, 'address': response_address}}
 
         result_note = CommandResults(outputs_prefix='GoogleMaps',
-                                     outputs_key_field=['results.[0].geometry.location.lat',
-                                                        'results.[0].geometry.location.lon'],
+                                     outputs_key_field=['lat', 'lng'],
+                                     outputs=note_outputs,
                                      entry_type=EntryType.NOTE,
                                      raw_response=response)
 
-        result_map = CommandResults(outputs_prefix='GoogleMaps',
-                                    outputs_key_field=['lat', 'lng'],
-                                    entry_type=EntryType.MAP_ENTRY_TYPE,
+        result_map = CommandResults(entry_type=EntryType.MAP_ENTRY_TYPE,
                                     raw_response=coordinate_dict)
 
         return [result_note, result_map]
 
 
 def google_maps_geocode_command(client: Client, address: str) -> List[CommandResults]:
-    return client.geocode(address)
+    return client.google_maps_geocode(address)
 
 
 def test_module(client: Client) -> str:
     """Tests GoogleMaps by geocoding the address of Demisto's (original) HQ"""
-    client.geocode('45 Rothschild, Tel Aviv')
+    client.google_maps_geocode('45 Rothschild, Tel Aviv')
     return 'ok'  # on any failure, an exception is raised
 
 
@@ -158,7 +161,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
 
-        elif command == 'geocode':
+        elif command == 'google-maps-geocode':
             return_results(google_maps_geocode_command(client, **args))
 
         else:

@@ -1,6 +1,5 @@
 Use the Google Maps API.
-This integration was integrated and tested with version 3.43 of the Google Maps API.
-
+This integration was integrated and tested with version xx of GoogleMaps
 ## Configure GoogleMaps on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -17,14 +16,14 @@ This integration was integrated and tested with version 3.43 of the Google Maps 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### geocode
+### google-maps-geocode
 ***
 Returns the coordinates of the given physical address.
 
 
 #### Base Command
 
-`geocode`
+`google-maps-geocode`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
