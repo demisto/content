@@ -26,11 +26,15 @@ args:
   - ssdeep
   - accountRep
   - CIDR
-  - STIX Attack Pattern
-  - STIX Malware
-  - STIX Report
-  - STIX Threat Actor
-  - STIX Tool
+  - Attack Pattern
+  - Malware
+  - Report
+  - Threat Actor
+  - Tool
+  - Campaign
+  - Course of Action
+  - Infrastructure
+  - Intrusion Set
   required: true
   secret: false
 - default: false
