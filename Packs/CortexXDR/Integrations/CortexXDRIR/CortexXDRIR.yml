@@ -34,13 +34,13 @@ configuration:
   name: apikey
   required: true
   type: 4
-- additionalInfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
+- additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
   name: timeout
   required: false
   type: 0
-- additionalInfo: The maximum number of incidents per fetch. Cannot exceed 100.
+- additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
@@ -51,7 +51,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- additionalInfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every
+- additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every
     incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be
     synced. Note that once this value is changed and synchronized between the systems,
     additional changes will not be reflected. For example, if you change the owner
@@ -72,7 +72,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalInfo: 'The statuses of the incidents that will be fetched. If no status
+- additionalinfo: 'The statuses of the incidents that will be fetched. If no status
     is provided then incidents of all the statuses will be fetched. Note: An incident
     whose status was changed to a filtered status after its creation time will not
     be fetched.'
@@ -2817,6 +2817,9 @@ script:
   runonce: false
   script: '-'
   subtype: python3
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook
