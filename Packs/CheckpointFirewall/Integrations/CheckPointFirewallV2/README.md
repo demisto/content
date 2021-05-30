@@ -59,6 +59,7 @@ Show all host objects
 | CheckPoint.Host.uid | String | object uid | 
 | CheckPoint.Host.type | String | object type | 
 | CheckPoint.Host.ipv4 | String | IP-v4 address of a spesific host | 
+| CheckPoint.Host.ipv6 | String | IP-v4 address of a spesific host | 
 
 
 #### Command Example
@@ -75,6 +76,7 @@ Show all host objects
                 "domain-uid": null,
                 "groups": null,
                 "ipv4-address": "18.88.8.7",
+                "ipv6-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
                 "last-modifier": null,
                 "name": "18.88.8.7",
                 "read-only": null,
@@ -87,6 +89,7 @@ Show all host objects
                 "domain-uid": null,
                 "groups": null,
                 "ipv4-address": "18.88.8.8",
+                "ipv6-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
                 "last-modifier": null,
                 "name": "18.88.8.8",
                 "read-only": null,
@@ -99,6 +102,7 @@ Show all host objects
                 "domain-uid": null,
                 "groups": null,
                 "ipv4-address": "192.168.30.2",
+                "ipv6-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
                 "last-modifier": null,
                 "name": "192.168.30.2",
                 "read-only": null,
@@ -111,6 +115,7 @@ Show all host objects
                 "domain-uid": null,
                 "groups": null,
                 "ipv4-address": "200.200.200.112",
+                "ipv6-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
                 "last-modifier": null,
                 "name": "200.200.200.112",
                 "read-only": null,
@@ -123,6 +128,7 @@ Show all host objects
                 "domain-uid": null,
                 "groups": null,
                 "ipv4-address": "192.192.10.10",
+                "ipv6-address": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
                 "last-modifier": null,
                 "name": "Demisto - 2096",
                 "read-only": null,
@@ -137,13 +143,13 @@ Show all host objects
 #### Human Readable Output
 
 >### CheckPoint data for all hosts:
->|name|uid|type|ipv4-address|
->|---|---|---|---|
->| 18.88.8.7 | f083d3ce-8e95-460f-a386-0bc4eca1214a | host | 18.88.8.7 |
->| 18.88.8.8 | b032c0a7-096c-4b27-9a09-8d9437312135 | host | 18.88.8.8 |
->| 192.168.30.2 | 5bd98c85-f848-45ab-aa4c-c729fb8b1723 | host | 192.168.30.2 |
->| 200.200.200.112 | 23c4b2cf-0adc-4282-8f15-262cfec7f5f5 | host | 200.200.200.112 |
->| Demisto - 2096 | cded0c90-3402-4766-ad1b-adaf972b254f | host | 192.192.10.10 |
+>|name|uid|type|ipv4-address|ipv6-address|
+>|---|---|---|---|---|
+>| 18.88.8.7 | f083d3ce-8e95-460f-a386-0bc4eca1214a | host | 18.88.8.7 | 2001:0db8:85a3:0000:0000:8a2e:0370:7334 |
+>| 18.88.8.8 | b032c0a7-096c-4b27-9a09-8d9437312135 | host | 18.88.8.8 | 2001:0db8:85a3:0000:0000:8a2e:0370:7334 |
+>| 192.168.30.2 | 5bd98c85-f848-45ab-aa4c-c729fb8b1723 | host | 192.168.30.2 | 2001:0db8:85a3:0000:0000:8a2e:0370:7334 |
+>| 200.200.200.112 | 23c4b2cf-0adc-4282-8f15-262cfec7f5f5 | host | 200.200.200.112 | 2001:0db8:85a3:0000:0000:8a2e:0370:7334 |
+>| Demisto - 2096 | cded0c90-3402-4766-ad1b-adaf972b254f | host | 192.192.10.10 |  2001:0db8:85a3:0000:0000:8a2e:0370:7334 |
 
 
 ### checkpoint-host-get
@@ -228,8 +234,8 @@ Add new host
 | ip_address | ip address | Required | 
 | groups | group identifier. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
-
-
+| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. | Optional |
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -301,7 +307,8 @@ update host changes
 | ignore_errors | Apply changes ignoring errors. You won't be able to publish such a changes.<br/>If ignore-warnings flag was omitted - warnings will also be ignored. | Optional | 
 | groups | Collection of group identifiers. | Optional | 
 | session_id | Execute command with a specific session ID | Required | 
-
+| ignore_warnings | Whether to ignore warnings when adding a host. | Optional |
+| ignore_errors | Whether to ignore errors when adding a host. | Optional |
 
 #### Context Output
 
@@ -537,7 +544,8 @@ Get all data of a given group
 | CheckPoint.Group.creator | String | indicates the creator of the object | 
 | CheckPoint.Group.last-modifier | String | indicates the last user modified the object | 
 | CheckPoint.Group.read-only | Boolean | indicates if the object is read only | 
-
+| CheckPoint.Group.members.ipv4-address | String | Group members IPv4 addresses |
+| CheckPoint.Group.members.ipv6-address | String | Group members IPv6 addresses |
 
 #### Command Example
 ```!checkpoint-group-get identifier=group_test```
@@ -2802,4 +2810,3 @@ Get checkpoint-packages details.
 >|target-name|name|target-uid|revision
 >|---|---|---|---|
 >| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
-
