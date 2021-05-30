@@ -124,7 +124,6 @@ Gets a list of incidents from Azure Sentinel.
 ##### Base Command
 
 `azure-sentinel-list-incidents`
-`azure-sentinel-update-incident incident_id=1234567 severity=Informational assignee_email=example@example.com`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -230,7 +229,7 @@ Updates a single incident in Azure Sentinel.
 
 
 ##### Command Example
-```!azure-sentinel-update-incident incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5 severity=Medium```
+```azure-sentinel-update-incident incident_id=f1670c58-43dc-4b82-a13a-c732325c41f5 severity=Informational assignee_email=example@example.com```
 
 ##### Human Readable Output
 ### Updated incidents b3de6b49-0945-454e-bb59-98087573cfc2 details
