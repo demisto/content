@@ -119,15 +119,16 @@ def test_parse_resource_ids(test_input, expected_output):
     assert parse_resource_ids(test_input) == expected_output
 
 
+FINDINGS = [{
+    'ProductArn': 'Test',
+    'Description': 'Test',
+    'SchemaVersion': '2021-05-27'}]
+
+
 class MockClient:
 
     def get_findings(self, **kwargs):
-        return {'Findings': [
-            {
-                'ProductArn': 'Test',
-                'Description': 'Test',
-                'SchemaVersion': '2021-05-27'}
-        ]}
+        return {'Findings': FINDINGS}
 
 
 def test_aws_securityhub_get_findings_command():
@@ -138,15 +139,10 @@ def test_aws_securityhub_get_findings_command():
     When:
         - Running get_findings_command
     Then:
-        Verify returned value is as expected - i.e the findings list.
+        - Verify returned value is as expected - i.e the findings list.
     """
     client = MockClient()
     human_readable, outputs, findings = get_findings_command(client, {})
-    expected_output = [
-        {
-            'ProductArn': 'Test',
-            'Description': 'Test',
-            'SchemaVersion': '2021-05-27'}
-    ]
+    expected_output = FINDINGS
 
     assert findings == expected_output
