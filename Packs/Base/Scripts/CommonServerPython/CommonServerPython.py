@@ -413,8 +413,7 @@ class FeedIndicatorType(object):
         :rtype: ``str``
         :return:: Indicator type .
         """
-        a = is_demisto_version_ge("6.2.0")
-        if a and indicator_type.startswith(STIX_PREFIX):
+        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
             return indicator_type[len(STIX_PREFIX):]
         return indicator_type
 

@@ -1,0 +1,26 @@
+{
+    "id": 1512887120055,
+    "status": "pending",
+    "task-type": "analysis",
+    "task-result": {
+        "id": "ef0e7bd0421cb2cc2e9cb7ab5ce3cba109ee2a95",
+        "project": {
+            "id": 1511925128331,
+            "url-identifier": "g/my-tradingbot/scanner",
+            "name": "my-tradingbot/scanner",
+            "url": "https://lgtm.com/projects/g/my-tradingbot/scanner"
+        },
+        "commit-id": "b1b136e071533d78053be506d32f79417651727d",
+        "languages": [
+            {
+                "language": "python",
+                "status": "pending",
+                "commit-id": "b1b136e071533d78053be506d32f79417651727d",
+                "commit-date": "2020-05-31T14:33:52.000+0000"
+            }
+        ],
+        "log-url": "https://lgtm.com/projects/g/my-tradingbot/scanner/logs/analysis/ef0e7bd0421cb2cc2e9cb7ab5ce3cba109ee2a95",
+        "results-url": "https://lgtm.com/projects/g/my-tradingbot/scanner/analysis/ef0e7bd0421cb2cc2e9cb7ab5ce3cba109ee2a95/files"
+    },
+    "task-result-url": "https://lgtm.com/api/v1.0/analyses/ef0e7bd0421cb2cc2e9cb7ab5ce3cba109ee2a95"
+}
