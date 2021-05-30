@@ -1,5 +1,9 @@
 Amazon Web Services Simple Queuing Service (SQS)
 
+For more information regarding the AWS SQS service, please visit the official documentation found [here](https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/sqs.html).
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
 ## Configure AWS - SQS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -8,13 +12,15 @@ Amazon Web Services Simple Queuing Service (SQS)
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | AWS Default Region |  | False |
-    | Role Arn | When using Access Key and Secret Key, there is no need to use Role Arn | False |
-    | Role Session Name |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
+    | defaultRegion | AWS Default Region | False |
+    | roleArn | Role Arn Role Arn | False |
+    | roleSessionName | Role Session Name | False |
+    | access_key | Access Key | False |
+    | secret_key | Secret Key | False |
     | Role Session Duration |  | False |
-    | QueueURL |  | False |
+    | queueUrl | QueueURL | False |
+    | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. | False |
+    | retries | T"The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time." More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False |
     | Fetch incidents |  | False |
     | Maximum incidents for one fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
