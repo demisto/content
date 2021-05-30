@@ -3321,7 +3321,7 @@
             ],
             "fromversion": "6.0.0",
             "timeout": 6000,
-            "memory_threshold": 250
+            "memory_threshold": 900
         }
     ],
     "skipped_tests": {
