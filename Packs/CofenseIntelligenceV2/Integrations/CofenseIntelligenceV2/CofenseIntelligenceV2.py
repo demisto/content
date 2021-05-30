@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -64,6 +64,7 @@ class Client(BaseClient):
 
         return self._http_request(method='POST', url_suffix='/apiv1/threat/search', params=params)
 
+
 def remove_false_vendors_detections_from_threat(threats):
     """remove false vendor detections from report
         Args:
@@ -76,9 +77,6 @@ def remove_false_vendors_detections_from_threat(threats):
                 if detection.get('detected') == True:
                     detections.append(detection)
             exe['vendorDetections'] = detections
-
-
-
 
 
 def create_threat_md_row(threat: Dict, severity_level: int = None):
@@ -99,7 +97,7 @@ def create_threat_md_row(threat: Dict, severity_level: int = None):
                   "Threat Report": f"[{threat.get('reportURL', '')}]({threat.get('reportURL', '')})"}
 
     if severity_level:
-        threat_row["Verdict"] = DBOT_TO_VERDICT.get(DBOT_SCORE.get(severity_level))
+        threat_row["Verdict"] = DBOT_TO_VERDICT.get(str(DBOT_SCORE.get(severity_level)))
 
     return threat_row
 
@@ -273,7 +271,7 @@ def connectivity_testing(client: Client) -> str:
     return message
 
 
-def search_url_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
+def search_url_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given url,
      analyze the response and generates the command result object for the url command
             Args:
@@ -313,7 +311,7 @@ def search_url_command(client: Client, args: Dict[str, Any], params) -> list[Com
     return results_list
 
 
-def check_ip_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
+def check_ip_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given ip,
      analyze the response and generates the command result object for the ip command
             Args:
@@ -364,7 +362,7 @@ def check_ip_command(client: Client, args: Dict[str, Any], params) -> list[Comma
     return results_list
 
 
-def check_email_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
+def check_email_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given email,
      analyze the response and generates the command result object for the email command
             Args:
@@ -409,7 +407,7 @@ def check_email_command(client: Client, args: Dict[str, Any], params) -> list[Co
     return results_list
 
 
-def check_md5_command(client: Client, args: Dict[str, Any], params) -> list[CommandResults]:
+def check_md5_command(client: Client, args: Dict[str, Any], params) -> List[CommandResults]:
     """ Performs the api call to cofense threts-search endpoint to get all threats associated with the given file hash,
      analyze the response and generates the command result object for the file command
             Args:
