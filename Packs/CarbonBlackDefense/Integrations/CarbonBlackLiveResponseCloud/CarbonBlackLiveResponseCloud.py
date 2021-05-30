@@ -77,7 +77,7 @@ def list_directory_command(api_client: CBCloudAPI, device_id: str, directory_pat
             'name': item['filename'],
             'type': 'Directory' if item['attributes'] and 'DIRECTORY' in item['attributes'] else 'File',
             'date_modified': item['last_write_time'],
-            'size': item['size']
+            'size': item['size'],
         })
 
     context_entry = dict(content=context_entry_items, device_id=device_id, directory_path=directory_path)
@@ -93,7 +93,7 @@ def list_directory_command(api_client: CBCloudAPI, device_id: str, directory_pat
         outputs_key_field=['device_id', 'directory_path'],
         outputs=context_entry,
         readable_output=readable_output,
-        raw_response=items
+        raw_response=items,
     )
 
 
@@ -132,7 +132,7 @@ def list_reg_sub_keys_command(api_client: CBCloudAPI, device_id: str, reg_path: 
         outputs_key_field=['device_id', 'key'],
         outputs=context_entry,
         readable_output=human_readable,
-        raw_response=sub_keys
+        raw_response=sub_keys,
     )
 
 
@@ -160,7 +160,7 @@ def get_reg_values_command(api_client: CBCloudAPI, device_id: str, reg_path: str
         outputs_key_field=['device_id', 'key'],
         outputs=context_entry,
         readable_output=readable_output,
-        raw_response=values
+        raw_response=values,
     )
 
 
