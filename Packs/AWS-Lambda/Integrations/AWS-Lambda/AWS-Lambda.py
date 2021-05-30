@@ -295,7 +295,7 @@ def main():
         elif command == 'aws-lambda-list-aliases':
             list_aliases(args, aws_client)
         elif command == 'aws-lambda-invoke':
-            invoke(demisto.args(), aws_client)
+            invoke(args, aws_client)
         elif command == 'aws-lambda-remove-permission':
             remove_permission(args, aws_client)
         elif command == 'aws-lambda-get-account-settings':
