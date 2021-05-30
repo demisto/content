@@ -53,7 +53,7 @@ args:
     If using append=true can also use a DT selector such as "Data(val.ID == obj.ID)".
 - name: value
   required: true
-  description: The value to set to the key. Can be an array.
+  description: The value to set to the key. Can be an array (e.g. ["192.168.1.1","192.168.1.2"]) or JSON (e.g. {"key":"value"}).
   isArray: true
 - name: append
   auto: PREDEFINED

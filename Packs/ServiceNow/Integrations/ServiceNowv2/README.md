@@ -93,6 +93,8 @@ If MFA is enabled for your user, follow the next steps:
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
 
+Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
+
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
