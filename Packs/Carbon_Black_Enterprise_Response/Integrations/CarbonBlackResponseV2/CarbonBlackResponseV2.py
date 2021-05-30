@@ -785,6 +785,8 @@ def main() -> None:
                 feedname=alert_feed_name,
                 hostname=alert_hostname,
                 query=alert_query)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
 
             # return_results(baseintegration_dummy_command(client, demisto.args()))
         elif command in commands:
