@@ -33,6 +33,8 @@ class AWSClient:
 
         proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         (read_timeout, connect_timeout) = AWSClient.get_timeout(timeout)
+        if int(retries) > 10:
+            retries = 10
         self.config = Config(
             connect_timeout=connect_timeout,
             read_timeout=read_timeout,
