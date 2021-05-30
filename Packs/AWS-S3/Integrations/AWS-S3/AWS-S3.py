@@ -10,6 +10,8 @@ import urllib3.util
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+SERVICE = 's3'
+
 """HELPER FUNCTIONS"""
 
 
@@ -36,7 +38,7 @@ class DatetimeEncoder(json.JSONEncoder):
 
 def create_bucket_command(args, aws_client):
     client = aws_client. aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -72,7 +74,7 @@ def create_bucket_command(args, aws_client):
 
 def delete_bucket_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -86,7 +88,7 @@ def delete_bucket_command(args, aws_client):
 
 def list_buckets_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -106,7 +108,7 @@ def list_buckets_command(args, aws_client):
 
 def get_bucket_policy_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -135,7 +137,7 @@ def get_bucket_policy_command(args, aws_client):
 
 def put_bucket_policy_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -156,7 +158,7 @@ def put_bucket_policy_command(args, aws_client):
 
 def delete_bucket_policy_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -168,7 +170,7 @@ def delete_bucket_policy_command(args, aws_client):
 
 def download_file_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -182,7 +184,7 @@ def download_file_command(args, aws_client):
 
 def list_objects_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -211,7 +213,7 @@ def get_file_path(file_id):
 
 def upload_file_command(args, aws_client):
     client = aws_client.aws_session(
-        service='s3',
+        service=SERVICE,
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
@@ -238,8 +240,8 @@ def main():
     aws_access_key_id = params.get('access_key')
     aws_secret_access_key = params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
-    timeout = demisto.params().get('timeout')
-    retries = demisto.params().get('retries') or 5
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -254,7 +256,7 @@ def main():
 
         LOG('Command being called is {command}'.format(command=demisto.command()))
         if command == 'test-module':
-            client = aws_client.aws_session(service='s3')
+            client = aws_client.aws_session(service=SERVICE)
             response = client.list_buckets()
             if response['ResponseMetadata']['HTTPStatusCode'] == 200:
                 demisto.results('ok')
