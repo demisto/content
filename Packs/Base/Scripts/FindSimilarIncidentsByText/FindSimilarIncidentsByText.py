@@ -65,8 +65,8 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
         'limit': max_number_of_results
     })
 
-    if res[0]['Type'] == entryTypes['error']:
-        raise Exception(str(res[0]['Contents']))
+    if is_error(res):
+        return_error(res)
 
     incident_list = json.loads(res[0]['Contents'])
     return incident_list or []
