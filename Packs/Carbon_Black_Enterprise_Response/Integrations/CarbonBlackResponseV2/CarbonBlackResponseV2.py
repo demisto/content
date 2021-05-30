@@ -2,7 +2,7 @@ import dateparser
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *  # noqa
-from typing import Callable, Dict, List, Any
+from typing import Callable, Dict, List, Any, Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -120,8 +120,9 @@ class Client(BaseClient):
         )
         return data
 
-    def get_sensors(self, id: str = None, hostname: str = None, ipaddr: str = None,
-                    groupid: str = None, inactive_filter_days: str = None, limit: int = None) -> List[dict]:
+    def get_sensors(self, id: str = None, hostname: str = None, ipaddr: str = None,  # noqa: F841
+                    groupid: str = None, inactive_filter_days: str = None,  # noqa: F841
+                    limit: Union[int, str] = None) -> List[dict]:
         url = f'/v1/sensor/{id}' if id else '/v1/sensor'
         query_fields = ['ipaddr', 'hostname', 'groupid', 'inactive_filter_days']
         query_params: dict = {key: locals().get(key) for key in query_fields if
@@ -129,17 +130,18 @@ class Client(BaseClient):
         res = self.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
 
         # When querying specific sensor without filters, the api returns dictionary instead of list.
-        return res if isinstance(res, list) else [res]
+        return res[:arg_to_number(limit)] if isinstance(res, list) else [res]
 
     def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                   facet: str = None, rows: str = None, start: str = None) -> dict:
+                   facet: str = None, limit: Union[str, int] = None, start: str = None) -> dict:
+
         query_fields = ['status', 'username', 'feedname', 'hostname', 'report', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
-                               rows=rows,
+                               rows=arg_to_number(limit),
                                start=start,
                                sort=sort,
                                facet=facet,
@@ -147,17 +149,18 @@ class Client(BaseClient):
 
         return self.http_request(url='/v2/alert', method='GET', params=params)
 
-    def get_binaries(self, md5: str = None, product_name: str = None, signed: str = None, group: str = None,
-                     hostname: str = None, digsig_publisher: str = None, company_name: str = None, sort: str = None,
+    def get_binaries(self, md5: str = None, product_name: str = None, signed: str = None,  # noqa: F841
+                     group: str = None, hostname: str = None, digsig_publisher: str = None,   # noqa: F841
+                     company_name: str = None, sort: str = None,
                      observed_filename: str = None, query: str = None, facet: str = None,
-                     rows: str = None, start: str = None) -> dict:
+                     limit: str = None, start: str = None) -> dict:
         query_fields = ['md5', 'product_name', 'signed', 'group', 'hostname', 'digsig_publisher', 'company_name',
                         'observed_filename', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
-                               rows=rows,
+                               rows=arg_to_number(limit),
                                start=start,
                                sort=sort,
                                facet=facet,
@@ -167,13 +170,13 @@ class Client(BaseClient):
     def get_processes(self, process_name: str = None, group: str = None, hostname: str = None,
                       parent_name: str = None, process_path: str = None, md5: str = None,
                       query: str = None, group_by: str = None, sort: str = None, facet: str = None,
-                      facet_field: str = None, rows: str = None, start: str = None):
+                      facet_field: str = None, limit: str = None, start: str = None):
         query_fields = ['process_name', 'group', 'hostname', 'parent_name', 'process_path', 'md5', 'query']
         local_params = locals()
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
-                               rows=rows,
+                               rows=arg_to_number(limit),
                                start=start,
                                sort=sort,
                                facet=facet,
@@ -321,15 +324,15 @@ def watchlist_create_command(client: Client, name: str, search_query: str, index
     return CommandResults(readable_output="Could not create new watchlist.")
 
 
-def get_watchlist_list_command(client: Client, id: str = None) -> CommandResults:
+def get_watchlist_list_command(client: Client, id: str = None, limit: str = None) -> CommandResults:
     url = f'/v1/watchlist/{id}' if id else '/v1/watchlist'
-    res = client.http_request(url=url, method='GET')
+    res: Union[dict, list] = client.http_request(url=url, method='GET')
 
     human_readable_data = []
     # Handling case of only one record.
-
     if id:
         res = [res]
+    res = res[:arg_to_number(limit)]
     for watchlist in res:
         human_readable_data.append({
             'Name': watchlist.get('name'),
@@ -393,8 +396,8 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
 
 def alert_search_command(client: Client, status: str = None, username: str = None, feedname: str = None,
                          hostname: str = None, report: str = None, sort: str = None, query: str = None,
-                         facet: str = None, rows: str = None, start: str = None) -> CommandResults:
-    res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, rows, start)
+                         facet: str = None, limit: str = None, start: str = None) -> CommandResults:
+    res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, limit, start)
     if not res:
         raise Exception('Request cannot be processed.')
 
@@ -462,9 +465,9 @@ def binary_download_command(client: Client, md5: str) -> CommandResults:
 def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None,
                           group: str = None, hostname: str = None, publisher: str = None, company_name: str = None,
                           sort: str = None, observed_filename: str = None, query: str = None, facet: str = None,
-                          rows: str = None, start: str = None) -> CommandResults:
+                          limit: str = None, start: str = None) -> CommandResults:
     res = client.get_binaries(md5, product_name, digital_signature, group, hostname, publisher, company_name, sort,
-                              observed_filename, query, facet, rows, start)
+                              observed_filename, query, facet, limit, start)
 
     if not res:
         raise Exception('Request cannot be processed.')
@@ -554,7 +557,7 @@ def processes_search_command(client: Client, process_name: str = None, group: st
                              query: str = None, group_by: str = None, sort: str = None, facet: str = None,
                              facet_field: str = None, limit: str = None, start: str = None):
     res = client.get_processes(process_name, group, hostname, parent_name, process_path, md5, query, group_by, sort,
-                               facet, facet_field, rows, start)
+                               facet, facet_field, limit, start)
 
     if not res:
         raise Exception('Request cannot be processed.')
@@ -637,7 +640,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     latest_created_time = last_fetch
 
     incidents: List[Dict[str, Any]] = []
-    res = client.get_alerts(status=status, feedname=feedname, hostname=hostname, query=query)
+    res = client.get_alerts(status=status, feedname=feedname, hostname=hostname, query=query, limit=max_results)
     alerts = res.get('results', {})
 
     for alert in alerts:
