@@ -3320,7 +3320,8 @@
                 "Create-Mock-Feed-Relationships"
             ],
             "fromversion": "6.0.0",
-            "timeout": 6000
+            "timeout": 6000,
+            "memory_threshold": 250
         }
     ],
     "skipped_tests": {
