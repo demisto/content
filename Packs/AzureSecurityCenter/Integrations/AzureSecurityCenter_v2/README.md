@@ -9,7 +9,7 @@ With Security Center, you can apply security policies across your workloads, lim
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication) .
 
-* After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
+* After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 * In order to assign a role to the application after consent was given:
     * Go to the Azure Portal UI.
     * Go to Subscriptions, and then Access Control (IAM).
@@ -431,7 +431,7 @@ Lists all the storage accounts available under the subscription.
 | --- | --- | --- |
 | cs20f907ea4bc8bx4c11x9d7 | cloud-shell-storage-eastus | eastus |
 | useastrgdiag204 | us-east-rg | eastus |
-| xsoardevops | cloud-shell-storage-eastus | westeurope |
+| demistodevops | cloud-shell-storage-eastus | westeurope |
 
 ### 9. azure-list-subscriptions
 

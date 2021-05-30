@@ -51,7 +51,7 @@
 </ol>
 <h3> </h3>
 <p>After you integrate Cortex XSOAR, SafeBreach Management users can drill down in a simulation and use the <strong>Send To</strong> button to send the simulation results to Cortex XSOAR. For more information see the Drilling Down for More about a Simulation article on the <a href="https://support.safebreach.com/hc/en-us">SafeBreach support site</a>.</p>
-<p><strong>NOTE</strong>: You can also use the <em>update</em> and <em>show</em> commands to change and view details about Cortex XSOAR plugins.</p>
+<p><strong>NOTE</strong>: You can also use the <em>update</em> and <em>show</em> commands to change and view details about Demisto plugins.</p>
 <hr>
 <h2>Generate a SafeBreach API Key</h2>
 <ol>

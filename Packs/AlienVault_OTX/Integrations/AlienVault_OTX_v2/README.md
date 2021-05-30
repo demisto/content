@@ -389,7 +389,7 @@ Searches for a host name in AlienVault OTX.
 >### AlienVault OTX v2 - Results for Hostname query
 >|Alexa|Hostname|Whois|
 >|---|---|---|
->| http://www.alexa.com/siteinfo/demisto.com | xsoar.com | http://whois.domaintools.com/demisto.com |
+>| http://www.alexa.com/siteinfo/demisto.com | demisto.com | http://whois.domaintools.com/demisto.com |
 
 
 ### file

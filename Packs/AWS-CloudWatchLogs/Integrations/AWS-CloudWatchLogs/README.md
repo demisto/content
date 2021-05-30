@@ -1,5 +1,6 @@
 <!-- HTML_DOC -->
 <p>Use the AWS CloudWatch Logs integration to monitor, store, and access your log files from AWS Elastic Compute Cloud (Amazon EC2) instances, AWS CloudTrail, AWS Route 53, and other sources. You can then retrieve the associated log data from CloudWatch Logs.<br>For more information see the <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html" rel="nofollow">CloudWatch documentation</a>.</p>
+<p>For detailed instructions about setting up authentication, see: <a href="https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication">AWS Integrations - Authentication</a>.</p>
 <h2>Configure the AWS Cloud Watch Logs Integration on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

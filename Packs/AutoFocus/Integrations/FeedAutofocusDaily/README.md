@@ -58,7 +58,7 @@ There is no context output for this command.
 ### Indicators from AutoFocus:
 |Value|Type|
 |---|---|
-| XSOAR\<Span\>.com | Domain |
+| demsito\<Span\>.com | Domain |
 | {file hash} | File |
 | 8.8.8.8 | IP |
 | demsito\<Span\>.com/some/aditional/path | URL |

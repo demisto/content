@@ -57,7 +57,7 @@
 <li><font style="vertical-align: inherit;"> <font style="vertical-align: inherit;"> <strong>Authentication Key</strong>: received from the <a href="#h_ed302a66-2e1a-4748-abf9-3f771021c5f0" target="_self">Activate XSOAR on Palo Alto Networks Cortex Hub</a> procedure. </font> </font></li>
 </ul>
 </li>
-<li>Click&nbsp;<strong>Test</strong> to validate the integration and XSOAR App Token.</li>
+<li>Click&nbsp;<strong>Test</strong> to validate the integration and Demisto App Token.</li>
 </ol>
 <h2>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>

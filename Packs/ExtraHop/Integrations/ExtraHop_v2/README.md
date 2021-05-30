@@ -16,7 +16,7 @@
 </ul><h2>Detailed Description</h2>
 <p>Visit the <a href="https://www.extrahop.com/customers/community/bundles/extrahop/demisto-integration/">ExtraHop + XSOAR Setup Guide</a> for detailed integration instructions.</p>
 <h2>Fetch Incidents</h2>
-<p>Incidents are pushed in via the XSOAR REST API by a trigger running on the ExtraHop Reveal(x) appliance.</p>
+<p>Incidents are pushed in via the Demisto REST API by a trigger running on the ExtraHop Reveal(x) appliance.</p>
 <h2>Configure ExtraHop Reveal(x) on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>

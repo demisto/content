@@ -57,13 +57,13 @@ Specify True to use Custom Block Rules. | True |  | Optional |
 | AutoCommit | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
 Specify the Static Address Group name for IP handling. | No |  | Optional |
 | IPListName | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
-Specify the EDL name for IP handling. | XSOAR Remediation - IP EDL |  | Optional |
+Specify the EDL name for IP handling. | Demisto Remediation - IP EDL |  | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.
 Specify the Dynamic Address Group tag name for IP handling. |  |  | Optional |
 | StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
 Specify the Static Address Group name for IP handling. |  |  | Optional |
-| URLListName | URL list from the instance context with which to override the remote file. | XSOAR Remediation - URL EDL |  | Optional |
-| CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs |  | Optional |
+| URLListName | URL list from the instance context with which to override the remote file. | Demisto Remediation - URL EDL |  | Optional |
+| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs |  | Optional |
 | type | Custom URL category type. Insert &quot;URL List&quot;/ &quot;Category Match&quot;. |  |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  |  | Optional |
 | categories | The list of categories. Relevant from PAN\-OS v9.x. |  |  | Optional |

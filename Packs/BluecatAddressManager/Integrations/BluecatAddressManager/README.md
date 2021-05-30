@@ -502,7 +502,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>bluecat-am-search-response-policies-by-domain domain="xsoar.com"</pre>
+<pre>bluecat-am-search-response-policies-by-domain domain="demisto.com"</pre>
 <h5>Human Readable Output</h5>
 <p>Could not find any response policy</p>
 <h3 id="h_d14f7a3e-ee37-439a-918f-8ca79cebb056">4. Add a domain to a response policy</h3>
@@ -536,9 +536,9 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
-<pre>bluecat-am-response-policy-add-domain policy_id="100930" domain="xsoar.com"</pre>
+<pre>bluecat-am-response-policy-add-domain policy_id="100930" domain="demisto.com"</pre>
 <h5>Human Readable Output</h5>
-<p>Successfully added xsoar.com to response policy 100930</p>
+<p>Successfully added demisto.com to response policy 100930</p>
 <h3 id="h_489c45fb-a61f-4aef-88d0-6d9f07798955">5. Remove a domain from a response policy</h3>
 <hr>
 <p>Removes a domain from the given response policy.</p>
@@ -570,9 +570,9 @@
 <h5>Context Output</h5>
 <p>There is no context output for this command.</p>
 <h5>Command Example</h5>
-<pre>bluecat-am-response-policy-remove-domain policy_id="100930" domain="xsoar.com"</pre>
+<pre>bluecat-am-response-policy-remove-domain policy_id="100930" domain="demisto.com"</pre>
 <h5>Human Readable Output</h5>
-<p>Successfully removed xsoar.com from response policy 100930</p>
+<p>Successfully removed demisto.com from response policy 100930</p>
 <h3 id="h_0457fa2f-abac-46f1-9091-f56b52cb50be">6. Get an IPv4 block containing an IPv4 address</h3>
 <hr>
 <p>Gets an IPv4 block, which contains a specified IPv4 address.</p>

@@ -23,7 +23,7 @@ Use this integration to pull incidents and supporting information from your Cora
 | Application Name (for tags) | The Coralogix application name that will be assigned to the tags created by this instance | **Yes** | Cortex XSOAR |
 | Subsystem Name (for tags) | The Coralogix subsystem name that will  be assigned to the tags created by this instance | **Yes** | Cortex XSOAR |
 | Coralogix ES-API Endpoint URL | The Coralogix ES-API URL | **Yes** | `https://coralogix-esapi.coralogix.com:9443` |
-| Basic incidents query | The Lucene query for fetching incidents. If not specified, will return Coralogix alerts that were sent to the Cortex XSOAR webhook | No | N/A |
+| Basic incidents query | The Lucene query for fetching incidents. If not specified, will return Coralogix alerts that were sent to the Demisto webhook | No | N/A |
 | Incidents Application Name | Limits the incidents query to only return incidents of a specific application name | No | N/A |
 | Incidents Severity | Limits the incidents query to only return incidents of a specific severity | No | N/A |
 | incidents Name Field | The Coralogix field value that should be used as the incident's name. If not specified, the integration will use the "alert_name" field | No | N/A |

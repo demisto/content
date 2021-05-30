@@ -888,7 +888,7 @@ There are no input arguments for this command.
             "Groups": [
                 {
                     "ID": "4fe9c3b1-2a26-487a-97bd-a098e55ea3d2",
-                    "Name": "Cortex XSOAR asset group"
+                    "Name": "Demisto asset group"
                 }
             ],
             "Hostname": "ec2amaz-g4iu5no",

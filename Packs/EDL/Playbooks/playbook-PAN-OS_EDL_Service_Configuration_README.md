@@ -29,8 +29,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ip-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | XSOAR Remediation - IP EDL | Optional |
-| url-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | XSOAR Remediation - URL EDL | Optional |
+| ip-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | Demisto Remediation - IP EDL | Optional |
+| url-edl-object-name | Set a name for the EDL object that will be configured on pan\-os. This value is used to set the rule name as well. | Demisto Remediation - URL EDL | Optional |
 | EDLServiceURL | The EDL service provides serval access methods to the EDL instance. By default, it uses a unique port, configured in the EDL Service integration, and an HTTP session. It is possible to either configure a certificate for the default option or to access the EDL by instance name, which is HTTPS by default.
 Please refer to the EDL Service integration tip for more information.
 EDLServiceURL input Examples:

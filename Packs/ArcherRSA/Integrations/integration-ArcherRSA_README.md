@@ -105,7 +105,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<p><code>!archer-create-record applicationId="75" fieldsToValues="{\"Description\":\"Cortex XSOAR Fraud Referrer \",\"Date/Time Occurred\":\"3/23/2018 7:00 AM\",\"Date/Time Identified\":\"3/23/2018 7:00 AM\",\"Date/Time Reported\":\"3/23/2018 7:00 AM\",\"Executive Summary\":\"test\", \"Incident Report\": \"test incident report from Cortex XSOAR\"}"</code></p>
+<p><code>!archer-create-record applicationId="75" fieldsToValues="{\"Description\":\"Demisto Fraud Referrer \",\"Date/Time Occurred\":\"3/23/2018 7:00 AM\",\"Date/Time Identified\":\"3/23/2018 7:00 AM\",\"Date/Time Reported\":\"3/23/2018 7:00 AM\",\"Executive Summary\":\"test\", \"Incident Report\": \"test incident report from Demisto\"}"</code></p>
 <h5>Raw Output</h5>
 <pre>{  
    "Record":{  
@@ -113,9 +113,9 @@
          "Date/Time Identified":"3/23/2018 7:00 AM",
          "Date/Time Occurred":"3/23/2018 7:00 AM",
          "Date/Time Reported":"3/23/2018 7:00 AM",
-         "Description":"Cortex XSOAR Fraud Referrer ",
+         "Description":"Demisto Fraud Referrer ",
          "Executive Summary":"test",
-         "Incident Report":"test incident report from Cortex XSOAR"
+         "Incident Report":"test incident report from Demisto"
       },
       "Id":"227645"
    }

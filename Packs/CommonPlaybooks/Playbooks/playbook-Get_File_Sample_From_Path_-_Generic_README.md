@@ -1,7 +1,8 @@
+
 Returns a file sample, to the War Room from a path on an endpoint using one or more integrations.
 
 inputs:
-* UseD2 - If "True", use the XSOAR Dissolvable Agent (D2) to return the file. The default is "False".
+* UseD2 - If "True", use the Demisto Dissolvable Agent (D2) to return the file. The default is "False".
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
