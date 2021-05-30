@@ -277,7 +277,6 @@ def command_test_module(api_client: CBCloudAPI) -> str:
     except ObjectNotFoundError as e:
         if 'org_id' in str(e):
             raise DemistoException(ORG_ID_ERROR_MSG)
-        pass  # expected
     except errors.UnauthorizedError:
         raise DemistoException(AUTHORIZATION_ERROR_MSG)
     except errors.ConnectionError as e:
