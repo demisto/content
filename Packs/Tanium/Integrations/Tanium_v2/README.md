@@ -31,7 +31,7 @@
   <li>The credentials should be the same as the Tanium client.</li>
 </ul>
 
-<h2>Configure Tanium v2 on Demisto</h2>
+<h2>Configure Tanium v2 on Cortex XSOAR</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
     &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
@@ -53,7 +53,7 @@
 </ol>
 <h2>Commands</h2>
 <p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+  You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
@@ -3720,7 +3720,7 @@
         "ExpireSeconds": 780,
         "HistorySavedQuestionId": 0,
         "ID": 19886,
-        "Name": "Trace - Install Endpoint Certificate [Windows] via Demisto API",
+        "Name": "Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API",
         "PackageId": 1222,
         "PackageName": "Apply Windows IPsec Quarantine",
         "SavedActionId": 642,
@@ -3775,7 +3775,7 @@
         <td> 780 </td>
         <td> 0 </td>
         <td> 19886 </td>
-        <td> Trace - Install Endpoint Certificate [Windows] via Demisto API </td>
+        <td> Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API </td>
         <td> 1222 </td>
         <td> Apply Windows IPsec Quarantine </td>
         <td> 642 </td>
@@ -5217,7 +5217,7 @@ There are no context output for this command.
         "ExpireSeconds": 780,
         "HistorySavedQuestionId": 0,
         "ID": 19881,
-        "Name": "Trace - Install Endpoint Certificate [Windows] via Demisto API",
+        "Name": "Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API",
         "PackageId": 1222,
         "PackageName": "Apply Windows IPsec Quarantine",
         "SavedActionId": 642,
@@ -5272,7 +5272,7 @@ There are no context output for this command.
         <td> 780 </td>
         <td> 0 </td>
         <td> 19881 </td>
-        <td> Trace - Install Endpoint Certificate [Windows] via Demisto API </td>
+        <td> Trace - Install Endpoint Certificate [Windows] via Cortex XSOAR API </td>
         <td> 1222 </td>
         <td> Apply Windows IPsec Quarantine </td>
         <td> 642 </td>
