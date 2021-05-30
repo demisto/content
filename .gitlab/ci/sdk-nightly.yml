@@ -163,11 +163,3 @@ demisto-sdk-nightly:trigger-slack-notify:
     WORKFLOW: 'Demisto SDK Nightly'
     SLACK_CHANNEL: $SLACK_CHANNEL
     JOB_NAME: 'demisto-sdk-nightly:run-commands-against-instance'
-
-
-demisto-sdk-nightly:stam-test:
-  stage: .post
-  extends:
-    - .sdk-nightly-schedule-rule
-  script:
-    - echo "STAM"
