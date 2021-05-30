@@ -1,705 +1,720 @@
+category: Endpoint
 commonfields:
   id: carbonblack-v3
   version: -1
-name: carbonblack-v3
-display: VMware Carbon Black EDR v2
-fromversion: 5.0.0
-category: Endpoint
-description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
 configuration:
-  - display: Server URL
-    name: url
-    defaultvalue: ""
-    type: 0
-    required: true
-  - display: API Token
-    name: apitoken
-    defaultvalue: ""
-    type: 4
-    required: true
-  - display: Trust any certificate (not secure)
-    name: insecure
-    defaultvalue: ""
-    type: 8
-    required: false
-  - display: Use system proxy settings
-    name: proxy
-    defaultvalue: ""
-    type: 8
-    required: false
-  - display: Fetch incidents
-    name: isFetch
-    type: 8
-    required: false
-  - display: Incident type
-    name: incidentType
-    type: 13
-    required: false
-  - display: Fetch Alert Severity Threshold Higher Than
-    name: fetchAlertsSeverityThreshold
-    defaultvalue: ""
-    type: 0
-    required: false
-  - display: Maximum Number Of Incidents To Fetch
-    defaultvalue: '50'
-    name: max_fetch
-    required: false
-    type: 0
-  - defaultvalue: 7 days
-    display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-    name: first_fetch
-    required: false
-    type: 0
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: apitoken
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch Alert Severity Threshold Higher Than
+  name: fetchAlertsSeverityThreshold
+  required: false
+  type: 0
+- display: Alert Status
+  name: alert_status
+  options:
+    - Resolved
+    - Unresolved
+    - In Progress
+    - False Positive
+  required: false
+  type: 15
+- display: Alert Feed Name
+  name: alert_feed_name
+  type: 0
+  required: false
+- display: Alert Hostname
+  name: alert_hostname
+  type: 0
+  required: false
+- display: Alert Query
+  name: alert_query
+  type: 0
+  required: false
+- defaultvalue: '50'
+  display: Maximum Number Of Incidents To Fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
+description: VMware Carbon Black EDR (formerly known as Carbon Black Response)
+display: VMware Carbon Black EDR v2
+name: carbonblack-v3
 script:
   commands:
-    - arguments:
-        - default: false
-          description: The name of the process
-          isArray: false
-          name: process_name
-          required: false
-          secret: false
-        - default: false
-          description: The CB Host group this sensor is assigned to
-          isArray: false
-          name: group
-          required: false
-          secret: false
-        - default: false
-          description: The hostname of the computer for this process
-          isArray: false
-          name: hostname
-          required: false
-          secret: false
-        - default: false
-          description: The parent process name
-          isArray: false
-          name: parent_name
-          required: false
-          secret: false
-        - default: false
-          description: The process path
-          isArray: false
-          name: process_path
-          required: false
-          secret: false
-        - default: false
-          description: The md5 of the binary image backing the process
-          isArray: false
-          name: md5
-          required: false
-          secret: false
-        - default: false
-          description: Advanced query string. Accepts the same data as the search box on the Process
-            Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
-            If not provided, at least one other search field must be provided.
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - default: false
-          description: group by a field name. For example, if parameter group=id, search
-            will return one result per process. Note that results will still honor sorting
-            specified by the search. Even within group, it will return result that is
-            first in the sort order. Grouping will be slower (sometimes much slower) than
-            regular results.
-          isArray: false
-          name: group_by
-          required: false
-          secret: false
-        - default: false
-          description: Sort rows by this field and order. last_update desc by default.
-          isArray: false
-          name: sort
-          required: false
-          secret: false
-        - default: false
-          description: Return facet results. ‘false’ by default, set to ‘true’ for facets.
-          isArray: false
-          name: facet
-          required: false
-          secret: false
-        - default: false
-          description: facet field name to return. Multiple facet.field parameters can
-            be specified in a query.
-          isArray: false
-          name: facet_field
-          required: false
-          secret: false
-        - default: false
-          description: Return this many rows, 10 by default.
-          isArray: false
-          name: rows
-          required: false
-          secret: false
-        - default: false
-          description: Start at this row, 0 by default.
-          isArray: false
-          name: start
-          required: false
-          secret: false
-      deprecated: false
-      description: Process search
-      execution: false
-      name: cb-edr-processes-search
-    - arguments:
-        - default: false
-          description: The internal CB process id; this is the id field in search results.
-          isArray: false
-          name: process_id
-          required: true
-          secret: false
-        - default: false
-          description: The process segment id, the segment_id field in search results.
-          isArray: false
-          name: segment_id
-          required: true
-          secret: false
-        - default: false
-          defaultValue: 'False'
-          description: Whether to get sibling data for process.
-          isArray: false
-          name: get_related
-          required: false
-          secret: false
-      deprecated: false
-      description: Gets basic process information for segment  of process.
-      execution: false
-      name: cb-edr-process-get
-    - arguments:
-        - default: false
-          description: The internal CB process id; this is the id field in search results.
-          isArray: false
-          name: process_id
-          required: true
-          secret: false
-      deprecated: false
-      description: Gets segment data for a given process.
-      execution: false
-      name: cb-edr-process-segments-get
-    - arguments:
-        - auto: PREDEFINED
-          default: false
-          description: |-
-            Download a zip archive including a sensor installer for Windows, Mac OS X or Linux.
+  - arguments:
+    - default: false
+      description: The name of the process
+      isArray: false
+      name: process_name
+      required: false
+      secret: false
+    - default: false
+      description: The CB Host group this sensor is assigned to
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: The hostname of the computer for this process
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: The parent process name
+      isArray: false
+      name: parent_name
+      required: false
+      secret: false
+    - default: false
+      description: The process path
+      isArray: false
+      name: process_path
+      required: false
+      secret: false
+    - default: false
+      description: The md5 of the binary image backing the process
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: Advanced query string. Accepts the same data as the search box
+        on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
+        If not provided, at least one other search field must be provided.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: group by a field name. For example, if parameter group=id, search
+        will return one result per process. Note that results will still honor sorting
+        specified by the search. Even within group, it will return result that is
+        first in the sort order. Grouping will be slower (sometimes much slower) than
+        regular results.
+      isArray: false
+      name: group_by
+      required: false
+      secret: false
+    - default: false
+      description: Sort rows by this field and order. last_update desc by default.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Return facet results. ‘false’ by default, set to ‘true’ for facets.
+      isArray: false
+      name: facet
+      required: false
+      secret: false
+    - default: false
+      description: facet field name to return. Multiple facet.field parameters can
+        be specified in a query.
+      isArray: false
+      name: facet_field
+      required: false
+      secret: false
+    - default: false
+      description: Return this many rows, 10 by default.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Start at this row, 0 by default.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Process search
+    execution: false
+    name: cb-edr-processes-search
+  - arguments:
+    - default: false
+      description: The internal CB process id; this is the id field in search results.
+      isArray: false
+      name: process_id
+      required: true
+      secret: false
+    - default: false
+      description: The process segment id, the segment_id field in search results.
+      isArray: false
+      name: segment_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Whether to get sibling data for process.
+      isArray: false
+      name: get_related
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets basic process information for segment  of process.
+    execution: false
+    name: cb-edr-process-get
+  - arguments:
+    - default: false
+      description: The internal CB process id; this is the id field in search results.
+      isArray: false
+      name: process_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets segment data for a given process.
+    execution: false
+    name: cb-edr-process-segments-get
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Download a zip archive including a sensor installer for Windows, Mac OS X or Linux.
 
-            For Windows- A ZIP archive which includes a signed Windows EXE or MSI sensor installer and settings file
-            For Mac OS X- A ZIP archive which includes a signed OSX PKG sensor installer and settings file
-            For Linux- A compressed tarball (tar.gz) archive which includes a Linux sensor installer and settings file
-          isArray: false
-          name: os_type
-          predefined:
-            - windows_exe
-            - windows_msi
-            - osx
-            - linux
-          required: true
-          secret: false
-        - default: false
-          description: An ID of a group related to sensors.
-          isArray: false
-          name: group_id
-          required: true
-          secret: false
-      deprecated: false
-      description: Download a zip archive including a sensor installer for Windows,
-        Mac OS X or Linux.
-      execution: false
-      name: cb-edr-sensor-installer-download
-    - arguments:
-        - default: true
-          description: The internal CB process id; this is the id field in search results
-          isArray: false
-          name: process_id
-          required: true
-          secret: false
-        - default: false
-          description: |-
-            The process segment id. This is the segment_id field in search results.
-            If this is set to 0, the API will merge all segments in results
-          isArray: false
-          name: segment_id
-          required: true
-          secret: false
-        - default: false
-          description: |-
-            Return events starting with this offset.
-            If not provided, offset will be 0 (returns events starting from the beginning)
-          isArray: false
-          name: start
-          required: false
-          secret: false
-        - default: false
-          description: How many events to fetch.
-          isArray: false
-          name: count
-          required: false
-          secret: false
-      deprecated: false
-      description: Gets the events for the process with CB process id (process_id) and segment id (segment_id).
-      execution: false
-      name: cb-edr-process-events-list
-    - arguments:
-        - default: true
-          description: The sensor ID to quarantine
-          isArray: false
-          name: sensor_id
-          required: true
-          secret: false
-      deprecated: false
-      description: Unquarantine the endpoint
-      execution: false
-      name: cb-edr-unquarantine-device
-    - arguments:
-        - default: true
-          description: The sensor ID to quarantine
-          isArray: false
-          name: sensor_id
-          required: true
-          secret: false
-      deprecated: false
-      description: Isolate the endpoint from the network
-      execution: false
-      name: cb-edr-quarantine-device
-    - arguments:
-        - default: false
-          description: The sensor ID
-          isArray: false
-          name: id
-          predefined:
-            - ''
-          required: false
-          secret: false
-        - default: false
-          description: Returns the sensor registration(s) with specified IP address
-          isArray: false
-          name: ip
-          predefined:
-            - ''
-          required: false
-          secret: false
-        - default: false
-          description: Retruns the sensor registration(s) in the specified sensor group
-            id
-          isArray: false
-          name: group_id
-          required: false
-          secret: false
-        - default: false
-          description: ' only returns sensors that have been inactive for less than the
+        For Windows- A ZIP archive which includes a signed Windows EXE or MSI sensor installer and settings file
+        For Mac OS X- A ZIP archive which includes a signed OSX PKG sensor installer and settings file
+        For Linux- A compressed tarball (tar.gz) archive which includes a Linux sensor installer and settings file
+      isArray: false
+      name: os_type
+      predefined:
+      - windows_exe
+      - windows_msi
+      - osx
+      - linux
+      required: true
+      secret: false
+    - default: false
+      description: An ID of a group related to sensors.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download a zip archive including a sensor installer for Windows,
+      Mac OS X or Linux.
+    execution: false
+    name: cb-edr-sensor-installer-download
+  - arguments:
+    - default: true
+      description: The internal CB process id; this is the id field in search results
+      isArray: false
+      name: process_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The process segment id. This is the segment_id field in search results.
+        If this is set to 0, the API will merge all segments in results
+      isArray: false
+      name: segment_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Return events starting with this offset.
+        If not provided, offset will be 0 (returns events starting from the beginning)
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: How many events to fetch.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the events for the process with CB process id (process_id) and
+      segment id (segment_id).
+    execution: false
+    name: cb-edr-process-events-list
+  - arguments:
+    - default: true
+      description: The sensor ID to quarantine
+      isArray: false
+      name: sensor_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Unquarantine the endpoint
+    execution: false
+    name: cb-edr-unquarantine-device
+  - arguments:
+    - default: true
+      description: The sensor ID to quarantine
+      isArray: false
+      name: sensor_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Isolate the endpoint from the network
+    execution: false
+    name: cb-edr-quarantine-device
+  - arguments:
+    - default: false
+      description: The sensor ID
+      isArray: false
+      name: id
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Returns the sensor registration(s) with specified IP address
+      isArray: false
+      name: ip
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Retruns the sensor registration(s) in the specified sensor group
+        id
+      isArray: false
+      name: group_id
+      required: false
+      secret: false
+    - default: false
+      description: ' only returns sensors that have been inactive for less than the
         specified number of days'
-          isArray: false
-          name: inactive_filter_days
-          required: false
-          secret: false
-        - default: false
-          description: Returns the sensor registration(s) with matching hostname
-          isArray: false
-          name: hostname
-          required: false
-          secret: false
-        - default: false
-          description: The maximum amount of sensors to be returned.
-          isArray: false
-          name: limit
-          required: false
-          secret: false
-      deprecated: false
-      description: List the CarbonBlack sensors
-      execution: false
-      name: cb-edr-sensors-list
-    - arguments:
-        - default: true
-          description: Delete a watchlist in Carbon black Response.
-          isArray: false
-          name: id
-          required: true
-          secret: false
-      deprecated: false
-      description: Delete a Watchlist that is specified using ID.
-      execution: false
-      name: cb-edr-watchlist-delete
-    - arguments:
-        - default: true
-          description: The watchlist ID
-          isArray: false
-          name: id
-          required: true
-          secret: false
-        - default: false
-          description: The raw Carbon Black query that this watchlist matches
-          isArray: false
-          name: search_query
-          required: false
-          secret: false
-        - default: false
-          description: A description of the update.
-          isArray: false
-          name: description
-          required: false
-          secret: false
-        - default: false
-          description: Whether the watchlist is enabled or not.
-          isArray: false
-          name: enabled
-          required: false
-          secret: false
-      deprecated: false
-      description: |-
-        Updates a Watchlist that is specified using ID. You can use the enabled parameter in the body to enable/disable the watchlist.
+      isArray: false
+      name: inactive_filter_days
+      required: false
+      secret: false
+    - default: false
+      description: Returns the sensor registration(s) with matching hostname
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: The maximum amount of sensors to be returned.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List the CarbonBlack sensors
+    execution: false
+    name: cb-edr-sensors-list
+  - arguments:
+    - default: true
+      description: Delete a watchlist in Carbon black Response.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a Watchlist that is specified using ID.
+    execution: false
+    name: cb-edr-watchlist-delete
+  - arguments:
+    - default: true
+      description: The watchlist ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: The raw Carbon Black query that this watchlist matches
+      isArray: false
+      name: search_query
+      required: false
+      secret: false
+    - default: false
+      description: A description of the update.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Whether the watchlist is enabled or not.
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Updates a Watchlist that is specified using ID. You can use the enabled parameter in the body to enable/disable the watchlist.
 
-        Note: The watchlist's id value will increase by one each time it is updated. For example, if you update a watchlist with an id of 709, it will increment the id to 710 when the action is successful.
-      execution: false
-      name: cb-edr-watchlist-update
-    - arguments:
-        - default: false
-          description: Name of the watchlist
-          isArray: false
-          name: name
-          required: true
-          secret: false
-        - default: false
-          description: The raw Carbon Black query that this watchlist matches
-          isArray: false
-          name: search_query
-          required: true
-          secret: false
-        - default: false
-          description: A description of the update.
-          isArray: false
-          name: description
-          required: false
-          secret: false
-        - default: false
-          description: the type of watchlist. Valid values are ‘modules’ and ‘events’
-            for binary and process watchlists, respectively. Deafult is 'events'.
-          isArray: false
-          name: index_type
-          required: false
-          secret: false
-      deprecated: false
-      description: Creates a new Watchlist within EDR,
-      execution: false
-      name: cb-edr-watchlist-create
-    - arguments:
-        - default: true
-          description: The watchlist ID
-          isArray: false
-          name: id
-          required: false
-          secret: false
-      deprecated: false
-      description: Retrieve watchlist in Carbon black Response.
-      execution: false
-      name: cb-edr-watchlists-list
-    - arguments:
-        - default: false
-          description: The banned hash
-          isArray: false
-          name: md5
-          required: true
-          secret: false
-        - default: false
-          description: Text description of blacklist
-          isArray: false
-          name: text
-          required: true
-          secret: false
-        - default: false
-          description: The last time the hash was blocked or prevented from being executed
-          isArray: false
-          name: last_ban_time
-          required: false
-          secret: false
-        - default: false
-          description: Total number of blocks on the banned list
-          isArray: false
-          name: ban_count
-          required: false
-          secret: false
-        - default: false
-          description: Last hostname to block this hash
-          isArray: false
-          name: last_ban_host
-          required: false
-          secret: false
-        - default: false
-          description: ''
-          isArray: false
-          name: enabled
-          required: false
-          secret: false
-      deprecated: false
-      description: Prevent execution of a specified md5 hash
-      execution: false
-      name: cb-edr-binary-ban
-    - arguments: [ ]
-      deprecated: false
-      description: Returns a list of banned hashes
-      execution: false
-      name: cb-edr-binary-bans-list
-    - arguments:
-        - default: false
-          description: Alert unique identifier
-          isArray: true
-          name: alert_ids
-          required: true
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: "The requested status to \n"
-          isArray: false
-          name: status
-          predefined:
-            - ' Resolved'
-            - Unresolved
-            - In Progress
-            - False Positive
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Setting is_ignored to True for an Alert carries through to the
-            threat report that generated the Alert. Any further hits on IOCs contained
-            within that report will no longer trigger an Alert.
-          isArray: false
-          name: set_ignored
-          predefined:
-            - 'true'
-            - 'false'
-          required: false
-          secret: false
-        - default: false
-          description: Advanced query string. Accepts the same data as the search box on the Process
-            Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
-            If not provided, at least one other search field must be provided.
-          isArray: false
-          name: query
-          required: false
-          secret: false
-      deprecated: false
+      Note: The watchlist's id value will increase by one each time it is updated. For example, if you update a watchlist with an id of 709, it will increment the id to 710 when the action is successful.
+    execution: false
+    name: cb-edr-watchlist-update
+  - arguments:
+    - default: false
+      description: Name of the watchlist
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The raw Carbon Black query that this watchlist matches
+      isArray: false
+      name: search_query
+      required: true
+      secret: false
+    - default: false
+      description: A description of the update.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: the type of watchlist. Valid values are ‘modules’ and ‘events’
+        for binary and process watchlists, respectively. Deafult is 'events'.
+      isArray: false
+      name: index_type
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Watchlist within EDR,
+    execution: false
+    name: cb-edr-watchlist-create
+  - arguments:
+    - default: true
+      description: The watchlist ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve watchlist in Carbon black Response.
+    execution: false
+    name: cb-edr-watchlists-list
+  - arguments:
+    - default: false
+      description: The banned hash
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    - default: false
+      description: Text description of blacklist
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - default: false
+      description: The last time the hash was blocked or prevented from being executed
+      isArray: false
+      name: last_ban_time
+      required: false
+      secret: false
+    - default: false
+      description: Total number of blocks on the banned list
+      isArray: false
+      name: ban_count
+      required: false
+      secret: false
+    - default: false
+      description: Last hostname to block this hash
+      isArray: false
+      name: last_ban_host
+      required: false
+      secret: false
+    - default: false
+      description: ''
+      isArray: false
+      name: enabled
+      required: false
+      secret: false
+    deprecated: false
+    description: Prevent execution of a specified md5 hash
+    execution: false
+    name: cb-edr-binary-ban
+  - deprecated: false
+    description: Returns a list of banned hashes
+    execution: false
+    name: cb-edr-binary-bans-list
+  - arguments:
+    - default: false
+      description: Alert unique identifier
+      isArray: true
+      name: alert_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "The requested status to \n"
+      isArray: false
+      name: status
+      predefined:
+      - Resolved
+      - Unresolved
+      - In Progress
+      - False Positive
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Setting is_ignored to True for an Alert carries through to the
+        threat report that generated the Alert. Any further hits on IOCs contained
+        within that report will no longer trigger an Alert.
+      isArray: false
+      name: set_ignored
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Advanced query string. Accepts the same data as the search box
+        on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
+        If not provided, at least one other search field must be provided.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Alerts update and resolution.
+      Updating Alerts requires an API key with Global Administrator privileges.
+    execution: false
+    name: cb-edr-alert-update
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Alert status to filter by
+      isArray: false
+      name: status
+      predefined:
+      - Unresolved
+      - In Progress
+      - Resolved
+      - False Positive
+      required: false
+      secret: false
+    - default: false
+      description: Alert username to filter by
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: Alert feedname to filter by
+      isArray: false
+      name: feedname
+      required: false
+      secret: false
+    - default: false
+      description: Alert hostname to filter by
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: Alert report name (watchlist_id) to filter by
+      isArray: false
+      name: report
+      required: false
+      secret: false
+    - default: false
+      description: Advanced query string. Accepts the same data as the search box.
+        For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
+        If not provided, at least one other search field must be provided.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: Sort rows by this field and order. server_added_timestamp desc
+        by default.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: Return facet results. 'false' by default, set to 'true' for facets.
+      isArray: false
+      name: facet
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve alerts from Carbon Black Response.
+    execution: false
+    name: cb-edr-alert-search
+  - arguments:
+    - default: true
+      description: The md5 of the binary
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the metadata for the binary with the provided md5
+    execution: false
+    name: cb-edr-binary-summary
+  - arguments:
+    - default: true
+      description: The md5 hash of the binary
+      isArray: false
+      name: md5
+      required: true
+      secret: false
+    deprecated: false
+    description: Download the binary with this md5 hash.
+    execution: false
+    name: cb-edr-binary-download
+  - arguments:
+    - default: false
+      description: Gets the name of the product this file is distributed with.
+      isArray: false
+      name: product_name
+      required: false
+      secret: false
+    - default: false
+      description: The md5 hash of this binary
+      isArray: false
+      name: md5
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Digital signature status
+      isArray: false
+      name: digital_signature
+      predefined:
+      - Signed
+      - Unsigned
+      - Expired
+      - Bad Signature
+      - Invalid Signature
+      - Invalid Chain
+      - Untrusted Root
+      - Explicit Distrust
+      required: false
+      secret: false
+    - default: false
+      description: If signed and present, the publisher name.
+      isArray: false
+      name: publisher
+      required: false
+      secret: false
+    - default: false
+      description: The name of the company that produced the file.
+      isArray: false
+      name: company_name
+      required: false
+      secret: false
+    - default: false
       description: |-
-        Alerts update and resolution.
-        Updating Alerts requires an API key with Global Administrator privileges.
-      execution: false
-      name: cb-edr-alert-update
-    - arguments:
-        - auto: PREDEFINED
-          default: false
-          description: Alert status to filter by
-          isArray: false
-          name: status
-          predefined:
-            - Unresolved
-            - In Progress
-            - Resolved
-            - False Positive
-          required: false
-          secret: false
-        - default: false
-          description: Alert username to filter by
-          isArray: false
-          name: username
-          required: false
-          secret: false
-        - default: false
-          description: Alert feedname to filter by
-          isArray: false
-          name: feedname
-          required: false
-          secret: false
-        - default: false
-          description: Alert hostname to filter by
-          isArray: false
-          name: hostname
-          required: false
-          secret: false
-        - default: false
-          description: Alert report name (watchlist_id) to filter by
-          isArray: false
-          name: report
-          required: false
-          secret: false
-        - default: false
-          description: Advanced query string. Accepts the same data as the search box.
-            For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
-            If not provided, at least one other search field must be provided.
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - default: false
-          description: Sort rows by this field and order. server_added_timestamp desc
-            by default.
-          isArray: false
-          name: sort
-          required: false
-          secret: false
-        - default: false
-          description: Return facet results. 'false' by default, set to 'true' for facets.
-          isArray: false
-          name: facet
-          required: false
-          secret: false
-      deprecated: false
-      description: Retrieve alerts from Carbon Black Response.
-      execution: false
-      name: cb-edr-alert-search
-    - arguments:
-        - default: true
-          description: The md5 of the binary
-          isArray: false
-          name: md5
-          required: true
-          secret: false
-      deprecated: false
-      description: Returns the metadata for the binary with the provided md5
-      execution: false
-      name: cb-edr-binary-summary
-    - arguments:
-        - default: true
-          description: The md5 hash of the binary
-          isArray: false
-          name: md5
-          required: true
-          secret: false
-      deprecated: false
-      description: Download the binary with this md5 hash.
-      execution: false
-      name: cb-edr-binary-download
-    - arguments:
-        - default: false
-          description: Gets the name of the product this file is distributed with.
-          isArray: false
-          name: product_name
-          required: false
-          secret: false
-        - default: false
-          description: The md5 hash of this binary
-          isArray: false
-          name: md5
-          required: false
-          secret: false
-        - auto: PREDEFINED
-          default: false
-          description: Digital signature status
-          isArray: false
-          name: digital_signature
-          predefined:
-            - Signed
-            - Unsigned
-            - Expired
-            - Bad Signature
-            - Invalid Signature
-            - Invalid Chain
-            - Untrusted Root
-            - Explicit Distrust
-          required: false
-          secret: false
-        - default: false
-          description: If signed and present, the publisher name.
-          isArray: false
-          name: publisher
-          required: false
-          secret: false
-        - default: false
-          description: The name of the company that produced the file.
-          isArray: false
-          name: company_name
-          required: false
-          secret: false
-        - default: false
-          description: |-
-            Sensor group this sensor was
-            assigned to at the time of process
-            execution
-          isArray: false
-          name: group
-          required: false
-          secret: false
-        - default: false
-          description: |-
-            Hostname of the computer on
-            which the process was executed
-          isArray: false
-          name: hostname
-          required: false
-          secret: false
-        - default: false
-          description: Sort rows by this field and order. server_added_timestamp desc
-            by default.
-          isArray: false
-          name: sort
-          required: false
-          secret: false
-        - default: false
-          description: |-
-            Full path of the binary at the time
-            of collection.
-          isArray: false
-          name: observed_filename
-          required: false
-          secret: false
-        - default: false
-          description: Advanced query string. Accepts the same data as the search box.
-            For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
-            If not provided, at least one other search field must be provided.
-          isArray: false
-          name: query
-          required: false
-          secret: false
-        - default: false
-          description: Return facet results. ‘false’ by default, set to ‘true’ for facets.
-          isArray: false
-          name: facet
-          required: false
-          secret: false
-        - default: false
-          description: facet field name to return. Multiple facet.field parameters can
-            be specified in a query.
-          isArray: false
-          name: facet_field
-          required: false
-          secret: false
-        - default: false
-          description: Return this many rows, 10 by default.
-          isArray: false
-          name: rows
-          required: false
-          secret: false
-        - default: false
-          description: Start at this row, 0 by default.
-          isArray: false
-          name: start
-          required: false
-          secret: false
-      deprecated: false
-      description: Binary search
-      execution: false
-      name: cb-edr-binary-search
-    - arguments:
-        - default: false
-          description: The sensor ID
-          isArray: false
-          name: id
-          required: true
-          secret: false
-        - default: false
-          description: Query sensors with specified IP address
-          isArray: false
-          name: ip
-          required: true
-          secret: false
-        - default: false
-          description: Query sensors with matching hostname
-          isArray: false
-          name: hostname
-          required: true
-          secret: false
-      deprecated: false
-      description: List the CarbonBlack sensors
-      execution: false
-      name: endpoint
+        Sensor group this sensor was
+        assigned to at the time of process
+        execution
+      isArray: false
+      name: group
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Hostname of the computer on
+        which the process was executed
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: Sort rows by this field and order. server_added_timestamp desc
+        by default.
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Full path of the binary at the time
+        of collection.
+      isArray: false
+      name: observed_filename
+      required: false
+      secret: false
+    - default: false
+      description: Advanced query string. Accepts the same data as the search box.
+        For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf.
+        If not provided, at least one other search field must be provided.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: Return facet results. ‘false’ by default, set to ‘true’ for facets.
+      isArray: false
+      name: facet
+      required: false
+      secret: false
+    - default: false
+      description: facet field name to return. Multiple facet.field parameters can
+        be specified in a query.
+      isArray: false
+      name: facet_field
+      required: false
+      secret: false
+    - default: false
+      description: Return this many rows, 10 by default.
+      isArray: false
+      name: rows
+      required: false
+      secret: false
+    - default: false
+      description: Start at this row, 0 by default.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: false
+    description: Binary search
+    execution: false
+    name: cb-edr-binary-search
+  - arguments:
+    - default: false
+      description: The sensor ID
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Query sensors with specified IP address
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: Query sensors with matching hostname
+      isArray: false
+      name: hostname
+      required: true
+      secret: false
+    deprecated: false
+    description: List the CarbonBlack sensors
+    execution: false
+    name: endpoint
   dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: true
@@ -710,5 +725,5 @@ script:
   subtype: python3
   type: python
 tests:
-  - No tests (auto formatted)
-
+- No tests (auto formatted)
+fromversion: 5.0.0

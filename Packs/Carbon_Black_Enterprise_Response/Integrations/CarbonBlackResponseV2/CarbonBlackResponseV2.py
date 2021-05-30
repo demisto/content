@@ -19,7 +19,7 @@ class ProcessEventDetail:
     def __init__(self, piped_version, fields):
         data = piped_version.split('|')
         if len(data) != len(fields):
-            raise Exception("Data from API is in unexpected format.")
+            raise Exception(f'{INTEGRATION_NAME} - Data from API is in unexpected format.')
         self.fields = dict(zip(fields, data))
 
     def format(self):
@@ -130,7 +130,7 @@ class Client(BaseClient):
         res = self.http_request(url=url, method='GET', params=query_params, ok_codes=(200, 204))
 
         # When querying specific sensor without filters, the api returns dictionary instead of list.
-        return res[:arg_to_number(limit)] if isinstance(res, list) else [res]
+        return res[:arg_to_number(limit, 'limit')] if isinstance(res, list) else [res]
 
     def get_alerts(self, status: str = None, username: str = None, feedname: str = None,
                    hostname: str = None, report: str = None, sort: str = None, query: str = None,
@@ -141,7 +141,7 @@ class Client(BaseClient):
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
-                               rows=arg_to_number(limit),
+                               rows=arg_to_number(limit, 'limit'),
                                start=start,
                                sort=sort,
                                facet=facet,
@@ -160,7 +160,7 @@ class Client(BaseClient):
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
-                               rows=arg_to_number(limit),
+                               rows=arg_to_number(limit, 'limit'),
                                start=start,
                                sort=sort,
                                facet=facet,
@@ -176,7 +176,7 @@ class Client(BaseClient):
         query_params = {key: local_params.get(key) for key in query_fields if local_params.get(key)}
         query_string = _create_query_string(query_params)
         params = assign_params(q=query_string,
-                               rows=arg_to_number(limit),
+                               rows=arg_to_number(limit, 'limit'),
                                start=start,
                                sort=sort,
                                facet=facet,
@@ -211,7 +211,7 @@ def _create_query_string(params: dict) -> str:
     current_query = ' AND '.join(current_query)
 
     if not current_query:
-        raise Exception('Search without any filter is not permitted.')
+        raise Exception(f'{INTEGRATION_NAME} - Search without any filter is not permitted.')
 
     return current_query
 
@@ -250,7 +250,7 @@ def unquarantine_device_command(client: Client, sensor_id: str) -> CommandResult
     res = client.http_request(url=url, method='PUT',
                               json_data=_get_sensor_isolation_change_body(client, sensor_id, False))
     if not res:
-        raise Exception('could not run')
+        raise Exception(f'{INTEGRATION_NAME} - could not un-isolate sensor {sensor_id}')
     return CommandResults(readable_output='Sensor was un-isolated successfully.')
 
 
@@ -259,7 +259,7 @@ def quarantine_device_command(client: Client, sensor_id: str) -> CommandResults:
     res = client.http_request(url=url, method='PUT',
                               json_data=_get_sensor_isolation_change_body(client, sensor_id, True))
     if not res:
-        raise Exception('could not run')
+        raise Exception(f'{INTEGRATION_NAME} - could not isolate sensor {sensor_id}')
     return CommandResults(readable_output='Sensor was isolated successfully.')
 
 
@@ -293,9 +293,10 @@ def sensors_list_command(client: Client, id: str = None, hostname: str = None, i
                               raw_response=res)
     except DemistoException as e:
         if '404' in e.message:
-            raise Exception(f'The sensor {id} could not be found. Please try using a different sensor.')
+            raise Exception(f'{INTEGRATION_NAME} - The sensor {id} could not be found. '
+                            f'Please try using a different sensor.')
         else:
-            raise Exception(f'Error connecting to API. Error: {e.message}')
+            raise Exception(f'{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}')
 
 
 def watchlist_delete_command(client: Client, id: str) -> CommandResults:
@@ -332,20 +333,22 @@ def get_watchlist_list_command(client: Client, id: str = None, limit: str = None
     # Handling case of only one record.
     if id:
         res = [res]
-    res = res[:arg_to_number(limit)]
+    res = res[:arg_to_number(limit, 'limit')]
     for watchlist in res:
         human_readable_data.append({
             'Name': watchlist.get('name'),
             'ID': watchlist.get('id'),
+            'Group ID': watchlist.get('group_id'),
             'Description': watchlist.get('description'),
-            'Query': watchlist.get('search_query'),
             'Total Hits': watchlist.get('total_hits'),
-            'Group ID': watchlist.get('group_id')
+            'Query': watchlist.get('search_query'),
         })
 
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Watchlists', human_readable_data, removeNull=True)
+    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+
     return CommandResults(outputs=res, outputs_prefix='CarbonBlackEDR.Watchlist', outputs_key_field='name',
-                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} -Watchlists', human_readable_data,
-                                                          removeNull=True))
+                          readable_output=md)
 
 
 def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str = None, ban_count: str = None,
@@ -360,7 +363,7 @@ def binary_ban_command(client: Client, md5: str, text: str, last_ban_time: str =
         if '409' in e.message:
             return CommandResults(readable_output=f'Ban for md5 {md5} already exists')
         else:
-            raise Exception(f'Error connecting to API. Error: {e.message}')
+            raise Exception(f'{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}')
     return CommandResults(readable_output='hash banned successfully')
 
 
@@ -390,7 +393,7 @@ def alert_update_command(client: Client, alert_ids: str, status: str = None, set
                          )
     res = client.http_request(url=url, method='POST', json_data=body)
     if not res:
-        raise Exception('Could not find alert.')
+        raise Exception(f"{INTEGRATION_NAME} - Could not find alerts: {', '.join(alert_ids)}.")
     return CommandResults(readable_output='Alert was updated successfully.')
 
 
@@ -399,7 +402,7 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
                          facet: str = None, limit: str = None, start: str = None) -> CommandResults:
     res = client.get_alerts(status, username, feedname, hostname, report, sort, query, facet, limit, start)
     if not res:
-        raise Exception('Request cannot be processed.')
+        raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
     alerts = res.get('results', [])
     human_readable_data = []
@@ -418,6 +421,8 @@ def alert_search_command(client: Client, status: str = None, username: str = Non
     outputs = assign_params(Results=alerts, Facets=res.get('facets'))
 
     md = tableToMarkdown(f'{INTEGRATION_NAME} - Alert Search Results', human_readable_data)
+    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Alert',
                           outputs_key_field='unique_id',
                           readable_output=md)
@@ -459,18 +464,18 @@ def binary_download_command(client: Client, md5: str) -> CommandResults:
         if '404' in e.message:
             return CommandResults(readable_output=f'File {md5} could not be found')
         else:
-            raise Exception(f'Error connecting to API. Error: {e.message}')
+            raise Exception(f'{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}')
 
 
 def binary_search_command(client: Client, md5: str = None, product_name: str = None, digital_signature: str = None,
                           group: str = None, hostname: str = None, publisher: str = None, company_name: str = None,
                           sort: str = None, observed_filename: str = None, query: str = None, facet: str = None,
-                          limit: str = None, start: str = None) -> CommandResults:
+                          limit: str = '50', start: str = None) -> CommandResults:
     res = client.get_binaries(md5, product_name, digital_signature, group, hostname, publisher, company_name, sort,
                               observed_filename, query, facet, limit, start)
 
     if not res:
-        raise Exception('Request cannot be processed.')
+        raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
     outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
     human_readable_data = []
@@ -485,15 +490,17 @@ def binary_search_command(client: Client, md5: str = None, product_name: str = N
             'Is Executable Image': binary_file.get('is_executable_image')
         })
 
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Binary Search Results', human_readable_data)
+    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
+
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.BinarySearch',
                           outputs_key_field='md5',
-                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Binary Search Results',
-                                                          human_readable_data))
+                          readable_output=md)
 
 
 def process_events_list_command(client: Client, process_id: str, segment_id: str, start: str = None, count: str = None):
     if not process_id or not segment_id:
-        raise Exception('Please provide both process id and segment id to run this command.')
+        raise Exception(f'{INTEGRATION_NAME} - Please provide both process id and segment id to run this command.')
     url = f'/v3/process/{process_id}/{segment_id}/event'
     start = int(start) if start else None
     count = int(count) if count else None
@@ -504,6 +511,7 @@ def process_events_list_command(client: Client, process_id: str, segment_id: str
         params['cb.event_count'] = count
     res = client.http_request(url=url, method='GET', params=params)
     process = client.get_formatted_ProcessEventDetail(res.get('process', {}))
+
     return CommandResults(outputs=process, outputs_prefix='CarbonBlackEDR.Events',
                           outputs_key_field='id',
                           readable_output=process, raw_response=res)
@@ -516,7 +524,7 @@ def process_segments_get_command(client: Client, process_id: str) -> CommandResu
         return CommandResults(
             readable_output=f'Could not find segment data for process id {process_id}.')
 
-    # Human readable is depending on request therefore is not changed.
+    # Human readable is depending on request therefore is not prettified.
     return CommandResults(outputs=res.get('process'), outputs_prefix='CarbonBlackEDR.ProcessSegments',
                           outputs_key_field='unique_id',
                           readable_output=res.get('process', {}).get('segments'))
@@ -530,9 +538,10 @@ def process_get_command(client: Client, process_id: str, segment_id: str,
         res = client.http_request(url=url, method='GET')
     except DemistoException as e:
         if "404" in e.message:
-            raise Exception(f'Could not find result for process id {process_id} with segment id {segment_id}.')
+            raise Exception(f'{INTEGRATION_NAME} - Could not find result for '
+                            f'process id {process_id} with segment id {segment_id}.')
         else:
-            raise Exception(f'Error connecting to API. Error: {e.message}')
+            raise Exception(f'{INTEGRATION_NAME} - Error connecting to API. Error: {e.message}')
 
     data = res.get('process', {}) if get_related else res
     human_readable_data = {
@@ -555,12 +564,12 @@ def process_get_command(client: Client, process_id: str, segment_id: str,
 def processes_search_command(client: Client, process_name: str = None, group: str = None, hostname: str = None,
                              parent_name: str = None, process_path: str = None, md5: str = None,
                              query: str = None, group_by: str = None, sort: str = None, facet: str = None,
-                             facet_field: str = None, limit: str = None, start: str = None):
+                             facet_field: str = None, limit: str = '50', start: str = None):
     res = client.get_processes(process_name, group, hostname, parent_name, process_path, md5, query, group_by, sort,
                                facet, facet_field, limit, start)
 
     if not res:
-        raise Exception('Request cannot be processed.')
+        raise Exception(f'{INTEGRATION_NAME} - Request cannot be processed.')
 
     outputs = assign_params(Results=res.get('results'), Facets=res.get('facets'))
 
@@ -579,11 +588,11 @@ def processes_search_command(client: Client, process_name: str = None, group: st
                 'Last Update': process.get('last_update'),
                 'Is Terminated': process.get('terminated')
             })
+    md = tableToMarkdown(f'{INTEGRATION_NAME} - Process Search Results', human_readable_data, removeNull=True)
+    md += f"\nShowing {len(res.get('results'))} out of {res.get('total_results')} results."
 
     return CommandResults(outputs=outputs, outputs_prefix='CarbonBlackEDR.Process', outputs_key_field='id',
-                          readable_output=tableToMarkdown(f'{INTEGRATION_NAME} - Process Search Results',
-                                                          human_readable_data,
-                                                          removeNull=True))
+                          readable_output=md)
 
 
 def sensor_installer_download_command(client: Client, os_type: str, group_id: str):
@@ -596,36 +605,39 @@ def sensor_installer_download_command(client: Client, os_type: str, group_id: st
 
 
 def endpoint_command(client: Client, id: str, ip: str, hostname: str):
-    if not id or not ip or not hostname:
-        raise Exception('In order to run this command, please provide valid id, ip and hostname')
+    if not id and not ip and not hostname:
+        raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
-    res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)
-    endpoints = []
-    command_results = []
-    for sensor in res:
-        is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
-                                                  sensor['is_isolating'])
-        endpoint = Common.Endpoint(
-            id=id,
-            hostname=hostname,
-            ip_address=ip,
-            mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
-            os_version=sensor.get('os_environment_display_string'),
-            memory=sensor.get('physical_memory_size'),
-            status='Online' if sensor.get('status') else 'Offline',
-            is_isolated=is_isolated,
-            vendor='Carbon Black Response')
-        endpoints.append(endpoint)
+    try:
+        res = client.get_sensors(id=id, ipaddr=ip, hostname=hostname)
+        endpoints = []
+        command_results = []
+        for sensor in res:
+            is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
+                                                      sensor['is_isolating'])
+            endpoint = Common.Endpoint(
+                id=id,
+                hostname=hostname,
+                ip_address=ip,
+                mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
+                os_version=sensor.get('os_environment_display_string'),
+                memory=sensor.get('physical_memory_size'),
+                status='Online' if sensor.get('status') else 'Offline',
+                is_isolated=is_isolated,
+                vendor='Carbon Black Response')
+            endpoints.append(endpoint)
 
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {id}', endpoint_context)
+            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+            md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {id}', endpoint_context)
 
-        command_results.append(CommandResults(
-            readable_output=md,
-            raw_response=res,
-            indicator=endpoint
-        ))
-    return command_results
+            command_results.append(CommandResults(
+                readable_output=md,
+                raw_response=res,
+                indicator=endpoint
+            ))
+        return command_results
+    except Exception:
+        return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint')
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: int, status: str,
@@ -649,7 +661,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch:
-            if incident_created_time <= last_fetch:
+            if incident_created_time_ms <= last_fetch:
                 continue
 
         # If no name is present it will throw an exception
@@ -672,8 +684,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+        if incident_created_time_ms > latest_created_time:
+            latest_created_time = incident_created_time_ms
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': latest_created_time}
