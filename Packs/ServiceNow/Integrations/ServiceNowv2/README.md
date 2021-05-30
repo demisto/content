@@ -8,8 +8,6 @@ Please refer to ServiceNow documentation for additional information. We especial
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
-This integration does not work with the SIR module.
-
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
@@ -94,6 +92,8 @@ If MFA is enabled for your user, follow the next steps:
 
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
+
+Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
 
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
