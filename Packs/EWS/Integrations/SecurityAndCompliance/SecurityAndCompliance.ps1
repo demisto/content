@@ -1498,7 +1498,6 @@ function Main {
     try {
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
-        $Demisto.Debug("oauth2_client from integration context: $($oauth2_client | ConvertTo-Json)")
 
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()

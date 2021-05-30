@@ -442,7 +442,7 @@ view: |-
 inputs:
 - key: value
   value:
-    simple: test
+    simple: First Value
   required: true
   description: Value to set in integration context
   playbookInputQuery: null
