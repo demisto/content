@@ -92,7 +92,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 3. [Configure Microsoft Teams on Demisto](#configure-microsoft-teams-on-demisto)
 4. [Add the Demisto Bot to a Team](#add-the-demisto-bot-to-a-team)
 
-### Create the Cortex XSOAR Bot in Microsoft Teams
+### Create the Demisto Bot in Microsoft Teams
 
 1. Download the ZIP file located at the bottom of this article.
 2. In Microsoft Teams, access the Store.
@@ -102,31 +102,31 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 6. Click the **Manifest editor** tab.
 7. Click the **Import an existing app** button, and select the ZIP file that you downloaded.
 8. Click the app widget, and in the **Identification** section, click the **Generate** button to generate a unique App ID.  The following parameters are automatically populated in the ZIP file, use this information for reference.
-  - **Short name**: Cortex XSOAR Bot
+  - **Short name**: Demisto Bot
   - **App ID**: the App ID for configuring in Cortex XSOAR.
   - **Package name**: desmisto.bot (this is a unique identifier for the app in the Store)
   - **Version**: 1.0.0 (this is a unique identifier for the app in the Store)
   - **Short description**: Mechanism for mirroring between Cortex XSOAR and Microsoft Teams.
-  - **Long description**: Cortex XSOAR Bot is the mechanism that enables messaging team members and channels, executing Cortex XSOAR commands directly from Teams, and mirroring investigation data between Cortex XSOAR and Microsoft Teams
+  - **Long description**: Demisto Bot is the mechanism that enables messaging team members and channels, executing Cortex XSOAR commands directly from Teams, and mirroring investigation data between Cortex XSOAR and Microsoft Teams
 
 9. From the left-side navigation pane, under Capabilities, click **Bots > Set up**.
 10. Configure the settings under the **Scope** section, and click **Create bot**.
-  - In the **Name** field, enter *Cortex XSOAR Bot*.
+  - In the **Name** field, enter *Demisto Bot*.
   - In the **Scope** section, select the following checkboxes: `Personal`, `Team`, and `Group Chat`. 
 
 11. Record the **Bot ID**, which you will need when configuring the integration in Cortex XSOAR.
 ![image](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/MSTeams-BotID.png)
 12. Click **Generate new password**. Record the password, which you will need when configuring the integration in Cortex XSOAR.
-13. In the **Messaging endpoints** section, enter the URL to which messages will be sent (to the Cortex XSOAR Bot).
+13. In the **Messaging endpoints** section, enter the URL to which messages will be sent (to the Demisto Bot).
   - To enable calling capabilities on the Bot enter the same URL to the **Calling endpoints** section.
 14. From the left-side navigation pane, under Finish, click **Test and distribute**.
 15. To download the new bot file, which now includes App Details, click **Download**.
 16. Navigate to Store, and click **Upload a custom app > Upload for ORGANIZATION-NAME**, and select the ZIP file you downloaded.
 
-### Grant the Cortex XSOAR Bot Permissions in Microsoft Graph
+### Grant the Demisto Bot Permissions in Microsoft Graph
 
 1. Go to your Microsoft Azure portal, and from the left navigation pane select **Azure Active Directory > App registrations**.
-2. Search for and click **Cortex XSOAR Bot**.
+2. Search for and click **Demisto Bot**.
 3. Click **API permissions > Add a permission > Microsoft Graph > Application permissions**.
 4. For the following permissions, search for,  select the checkbox and click **Add permissions**.
   - User.Read.All
@@ -135,7 +135,7 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
   - Calls.InitiateGroupCall.All
   - OnlineMeetings.ReadWrite.All
 
-5. Verify that all permissions were added, and click **Grant admin consent for Cortex XSOAR**.
+5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
 
 
@@ -165,12 +165,12 @@ Before you can create an instance of the Microsoft Teams integration in Cortex X
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-### Add the Cortex XSOAR Bot to a Team
+### Add the Demisto Bot to a Team
 
   - Note: the following need to be done after configuring the integration on Cortex XSOAR (the previous step).
   
 1. In Microsoft Teams, access the Store.
-2. Search for **Cortex XSOAR Bot** and click the Cortex XSOAR Bot widget.
+2. Search for **Demisto Bot** and click the Demisto Bot widget.
 3. Click the arrow on the **Open** button and select **Add to a team**.
 4. In the search box, type the name of the team to which to add the bot.
 5. Click **Set up** and configure the new app.
@@ -232,8 +232,8 @@ Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel.
 | --- | --- | --- |
 | mirror_type | The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring. | Optional | 
 | autoclose | Whether to auto-close the channel when the incident is closed in Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true". | Optional | 
-| direction | The mirroring direction. Can be "FromXSOAR", "ToXSOAR", or "Both". | Optional | 
-| team | The team in which to mirror the XSOAR investigation. If not specified, the default team configured in the integration parameters will be used. | Optional | 
+| direction | The mirroring direction. Can be "FromDemisto", "ToDemisto", or "Both". | Optional | 
+| team | The team in which to mirror the Demisto investigation. If not specified, the default team configured in the integration parameters will be used. | Optional | 
 | channel_name | The name of the channel. The default is "incident-INCIDENTID". | Optional | 
 
 
@@ -457,7 +457,7 @@ You can run Cortex XSOAR commands, according to the user permissions, from Micro
 
 Note: Like every message in a mirrored channel, in order for it to be passed to the bot, the bot must be mentioned.
 
-For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@XSOAR Bot !ip ip=8.8.8.8`
+For example, in order to check the reputation of the IP address 8.8.8.8, run the following: `@Demisto Bot !ip ip=8.8.8.8`
 
 ![image](https://raw.githubusercontent.com/demisto/content/c7d516e68459f04102fd31ebfadd6574d775f436/Packs/MicrosoftTeams/Integrations/MicrosoftTeams/doc_files/cmd.png)
 
@@ -504,6 +504,6 @@ You can send the message `help` in order to see the supported commands:
 
    Make sure to remove the bot from the team before clearing the integration cache, and add it back after done.
 
-## Download Cortex XSOAR Bot
+## Download Demisto Bot
 
 [Demisto Bot zip](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
