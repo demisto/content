@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-
 from typing import Any, Tuple
 
 """ CONSTANT VARIABLES """
@@ -209,6 +208,37 @@ def reset_fetch_command(client):
     )
 
 
+def get_feed_last_run():
+    """
+    This function returns the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
+    :return: All indicators from the feed's last run
+    """
+    if is_demisto_version_ge('6.2.0'):
+        feed_last_run = demisto.getLastRun() or {}
+        if not feed_last_run:
+            integration_ctx = demisto.getIntegrationContext()
+            if integration_ctx:
+                feed_last_run = integration_ctx
+                demisto.setLastRun(feed_last_run)
+                demisto.setIntegrationContext({})
+    else:
+        feed_last_run = demisto.getIntegrationContext() or {}
+    return feed_last_run
+
+
+def set_feed_last_run(last_run_indicators):
+    """
+    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
+    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
+    :return: None
+    """
+    if is_demisto_version_ge('6.2.0'):
+        demisto.setLastRun(last_run_indicators)
+    else:
+        demisto.setIntegrationContext(last_run_indicators)
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -261,18 +291,19 @@ def main():
         elif demisto.command() == "fetch-indicators":
             if fetch_full_feed:
                 limit = -1
-            integration_ctx = demisto.getIntegrationContext() or {}
-            (indicators, integration_ctx) = fetch_indicators_command(
+
+            last_run_indicators = get_feed_last_run()
+            (indicators, last_run_indicators) = fetch_indicators_command(
                 client,
                 initial_interval,
                 limit,
-                integration_ctx,
+                last_run_indicators,
                 fetch_full_feed,
             )
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
-            demisto.setIntegrationContext(integration_ctx)
+            set_feed_last_run(last_run_indicators)
         else:
             return_results(commands[command](client, **args))  # type: ignore[operator]
 
