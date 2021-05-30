@@ -1,5 +1,6 @@
 # type: ignore
 import dateutil.parser
+from numpy.compat import basestring
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
@@ -50,7 +51,7 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
                                                                 incident_type)
 
     if ignore_closed:
-        query += " and -closed:*"
+        query += " and -status: closed"
 
     if incident_id:
         query += ' and -id:%s' % incident_id
@@ -58,15 +59,18 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
     args = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
     if time_field == "created":
         args['from'] = min_date.isoformat()
-    res = demisto.executeCommand("getIncidents",
-                                 {'query': query,
-                                  'size': max_number_of_results, 'sort': '%s.desc' % time_field})
 
-    if res[0]['Type'] == entryTypes['error']:
-        raise Exception(str(res[0]['Contents']))
+    res = demisto.executeCommand('GetIncidentsByQuery', {
+        'query': query,
+        'fromDate': min_date.isoformat(),
+        'toDate': max_date.isoformat(),
+        'limit': max_number_of_results
+    })
+    if is_error(res):
+        return_error(res)
 
-    incident_list = res[0]['Contents']['data']
-    return incident_list or []
+    incident_list = json.loads(res[0]['Contents']) if len(res) > 0 else []
+    return incident_list
 
 
 def incident_to_record(incident, time_field):

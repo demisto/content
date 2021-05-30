@@ -196,7 +196,7 @@ incident1_dup = {
 
 
 def execute_command(command, args=None):
-    if command == 'getIncidents':
+    if command == 'GetIncidentsByQuery':
         entry = {}
         entry['Type'] = entryTypes['note']
         entry['Contents'] = {}
