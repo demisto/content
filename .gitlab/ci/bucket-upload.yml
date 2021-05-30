@@ -51,7 +51,6 @@ create-instances-upload-flow:
     INSTANCE_CREATED: "true"
     SSH_TUNNEL_TIMEOUT: 10
     TIME_TO_LIVE: ""
-    # DESTROY_INSTANCES: "true"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -163,18 +162,19 @@ run-validations-upload-flow:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .bucket-upload-rule
-#   variables:
-#     SLACK_TEST_TYPE: "unittests"
-#     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
-#     SLACK_ONLY_IF: "true"
 
 
 slack-notify-bucket-upload:
   extends:
     - .trigger-slack-notification
-    - .bucket-upload-rule
+  rules:
+    - if: '$GCS_MARKET_BUCKET == "marketplace-dist"' # remove this after testing period
+      when: never # remove this after testing period
+    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
+      when: never
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
     WORKFLOW: 'Upload Packs to Marketplace Storage'
-    SLACK_NOTIFY: 'true'
     JOB_NAME: 'upload-packs-to-marketplace'
