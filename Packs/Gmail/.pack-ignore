@@ -1,2 +1,5 @@
 [file:Gmail.yml]
 ignore=IN126
+
+[file:classifier-mapper-incoming-Gsuite-gmail.json]
+ignore=BA101

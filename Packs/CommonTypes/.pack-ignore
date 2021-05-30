@@ -183,3 +183,9 @@ ignore=BA101
 
 [file:layoutscontainer-url.json]
 ignore=BA101
+
+[file:classifier-mapper-incoming-Mail-listener.json]
+ignore=BA101
+
+[file:]
+ignore=BA101

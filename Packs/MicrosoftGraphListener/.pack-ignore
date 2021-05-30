@@ -1,2 +1,5 @@
 [file:MicrosoftGraphListener.yml]
 ignore=IN126
+
+[file:classifier-mapper-incomming-MicrosoftGraphListener.json]
+ignore=BA101

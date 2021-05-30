@@ -1,2 +1,5 @@
 [file:README.md]
 ignore=RM104
+
+[file:classifier-Box_Incoming_Mapper.json]
+ignore=BA101

@@ -1,2 +1,5 @@
 [file:GmailSingleUser.yml]
 ignore=BA109
+
+[file:classifier-mapper-incoming-gmail-single-user.json]
+ignore=BA101

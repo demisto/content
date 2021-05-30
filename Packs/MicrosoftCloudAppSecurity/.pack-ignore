@@ -3,3 +3,6 @@ ignore=RM102,RM104
 
 [file:layoutscontainer-details-MicrosoftCloudAppSecurity.json]
 ignore=BA101
+
+[file:classifier-mapper-incoming-MicrosoftCloudAppSecurity.json]
+ignore=BA101

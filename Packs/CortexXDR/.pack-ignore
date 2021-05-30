@@ -15,3 +15,9 @@ ignore=BA108,BA109,BA110
 
 [file:Cortex_XDR_-_Retrieve_File_Playbook.yml]
 ignore=BA110
+
+[file:classifier-mapper-incoming-PaloAltoNetworks_CortexXDR.json]
+ignore=BA101
+
+[file:classifier-mapper-outgoing-PaloAltoNetworks_CortexXDR.json]
+ignore=BA101

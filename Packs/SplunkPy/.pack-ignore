@@ -1,2 +1,5 @@
 [file:SplunkPy.yml]
 ignore=IN126,IN135
+
+[file:classifier-mapper-incoming-SplunkPy.json]
+ignore=BA101
