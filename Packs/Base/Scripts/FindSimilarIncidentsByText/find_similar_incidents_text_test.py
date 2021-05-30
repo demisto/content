@@ -1,3 +1,5 @@
+import json
+
 from CommonServerPython import *
 from FindSimilarIncidentsByText import main
 import random
@@ -199,7 +201,7 @@ def execute_command(command, args=None):
     if command == 'GetIncidentsByQuery':
         entry = {}
         entry['Type'] = entryTypes['note']
-        entry['Contents'] = [incident1_dup, incident3, incident4]
+        entry['Contents'] = json.dumps([incident1_dup, incident3, incident4])
         return [entry]
         find_similar_incidents_text_test
     if command == 'WordTokenizerNLP':
