@@ -6273,7 +6273,7 @@ def is_demisto_version_ge(version, build_number=''):
             return True
         elif server_version.get('version') == version:
             if build_number:
-                return int(server_version.get('buildNumber')) >= int(build_number)
+                return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[[arg-type]]
             return True  # No build number
         else:
             return False
