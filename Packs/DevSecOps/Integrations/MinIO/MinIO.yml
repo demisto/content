@@ -3,7 +3,7 @@ commonfields:
   id: MinIO
   version: -1
 configuration:
-- display: Server Name or Address (e.g. 192.168.20.20)
+- display: Server Name or Address (e.g. 8.8.8.8)
   name: server
   required: true
   type: 0

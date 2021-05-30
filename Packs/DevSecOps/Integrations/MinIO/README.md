@@ -8,7 +8,7 @@ This integration was integrated and tested with RELEASE.2020-12 of MinIO.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | server | Server Name or Address \(e.g. 192.168.20.20\) | True |
+    | server | Server Name or Address \(e.g. 8.8.8.8\) | True |
     | port | Port Number | True |
     | access_key | Access Key | True |
     | access_secret | Access Secret | True |
