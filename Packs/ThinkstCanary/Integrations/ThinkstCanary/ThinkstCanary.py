@@ -254,13 +254,13 @@ def check_whitelist_command():
     context = {
         'Address': str(ip),
         'Port': str(port),
-        'Whitelisted': str(res.get('is_ip_whitelisted'))
+        'Whitelisted': str(res.get('is_ip_ignored'))
     }
     contents = res
     context = createContext(context, removeNull=True)
     outputs = {'CanaryTools.IP(val.Address && val.Address===obj.Address && val.Port && val.Port===obj.Port)': context}
 
-    if res.get('is_ip_whitelisted'):
+    if res.get('is_ip_ignored'):
         human_readable = 'The IP address {}:{} is Whitelisted'.format(ip, port)
     else:
         human_readable = 'The IP address {}:{} is not Whitelisted'.format(ip, port)
