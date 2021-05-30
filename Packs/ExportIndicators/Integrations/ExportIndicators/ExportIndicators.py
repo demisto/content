@@ -868,7 +868,7 @@ def run_long_running(params, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=server.serve_forever)
             server_process.start()

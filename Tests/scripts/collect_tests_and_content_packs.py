@@ -230,9 +230,9 @@ def collect_tests_and_content_packs(
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
-            logging.error("The playbook {} does not appear in the conf.json file,"
-                          " which means no test with it will run. please update the conf.json file accordingly"
-                          .format(test_playbook_name))
+            logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
+                          " which means no test with it will run. please update the conf.json file accordingly."
+                          )
 
     ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                             integration_ids, playbook_ids, script_ids)
@@ -248,10 +248,12 @@ def collect_tests_and_content_packs(
             test_playbook_pack = test_playbook_object.get('pack')
             if test_playbook_pack:
                 logging.info(
-                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
+                    f'Found test playbook "{test_playbook_id}" in pack "{test_playbook_pack}"'
+                    f' - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
-                logging.warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
+                logging.warning(f'Found test playbook "{test_playbook_id}" without pack'
+                                f' - not adding to packs to install')
 
     return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
 
@@ -340,11 +342,11 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     playbook_names = set([])
     integration_ids = set([])
 
-    tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
+    tests_set, caught_scripts, caught_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
-        script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
+        script_names, playbook_names, integration_ids, caught_scripts, caught_playbooks, tests_set, id_set, conf)
 
     packs_to_install.update(test_packs_to_install)
 
@@ -1072,7 +1074,7 @@ def filter_installed_packs(packs_to_install: set) -> set:
         else:
             packs_that_should_be_installed.add(pack)
     if packs_that_should_not_be_installed:
-        logging.debug('The following packs are should not be installed and therefore not collected: \n{} '.format(
+        logging.debug('The following packs should not be installed and therefore not collected: \n{} '.format(
             '\n'.join(packs_that_should_not_be_installed)))
 
     return packs_that_should_be_installed
