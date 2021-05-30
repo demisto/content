@@ -1,5 +1,8 @@
 Amazon Web Services Identity and Access Management (IAM)
-This integration was integrated and tested with version xx of AWS - IAM
+
+For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
+
+
 ## Configure AWS - IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
