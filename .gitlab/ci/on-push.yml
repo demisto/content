@@ -151,7 +151,7 @@ run-validations:
 
 slack-notify-nightly-build:
   extends:
-    - .trigger-slack-notify
+    - .trigger-slack-notification
   rules:
     - if: '$NIGHTLY'
   variables:

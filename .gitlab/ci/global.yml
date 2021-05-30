@@ -126,7 +126,7 @@
   stage: .post
   trigger:
     include:
-      - local: .gitlab/ci/slack-nightly.yml
+      - local: .gitlab/ci/slack-notify.yml
 
 
 .run-unittests-and-lint:

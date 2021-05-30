@@ -154,7 +154,7 @@ demisto-sdk-nightly:run-commands-against-instance:
 
 demisto-sdk-nightly:trigger-slack-notify:
   extends:
-    - .trigger-slack-notify
+    - .trigger-slack-notification
     - .sdk-nightly-schedule-rule
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID

@@ -171,7 +171,7 @@ run-validations-upload-flow:
 
 slack-notify-bucket-upload:
   extends:
-    - .trigger-slack-notify
+    - .trigger-slack-notification
     - .bucket-upload-rule
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
