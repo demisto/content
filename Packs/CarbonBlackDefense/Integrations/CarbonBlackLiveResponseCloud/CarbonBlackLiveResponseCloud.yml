@@ -5,10 +5,10 @@ name: CarbonBlackLiveResponseCloud
 display: Carbon Black Live Response Cloud
 fromversion: 5.5.0
 category: Endpoint
-description: VMware Carbon Black Endpoint Standard Live Response is a feature that’s
-  allows security operators to collect information and take action on remote endpoints
-  in real time, These actions include the ability to upload, download, and remove
-  files, retrieve and remove registry entries, dump contents of physical memory, execute
+description: VMware Carbon Black Endpoint Standard Live Response is a feature that
+  enables security operators to collect information and take action on remote endpoints
+  in real time. These actions include the ability to upload, download, and remove
+  files, retrieve and remove registry entries, dump contents of physical memory, and execute
   and terminate processes.
 detaileddescription:
 configuration:
@@ -16,22 +16,22 @@ configuration:
   name: url
   type: 0
   required: true
-  additionalinfo: The URL used to access the Carbon Black Cloud
+  additionalinfo: The URL used to access the Carbon Black Cloud.
 - display: Custom Key
   name: custom_key
   type: 4
   required: true
-  additionalinfo: The Custom Key to use for connection
+  additionalinfo: The custom key to use for the connection.
 - display: Custom ID
   name: custom_id
   type: 4
   required: true
-  additionalinfo: The Custom Id to use for connection
+  additionalinfo: The custom ID to use for the connection.
 - display: Organization Key
   name: org_key
   type: 4
   required: true
-  additionalinfo: The Organization Key to use for connection
+  additionalinfo: The organization key to use for the connection.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -48,157 +48,157 @@ script:
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: destination_path
       required: true
-      description: File path to create on the remote endpoint
+      description: File path to create on the remote endpoint.
     - name: file_id
       required: true
-      description: The file entry id in the War Room
-    description: Create a new file on the remote machine with the specified data
+      description: The file entry ID in the War Room.
+    description: Creates a new file on the remote machine with the specified data.
     execution: true
   - name: cbd-lr-file-get
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: source_path
       required: true
-      description: Path of the file to be retrieved
+      description: Path of the file to be retrieved.
     - name: timeout
-      description: Timeout for the operation
+      description: Timeout for the operation.
     - name: delay
-      description: Delay in seconds to wait before command complete
-    description: Retrieve contents of the specified file on the remote machine
+      description: The amount of time in seconds to wait before a command completes.
+    description: Retrieves the contents of the specified file on the remote machine.
   - name: cbd-lr-file-delete
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: source_path
       required: true
-      description: Path of the file to be deleted
+      description: Path of the file to be deleted.
     outputs:
-    description: Delete the specified file name on the remote machine
+    description: Deletes the specified file name on the remote machine.
     execution: true
   - name: cbd-lr-directory-listing
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: directory_path
       required: true
-      description: Directory to list. This parameter should end with the path separator or have some filter pattern e.g *.txt
+      description: The directory path. This parameter should end with the path separator or have some filter pattern, e.g., *.txt.
     - name: limit
-      description: Limit the number of returned directory entries
+      description: The maximum number of returned directory entries.
       defaultValue: "100"
     outputs:
     - contextPath: CarbonBlackDefenseLR.Directory.content
-      description: list of dicts, each one describing a directory entry
+      description: List of dicts, each describing a directory entry.
       type: Data
     - contextPath: CarbonBlackDefenseLR.Directory.device_id
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
       type: String
     - contextPath: CarbonBlackDefenseLR.Directory.directory_path
-      description: The path of the listed directory
+      description: The path of the listed directory.
       type: String
-    description: List the contents of a directory on the remote machine
+    description: Lists the contents of a directory on the remote machine.
   - name: cbd-lr-reg-sub-keys
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: reg_path
       required: true
-      description: The registry key to enumerate
+      description: The registry key to enumerate.
     - name: limit
-      description: Limit the number of returned sub keys
+      description: The maximum number of returned subkeys.
       defaultValue: "100"
     outputs:
     - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.key
-      description: The parent registry key
+      description: The parent registry key.
       type: String
     - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.sub_keys
-      description: The sub keys
+      description: The subkeys.
       type: Data
     - contextPath: CarbonBlackDefenseLR.RegistrySubKeys.device_id
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
       type: String
-    description: Enumerate subkeys of the specified registry key on the remote machine
+    description: Enumerates the subkeys of the specified registry key on the remote machine.
   - name: cbd-lr-reg-get-values
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: reg_path
       required: true
-      description: The registry key to enumerate
+      description: The registry key to enumerate.
     - name: limit
-      description: Limit the number of returned values
+      description: The maximum number of returned values.
       defaultValue: "100"
     outputs:
     - contextPath: CarbonBlackDefenseLR.RegistryValues.key
-      description: The registry key
+      description: The registry key.
       type: String
     - contextPath: CarbonBlackDefenseLR.RegistryValues.values
-      description: The registry values of the given key
+      description: The registry values of the given key.
       type: Data
     - contextPath: CarbonBlackDefenseLR.RegistryValues.device_id
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
       type: String
-    description: 'Enumerate all registry values from the specified registry key on the remote machine,
-      due to API limitation - binary values will not shown'
+    description: 'Enumerates all registry values from the specified registry key on the remote machine.
+      Due to API limitations, binary values will not be shown.'
   - name: cbd-lr-reg-key-create
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: reg_path
       required: true
-      description: The registry key to create
+      description: The registry key to create.
     outputs:
-    description: Create a new registry key on the remote machine
+    description: Creates a new registry key on the remote machine.
     execution: true
   - name: cbd-lr-reg-key-delete
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: reg_path
       required: true
-      description: The registry key to delete
+      description: The registry key to delete.
     - name: force
       defaultValue: "False"
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
-      description: True to force delete the registry key with all sub keys if exist
+      description: True to force delete the registry key with all subkeys if they exist.
     outputs:
-    description: Delete a registry key on the remote machine, the key must be without any sub keys
+    description: Deletes a registry key on the remote machine. The key must be without any subkeys.
     execution: true
   - name: cbd-lr-reg-value-delete
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: reg_path
       required: true
-      description: The registry value to delete
+      description: The registry value to delete.
     outputs:
-    description: Delete a registry value on the remote machine
+    description: Deletes a registry value on the remote machine.
     execution: true
   - name: cbd-lr-reg-value-set
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: reg_path
       required: true
-      description: The path of the key + the path of the value e.g. HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue
+      description: The path of the key + the path of the value, e.g., HKLM\SYSTEM\CurrentControlSet\services\ACPI\testvalue.
     - name: value_data
       required: true
-      description: The value data
+      description: The value data.
     - name: value_type
       required: true
       auto: PREDEFINED
@@ -210,7 +210,7 @@ script:
       - REG_MULTI_SZ
       - REG_SZ
       - REG_SZ
-      description: 'The type of value. Examples: REG_DWORD, REG_MULTI_SZ, REG_SZ'
+      description: 'The type of the value. For example: REG_DWORD, REG_MULTI_SZ, REG_SZ.'
     - name: overwrite
       defaultValue: "True"
       description: If True, any existing value will be overwritten.
@@ -218,62 +218,62 @@ script:
       predefined:
         - "True"
         - "False"
-    description: Set a registry value on the specified registry key on the remote
-      machine
+    description: Sets a registry value on the specified registry key on the remote
+      machine.
     execution: true
   - name: cbd-lr-ps
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: limit
-      description: Limit the number of returned processes
+      description: The maximum number of returned processes.
       defaultValue: "100"
     outputs:
     - contextPath: CarbonBlackDefenseLR.Processes.processes
-      description: A list of dicts describing the processes
+      description: A list of dicts describing the processes.
       type: String
     - contextPath: CarbonBlackDefenseLR.Processes.device_id
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
       type: String
-    description: List currently running processes on the remote machine
+    description: Lists the currently running processes on the remote machine.
     execution: true
   - name: cbd-lr-kill
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: pid
       required: true
-      description: Process ID to be terminated
+      description: Process ID to be terminated.
     outputs:
-    description: Terminate a process on the remote machine
+    description: Terminates a process on the remote machine.
     execution: true
   - name: cbd-lr-execute
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: command_string
       required: true
-      description: Command string used for the create process operation
+      description: Command string used for the create process operation.
     - name: wait_for_output
-      description: ' True to block on output from the new process (execute in foreground).
-        This will also set wait_for_completion (below).'
+      description: 'True to block on output from the new process (execute in foreground).
+        This will also set the wait_for_completion command.'
       defaultValue: "True"
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
     - name: working_directory
-      description: The working directory of the create process operation
+      description: The working directory of the create process operation.
     - name: remote_output_file_name
-      description: The remote output file name used for process output
+      description: The remote output file name used for the process output.
     - name: wait_timeout
-      description: Timeout used for this command
+      description: Timeout used for this command.
       defaultValue: "30"
     - name: wait_for_completion
-      description: True to wait until the process is completed before returning
+      description: True to wait until the process is completed before returning.
       defaultValue: "True"
       auto: PREDEFINED
       predefined:
@@ -281,28 +281,28 @@ script:
         - "False"
     outputs:
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.return_value
-      description: The output of the process
+      description: The output of the process.
       type: String
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.device_id
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
       type: String
     - contextPath: CarbonBlackDefenseLR.ExecuteProcess.command_string
-      description: The command string used for the create process operation
+      description: The command string used for the create process operation.
       type: String
-    description: Create a new process on the remote machine with the specified command
-      string
+    description: Creates a new process on the remote machine with the specified command
+      string.
     execution: true
   - name: cbd-lr-memdump
     arguments:
     - name: device_id
       required: true
-      description: The device (endpoint) id
+      description: The device (endpoint) ID.
     - name: target_path
       required: true
-      description: Path of the file the memory dump will be stored in on the remote machine
-    description: Perform a memory dump operation on the remote machine
+      description: Path of the file the memory dump will be stored in on the remote machine.
+    description: Performs a memory dump operation on the remote machine.
     execution: true
     outputs:
-  dockerimage: devdemisto/carbon-black-cloud:1.0.0.20489
+  dockerimage: demisto/carbon-black-cloud:1.0.0.19362
   runonce: false
   subtype: python3
