@@ -134,9 +134,9 @@ server_master:
     - if: '$NIGHTLY'
   variables:
     INSTANCE_ROLE: "Server Master"
-    SLACK_TEST_TYPE: "test_playbooks"
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
+    # SLACK_TEST_TYPE: "test_playbooks"
+    # SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+    # SLACK_ONLY_IF: "true"
 
 run-validations:
   extends:
@@ -148,3 +148,14 @@ run-validations:
 #   extends:
 #     - .run-unittests-and-lint
 #     - .push-rule
+
+slack-notify-nightly-build:
+  extends:
+    - .trigger-slack-notify
+  rules:
+    - if: '$NIGHTLY'
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Content Nightly'
+    SLACK_NOTIFY: 'true'
+    JOB_NAME: 'server_master'

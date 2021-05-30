@@ -167,3 +167,14 @@ run-validations-upload-flow:
 #     SLACK_TEST_TYPE: "unittests"
 #     SLACK_ENV_RESULTS: $ARTIFACTS_FOLDER/env_results.json
 #     SLACK_ONLY_IF: "true"
+
+
+slack-notify-bucket-upload:
+  extends:
+    - .trigger-slack-notify
+    - .bucket-upload-rule
+  variables:
+    PIPELINE_TO_QUERY: $CI_PIPELINE_ID
+    WORKFLOW: 'Upload Packs to Marketplace Storage'
+    SLACK_NOTIFY: 'true'
+    JOB_NAME: 'upload-packs-to-marketplace'

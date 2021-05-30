@@ -14,4 +14,8 @@ include:
 slack-notify:
   stage: notify
   extends: .default-job-settings
-  script: ./Tests/scripts/slack_notifier.sh "$SLACK_TEST_TYPE" "$SLACK_ENV_RESULTS" "$SLACK_CHANNEL"
+  script: 
+    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "$PIPELINE_TO_QUERY" -s "$SLACK_TOKEN" -c "$GITLAB_STATUS_TOKEN" -ca "$ARTIFACTS_FOLDER" -ch "$SLACK_CHANNEL" -tw "$WORKFLOW"
+  needs:
+    - pipeline: $PIPELINE_TO_QUERY
+      job: $JOB_NAME

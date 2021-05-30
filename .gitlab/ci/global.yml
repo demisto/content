@@ -124,12 +124,9 @@
 
 .trigger-slack-notification:
   stage: .post
-  variables:
-    PIPELINE_TO_QUERY: ''
   trigger:
     include:
       - local: .gitlab/ci/slack-nightly.yml
-      - artifact: $ENV_RESULTS_PATH
 
 
 .run-unittests-and-lint:
