@@ -29,10 +29,10 @@ demisto-sdk-nightly:run-validations:
   extends:
     - .run-validations
     - .sdk-nightly-schedule-rule
-  variables:
-    SLACK_TEST_TYPE: ${CI_JOB_NAME}
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
+  # variables:
+  #   SLACK_TEST_TYPE: ${CI_JOB_NAME}
+  #   SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+  #   SLACK_ONLY_IF: "true"
 
 
 demisto_sdk_nightly:check_idset_dependent_commands:
@@ -108,9 +108,9 @@ demisto-sdk-nightly:run-commands-against-instance:
   variables:
     DESTROY_INSTANCES: "true"
     INSTANCE_ROLE: "Server Master"
-    SLACK_TEST_TYPE: ${CI_JOB_NAME}
-    SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
-    SLACK_ONLY_IF: "true"
+    # SLACK_TEST_TYPE: ${CI_JOB_NAME}
+    # SLACK_ENV_RESULTS: ${ARTIFACTS_FOLDER}/env_results.json
+    # SLACK_ONLY_IF: "true"
   needs: ["demisto-sdk-nightly:create-instance"]
   dependencies:
     - demisto-sdk-nightly:create-instance

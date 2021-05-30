@@ -1,6 +1,6 @@
 workflow:
   rules:
-    - if: $SLACK_NOTIFY
+    - if: '$SLACK_NOTIFY == "true" && ($CI_COMMIT_BRANCH == "master" || $SLACK_CHANNEL != "dmst-content-team")'
 
 
 stages:
