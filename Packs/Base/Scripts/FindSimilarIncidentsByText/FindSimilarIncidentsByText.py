@@ -50,7 +50,7 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
                                                                 incident_type)
 
     if ignore_closed:
-        query += " -status: closed"
+        query += " and -closed:*"
 
     if incident_id:
         query += ' and -id:%s' % incident_id
@@ -58,17 +58,14 @@ def get_incidents_by_time(incident_time, incident_type, incident_id, hours_time_
     args = {'query': query, 'size': max_number_of_results, 'sort': '%s.desc' % time_field}
     if time_field == "created":
         args['from'] = min_date.isoformat()
-    res = demisto.executeCommand('GetIncidentsByQuery', {
-        'query': query,
-        'fromDate': min_date.isoformat(),
-        'toDate': max_date.isoformat(),
-        'limit': max_number_of_results
-    })
+    res = demisto.executeCommand("getIncidents",
+                                 {'query': query,
+                                  'size': max_number_of_results, 'sort': '%s.desc' % time_field})
 
-    if is_error(res):
-        return_error(res)
+    if res[0]['Type'] == entryTypes['error']:
+        raise Exception(str(res[0]['Contents']))
 
-    incident_list = json.loads(res[0]['Contents'])
+    incident_list = res[0]['Contents']['data']
     return incident_list or []
 
 
