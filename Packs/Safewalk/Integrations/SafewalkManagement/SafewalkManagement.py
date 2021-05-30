@@ -1250,7 +1250,7 @@ def main():
 
         if demisto.command() == 'safewalk-set-user-virtualauthentication-settings':
             result = set_user_virtualauthentication_settings(client, demisto.args())
-            return_results(result)
+            #return_results(result)
 
         if demisto.command() == 'safewalk-get-user-group':
             result = get_user_group(client, demisto.args())
