@@ -1,6 +1,7 @@
 import json
 import io
 import dateparser
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
