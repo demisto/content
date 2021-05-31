@@ -2,7 +2,7 @@
     "name": "Common Types",
     "description": "This Content Pack will get you up and running in no-time and provide you with the most commonly used incident & indicator fields and types.",
     "support": "xsoar",
-    "currentVersion": "2.9.9",
+    "currentVersion": "2.10.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -17,11 +17,11 @@
             "display_name": "Phishing"
         },
         "CommonScripts": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "Common Scripts"
         },
         "Malware": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Malware"
         },
         "SplunkPy": {
@@ -42,9 +42,7 @@
         "CommonScripts",
         "Malware",
         "SplunkPy",
-        "SANS",
         "CVESearch",
-        "NIST",
         "Compliance"
     ]
 }
