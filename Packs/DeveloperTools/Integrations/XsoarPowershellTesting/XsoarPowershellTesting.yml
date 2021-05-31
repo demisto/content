@@ -38,6 +38,23 @@ script:
     description: Set integration context.
     execution: false
     name: pwsh-test-set-integration-context
+  - arguments:
+      - default: false
+        description: Value to set in integration context.
+        isArray: false
+        name: value
+        required: true
+        secret: false
+      - default: false
+        description: The context version to update.
+        isArray: false
+        name: version
+        required: true
+        secret: false
+    deprecated: false
+    description: Set integration versioned context.
+    execution: false
+    name: pwsh-test-set-integration-versioned-context
   dockerimage: demisto/powershell-ubuntu:7.1.3.20270
   isfetch: false
   longRunning: false

@@ -731,7 +731,7 @@ function GetIntegrationContext {
     return $demisto.GetIntegrationContext()
 }
 
-function SetIntegrationContext ([object]$context, [bool]$sync = $true, [int]$version = -1) {
+function SetIntegrationContext ([object]$context, $version = -1, [bool]$sync = $true) {
     if (DemistoVersionGreaterEqualThen -version "6.0.0") {
         return $demisto.setIntegrationContextVersioned($context, $version, $sync)
     }

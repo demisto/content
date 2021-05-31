@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 50
         }
       }
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 370
         }
       }
@@ -87,7 +87,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 545
         }
       }
@@ -129,7 +129,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 720
         }
       }
@@ -155,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 2295
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -189,7 +189,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 195
         }
       }
@@ -220,7 +220,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1945
         }
       }
@@ -233,14 +233,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e3efa332-61a4-4b89-87ec-744362c05f97
+    taskid: d839d6ff-7f9e-44f3-82c4-f6bec523577a
     type: regular
     task:
-      id: e3efa332-61a4-4b89-87ec-744362c05f97
+      id: d839d6ff-7f9e-44f3-82c4-f6bec523577a
       version: -1
-      name: Set integration context
-      description: Set integration context.
-      script: '|||pwsh-test-set-integration-context'
+      name: Set integration vesioned context
+      description: Set integration context with version.
+      script: '|||pwsh-test-set-integration-versioned-context'
       type: regular
       iscommand: true
       brand: ""
@@ -250,11 +250,14 @@ tasks:
     scriptarguments:
       value:
         simple: Second Value
+      version:
+        complex:
+          root: PrevVersion
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1770
         }
       }
@@ -267,10 +270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 23f18d13-11f3-456b-8e56-c2e242056083
+    taskid: 90f3c2e7-2d92-43b6-8eb4-3893a4f44b1c
     type: condition
     task:
-      id: 23f18d13-11f3-456b-8e56-c2e242056083
+      id: 90f3c2e7-2d92-43b6-8eb4-3893a4f44b1c
       version: -1
       name: Check integration context was updated
       description: Check integration context setup succesfully and retrieve succesfully.
@@ -279,7 +282,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -305,7 +308,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 2120
         }
       }
@@ -336,7 +339,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 895
         }
       }
@@ -379,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1595
         }
       }
@@ -415,7 +418,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 1420
         }
       }
@@ -446,7 +449,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1070
         }
       }
@@ -488,8 +491,82 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 50,
           "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3ae4c12d-88d0-450f-8efe-f3aa26990828
+    type: regular
+    task:
+      id: 3ae4c12d-88d0-450f-8efe-f3aa26990828
+      version: -1
+      name: Set integration outdated vesioned context
+      description: Set integration context with version.
+      script: '|||pwsh-test-set-integration-versioned-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      value:
+        simple: Second Value
+      version:
+        complex:
+          root: PrevVersion
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b719ada1-be5a-4480-8594-8239b6d416cc
+    type: condition
+    task:
+      id: b719ada1-be5a-4480-8594-8239b6d416cc
+      version: -1
+      name: Verify error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2480
         }
       }
     note: false
@@ -504,7 +581,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 2660,
         "width": 492.5,
         "x": 50,
         "y": 50
