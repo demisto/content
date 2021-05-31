@@ -152,7 +152,7 @@ def main():
             'mapping': MAPPING.get(indicator_type),
             'custom_build_iterator': custom_build_iterator,
             'fetch_time': params.get('fetch_time', '7 days'),
-            'relation_entity_b_type': 'STIX Malware',
+            'relation_entity_b_type': 'Malware',
             'relation_name': EntityRelationship.Relationships.COMMUNICATES_WITH,
             'create_relations_function': custom_build_relationships,
 
