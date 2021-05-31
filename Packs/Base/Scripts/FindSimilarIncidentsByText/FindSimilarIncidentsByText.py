@@ -28,7 +28,7 @@ def get_texts_from_incident(incident, text_fields):
         if label['type'].lower() in text_fields:
             texts.append(label['value'])
 
-    # custom fields + incident fields
+    # custom fields + incident fields.
     custom_fields = incident.get('CustomFields') or {}
     for field_name, field_value in (custom_fields.items() | incident.items()):
         if field_name in text_fields and isinstance(field_value, string_types):
