@@ -1,0 +1,22 @@
+{
+    "id": 1512888939239,
+    "status": "pending",
+    "task-type": "codereview",
+    "task-result": {
+        "id": "c2ea64a00158ea88afa84d8008c0eed129445f45",
+        "results-url": "https://lgtm.com/projects/g/my-devsecops/moon/rev/pr-c2ea64a00158ea88afa84d8008c0eed129445f45",
+        "status": "pending",
+        "status-message": "Starting up",
+        "languages": [
+            {
+                "language": "python",
+                "status": "pending",
+                "status-message": "Starting up",
+                "new": 0,
+                "fixed": 0,
+                "alerts": []
+            }
+        ]
+    },
+    "task-result-url": "https://lgtm.com/api/v1.0/codereviews/c2ea64a00158ea88afa84d8008c0eed129445f45"
+}

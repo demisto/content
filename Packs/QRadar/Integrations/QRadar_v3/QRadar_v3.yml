@@ -38,6 +38,12 @@ configuration:
   required: true
   type: 15
 - defaultvalue: '20'
+  display: Maximum number of events per incident.
+  name: events_limit
+  required: false
+  type: 0
+  additionalinfo: The maximal amount of events to pull per incident.
+- defaultvalue: '20'
   display: Number of offenses to pull per API call (max 50)
   name: offenses_per_fetch
   required: false
@@ -85,7 +91,7 @@ configuration:
   - Mirror Offense
   required: false
   type: 15
-  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done.
+  additionalinfo: How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev.
 - additionalinfo: When selected, closing the QRadar offense is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
@@ -2810,7 +2816,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.5.20070
   feed: false
   isfetch: false
   isremotesyncin: true
