@@ -222,6 +222,7 @@ class PostProcessing(object):
         Compute distribution of sample per cluster (depending of the naming and threshold)
         """
         dist_total = {}  # type: Dict
+        duplicate_family = {}  # type: ignore
         if not self.generic_cluster_name:
             for cluster_number in range(-1, self.clustering.number_clusters):  # type: ignore
                 chosen = {k: v for k, v in self.stats[cluster_number]['distribution sample'].items() if
@@ -236,7 +237,14 @@ class PostProcessing(object):
                         self.clustering.model.labels_ == cluster_number].label.isin(  # type: ignore
                         list(chosen.keys())))  # type: ignore
                 dist_total[cluster_number]['distribution'] = dist
-                dist_total[cluster_number]['clusterName'] = ' , '.join([x for x in chosen.keys()])[:15]
+                cluster_name = ' , '.join([x for x in chosen.keys()])[:15]
+                if cluster_name in duplicate_family.keys():
+                    new_cluster_name = '%s_%s' % (cluster_name, str(duplicate_family[cluster_name]))
+                    duplicate_family[cluster_name] += 1
+                else:
+                    new_cluster_name = cluster_name
+                    duplicate_family[cluster_name] = 0
+                dist_total[cluster_number]['clusterName'] = new_cluster_name
         else:
             for cluster_number in range(-1, self.clustering.number_clusters):  # type: ignore
                 chosen = self.stats[cluster_number]['distribution sample']
