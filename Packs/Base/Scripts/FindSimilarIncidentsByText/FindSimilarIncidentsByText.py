@@ -130,7 +130,7 @@ def main():
 
     # filter candidates with minimum length constraint
     map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
-    candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, 0)) >= MIN_TEXT_LENGTH]
+    candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, "")) >= MIN_TEXT_LENGTH]
 
     # compare candidates to the orginial incident using TF-IDF
     candidates_text = map(lambda x: x[INCIDENT_TEXT_FIELD], candidates)
