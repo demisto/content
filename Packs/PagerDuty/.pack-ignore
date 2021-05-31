@@ -1,2 +1,5 @@
 [file:PagerDuty.yml]
 ignore=IN126
+
+[file:READNE.md]
+ignore=RM106
