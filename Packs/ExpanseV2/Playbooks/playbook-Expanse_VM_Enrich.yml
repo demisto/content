@@ -513,7 +513,7 @@ tasks:
       version: -1
       name: IP Address Exists
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -550,7 +550,7 @@ tasks:
       version: -1
       name: Domain Exists
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -682,7 +682,7 @@ tasks:
       version: -1
       name: Has Asset been assessed?
       description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+        for empty arrays. To be used mostly with DQ and selectors.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -751,7 +751,7 @@ tasks:
       id: a8eedd9a-8777-4941-8dc5-d7516cb20758
       version: -1
       name: Print Asset Summary
-      description: Convert an array to a nice table display. Usually, from the context.
+      description: Convert an array to a nice table display, usually from the context.
       scriptName: ToTable
       type: regular
       iscommand: false
