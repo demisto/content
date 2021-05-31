@@ -33,3 +33,6 @@ ignore=SC105
 
 [file:FileToBase64List.yml]
 ignore=BA109
+
+[file:script-ExampleJSScript.yml]
+ignore=BA110
