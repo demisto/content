@@ -1,5 +1,4 @@
-This is the Gurucul GRA integration for getting started and learn how to build an integration with Cortex XSOAR.
-You can check the Design Document of this integration [here](https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0).
+In this tutorial, learn how to integrate GRA with Cortex XSOAR. You can check the Design Document of this integration [here](https://docs.google.com/document/d/1wETtBEKg37PHNU8tYeB56M1LE314ux086z3HFeF_cX0).
 
 Please make sure you look at the integration source code and comments.
 
@@ -440,7 +439,7 @@ Retrieve all High Privileged Accounts for a Given Resource.
 ```
 [{
       "id":2,
-      "name":"Jonathan.Osterman01_NN",
+      "name":"user1",
       "type":null,
       "created_on":"02/09/2017 10:00:00",
       "department":null,
@@ -499,7 +498,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 ```
 [{
       "id":2,
-      "name":"Jonathan.Osterman01_NN",
+      "name":"user1",
       "type":null,
       "created_on":"02/09/2017 10:00:00",
       "department":null,
@@ -559,7 +558,7 @@ Retrieve All Orphan / Rogue Accounts for a Given Resource.
 ```
 [{
       "id":2,
-      "name":"Jonathan.Osterman01_NN",
+      "name":"user1",
       "type":null,
       "created_on":"02/09/2017 10:00:00",
       "department":null,
@@ -671,7 +670,7 @@ get details of the user.
     "firstName":"Jonathan",
     "middleName":null,
     "lastName":"Osterman01_NN",
-    "employeeId":"Jonathan.Osterman01_NN",
+    "employeeId":"user1",
     "riskScore":88,
     "userRisk":88,
     "department":"IT",
@@ -722,7 +721,6 @@ get details of the user.
 | Gra.Highrisk.Users.high_risk | String | High Risk. | 
 | Gra.Highrisk.Users.is_orphan | String | Is Orphan Account . | 
 | Gra.Highrisk.Users.is_reassigned | String | Is Reassigned . | 
-| Gra.Highrisk.Users.risk_score | String | Risk Score . | 
 | Gra.Highrisk.Users.updated_on | Date | Updated On . | 
 | Gra.Highrisk.Users.exitDate | Date | Exit Date . | 
 | Gra.Highrisk.Users.created_on | Date | Created On . | 
@@ -846,7 +844,7 @@ get details of the user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gra.Anomalies.anomaly_name | String | Anomaly Name . | 
+| Gra.User.Anomalies.anomaly_name | String | Anomaly Name . | 
 
 
 #### Command Example

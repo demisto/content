@@ -659,7 +659,7 @@ script:
       type: string
     - contextPath: Gra.Highrisk.Users.riskScore
       description: Risk Score
-      type: string
+      type: number
     - contextPath: Gra.Highrisk.Users.userRisk
       description: User Risk
       type: string
@@ -720,9 +720,6 @@ script:
     - contextPath: Gra.Highrisk.Users.domain
       description: Domain
       type: string
-    - contextPath: Gra.Highrisk.Users.risk_score
-      description: Risk Score
-      type: number
     description: Retrieve All High Risk User Information
   - name: gra-cases
     arguments:
@@ -791,7 +788,7 @@ script:
       description: Per page record count
       defaultValue: "25"
     outputs:
-    - contextPath: Gra.Anomalies.anomaly_name
+    - contextPath: Gra.User.Anomalies.anomaly_name
       description: Anomaly Name
       type: string
     description: Retrieve Detailed Information for a Given User
