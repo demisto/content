@@ -14,13 +14,13 @@ RESOLUTION = ["Docker containers overloaded: https://docs.paloaltonetworks.com/c
 
 
 def containerAnalytics(containers):
-    lres: List
+    lres = []
     for container in containers:
         if float(container['cpu_usage']) > 80.0:
-            res.append({"category": "Docker", "severity": "High",
-                        "description": "Container {} uses more then 80% of the CPU".format(container['containerid']),
-                        "resolution": f"{RESOLUTION[0]}"
-                        })
+            lres.append({"category": "Docker", "severity": "High",
+                         "description": "Container {} uses more then 80% of the CPU".format(container['containerid']),
+                         "resolution": f"{RESOLUTION[0]}"
+                         })
     return lres
 
 

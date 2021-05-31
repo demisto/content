@@ -2,7 +2,21 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import re
 
-restartcount = 0
+
+def findOldestDate(incidentDate, newDate):
+    incidentDate = datetime.strptime(incidentDate, "%Y-%m-%d %H:%M:%S")
+    newDate = datetime.strptime(newDate, "%Y-%m-%d %H:%M:%S")
+    return min([incidentDate, newDate])
+
+
+def findNewestDate(incidentDate, newDate):
+    incidentDate = datetime.strptime(incidentDate, "%Y-%m-%d %H:%M:%S")
+    newDate = datetime.strptime(newDate, "%Y-%m-%d %H:%M:%S")
+    return max([incidentDate, newDate])
+
+
+context = demisto.context()
+
 suggestions = []
 knownerrors = [
     {
@@ -116,32 +130,62 @@ knownerrors = [
 ]
 
 res = []
-last_line: List
-since: List
+context_since = context.get('LogServer', {}).get('since')
+since = log_until = restartcount = None
+context_log_until = context.get('LogServer', {}).get('logUntil')
+context_restartcount = context.get('LogServer', {}).get('restartCount')
 path = demisto.executeCommand('getFilePath', {'id': demisto.args()['entryID']})
+
 if path[0]['Type'] == entryTypes['error']:
     demisto.results('File not found')
 else:
     try:
         with open(path[0]['Contents']['path'], 'r') as f:
             data_line = f.readlines()
-
+            # find Since and find knownErrors
             for line in data_line:
                 if 'good luck' in line:
-                    restartcount += 1
-
+                    if (context_restartcount is None) and (restartcount is None):
+                        restartcount = 1
+                    elif (context_restartcount is not None) and (restartcount is None):
+                        restartcount = int(context_restartcount)
+                        restartcount += 1
+                    elif (context_restartcount is not None) and (restartcount is not None):
+                        # int(restartcount)
+                        restartcount += 1
                 for item in knownerrors:
                     for (err, suggest) in item.items():
                         if err in line:
                             if suggest not in suggestions:
                                 suggestions.append(suggest)
-                if since:
-                    pass
-                else:
+                if (context_since is None) and (since is None):
                     since = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
-                last_line = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                    oldestDate = since[0]
+                    continue
+                elif (context_since is not None) and (since is None):
+                    since = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                    oldestDate = findOldestDate(since[0], context_since)
+                    continue
+                else:
+                    continue
+            # find Last Log
+            for line in reversed(data_line):
+                if (context_log_until is None) and (log_until is None):
+                    log_until = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                    newestDate = log_until[0]
+                    break
+                elif (context_since is not None) and (log_until is None):
+                    log_until = re.findall('(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+                    newestDate = log_until[0]
+                    newestDate = findNewestDate(log_until[0], context_log_until)
+                    continue
 
-        demisto.executeCommand("setIncident", {"restartcount": restartcount, "logsince": since[0], "loguntil": last_line[0]})
+        demisto.setContext("LogServer.since", str(oldestDate))
+        demisto.setContext("LogServer.logUntil", str(newestDate))
+        demisto.setContext("LogServer.restartCount", restartcount)
+        demisto.executeCommand("setIncident", {"restartcount": restartcount,
+                                               "logsince": str(oldestDate),
+                                               "loguntil": str(newestDate)})
 
         if suggestions:
             for entry in suggestions:
