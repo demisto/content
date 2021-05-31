@@ -208,37 +208,6 @@ def reset_fetch_command(client):
     )
 
 
-def get_feed_last_run():
-    """
-    This function returns the feed's last run: from XSOAR version 6.2.0: using `demisto.getLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.getIntegrationContext()`.
-    :return: All indicators from the feed's last run
-    """
-    if is_demisto_version_ge('6.2.0'):
-        feed_last_run = demisto.getLastRun() or {}
-        if not feed_last_run:
-            integration_ctx = demisto.getIntegrationContext()
-            if integration_ctx:
-                feed_last_run = integration_ctx
-                demisto.setLastRun(feed_last_run)
-                demisto.setIntegrationContext({})
-    else:
-        feed_last_run = demisto.getIntegrationContext() or {}
-    return feed_last_run
-
-
-def set_feed_last_run(last_run_indicators):
-    """
-    This function sets the feed's last run: from XSOAR version 6.2.0: using `demisto.setLastRun()`.
-    Before XSOAR version 6.2.0: using `demisto.setIntegrationContext()`.
-    :return: None
-    """
-    if is_demisto_version_ge('6.2.0'):
-        demisto.setLastRun(last_run_indicators)
-    else:
-        demisto.setIntegrationContext(last_run_indicators)
-
-
 def main():
     params = demisto.params()
     args = demisto.args()
