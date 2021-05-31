@@ -24,7 +24,7 @@ script:
       - contextPath: XSOAR.IntegrationContext.Value
         description: Integration context object.
         type: Unknown
-      - contextPath: XSOAR.IntegrationContext.Version
+      - contextPath: XSOAR.Version
         description: Integration context version number.
         type: Unknown
   - arguments:

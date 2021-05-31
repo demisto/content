@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: ce1e6d33-0ce8-45d8-875e-9d9559333308
+    taskid: 0b2eed7c-7659-41d7-8166-c36a6450fe56
     type: start
     task:
-      id: ce1e6d33-0ce8-45d8-875e-9d9559333308
+      id: 0b2eed7c-7659-41d7-8166-c36a6450fe56
       version: -1
       name: ""
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 50
         }
       }
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7619108a-b126-4b04-8699-30d083b2af66
+    taskid: d0f2274f-76f9-4a1e-89f2-a90497b7913b
     type: regular
     task:
-      id: 7619108a-b126-4b04-8699-30d083b2af66
+      id: d0f2274f-76f9-4a1e-89f2-a90497b7913b
       version: -1
       name: Set integration context
       description: Set integration context.
@@ -56,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 370
         }
       }
@@ -69,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f4470563-f3e9-4e88-8f89-497703b6a265
+    taskid: 3cde8e74-f9e6-4a82-81fb-4ddd4ca6684a
     type: regular
     task:
-      id: f4470563-f3e9-4e88-8f89-497703b6a265
+      id: 3cde8e74-f9e6-4a82-81fb-4ddd4ca6684a
       version: -1
       name: Get integration context
       description: Get integration context.
@@ -87,7 +87,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 545
         }
       }
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7d7a7943-f155-498d-856a-a06689e30279
+    taskid: 37f1783c-7eba-414e-8ea5-4fc7f5250a6f
     type: condition
     task:
-      id: 7d7a7943-f155-498d-856a-a06689e30279
+      id: 37f1783c-7eba-414e-8ea5-4fc7f5250a6f
       version: -1
       name: Check integration context set/get value
       description: Check integration context setup succesfully and retrieve succesfully.
@@ -129,7 +129,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 720
         }
       }
@@ -142,10 +142,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: bdd37555-f9cb-4f2e-8b2b-f10e1f1dda71
+    taskid: f2ce1836-a560-4817-8257-c053ae599812
     type: title
     task:
-      id: bdd37555-f9cb-4f2e-8b2b-f10e1f1dda71
+      id: f2ce1836-a560-4817-8257-c053ae599812
       version: -1
       name: Finished succefully
       type: title
@@ -155,8 +155,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1770
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
@@ -168,10 +168,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9dd6f4b1-6117-4856-834a-9f139711a600
+    taskid: f5e8b81d-e1f6-4804-8078-d1b81983da8d
     type: regular
     task:
-      id: 9dd6f4b1-6117-4856-834a-9f139711a600
+      id: f5e8b81d-e1f6-4804-8078-d1b81983da8d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -189,7 +189,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 195
         }
       }
@@ -202,10 +202,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 88be5fb3-737c-4b65-8ca1-731403a652b9
+    taskid: 52eb9e4a-3460-42a1-8a15-562d515889ac
     type: regular
     task:
-      id: 88be5fb3-737c-4b65-8ca1-731403a652b9
+      id: 52eb9e4a-3460-42a1-8a15-562d515889ac
       version: -1
       name: Get integration versioned context
       description: Get integration versioned context.
@@ -221,7 +221,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1945
         }
       }
     note: false
@@ -233,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 130101d0-487f-495b-890b-7fc738d0f272
+    taskid: e3efa332-61a4-4b89-87ec-744362c05f97
     type: regular
     task:
-      id: 130101d0-487f-495b-890b-7fc738d0f272
+      id: e3efa332-61a4-4b89-87ec-744362c05f97
       version: -1
       name: Set integration context
       description: Set integration context.
@@ -255,7 +255,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1770
         }
       }
     note: false
@@ -267,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: acf88cb4-7fc6-4428-8911-d0df36a3e50f
+    taskid: 23f18d13-11f3-456b-8e56-c2e242056083
     type: condition
     task:
-      id: acf88cb4-7fc6-4428-8911-d0df36a3e50f
+      id: 23f18d13-11f3-456b-8e56-c2e242056083
       version: -1
       name: Check integration context was updated
       description: Check integration context setup succesfully and retrieve succesfully.
@@ -306,7 +306,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1605
+          "y": 2120
         }
       }
     note: false
@@ -318,10 +318,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: fa9fcd1b-fd07-44c5-8bba-3de431052959
+    taskid: aae53ed9-764d-4ee0-8b63-c54f93bbaacd
     type: regular
     task:
-      id: fa9fcd1b-fd07-44c5-8bba-3de431052959
+      id: aae53ed9-764d-4ee0-8b63-c54f93bbaacd
       version: -1
       name: Get integration versioned context
       description: Get integration versioned context.
@@ -331,13 +331,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
-      - "10"
+      - "12"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 162.5,
           "y": 895
         }
       }
@@ -350,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8577ba06-49d2-40b3-89c4-d69aba4d3204
+    taskid: 65232a92-8703-426a-8196-7d9036f9f05e
     type: condition
     task:
-      id: 8577ba06-49d2-40b3-89c4-d69aba4d3204
+      id: 65232a92-8703-426a-8196-7d9036f9f05e
       version: -1
       name: Verify Results
       description: Check integration context setup succesfully and retrieve succesfully.
@@ -381,7 +380,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1595
         }
       }
     note: false
@@ -393,10 +392,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 7e0ac734-ded1-431c-808c-7682e19c23d6
+    taskid: 80dc25aa-b2fd-45ed-898c-a76cd9602765
     type: regular
     task:
-      id: 7e0ac734-ded1-431c-808c-7682e19c23d6
+      id: 80dc25aa-b2fd-45ed-898c-a76cd9602765
       version: -1
       name: Set
       description: Set a value in context under the key you entered.
@@ -406,7 +405,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "10"
     scriptarguments:
       key:
         simple: PrevVersion
@@ -416,8 +415,81 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 620,
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3cd84a1a-1a8d-404e-87fe-b42ab60c9a94
+    type: regular
+    task:
+      id: 3cd84a1a-1a8d-404e-87fe-b42ab60c9a94
+      version: -1
+      name: Get demisto server
+      description: Return the Demisto server version.
+      scriptName: DemistoVersion
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
           "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c243daec-02d7-44c8-821d-b3770e476ce4
+    type: condition
+    task:
+      id: c243daec-02d7-44c8-821d-b3770e476ce4
+      version: -1
+      name: Verify versioned context is available
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: DemistoVersion.version
+            iscontext: true
+          right:
+            value:
+              simple: "6."
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
         }
       }
     note: false
@@ -432,8 +504,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1785,
-        "width": 950,
+        "height": 2310,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }

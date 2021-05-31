@@ -55,10 +55,18 @@ function GetVersionedIntegrationContextCommand() {
     $human_readable = "Integration context with version is **$raw_response_json**"
     # Entry context
     $entry_context = @{}
+
+    if (DemistoVersionGreaterEqualThen -version "6.1.0") {
+        $version = $raw_response.version.version
+    }
+    else {
+         $version = $raw_response.version
+    }
+
     $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{
             "IntegrationContext" = $raw_response.context
-            "Version" = $raw_response.version.version
+            "Version" = $version
         }
     }
 
