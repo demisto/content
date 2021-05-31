@@ -1646,6 +1646,34 @@ class TestReleaseNotes:
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
 
+    def test_get_release_notes_lines_no_rn(self, mocker, dummy_pack):
+        """
+           Given:
+               - 2 release notes files, 1.0.0 and 1.0.1 which is the latest rn and exists in the changelog
+           When:
+               - Creating the release notes for version 1.0.1
+           Then:
+               - Verify that the rn are the same
+       """
+        repo_latest_rn = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow2
+        '''
+
+        changelog_latest_rn = '''
+#### Integrations
+##### CrowdStrike Falcon Intel v2
+- wow1
+- wow2
+        '''
+
+        mocker.patch('builtins.open', mock_open(read_data=repo_latest_rn))
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
+        assert latest_rn == '1.0.1'
+        assert rn_lines == changelog_latest_rn
+
     FAILED_PACKS_DICT = {
         'TestPack': {'status': 'wow1'},
         'TestPack2': {'status': 'wow2'}
