@@ -92,7 +92,7 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
         for key in dic.keys():
             if key == 'time_seen':
                 incident_occurred_time = dic['time_seen']
-                incident_created_time = dateparser.parse(str(int(dic['action_time'])*1000),settings={'TIMEZONE': 'UTC'})
+                incident_created_time = dateparser.parse(str(int(dic['action_time']) * 1000), settings = {'TIMEZONE': 'UTC'})
                 if last_fetch:
                     if incident_created_time <= last_fetch:
                         continue
