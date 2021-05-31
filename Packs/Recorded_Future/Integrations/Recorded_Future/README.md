@@ -976,7 +976,7 @@
 <h3 id="get-information-for-a-domain-or-dns">1. Get information for a domain or DNS</h3>
 <p>This command is deprecated.</p>
 <p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=domain` and `entity=domain_value`.</p>
-<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that we are no longer support community notes field.</p>
+<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1149,7 +1149,7 @@
 <h3 id="get-information-for-an-ip-address">2. Get information for an IP address</h3>
 <p>This command is deprecated.</p>
 <p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=ip` and `entity=ip_value`.</p>
-<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that we are no longer support community notes field.</p>
+<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1336,7 +1336,7 @@
 <h3 id="get-information-for-a-file">3. Get information for a file</h3>
 <p>This command is deprecated.</p>
 <p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=file` and `entity=hash_value`.</p>
-<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that we are no longer support community notes field.</p>
+<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1548,7 +1548,7 @@
 <h3 id="get-information-for-a-url">4. Get information for a URL</h3>
 <p>This command is deprecated.</p>
 <p>Use `recordedfuture-intelligence` command from Recorded Future v2 with the following argument `entity_type=url` and `entity=url_value`.</p>
-<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that we are no longer support community notes field.</p>
+<p>You can find context differences in <a href="https://xsoar.pan.dev/docs/reference/integrations/recorded-future-v2#recordedfuture-intelligence">here</a>. Notice that 'community notes' output is no longer supported.</p>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
