@@ -139,12 +139,13 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
 
         # Notify contributors if this is not new pack
         if pack_metadata.get('support') != XSOAR_SUPPORT and pack_metadata.get('currentVersion') != '1.0.0':
-            notified_by_email = False
+            # notified_by_email = False
             # Notify contributors by emailing them on dev email:
             if reviewers_emails := pack_metadata.get(PACK_METADATA_DEV_EMAIL_FIELD):
                 reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
                                                                              str) else reviewers_emails
-                notified_by_email = send_email_to_reviewers(
+                # notified_by_email =
+                send_email_to_reviewers(
                     reviewers_emails=reviewers_emails,
                     api_token=email_api_token,
                     pack_name=pack,
@@ -165,16 +166,17 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                         reviewers.add(github_user)
                         print(f"Found {github_user} default reviewer of pack {pack}")
 
-                notified_by_github = check_reviewers(reviewers=reviewers, pr_author=pr_author,
-                                                     version=pack_metadata.get('currentVersion'),
-                                                     modified_files=modified_files, pack=pack, pr_number=pr_number,
-                                                     github_token=github_token,
-                                                     verify_ssl=verify_ssl)
+                # notified_by_github =
+                check_reviewers(reviewers=reviewers, pr_author=pr_author,
+                                version=pack_metadata.get('currentVersion'),
+                                modified_files=modified_files, pack=pack, pr_number=pr_number,
+                                github_token=github_token,
+                                verify_ssl=verify_ssl)
 
                 # Notify contributors by emailing them on support email:
-                if (reviewers_emails := pack_metadata.get(
-                       PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github and not notified_by_email:
-                    pass
+                # if (reviewers_emails := pack_metadata.get(
+                #       PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github and not notified_by_email:
+                #    pass
                 #     reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
                 #                                                                  str) else reviewers_emails
                 #     send_email_to_reviewers(
