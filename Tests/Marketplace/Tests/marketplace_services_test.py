@@ -558,11 +558,6 @@ class TestChangelogCreation:
            Then:
                - return True
        """
-        dummy_pack.current_version = '2.0.2'
-        mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        mocker.patch("os.path.exists", return_value=True)
-        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
-        mocker.patch("os.listdir", return_value=dir_list)
         original_changelog = '''{
             "1.0.0": {
                 "releaseNotes": "First release notes",
@@ -575,8 +570,17 @@ class TestChangelogCreation:
                 "released": "2020-06-05T13:39:33Z"
             }
         }'''
-        mocker.patch('builtins.open', mock_open(read_data=original_changelog))
+
+        dummy_pack.current_version = '2.0.2'
+        open_mocker = MockOpen()
         dummy_path = 'Irrelevant/Test/Path'
+        open_mocker[os.path.join(dummy_path, dummy_pack.name, Pack.CHANGELOG_JSON)].read_data = original_changelog
+        open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
+        mocker.patch("Tests.Marketplace.marketplace_services.logging")
+        mocker.patch("os.path.exists", return_value=True)
+        dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        mocker.patch('builtins.open', open_mocker)
         build_number = random.randint(0, 100000)
         task_status, not_updated_build = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
@@ -1570,9 +1574,10 @@ class TestReleaseNotes:
         }
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         mocker.patch('os.path.exists', return_value=True)
-        changelog, changelog_latest_rn_version = dummy_pack.get_changelog_latest_rn('fake_path')
+        changelog, changelog_latest_rn_version, changelog_latest_rn = dummy_pack.get_changelog_latest_rn('fake_path')
         assert changelog == original_changelog_dict
         assert changelog_latest_rn_version == LooseVersion('2.0.0')
+        assert changelog_latest_rn == "Second release notes"
 
     def test_create_local_changelog(self, mocker, dummy_pack):
         """
@@ -1622,7 +1627,7 @@ class TestReleaseNotes:
         open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'))
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.0'), '')
         assert latest_rn == '2.0.0'
         assert rn_lines == aggregated_rn
 
@@ -1642,7 +1647,7 @@ class TestReleaseNotes:
         '''
         mocker.patch('builtins.open', mock_open(read_data=rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'), rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == rn
 
@@ -1655,12 +1660,6 @@ class TestReleaseNotes:
            Then:
                - Verify that the rn are the same
        """
-        repo_latest_rn = '''
-#### Integrations
-##### CrowdStrike Falcon Intel v2
-- wow2
-        '''
-
         changelog_latest_rn = '''
 #### Integrations
 ##### CrowdStrike Falcon Intel v2
@@ -1668,9 +1667,8 @@ class TestReleaseNotes:
 - wow2
         '''
 
-        mocker.patch('builtins.open', mock_open(read_data=repo_latest_rn))
         mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_1.md'])
-        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('rn_dir_fake_path', LooseVersion('1.0.1'))
+        rn_lines, latest_rn = dummy_pack.get_release_notes_lines('wow', LooseVersion('1.0.1'), changelog_latest_rn)
         assert latest_rn == '1.0.1'
         assert rn_lines == changelog_latest_rn
 
