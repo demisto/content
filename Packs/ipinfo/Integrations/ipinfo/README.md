@@ -1,7 +1,7 @@
 Use the ipinfo.io API to get data about an IP address
 
 ## IPinfo v2 is now available
-It's recommended to use `ipinfo_v2`, rather than `IPinfo`:
+It's recommended to use `IPinfo v2`, rather than `IPinfo`:
 - IPinfo v2 allows setting source reliability.
 - IPinfo v2 enriches data with IP-hostname relationships.
 - On IPinfo v2, the `ip-field` command has been removed: all outputs are available by running `ip`.
@@ -110,4 +110,3 @@ There is no context output for this command.
 
 #### Human Readable Output
 Miami
-
