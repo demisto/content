@@ -1,10 +1,10 @@
 {
-  "name": "FireEye Central Management NX Alerts - Mapper",
-  "id": "FireEye Central Management NX Alerts - Mapper",
+  "name": "FireEye NX Alerts v2 - Mapper",
+  "id": "FireEye NX Alerts v2 - Mapper",
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0",
-  "description": "Maps FireEye Central Management NX alerts.",
+  "description": "Maps FireEye NX alerts.",
   "mapping": {
     "FireEye NX Alert v2": {
       "dontMapEventToLabels": true,

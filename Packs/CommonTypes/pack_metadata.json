@@ -33,7 +33,7 @@
             "display_name": "CVE Search"
         },
         "Compliance": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "Compliance"
         }
     },

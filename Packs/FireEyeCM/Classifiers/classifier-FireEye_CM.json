@@ -2,9 +2,9 @@
   "name": "FireEye Central Management - Classifier",
   "type": "classification",
   "id": "FireEye Central Management - Classifier",
-  "description": "Classifies FireEye NX Incidents.",
+  "description": "Classifies FireEye NX Alerts.",
   "keyTypeMap": {
-    "WEB_MPS": "FireEye NX Alert"
+    "WEB_MPS": "FireEye NX Alert v2"
   },
   "transformer": {
     "complex": null,
