@@ -1,15 +1,14 @@
 import json
 from datetime import datetime, timedelta
 
-import requests
 from dateutil.parser import parse as parse_date
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+import urllib3
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Supress warning about unverified HTTPS
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+urllib3.disable_warnings()
 
 if not demisto.params().get("proxy", True):
     del os.environ["HTTP_PROXY"]
@@ -41,7 +40,7 @@ def api_request(uri, data):
                             headers=AUTH_HEADER)
         if res.status_code not in (200, 204):
             raise Exception('Your request failed with the following error: ' + res.reason)
-    except Exception, e:
+    except Exception:
         raise
     return res
 
@@ -56,7 +55,8 @@ def datetime_to_iso(d):
 def get_alerts(start_time=None, end_time=None, cursor=None, types=None, source_user_id=None):
     query = """
 query ($cursor: Cursor, $startTime: DateTimeInput, $endTime: DateTimeInput, $types: [String!], $sourceUserId: UUID) {
-  timeline(types: [ALERT], limit: %d, alertQuery: {types: $types}, sourceEntityQuery: {id: $sourceUserId}, startTime: $startTime, endTime: $endTime, after: $cursor) {
+timeline(types: [ALERT], limit: %d, alertQuery: {types: $types}, sourceEntityQuery: {id: $sourceUserId}, startTime:
+  $startTime, endTime: $endTime, after: $cursor) {
     cursor
     eventId
     timestamp
@@ -115,7 +115,8 @@ query ($cursor: Cursor, $startTime: DateTimeInput, $endTime: DateTimeInput, $typ
 """ % TIMELINE_LIMIT
 
     variables = {
-        "cursor": cursor, "startTime": datetime_to_iso(start_time), "endTime": datetime_to_iso(end_time), "types": types, "sourceUserId": source_user_id
+        "cursor": cursor, "startTime": datetime_to_iso(start_time), "endTime": datetime_to_iso(end_time),
+        "types": types, "sourceUserId": source_user_id
     }
     data = {
         "query": query, "variables": variables
@@ -131,7 +132,7 @@ query ($cursor: Cursor, $startTime: DateTimeInput, $endTime: DateTimeInput, $typ
 if demisto.command() == "test-module":
     # This is the call made when pressing the integration test button.
     query = "{ aomActivities(limit: 1) { _id } }"
-    variables = {}
+    variables = {}  # type: Dict
     data = {
         "query": query, "variables": variables
     }
@@ -161,7 +162,7 @@ if demisto.command() == "fetch-incidents":
             for field in ["geoLocation", "ipAddress"]:
                 alert[field] = access[field]
             fixed_alerts.append(alert)
-        except StopIteration, e:
+        except StopIteration:
             pass
 
     result = [{"Name": "Incident %s" % alert["eventId"], "rawJSON": json.dumps(alert)} for alert in fixed_alerts]
@@ -196,8 +197,10 @@ if demisto.command() == "preempt-remove-from-watch-list":
 
 if demisto.command() == "preempt-get-activities":
     query = """
-query ($cursor: Cursor, $startTime: DateTimeInput,  $endTime: DateTimeInput, $types: [TimelineEventType!], $authTypes: [AuthenticationType!], $sourceUserId: UUID) {
-  timeline(limit: %d, types: $types, sourceEntityQuery: {id: $sourceUserId}, activityQuery: {authenticationTypes: $authTypes}, startTime: $startTime, endTime: $endTime, after: $cursor) {
+query ($cursor: Cursor, $startTime: DateTimeInput,  $endTime: DateTimeInput, $types: [TimelineEventType!], $authTypes:
+[AuthenticationType!], $sourceUserId: UUID) {
+timeline(limit: %d, types: $types, sourceEntityQuery: {id: $sourceUserId}, activityQuery: {authenticationTypes:
+  $authTypes}, startTime: $startTime, endTime: $endTime, after: $cursor) {
     cursor
     timestamp
     eventType
@@ -305,12 +308,13 @@ query ($sourceUserId: UUID!) {
     if entities:
         entity = entities[0]
         ownedEndpointsId = [assoc["entityId"] for assoc in entity["associations"] if assoc["bindingType"] == "OWNERSHIP"]
-        result = [dict(assoc, isOwned=(assoc["entityId"] in ownedEndpointsId))
-                  for assoc in entity["associations"] if assoc["bindingType"] == "LOGIN"]
+        result = [dict(assoc, isOwned=assoc["entityId"])
+                  for assoc in entity["associations"] if (assoc["bindingType"] == "LOGIN"
+                                                          and assoc["entityId"] in ownedEndpointsId)]
     else:
         result = []
 
-    def prettyfy_result(endpoint):
+    def prettyfy_result_endpoint(endpoint):
         return {
             "Id": endpoint["entityId"],
             "HostName": endpoint["entity"]["hostName"],
@@ -320,7 +324,7 @@ query ($sourceUserId: UUID!) {
             "StaticIpAddresses": endpoint["entity"]["staticIpAddresses"]
         }
 
-    pretty_results = map(prettyfy_result, result)
+    pretty_results = map(prettyfy_result_endpoint, result)
 
     demisto.results({
         "Type": 1,

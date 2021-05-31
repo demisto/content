@@ -140,5 +140,7 @@ script:
       description: Cursor of last retrieved activity for pagination
     description: Get the alerts generated according to given arguments
   isfetch: true
-  dockerimage: demisto/python:2.7.18.15765
+  dockerimage: demisto/python:2.7.18.19851
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
