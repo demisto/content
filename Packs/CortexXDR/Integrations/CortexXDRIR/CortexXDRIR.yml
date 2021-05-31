@@ -2668,13 +2668,13 @@ script:
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
       description: Paths of the files to delete. All files will run on all endpoints.
-      isArray: false
+      isArray: true
       name: file_path
       required: true
       secret: false
@@ -2701,13 +2701,14 @@ script:
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
-      description: Paths of the files to check for existence. All files will run on all endpoints.
-      isArray: false
+      description: Paths of the files to check for existence. All files will run on
+        all endpoints.
+      isArray: true
       name: file_path
       required: true
       secret: false
@@ -2733,13 +2734,13 @@ script:
     - default: false
       description: Comma-separated list of endpoint IDs. Can be retrieved by running
         the xdr-get-endpoints command.
-      isArray: false
+      isArray: true
       name: endpoint_ids
       required: true
       secret: false
     - default: false
       description: Names of processes to kill. Will run all processes on all endpoints.
-      isArray: false
+      isArray: true
       name: process_name
       required: true
       secret: false
