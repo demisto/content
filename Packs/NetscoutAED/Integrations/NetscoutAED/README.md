@@ -748,26 +748,26 @@ Updates the settings for one or more protection groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.Protection_Group.active | Boolean | True if the protection group mode is active, false if inactive. | 
-| NetscoutAED.Protection_Group.bps_dropped | Number | Number of dropped bps. | 
-| NetscoutAED.Protection_Group.bps_passed | Number | Number of passed bps. | 
-| NetscoutAED.Protection_Group.bytes_dropped | Number | Number of dropped bytes. | 
-| NetscoutAED.Protection_Group.bytes_passed | Unknown | Number of passed bytes. | 
-| NetscoutAED.Protection_Group.description | String | Description of the protection group. | 
-| NetscoutAED.Protection_Group.name | String | Protection group name. | 
-| NetscoutAED.Protection_Group.packets_dropped | Number | Number of dropped packets. | 
-| NetscoutAED.Protection_Group.packets_passed | Number | Number of passed packets. | 
-| NetscoutAED.Protection_Group.pgid | Number | Protection group identifier. | 
-| NetscoutAED.Protection_Group.pps_passed | Number | Number of passed pps. | 
-| NetscoutAED.Protection_Group.pps_dropped | Number | Number of dropped pps. | 
-| NetscoutAED.Protection_Group.prefixes | Unknown | List of ‘,’ delimited prefixes belonging to the protection group. | 
-| NetscoutAED.Protection_Group.profiling | Boolean | A traffic profile capture for a protection group’s rate-based protection settings is running \(true\) or not \(false\). | 
-| NetscoutAED.Protection_Group.profiling_duration | Number | The duration, in days, of an active traffic profile capture. A 0 indicates that profiling is not active. | 
-| NetscoutAED.Protection_Group.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicates that profiling was never started. | 
-| NetscoutAED.Protection_Group.protection_level | Unknown | The protection level \(None = use the global protection level, low, medium, high\). | 
-| NetscoutAED.Protection_Group.server_name | String | The protection group’s server name. | 
-| NetscoutAED.Protection_Group.server_type | Number | The protection group’s server type. | 
-| NetscoutAED.Protection_Group.time_created | Date | The time when the protection group was created. | 
+| NetscoutAED.ProtectionGroup.active | Boolean | True if the protection group mode is active, false if inactive. | 
+| NetscoutAED.ProtectionGroup.bps_dropped | Number | Number of dropped bps. | 
+| NetscoutAED.ProtectionGroup.bps_passed | Number | Number of passed bps. | 
+| NetscoutAED.ProtectionGroup.bytes_dropped | Number | Number of dropped bytes. | 
+| NetscoutAED.ProtectionGroup.bytes_passed | Unknown | Number of passed bytes. | 
+| NetscoutAED.ProtectionGroup.description | String | Description of the protection group. | 
+| NetscoutAED.ProtectionGroup.name | String | Protection group name. | 
+| NetscoutAED.ProtectionGroup.packets_dropped | Number | Number of dropped packets. | 
+| NetscoutAED.ProtectionGroup.packets_passed | Number | Number of passed packets. | 
+| NetscoutAED.ProtectionGroup.pgid | Number | Protection group identifier. | 
+| NetscoutAED.ProtectionGroup.pps_passed | Number | Number of passed pps. | 
+| NetscoutAED.ProtectionGroup.pps_dropped | Number | Number of dropped pps. | 
+| NetscoutAED.ProtectionGroup.prefixes | Unknown | List of ‘,’ delimited prefixes belonging to the protection group. | 
+| NetscoutAED.ProtectionGroup.profiling | Boolean | A traffic profile capture for a protection group’s rate-based protection settings is running \(true\) or not \(false\). | 
+| NetscoutAED.ProtectionGroup.profiling_duration | Number | The duration, in days, of an active traffic profile capture. A 0 indicates that profiling is not active. | 
+| NetscoutAED.ProtectionGroup.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicates that profiling was never started. | 
+| NetscoutAED.ProtectionGroup.protection_level | Unknown | The protection level \(None = use the global protection level, low, medium, high\). | 
+| NetscoutAED.ProtectionGroup.server_name | String | The protection group’s server name. | 
+| NetscoutAED.ProtectionGroup.server_type | Number | The protection group’s server type. | 
+| NetscoutAED.ProtectionGroup.time_created | Date | The time when the protection group was created. | 
 
 
 #### Command Example
@@ -777,7 +777,7 @@ Updates the settings for one or more protection groups.
 ```json
 {
     "NetscoutAED": {
-        "Protection_Group": {
+        "ProtectionGroup": {
             "active": false,
             "bps_dropped": 0,
             "bps_passed": 0,
@@ -836,27 +836,27 @@ Gets a list of the protection groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetscoutAED.Protection_Group.active | Boolean | True if the protection group mode is active, false if inactive. | 
-| NetscoutAED.Protection_Group.bps_dropped | Number | Number of dropped bps. | 
-| NetscoutAED.Protection_Group.bps_passed | Number | Number of passed bps. | 
-| NetscoutAED.Protection_Group.bytes_dropped | Number | Number of dropped bytes. | 
-| NetscoutAED.Protection_Group.bytes_passed | Unknown | Number of passed bytes. | 
-| NetscoutAED.Protection_Group.description | String | Description of the protection group. | 
-| NetscoutAED.Protection_Group.name | String | Protection group name. | 
-| NetscoutAED.Protection_Group.packets_dropped | Number | Number of dropped packets. | 
-| NetscoutAED.Protection_Group.packets_passed | Number | Number of passed packets. | 
-| NetscoutAED.Protection_Group.pgid | Number | Protection group identifier. | 
-| NetscoutAED.Protection_Group.pps_passed | Number | Number of passed pps. | 
-| NetscoutAED.Protection_Group.pps_dropped | Number | Number of dropped pps. | 
-| NetscoutAED.Protection_Group.prefixes | Unknown | Comma-separated list of prefixes belonging to the protection group. | 
-| NetscoutAED.Protection_Group.profiling | Boolean | A traffic profile capture for a protection group’s rate-based protection settings is running \(true\) or not \(false\). | 
-| NetscoutAED.Protection_Group.profiling_duration | Number | The duration, in days, of an active traffic profile capture. A 0 indicates that profiling is not active. | 
-| NetscoutAED.Protection_Group.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicats that profiling was never started. | 
-| NetscoutAED.Protection_Group.protection_level | Unknown | The protection level \(None = use the global protection level, low, medium, high\). | 
-| NetscoutAED.Protection_Group.server_name | String | The protection group’s server name. | 
-| NetscoutAED.Protection_Group.server_type | Number | The protection group’s server type. | 
-| NetscoutAED.Protection_Group.time_created | Date | The time when the protection group was created. | 
-| NetscoutAED.Protection_Group.cid | Number | Central configuration ID. | 
+| NetscoutAED.ProtectionGroup.active | Boolean | True if the protection group mode is active, false if inactive. | 
+| NetscoutAED.ProtectionGroup.bps_dropped | Number | Number of dropped bps. | 
+| NetscoutAED.ProtectionGroup.bps_passed | Number | Number of passed bps. | 
+| NetscoutAED.ProtectionGroup.bytes_dropped | Number | Number of dropped bytes. | 
+| NetscoutAED.ProtectionGroup.bytes_passed | Unknown | Number of passed bytes. | 
+| NetscoutAED.ProtectionGroup.description | String | Description of the protection group. | 
+| NetscoutAED.ProtectionGroup.name | String | Protection group name. | 
+| NetscoutAED.ProtectionGroup.packets_dropped | Number | Number of dropped packets. | 
+| NetscoutAED.ProtectionGroup.packets_passed | Number | Number of passed packets. | 
+| NetscoutAED.ProtectionGroup.pgid | Number | Protection group identifier. | 
+| NetscoutAED.ProtectionGroup.pps_passed | Number | Number of passed pps. | 
+| NetscoutAED.ProtectionGroup.pps_dropped | Number | Number of dropped pps. | 
+| NetscoutAED.ProtectionGroup.prefixes | Unknown | Comma-separated list of prefixes belonging to the protection group. | 
+| NetscoutAED.ProtectionGroup.profiling | Boolean | A traffic profile capture for a protection group’s rate-based protection settings is running \(true\) or not \(false\). | 
+| NetscoutAED.ProtectionGroup.profiling_duration | Number | The duration, in days, of an active traffic profile capture. A 0 indicates that profiling is not active. | 
+| NetscoutAED.ProtectionGroup.profiling_start | Date | A UNIX epoch timestamp that indicates when a traffic profile capture began. A 0 indicats that profiling was never started. | 
+| NetscoutAED.ProtectionGroup.protection_level | Unknown | The protection level \(None = use the global protection level, low, medium, high\). | 
+| NetscoutAED.ProtectionGroup.server_name | String | The protection group’s server name. | 
+| NetscoutAED.ProtectionGroup.server_type | Number | The protection group’s server type. | 
+| NetscoutAED.ProtectionGroup.time_created | Date | The time when the protection group was created. | 
+| NetscoutAED.ProtectionGroup.cid | Number | Central configuration ID. | 
 
 
 #### Command Example
@@ -866,7 +866,7 @@ Gets a list of the protection groups.
 ```json
 {
     "NetscoutAED": {
-        "Protection_Group": {
+        "ProtectionGroup": {
             "active": false,
             "bps_dropped": 0,
             "bps_passed": 0,

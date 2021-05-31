@@ -573,69 +573,69 @@ script:
     execution: false
     name: na-ed-protection-groups-update
     outputs:
-    - contextPath: NetscoutAED.Protection_Group.active
+    - contextPath: NetscoutAED.ProtectionGroup.active
       description: True if the protection group mode is active, false if inactive.
       type: Boolean
-    - contextPath: NetscoutAED.Protection_Group.bps_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.bps_dropped
       description: Number of dropped bps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.bps_passed
+    - contextPath: NetscoutAED.ProtectionGroup.bps_passed
       description: Number of passed bps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.bytes_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_dropped
       description: Number of dropped bytes.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.bytes_passed
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_passed
       description: Number of passed bytes.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.description
+    - contextPath: NetscoutAED.ProtectionGroup.description
       description: Description of the protection group.
       type: String
-    - contextPath: NetscoutAED.Protection_Group.name
+    - contextPath: NetscoutAED.ProtectionGroup.name
       description: Protection group name.
       type: String
-    - contextPath: NetscoutAED.Protection_Group.packets_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.packets_dropped
       description: Number of dropped packets.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.packets_passed
+    - contextPath: NetscoutAED.ProtectionGroup.packets_passed
       description: Number of passed packets.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.pgid
+    - contextPath: NetscoutAED.ProtectionGroup.pgid
       description: Protection group identifier.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.pps_passed
+    - contextPath: NetscoutAED.ProtectionGroup.pps_passed
       description: Number of passed pps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.pps_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.pps_dropped
       description: Number of dropped pps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.prefixes
+    - contextPath: NetscoutAED.ProtectionGroup.prefixes
       description: A comma-separated list of prefixes belonging to the protection
         group.
       type: Unknown
-    - contextPath: NetscoutAED.Protection_Group.profiling
+    - contextPath: NetscoutAED.ProtectionGroup.profiling
       description: A traffic profile capture for a protection group’s rate-based protection
         settings is running (true) or not (false).
       type: Boolean
-    - contextPath: NetscoutAED.Protection_Group.profiling_duration
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_duration
       description: The duration, in days, of an active traffic profile capture. A
         0 indicates that profiling is not active.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.profiling_start
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_start
       description: A UNIX epoch timestamp that indicates when a traffic profile capture
         began. A 0 indicates that profiling was never started.
       type: Date
-    - contextPath: NetscoutAED.Protection_Group.protection_level
+    - contextPath: NetscoutAED.ProtectionGroup.protection_level
       description: The protection level (None = use the global protection level, low,
         medium, high).
       type: String
-    - contextPath: NetscoutAED.Protection_Group.server_name
+    - contextPath: NetscoutAED.ProtectionGroup.server_name
       description: The protection group’s server name.
       type: String
-    - contextPath: NetscoutAED.Protection_Group.server_type
+    - contextPath: NetscoutAED.ProtectionGroup.server_type
       description: The protection group’s server type.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.time_created
+    - contextPath: NetscoutAED.ProtectionGroup.time_created
       description: The time when the protection group was created.
       type: Date
   - arguments:
@@ -673,72 +673,72 @@ script:
     execution: false
     name: na-ed-protection-groups-list
     outputs:
-    - contextPath: NetscoutAED.Protection_Group.active
+    - contextPath: NetscoutAED.ProtectionGroup.active
       description: True if the protection group mode is active, false if inactive.
       type: Boolean
-    - contextPath: NetscoutAED.Protection_Group.bps_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.bps_dropped
       description: Number of dropped bps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.bps_passed
+    - contextPath: NetscoutAED.ProtectionGroup.bps_passed
       description: Number of passed bps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.bytes_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_dropped
       description: Number of dropped bytes.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.bytes_passed
+    - contextPath: NetscoutAED.ProtectionGroup.bytes_passed
       description: Number of passed bytes.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.description
+    - contextPath: NetscoutAED.ProtectionGroup.description
       description: Description of the protection group.
       type: String
-    - contextPath: NetscoutAED.Protection_Group.name
+    - contextPath: NetscoutAED.ProtectionGroup.name
       description: Protection group name.
       type: String
-    - contextPath: NetscoutAED.Protection_Group.packets_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.packets_dropped
       description: Number of dropped packets.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.packets_passed
+    - contextPath: NetscoutAED.ProtectionGroup.packets_passed
       description: Number of passed packets.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.pgid
+    - contextPath: NetscoutAED.ProtectionGroup.pgid
       description: Protection group identifier.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.pps_passed
+    - contextPath: NetscoutAED.ProtectionGroup.pps_passed
       description: Number of passed pps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.pps_dropped
+    - contextPath: NetscoutAED.ProtectionGroup.pps_dropped
       description: Number of dropped pps.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.prefixes
+    - contextPath: NetscoutAED.ProtectionGroup.prefixes
       description: A comma-separated list of prefixes belonging to the protection
         group.
       type: Unknown
-    - contextPath: NetscoutAED.Protection_Group.profiling
+    - contextPath: NetscoutAED.ProtectionGroup.profiling
       description: A traffic profile capture for a protection group’s rate-based protection
         settings is running (true) or not (false).
       type: Boolean
-    - contextPath: NetscoutAED.Protection_Group.profiling_duration
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_duration
       description: The duration, in days, of an active traffic profile capture. A
         0 indicates that profiling is not active.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.profiling_start
+    - contextPath: NetscoutAED.ProtectionGroup.profiling_start
       description: A UNIX epoch timestamp that indicates when a traffic profile capture
         began. A 0 indicates that profiling was never started.
       type: Date
-    - contextPath: NetscoutAED.Protection_Group.protection_level
+    - contextPath: NetscoutAED.ProtectionGroup.protection_level
       description: The protection level (None = use the global protection level, low,
         medium, high).
       type: String
-    - contextPath: NetscoutAED.Protection_Group.server_name
+    - contextPath: NetscoutAED.ProtectionGroup.server_name
       description: The protection group’s server name.
       type: String
-    - contextPath: NetscoutAED.Protection_Group.server_type
+    - contextPath: NetscoutAED.ProtectionGroup.server_type
       description: The protection group’s server type.
       type: Number
-    - contextPath: NetscoutAED.Protection_Group.time_created
+    - contextPath: NetscoutAED.ProtectionGroup.time_created
       description: The time when the protection group was created.
       type: Date
-    - contextPath: NetscoutAED.Protection_Group.cid
+    - contextPath: NetscoutAED.ProtectionGroup.cid
       description: Central configuration ID.
       type: Number
   - arguments:

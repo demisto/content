@@ -642,7 +642,7 @@ def handle_host_addition_and_replacement_commands(client: Client,
     host_address = demisto_args.get('hostAddress')
     if not host_address:
         raise DemistoException(
-            f'A host address must be provided in order to add/update him in the {direction} {list_color} list.')
+            f'A host address must be provided in order to add/update it in the {direction} {list_color} list.')
 
     demisto_args['hostAddress'] = argToList(host_address)
 
