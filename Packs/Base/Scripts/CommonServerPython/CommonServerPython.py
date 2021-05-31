@@ -67,7 +67,7 @@ except Exception:
 CONTENT_RELEASE_VERSION = '0.0.0'
 CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
-
+STIX_PREFIX = "STIX "
 # pylint: disable=undefined-variable
 
 ZERO = timedelta(0)
@@ -402,6 +402,21 @@ class FeedIndicatorType(object):
 
         else:
             return None
+
+    @staticmethod
+    def indicator_type_by_server_version(indicator_type):
+        """Returns the indicator type of the input by the server version.
+        If the server version is 6.2 and greater, remove the STIX prefix of the type
+
+        :type indicator_type: ``str``
+        :param indicator_type: Type of an indicator.
+
+        :rtype: ``str``
+        :return:: Indicator type .
+        """
+        if is_demisto_version_ge("6.2.0") and indicator_type.startswith(STIX_PREFIX):
+            return indicator_type[len(STIX_PREFIX):]
+        return indicator_type
 
 
 # -------------------------------- Threat Intel Objects ----------------------------------- #
@@ -6267,16 +6282,31 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+    server_version = {}
     try:
         server_version = get_demisto_version()
-        return \
-            server_version.get('version') >= version and \
-            (not build_number or int(server_version.get('buildNumber')) >= int(build_number))
+        if server_version.get('version') > version:
+            return True
+        elif server_version.get('version') == version:
+            if build_number:
+                return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
+            return True  # No build number
+        else:
+            return False
     except AttributeError:
         # demistoVersion was added in 5.0.0. We are currently running in 4.5.0 and below
         if version >= "5.0.0":
             return False
         raise
+    except ValueError:
+        # dev editions are not comparable
+        demisto.log(
+            'is_demisto_version_ge: ValueError. \n '
+            'input: server version: {} build number: {}\n'
+            'server version: {}'.format(version, build_number, server_version)
+        )
+
+        return True
 
 
 class DemistoHandler(logging.Handler):

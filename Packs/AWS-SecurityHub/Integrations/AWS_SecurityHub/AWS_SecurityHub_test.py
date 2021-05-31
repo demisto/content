@@ -1,5 +1,8 @@
 import pytest
 
+
+from AWS_SecurityHub import get_findings_command
+
 FILTER_FIELDS_TEST_CASES = [
     (
         'some non parseable input',
@@ -114,3 +117,32 @@ def test_parse_resource_ids(test_input, expected_output):
     """
     from AWS_SecurityHub import parse_resource_ids
     assert parse_resource_ids(test_input) == expected_output
+
+
+FINDINGS = [{
+    'ProductArn': 'Test',
+    'Description': 'Test',
+    'SchemaVersion': '2021-05-27'}]
+
+
+class MockClient:
+
+    def get_findings(self, **kwargs):
+        return {'Findings': FINDINGS}
+
+
+def test_aws_securityhub_get_findings_command():
+    """
+    Given:
+        - A dictionary that represents response body of aws_securityhub_get_findings API call without pagination -
+        i.e doesn't have 'NextToken' key.
+    When:
+        - Running get_findings_command
+    Then:
+        - Verify returned value is as expected - i.e the findings list.
+    """
+    client = MockClient()
+    human_readable, outputs, findings = get_findings_command(client, {})
+    expected_output = FINDINGS
+
+    assert findings == expected_output
