@@ -21,19 +21,24 @@ def main() -> None:
     # SSH Key integration requires ssh_agent to be running in the background
     ssh_agent_setup.setup()
 
+    # Common Inputs
+    command = demisto.command()
+    args = demisto.args()
+    int_params = demisto.params()
+
     try:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
         elif demisto.command() == 'k8s-k8s':
-            return_results(generic_ansible('kubernetes', 'k8s', demisto.args()))
+            return_results(generic_ansible('kubernetes', 'k8s', args, int_params))
         elif demisto.command() == 'k8s-info':
-            return_results(generic_ansible('kubernetes', 'k8s_info', demisto.args()))
+            return_results(generic_ansible('kubernetes', 'k8s_info', args, int_params))
         elif demisto.command() == 'k8s-scale':
-            return_results(generic_ansible('kubernetes', 'k8s_scale', demisto.args()))
+            return_results(generic_ansible('kubernetes', 'k8s_scale', args, int_params))
         elif demisto.command() == 'k8s-service':
-            return_results(generic_ansible('kubernetes', 'k8s_service', demisto.args()))
+            return_results(generic_ansible('kubernetes', 'k8s_service', args, int_params))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

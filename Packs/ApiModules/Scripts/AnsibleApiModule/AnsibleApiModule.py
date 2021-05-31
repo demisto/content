@@ -2,15 +2,13 @@ from CommonServerPython import *  # noqa: F403
 from CommonServerUserPython import *  # noqa: F403
 import ansible_runner  # pylint: disable=E0401
 import json
-from typing import Dict, cast
-
-import demistomock as demisto  # noqa: F401
+from typing import Dict, cast, List, Union, Any
 
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
 
 
-def dict2md(json_block, depth=0):
+def dict2md(json_block: Union[Dict[str, Union[dict, list]], List[Union[str, dict, list, float]], float], depth: int = 0):
     markdown = ""
 
     if isinstance(json_block, dict):
@@ -20,7 +18,7 @@ def dict2md(json_block, depth=0):
     return markdown
 
 
-def parse_dict(d, depth):
+def parse_dict(d: Dict[str, Union[dict, list]], depth: int):
     markdown = ""
 
     # In the case of a dict of dicts/lists, we want to show the "leaves" of the tree first.
@@ -29,7 +27,7 @@ def parse_dict(d, depth):
 
     for k in d:
         if not isinstance(d[k], (dict, list)):
-            markdown += build_value_chain(k, d[k], depth + 1)
+            markdown += build_value_chain(k, d.get(k), depth + 1)
 
     for k in d:
         if isinstance(d[k], (dict, list)):
@@ -38,7 +36,7 @@ def parse_dict(d, depth):
     return markdown
 
 
-def parse_list(rawlist, depth):
+def parse_list(rawlist: List[Union[str, dict, list, float]], depth: int):
     markdown = ""
     default_header_value = "list"
     for value in rawlist:
@@ -59,7 +57,7 @@ def parse_list(rawlist, depth):
     return markdown
 
 
-def find_header_in_dict(rawdict):
+def find_header_in_dict(rawdict: Union[Dict[Any, Any], List[Any]]):
     header = None
     # Finds a suitible value to use as a header
     if not isinstance(rawdict, dict):
@@ -76,7 +74,7 @@ def find_header_in_dict(rawdict):
     return header
 
 
-def build_header_chain(depth):
+def build_header_chain(depth: int):
     list_tag = '* '
     htag = '#'
     tab = "  "
@@ -85,7 +83,7 @@ def build_header_chain(depth):
     return chain
 
 
-def build_value_chain(key, value, depth):
+def build_value_chain(key: Union[int, str], value: Union[str, int, float, Dict[Any, Any], List[Any], None], depth: int):
     tab = '  '
     list_tag = '* '
 
@@ -93,20 +91,20 @@ def build_value_chain(key, value, depth):
     return chain
 
 
-def add_header(value, depth):
+def add_header(value: str, depth: int):
     chain = build_header_chain(depth)
     chain = chain.replace('value', value.title())
     return chain
 
 
 # Remove ansible branding from results
-def rec_ansible_key_strip(obj):
+def rec_ansible_key_strip(obj: Dict[Any, Any]):
     if isinstance(obj, dict):
         return {key.replace('ansible_', ''): rec_ansible_key_strip(val) for key, val in obj.items()}
     return obj
 
 
-def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
+def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any], host_type: str = "local"):
     host_types = ['ssh', 'winrm', 'nxos', 'ios', 'local']
     if host_type not in host_types:
         raise ValueError("Invalid host type. Expected one of: %s" % host_types)
@@ -124,12 +122,10 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
 
     # All other host types are remote
     elif host_type in ['ssh', 'winrm', 'nxos', 'ios']:
-        if type(args['host']) is list:
-            # host arg can be a array of multiple hosts
-            hosts = args['host']
-        else:
-            # host arg could also be csv
-            hosts = [host.strip() for host in args['host'].split(',')]
+        hosts = args.get('host')
+        if type(args.get('host')) is str:
+            # host arg could be csv
+            hosts = [host.strip() for host in hosts.split(',')]
 
         for host in hosts:
             new_host = {}
@@ -141,30 +137,30 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
                 new_host['ansible_host'] = address[0]
             else:
                 new_host['ansible_host'] = host
-                if demisto.params().get('port'):
-                    new_host['ansible_port'] = demisto.params().get('port')
+                if int_params.get('port'):
+                    new_host['ansible_port'] = int_params.get('port')
 
             # Common SSH based auth options
             if host_type in ['ssh', 'nxos', 'ios']:
                 # SSH Key saved in credential manager selection
-                if demisto.params().get('creds', {}).get('credentials').get('sshkey'):
-                    username = demisto.params().get('creds', {}).get('credentials').get('user')
-                    sshkey = demisto.params().get('creds', {}).get('credentials').get('sshkey')
+                if int_params.get('creds', {}).get('credentials').get('sshkey'):
+                    username = int_params.get('creds', {}).get('credentials').get('user')
+                    sshkey = int_params.get('creds', {}).get('credentials').get('sshkey')
 
                     new_host['ansible_user'] = username
 
                 # Password saved in credential manager selection
-                elif demisto.params().get('creds', {}).get('credentials').get('password'):
-                    username = demisto.params().get('creds', {}).get('credentials').get('user')
-                    password = demisto.params().get('creds', {}).get('credentials').get('password')
+                elif int_params.get('creds', {}).get('credentials').get('password'):
+                    username = int_params.get('creds', {}).get('credentials').get('user')
+                    password = int_params.get('creds', {}).get('credentials').get('password')
 
                     new_host['ansible_user'] = username
                     new_host['ansible_password'] = password
 
                 # username/password individually entered
                 else:
-                    username = demisto.params().get('creds', {}).get('identifier')
-                    password = demisto.params().get('creds', {}).get('password')
+                    username = int_params.get('creds', {}).get('identifier')
+                    password = int_params.get('creds', {}).get('password')
 
                     new_host['ansible_user'] = username
                     new_host['ansible_password'] = password
@@ -189,17 +185,17 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
             elif host_type == 'winrm':
                 # Only two credential options
                 # Password saved in credential manager selection
-                if demisto.params().get('creds', {}).get('credentials').get('password'):
-                    username = demisto.params().get('creds', {}).get('credentials').get('user')
-                    password = demisto.params().get('creds', {}).get('credentials').get('password')
+                if int_params.get('creds', {}).get('credentials').get('password'):
+                    username = int_params.get('creds', {}).get('credentials').get('user')
+                    password = int_params.get('creds', {}).get('credentials').get('password')
 
                     new_host['ansible_user'] = username
                     new_host['ansible_password'] = password
 
                 # username/password individually entered
                 else:
-                    username = demisto.params().get('creds', {}).get('identifier')
-                    password = demisto.params().get('creds', {}).get('password')
+                    username = int_params.get('creds', {}).get('identifier')
+                    password = int_params.get('creds', {}).get('password')
 
                     new_host['ansible_user'] = username
                     new_host['ansible_password'] = password
@@ -216,7 +212,7 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
 host_type: str  # Global defined within the integration module. Defined here because https://github.com/python/mypy/issues/5732
 
 
-def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandResults:
+def generic_ansible(integration_name: str, command: str, args: Dict[str, Any], int_params: Dict[str, Any]) -> CommandResults:
 
     readable_output = ""
     sshkey = ""
@@ -227,7 +223,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
         fork_count = cast(int, args.get('concurrency'))
 
     # generate ansible host inventory
-    inventory, sshkey = generate_ansible_inventory(args=args, host_type=host_type)
+    inventory, sshkey = generate_ansible_inventory(args=args, host_type=host_type, int_params=int_params)
 
     module_args = ""
     # build module args list
@@ -238,9 +234,9 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
 
         module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
-        # If this isn't host based, then all the integratation parms will be used as command args
+        # If this isn't host based, then all the integration parms will be used as command args
     if host_type == 'local':
-        for arg_key, arg_value in demisto.params().items():
+        for arg_key, arg_value in int_params.items():
             module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
     r = ansible_runner.run(inventory=inventory, host_pattern='all', module=command, quiet=True,
@@ -286,10 +282,11 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
                 results.append(result)
             if each_host_event['event'] == "runner_on_unreachable":
                 msg = "Host %s unreachable\nError Details: %s" % (host, result)
-                return_error(msg)
 
             if each_host_event['event'] == "runner_on_failed":
                 msg = "Host %s failed running command\nError Details: %s" % (host, result)
+
+            if each_host_event['event'] in ["runner_on_failed", "runner_on_unreachable"]:
                 return_error(msg)
     return CommandResults(
         readable_output=readable_output,

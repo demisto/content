@@ -21,23 +21,28 @@ def main() -> None:
     # SSH Key integration requires ssh_agent to be running in the background
     ssh_agent_setup.setup()
 
+    # Common Inputs
+    command = demisto.command()
+    args = demisto.args()
+    int_params = demisto.params()
+
     try:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
         elif demisto.command() == 'acme-account':
-            return_results(generic_ansible('acme', 'acme_account', demisto.args()))
+            return_results(generic_ansible('acme', 'acme_account', args, int_params))
         elif demisto.command() == 'acme-account-info':
-            return_results(generic_ansible('acme', 'acme_account_info', demisto.args()))
+            return_results(generic_ansible('acme', 'acme_account_info', args, int_params))
         elif demisto.command() == 'acme-certificate':
-            return_results(generic_ansible('acme', 'acme_certificate', demisto.args()))
+            return_results(generic_ansible('acme', 'acme_certificate', args, int_params))
         elif demisto.command() == 'acme-certificate-revoke':
-            return_results(generic_ansible('acme', 'acme_certificate_revoke', demisto.args()))
+            return_results(generic_ansible('acme', 'acme_certificate_revoke', args, int_params))
         elif demisto.command() == 'acme-challenge-cert-helper':
-            return_results(generic_ansible('acme', 'acme_challenge_cert_helper', demisto.args()))
+            return_results(generic_ansible('acme', 'acme_challenge_cert_helper', args, int_params))
         elif demisto.command() == 'acme-inspect':
-            return_results(generic_ansible('acme', 'acme_inspect', demisto.args()))
+            return_results(generic_ansible('acme', 'acme_inspect', args, int_params))
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
