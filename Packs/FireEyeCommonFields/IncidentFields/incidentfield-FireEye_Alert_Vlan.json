@@ -27,7 +27,8 @@
     "FireEye NX IPS Event",
     "FireEye NX Alert",
     "FireEye NX IPS Event v2",
-    "FireEye NX Alert v2"
+    "FireEye NX Alert v2",
+    "FireEye EX Alert"
   ],
   "associatedToAll": false,
   "unmapped": false,

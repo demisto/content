@@ -9,7 +9,7 @@
     "FireEye NX Alert v2": {
       "dontMapEventToLabels": true,
       "internalMapping": {
-        "FireEye Alert Acknowledgement": {
+        "Alert Acknowledgement": {
           "complex": {
             "accessor": "",
             "filters": [],
@@ -18,7 +18,7 @@
           },
           "simple": ""
         },
-        "FireEye Alert Attack Time": {
+        "Alert Attack Time": {
           "complex": {
             "accessor": "",
             "filters": [],
@@ -72,7 +72,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Action": {
+        "Alert Action": {
           "complex": {
             "accessor": "",
             "filters": [],
@@ -108,7 +108,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Target IP": {
+        "Destination IP": {
           "complex": {
             "accessor": "ip",
             "filters": [],
@@ -117,7 +117,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Target MAC Address": {
+        "Destination MAC Address": {
           "complex": {
             "accessor": "mac",
             "filters": [],
@@ -126,7 +126,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Target Port": {
+        "Destination Port": {
           "complex": {
             "accessor": "port",
             "filters": [],
@@ -144,11 +144,20 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert URL": {
+        "Alert URL": {
           "complex": {
             "accessor": "",
             "filters": [],
             "root": "alertUrl",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Appliance ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "applianceId",
             "transformers": []
           },
           "simple": ""
@@ -162,7 +171,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Victim IP": {
+        "Source IP": {
           "complex": {
             "accessor": "ip",
             "filters": [],
@@ -171,7 +180,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Victim MAC Address": {
+        "Source MAC Address": {
           "complex": {
             "accessor": "mac",
             "filters": [],
@@ -180,7 +189,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Victim Port": {
+        "Source Port": {
           "complex": {
             "accessor": "port",
             "filters": [],
