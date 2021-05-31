@@ -144,7 +144,7 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     Returns:
         zipped_packs: A list of the downloaded packs paths and their corresponding pack names.
     """
-    zipped_packs = []
+    # zipped_packs = []
     src_path = "gs://marketplace-dist-dev/" + gcp_path
     # gs_cmd = f"gsutil -m cp -r {src_path} {destination_path}"
     try:
