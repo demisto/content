@@ -13,7 +13,7 @@ thresholds = args.get('Thresholds', Thresholds)
 prevMonth = datetime.today() + dateutil.relativedelta.relativedelta(months=-1)
 
 res = demisto.executeCommand("GetLargestInvestigations", {"from": prevMonth.strftime("%Y-%m-%d"),
-                                                          "to":prevMonth.strftime("%Y-%m-%d"),
+                                                          "to": prevMonth.strftime("%Y-%m-%d"),
                                                           "table_result": "true"})
 
 incidentsbiggerthan1mb = res[0]['Contents']['data']

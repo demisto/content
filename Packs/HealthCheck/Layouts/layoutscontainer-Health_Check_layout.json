@@ -82,15 +82,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "demistomemory",
-                                "height": 22,
-                                "id": "755e55c0-e5c7-11e9-a699-3b06b24612cf",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "xsoarmemory",
                                 "height": 22,
                                 "id": "794b9810-6a4f-11eb-8ba8-c3c339e58141",
@@ -100,28 +91,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "demistocpu",
-                                "height": 22,
-                                "id": "7842ff20-e5c7-11e9-a699-3b06b24612cf",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "xsoarcpu",
                                 "height": 22,
                                 "id": "8c569fe0-6a4f-11eb-8ba8-c3c339e58141",
                                 "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "demistoos",
-                                "height": 22,
-                                "id": "7a6235a0-e5c7-11e9-a699-3b06b24612cf",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },

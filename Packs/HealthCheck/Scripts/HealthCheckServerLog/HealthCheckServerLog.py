@@ -151,7 +151,6 @@ else:
                         restartcount = int(context_restartcount)
                         restartcount += 1
                     elif (context_restartcount is not None) and (restartcount is not None):
-                        # int(restartcount)
                         restartcount += 1
                 for item in knownerrors:
                     for (err, suggest) in item.items():
