@@ -3038,8 +3038,7 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = args.get('parameters')
-    if parameters:
+    if parameters := args.get('parameters'):
         try:
             parameters = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
