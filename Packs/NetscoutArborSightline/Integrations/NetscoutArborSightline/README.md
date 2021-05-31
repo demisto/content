@@ -291,7 +291,7 @@ List all mitigations. When a mitigation ID is given, only the relevant mitigatio
 
 ### na-sightline-mitigation-create
 ***
-List all alerts. When an alert ID is given, only the relevant alert will be fetched.
+Add a TMS or flowspec mitigation with the attributes and relationships passed in the JSON sub_object.
 
 
 #### Base Command
