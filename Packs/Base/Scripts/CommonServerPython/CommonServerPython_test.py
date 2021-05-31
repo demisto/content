@@ -39,7 +39,6 @@ INFO = {'b': 1,
         }
         }
 
-
 @pytest.fixture()
 def clear_version_cache():
     """
@@ -1150,57 +1149,46 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
-def test_get_demisto_version(mocker, clear_version_cache):
-    # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+def test_indicator_type_by_server_version_under_6_1(mocker, clear_version_cache):
+    """
+    Given
+    - demisto version mock under 6.2
+
+    When
+    - demisto version mock under 6.2
+
+    Then
+    - Do not remove the STIX indicator type prefix.
+    """
     mocker.patch.object(
         demisto,
         'demistoVersion',
         return_value={
-            'version': '5.0.0',
-            'buildNumber': '50000'
+            'version': '6.1.0',
         }
     )
-    assert get_demisto_version() == {
-        'version': '5.0.0',
-        'buildNumber': '50000'
-    }
-    # call again to check cache
-    assert get_demisto_version() == {
-        'version': '5.0.0',
-        'buildNumber': '50000'
-    }
-    # call count should be 1 as we cached
-    assert demisto.demistoVersion.call_count == 1
-    # test is_demisto_version_ge
-    assert is_demisto_version_ge('5.0.0')
-    assert is_demisto_version_ge('4.5.0')
-    assert not is_demisto_version_ge('5.5.0')
-    assert get_demisto_version_as_str() == '5.0.0-50000'
+    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "STIX Attack Pattern"
 
 
-def test_is_demisto_version_ge_4_5(mocker, clear_version_cache):
-    get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
-    get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
-    assert not is_demisto_version_ge('5.0.0')
-    assert not is_demisto_version_ge('6.0.0')
-    with raises(AttributeError, match='simulate missing demistoVersion'):
-        is_demisto_version_ge('4.5.0')
+def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
+    """
+    Given
+    - demisto version mock set to 6.2
 
+    When
+    - demisto version mock set to 6.2
 
-def test_is_demisto_version_build_ge(mocker):
+    Then
+    - Return the STIX indicator type with the STIX prefix
+    """
     mocker.patch.object(
         demisto,
         'demistoVersion',
         return_value={
-            'version': '6.0.0',
-            'buildNumber': '50000'
+            'version': '6.2.0',
         }
     )
-    assert is_demisto_version_ge('6.0.0', '49999')
-    assert is_demisto_version_ge('6.0.0', '50000')
-    assert not is_demisto_version_ge('6.0.0', '50001')
-    assert not is_demisto_version_ge('6.1.0', '49999')
-    assert not is_demisto_version_ge('5.5.0', '50001')
+    assert FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern") == "Attack Pattern"
 
 
 def test_assign_params():
@@ -3543,6 +3531,60 @@ def test_warnings_handler(mocker):
     assert 'python warning' in msg
 
 
+def test_get_schedule_metadata():
+    """
+        Given
+            - case 1: no parent entry
+            - case 2: parent entry with schedule metadata
+            - case 3: parent entry without schedule metadata
+
+        When
+            querying the schedule metadata
+
+        Then
+            ensure scheduled_metadata is returned correctly
+            - case 1: no data (empty dict)
+            - case 2: schedule metadata with all details
+            - case 3: empty schedule metadata (dict with polling: false)
+    """
+    from CommonServerPython import get_schedule_metadata
+
+    # case 1
+    context = {'ParentEntry': None}
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata == {}
+
+    # case 2
+    parent_entry = {
+        'polling': True,
+        'pollingCommand': 'foo',
+        'pollingArgs': {'name': 'foo'},
+        'timesRan': 5,
+        'startDate': '2021-04-28T14:20:56.03728+03:00',
+        'endingDate': '2021-04-28T14:25:35.976244+03:00'
+    }
+    context = {
+        'ParentEntry': parent_entry
+    }
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata.get('is_polling') is True
+    assert actual_scheduled_metadata.get('polling_command') == parent_entry.get('pollingCommand')
+    assert actual_scheduled_metadata.get('polling_args') == parent_entry.get('pollingArgs')
+    assert actual_scheduled_metadata.get('times_ran') == (parent_entry.get('timesRan') + 1)
+    assert actual_scheduled_metadata.get('startDate') == parent_entry.get('start_date')
+    assert actual_scheduled_metadata.get('startDate') == parent_entry.get('start_date')
+
+    # case 3
+    parent_entry = {
+        'polling': False
+    }
+    context = {
+        'ParentEntry': parent_entry
+    }
+    actual_scheduled_metadata = get_schedule_metadata(context=context)
+    assert actual_scheduled_metadata == {'is_polling': False, 'times_ran': 1}
+
+
 class TestCommonTypes:
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
@@ -4173,7 +4215,8 @@ class TestCommonTypes:
 
 
 class TestIndicatorsSearcher:
-    def mock_search_after_output(self, fromDate='', toDate='', query='', size=0, value='', page=0, searchAfter=''):
+    def mock_search_after_output(self, fromDate='', toDate='', query='', size=0, value='', page=0, searchAfter='',
+                                 populateFields=None):
         if not searchAfter:
             searchAfter = 0
 
@@ -4281,6 +4324,7 @@ class TestIndicatorsSearcher:
 
         assert search_indicators_obj_search_after._search_after_param == 200
         assert search_indicators_obj_search_after._page == 17
+
 
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
@@ -4600,3 +4644,88 @@ class TestEntityRelationship:
                                )
         except ValueError as exception:
             assert "Invalid entity B type: DomainTest" in str(exception)
+
+
+class TestIsDemistoServerGE:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    def test_get_demisto_version(self, mocker):
+        # verify expected server version and build returned in case Demisto class has attribute demistoVersion
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '5.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert get_demisto_version() == {
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+        # call again to check cache
+        assert get_demisto_version() == {
+            'version': '5.0.0',
+            'buildNumber': '50000'
+        }
+        # call count should be 1 as we cached
+        assert demisto.demistoVersion.call_count == 1
+        # test is_demisto_version_ge
+        assert is_demisto_version_ge('5.0.0')
+        assert is_demisto_version_ge('4.5.0')
+        assert not is_demisto_version_ge('5.5.0')
+        assert get_demisto_version_as_str() == '5.0.0-50000'
+
+    def test_is_demisto_version_ge_4_5(self, mocker):
+        get_version_patch = mocker.patch('CommonServerPython.get_demisto_version')
+        get_version_patch.side_effect = AttributeError('simulate missing demistoVersion')
+        assert not is_demisto_version_ge('5.0.0')
+        assert not is_demisto_version_ge('6.0.0')
+        with raises(AttributeError, match='simulate missing demistoVersion'):
+            is_demisto_version_ge('4.5.0')
+
+    def test_is_demisto_version_ge_dev_version(self, mocker):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert is_demisto_version_ge('6.0.0', '1-dev')
+
+    @pytest.mark.parametrize('version, build', [
+        ('6.0.0', '49999'),
+        ('6.0.0', '50000'),
+        ('6.0.0', '6'),  # Added with the fix of https://github.com/demisto/etc/issues/36876
+        ('5.5.0', '50001')
+    ])
+    def test_is_demisto_version_build_ge(self, mocker, version, build):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert is_demisto_version_ge(version, build)
+
+    @pytest.mark.parametrize('version, build', [
+        ('6.0.0', '50001'),
+        ('6.1.0', '49999')
+    ])
+    def test_is_demisto_version_build_ge_negative(self, mocker, version, build):
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '6.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        assert not is_demisto_version_ge(version, build)

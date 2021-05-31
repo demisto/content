@@ -1647,7 +1647,7 @@ Get list of files from the given path in the repository.
 | GitHub.File.Size | Number | The size of the file in bytes. | 
 | GitHub.File.Path | String | The file path inside the repository. | 
 | GitHub.File.DownloadUrl | String | Link to download the file content. | 
-
+| GitHub.File.SHA | String | The SHA of the file. | 
 
 #### Command Example
 ```!Github-list-files path=Index```
@@ -1658,3 +1658,417 @@ Get list of files from the given path in the repository.
 |--- |--- |--- |--- |--- |
 |README.md|Index/README.md|file|1500|https://raw.githubusercontent.com/demisto/hello-world/master/index/README.md|
 |images|Index/images|dir|0||
+
+### GitHub-list-team-members
+***
+List team members.
+#### Base Command
+`GitHub-list-team-members`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| organization | The name of the organization. | Required | 
+| team_slug | The name of the team under the organiztion. | Required | 
+| maximum_users | The maximum number of users to return | Optional | 
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.TeamMember.ID | String | The ID of the team member. | 
+| GitHub.TeamMember.Login | String | The login name of the team member. |
+| GitHub.TeamMember.Team | String | The user's team. |
+#### Command Example
+```!GitHub-list-team-members organization=demisto team_slug=content maximum_users=20```
+
+##### Context Example
+```
+{
+    "GitHub.GitHub": [
+        {
+            "ID": 1234567, 
+            "Login": "user1", 
+            "Team": "content", 
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+## Team Member of team content in organization demisto
+|ID|Login|Team|
+|--- |---|---|
+|1234567|user1|content|
+
+### GitHub-list-branch-pull-requests
+***
+Get pull requests corresponding to the given branch name.
+
+
+#### Base Command
+
+`GitHub-list-branch-pull-requests`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| branch_name | The branch name from which to retrieve pull requests. | Required | 
+| organization | The name of the organization. | Optional | 
+| repository | The repository for the pull request. Defaults to the repository parameter if not provided. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.PR.ID | Number | The ID number of the pull request | 
+| GitHub.PR.NodeID | String | The node ID of the pull request | 
+| GitHub.PR.Number | Number | The issue number of the pull request | 
+| GitHub.PR.State | String | The state of the pull request | 
+| GitHub.PR.Locked | Boolean | Whether the pull request is locked or not | 
+| GitHub.PR.User.Login | String | The login of the user who opened the pull request | 
+| GitHub.PR.User.ID | Number | The ID of the user who opened the pull request | 
+| GitHub.PR.User.NodeID | String | The node ID of the user who opened the pull request | 
+| GitHub.PR.User.Type | String | The type of the user who opened the pull request | 
+| GitHub.PR.User.SiteAdmin | Boolean | Whether the user who opened the pull request is a site admin or not | 
+| GitHub.PR.Body | String | The body content of the pull request | 
+| GitHub.PR.Label.ID | Number | The ID of the label | 
+| GitHub.PR.Label.NodeID | String | The node ID of the label | 
+| GitHub.PR.Label.Name | String | The name of the label | 
+| GitHub.PR.Label.Description | String | The description of the label | 
+| GitHub.PR.Label.Color | String | The hex color value of the label | 
+| GitHub.PR.Label.Default | Boolean | Whether the label is a default or not | 
+| GitHub.PR.Milestone.ID | Number | The ID of the milestone | 
+| GitHub.PR.Milestone.NodeID | String | The node ID of the milestone | 
+| GitHub.PR.Milestone.Number | Number | The number of the milestone | 
+| GitHub.PR.Milestone.State | String | The state of the milestone | 
+| GitHub.PR.Milestone.Title | String | The title of the milestone | 
+| GitHub.PR.Milestone.Description | String | The description of the milestone | 
+| GitHub.PR.Milestone.Creator.Login | String | The login of the milestone creator | 
+| GitHub.PR.Milestone.Creator.ID | Number | The ID the milestone creator | 
+| GitHub.PR.Milestone.Creator.NodeID | String | The node ID of the milestone creator | 
+| GitHub.PR.Milestone.Creator.Type | String | The type of the milestone creator | 
+| GitHub.PR.Milestone.Creator.SiteAdmin | Boolean | Whether the milestone creator is a site admin or not | 
+| GitHub.PR.Milestone.OpenIssues | Number | The number of open issues with this milestone | 
+| GitHub.PR.Milestone.ClosedIssues | Number | The number of closed issues with this milestone | 
+| GitHub.PR.Milestone.CreatedAt | String | The date the milestone was created | 
+| GitHub.PR.Milestone.UpdatedAt | String | The date the milestone was updated | 
+| GitHub.PR.Milestone.ClosedAt | String | The date the milestone was closed | 
+| GitHub.PR.Milestone.DueOn | String | The due date for the milestone | 
+| GitHub.PR.ActiveLockReason | String | The reason the pull request is locked | 
+| GitHub.PR.CreatedAt | String | The date the pull request was created | 
+| GitHub.PR.UpdatedAt | String | The date the pull request was updated | 
+| GitHub.PR.ClosedAt | String | The date the pull request was closed | 
+| GitHub.PR.MergedAt | String | The date the pull request was merged | 
+| GitHub.PR.MergeCommitSHA | String | The SHA hash of the pull request's merge commit | 
+| GitHub.PR.Assignee.Login | String | The login of the user assigned to the pull request | 
+| GitHub.PR.Assignee.ID | Number | The ID of the user assigned to the pull request | 
+| GitHub.PR.Assignee.NodeID | String | The node ID of the user assigned to the pull request | 
+| GitHub.PR.Assignee.Type | String | The type of the user assigned to the pull request | 
+| GitHub.PR.Assignee.SiteAdmin | Boolean | Whether the user assigned to the pull request is a site admin or not | 
+| GitHub.PR.RequestedReviewer.Login | String | The login of the user requested for review | 
+| GitHub.PR.RequestedReviewer.ID | Number | The ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.NodeID | String | The node ID of the user requested for review | 
+| GitHub.PR.RequestedReviewer.Type | String | The type of the user requested for review | 
+| GitHub.PR.RequestedReviewer.SiteAdmin | Boolean | Whether the user requested for review is a site admin or not | 
+| GitHub.PR.RequestedTeam.ID | Number | The ID of the team requested for review | 
+| GitHub.PR.RequestedTeam.NodeID | String | The node ID of the team requested for review | 
+| GitHub.PR.RequestedTeam.Name | String | The name of the team requested for review | 
+| GitHub.PR.RequestedTeam.Slug | String | The slug of the team requested for review | 
+| GitHub.PR.RequestedTeam.Description | String | The description of the team requested for review | 
+| GitHub.PR.RequestedTeam.Privacy | String | The privacy setting of the team requested for review | 
+| GitHub.PR.RequestedTeam.Permission | String | The permissions of the team requested for review | 
+| GitHub.PR.RequestedTeam.Parent | Unknown | The parent of the team requested for review | 
+| GitHub.PR.Head.Label | String | The label of the branch that HEAD points to | 
+| GitHub.PR.Head.Ref | String | The reference of the branch that HEAD points to | 
+| GitHub.PR.Head.SHA | String | The SHA hash of the commit that HEAD points to | 
+| GitHub.PR.Head.User.Login | String | The login of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.ID | Number | The ID of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.NodeID | String | The node ID of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.Type | String | The type of the committer of the HEAD commit of the checked out branch | 
+| GitHub.PR.Head.User.SiteAdmin | Boolean | Whether the committer of the HEAD commit of the checked out branch is a site admin or not | 
+| GitHub.PR.Head.Repo.ID | Number | The ID of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.NodeID | String | The node ID of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Name | String | The name of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.FullName | String | The full name of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.Login | String | The user login of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.ID | Number | The user ID of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.NodeID | String | The user node ID of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.Type | String | The user type of the owner of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository of the checked out branch is a site admin or not | 
+| GitHub.PR.Head.Repo.Private | Boolean | Whether the repository of the checked out branch is private or not | 
+| GitHub.PR.Head.Repo.Description | String | The description of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Fork | Boolean | Whether the repository of the checked out branch is a fork or not | 
+| GitHub.PR.Head.Repo.Language | Unknown | The language of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.ForksCount | Number | The number of forks of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.StargazersCount | Number | The number of stars of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.WatchersCount | Number | The number of entities watching the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Size | Number | The size of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.DefaultBranch | String | The default branch of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.OpenIssuesCount | Number | The open issues of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.Topics | Unknown | Topics listed for the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.HasIssues | Boolean | Whether the repository of the checked out branch has issues or not | 
+| GitHub.PR.Head.Repo.HasProjects | Boolean | Whether the repository of the checked out branch has projects or not | 
+| GitHub.PR.Head.Repo.HasWiki | Boolean | Whether the repository of the checked out branch has a wiki or not | 
+| GitHub.PR.Head.Repo.HasPages | Boolean | Whether the repository of the checked out branch has pages or not | 
+| GitHub.PR.Head.Repo.HasDownloads | Boolean | Whether the repository of the checked out branch has downloads or not | 
+| GitHub.PR.Head.Repo.Archived | Boolean | Whether the repository of the checked out branch has been arvhived or not | 
+| GitHub.PR.Head.Repo.Disabled | Boolean | Whether the repository of the checked out branch has been disabled or not | 
+| GitHub.PR.Head.Repo.PushedAt | String | The date of the latest push to the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.CreatedAt | String | The date of creation of the repository of the checked out branch | 
+| GitHub.PR.Head.Repo.UpdatedAt | String | The date the repository of the checked out branch was last updated | 
+| GitHub.PR.Head.Repo.AllowRebaseMerge | Boolean | Whether the repository of the checked out branch permits rebase-style merges or not | 
+| GitHub.PR.Head.Repo.AllowSquashMerge | Boolean | Whether the repository of the checked out branch permits squash merges or not | 
+| GitHub.PR.Head.Repo.AllowMergeCommit | Boolean | Whether the repository of the checked out branch permits merge commits or not | 
+| GitHub.PR.Head.Repo.SubscribersCount | Number | The number of entities subscribing to the repository of the checked out branch | 
+| GitHub.PR.Base.Label | String | The label of the base branch | 
+| GitHub.PR.Base.Ref | String | The reference of the base branch | 
+| GitHub.PR.Base.SHA | String | The SHA hash of the base branch | 
+| GitHub.PR.Base.User.Login | String | The login of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.ID | Number | The ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.NodeID | String | The node ID of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.Type | String | The user type of the committer of the commit that the base branch points to | 
+| GitHub.PR.Base.User.SiteAdmin | Boolean | Whether the committer of the commit that the base branch points to is a site admin or not | 
+| GitHub.PR.Base.Repo.ID | Number | The ID of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.NodeID | String | The node ID of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Name | String | The name of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.FullName | String | The full name of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.Login | String | The user login of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.ID | Number | The user ID of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.NodeID | String | The user node ID of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.Type | String | The user type of the owner of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Owner.SiteAdmin | Boolean | Whether the owner of the repository that the base branch belongs to is a site admin or not | 
+| GitHub.PR.Base.Repo.Private | Boolean | Whether the repository that the base branch belongs to is private or not | 
+| GitHub.PR.Base.Repo.Description | String | The description of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Fork | Boolean | Whether the repository that the base branch belongs to is a fork or not | 
+| GitHub.PR.Base.Repo.Language | Unknown | The language of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.ForksCount | Number | The number of times that the repository that the base branch belongs to has been forked | 
+| GitHub.PR.Base.Repo.StargazersCount | Number | The number of times that the repository that the base branch belongs to has been starred | 
+| GitHub.PR.Base.Repo.WatchersCount | Number | The number of entities watching the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Size | Number | The size of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.DefaultBranch | String | The default branch of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.OpenIssuesCount | Number | The number of open issues in the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.Topics | String | Topics listed for the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.HasIssues | Boolean | Whether the repository that the base branch belongs to has issues or not | 
+| GitHub.PR.Base.Repo.HasProjects | Boolean | Whether the repository that the base branch belongs to has projects or not | 
+| GitHub.PR.Base.Repo.HasWiki | Boolean | Whether the repository that the base branch belongs to has a wiki or not | 
+| GitHub.PR.Base.Repo.HasPages | Boolean | Whether the repository that the base branch belongs to has pages or not | 
+| GitHub.PR.Base.Repo.HasDownloads | Boolean | Whether the repository that the base branch belongs to has downloads or not | 
+| GitHub.PR.Base.Repo.Archived | Boolean | Whether the repository that the base branch belongs to is archived or not | 
+| GitHub.PR.Base.Repo.Disabled | Boolean | Whether the repository that the base branch belongs to is disabled or not | 
+| GitHub.PR.Base.Repo.PushedAt | String | The date that the repository that the base branch belongs to was last pushed to | 
+| GitHub.PR.Base.Repo.CreatedAt | String | The date of creation of the repository that the base branch belongs to | 
+| GitHub.PR.Base.Repo.UpdatedAt | String | The date that the repository that the base branch belongs to was last updated | 
+| GitHub.PR.Base.Repo.AllowRebaseMerge | Boolean | Whether the repository that the base branch belongs to allows rebase-style merges or not | 
+| GitHub.PR.Base.Repo.AllowSquashMerge | Boolean | Whether the repository that the base branch belongs to allows squash merges or not | 
+| GitHub.PR.Base.Repo.AllowMergeCommit | Boolean | Whether the repository that the base branch belongs to allows merge commits or not | 
+| GitHub.PR.Base.Repo.SubscribersCount | Number | The number of entities that subscribe to the repository that the base branch belongs to | 
+| GitHub.PR.AuthorAssociation | String | The pull request author association | 
+| GitHub.PR.Draft | Boolean | Whether the pull request is a draft or not | 
+| GitHub.PR.Merged | Boolean | Whether the pull request is merged or not | 
+| GitHub.PR.Mergeable | Boolean | Whether the pull request is mergeable or not | 
+| GitHub.PR.Rebaseable | Boolean | Whether the pull request is rebaseable or not | 
+| GitHub.PR.MergeableState | String | The mergeable state of the pull request | 
+| GitHub.PR.MergedBy.Login | String | The login of the user who merged the pull request | 
+| GitHub.PR.MergedBy.ID | Number | The ID of the user who merged the pull request | 
+| GitHub.PR.MergedBy.NodeID | String | The node ID of the user who merged the pull request | 
+| GitHub.PR.MergedBy.Type | String | The type of the user who merged the pull request | 
+| GitHub.PR.MergedBy.SiteAdmin | Boolean | Whether the user who merged the pull request is a site admin or not | 
+| GitHub.PR.Comments | Number | The number of comments on the pull request | 
+| GitHub.PR.ReviewComments | Number | The number of review comments on the pull request | 
+| GitHub.PR.MaintainerCanModify | Boolean | Whether the maintainer can modify the pull request or not | 
+| GitHub.PR.Commits | Number | The number of commits in the pull request | 
+| GitHub.PR.Additions | Number | The number of additions in the pull request | 
+| GitHub.PR.Deletions | Number | The number of deletions in the pull request | 
+| GitHub.PR.ChangedFiles | Number | The number of changed files in the pull request | 
+
+
+#### Command Example
+```!GitHub-list-branch-pull-requests branch_name=Update-Docker-Image```
+
+#### Context Example
+```json
+{
+ "GitHub": {
+     "PR": {
+         "ActiveLockReason": null,
+         "Additions": null,
+         "AuthorAssociation": "MEMBER",
+         "Base": {
+             "Label": "demisto:master",
+             "Ref": "master",
+             "Repo": {
+                 "AllowMergeCommit": null,
+                 "AllowRebaseMerge": null,
+                 "AllowSquashMerge": null,
+                 "Archived": false,
+                 "CreatedAt": "2016-06-06T12:17:02Z",
+                 "DefaultBranch": "master",
+                 "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
+                 "Disabled": false,
+                 "Fork": false,
+                 "ForksCount": 678,
+                 "FullName": "demisto/content",
+                 "HasDownloads": true,
+                 "HasIssues": false,
+                 "HasPages": false,
+                 "HasProjects": true,
+                 "HasWiki": false,
+                 "ID": 60525392,
+                 "Language": "Python",
+                 "Name": "content",
+                 "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
+                 "OpenIssuesCount": 181,
+                 "Owner": {
+                     "ID": 11011767,
+                     "Login": "demisto",
+                     "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                     "SiteAdmin": false,
+                     "Type": "Organization"
+                 },
+                 "Private": false,
+                 "PushedAt": "2021-05-06T11:49:07Z",
+                 "Size": 371861,
+                 "StargazersCount": 635,
+                 "SucscribersCount": null,
+                 "Topics": null,
+                 "UpdatedAt": "2021-05-06T11:41:27Z",
+                 "WatchersCount": 635
+             },
+             "SHA": "9adf770fb981ec8bc9d6e87669be75da23176693",
+             "User": {
+                 "ID": 11011767,
+                 "Login": "demisto",
+                 "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                 "SiteAdmin": false,
+                 "Type": "Organization"
+             }
+         },
+         "Body": "Updated Docker Images For Integrations",
+         "ChangedFiles": null,
+         "ClosedAt": null,
+         "Comments": null,
+         "Commits": null,
+         "CreatedAt": "2021-05-03T14:29:25Z",
+         "Deletions": null,
+         "Draft": false,
+         "Head": {
+             "Label": "demisto:Update-Docker-Image",
+             "Ref": "Update-Docker-Image",
+             "Repo": {
+                 "AllowMergeCommit": null,
+                 "AllowRebaseMerge": null,
+                 "AllowSquashMerge": null,
+                 "Archived": false,
+                 "CreatedAt": "2016-06-06T12:17:02Z",
+                 "DefaultBranch": "master",
+                 "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ",
+                 "Disabled": false,
+                 "Fork": false,
+                 "ForksCount": 678,
+                 "FullName": "demisto/content",
+                 "HasDownloads": true,
+                 "HasIssues": false,
+                 "HasPages": false,
+                 "HasProjects": true,
+                 "HasWiki": false,
+                 "ID": 60525392,
+                 "Language": "Python",
+                 "Name": "content",
+                 "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==",
+                 "OpenIssuesCount": 181,
+                 "Owner": {
+                     "ID": 11011767,
+                     "Login": "demisto",
+                     "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                     "SiteAdmin": false,
+                     "Type": "Organization"
+                 },
+                 "Private": false,
+                 "PushedAt": "2021-05-06T11:49:07Z",
+                 "Size": 371861,
+                 "StargazersCount": 635,
+                 "SucscribersCount": null,
+                 "Topics": null,
+                 "UpdatedAt": "2021-05-06T11:41:27Z",
+                 "WatchersCount": 635
+             },
+             "SHA": "baee6e30aaa0f52e676987c1968ffd3ce11d7e57",
+             "User": {
+                 "ID": 11011767,
+                 "Login": "demisto",
+                 "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3",
+                 "SiteAdmin": false,
+                 "Type": "Organization"
+             }
+         },
+         "ID": 629143674,
+         "Label": [
+             {
+                 "Color": null,
+                 "Default": false,
+                 "Description": "",
+                 "ID": 1523790036,
+                 "Name": "docs-approved",
+                 "NodeID": "MDU6TGFiZWwxNTIzNzkwMDM2"
+             }
+         ],
+         "Locked": false,
+         "MaintainerCanModify": null,
+         "MergeCommitSHA": "5854633d909c5672ba6ccf118c4dae68eb4e38c0",
+         "Mergeable": null,
+         "MergeableState": null,
+         "Merged": null,
+         "MergedAt": null,
+         "NodeID": "MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0",
+         "Number": 12510,
+         "Rebaseable": null,
+         "ReviewComments": null,
+         "State": "open",
+         "UpdatedAt": "2021-05-03T14:48:58Z",
+         "User": {
+             "ID": 55035720,
+             "Login": "content-bot",
+             "NodeID": "MDQ6VXNlcjU1MDM1NzIw",
+             "SiteAdmin": false,
+             "Type": "User"
+         }
+     }
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Pull Request For Branch #Update-Docker-Image
+>|AuthorAssociation|Base|Body|CreatedAt|Draft|Head|ID|Label|Locked|MergeCommitSHA|NodeID|Number|State|UpdatedAt|User|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| MEMBER | Label: demisto:master<br/>Ref: master<br/>SHA: 9adf770fb981ec8bc9d6e87669be75da23176693<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | Updated Docker Images For Integrations | 2021-05-03T14:29:25Z | false | Label: demisto:Update-Docker-Image<br/>Ref: Update-Docker-Image<br/>SHA: baee6e30aaa0f52e676987c1968ffd3ce11d7e57<br/>User: {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}<br/>Repo: {"ID": 60525392, "NodeID": "MDEwOlJlcG9zaXRvcnk2MDUyNTM5Mg==", "Name": "content", "FullName": "demisto/content", "Owner": {"Login": "demisto", "ID": 11011767, "NodeID": "MDEyOk9yZ2FuaXphdGlvbjExMDExNzY3", "Type": "Organization", "SiteAdmin": false}, "Private": false, "Description": "Demisto is now Cortex XSOAR. Automate and orchestrate your Security Operations with Cortex XSOAR's ever-growing Content Repository. Pull Requests are always welcome and highly appreciated! ", "Fork": false, "Language": "Python", "ForksCount": 678, "StargazersCount": 635, "WatchersCount": 635, "Size": 371861, "DefaultBranch": "master", "OpenIssuesCount": 181, "Topics": null, "HasIssues": false, "HasProjects": true, "HasWiki": false, "HasPages": false, "HasDownloads": true, "Archived": false, "Disabled": false, "PushedAt": "2021-05-06T11:49:07Z", "CreatedAt": "2016-06-06T12:17:02Z", "UpdatedAt": "2021-05-06T11:41:27Z", "AllowRebaseMerge": null, "AllowSquashMerge": null, "AllowMergeCommit": null, "SucscribersCount": null} | 629143674 | {'ID': 1523790036, 'NodeID': 'MDU6TGFiZWwxNTIzNzkwMDM2', 'Name': 'docs-approved', 'Description': '', 'Color': None, 'Default': False} | false | 5854633d909c5672ba6ccf118c4dae68eb4e38c0 | MDExOlB1bGxSZXF1ZXN0NjI5MTQzNjc0 | 12510 | open | 2021-05-03T14:48:58Z | Login: content-bot<br/>ID: 55035720<br/>NodeID: MDQ6VXNlcjU1MDM1NzIw<br/>Type: User<br/>SiteAdmin: false |
+
+### Github-commit-file
+***
+Commits a given file.
+
+
+#### Base Command
+
+`Github-commit-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| commit_message | Commit message. | Required | 
+| path_to_file | Path to the file in the Github repo (including file name and file ending). | Required | 
+| entry_id | Entry ID for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| file_text | Plain text for the file to commit. Either "entry_id" or "file_text" must be provided. | Optional | 
+| branch_name | The branch name. | Required | 
+| file_sha | The blob SHA of the file being replaced. Use the Github-list-files command to get the SHA value of the file.  Required if you are updating a file. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!Github-commit-file commit_message="test commit" path_to_file="TEST.md" branch_name=branch-for-pr file_sha=hjashd878ad file_text=Test```
+
+#### Human Readable Output
+The file TEST.md committed successfully. Link to the commit: https://github.com/content-bot/hello-world/commit/7678213ghg72136

@@ -71,9 +71,11 @@ def main():
         if is_error(res[0]):
             raise Exception("Error in searchRelationships command - {}".format(res[0]["Contents"]))
 
-        relationships = res[0]['Contents']['data']
-
-        context = to_context(relationships, verbose)
+        relationships = res[0].get('Contents', {}).get('data', [])
+        if relationships:
+            context = to_context(relationships, verbose)
+        else:
+            context = []
         hr = tableToMarkdown('Relationships', context,
                              headers=['EntityA', 'EntityAType', 'EntityB', 'EntityBType', 'Relationship'],
                              headerTransform=lambda header: re.sub(r"\B([A-Z])", r" \1", header))

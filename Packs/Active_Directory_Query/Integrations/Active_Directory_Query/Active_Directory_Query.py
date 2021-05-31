@@ -9,6 +9,7 @@ import traceback
 import os
 from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
                              set_library_log_hide_sensitive_data, EXTENDED)
+from ldap3.utils.conv import escape_filter_chars
 
 # global connection
 conn: Optional[Connection] = None
@@ -454,26 +455,32 @@ def search_users(default_base_dn, page_size):
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(args['dn'])
+        dn = escape_filter_chars(args['dn'])
+        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(dn)
 
     # query by name
     if args.get('name'):
-        query = "(&(objectClass=User)(objectCategory=person)(cn={}))".format(args['name'])
+        name = escape_filter_chars(args['name'])
+        query = "(&(objectClass=User)(objectCategory=person)(cn={}))".format(name)
 
     # query by email
     if args.get('email'):
-        query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(args['email'])
+        email = escape_filter_chars(args['email'])
+        query = "(&(objectClass=User)(objectCategory=person)(mail={}))".format(email)
 
     # query by sAMAccountName
     if args.get('username'):
-        query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(args['username'])
+        username = escape_filter_chars(args['username'])
+        query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(username)
 
     # query by custom object attribute
     if args.get('custom-field-type'):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
+        field_type = escape_filter_chars(args['custom-field-type'])
+        field_data = escape_filter_chars(args['custom-field-data'])
         query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(
-            args['custom-field-type'], args['custom-field-data'])
+            field_type, field_data)
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
@@ -608,20 +615,24 @@ def search_computers(default_base_dn, page_size):
     )
 
     endpoints = [endpoint_entry(entry, custom_attributes) for entry in entries['flat']]
+    readable_output = tableToMarkdown("Active Directory - Get Computers", entries['flat'])
 
-    demisto_entry = {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': entries['raw'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Active Directory - Get Computers", entries['flat']),
-        'EntryContext': {
-            'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
-            # 'backward compatability' with ADGetComputer script
-            'Endpoint(obj.ID == val.ID)': endpoints
-        }
-    }
-    demisto.results(demisto_entry)
+    if endpoints:
+        results = CommandResults(
+            readable_output=readable_output,
+            outputs={
+                'ActiveDirectory.Computers(obj.dn == val.dn)': entries['flat'],
+                # 'backward compatability' with ADGetComputer script
+                'Endpoint(obj.ID == val.ID)': endpoints,
+            },
+            raw_response=entries['raw'],
+        )
+    else:
+        results = CommandResults(
+            readable_output=readable_output,
+        )
+
+    return_results(results)
 
 
 def search_group_members(default_base_dn, page_size):
@@ -1381,8 +1392,9 @@ def get_mapping_fields_command(search_base):
 
 
 def main():
-    ''' INSTANCE CONFIGURATION '''
+    """ INSTANCE CONFIGURATION """
     params = demisto.params()
+    command = demisto.command()
 
     SERVER_IP = params.get('server_ip')
     USERNAME = params.get('credentials')['identifier']
@@ -1457,7 +1469,7 @@ def main():
 
         ''' COMMAND EXECUTION '''
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             if conn.user == '':
                 # Empty response means you have no authentication status on the server, so you are an anonymous user.
                 raise Exception("Failed to authenticate user")
@@ -1465,82 +1477,82 @@ def main():
 
         args = demisto.args()
 
-        if demisto.command() == 'ad-search':
+        if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-expire-password':
+        if command == 'ad-expire-password':
             expire_user_password(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-set-new-password':
+        if command == 'ad-set-new-password':
             set_user_password(DEFAULT_BASE_DN, PORT)
 
-        if demisto.command() == 'ad-unlock-account':
+        if command == 'ad-unlock-account':
             unlock_account(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-disable-account':
+        if command == 'ad-disable-account':
             disable_user(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-enable-account':
+        if command == 'ad-enable-account':
             enable_user(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-remove-from-group':
+        if command == 'ad-remove-from-group':
             remove_member_from_group(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-add-to-group':
+        if command == 'ad-add-to-group':
             add_member_to_group(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-create-user':
+        if command == 'ad-create-user':
             create_user()
 
-        if demisto.command() == 'ad-delete-user':
+        if command == 'ad-delete-user':
             delete_user()
 
-        if demisto.command() == 'ad-update-user':
+        if command == 'ad-update-user':
             update_user(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-modify-computer-ou':
+        if command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)
 
-        if demisto.command() == 'ad-create-contact':
+        if command == 'ad-create-contact':
             create_contact()
 
-        if demisto.command() == 'ad-update-contact':
+        if command == 'ad-update-contact':
             update_contact()
 
-        if demisto.command() == 'ad-get-user':
+        if command == 'ad-get-user':
             search_users(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-get-computer':
+        if command == 'ad-get-computer':
             search_computers(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-get-group-members':
+        if command == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if demisto.command() == 'ad-create-group':
+        if command == 'ad-create-group':
             create_group()
 
-        if demisto.command() == 'ad-delete-group':
+        if command == 'ad-delete-group':
             delete_group()
 
         # IAM commands
-        if demisto.command() == 'iam-get-user':
+        if command == 'iam-get-user':
             user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
             return return_results(user_profile)
 
-        if demisto.command() == 'iam-create-user':
+        if command == 'iam-create-user':
             user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out, disabled_users_group_cn)
             return return_results(user_profile)
 
-        if demisto.command() == 'iam-update-user':
+        if command == 'iam-update-user':
             user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out,
                                            disabled_users_group_cn)
             return return_results(user_profile)
 
-        if demisto.command() == 'iam-disable-user':
+        if command == 'iam-disable-user':
             user_profile = disable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
 
-        elif demisto.command() == 'get-mapping-fields':
+        elif command == 'get-mapping-fields':
             mapping_fields = get_mapping_fields_command(DEFAULT_BASE_DN)
             return return_results(mapping_fields)
 
@@ -1562,5 +1574,5 @@ def main():
 from IAMApiModule import *  # noqa: E402
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()

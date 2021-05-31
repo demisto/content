@@ -107,7 +107,7 @@ WildFire - Detonate file
 | **Argument Name** | **Description** |
 | --- | --- |
 | key | The key to set. Can be a full path such as "Key.ID". If using append=true can also use a DT selector such as "Data\(val.ID == obj.ID\)". |
-| value | The value to set to the key. Can be an array. |
+| value | The value to set to the key. Can be an array (e.g. ["192.168.1.1","192.168.1.2"]) or JSON (e.g. {"key":"value"}). |
 | append | If false then the context key will be overwritten. If set to true then the script will append to existing context key. |
 | stringify | Whether the argument should be saved as a string. |
 

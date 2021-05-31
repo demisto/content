@@ -498,6 +498,13 @@ You can send the message `help` in order to see the supported commands:
 
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
 
+4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
+
+   <img height="75" src="./doc_files/cache.png" />
+
+   Make sure to remove the bot from the team before clearing the integration cache, and add it back after done.
+
+
 ## Download Demisto Bot
 
 [Demisto Bot zip](https://raw.githubusercontent.com/demisto/content/b222375925eb13feaaa28cd8b1c814b4d212f2e4/Integrations/MicrosoftTeams/doc_files/DemistoBot.zip)
