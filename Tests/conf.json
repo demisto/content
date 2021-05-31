@@ -1971,7 +1971,7 @@
         {
             "integrations": "FireEye HX",
             "playbookID": "FireEye HX Test",
-            "timeout": 500
+            "timeout": 800
         },
         {
             "integrations": "FireEyeFeed",
@@ -3312,6 +3312,16 @@
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
             "fromversion": "5.5.0",
             "timeout": 1000
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Get endpoint details - Generic - test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Isolate and unisolate endpoint - test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "VirusTotal - Premium (API v3)",
