@@ -220,7 +220,7 @@ def test_similar_context(mocker):
     result = main()
     assert len(result['EntryContext']['similarIncidentList']) == 1
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
-    assert result['EntryContext']['similarIncident']['similarity'] > 0.9
+    assert float(result['EntryContext']['similarIncident']['similarity']) > 0.9
 
 
 def test_similar_context_with_pre_process(mocker):
@@ -234,4 +234,4 @@ def test_similar_context_with_pre_process(mocker):
     result = main()
     assert len(result['EntryContext']['similarIncidentList']) == 1
     assert result['EntryContext']['similarIncidentList'][0]['rawId'] == 2
-    assert result['EntryContext']['similarIncident']['similarity'] > 0.9
+    assert float(result['EntryContext']['similarIncident']['similarity']) > 0.9

@@ -16,7 +16,7 @@ def get_similar_texts(text, other_texts):
     vect = TfidfVectorizer(min_df=1, stop_words='english')
     if type(text) is not list:
         text = [text]
-    tfidf = vect.fit_transform(text + other_texts)
+    tfidf = vect.fit_transform(text + list(other_texts))
     similarity_vector = linear_kernel(tfidf[0:1], tfidf).flatten()
     return similarity_vector[1:]
 
@@ -129,7 +129,9 @@ def main():
                                        IGNORE_CLOSED, INCIDENT_QUERY_SIZE, TIME_FIELD)
 
     # filter candidates with minimum length constraint
-    map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
+    for candidate in candidates:
+        add_text_to_incident(candidate, TEXT_FIELDS)
+    # map(lambda x: add_text_to_incident(x, TEXT_FIELDS), candidates)
     candidates = [x for x in candidates if len(x.get(INCIDENT_TEXT_FIELD, "")) >= MIN_TEXT_LENGTH]
 
     # compare candidates to the orginial incident using TF-IDF
