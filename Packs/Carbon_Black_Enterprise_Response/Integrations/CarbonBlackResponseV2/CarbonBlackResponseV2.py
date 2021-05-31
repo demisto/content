@@ -16,19 +16,25 @@ MAX_INCIDENTS_TO_FETCH = 10
 
 class ProcessEventDetail:
 
-    def __init__(self, piped_version, fields):
-        data = piped_version.split('|')
-        if len(data) != len(fields):
-            raise Exception(f'{INTEGRATION_NAME} - Data from API is in unexpected format.')
-        self.fields = dict(zip(fields, data))
+    def __init__(self, piped_version: Union[str,list], fields):
+        self.fields = []
+        if not isinstance(piped_version, list):
+            piped_version = [piped_version]
+        for entry in piped_version:
+            data = entry.split('|')
+            if len(data) != len(fields):
+                demisto.debug(f'{INTEGRATION_NAME} - Missing details. Ignoring entry: {entry}.')
+            self.fields.append(dict(zip(fields, data)))
 
     def format(self):
         return self.fields
 
+    def set_field_value(self, key, new_val):
+        self.fields[key] = new_val
 
 class filemod_complete(ProcessEventDetail):
-    FIELDS = ['operation type', 'event time', 'file path', 'md5 of the file after last write',
-              'file type', 'flagged as potential tamper attempt']
+    FIELDS = ['operation_type', 'event_time', 'file_path', 'md5_after_last_write',
+              'file_type', 'flagged_as_potential_tamper_attempt']
     OPERATION_TYPE = {'1': 'Created the file',
                       '2': 'First wrote to the file',
                       '4': 'Deleted the file',
@@ -51,13 +57,14 @@ class filemod_complete(ProcessEventDetail):
         super().__init__(piped_version, self.FIELDS)
 
     def format(self):
-        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type', ''), '')
-        self.fields['file type'] = self.FILE_TYPE.get(self.fields.get('file type', ''), '')
+        for entry in self.fields:
+            entry['operation_type'] = self.OPERATION_TYPE.get(entry.get('operation_type', ''), '')
+            entry['file_type'] = self.FILE_TYPE.get(entry.get('file_type', ''), '')
         return self.fields
 
 
 class modload_complete(ProcessEventDetail):
-    FIELDS = ['event time', 'MD5 of the loaded module', 'Full path of the loaded module']
+    FIELDS = ['event_time', 'loaded_module_md5', 'loaded_module_full_path']
 
     def __init__(self, piped_version):
         super().__init__(piped_version, self.FIELDS)
@@ -67,7 +74,7 @@ class modload_complete(ProcessEventDetail):
 
 
 class regmod_complete(ProcessEventDetail):
-    FIELDS = ['operation type', 'event time', 'the registry key path']
+    FIELDS = ['operation_type', 'event_time', 'registry_key_path']
     OPERATION_TYPE = {'1': 'Created the file',
                       '2': 'First wrote to the file',
                       '4': 'Deleted the file',
@@ -77,21 +84,23 @@ class regmod_complete(ProcessEventDetail):
         super().__init__(piped_version, self.FIELDS)
 
     def format(self):
-        self.fields['operation type'] = self.OPERATION_TYPE.get(self.fields.get('operation type', ''), '')
+        for entry in self.fields:
+            entry['operation_type'] = self.OPERATION_TYPE.get(entry.get('operation_type', ''), '')
         return self.fields
 
 
 class crossproc_complete(ProcessEventDetail):
-    FIELDS = ['type of cross-process access', 'event time', 'unique_id of the targeted process',
-              'md5 of the targeted process', 'path of the targeted process', 'sub-type for ProcessOpen',
-              'requested access priviledges', 'flagged as potential tamper attempt']
+    FIELDS = ['cross-process_access_type', 'event_time', 'targeted_process_unique_id',
+              'targeted_process_md5', 'targeted_process_path', 'ProcessOpen_sub-type',
+              'requested_access_priviledges', 'flagged_as_potential_tamper_attempt']
     SUB_TYPES = {'1': 'handle open to process', '2': 'handle open to thread in process'}
 
     def __init__(self, piped_version):
         super().__init__(piped_version, self.FIELDS)
 
     def format(self):
-        self.fields['sub-type for ProcessOpen'] = self.SUB_TYPES.get(self.fields.get('sub-type for ProcessOpen', ''), '')
+        for entry in self.fields:
+            entry['ProcessOpen_sub-type'] = self.SUB_TYPES.get(entry.get('ProcessOpen_sub-type', ''), '')
         return self.fields
 
 
