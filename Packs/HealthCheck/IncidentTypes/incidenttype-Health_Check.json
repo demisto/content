@@ -13,7 +13,7 @@
     "hours": 0,
     "hoursR": 0,
     "id": "Health Check",
-    "layout": "Health Check layout",
+    "layout": "Health Check",
     "locked": false,
     "name": "Health Check",
     "onChangeRepAlg": 0,
