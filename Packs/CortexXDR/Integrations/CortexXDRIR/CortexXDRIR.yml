@@ -2673,7 +2673,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Path of the file to delete.
+      description: Paths of the files to delete. All files will run on all endpoints.
       isArray: false
       name: file_path
       required: true
@@ -2706,7 +2706,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Path of the file to check for existence.
+      description: Paths of the files to check for existence. All files will run on all endpoints.
       isArray: false
       name: file_path
       required: true
@@ -2738,7 +2738,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of process to kill.
+      description: Names of processes to kill. Will run all processes on all endpoints.
       isArray: false
       name: process_name
       required: true
@@ -2817,9 +2817,6 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   type: python
 tests:
 - Test XDR Playbook

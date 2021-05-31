@@ -2385,7 +2385,7 @@ Initiates a new endpoint script execution to delete the specified file.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| file_path | Path of the file to delete. | Required |
+| file_path |  Paths of the files to delete. All files will run on all endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
@@ -2436,7 +2436,7 @@ Initiates a new endpoint script execution to check if the file exists.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| file_path | Path of the file to check for existence. | Required |
+| file_path | Paths of the files to check for existence. All files will run on all endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
@@ -2487,7 +2487,7 @@ Initiates a new endpoint script execution kill process.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
-| process_name | Name of the process to kill. | Required |
+| process_name | Names of processes to kill. Will run all processes on all endpoints. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
