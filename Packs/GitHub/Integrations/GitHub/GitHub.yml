@@ -2952,6 +2952,53 @@ script:
     name: Github-commit-file
   - arguments:
     - default: false
+      description: The name of the release.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The name of the releae tag.
+      isArray: false
+      name: tag_name
+      required: true
+      secret: false
+    - default: false
+      description: Text describing the contents of the tag.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: True to create a draft (unpublished) release, false to create a published one.
+      isArray: false
+      name: draft
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - True
+      - False
+      defaultValue: 'True'
+    deprecated: false
+    description: Create a release.
+    execution: false
+    name: GitHub-create-release
+    outputs:
+    - contextPath: GitHub.Release.draft
+      description: Whether the release is draft or not
+      type: Boolean
+    - contextPath: GitHub.Release.html_url
+      description: The release URL.
+      type: String
+    - contextPath: GitHub.Release.id
+      description: The ID of the release.
+      type: Number
+    - contextPath: GitHub.Release.url
+      description: Github API url link to the release.
+      type: String
+  - arguments:
+    - default: false
       description: The branch name from which to retrieve pull requests.
       isArray: false
       name: branch_name
