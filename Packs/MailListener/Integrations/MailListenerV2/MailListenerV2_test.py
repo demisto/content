@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-MAIL_STRING = b"""Delivered-To: to@test1.com
+MAIL_STRING = """Delivered-To: to@test1.com
 MIME-Version: 1.0
 From: John Smith <from@test1.com>
 Date: Mon, 10 Aug 2020 10:17:16 +0300
@@ -20,7 +20,6 @@ Content-Type: text/plain; charset="UTF-8"
 Content-Type: text/html; charset="UTF-8"
 
 <div dir="ltr"><br></div>
-<p>C:\Users</p>
 
 --0000000000002b271405ac80bf8b--
 """
@@ -38,7 +37,7 @@ EXPECTED_LABELS = [
     {'type': 'Email/headers/Content-Type',
      'value': 'multipart/alternative; boundary="0000000000002b271405ac80bf8b"'},
     {'type': 'Email', 'value': 'to@test1.com'},
-    {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>'}]
+    {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>'}]
 
 
 def test_convert_to_incident():
@@ -53,7 +52,7 @@ def test_convert_to_incident():
         - Validate the 'attachments', 'occurred', 'details' and 'name' fields are parsed as expected
     """
     from MailListenerV2 import Email
-    email = Email(MAIL_STRING, False, False, 0)
+    email = Email(MAIL_STRING.encode(), False, False, 0)
     incident = email.convert_to_incident()
     assert incident['attachment'] == []
     assert incident['occurred'] == email.date.isoformat()
@@ -134,7 +133,7 @@ def test_generate_labels():
         - Validate all expected labels are in the generated labels
     """
     from MailListenerV2 import Email
-    email = Email(MAIL_STRING, False, False, 0)
+    email = Email(MAIL_STRING.encode(), False, False, 0)
     labels = email._generate_labels()
     for label in EXPECTED_LABELS:
         assert label in labels, f'Label {label} was not found in the generated labels, {labels}'

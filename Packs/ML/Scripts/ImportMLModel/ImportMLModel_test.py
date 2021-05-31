@@ -8,8 +8,7 @@ done = False
 def test_main(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         "entryID": 'id',
-        "modelName": 'model',
-        'modelStoreType': 'mlModel'
+        "modelName": 'model'
     })
 
     def get_file_path(entry_id):

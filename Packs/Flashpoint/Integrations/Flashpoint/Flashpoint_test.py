@@ -27,7 +27,7 @@ TEST_POST_SEARCH_KEYWORD = 'testing'
 
 
 class MyTestCase(unittest.TestCase):
-    client = Client(API_KEY, "url", False, None, True)
+    client = Client(API_KEY, "url", False, None)
 
     @patch("Flashpoint.Client.http_request")
     def test_domain(self, mocker):
@@ -37,19 +37,17 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        command_result = domain_lookup_command(self.client, TEST_SCAN_DOMAIN)
-        resp = command_result.to_context().get('Contents')
+        hr, ec, resp = domain_lookup_command(self.client, TEST_SCAN_DOMAIN)
         result = self.get_result(resp)
-        # ec = command_result.to_context().get('EntryContext')
-        #
-        # with open("./TestData/domain_ec.json", encoding='utf-8') as f:
-        #     expected_ec = json.load(f)
+
+        with open("./TestData/domain_ec.json", encoding='utf-8') as f:
+            expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_DOMAIN
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
-        # assert expected_ec == ec  # Testing CommandResult object, should not check that function
+        assert expected_ec == ec
 
     @patch("Flashpoint.Client.http_request")
     def test_ip(self, mocker):
@@ -59,19 +57,17 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        command_result = ip_lookup_command(self.client, TEST_SCAN_IP)
-        resp = command_result.to_context().get('Contents')
+        hr, ec, resp = ip_lookup_command(self.client, TEST_SCAN_IP)
         result = self.get_result(resp)
-        # ec = command_result.to_context().get('EntryContext')
-        #
-        # with open("./TestData/ip_ec.json", encoding='utf-8') as f:
-        #     expected_ec = json.load(f)
+
+        with open("./TestData/ip_ec.json", encoding='utf-8') as f:
+            expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_IP
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
-        # assert expected_ec == ec  # Testing CommandResult object, should not check that function
+        assert expected_ec == ec
 
     @patch("Flashpoint.Client.http_request")
     def test_filename(self, mocker):
@@ -101,19 +97,17 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        command_result = url_lookup_command(self.client, TEST_SCAN_URL)
-        resp = command_result.to_context().get('Contents')
+        hr, ec, resp = url_lookup_command(self.client, TEST_SCAN_URL)
         result = self.get_result(resp)
-        # ec = command_result.to_context().get('EntryContext')
-        #
-        # with open("./TestData/url_ec.json", encoding='utf-8') as f:
-        #     expected_ec = json.load(f)
+
+        with open("./TestData/url_ec.json", encoding='utf-8') as f:
+            expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_URL
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
-        # assert expected_ec == ec  # Testing CommandResult object, should not check that function
+        assert expected_ec == ec
 
     @patch("Flashpoint.Client.http_request")
     def test_file(self, mocker):
@@ -123,19 +117,17 @@ class MyTestCase(unittest.TestCase):
             expected = json.load(f)
 
         mocker.return_value = expected
-        command_result = file_lookup_command(self.client, TEST_SCAN_FILE)
-        resp = command_result.to_context().get('Contents')
+        hr, ec, resp = file_lookup_command(self.client, TEST_SCAN_FILE)
         result = self.get_result(resp)
-        # ec = command_result.to_context().get('EntryContext')
-        #
-        # with open("./TestData/file_ec.json", encoding='utf-8') as f:
-        #     expected_ec = json.load(f)
+
+        with open("./TestData/file_ec.json", encoding='utf-8') as f:
+            expected_ec = json.load(f)
 
         fpid = result['fpid']
         assert result['name'] == TEST_SCAN_FILE
         assert result['href'] == HREF_BASE_URL + fpid
         assert expected == resp
-        # assert expected_ec == ec  # Testing CommandResult object, should not check that function
+        assert expected_ec == ec
 
     @patch("Flashpoint.Client.http_request")
     def test_email(self, mocker):

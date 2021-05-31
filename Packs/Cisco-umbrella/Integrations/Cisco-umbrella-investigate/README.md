@@ -9,7 +9,6 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Cisco Umbrella API token</strong></li>
-<li><strong>Source Reliability.</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Base URL</strong></li>

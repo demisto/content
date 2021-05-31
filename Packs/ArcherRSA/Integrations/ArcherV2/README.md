@@ -490,8 +490,8 @@ There is no context output for this command.
 
 ### archer-update-record
 ***
-Updates existing content record in the given application.
-When updating a record, it is important to pay attention to the way the values are sent through the argument - fieldsToValues. For more information regarding this argument see archer-create-record description.
+Updates existing content record in the given application
+
 
 #### Base Command
 
@@ -954,8 +954,7 @@ Search for records inside the given application
 | numericOperator | Numeric search operator | Optional | 
 | dateOperator | Date search operator | Optional | 
 | fieldsToGet | Fields to fetch from the the application | Optional | 
-| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required |
-| isDescending | Whether to order by descending order. Possible values are: "true", "false". | Optional |
+| fullData | Get an extended responses with all of the data regarding this search. For example, "fullData=true" | Required | 
 
 
 #### Context Output

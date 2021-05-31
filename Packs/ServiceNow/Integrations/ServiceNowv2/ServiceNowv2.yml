@@ -2388,7 +2388,7 @@ script:
     name: servicenow-oauth-test
   - arguments:
     - default: false
-      description: Date string in local time representing the last time the incident was updated.
+      description: Date string in local time representing the last time the incident was updated. 
         The incident is only returned if it was modified after the last update time.
       isArray: false
       name: lastUpdate
@@ -2400,7 +2400,7 @@ script:
       is used as part of a Mirroring feature, which is available from version 6.1.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.9.5.20070
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false

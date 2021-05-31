@@ -288,4 +288,3 @@ outputs:
   type: unknown
 tests:
 - no test
-deprecated: true

@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 import urllib3
 import traceback
+import shutil
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -214,17 +215,19 @@ class Client:
         :param comment: a descriptive comment to identify the file for other users
         :return: http response
         """
-        get_file_path_res = demisto.getFilePath(file)
-        file_path = get_file_path_res["path"]
-        file_name = get_file_path_res["name"]
-
-        url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
-                     f"&comment={comment}"
-        self._headers['Content-Type'] = 'application/octet-stream'
-        file_data = open(file_path, 'rb')
-        res = self._http_request("POST", url_suffix, data=file_data)
-        file_data.close()
-        return res
+        name = demisto.getFilePath(file)['name']
+        try:
+            shutil.copy(demisto.getFilePath(file)['path'], name)
+            with open(name, 'rb') as f:
+                url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
+                             f"&comment={comment}"
+                self._headers['Content-Type'] = 'application/octet-stream'
+                shutil.rmtree(file_name, ignore_errors=True)
+                return self._http_request("POST", url_suffix, files={'file': f})
+        except OSError:
+            raise Exception('Failed to prepare file for upload.')
+        finally:
+            shutil.rmtree(file_name, ignore_errors=True)
 
     def send_uploaded_file_to_sandbox_analysis(
             self,

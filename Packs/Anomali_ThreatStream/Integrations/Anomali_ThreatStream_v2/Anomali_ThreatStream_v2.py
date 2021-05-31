@@ -59,7 +59,6 @@ DEFAULT_INDICATOR_MAPPING = {
     'status': 'Status',
     'org': 'Organization',
     'source': 'Source',
-    'tags': 'Tags',
 }
 
 INDICATOR_EXTENDED_MAPPING = {
@@ -210,10 +209,6 @@ def get_ip_context(indicator, threshold):
         'Country': indicator.get('country', ''),
         'Location': F"{indicator.get('latitude', '')},{indicator.get('longitude', '')}"
     }
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        ip_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
     mark_as_malicious(indicator, threshold, ip_context)
 
     return ip_context
@@ -239,10 +234,6 @@ def get_domain_context(indicator, threshold):
         registrant['Phone'] = meta.get('registrant_phone', '')
     whois_context['Registrant'] = registrant
     domain_context['WHOIS'] = whois_context
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        domain_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
     mark_as_malicious(indicator, threshold, domain_context)
 
     return domain_context
@@ -265,9 +256,6 @@ def get_file_context(indicator, threshold):
     file_context = {}
     if indicator_type:
         file_context = {indicator_type: indicator_value}
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        file_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
 
     mark_as_malicious(indicator, threshold, file_context)
 
@@ -279,10 +267,6 @@ def get_url_context(indicator, threshold):
         Builds and returns dictionary that will be set to URL generic context.
     """
     url_context = {'Data': indicator.get('value', '')}
-    indicator_tags = indicator.get('tags', [])
-    if indicator_tags:
-        url_context['Tags'] = [str(tag.get('name', '')) for tag in indicator_tags]
-
     mark_as_malicious(indicator, threshold, url_context)
 
     return url_context
@@ -455,19 +439,13 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     dbot_context = get_dbot_context(indicator, threshold)
     ip_context = get_ip_context(indicator, threshold)
     threat_ip_context = get_threat_generic_context(indicator)
-    threat_ip_tags = threat_ip_context.pop('Tags', [])
-    if threat_ip_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_ip_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_ip_tags)
-    human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
-    threat_ip_context['Tags'] = threat_ip_tags
 
     ec = {
         'DBotScore': dbot_context,
         'IP(val.Address == obj.Address)': ip_context,
         'ThreatStream.IP(val.Address == obj.Address)': threat_ip_context
     }
+    human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
 
     return_outputs(human_readable, ec, indicator)
 
@@ -495,19 +473,13 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     dbot_context = get_dbot_context(indicator, threshold)
     domain_context = get_domain_context(indicator, threshold)
     threat_domain_context = get_threat_generic_context(indicator)
-    threat_domain_tags = threat_domain_context.pop('Tags', [])
-    if threat_domain_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_domain_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_domain_tags)
-    human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
-    threat_domain_context['Tags'] = threat_domain_tags
 
     ec = {
         'DBotScore': dbot_context,
         'Domain(val.Name == obj.Name)': domain_context,
         'ThreatStream.Domain(val.Address == obj.Address)': threat_domain_context
     }
+    human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
 
     return_outputs(human_readable, ec, indicator)
 
@@ -547,19 +519,13 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     threat_file_context.pop("ASN", None)
     threat_file_context.pop("Organization", None)
     threat_file_context.pop("Country", None)
-    threat_file_tags = threat_file_context.pop('Tags', [])
-    if threat_file_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_file_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_file_tags)
-    human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
-    threat_file_context['Tags'] = threat_file_tags
 
     ec = {
         'DBotScore': dbot_context,
         Common.File.CONTEXT_PATH: file_context,
         f'ThreatStream.{Common.File.CONTEXT_PATH}': threat_file_context
     }
+    human_readable = tableToMarkdown(F"{file_type} reputation for: {file}", threat_file_context)
 
     return_outputs(human_readable, ec, indicator)
 
@@ -588,19 +554,13 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     domain_context = get_url_context(indicator, threshold)
     threat_url_context = get_threat_generic_context(indicator)
     del threat_url_context['ASN']
-    threat_url_tags = threat_url_context.pop('Tags', [])
-    if threat_url_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_url_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_url_tags)
-    human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context)
-    threat_url_context['Tags'] = threat_url_tags
 
     ec = {
         'DBotScore': dbot_context,
         'URL(val.Data == obj.Data)': domain_context,
         'ThreatStream.URL(val.Address == obj.Address)': threat_url_context
     }
+    human_readable = tableToMarkdown(F"URL reputation for: {url}", threat_url_context)
 
     return_outputs(human_readable, ec, indicator)
 
@@ -622,18 +582,12 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     threat_email_context.pop("ASN", None)
     threat_email_context.pop("Organization", None)
     threat_email_context.pop("Country", None)
-    threat_email_tags = threat_email_context.pop('Tags', [])
-    if threat_email_tags:
-        # Convert the tags objects into s string for the human readable and then override it with the original objects
-        # for the context.
-        threat_email_context['Tags'] = ', '.join(str(tag.get('name', '')) for tag in threat_email_tags)
-    human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context)
-    threat_email_context['Tags'] = threat_email_tags
 
     ec = {
         'DBotScore': dbot_context,
         'ThreatStream.EmailReputation(val.Email == obj.Email)': threat_email_context
     }
+    human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context)
 
     return_outputs(human_readable, ec, indicator)
 

@@ -17,7 +17,6 @@
 !xdr-quarantine-files endpoint_id_list=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
 !xdr-get-quarantine-status endpoint_id=f8a2f58846b542579c12090652e79f3d file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4 file_path=/home/ec2-user/test_file.txt
 !xdr-endpoint-scan endpoint_id_list=f8a2f58846b542579c12090652e79f3d
-!xdr-endpoint-scan-abort endpoint_id_list=aeec6a2cc92e46fab3b6f621722e9916
 !xdr-restore-file file_hash=55f8718109829bf506b09d8af615b9f107a266e19f7a311039d1035f180b22d4
 !xdr-get-policy endpoint_id="f8a2f58846b542579c12090652e79f3d"
 !xdr-get-endpoint-device-control-violations violation_id_list=100,90,80

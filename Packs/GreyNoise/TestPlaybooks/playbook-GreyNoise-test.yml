@@ -1,15 +1,15 @@
 id: GreyNoise-Test
-version: 5
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: GreyNoise-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8e9c2246-e483-4c61-8837-4f4990f0fbe1
+    taskid: d10c3fb2-3b14-4997-8e76-0bf3165b324f
     type: start
     task:
-      id: 8e9c2246-e483-4c61-8837-4f4990f0fbe1
+      id: d10c3fb2-3b14-4997-8e76-0bf3165b324f
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 8f5eb2a1-6eb7-4f2a-88ef-2e8aa83a0f71
+    taskid: 0b2ee48c-0659-4a4e-886d-4346c0b59d4e
     type: regular
     task:
-      id: 8f5eb2a1-6eb7-4f2a-88ef-2e8aa83a0f71
+      id: 0b2ee48c-0659-4a4e-886d-4346c0b59d4e
       version: -1
       name: DeleteContext
       description: Delete existing context data.
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: baa015b3-3d01-4bfe-85b8-9efc96e4461a
+    taskid: 966952be-d3bc-4e78-8632-247a0abf5635
     type: regular
     task:
-      id: baa015b3-3d01-4bfe-85b8-9efc96e4461a
+      id: 966952be-d3bc-4e78-8632-247a0abf5635
       version: -1
       name: ip
       description: Retrieves reputation of the IP.
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -102,10 +102,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: f12f48fd-ecd4-4899-8652-e7f19b28d87d
+    taskid: 77f0b6c9-eb1e-4a4e-8a53-014d553f5e70
     type: condition
     task:
-      id: f12f48fd-ecd4-4899-8652-e7f19b28d87d
+      id: 77f0b6c9-eb1e-4a4e-8a53-014d553f5e70
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -248,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1245
         }
       }
     note: false
@@ -258,10 +258,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 426428d9-a956-4b52-8a65-b4530ba43ef0
+    taskid: 225eeab0-5162-4cd2-8170-97597bf7fb20
     type: regular
     task:
-      id: 426428d9-a956-4b52-8a65-b4530ba43ef0
+      id: 225eeab0-5162-4cd2-8170-97597bf7fb20
       version: -1
       name: greynoise-ip-quick-check
       description: Retrieves quick check data for IP.
@@ -292,10 +292,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: c6802b2c-3213-4684-8c30-97f9eb812f46
+    taskid: fe8a83be-4142-44c7-8761-e0d1a1a41f1f
     type: condition
     task:
-      id: c6802b2c-3213-4684-8c30-97f9eb812f46
+      id: fe8a83be-4142-44c7-8761-e0d1a1a41f1f
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -304,7 +304,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "2"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -343,10 +343,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: fb3e2ff4-e1f2-4930-8921-f5e8bd4a2e81
+    taskid: 66034cc7-14b8-4c90-881d-81e640f3c886
     type: regular
     task:
-      id: fb3e2ff4-e1f2-4930-8921-f5e8bd4a2e81
+      id: 66034cc7-14b8-4c90-881d-81e640f3c886
       version: -1
       name: greynoise-query
       description: Retrieves single record from GreyNoise using a query command.
@@ -383,10 +383,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 9cf79978-59e0-4c0e-8012-9d9252db739b
+    taskid: 6d0f8e33-fd90-48e6-817d-8267b24d128a
     type: condition
     task:
-      id: 9cf79978-59e0-4c0e-8012-9d9252db739b
+      id: 6d0f8e33-fd90-48e6-817d-8267b24d128a
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -514,10 +514,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 635e0342-af17-4ea7-80d0-e54efa1f93a3
+    taskid: ae677357-e9dc-42db-841e-5e7db0a6c722
     type: regular
     task:
-      id: 635e0342-af17-4ea7-80d0-e54efa1f93a3
+      id: ae677357-e9dc-42db-841e-5e7db0a6c722
       version: -1
       name: greynoise-stats
       description: Retrieves stats data from GreyNoise.
@@ -543,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1955
+          "y": 1595
         }
       }
     note: false
@@ -553,10 +553,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: c594e51e-f0ac-4199-8d30-ac6d91b2735d
+    taskid: f5457bca-6844-4bdd-80e1-c66c85f80c51
     type: condition
     task:
-      id: c594e51e-f0ac-4199-8d30-ac6d91b2735d
+      id: f5457bca-6844-4bdd-80e1-c66c85f80c51
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -674,7 +674,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -684,10 +684,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 03727b68-c4a4-4362-8e7f-0bd9caac3782
+    taskid: d791cfd6-9b83-49ed-8c0f-d016cb4c2e2b
     type: title
     task:
-      id: 03727b68-c4a4-4362-8e7f-0bd9caac3782
+      id: d791cfd6-9b83-49ed-8c0f-d016cb4c2e2b
       version: -1
       name: Test Done
       type: title
@@ -698,7 +698,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -708,10 +708,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 71b2152f-ec5f-4732-8d7e-f2214a596022
+    taskid: 341632df-8aa2-454f-80cd-aa746eeb684c
     type: regular
     task:
-      id: 71b2152f-ec5f-4732-8d7e-f2214a596022
+      id: 341632df-8aa2-454f-80cd-aa746eeb684c
       version: -1
       name: DeleteContext
       description: Delete existing context data.
@@ -734,83 +734,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: f4d766da-89b8-4e66-8701-2d7fed312ab2
-    type: regular
-    task:
-      id: f4d766da-89b8-4e66-8701-2d7fed312ab2
-      version: -1
-      name: greynoise-riot
-      description: Returns information about IP whether it is potentially harmful
-        or not. RIOT (Rule It Out) means to inform the analyst about the harmfulness
-        of the IP. For the harmless IP, the value of RIOT is "True" which in turn
-        returns DNS and other information about the IP. For the potentially harmful
-        IP, the value of RIOT is "False".
-      script: '|||greynoise-riot'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      ip:
-        simple: ${GreyNoise.IP.address}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: ca038ff7-2751-4f2d-8a27-e7bcad4bd03a
-    type: condition
-    task:
-      id: ca038ff7-2751-4f2d-8a27-e7bcad4bd03a
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: GreyNoise.Riot.ip
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: GreyNoise.Riot.riot
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1240
+          "y": 1420
         }
       }
     note: false
@@ -820,18 +744,17 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {
-      "7_14_yes": 0.84
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2310,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
+
 inputs: []
 outputs: []
 tests:

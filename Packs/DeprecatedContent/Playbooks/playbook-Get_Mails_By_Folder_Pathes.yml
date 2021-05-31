@@ -193,4 +193,3 @@ inputs:
 outputs: []
 tests:
 - No Test - use the "Get Mails By Folder Paths" playbook instead.
-deprecated: true

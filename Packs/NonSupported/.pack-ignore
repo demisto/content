@@ -107,7 +107,7 @@ ignore=PA116
 ignore=IN126
 
 [file:QRadar_5_4_9.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126
 
 [file:JiraV2_old.yml]
 ignore=IN126
@@ -123,12 +123,3 @@ ignore=IN126
 
 [file:integration-VirusTotal.yml]
 ignore=IN135
-
-[file:script-CommonServerUserPowerShell.yml]
-ignore=BA108,BA109
-
-[file:script-CommonServerUserPython.yml]
-ignore=BA108,BA109
-
-[file:script-CommonUserServer.yml]
-ignore=BA108,BA109

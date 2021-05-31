@@ -10,20 +10,19 @@ import warnings
 warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'VocabList' object.")
 warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'str' object.")
 warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'datetime' object.")
-warnings.filterwarnings("ignore", message="The use of this field has been deprecated. "
-                                          "Received 'StructuredTextList' object.")
+warnings.filterwarnings("ignore", message="The use of this field has been deprecated. Received 'StructuredTextList' object.")
 
 
 """ GLOBAL PARAMS """
 PATTERNS_DICT = {
-    "file:": FeedIndicatorType.File,
-    "ipv6": FeedIndicatorType.IPv6,
-    "ipv4-addr:": FeedIndicatorType.IP,
-    "url:": FeedIndicatorType.URL,
-    "domain-name:": FeedIndicatorType.Domain,
-    "email": FeedIndicatorType.Email,
-    "registry-key:key": FeedIndicatorType.Registry,
-    "account": FeedIndicatorType.Account,
+    "file:": "File",
+    "ipv6-addr": "IP",
+    "ipv4-addr:": "IP",
+    "url:": "URL",
+    "domain-name:": "Domain",
+    "email": "Email",
+    "registry-key:key": "Registry Path Reputation",
+    "user-account": "Username"
 }
 
 """ HELPER FUNCTIONS"""
@@ -243,11 +242,20 @@ def get_indicators(indicators):
         elif stix_indicator.get("description") == "cve cvss score":
             new_indicator = stix_indicator.get("name")
             if new_indicator:
-                patterns_lists.setdefault("CVE CVSS Score", []).append(new_indicator)
+                patterns_lists["CVE CVSS Score"].append(new_indicator)
                 entries_dict[new_indicator] = stix_indicator
 
     regex = re.compile("(\\w.*?) = '(.*?)'")
-    patterns_lists = {indicator_type: [] for indicator_type in PATTERNS_DICT.values()}  # type: dict
+    patterns_lists = {
+        "File": list(),
+        "IP": list(),
+        "Domain": list(),
+        "Email": list(),
+        "URL": list(),
+        "Registry Path Reputation": list(),
+        "CVE CVSS Score": list(),
+        "Username": list()
+    }  # type: dict
 
     # Will hold values for package {"KEY": <STIX OBJECT>}
     entries_dict = dict()  # type: dict

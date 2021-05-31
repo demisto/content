@@ -39,7 +39,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: |-
+  script: >-
     server = params.server.replace(/[\/]+$/, '') + '/wsapis/v' + params.version + '/';
 
     commandDictionary = {
@@ -94,7 +94,7 @@ script:
             setContentType: true,
         },
         'fe-submit-result': {
-            url: 'submissions/results/%submission_Key%?info_level=%info_level%',
+            url: 'submissions/results/%submission_Key%',
             method: 'GET',
             setContentType: true,
             extended: true,
@@ -105,13 +105,12 @@ script:
                     data: [
                         {to: 'Key', from: 'submission_Key'},
                         {to: 'Severity', from: 'alerts.alert.-severity'},
-                        {to: 'InfoLevel', from: 'info_level'},
                     ]
                 }
             ],
         },
         'fe-submit-url-result': {
-            url: 'submissions/results/%submissionID%?info_level=%info_level%',
+            url: 'submissions/results/%submissionID%',
             method: 'GET',
             setContentType: true,
             extended: true,
@@ -122,7 +121,6 @@ script:
                     data: [
                         {to: 'ID', from: 'alerts.alert.-id'},
                         {to: 'Severity', from: 'alerts.alert.-severity'},
-                        {to: 'InfoLevel', from: 'info_level'},
                     ]
                 }
             ],
@@ -262,7 +260,6 @@ script:
            httpParams.Password = params.credentials.password;
         }
         full_url = server + url + (method === 'GET' && method ? encodeToURLQuery(args) : '')
-        logDebug('Using the following url: ' + full_url);
         httpParams.Headers = headers;
         var res = http(
                 full_url,
@@ -349,11 +346,11 @@ script:
         case 'fe-submit-status':
             submissionKeyList = argToList(args.submission_Key);
             result = [];
-            method = commandDictionary[command].method;
-            setContentType = commandDictionary[command].setContentType;
+            method = commandDictionary[command].method
+            setContentType = commandDictionary[command].setContentType
 
             for (var i=0; i < submissionKeyList.length; i++) {
-                url = commandDictionary[command].url + '/' + submissionKeyList[i];
+                url = commandDictionary[command].url + '/' + submissionKeyList[i]
 
                 response = sendRequest(url, method, token, setContentType);
                 status_result = response.Body;
@@ -365,7 +362,6 @@ script:
                 if (contentType && contentType.indexOf('application/xml') !== -1) {
                   status_result = JSON.parse(x2j(response.Body));
                 }
-                status_result['submission_Key'] = submissionKeyList[i];
                 result.push(status_result)
             }
             break;
@@ -381,18 +377,22 @@ script:
               result = JSON.parse(x2j(response.Body));
             }
     }
+
     sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
 
 
-    if (typeof result === 'object' && !result['submission_Key'] && command != 'fe-submit-status') {
+    if (typeof result === 'object' && !result['submission_Key']) {
       result['submission_Key'] = submissionKey;
     }
 
+
     currentCommand = commandDictionary[command];
+
     var entries = [];
+
     if (currentCommand.extended) {
         if(command === 'fe-submit-url'){
-            result = result.response;
+            result = result.response
         }
         for (var j in currentCommand.translator) {
             var current = currentCommand.translator[j];
@@ -427,9 +427,9 @@ script:
             entries.push(entry);
         }
     }
-    else {
-        return result;
-    }
+
+    else {return result};
+
     return entries;
   type: javascript
   commands:
@@ -504,13 +504,7 @@ script:
       required: true
       description: commands.server.feSubmit.arguments.submissionKey.description
     - name: info_level
-      auto: PREDEFINED
-      predefined:
-      - concise
-      - normal
-      - extended
       description: commands.server.feAlert.arguments.infoLevel.description
-      defaultValue: concise
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The submission key
@@ -652,9 +646,6 @@ script:
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The url submission key
-    - contextPath: FireEyeAX.Submissions.InfoLevel
-      description: The info level of the report.
-      type: String
     - contextPath: FireEyeAX.Submissions.Status
       description: The url submission status
     - contextPath: FireEyeAX.Submissions.ID
@@ -666,23 +657,14 @@ script:
       required: true
       description: Submission ID of the submission
     - name: info_level
-      auto: PREDEFINED
-      predefined:
-      - concise
-      - normal
-      - extended
       description: 'Specifies the level of information to be returned. Unless otherwise
         specified, the info_level is set to concise. You can select the following
         information levels concise: (default), normal, extended'
-      defaultValue: concise
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The submission key
     - contextPath: FireEyeAX.Submissions.Severity
       description: The severity level of the file
-    - contextPath: FireEyeAX.Submissions.InfoLevel
-      description: The info level of the report.
-      type: String
     - contextPath: DBotScore.Score
       description: The actual score
     - contextPath: DBotScore.Indicator

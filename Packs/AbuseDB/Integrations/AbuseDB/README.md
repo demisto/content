@@ -11,7 +11,6 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>API Key (v2).</strong></li>
-<li><strong>Source Reliability</strong>: Reliability of the source providing the intelligence data.</li>
 <li><strong>IP Threshold. Minimum score from AbuseIPDB analysis to consider the IP malicious. (&gt;20).</strong></li>
 <li><strong>Max reports age.</strong></li>
 <li><strong>Disregard quota errors.</strong></li>
@@ -302,11 +301,6 @@
 <tr>
 <td style="width: 169px;">limit</td>
 <td style="width: 481px;">Maximum number of IPs to retrieve, default is 50</td>
-<td style="width: 90px;">Optional</td>
-</tr>
-<tr>
-<td style="width: 169px;">confidence</td>
-<td style="width: 481px;">The Minimum confidence required for the retrieved IPs. Default is 100</td>
 <td style="width: 90px;">Optional</td>
 </tr>
 </tbody>

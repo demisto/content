@@ -1,11 +1,2 @@
 [file:Cymulate.yml]
 ignore=IN126
-
-[file:layoutscontainer-Cymulate_Immediate_Threats.json]
-ignore=BA101
-
-[file:layoutscontainer-Cymulate_Layout.json]
-ignore=BA101
-
-[file:Cymulate_v2.yml]
-ignore=BA108,BA109

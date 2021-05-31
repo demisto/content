@@ -4,6 +4,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 BRAND = "Demisto REST API"
+PAGE_SIZE = 1000
 
 
 def get_rest_api_instance_to_use():
@@ -67,7 +68,7 @@ def get_failed_tasks_output(tasks: list, incident: dict):
             "Error Entry ID": error_entries,
             "Number of Errors": len(error_entries),
             "Task ID": task.get("id"),
-            "Incident Created Date": incident.get("created", ''),
+            "Incident Created Date": incident.get("created", '').replace("T", " "),
             "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
             "Incident Owner": incident["owner"]
         }
@@ -124,27 +125,44 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
 def main():
     args = demisto.args()
     query = args.get("query")
-    max_incidents = arg_to_number(args.get("max_incidents", "300"))
-    max_incidents = min(max_incidents, 1000)
+    limit = arg_to_number(args.get("max_incidents"))
     rest_api_instance = args.get("rest_api_instance")
     rest_api_instance_to_use = get_rest_api_instance_to_use() if not rest_api_instance else rest_api_instance
 
     tenant_name = get_tenant_name()
 
+    page_number = 0
     number_of_failed_incidents = 0
     number_of_error_entries = 0
+    total_incidents: list = []
     incidents_output = []  # type: Any
     total_failed_incidents = []
 
     start_time = time.time()
+    while True:
+        get_incidents_result = demisto.executeCommand("getIncidents", {"query": query,
+                                                                       "page": page_number,
+                                                                       "size": PAGE_SIZE,
+                                                                       })
 
-    get_incidents_result = demisto.executeCommand("getIncidents", {"query": query,
-                                                                   "size": max_incidents,
-                                                                   })
-    incidents_data = get_incidents_result[0]["Contents"]["data"]
-    total_incidents = incidents_data if incidents_data else []
+        incidents_data = get_incidents_result[0]["Contents"]["data"]
+        if incidents_data:
+            total_incidents.extend(incidents_data)
+        else:
+            incidents_data = []
 
-    demisto.debug(f'got {len(total_incidents)} incidents using {max_incidents} limit. '
+        page_number += 1
+
+        if len(incidents_data) < PAGE_SIZE:
+            # no more results
+            break
+
+        if limit and len(total_incidents) > limit:
+            # over the limit
+            total_incidents = total_incidents[:limit]
+            break
+
+    demisto.debug(f'got {len(total_incidents)} incidents using {page_number} pages. '
                   f'Elapsed time: {time.time() - start_time}')
 
     for incident in total_incidents:
@@ -170,7 +188,7 @@ def main():
         readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
                                         ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
                                          "Playbook Name",
-                                         "Command Name", "Error Entry ID"]),
+                                            "Command Name", "Error Entry ID"]),
         outputs={
             "GetFailedTasks": incidents_output,
             "NumberofFailedIncidents": total_failed_incidents,

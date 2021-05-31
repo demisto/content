@@ -290,10 +290,8 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     return fields_mapping
 
 
-def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0,
-                             create_relationships: bool = False, **kwargs):
+def fetch_indicators_command(client: Client, default_indicator_type: str, auto_detect: bool, limit: int = 0, **kwargs):
     iterator = client.build_iterator(**kwargs)
-    relationships_of_indicator = []
     indicators = []
     config = client.feed_url_to_config or {}
     for url_to_reader in iterator:
@@ -311,24 +309,11 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                     indicator_type = determine_indicator_type(conf_indicator_type, default_indicator_type, auto_detect,
                                                               value)
                     raw_json['type'] = indicator_type
-                    # if relationships param is True and also the url returns relationships
-                    if create_relationships and config.get(url, {}).get('relationship_name'):
-                        if fields_mapping.get('relationship_entity_b'):
-                            relationships_lst = EntityRelationship(
-                                name=config.get(url, {}).get('relationship_name'),
-                                entity_a=value,
-                                entity_a_type=indicator_type,
-                                entity_b=fields_mapping.get('relationship_entity_b'),
-                                entity_b_type=config.get(url, {}).get('relationship_entity_b_type'),
-                            )
-                            relationships_of_indicator = [relationships_lst.to_indicator()]
-
                     indicator = {
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': fields_mapping,
-                        'relationships': relationships_of_indicator,
+                        'fields': fields_mapping
                     }
                     indicator['fields']['tags'] = client.tags
 
@@ -352,8 +337,7 @@ def get_indicators_command(client, args: dict, tags: Optional[List[str]] = None)
     except ValueError:
         raise ValueError('The limit argument must be a number.')
     auto_detect = demisto.params().get('auto_detect_type')
-    relationships = demisto.params().get('create_relationships', False)
-    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit, relationships)
+    indicators_list = fetch_indicators_command(client, itype, auto_detect, limit)
     entry_result = indicators_list[:limit]
     hr = tableToMarkdown('Indicators', entry_result, headers=['value', 'type', 'fields'])
     return hr, {}, indicators_list
@@ -381,7 +365,6 @@ def feed_main(feed_name, params=None, prefix=''):
                 params.get('indicator_type'),
                 params.get('auto_detect_type'),
                 params.get('limit'),
-                params.get('create_relationships')
             )
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):

@@ -128,7 +128,7 @@ Uses a certificate GUID to extract more details from the cert store.
 | Venafi.Certificate.ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
 | Venafi.Certificate.CreatedOn | date | The exact date and time when the Certificate object was created. | 
 | Venafi.Certificate.DN | string | The DN of the certificate. | 
-| Venafi.Certificate.Name | string | The name of the certificate. | 
+| Venafi.Certificate.Name | string |The name of the certificate. | 
 | Venafi.Certificate.SchemaClass | string | The class name of the certificate object. | 
 | Venafi.Certificate.Approver | string | An array of one or more users or groups who are certificate approvers. | 
 | Venafi.Certificate.CertificateAuthorityDN | string | The CA template that is required for certificate renewal. | 
@@ -136,7 +136,7 @@ Uses a certificate GUID to extract more details from the cert store.
 | Venafi.Certificate.Description | string | Certificate description. | 
 | Venafi.Certificate.ManagedBy | string | Certificate manager. | 
 | Venafi.Certificate.ManagementType | string | The level of management that the Trust Protection Platform applies to the certificate. | 
-| Venafi.Certificate.CertificateDetails.AIAKeyIdentifier | string | Authority key identifier. | 
+| Venafi.Certificate.CertificateDetails.AIAKeyIdentifier | string |Authority key identifier. | 
 | Venafi.Certificate.CertificateDetails.Issuer | string | The CN, O, L, S, and C values from the certificate request. | 
 | Venafi.Certificate.CertificateDetails.Serial | string | The unique serial number that the CA assigned to the certificate. | 
 | Venafi.Certificate.CertificateDetails.Subject | string | The CN, O, L, S, and C values from the certificate request. | 

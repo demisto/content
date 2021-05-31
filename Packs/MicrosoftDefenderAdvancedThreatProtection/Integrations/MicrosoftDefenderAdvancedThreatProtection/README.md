@@ -2655,7 +2655,6 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum amount of indicators to return. Default is 50. | Optional | 
-| page_size | Specify the page size of the result set. Maximum is 200. Default value is 50. | Optional |
 
 
 #### Context Output

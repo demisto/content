@@ -39,18 +39,12 @@ configuration:
   name: collections
   required: true
   type: 12
-- display: TAXII Service URL Address
-  additionalinfo: The URL address to set in the TAXII service response. If not set, the integration will try to auto-detect the URL.
-  hidden: false
-  name: service_address
-  required: false
-  type: 0
 description: This integration provides TAXII Services for system indicators (Outbound
   feed).
 display: TAXII Server
 name: TAXII Server
 script:
-  dockerimage: demisto/taxii-server:1.0.0.19454
+  dockerimage: demisto/taxii-server:1.0.0.7844
   feed: false
   isfetch: false
   longRunning: true
@@ -60,5 +54,5 @@ script:
   subtype: python3
   type: python
 tests:
-- TAXII_Feed_Test
+- No test
 fromversion: 5.5.0

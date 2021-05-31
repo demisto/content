@@ -174,4 +174,3 @@ inputs: []
 outputs: []
 tests:
 - No tests - Deprecated
-deprecated: true

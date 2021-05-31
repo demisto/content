@@ -10,7 +10,6 @@ This integration was integrated and tested with version v2.58.0 of iDefense
 | --- | --- | --- |
 | url | URL | True |
 | api_token | API Token | True |
-| Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |
 | insecure | Trust any certificate \(not secure\) | False |
 | use_proxy | Use system proxy settings | False |
 

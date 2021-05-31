@@ -4,8 +4,10 @@
 set -e
 
 # Build uploads artifacts dir to artifacts bucket
-BRANCH=${CI_COMMIT_BRANCH:-unknown}
-ARTIFACTS_DIR=${ARTIFACTS_FOLDER:-artifacts}
+
+CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+ARTIFACTS_DIR=${ARTIFACTS_DIR:-artifacts}
+CIRCLE_NODE_INDEX=${CIRCLE_NODE_INDEX:-0}
 
 if [[ ! -d "$ARTIFACTS_DIR" ]]; then
     echo "Directory [$ARTIFACTS_DIR] not found. Nothing to upload. Skipping!"
@@ -17,13 +19,13 @@ if [[ -z "$(ls -A ${ARTIFACTS_DIR})" ]]; then
     exit 0
 fi
 
-if [[ "$BRANCH" =~ pull/[0-9]+ ]]; then
+if [[ "$CIRCLE_BRANCH" =~ pull/[0-9]+ ]]; then
     echo "Running on remote fork. Skipping!"
     exit 0
 fi
 
-if [[ -z "$CI_PIPELINE_ID" ]]; then
-    echo "CI_PIPELINE_ID not set aborting!"
+if [[ -z "$CIRCLE_BUILD_NUM" ]]; then
+    echo "CIRCLE_BUILD_NUM not set aborting!"
     exit 1
 fi
 
@@ -32,12 +34,12 @@ if [[ -z "$GCS_ARTIFACTS_BUCKET" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$GCS_ARTIFACTS_KEY" ]]; then
+if [[ -z "$GCS_ARTIFACTS_KEY" ]]; then
     echo "GCS_ARTIFACTS_KEY not set aborting!"
     exit 1
 fi
 
-gcloud auth activate-service-account --key-file=$GCS_ARTIFACTS_KEY > auth.out 2>&1
-TARGET_PATH="content/$BRANCH/$CI_PIPELINE_ID"
+echo "$GCS_ARTIFACTS_KEY"  | gcloud auth activate-service-account --key-file=- > auth.out 2>&1
+TARGET_PATH="content/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/$CIRCLE_NODE_INDEX"
 echo "auth loaded. uploading files at: $ARTIFACTS_DIR to target path: $TARGET_PATH ..."
-gsutil -m cp -z html,md,json,log,txt -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"
+gsutil -m cp -r "$ARTIFACTS_DIR" "gs://$GCS_ARTIFACTS_BUCKET/$TARGET_PATH"

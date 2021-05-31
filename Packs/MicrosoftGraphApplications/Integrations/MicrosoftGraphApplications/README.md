@@ -8,8 +8,7 @@ This integration was integrated and tested with version v1.0 of Microsoft Graph 
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Application ID | True |    
-    | Azure AD endpoint | False |
+    | Application ID | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 

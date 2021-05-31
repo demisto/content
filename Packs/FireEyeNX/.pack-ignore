@@ -63,6 +63,3 @@ ignore=IF100
 
 [incidentfield-FireEye_NX_Alert_Victim_IP.json]
 ignore=IF100
-
-[file:README.md]
-ignore=RM104

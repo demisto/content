@@ -6,7 +6,7 @@
             "alert_data": {
                 "application": null,
                 "csv": {
-                    "id": "X",
+                    "id": 123,
                     "mimetype": "text/csv",
                     "name": "Company Customer Credentials Exposed.csv"
                 },
@@ -15,7 +15,7 @@
             "analysis_report": null,
             "attachments": [
                 {
-                    "id": "X",
+                    "id": 18,
                     "mimetype": "image/png",
                     "name": "Compromised Account As Appears On Argos.png"
                 }
@@ -78,7 +78,7 @@
                 "registrar": "NameSilo, LLC",
                 "requests_user_details": true,
                 "screenshot": {
-                    "id": "X",
+                    "id": 166,
                     "mimetype": "image/png",
                     "name": "Argos Screenshot of the Phishing Website.png"
                 },
@@ -89,13 +89,13 @@
                 "whois_record": null
             },
             "analysis_report": {
-                "id": "X",
+                "id": 26,
                 "mimetype": "application/pdf",
                 "name": "Expert Analysis - Active Phishing Website Targeting Company.pdf"
             },
             "attachments": [
                 {
-                    "id": "X",
+                    "id": 21,
                     "mimetype": "image/png",
                     "name": "Forensic Canvas Investigation of website.com.png"
                 }

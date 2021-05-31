@@ -1,5 +1,2 @@
 [file:integration-TrendMicroDDA.yml]
 ignore=IN110,IN109
-
-[file:README.md]
-ignore=RM104

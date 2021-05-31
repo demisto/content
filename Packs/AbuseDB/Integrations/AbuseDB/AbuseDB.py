@@ -93,6 +93,7 @@ CATEGORIES_ID = {
 
 session = requests.session()
 
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -115,7 +116,7 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
         return_error(e.message)
 
 
-def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
+def analysis_to_entry(info, threshold=THRESHOLD, verbose=VERBOSE):
     if not isinstance(info, list):
         info = [info]
 
@@ -129,9 +130,8 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
             "IP": {
                 "Address": analysis.get("ipAddress"),
                 "Geo": {"Country": analysis.get("countryName") or analysis.get("countryCode")},
-                "AbuseConfidenceScore": analysis.get('abuseConfidenceScore'),
-                "TotalReports": analysis.get("totalReports") or analysis.get("numReports") or "0",
-                "ISP": analysis.get("isp")
+                'AbuseConfidenceScore': analysis.get('abuseConfidenceScore'),
+                "TotalReports": analysis.get("totalReports") or analysis.get("numReports") or "0"
             }
         }
 
@@ -154,10 +154,8 @@ def analysis_to_entry(info, reliability, threshold=THRESHOLD, verbose=VERBOSE):
             "Score": dbot_score,
             "Vendor": "AbuseIPDB",
             "Indicator": analysis.get("ipAddress"),
-            "Type": "ip",
-            "Reliability": reliability
+            "Type": "ip"
         })
-
         context_ip.append(abuse_ec)
         context_ip_generic.append(ip_ec)
 
@@ -222,7 +220,7 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tim
 ''' FUNCTIONS '''
 
 
-def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
+def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
     params = {
         "maxAgeInDays": days
     }
@@ -236,18 +234,17 @@ def check_ip_command(reliability, ip, days=MAX_AGE, verbose=VERBOSE, threshold=T
         if analysis == API_QUOTA_REACHED_MESSAGE:
             continue
         analysis_data = analysis.get("data")
-        entry_list.append(analysis_to_entry(analysis_data, reliability, verbose=verbose, threshold=threshold))
+        entry_list.append(analysis_to_entry(analysis_data, verbose=verbose, threshold=threshold))
     return entry_list
 
 
-def check_block_command(reliability, network, limit, days=MAX_AGE, threshold=THRESHOLD):
+def check_block_command(network, limit, days=MAX_AGE, threshold=THRESHOLD):
     params = {
         "network": network,
         "maxAgeInDays": days
     }
     analysis = http_request("GET", url_suffix=CHECK_BLOCK_CMD, params=params).get("data").get("reportedAddress")
-    return analysis_to_entry(analysis[:int(limit) if limit.isdigit() else 40], verbose=False, threshold=threshold,
-                             reliability=reliability)
+    return analysis_to_entry(analysis[:int(limit) if limit.isdigit() else 40], verbose=False, threshold=threshold)
 
 
 def report_ip_command(ip, categories):
@@ -259,19 +256,18 @@ def report_ip_command(ip, categories):
     return analysis
 
 
-def get_blacklist_command(limit, days, confidence, saveToContext):
+def get_blacklist_command(limit, days, saveToContext):
     params = {
         'maxAgeInDays': days,
-        'confidenceMinimum': confidence,
-        'limit': limit
+        "limit": limit
     }
     analysis = http_request("GET", url_suffix=BLACKLIST_CMD, params=params)
     return analysis if type(analysis) is str else blacklist_to_entry(analysis.get("data"), saveToContext)
 
 
-def test_module(reliability):
+def test_module():
     try:
-        check_ip_command(ip=TEST_IP, verbose=False, reliability=reliability)
+        check_ip_command(ip=TEST_IP, verbose=False)
     except Exception as e:
         LOG(e)
         return_error(e.message)
@@ -293,20 +289,13 @@ def get_categories_command():
 
 
 try:
-    reliability = demisto.params().get('integrationReliability', 'C - Fairly reliable')
-
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
     if demisto.command() == 'test-module':
         # Tests connectivity and credentails on login
-        test_module(reliability)
+        test_module()
     elif demisto.command() == 'ip':
-        demisto.results(check_ip_command(reliability, **demisto.args()))
+        demisto.results(check_ip_command(**demisto.args()))
     elif demisto.command() == 'abuseipdb-check-cidr-block':
-        demisto.results(check_block_command(reliability, **demisto.args()))
+        demisto.results(check_block_command(**demisto.args()))
     elif demisto.command() == 'abuseipdb-report-ip':
         demisto.results(report_ip_command(**demisto.args()))
     elif demisto.command() == 'abuseipdb-get-blacklist':

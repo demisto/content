@@ -48,15 +48,13 @@ tasks:
     scriptarguments:
       alarm-id:
         complex:
-          root: AlarmID
-          transformers:
-          - operator: FirstArrayElement
+          root: inputs.alarm_id
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 370
         }
       }
     note: false
@@ -78,7 +76,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "1"
     scriptarguments:
       all:
         simple: "yes"
@@ -117,7 +115,7 @@ tasks:
     scriptarguments:
       alarm-id:
         complex:
-          root: AlarmID
+          root: inputs.alarm_id
       comments:
         simple: test
     separatecontext: false
@@ -125,7 +123,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1070
+          "y": 720
         }
       }
     note: false
@@ -151,13 +149,14 @@ tasks:
     scriptarguments:
       alarm-id:
         complex:
-          root: AlarmID
+          root: inputs.alarm_id
+      include-raw-log: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1420
+          "y": 1070
         }
       }
     note: false
@@ -172,7 +171,7 @@ tasks:
     task:
       id: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
       version: -1
-      name: Get alarms with start and end date
+      name: Get alarms
       script: '|||lr-get-alarms'
       type: regular
       iscommand: true
@@ -196,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1945
+          "y": 1595
         }
       }
     note: false
@@ -222,7 +221,8 @@ tasks:
     scriptarguments:
       alarm-id:
         complex:
-          root: AlarmID
+          root: inputs.alarm_id
+      comments: {}
       status:
         simple: New
     separatecontext: false
@@ -230,7 +230,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2295
+          "y": 1945
         }
       }
     note: false
@@ -256,7 +256,8 @@ tasks:
     scriptarguments:
       alarm-id:
         complex:
-          root: AlarmID
+          root: inputs.alarm_id
+      comments: {}
       status:
         simple: Closed
     separatecontext: false
@@ -264,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2645
+          "y": 2295
         }
       }
     note: false
@@ -288,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3520
+          "y": 3170
         }
       }
     note: false
@@ -326,13 +327,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AlarmID
-            iscontext: true
+              simple: ${inputs.alarm_id}
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 895
+          "y": 545
         }
       }
     note: false
@@ -370,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1245
+          "y": 895
         }
       }
     note: false
@@ -410,7 +410,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1420
         }
       }
     note: false
@@ -443,13 +443,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AlarmID
-            iscontext: true
+              simple: ${inputs.alarm_id}
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 2120
+          "y": 1770
         }
       }
     note: false
@@ -487,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2470
+          "y": 2120
         }
       }
     note: false
@@ -525,7 +524,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2820
+          "y": 2470
         }
       }
     note: false
@@ -566,7 +565,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 2995
+          "y": 2645
         }
       }
     note: false
@@ -598,7 +597,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3170
+          "y": 2820
         }
       }
     note: false
@@ -636,7 +635,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 3345
+          "y": 2995
         }
       }
     note: false
@@ -673,80 +672,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "22":
-    id: "22"
-    taskid: 61fed595-7c2a-475f-8602-a376b0dd7c7c
-    type: regular
-    task:
-      id: 61fed595-7c2a-475f-8602-a376b0dd7c7c
-      version: -1
-      name: Get alarms with time farme
-      script: '|||lr-get-alarms'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      all-users:
-        simple: "true"
-      status:
-        simple: New
-      time_frame:
-        simple: LastWeek
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "23":
-    id: "23"
-    taskid: 98e052d2-c1b9-4c73-8fbf-4cad84f6ee2d
-    type: regular
-    task:
-      id: 98e052d2-c1b9-4c73-8fbf-4cad84f6ee2d
-      version: -1
-      name: Set alarm Id
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      key:
-        simple: AlarmID
-      value:
-        complex:
-          root: LogRhythm.Alarm
-          accessor: ID
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 545
+          "y": 1245
         }
       }
     note: false
@@ -760,13 +686,19 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3535,
+        "height": 3185,
         "width": 492.5,
         "x": 50,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: alarm_id
+  value:
+    simple: "2987"
+  required: false
+  description: ""
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0

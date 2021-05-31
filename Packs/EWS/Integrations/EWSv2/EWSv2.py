@@ -5,7 +5,6 @@ import warnings
 from collections import deque
 from multiprocessing import Process
 
-import dateparser
 import exchangelib
 from CommonServerPython import *
 from cStringIO import StringIO
@@ -106,9 +105,6 @@ AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
-FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
-
-
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
@@ -908,25 +904,18 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
         if not FETCH_ALL_HISTORY:
-
-            tz = EWSTimeZone.timezone('UTC')
-            first_fetch_datetime = dateparser.parse(FETCH_TIME)
-            first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
-            qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
+            last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
+            qs = qs.filter(datetime_received__gte=last_10_min)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
 
-    result = []
-    for item in qs:
-        try:
-            if isinstance(item, Message):
-                result.append(item)
-                if len(result) >= MAX_FETCH:
-                    break
-        except ValueError as exc:
-            future_utils.raise_from(ValueError(
-                'Got an error when pulling incidents. You might be using the wrong exchange version.'
-            ), exc)
+    result = qs.all()
+    try:
+        result = [item for item in result if isinstance(item, Message)]
+    except ValueError as exc:
+        future_utils.raise_from(ValueError(
+            'Got an error when pulling incidents. You might be using the wrong exchange version.'
+        ), exc)
 
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
@@ -1215,16 +1204,6 @@ def parse_incident_from_item(item, is_fetch):
             except ErrorIrresolvableConflict:
                 time.sleep(0.5)
                 item.save()
-            except ValueError as e:
-                if item.subject and len(item.subject) > 255:
-                    demisto.debug("Length of message subject is greater than 255, item.save could not handle it, "
-                                  "cutting the subject.")
-                    sub_subject = "Length of subject greater than 255 characters. " \
-                                  "Partial subject: {}".format(item.subject[:180])
-                    item.subject = sub_subject
-                    item.save()
-                else:
-                    raise e
 
         incident['labels'] = labels
         incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)

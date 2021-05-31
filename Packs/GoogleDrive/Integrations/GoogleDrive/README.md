@@ -834,7 +834,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.actions.target.drive.root.driveFolder.type | String | The type of Drive folder. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.legacyCommentId | String | The comment in the discussion thread. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.legacyDiscussionId | String | The discussion thread to which the comment was added. | 
-| GoogleDrive.DriveActivity.actions.target.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example: `"https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID"`. | 
+| GoogleDrive.DriveActivity.actions.target.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, "https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.actions.target.fileComment.parent.mimeType | String | The MIME type of the Drive item. | 
@@ -881,7 +881,7 @@ Query past activity in Google Drive.
 | GoogleDrive.DriveActivity.targets.drive.root.driveFolder.type | String | The type of Drive folder. | 
 | GoogleDrive.DriveActivity.targets.fileComment.legacyCommentId | String | The comment in the discussion thread. | 
 | GoogleDrive.DriveActivity.targets.fileComment.legacyDiscussionId | String | The discussion thread to which the comment was added. | 
-| GoogleDrive.DriveActivity.targets.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, `https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID`. | 
+| GoogleDrive.DriveActivity.targets.fileComment.linkToDiscussion | String | The link to the discussion thread containing this comment, for example, "https://docs.google.com/DOCUMENT_ID/edit?disco=THREAD_ID". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.name | String | The target Drive item. The format is "items/ITEM_ID". | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.title | String | The title of the Drive item. | 
 | GoogleDrive.DriveActivity.targets.fileComment.parent.mimeType | String | The MIME type of the Drive item. | 

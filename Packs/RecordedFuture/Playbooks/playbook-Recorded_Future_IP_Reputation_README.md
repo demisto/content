@@ -1,7 +1,7 @@
 IP address reputation using Recorded Future SOAR Enrichment
 
 ## Dependencies
-This playbook uses the following sub-playbooks, integrations, and scripts. Depends on the recorded futures indicator field; risk rules.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 This playbook does not use any sub-playbooks.

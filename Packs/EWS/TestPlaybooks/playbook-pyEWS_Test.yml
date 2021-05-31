@@ -7,15 +7,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7ce53ad6-ea9f-4586-8279-983848313e89
+    taskid: 6b37c48b-7ff3-494e-86f0-7d7be3253e30
     type: start
     task:
-      id: 7ce53ad6-ea9f-4586-8279-983848313e89
+      id: 6b37c48b-7ff3-494e-86f0-7d7be3253e30
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,14 +29,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "1":
     id: "1"
-    taskid: ddb9d210-0a94-4c22-8956-846e9dc599fb
+    taskid: 0f6a3325-6b2a-4b7b-8289-d973dfe6e4f3
     type: regular
     task:
-      id: ddb9d210-0a94-4c22-8956-846e9dc599fb
+      id: 0f6a3325-6b2a-4b7b-8289-d973dfe6e4f3
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -58,6 +55,7 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
     separatecontext: false
     view: |-
       {
@@ -69,14 +67,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "2":
     id: "2"
-    taskid: 523a03ea-ae00-47e1-8b0b-1705218ea9aa
+    taskid: 6ec896c4-d06f-4b82-87dc-37ac44937e11
     type: regular
     task:
-      id: 523a03ea-ae00-47e1-8b0b-1705218ea9aa
+      id: 6ec896c4-d06f-4b82-87dc-37ac44937e11
       version: -1
       name: Get searchable mailboxes
       script: '|||ews-get-searchable-mailboxes'
@@ -97,14 +93,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
-    taskid: 12d4afe7-7e9a-4b0c-844b-a99df4e3d6ee
+    taskid: 52608723-40cb-4791-8ec6-de93476ab9ab
     type: condition
     task:
-      id: 12d4afe7-7e9a-4b0c-844b-a99df4e3d6ee
+      id: 52608723-40cb-4791-8ec6-de93476ab9ab
       version: -1
       name: Verify Mailboxes context key
       type: condition
@@ -137,14 +131,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "6":
     id: "6"
-    taskid: c7f3fb44-ed0a-459c-8252-34305b03d352
+    taskid: 8c47c5d4-7628-4f6e-84be-955cc05ad6c0
     type: regular
     task:
-      id: c7f3fb44-ed0a-459c-8252-34305b03d352
+      id: 8c47c5d4-7628-4f6e-84be-955cc05ad6c0
       version: -1
       name: Get contacts
       script: '|||ews-get-contacts'
@@ -170,14 +162,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "7":
     id: "7"
-    taskid: 78727767-acc1-4070-861f-8cf6e67abd7e
+    taskid: 2fe52fca-0f7b-4bdb-8963-96b54b07dfc0
     type: condition
     task:
-      id: 78727767-acc1-4070-861f-8cf6e67abd7e
+      id: 2fe52fca-0f7b-4bdb-8963-96b54b07dfc0
       version: -1
       name: Verify Contacts context key
       type: condition
@@ -210,14 +200,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "8":
     id: "8"
-    taskid: 412078ab-5a29-462d-860a-08ef147c8f4d
+    taskid: 005f0a2f-d759-4628-8e54-cd123f98aa3f
     type: regular
     task:
-      id: 412078ab-5a29-462d-860a-08ef147c8f4d
+      id: 005f0a2f-d759-4628-8e54-cd123f98aa3f
       version: -1
       name: Get item attachment
       script: '|||ews-get-attachment'
@@ -228,8 +216,10 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      attachment-ids: {}
       item-id:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+rAAA=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqzBAAA=
+      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -241,14 +231,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "9":
     id: "9"
-    taskid: e36aad59-231d-48db-86d0-456db16f0238
+    taskid: c8280912-7b45-4078-8f36-d4aef84d8b9f
     type: condition
     task:
-      id: e36aad59-231d-48db-86d0-456db16f0238
+      id: c8280912-7b45-4078-8f36-d4aef84d8b9f
       version: -1
       name: Verify Items context
       type: condition
@@ -296,14 +284,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "10":
     id: "10"
-    taskid: c8a1f539-5da9-4972-802d-3d5c57d78bd0
+    taskid: ac12090c-bfdc-430b-8a4d-acbae7c5501f
     type: regular
     task:
-      id: c8a1f539-5da9-4972-802d-3d5c57d78bd0
+      id: ac12090c-bfdc-430b-8a4d-acbae7c5501f
       version: -1
       name: Get file attachment
       script: '|||ews-get-attachment'
@@ -315,9 +301,10 @@ tasks:
       - "11"
     scriptarguments:
       attachment-ids:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAABEgAQAPINyV3OXiNAtzjDCQ1jdJw=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyNAAABEgAQAK46mX7iCqlLp3Ro936zoX8=
       item-id:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAA=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyNAAA=
+      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -329,14 +316,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "11":
     id: "11"
-    taskid: 14f2925e-4db9-4461-8da3-faec7665d677
+    taskid: ffc5bea0-611d-4b05-8a5a-abe06fd2425e
     type: condition
     task:
-      id: 14f2925e-4db9-4461-8da3-faec7665d677
+      id: ffc5bea0-611d-4b05-8a5a-abe06fd2425e
       version: -1
       name: Verify EWS file attachment
       type: condition
@@ -369,14 +354,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "12":
     id: "12"
-    taskid: 1fe0d1eb-2079-4a9c-8bd6-2fb5fabc6ae3
+    taskid: ac2ab5fa-5630-42c5-8477-45d5de2336eb
     type: condition
     task:
-      id: 1fe0d1eb-2079-4a9c-8bd6-2fb5fabc6ae3
+      id: ac2ab5fa-5630-42c5-8477-45d5de2336eb
       version: -1
       name: Verify file context
       type: condition
@@ -404,14 +387,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "13":
     id: "13"
-    taskid: 22027822-7b5f-4109-86e1-22980fda37b1
+    taskid: 41fecb83-b747-4b11-8ccf-0c12df94b787
     type: regular
     task:
-      id: 22027822-7b5f-4109-86e1-22980fda37b1
+      id: 41fecb83-b747-4b11-8ccf-0c12df94b787
       version: -1
       name: Get out of office status
       script: '|||ews-get-out-of-office'
@@ -435,14 +416,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "14":
     id: "14"
-    taskid: 413adcf7-1c51-4d85-8acc-f1f08787174a
+    taskid: e90f03d4-31b1-430f-8aa7-a63f79115bab
     type: condition
     task:
-      id: 413adcf7-1c51-4d85-8acc-f1f08787174a
+      id: e90f03d4-31b1-430f-8aa7-a63f79115bab
       version: -1
       name: Verify out of office context key
       type: condition
@@ -485,14 +464,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "15":
     id: "15"
-    taskid: ac7760c2-9759-4592-8e84-e07d6a8f5c18
+    taskid: a072f42f-2802-4454-80b1-c72ced6d6946
     type: regular
     task:
-      id: ac7760c2-9759-4592-8e84-e07d6a8f5c18
+      id: a072f42f-2802-4454-80b1-c72ced6d6946
       version: -1
       name: Find folders
       script: '|||ews-find-folders'
@@ -502,6 +479,8 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
+    scriptarguments:
+      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -513,14 +492,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "16":
     id: "16"
-    taskid: 58455273-c84d-4de1-8064-78f89adff082
+    taskid: 49eadc39-b33b-4816-8c41-90e5af70d5ad
     type: condition
     task:
-      id: 58455273-c84d-4de1-8064-78f89adff082
+      id: 49eadc39-b33b-4816-8c41-90e5af70d5ad
       version: -1
       name: Verify folders context key
       type: condition
@@ -548,14 +525,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "17":
     id: "17"
-    taskid: 78588475-f2a8-4498-8f09-eac22b05a10d
+    taskid: 7493c0d1-2f40-406e-8a74-4b94df3e8faf
     type: regular
     task:
-      id: 78588475-f2a8-4498-8f09-eac22b05a10d
+      id: 7493c0d1-2f40-406e-8a74-4b94df3e8faf
       version: -1
       name: Get items
       script: '|||ews-get-items'
@@ -567,7 +542,8 @@ tasks:
       - "18"
     scriptarguments:
       item-ids:
-        simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAA=
+        simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyQAAA=
+      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -579,14 +555,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "18":
     id: "18"
-    taskid: 33a6df30-ab19-4994-8686-b0800f78e649
+    taskid: 710be358-95a9-4792-877f-ce4c8774b1dc
     type: condition
     task:
-      id: 33a6df30-ab19-4994-8686-b0800f78e649
+      id: 710be358-95a9-4792-877f-ce4c8774b1dc
       version: -1
       name: Filter item id
       type: condition
@@ -608,7 +582,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: AAMkADQ1OWE0NzI5LTUxZTktNDE2Zi1hYTdkLWRiMDFmZDgxNDY1MABGAAAAAAAEzx7ZB+bhTYeJK95WqEa8BwBL/fkrvLLNQrnWSaIq1hMZAAAApMXAAABL/fkrvLLNQrnWSaIq1hMZAAAApM+qAAA=
+              simple: AAMkAGI5MzAxMTRhLTYxNDktNGQwYy05YzVjLTAyYzM1ZDcxMTllMwBGAAAAAAA9nafscKt6T4M34vXA7RpjBwCgpD7iGmvYSIukpO18VjClAAAAAAENAACgpD7iGmvYSIukpO18VjClAAAGRqyQAAA=
     view: |-
       {
         "position": {
@@ -619,14 +593,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "19":
     id: "19"
-    taskid: bbee830d-d192-4dc4-8c8a-da2e17a3f2b0
+    taskid: 948d5742-dcfb-4caa-8ca7-2f309aea54c0
     type: regular
     task:
-      id: bbee830d-d192-4dc4-8c8a-da2e17a3f2b0
+      id: 948d5742-dcfb-4caa-8ca7-2f309aea54c0
       version: -1
       name: Did not find item in content
       description: Prints an error entry with a given message
@@ -648,20 +620,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "20":
     id: "20"
-    taskid: 71a45991-7602-4501-8f4f-7bcf695c1a98
+    taskid: 402419bc-7652-4e65-8b09-6e28de0292ca
     type: title
     task:
-      id: 71a45991-7602-4501-8f4f-7bcf695c1a98
+      id: 402419bc-7652-4e65-8b09-6e28de0292ca
       version: -1
       name: Found
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -673,14 +642,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "21":
     id: "21"
-    taskid: 584e2c4e-def6-4b24-8279-8f85b912afb5
+    taskid: 3a73387a-e5db-407d-89fd-bd0921e12047
     type: regular
     task:
-      id: 584e2c4e-def6-4b24-8279-8f85b912afb5
+      id: 3a73387a-e5db-407d-89fd-bd0921e12047
       version: -1
       name: Get expanded group
       script: '|||ews-expand-group'
@@ -704,14 +671,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "22":
     id: "22"
-    taskid: d915ce7c-81fd-4be6-88aa-a83537a9260f
+    taskid: 003896d7-b6bc-43ad-8e48-da288137d5af
     type: condition
     task:
-      id: d915ce7c-81fd-4be6-88aa-a83537a9260f
+      id: 003896d7-b6bc-43ad-8e48-da288137d5af
       version: -1
       name: Verify Expanded Group members
       type: condition
@@ -739,14 +704,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "23":
     id: "23"
-    taskid: d5f286a8-9d6d-45ff-8bbc-c7891d6d8fad
+    taskid: 4ed33e80-a949-4613-8420-ea29cb290135
     type: regular
     task:
-      id: d5f286a8-9d6d-45ff-8bbc-c7891d6d8fad
+      id: 4ed33e80-a949-4613-8420-ea29cb290135
       version: -1
       name: Get items from folder
       script: '|||ews-get-items-from-folder'
@@ -759,8 +722,11 @@ tasks:
     scriptarguments:
       folder-path:
         simple: Inbox\TEST
+      get-internal-item: {}
+      is-public: {}
       limit:
         simple: "10"
+      target-mailbox: {}
     separatecontext: false
     view: |-
       {
@@ -772,14 +738,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "24":
     id: "24"
-    taskid: 5ef115f9-6e8e-4513-8a24-f335aa599c1f
+    taskid: 60872a31-f9e0-4912-805a-f647cfd615e5
     type: condition
     task:
-      id: 5ef115f9-6e8e-4513-8a24-f335aa599c1f
+      id: 60872a31-f9e0-4912-805a-f647cfd615e5
       version: -1
       name: Verify items from folder
       type: condition
@@ -807,20 +771,17 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "25":
     id: "25"
-    taskid: 0b969dae-3342-46d6-8f95-9501a484bf2f
+    taskid: aa8a039c-1ee7-426e-85a7-6737feea3f20
     type: title
     task:
-      id: 0b969dae-3342-46d6-8f95-9501a484bf2f
+      id: aa8a039c-1ee7-426e-85a7-6737feea3f20
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -832,8 +793,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},

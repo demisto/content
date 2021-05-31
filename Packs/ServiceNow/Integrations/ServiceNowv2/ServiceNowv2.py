@@ -209,24 +209,14 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
     if closed_by:
-        if isinstance(closed_by, dict):
-            context['ResolvedBy'] = closed_by.get('value', '')
-        else:
-            context['ResolvedBy'] = closed_by
+        context['ResolvedBy'] = closed_by.get('value', '')
     opened_by = data.get('opened_by')
     if opened_by:
-        if isinstance(opened_by, dict):
-            context['OpenedBy'] = opened_by.get('value', '')
-            context['Creator'] = opened_by.get('value', '')
-        else:
-            context['OpenedBy'] = opened_by
-            context['Creator'] = opened_by
+        context['OpenedBy'] = opened_by.get('value', '')
+        context['Creator'] = opened_by.get('value', '')
     assigned_to = data.get('assigned_to')
     if assigned_to:
-        if isinstance(assigned_to, dict):
-            context['Assignee'] = assigned_to.get('value', '')
-        else:
-            context['Assignee'] = assigned_to
+        context['Assignee'] = assigned_to.get('value', '')
 
     # Try to map fields
     priority = data.get('priority')
@@ -581,8 +571,6 @@ class Client(BaseClient):
             try:
                 json_res = res.json()
             except Exception as err:
-                if res.status_code == 201:
-                    return "The ticket was successfully created."
                 if not res.content:
                     return ''
                 raise Exception(f'Error parsing reply - {str(res.content)} - {str(err)}')
@@ -656,10 +644,8 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        query = f'table_sys_id={ticket_id}'
-        if sys_created_on:
-            query += f'^sys_created_on>{sys_created_on}'
-        return self.send_request('attachment', 'GET', params={'sysparm_query': query})
+        return self.send_request('attachment', 'GET', params={
+            'sysparm_query': f'table_sys_id={ticket_id}^sys_created_on>{sys_created_on}'})
 
     def get_ticket_attachment_entries(self, ticket_id: str, sys_created_on: Optional[str] = None) -> list:
         """Get ticket attachments, including file attachments
@@ -735,7 +721,7 @@ class Client(BaseClient):
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
-               input_display_value: bool = False):
+               input_display_value: bool = False) -> dict:
         """Creates a ticket or a record by sending a POST request.
 
         Args:
@@ -1031,8 +1017,6 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     result = client.create(ticket_type, fields, custom_fields, input_display_value)
 
     if not result or 'result' not in result:
-        if 'successfully' in result:
-            return result, {}, {}, True
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 

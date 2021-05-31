@@ -6,8 +6,7 @@
   "IAM - Update User",
   "User Profile",
   "IAM - Sync User",
-  "IAM - Rehire User",
-  "IAM - AD User Activation"
+  "IAM - Rehire User"
  ],
  "caseInsensitive": true,
  "cliName": "email",

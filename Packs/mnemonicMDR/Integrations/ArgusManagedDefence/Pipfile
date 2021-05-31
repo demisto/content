@@ -5,15 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "*"
+pytest = "==5.0.1"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
-demisto-sdk = "*"
 
 [packages]
+pytest = "*"
 requests = "*"
-argus-api = ">=2.0.0,<3.0.0"
+argus-toolbelt = ">=5.0.1"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

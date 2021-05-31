@@ -433,5 +433,4 @@ outputs:
 - contextPath: CheckpointFWRule.Hits.Value
   description: Value of hits.
 tests:
-- No test - Deprecated playbook
-deprecated: true
+- block_indicators_-_generic_-_test

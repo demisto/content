@@ -1,316 +1,84 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: ArgusManagedDefence
   version: -1
-name: ArgusManagedDefence
-display: mnemonic MDR - Argus Managed Defence
-category: Data Enrichment & Threat Intelligence
-description: Rapidly detect, analyse and respond to security threats with mnemonic’s
-  leading Managed Detection and Response (MDR) service.
 configuration:
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  type: 13
   required: false
-- display: API URL
-  name: api_url
-  defaultvalue: https://api.mnemonic.no
+  type: 13
+- additionalinfo: 0 means up to system limit (100 000)
+  defaultvalue: '25'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
   type: 0
-  required: true
-  additionalinfo: "URL to Argus' API Endpoint."
 - display: API Key
   name: api_key
+  required: true
   type: 4
-  required: true
-  additionalinfo: "API Key of API user in Argus."
-- display: Minimum severity of alerts to fetch
+- defaultvalue: low
+  display: Minimum severity of alerts to fetch
   name: min_severity
-  defaultvalue: Low
-  type: 15
+  options:
+  - low
+  - medium
+  - high
+  - critical
   required: true
-  options:
-  - Low
-  - Medium
-  - High
-  - Critical
-  additionalinfo: "Argus Cases with priority lower than this value will be excluded\
-    \ by fetch incidents."
-- display: First fetch time
-  name: first_fetch
-  defaultvalue: 3 days
-  type: 0
-  required: false
-  additionalinfo: "How far back should the first run fetch open cases in Argus."
-- display: Maximum number of incidents per fetch
-  name: max_fetch
-  defaultvalue: "0"
-  type: 0
-  required: false
-  additionalinfo: "Maximum number of cases to be fetched from Argus. 0 means up to\
-    \ system limit (100 000)"
-- display: Fetch incidents exclude tag
-  name: exclude_tag
-  type: 0
-  required: false
-  additionalinfo: 'Excludes fetching incidents with the optional tag. May be used
-    to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
-    pairs. You may exclude with either (1) tag key, or (2) key: value pairs by a comma-separated
-    string.'
-- display: Incident Mirroring Direction
-  name: mirror_direction
-  defaultvalue: Incoming And Outgoing
   type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
   required: false
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
-  additionalinfo: "Which direction should the integration mirror incidents."
-- display: Mirroring tag
-  name: mirror_tag
   type: 0
-  required: false
-  defaultvalue: "argus_mirror"
-  additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma\
-    \ separated."
-- display: Close Argus Case
-  name: close_argus_case
-  defaultvalue: "true"
-  type: 8
-  required: false
-  additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored
-    Argus Case'
-- display: Close XSOAR Incident
-  name: close_incident
-  defaultvalue: "true"
-  type: 8
-  required: false
-  additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR
-    Incident'
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
-  additionalinfo: "Skip HTTPS certification verification."
+  type: 8
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
-  additionalinfo: "Use system proxy settings."
+  type: 8
+- defaultvalue: https://api.mnemonic.no
+  display: API URL
+  hidden: false
+  name: api_url
+  required: true
+  type: 0
+description: Rapidly detect, analyse and respond to security threats with mnemonic’s
+  leading Managed Detection and Response (MDR) service.
+display: mnemonic MDR - Argus Managed Defence
+name: ArgusManagedDefence
 script:
-  script: ''
-  type: python
   commands:
-  - name: argus-add-attachment
-    arguments:
-    - name: case_id
-      required: true
-      description: ID of Argus case
-    - name: file_id
-      required: true
-      description: ID of attachement
-    outputs:
-    - contextPath: Argus.Attachment.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Attachment.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Attachment.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Attachment.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Attachment.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Attachment.messages.message
-      description: Attachment Messages Message
-      type: String
-    - contextPath: Argus.Attachment.messages.messageTemplate
-      description: Attachment Messages Message Template
-      type: String
-    - contextPath: Argus.Attachment.messages.type
-      description: Attachment Messages Type
-      type: String
-    - contextPath: Argus.Attachment.messages.field
-      description: Attachment Messages Field
-      type: String
-    - contextPath: Argus.Attachment.messages.timestamp
-      description: Attachment Messages Timestamp
-      type: Number
-    - contextPath: Argus.Attachment.data.id
-      description: Attachment ID
-      type: String
-    - contextPath: Argus.Attachment.data.addedTimestamp
-      description: Attachment Added Timestamp
-      type: Number
-    - contextPath: Argus.Attachment.data.addedByUser.id
-      description: Attachment Added By User ID
-      type: Number
-    - contextPath: Argus.Attachment.data.addedByUser.customerID
-      description: Attachment Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Attachment.data.addedByUser.customer.id
-      description: Attachment Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Attachment.data.addedByUser.customer.name
-      description: Attachment Added By User Customer Name
-      type: String
-    - contextPath: Argus.Attachment.data.addedByUser.customer.shortName
-      description: Attachment Added By User Customer Short Name
-      type: String
-    - contextPath: Argus.Attachment.data.addedByUser.customer.domain.id
-      description: Attachment Added By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Attachment.data.addedByUser.customer.domain.name
-      description: Attachment Added By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Attachment.data.addedByUser.domain.id
-      description: Attachment Added By User Domain ID
-      type: Number
-    - contextPath: Argus.Attachment.data.addedByUser.domain.name
-      description: Attachment Added By User Domain Name
-      type: String
-    - contextPath: Argus.Attachment.data.addedByUser.userName
-      description: Attachment Added By User User Name
-      type: String
-    - contextPath: Argus.Attachment.data.addedByUser.name
-      description: Attachment Added By User Name
-      type: String
-    - contextPath: Argus.Attachment.data.addedByUser.type
-      description: Attachment Added By User Type
-      type: String
-    - contextPath: Argus.Attachment.data.name
-      description: Attachment Name
-      type: String
-    - contextPath: Argus.Attachment.data.mimeType
-      description: Attachment Mime Type
-      type: String
-    - contextPath: Argus.Attachment.data.flags
-      description: Attachment Flags
-      type: String
-    - contextPath: Argus.Attachment.data.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Attachment.data.originEmailAddress
-      description: Attachment Origin Email Address
-      type: String
-    - contextPath: Argus.Attachment.data.addedTime
-      description: Attachment Added Time
-      type: String
-    description: Add attachment to case (Max 50 MB, should be an archive)
-  - name: argus-add-case-tag
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: Case ID to add tag to
-    - name: key
+      isArray: false
+      name: case_id
       required: true
+      secret: false
+    - default: false
       description: Key of tag to add to case
-    - name: value
+      isArray: false
+      name: key
       required: true
+      secret: false
+    - default: false
       description: Value of tag to add to case
-    outputs:
-    - contextPath: Argus.Tags.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Tags.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Tags.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Tags.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Tags.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Tags.messages.message
-      description: Tag Messages Message
-      type: String
-    - contextPath: Argus.Tags.messages.messageTemplate
-      description: Tag Messages Message Template
-      type: String
-    - contextPath: Argus.Tags.messages.type
-      description: Tag Messages Type
-      type: String
-    - contextPath: Argus.Tags.messages.field
-      description: Tag Messages Field
-      type: String
-    - contextPath: Argus.Tags.messages.timestamp
-      description: Tag Messages Timestamp
-      type: Number
-    - contextPath: Argus.Tags.data.id
-      description: Tag ID
-      type: String
-    - contextPath: Argus.Tags.data.key
-      description: Tag Key
-      type: String
-    - contextPath: Argus.Tags.data.value
-      description: Tag Value
-      type: String
-    - contextPath: Argus.Tags.data.addedTimestamp
-      description: Tag Added Timestamp
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.id
-      description: Tag Added By User ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customerID
-      description: Tag Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customer.id
-      description: Tag Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customer.name
-      description: Tag Added By User Customer Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.customer.shortName
-      description: Tag Added By User Customer Short Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.customer.domain.id
-      description: Tag Added By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customer.domain.name
-      description: Tag Added By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.domain.id
-      description: Tag Added By User Domain ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.domain.name
-      description: Tag Added By User Domain Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.userName
-      description: Tag Added By User User Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.name
-      description: Tag Added By User Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.type
-      description: Tag Added By User Type
-      type: String
-    - contextPath: Argus.Tags.data.flags
-      description: Tag Flags
-      type: String
-    - contextPath: Argus.Tags.data.addedTime
-      description: Tag Added Time
-      type: String
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
     description: Adds a key, value tag to an Argus case
-  - name: argus-list-case-tags
-    arguments:
-    - name: case_id
-      required: true
-      description: Case ID
-    - name: limit
-      description: Limit the amount of fetched tags. (Default 25)
-    - name: offset
-      description: Skip a number of results
+    execution: false
+    name: argus-add-case-tag
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: API response metadata, response code of this request
@@ -396,28 +164,160 @@ script:
     - contextPath: Argus.Tags.data.addedTime
       description: Tag Added Time
       type: String
+  - arguments:
+    - default: false
+      description: 'Case ID '
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Limit the amount of fetched tags. (Default 25)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: List tags attached to an Argus case
-  - name: argus-add-comment
-    arguments:
-    - name: case_id
-      required: true
+    execution: false
+    name: argus-list-case-tags
+    outputs:
+    - contextPath: Argus.Tags.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Tags.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Tags.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Tags.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Tags.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Tags.messages.message
+      description: Tag Messages Message
+      type: String
+    - contextPath: Argus.Tags.messages.messageTemplate
+      description: Tag Messages Message Template
+      type: String
+    - contextPath: Argus.Tags.messages.type
+      description: Tag Messages Type
+      type: String
+    - contextPath: Argus.Tags.messages.field
+      description: Tag Messages Field
+      type: String
+    - contextPath: Argus.Tags.messages.timestamp
+      description: Tag Messages Timestamp
+      type: Number
+    - contextPath: Argus.Tags.data.id
+      description: Tag ID
+      type: String
+    - contextPath: Argus.Tags.data.key
+      description: Tag Key
+      type: String
+    - contextPath: Argus.Tags.data.value
+      description: Tag Value
+      type: String
+    - contextPath: Argus.Tags.data.addedTimestamp
+      description: Tag Added Timestamp
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.id
+      description: Tag Added By User ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customerID
+      description: Tag Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customer.id
+      description: Tag Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customer.name
+      description: Tag Added By User Customer Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.customer.shortName
+      description: Tag Added By User Customer Short Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.customer.domain.id
+      description: Tag Added By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customer.domain.name
+      description: Tag Added By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.domain.id
+      description: Tag Added By User Domain ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.domain.name
+      description: Tag Added By User Domain Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.userName
+      description: Tag Added By User User Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.name
+      description: Tag Added By User Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.type
+      description: Tag Added By User Type
+      type: String
+    - contextPath: Argus.Tags.data.flags
+      description: Tag Flags
+      type: String
+    - contextPath: Argus.Tags.data.addedTime
+      description: Tag Added Time
+      type: String
+  - arguments:
+    - default: false
       description: Case ID
-    - name: comment
+      isArray: false
+      name: case_id
       required: true
+      secret: false
+    - default: false
       description: The comment to attach
-    - name: as_reply_to
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
       description: ID of comment this comment will reply to
-    - name: internal
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
+      isArray: false
+      name: as_reply_to
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: Whether this comment will be shown to the customer
-      defaultValue: "false"
-    - name: origin_email_address
+      isArray: false
+      name: internal
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
       description: Define the e-mail address this comment originates from
-    - name: associated_attachment_id
+      isArray: false
+      name: origin_email_address
+      required: false
+      secret: false
+    - default: false
       description: ID of case attachement this comment is related to
+      isArray: false
+      name: associated_attachment_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Add comment to an Argus case
+    execution: false
+    name: argus-add-comment
     outputs:
     - contextPath: Argus.Comment.responseCode
       description: API response metadata, response code of this request
@@ -527,29 +427,53 @@ script:
     - contextPath: Argus.Comment.data.addedTime
       description: Comment Added Time
       type: String
-    description: Add comment to an Argus case
-  - name: argus-list-case-comments
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: Case ID of Argus case
-    - name: before_comment
-      auto: PREDEFINED
-      predefined:
-      - ""
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
       description: Limit to comments before this comment ID (in sort order)
-    - name: offset
+      isArray: false
+      name: before_comment
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
       description: Skip a number of results (default 0)
-    - name: limit
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
       description: Maximum number of returned results (default 25)
-    - name: sort_by
-      auto: PREDEFINED
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Sort ordering. Default is ascending
+      isArray: false
+      name: sort_by
       predefined:
       - ascending
       - descending
-      description: Sort ordering. Default is ascending
-    - name: after_comment
+      required: false
+      secret: false
+    - default: false
       description: Limit to comments after this comment ID (in sort order)
+      isArray: false
+      name: after_comment
+      required: false
+      secret: false
+    deprecated: false
+    description: List the comments of an Argus case
+    execution: false
+    name: argus-list-case-comments
     outputs:
     - contextPath: Argus.Comments.responseCode
       description: API response metadata, response code of this request
@@ -659,154 +583,276 @@ script:
     - contextPath: Argus.Comments.data.addedTime
       description: Comment Added Time
       type: String
-    description: List the comments of an Argus case
-  - name: argus-advanced-case-search
-    arguments:
-    - name: start_timestamp
-      auto: PREDEFINED
-      predefined:
-      - ""
+  - arguments:
+    - default: false
       description: Start timestamp
-    - name: end_timestamp
+      isArray: false
+      name: start_timestamp
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
       description: End timestamp
-    - name: limit
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
       description: Set this value to set max number of results. By default, no restriction
         on result set size.
-    - name: offset
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: 'Set this value to skip the first (offset) objects. By default,
         return result from first object. '
-    - name: include_deleted
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: Set to true to include deleted objects. By default, exclude deleted
         objects.
-      defaultValue: "false"
-    - name: sub_criteria
+      isArray: false
+      name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: Set additional criterias which are applied using a logical OR.
       isArray: true
-    - name: exclude
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: sub_criteria
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'Only relevant for subcriteria. If set to true, objects matching
         this subcriteria object will be excluded. '
-    - name: required
-      auto: PREDEFINED
+      isArray: false
+      name: exclude
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'Only relevant for subcriteria. If set to true, objects matching
         this subcriteria are required (AND-ed together with parent criteria). '
-    - name: customer_id
+      isArray: false
+      name: required
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to data belonging to specified customers. '
       isArray: true
-    - name: case_id
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to specific cases (by ID). '
       isArray: true
-    - name: customer
+      name: case_id
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to specific customers (by ID or shortname). '
       isArray: true
-    - name: case_type
+      name: customer
+      required: false
+      secret: false
+    - default: false
       description: Restrict search to entries of one of these types.
       isArray: true
-    - name: service
+      name: case_type
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to entries of one of these services (by service
         shortname or ID). '
       isArray: true
-    - name: category
+      name: service
+      required: false
+      secret: false
+    - default: false
       description: Restrict search to entries of one of these categories (by category
         shortname or ID).
       isArray: true
-    - name: status
+      name: category
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to entries of one of these statuses. '
       isArray: true
-    - name: priority
+      name: status
+      required: false
+      secret: false
+    - default: false
       description: Restrict search to entries with given priorties.
       isArray: true
-    - name: asset_id
+      name: priority
+      required: false
+      secret: false
+    - default: false
       description: Restrict search to cases associated with specified assets (hosts,
         services or processes).
       isArray: true
-    - name: tag
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to entries matching the given tag criteria. '
       isArray: true
-    - name: workflow
+      name: tag
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to entries matching the given workflow criteria. '
       isArray: true
-    - name: field
+      name: workflow
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to entries matching the given field criteria. '
       isArray: true
-    - name: keywords
+      name: field
+      required: false
+      secret: false
+    - default: false
       description: Search for keywords.
       isArray: true
-    - name: time_field_strategy
+      name: keywords
+      required: false
+      secret: false
+    - default: false
       description: 'Defines which timestamps will be included in the search (default
         all). '
       isArray: true
-    - name: time_match_strategy
+      name: time_field_strategy
+      required: false
+      secret: false
+    - default: false
       description: Defines how strict to match against different timestamps (all/any)
         using start and end timestamp (default any).
-    - name: keyword_field_strategy
+      isArray: false
+      name: time_match_strategy
+      required: false
+      secret: false
+    - default: false
       description: 'Defines which fields will be searched by keywords (default all
         supported fields). '
       isArray: true
-    - name: keyword_match_strategy
+      name: keyword_field_strategy
+      required: false
+      secret: false
+    - default: false
       description: 'Defines the MatchStrategy for keywords (default match all keywords). '
-    - name: user
+      isArray: false
+      name: keyword_match_strategy
+      required: false
+      secret: false
+    - default: false
       description: 'Restrict search to cases associated with these users or user groups
         (by ID or shortname). '
       isArray: true
-    - name: user_field_strategy
+      name: user
+      required: false
+      secret: false
+    - default: false
       description: 'Defines which user fields will be searched (default match all
         user fields). '
       isArray: true
-    - name: user_assigned
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      name: user_field_strategy
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If set, limit search to cases where assignedUser field is set/unset.
-    - name: tech_assigned
-      auto: PREDEFINED
+      isArray: false
+      name: user_assigned
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: If set, limit search to cases where assignedTech field is set/unset.
-    - name: include_workflows
-      auto: PREDEFINED
+      isArray: false
+      name: tech_assigned
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: 'If true, include list of workflows in result. Default is false
         (not present). '
-      defaultValue: "false"
-    - name: include_description
-      auto: PREDEFINED
+      isArray: false
+      name: include_workflows
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: 'If false, omit description from response. Default is true (description
         is present). '
-      defaultValue: "true"
-    - name: access_mode
+      isArray: false
+      name: include_description
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: If set, only match cases which is set to one of these access modes.
       isArray: true
-    - name: explicit_access
+      name: access_mode
+      required: false
+      secret: false
+    - default: false
       description: If set, only match cases which have explicit access grants matching
         the specified criteria.
       isArray: true
-    - name: sort_by
+      name: explicit_access
+      required: false
+      secret: false
+    - default: false
       description: List of properties to sort by (prefix with "-" to sort descending).
       isArray: true
-    - name: include_flags
+      name: sort_by
+      required: false
+      secret: false
+    - default: false
       description: 'Only include objects which have includeFlags set. '
       isArray: true
-    - name: exclude_flags
+      name: include_flags
+      required: false
+      secret: false
+    - default: false
       description: 'Exclude objects which have excludeFlags set. '
       isArray: true
+      name: exclude_flags
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns cases matching the defined case search criteria
+    execution: false
+    name: argus-advanced-case-search
     outputs:
     - contextPath: Argus.Cases.responseCode
       description: API response metadata, response code of this request
@@ -1201,14 +1247,23 @@ script:
     - contextPath: Argus.Cases.data.publishedTime
       description: Case Published Time
       type: String
-    description: Returns cases matching the defined case search criteria
-  - name: argus-close-case
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: Case ID of Argus case
-    - name: comment
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
       description: Attach a closing comment
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Close an Argus case
+    execution: false
+    name: argus-close-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -1603,24 +1658,32 @@ script:
     - contextPath: Argus.Case.data.publishedTime
       description: Case Published Time
       type: String
-    description: Close an Argus case
-  - name: argus-create-case
-    arguments:
-    - name: customer
+  - arguments:
+    - default: false
       description: ID or shortname of customer to create case for. Defaults to current
         users customer.
-    - name: service
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: customer
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: ID of service to create case for
+      isArray: false
+      name: service
       predefined:
       - ids
       - support
       - administrative
       - advisory
       - vulnscan
-      description: ID of service to create case for
-    - name: category
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, assign given category to new case (by category shortname). '
+      isArray: false
+      name: category
       predefined:
       - network-testing
       - unauthorized-access
@@ -1647,18 +1710,26 @@ script:
       - phishing
       - argus-improvement
       - argus-bug
-      description: 'If set, assign given category to new case (by category shortname). '
-    - name: type
-      required: true
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Type of case to create '
+      isArray: false
+      name: type
       predefined:
       - operationalIncident
       - change
       - securityIncident
       - informational
-      description: 'Type of case to create '
-    - name: status
-      auto: PREDEFINED
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Status of case to create. If not set, system will select automatically.
+        Creating a new case with status closed is not permitted. '
+      isArray: false
+      name: status
       predefined:
       - pendingCustomer
       - pendingSoc
@@ -1666,1095 +1737,87 @@ script:
       - pendingClose
       - workingSoc
       - workingCustomer
-      description: 'Status of case to create. If not set, system will select automatically.
-        Creating a new case with status closed is not permitted. '
-    - name: tags
+      required: false
+      secret: false
+    - default: false
       description: Tags to add on case creation.  (key,value,key,value, ...)
       isArray: true
-    - name: subject
-      required: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
       description: Subject of case to create.
-    - name: description
+      isArray: false
+      name: subject
       required: true
-      description: 'Case description. May use HTML, which will be sanitized. '
-    - name: customer_reference
+      secret: false
+    - default: false
+      description: 'Case description. May use HTML, which will be sanitized.'
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
       description: Customer reference for case.
-    - name: priority
-      auto: PREDEFINED
+      isArray: false
+      name: customer_reference
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: medium
+      description: Priority of case to create. (default medium)
+      isArray: false
+      name: priority
       predefined:
       - low
       - medium
       - high
       - critical
-      description: Priority of case to create. (default medium)
-      defaultValue: medium
-    - name: access_mode
+      required: false
+      secret: false
+    - default: false
       description: Access mode for new case. (default roleBased)
-    - name: origin_email_address
+      isArray: false
+      name: access_mode
+      required: false
+      secret: false
+    - default: false
       description: If case is created from an email, specify origin email address
         here.
-    - name: publish
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: origin_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Whether to publish new case. Creating an unpublished case requires
         special permission. (default true)
-      defaultValue: "true"
-    - name: default_watchers
-      auto: PREDEFINED
+      isArray: false
+      name: publish
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Whether to enable default watchers for this case. If set to false,
         default watchers will not be enabled, and will not be notified upon creation
         of this case. (default true)
-      defaultValue: "true"
-    outputs:
-    - contextPath: Argus.Case.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Case.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Case.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Case.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Case.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Case.messages.message
-      description: Case Messages Message
-      type: String
-    - contextPath: Argus.Case.messages.messageTemplate
-      description: Case Messages Message Template
-      type: String
-    - contextPath: Argus.Case.messages.type
-      description: Case Messages Type
-      type: String
-    - contextPath: Argus.Case.messages.field
-      description: Case Messages Field
-      type: String
-    - contextPath: Argus.Case.messages.timestamp
-      description: Case Messages Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.id
-      description: Case ID
-      type: Number
-    - contextPath: Argus.Case.data.customer.id
-      description: Case Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.customer.name
-      description: Case Customer Name
-      type: String
-    - contextPath: Argus.Case.data.customer.shortName
-      description: Case Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.customer.domain.id
-      description: Case Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.customer.domain.name
-      description: Case Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.service.id
-      description: Case Service ID
-      type: Number
-    - contextPath: Argus.Case.data.service.name
-      description: Case Service Name
-      type: String
-    - contextPath: Argus.Case.data.service.shortName
-      description: Case Service Short Name
-      type: String
-    - contextPath: Argus.Case.data.service.localizedName
-      description: Case Service Localized Name
-      type: String
-    - contextPath: Argus.Case.data.category.id
-      description: Case Category ID
-      type: Number
-    - contextPath: Argus.Case.data.category.name
-      description: Case Category Name
-      type: String
-    - contextPath: Argus.Case.data.category.shortName
-      description: Case Category Short Name
-      type: String
-    - contextPath: Argus.Case.data.category.localizedName
-      description: Case Category Localized Name
-      type: String
-    - contextPath: Argus.Case.data.type
-      description: Case Type
-      type: String
-    - contextPath: Argus.Case.data.initialStatus
-      description: Case Initial Status
-      type: String
-    - contextPath: Argus.Case.data.status
-      description: Case Status
-      type: String
-    - contextPath: Argus.Case.data.initialPriority
-      description: Case Initial Priority
-      type: String
-    - contextPath: Argus.Case.data.priority
-      description: Case Priority
-      type: String
-    - contextPath: Argus.Case.data.subject
-      description: Case Subject
-      type: String
-    - contextPath: Argus.Case.data.description
-      description: Case Description
-      type: String
-    - contextPath: Argus.Case.data.customerReference
-      description: Case Customer Reference
-      type: String
-    - contextPath: Argus.Case.data.accessMode
-      description: Case Access Mode
-      type: String
-    - contextPath: Argus.Case.data.reporter.id
-      description: Case Reporter ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customerID
-      description: Case Reporter Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customer.id
-      description: Case Reporter Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customer.name
-      description: Case Reporter Customer Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.customer.shortName
-      description: Case Reporter Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.customer.domain.id
-      description: Case Reporter Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customer.domain.name
-      description: Case Reporter Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.domain.id
-      description: Case Reporter Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.domain.name
-      description: Case Reporter Domain Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.userName
-      description: Case Reporter User Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.name
-      description: Case Reporter Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.type
-      description: Case Reporter Type
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.id
-      description: Case Assigned User ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customerID
-      description: Case Assigned User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customer.id
-      description: Case Assigned User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customer.name
-      description: Case Assigned User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.customer.shortName
-      description: Case Assigned User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.customer.domain.id
-      description: Case Assigned User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customer.domain.name
-      description: Case Assigned User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.domain.id
-      description: Case Assigned User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.domain.name
-      description: Case Assigned User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.userName
-      description: Case Assigned User User Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.name
-      description: Case Assigned User Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.type
-      description: Case Assigned User Type
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.id
-      description: Case Assigned Tech ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customerID
-      description: Case Assigned Tech Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customer.id
-      description: Case Assigned Tech Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customer.name
-      description: Case Assigned Tech Customer Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.customer.shortName
-      description: Case Assigned Tech Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.customer.domain.id
-      description: Case Assigned Tech Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customer.domain.name
-      description: Case Assigned Tech Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.domain.id
-      description: Case Assigned Tech Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.domain.name
-      description: Case Assigned Tech Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.userName
-      description: Case Assigned Tech User Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.name
-      description: Case Assigned Tech Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.type
-      description: Case Assigned Tech Type
-      type: String
-    - contextPath: Argus.Case.data.createdTimestamp
-      description: Case Created Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.id
-      description: Case Created By User ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customerID
-      description: Case Created By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customer.id
-      description: Case Created By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customer.name
-      description: Case Created By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.customer.shortName
-      description: Case Created By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.customer.domain.id
-      description: Case Created By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customer.domain.name
-      description: Case Created By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.domain.id
-      description: Case Created By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.domain.name
-      description: Case Created By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.userName
-      description: Case Created By User User Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.name
-      description: Case Created By User Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.type
-      description: Case Created By User Type
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedTimestamp
-      description: Case Last Updated Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.id
-      description: Case Last Updated By User ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customerID
-      description: Case Last Updated By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.id
-      description: Case Last Updated By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.name
-      description: Case Last Updated By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.shortName
-      description: Case Last Updated By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.id
-      description: Case Last Updated By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.name
-      description: Case Last Updated By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.id
-      description: Case Last Updated By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.name
-      description: Case Last Updated By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.userName
-      description: Case Last Updated By User User Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.name
-      description: Case Last Updated By User Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.type
-      description: Case Last Updated By User Type
-      type: String
-    - contextPath: Argus.Case.data.closedTimestamp
-      description: Case Closed Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.id
-      description: Case Closed By User ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customerID
-      description: Case Closed By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customer.id
-      description: Case Closed By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customer.name
-      description: Case Closed By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.customer.shortName
-      description: Case Closed By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.customer.domain.id
-      description: Case Closed By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customer.domain.name
-      description: Case Closed By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.domain.id
-      description: Case Closed By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.domain.name
-      description: Case Closed By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.userName
-      description: Case Closed By User User Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.name
-      description: Case Closed By User Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.type
-      description: Case Closed By User Type
-      type: String
-    - contextPath: Argus.Case.data.publishedTimestamp
-      description: Case Published Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.id
-      description: Case Published By User ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customerID
-      description: Case Published By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customer.id
-      description: Case Published By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customer.name
-      description: Case Published By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.customer.shortName
-      description: Case Published By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.customer.domain.id
-      description: Case Published By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customer.domain.name
-      description: Case Published By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.domain.id
-      description: Case Published By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.domain.name
-      description: Case Published By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.userName
-      description: Case Published By User User Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.name
-      description: Case Published By User Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.type
-      description: Case Published By User Type
-      type: String
-    - contextPath: Argus.Case.data.flags
-      description: Case Flags
-      type: String
-    - contextPath: Argus.Case.data.currentUserAccess.level
-      description: Case Current User Access Level
-      type: String
-    - contextPath: Argus.Case.data.currentUserAccess.role
-      description: Case Current User Access Role
-      type: String
-    - contextPath: Argus.Case.data.workflows.workflow
-      description: Case Workflows Workflow
-      type: String
-    - contextPath: Argus.Case.data.workflows.state
-      description: Case Workflows State
-      type: String
-    - contextPath: Argus.Case.data.originEmailAddress
-      description: Case Origin Email Address
-      type: String
-    - contextPath: Argus.Case.data.createdTime
-      description: Case Created Time
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedTime
-      description: Case Last Updated Time
-      type: String
-    - contextPath: Argus.Case.data.closedTime
-      description: Case Closed Time
-      type: String
-    - contextPath: Argus.Case.data.publishedTime
-      description: Case Published Time
-      type: String
-    description: Create Argus case
-  - name: argus-delete-case
-    arguments:
-    - name: case_id
-      required: true
-      description: ID of Argus case to mark as deleted
-    outputs:
-    - contextPath: Argus.Case.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Case.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Case.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Case.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Case.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Case.messages.message
-      description: Case Messages Message
-      type: String
-    - contextPath: Argus.Case.messages.messageTemplate
-      description: Case Messages Message Template
-      type: String
-    - contextPath: Argus.Case.messages.type
-      description: Case Messages Type
-      type: String
-    - contextPath: Argus.Case.messages.field
-      description: Case Messages Field
-      type: String
-    - contextPath: Argus.Case.messages.timestamp
-      description: Case Messages Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.id
-      description: Case ID
-      type: Number
-    - contextPath: Argus.Case.data.customer.id
-      description: Case Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.customer.name
-      description: Case Customer Name
-      type: String
-    - contextPath: Argus.Case.data.customer.shortName
-      description: Case Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.customer.domain.id
-      description: Case Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.customer.domain.name
-      description: Case Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.service.id
-      description: Case Service ID
-      type: Number
-    - contextPath: Argus.Case.data.service.name
-      description: Case Service Name
-      type: String
-    - contextPath: Argus.Case.data.service.shortName
-      description: Case Service Short Name
-      type: String
-    - contextPath: Argus.Case.data.service.localizedName
-      description: Case Service Localized Name
-      type: String
-    - contextPath: Argus.Case.data.category.id
-      description: Case Category ID
-      type: Number
-    - contextPath: Argus.Case.data.category.name
-      description: Case Category Name
-      type: String
-    - contextPath: Argus.Case.data.category.shortName
-      description: Case Category Short Name
-      type: String
-    - contextPath: Argus.Case.data.category.localizedName
-      description: Case Category Localized Name
-      type: String
-    - contextPath: Argus.Case.data.type
-      description: Case Type
-      type: String
-    - contextPath: Argus.Case.data.initialStatus
-      description: Case Initial Status
-      type: String
-    - contextPath: Argus.Case.data.status
-      description: Case Status
-      type: String
-    - contextPath: Argus.Case.data.initialPriority
-      description: Case Initial Priority
-      type: String
-    - contextPath: Argus.Case.data.priority
-      description: Case Priority
-      type: String
-    - contextPath: Argus.Case.data.subject
-      description: Case Subject
-      type: String
-    - contextPath: Argus.Case.data.description
-      description: Case Description
-      type: String
-    - contextPath: Argus.Case.data.customerReference
-      description: Case Customer Reference
-      type: String
-    - contextPath: Argus.Case.data.accessMode
-      description: Case Access Mode
-      type: String
-    - contextPath: Argus.Case.data.reporter.id
-      description: Case Reporter ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customerID
-      description: Case Reporter Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customer.id
-      description: Case Reporter Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customer.name
-      description: Case Reporter Customer Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.customer.shortName
-      description: Case Reporter Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.customer.domain.id
-      description: Case Reporter Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.customer.domain.name
-      description: Case Reporter Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.domain.id
-      description: Case Reporter Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.reporter.domain.name
-      description: Case Reporter Domain Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.userName
-      description: Case Reporter User Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.name
-      description: Case Reporter Name
-      type: String
-    - contextPath: Argus.Case.data.reporter.type
-      description: Case Reporter Type
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.id
-      description: Case Assigned User ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customerID
-      description: Case Assigned User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customer.id
-      description: Case Assigned User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customer.name
-      description: Case Assigned User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.customer.shortName
-      description: Case Assigned User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.customer.domain.id
-      description: Case Assigned User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.customer.domain.name
-      description: Case Assigned User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.domain.id
-      description: Case Assigned User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedUser.domain.name
-      description: Case Assigned User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.userName
-      description: Case Assigned User User Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.name
-      description: Case Assigned User Name
-      type: String
-    - contextPath: Argus.Case.data.assignedUser.type
-      description: Case Assigned User Type
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.id
-      description: Case Assigned Tech ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customerID
-      description: Case Assigned Tech Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customer.id
-      description: Case Assigned Tech Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customer.name
-      description: Case Assigned Tech Customer Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.customer.shortName
-      description: Case Assigned Tech Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.customer.domain.id
-      description: Case Assigned Tech Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.customer.domain.name
-      description: Case Assigned Tech Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.domain.id
-      description: Case Assigned Tech Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.assignedTech.domain.name
-      description: Case Assigned Tech Domain Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.userName
-      description: Case Assigned Tech User Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.name
-      description: Case Assigned Tech Name
-      type: String
-    - contextPath: Argus.Case.data.assignedTech.type
-      description: Case Assigned Tech Type
-      type: String
-    - contextPath: Argus.Case.data.createdTimestamp
-      description: Case Created Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.id
-      description: Case Created By User ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customerID
-      description: Case Created By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customer.id
-      description: Case Created By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customer.name
-      description: Case Created By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.customer.shortName
-      description: Case Created By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.customer.domain.id
-      description: Case Created By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.customer.domain.name
-      description: Case Created By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.domain.id
-      description: Case Created By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.createdByUser.domain.name
-      description: Case Created By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.userName
-      description: Case Created By User User Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.name
-      description: Case Created By User Name
-      type: String
-    - contextPath: Argus.Case.data.createdByUser.type
-      description: Case Created By User Type
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedTimestamp
-      description: Case Last Updated Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.id
-      description: Case Last Updated By User ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customerID
-      description: Case Last Updated By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.id
-      description: Case Last Updated By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.name
-      description: Case Last Updated By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.shortName
-      description: Case Last Updated By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.id
-      description: Case Last Updated By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.name
-      description: Case Last Updated By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.id
-      description: Case Last Updated By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.name
-      description: Case Last Updated By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.userName
-      description: Case Last Updated By User User Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.name
-      description: Case Last Updated By User Name
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedByUser.type
-      description: Case Last Updated By User Type
-      type: String
-    - contextPath: Argus.Case.data.closedTimestamp
-      description: Case Closed Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.id
-      description: Case Closed By User ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customerID
-      description: Case Closed By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customer.id
-      description: Case Closed By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customer.name
-      description: Case Closed By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.customer.shortName
-      description: Case Closed By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.customer.domain.id
-      description: Case Closed By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.customer.domain.name
-      description: Case Closed By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.domain.id
-      description: Case Closed By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.closedByUser.domain.name
-      description: Case Closed By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.userName
-      description: Case Closed By User User Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.name
-      description: Case Closed By User Name
-      type: String
-    - contextPath: Argus.Case.data.closedByUser.type
-      description: Case Closed By User Type
-      type: String
-    - contextPath: Argus.Case.data.publishedTimestamp
-      description: Case Published Timestamp
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.id
-      description: Case Published By User ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customerID
-      description: Case Published By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customer.id
-      description: Case Published By User Customer ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customer.name
-      description: Case Published By User Customer Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.customer.shortName
-      description: Case Published By User Customer Short Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.customer.domain.id
-      description: Case Published By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.customer.domain.name
-      description: Case Published By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.domain.id
-      description: Case Published By User Domain ID
-      type: Number
-    - contextPath: Argus.Case.data.publishedByUser.domain.name
-      description: Case Published By User Domain Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.userName
-      description: Case Published By User User Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.name
-      description: Case Published By User Name
-      type: String
-    - contextPath: Argus.Case.data.publishedByUser.type
-      description: Case Published By User Type
-      type: String
-    - contextPath: Argus.Case.data.flags
-      description: Case Flags
-      type: String
-    - contextPath: Argus.Case.data.currentUserAccess.level
-      description: Case Current User Access Level
-      type: String
-    - contextPath: Argus.Case.data.currentUserAccess.role
-      description: Case Current User Access Role
-      type: String
-    - contextPath: Argus.Case.data.workflows.workflow
-      description: Case Workflows Workflow
-      type: String
-    - contextPath: Argus.Case.data.workflows.state
-      description: Case Workflows State
-      type: String
-    - contextPath: Argus.Case.data.originEmailAddress
-      description: Case Origin Email Address
-      type: String
-    - contextPath: Argus.Case.data.createdTime
-      description: Case Created Time
-      type: String
-    - contextPath: Argus.Case.data.lastUpdatedTime
-      description: Case Last Updated Time
-      type: String
-    - contextPath: Argus.Case.data.closedTime
-      description: Case Closed Time
-      type: String
-    - contextPath: Argus.Case.data.publishedTime
-      description: Case Published Time
-      type: String
-    description: Mark existing case as deleted
-  - name: argus-delete-comment
-    arguments:
-    - name: case_id
-      required: true
-      description: ID of Argus case where comment exists
-    - name: comment_id
-      required: true
-      description: ID of comment to mark as deleted
-    outputs:
-    - contextPath: Argus.Comment.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Comment.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Comment.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Comment.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Comment.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Comment.messages.message
-      description: Comment Messages Message
-      type: String
-    - contextPath: Argus.Comment.messages.messageTemplate
-      description: Comment Messages Message Template
-      type: String
-    - contextPath: Argus.Comment.messages.type
-      description: Comment Messages Type
-      type: String
-    - contextPath: Argus.Comment.messages.field
-      description: Comment Messages Field
-      type: String
-    - contextPath: Argus.Comment.messages.timestamp
-      description: Comment Messages Timestamp
-      type: Number
-    - contextPath: Argus.Comment.data.id
-      description: Comment ID
-      type: String
-    - contextPath: Argus.Comment.data.addedTimestamp
-      description: Comment Added Timestamp
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.id
-      description: Comment Added By User ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customerID
-      description: Comment Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customer.id
-      description: Comment Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customer.name
-      description: Comment Added By User Customer Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.customer.shortName
-      description: Comment Added By User Customer Short Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.customer.domain.id
-      description: Comment Added By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customer.domain.name
-      description: Comment Added By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.domain.id
-      description: Comment Added By User Domain ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.domain.name
-      description: Comment Added By User Domain Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.userName
-      description: Comment Added By User User Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.name
-      description: Comment Added By User Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.type
-      description: Comment Added By User Type
-      type: String
-    - contextPath: Argus.Comment.data.comment
-      description: Comment Comment
-      type: String
-    - contextPath: Argus.Comment.data.flags
-      description: Comment Flags
-      type: String
-    - contextPath: Argus.Comment.data.lastUpdatedTimestamp
-      description: Comment Last Updated Timestamp
-      type: Number
-    - contextPath: Argus.Comment.data.status
-      description: Comment Status
-      type: String
-    - contextPath: Argus.Comment.data.priority
-      description: Comment Priority
-      type: String
-    - contextPath: Argus.Comment.data.originEmailAddress
-      description: Comment Origin Email Address
-      type: String
-    - contextPath: Argus.Comment.data.associatedAttachments.id
-      description: Comment Associated Attachments ID
-      type: String
-    - contextPath: Argus.Comment.data.associatedAttachments.name
-      description: Comment Associated Attachments Name
-      type: String
-    - contextPath: Argus.Comment.data.references.type
-      description: Comment References Type
-      type: String
-    - contextPath: Argus.Comment.data.references.commentID
-      description: Comment References Comment ID
-      type: String
-    - contextPath: Argus.Comment.data.lastUpdatedTime
-      description: Comment Last Updated Time
-      type: String
-    - contextPath: Argus.Comment.data.addedTime
-      description: Comment Added Time
-      type: String
-    description: Mark existing comment as deleted
-  - name: argus-edit-comment
-    arguments:
-    - name: case_id
-      required: true
-      description: ID of Argus case where comment exists
-    - name: comment_id
-      required: true
-      description: ID of comment to edit
-    - name: comment
-      required: true
-      description: Comment text which will replace the current text
-    outputs:
-    - contextPath: Argus.Comment.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Comment.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Comment.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Comment.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Comment.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Comment.messages.message
-      description: Comment Messages Message
-      type: String
-    - contextPath: Argus.Comment.messages.messageTemplate
-      description: Comment Messages Message Template
-      type: String
-    - contextPath: Argus.Comment.messages.type
-      description: Comment Messages Type
-      type: String
-    - contextPath: Argus.Comment.messages.field
-      description: Comment Messages Field
-      type: String
-    - contextPath: Argus.Comment.messages.timestamp
-      description: Comment Messages Timestamp
-      type: Number
-    - contextPath: Argus.Comment.data.id
-      description: Comment ID
-      type: String
-    - contextPath: Argus.Comment.data.addedTimestamp
-      description: Comment Added Timestamp
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.id
-      description: Comment Added By User ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customerID
-      description: Comment Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customer.id
-      description: Comment Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customer.name
-      description: Comment Added By User Customer Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.customer.shortName
-      description: Comment Added By User Customer Short Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.customer.domain.id
-      description: Comment Added By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.customer.domain.name
-      description: Comment Added By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.domain.id
-      description: Comment Added By User Domain ID
-      type: Number
-    - contextPath: Argus.Comment.data.addedByUser.domain.name
-      description: Comment Added By User Domain Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.userName
-      description: Comment Added By User User Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.name
-      description: Comment Added By User Name
-      type: String
-    - contextPath: Argus.Comment.data.addedByUser.type
-      description: Comment Added By User Type
-      type: String
-    - contextPath: Argus.Comment.data.comment
-      description: Comment Comment
-      type: String
-    - contextPath: Argus.Comment.data.flags
-      description: Comment Flags
-      type: String
-    - contextPath: Argus.Comment.data.lastUpdatedTimestamp
-      description: Comment Last Updated Timestamp
-      type: Number
-    - contextPath: Argus.Comment.data.status
-      description: Comment Status
-      type: String
-    - contextPath: Argus.Comment.data.priority
-      description: Comment Priority
-      type: String
-    - contextPath: Argus.Comment.data.originEmailAddress
-      description: Comment Origin Email Address
-      type: String
-    - contextPath: Argus.Comment.data.associatedAttachments.id
-      description: Comment Associated Attachments ID
-      type: String
-    - contextPath: Argus.Comment.data.associatedAttachments.name
-      description: Comment Associated Attachments Name
-      type: String
-    - contextPath: Argus.Comment.data.references.type
-      description: Comment References Type
-      type: String
-    - contextPath: Argus.Comment.data.references.commentID
-      description: Comment References Comment ID
-      type: String
-    - contextPath: Argus.Comment.data.lastUpdatedTime
-      description: Comment Last Updated Time
-      type: String
-    - contextPath: Argus.Comment.data.addedTime
-      description: Comment Added Time
-      type: String
-    description: Edit existing comment
-  - name: argus-get-case-metadata-by-id
-    arguments:
-    - name: case_id
-      required: true
-      description: ID of Argus case
-    - name: skip_redirect
-      auto: PREDEFINED
+      isArray: false
+      name: default_watchers
       predefined:
-      - "true"
-      - "false"
-      description: If true, skip automatic redirect (for merged cases)
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Create Argus case
+    execution: false
+    name: argus-create-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -3149,16 +2212,1107 @@ script:
     - contextPath: Argus.Case.data.publishedTime
       description: Case Published Time
       type: String
-    description: Returns the basic case descriptor for the case identified by ID
-  - name: argus-list-case-attachments
-    arguments:
-    - name: case_id
+  - arguments:
+    - default: false
+      description: ID of Argus case to mark as deleted
+      isArray: false
+      name: case_id
       required: true
+      secret: false
+    deprecated: false
+    description: Mark existing case as deleted
+    execution: false
+    name: argus-delete-case
+    outputs:
+    - contextPath: Argus.Case.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Case.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Case.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Case.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Case.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Case.messages.message
+      description: Case Messages Message
+      type: String
+    - contextPath: Argus.Case.messages.messageTemplate
+      description: Case Messages Message Template
+      type: String
+    - contextPath: Argus.Case.messages.type
+      description: Case Messages Type
+      type: String
+    - contextPath: Argus.Case.messages.field
+      description: Case Messages Field
+      type: String
+    - contextPath: Argus.Case.messages.timestamp
+      description: Case Messages Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.id
+      description: Case ID
+      type: Number
+    - contextPath: Argus.Case.data.customer.id
+      description: Case Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.customer.name
+      description: Case Customer Name
+      type: String
+    - contextPath: Argus.Case.data.customer.shortName
+      description: Case Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.customer.domain.id
+      description: Case Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.customer.domain.name
+      description: Case Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.service.id
+      description: Case Service ID
+      type: Number
+    - contextPath: Argus.Case.data.service.name
+      description: Case Service Name
+      type: String
+    - contextPath: Argus.Case.data.service.shortName
+      description: Case Service Short Name
+      type: String
+    - contextPath: Argus.Case.data.service.localizedName
+      description: Case Service Localized Name
+      type: String
+    - contextPath: Argus.Case.data.category.id
+      description: Case Category ID
+      type: Number
+    - contextPath: Argus.Case.data.category.name
+      description: Case Category Name
+      type: String
+    - contextPath: Argus.Case.data.category.shortName
+      description: Case Category Short Name
+      type: String
+    - contextPath: Argus.Case.data.category.localizedName
+      description: Case Category Localized Name
+      type: String
+    - contextPath: Argus.Case.data.type
+      description: Case Type
+      type: String
+    - contextPath: Argus.Case.data.initialStatus
+      description: Case Initial Status
+      type: String
+    - contextPath: Argus.Case.data.status
+      description: Case Status
+      type: String
+    - contextPath: Argus.Case.data.initialPriority
+      description: Case Initial Priority
+      type: String
+    - contextPath: Argus.Case.data.priority
+      description: Case Priority
+      type: String
+    - contextPath: Argus.Case.data.subject
+      description: Case Subject
+      type: String
+    - contextPath: Argus.Case.data.description
+      description: Case Description
+      type: String
+    - contextPath: Argus.Case.data.customerReference
+      description: Case Customer Reference
+      type: String
+    - contextPath: Argus.Case.data.accessMode
+      description: Case Access Mode
+      type: String
+    - contextPath: Argus.Case.data.reporter.id
+      description: Case Reporter ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customerID
+      description: Case Reporter Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customer.id
+      description: Case Reporter Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customer.name
+      description: Case Reporter Customer Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.customer.shortName
+      description: Case Reporter Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.customer.domain.id
+      description: Case Reporter Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customer.domain.name
+      description: Case Reporter Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.domain.id
+      description: Case Reporter Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.domain.name
+      description: Case Reporter Domain Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.userName
+      description: Case Reporter User Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.name
+      description: Case Reporter Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.type
+      description: Case Reporter Type
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.id
+      description: Case Assigned User ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customerID
+      description: Case Assigned User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customer.id
+      description: Case Assigned User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customer.name
+      description: Case Assigned User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.customer.shortName
+      description: Case Assigned User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.customer.domain.id
+      description: Case Assigned User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customer.domain.name
+      description: Case Assigned User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.domain.id
+      description: Case Assigned User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.domain.name
+      description: Case Assigned User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.userName
+      description: Case Assigned User User Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.name
+      description: Case Assigned User Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.type
+      description: Case Assigned User Type
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.id
+      description: Case Assigned Tech ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customerID
+      description: Case Assigned Tech Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customer.id
+      description: Case Assigned Tech Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customer.name
+      description: Case Assigned Tech Customer Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.customer.shortName
+      description: Case Assigned Tech Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.customer.domain.id
+      description: Case Assigned Tech Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customer.domain.name
+      description: Case Assigned Tech Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.domain.id
+      description: Case Assigned Tech Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.domain.name
+      description: Case Assigned Tech Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.userName
+      description: Case Assigned Tech User Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.name
+      description: Case Assigned Tech Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.type
+      description: Case Assigned Tech Type
+      type: String
+    - contextPath: Argus.Case.data.createdTimestamp
+      description: Case Created Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.id
+      description: Case Created By User ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customerID
+      description: Case Created By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customer.id
+      description: Case Created By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customer.name
+      description: Case Created By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.customer.shortName
+      description: Case Created By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.customer.domain.id
+      description: Case Created By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customer.domain.name
+      description: Case Created By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.domain.id
+      description: Case Created By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.domain.name
+      description: Case Created By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.userName
+      description: Case Created By User User Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.name
+      description: Case Created By User Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.type
+      description: Case Created By User Type
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedTimestamp
+      description: Case Last Updated Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.id
+      description: Case Last Updated By User ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customerID
+      description: Case Last Updated By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.id
+      description: Case Last Updated By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.name
+      description: Case Last Updated By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.shortName
+      description: Case Last Updated By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.id
+      description: Case Last Updated By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.name
+      description: Case Last Updated By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.id
+      description: Case Last Updated By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.name
+      description: Case Last Updated By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.userName
+      description: Case Last Updated By User User Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.name
+      description: Case Last Updated By User Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.type
+      description: Case Last Updated By User Type
+      type: String
+    - contextPath: Argus.Case.data.closedTimestamp
+      description: Case Closed Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.id
+      description: Case Closed By User ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customerID
+      description: Case Closed By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customer.id
+      description: Case Closed By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customer.name
+      description: Case Closed By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.customer.shortName
+      description: Case Closed By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.customer.domain.id
+      description: Case Closed By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customer.domain.name
+      description: Case Closed By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.domain.id
+      description: Case Closed By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.domain.name
+      description: Case Closed By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.userName
+      description: Case Closed By User User Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.name
+      description: Case Closed By User Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.type
+      description: Case Closed By User Type
+      type: String
+    - contextPath: Argus.Case.data.publishedTimestamp
+      description: Case Published Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.id
+      description: Case Published By User ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customerID
+      description: Case Published By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customer.id
+      description: Case Published By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customer.name
+      description: Case Published By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.customer.shortName
+      description: Case Published By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.customer.domain.id
+      description: Case Published By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customer.domain.name
+      description: Case Published By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.domain.id
+      description: Case Published By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.domain.name
+      description: Case Published By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.userName
+      description: Case Published By User User Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.name
+      description: Case Published By User Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.type
+      description: Case Published By User Type
+      type: String
+    - contextPath: Argus.Case.data.flags
+      description: Case Flags
+      type: String
+    - contextPath: Argus.Case.data.currentUserAccess.level
+      description: Case Current User Access Level
+      type: String
+    - contextPath: Argus.Case.data.currentUserAccess.role
+      description: Case Current User Access Role
+      type: String
+    - contextPath: Argus.Case.data.workflows.workflow
+      description: Case Workflows Workflow
+      type: String
+    - contextPath: Argus.Case.data.workflows.state
+      description: Case Workflows State
+      type: String
+    - contextPath: Argus.Case.data.originEmailAddress
+      description: Case Origin Email Address
+      type: String
+    - contextPath: Argus.Case.data.createdTime
+      description: Case Created Time
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedTime
+      description: Case Last Updated Time
+      type: String
+    - contextPath: Argus.Case.data.closedTime
+      description: Case Closed Time
+      type: String
+    - contextPath: Argus.Case.data.publishedTime
+      description: Case Published Time
+      type: String
+  - arguments:
+    - default: false
+      description: ID of Argus case where comment exists
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of comment to mark as deleted
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Mark existing comment as deleted
+    execution: false
+    name: argus-delete-comment
+    outputs:
+    - contextPath: Argus.Comment.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Comment.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Comment.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Comment.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Comment.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Comment.messages.message
+      description: Comment Messages Message
+      type: String
+    - contextPath: Argus.Comment.messages.messageTemplate
+      description: Comment Messages Message Template
+      type: String
+    - contextPath: Argus.Comment.messages.type
+      description: Comment Messages Type
+      type: String
+    - contextPath: Argus.Comment.messages.field
+      description: Comment Messages Field
+      type: String
+    - contextPath: Argus.Comment.messages.timestamp
+      description: Comment Messages Timestamp
+      type: Number
+    - contextPath: Argus.Comment.data.id
+      description: Comment ID
+      type: String
+    - contextPath: Argus.Comment.data.addedTimestamp
+      description: Comment Added Timestamp
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.id
+      description: Comment Added By User ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customerID
+      description: Comment Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customer.id
+      description: Comment Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customer.name
+      description: Comment Added By User Customer Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.customer.shortName
+      description: Comment Added By User Customer Short Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.customer.domain.id
+      description: Comment Added By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customer.domain.name
+      description: Comment Added By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.domain.id
+      description: Comment Added By User Domain ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.domain.name
+      description: Comment Added By User Domain Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.userName
+      description: Comment Added By User User Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.name
+      description: Comment Added By User Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.type
+      description: Comment Added By User Type
+      type: String
+    - contextPath: Argus.Comment.data.comment
+      description: Comment Comment
+      type: String
+    - contextPath: Argus.Comment.data.flags
+      description: Comment Flags
+      type: String
+    - contextPath: Argus.Comment.data.lastUpdatedTimestamp
+      description: Comment Last Updated Timestamp
+      type: Number
+    - contextPath: Argus.Comment.data.status
+      description: Comment Status
+      type: String
+    - contextPath: Argus.Comment.data.priority
+      description: Comment Priority
+      type: String
+    - contextPath: Argus.Comment.data.originEmailAddress
+      description: Comment Origin Email Address
+      type: String
+    - contextPath: Argus.Comment.data.associatedAttachments.id
+      description: Comment Associated Attachments ID
+      type: String
+    - contextPath: Argus.Comment.data.associatedAttachments.name
+      description: Comment Associated Attachments Name
+      type: String
+    - contextPath: Argus.Comment.data.references.type
+      description: Comment References Type
+      type: String
+    - contextPath: Argus.Comment.data.references.commentID
+      description: Comment References Comment ID
+      type: String
+    - contextPath: Argus.Comment.data.lastUpdatedTime
+      description: Comment Last Updated Time
+      type: String
+    - contextPath: Argus.Comment.data.addedTime
+      description: Comment Added Time
+      type: String
+  - arguments:
+    - default: false
+      description: ID of Argus case where comment exists
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of comment to edit
+      isArray: false
+      name: comment_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment text which will replace the current text
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Edit existing comment
+    execution: false
+    name: argus-edit-comment
+    outputs:
+    - contextPath: Argus.Comment.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Comment.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Comment.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Comment.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Comment.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Comment.messages.message
+      description: Comment Messages Message
+      type: String
+    - contextPath: Argus.Comment.messages.messageTemplate
+      description: Comment Messages Message Template
+      type: String
+    - contextPath: Argus.Comment.messages.type
+      description: Comment Messages Type
+      type: String
+    - contextPath: Argus.Comment.messages.field
+      description: Comment Messages Field
+      type: String
+    - contextPath: Argus.Comment.messages.timestamp
+      description: Comment Messages Timestamp
+      type: Number
+    - contextPath: Argus.Comment.data.id
+      description: Comment ID
+      type: String
+    - contextPath: Argus.Comment.data.addedTimestamp
+      description: Comment Added Timestamp
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.id
+      description: Comment Added By User ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customerID
+      description: Comment Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customer.id
+      description: Comment Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customer.name
+      description: Comment Added By User Customer Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.customer.shortName
+      description: Comment Added By User Customer Short Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.customer.domain.id
+      description: Comment Added By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.customer.domain.name
+      description: Comment Added By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.domain.id
+      description: Comment Added By User Domain ID
+      type: Number
+    - contextPath: Argus.Comment.data.addedByUser.domain.name
+      description: Comment Added By User Domain Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.userName
+      description: Comment Added By User User Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.name
+      description: Comment Added By User Name
+      type: String
+    - contextPath: Argus.Comment.data.addedByUser.type
+      description: Comment Added By User Type
+      type: String
+    - contextPath: Argus.Comment.data.comment
+      description: Comment Comment
+      type: String
+    - contextPath: Argus.Comment.data.flags
+      description: Comment Flags
+      type: String
+    - contextPath: Argus.Comment.data.lastUpdatedTimestamp
+      description: Comment Last Updated Timestamp
+      type: Number
+    - contextPath: Argus.Comment.data.status
+      description: Comment Status
+      type: String
+    - contextPath: Argus.Comment.data.priority
+      description: Comment Priority
+      type: String
+    - contextPath: Argus.Comment.data.originEmailAddress
+      description: Comment Origin Email Address
+      type: String
+    - contextPath: Argus.Comment.data.associatedAttachments.id
+      description: Comment Associated Attachments ID
+      type: String
+    - contextPath: Argus.Comment.data.associatedAttachments.name
+      description: Comment Associated Attachments Name
+      type: String
+    - contextPath: Argus.Comment.data.references.type
+      description: Comment References Type
+      type: String
+    - contextPath: Argus.Comment.data.references.commentID
+      description: Comment References Comment ID
+      type: String
+    - contextPath: Argus.Comment.data.lastUpdatedTime
+      description: Comment Last Updated Time
+      type: String
+    - contextPath: Argus.Comment.data.addedTime
+      description: Comment Added Time
+      type: String
+  - arguments:
+    - default: false
       description: ID of Argus case
-    - name: limit
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, skip automatic redirect (for merged cases)
+      isArray: false
+      name: skip_redirect
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the basic case descriptor for the case identified by ID
+    execution: false
+    name: argus-get-case-metadata-by-id
+    outputs:
+    - contextPath: Argus.Case.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Case.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Case.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Case.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Case.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Case.messages.message
+      description: Case Messages Message
+      type: String
+    - contextPath: Argus.Case.messages.messageTemplate
+      description: Case Messages Message Template
+      type: String
+    - contextPath: Argus.Case.messages.type
+      description: Case Messages Type
+      type: String
+    - contextPath: Argus.Case.messages.field
+      description: Case Messages Field
+      type: String
+    - contextPath: Argus.Case.messages.timestamp
+      description: Case Messages Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.id
+      description: Case ID
+      type: Number
+    - contextPath: Argus.Case.data.customer.id
+      description: Case Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.customer.name
+      description: Case Customer Name
+      type: String
+    - contextPath: Argus.Case.data.customer.shortName
+      description: Case Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.customer.domain.id
+      description: Case Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.customer.domain.name
+      description: Case Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.service.id
+      description: Case Service ID
+      type: Number
+    - contextPath: Argus.Case.data.service.name
+      description: Case Service Name
+      type: String
+    - contextPath: Argus.Case.data.service.shortName
+      description: Case Service Short Name
+      type: String
+    - contextPath: Argus.Case.data.service.localizedName
+      description: Case Service Localized Name
+      type: String
+    - contextPath: Argus.Case.data.category.id
+      description: Case Category ID
+      type: Number
+    - contextPath: Argus.Case.data.category.name
+      description: Case Category Name
+      type: String
+    - contextPath: Argus.Case.data.category.shortName
+      description: Case Category Short Name
+      type: String
+    - contextPath: Argus.Case.data.category.localizedName
+      description: Case Category Localized Name
+      type: String
+    - contextPath: Argus.Case.data.type
+      description: Case Type
+      type: String
+    - contextPath: Argus.Case.data.initialStatus
+      description: Case Initial Status
+      type: String
+    - contextPath: Argus.Case.data.status
+      description: Case Status
+      type: String
+    - contextPath: Argus.Case.data.initialPriority
+      description: Case Initial Priority
+      type: String
+    - contextPath: Argus.Case.data.priority
+      description: Case Priority
+      type: String
+    - contextPath: Argus.Case.data.subject
+      description: Case Subject
+      type: String
+    - contextPath: Argus.Case.data.description
+      description: Case Description
+      type: String
+    - contextPath: Argus.Case.data.customerReference
+      description: Case Customer Reference
+      type: String
+    - contextPath: Argus.Case.data.accessMode
+      description: Case Access Mode
+      type: String
+    - contextPath: Argus.Case.data.reporter.id
+      description: Case Reporter ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customerID
+      description: Case Reporter Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customer.id
+      description: Case Reporter Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customer.name
+      description: Case Reporter Customer Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.customer.shortName
+      description: Case Reporter Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.customer.domain.id
+      description: Case Reporter Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.customer.domain.name
+      description: Case Reporter Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.domain.id
+      description: Case Reporter Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.reporter.domain.name
+      description: Case Reporter Domain Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.userName
+      description: Case Reporter User Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.name
+      description: Case Reporter Name
+      type: String
+    - contextPath: Argus.Case.data.reporter.type
+      description: Case Reporter Type
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.id
+      description: Case Assigned User ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customerID
+      description: Case Assigned User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customer.id
+      description: Case Assigned User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customer.name
+      description: Case Assigned User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.customer.shortName
+      description: Case Assigned User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.customer.domain.id
+      description: Case Assigned User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.customer.domain.name
+      description: Case Assigned User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.domain.id
+      description: Case Assigned User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedUser.domain.name
+      description: Case Assigned User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.userName
+      description: Case Assigned User User Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.name
+      description: Case Assigned User Name
+      type: String
+    - contextPath: Argus.Case.data.assignedUser.type
+      description: Case Assigned User Type
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.id
+      description: Case Assigned Tech ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customerID
+      description: Case Assigned Tech Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customer.id
+      description: Case Assigned Tech Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customer.name
+      description: Case Assigned Tech Customer Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.customer.shortName
+      description: Case Assigned Tech Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.customer.domain.id
+      description: Case Assigned Tech Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.customer.domain.name
+      description: Case Assigned Tech Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.domain.id
+      description: Case Assigned Tech Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.assignedTech.domain.name
+      description: Case Assigned Tech Domain Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.userName
+      description: Case Assigned Tech User Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.name
+      description: Case Assigned Tech Name
+      type: String
+    - contextPath: Argus.Case.data.assignedTech.type
+      description: Case Assigned Tech Type
+      type: String
+    - contextPath: Argus.Case.data.createdTimestamp
+      description: Case Created Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.id
+      description: Case Created By User ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customerID
+      description: Case Created By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customer.id
+      description: Case Created By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customer.name
+      description: Case Created By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.customer.shortName
+      description: Case Created By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.customer.domain.id
+      description: Case Created By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.customer.domain.name
+      description: Case Created By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.domain.id
+      description: Case Created By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.createdByUser.domain.name
+      description: Case Created By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.userName
+      description: Case Created By User User Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.name
+      description: Case Created By User Name
+      type: String
+    - contextPath: Argus.Case.data.createdByUser.type
+      description: Case Created By User Type
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedTimestamp
+      description: Case Last Updated Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.id
+      description: Case Last Updated By User ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customerID
+      description: Case Last Updated By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.id
+      description: Case Last Updated By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.name
+      description: Case Last Updated By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.shortName
+      description: Case Last Updated By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.id
+      description: Case Last Updated By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.customer.domain.name
+      description: Case Last Updated By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.id
+      description: Case Last Updated By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.lastUpdatedByUser.domain.name
+      description: Case Last Updated By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.userName
+      description: Case Last Updated By User User Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.name
+      description: Case Last Updated By User Name
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedByUser.type
+      description: Case Last Updated By User Type
+      type: String
+    - contextPath: Argus.Case.data.closedTimestamp
+      description: Case Closed Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.id
+      description: Case Closed By User ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customerID
+      description: Case Closed By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customer.id
+      description: Case Closed By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customer.name
+      description: Case Closed By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.customer.shortName
+      description: Case Closed By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.customer.domain.id
+      description: Case Closed By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.customer.domain.name
+      description: Case Closed By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.domain.id
+      description: Case Closed By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.closedByUser.domain.name
+      description: Case Closed By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.userName
+      description: Case Closed By User User Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.name
+      description: Case Closed By User Name
+      type: String
+    - contextPath: Argus.Case.data.closedByUser.type
+      description: Case Closed By User Type
+      type: String
+    - contextPath: Argus.Case.data.publishedTimestamp
+      description: Case Published Timestamp
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.id
+      description: Case Published By User ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customerID
+      description: Case Published By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customer.id
+      description: Case Published By User Customer ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customer.name
+      description: Case Published By User Customer Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.customer.shortName
+      description: Case Published By User Customer Short Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.customer.domain.id
+      description: Case Published By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.customer.domain.name
+      description: Case Published By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.domain.id
+      description: Case Published By User Domain ID
+      type: Number
+    - contextPath: Argus.Case.data.publishedByUser.domain.name
+      description: Case Published By User Domain Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.userName
+      description: Case Published By User User Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.name
+      description: Case Published By User Name
+      type: String
+    - contextPath: Argus.Case.data.publishedByUser.type
+      description: Case Published By User Type
+      type: String
+    - contextPath: Argus.Case.data.flags
+      description: Case Flags
+      type: String
+    - contextPath: Argus.Case.data.currentUserAccess.level
+      description: Case Current User Access Level
+      type: String
+    - contextPath: Argus.Case.data.currentUserAccess.role
+      description: Case Current User Access Role
+      type: String
+    - contextPath: Argus.Case.data.workflows.workflow
+      description: Case Workflows Workflow
+      type: String
+    - contextPath: Argus.Case.data.workflows.state
+      description: Case Workflows State
+      type: String
+    - contextPath: Argus.Case.data.originEmailAddress
+      description: Case Origin Email Address
+      type: String
+    - contextPath: Argus.Case.data.createdTime
+      description: Case Created Time
+      type: String
+    - contextPath: Argus.Case.data.lastUpdatedTime
+      description: Case Last Updated Time
+      type: String
+    - contextPath: Argus.Case.data.closedTime
+      description: Case Closed Time
+      type: String
+    - contextPath: Argus.Case.data.publishedTime
+      description: Case Published Time
+      type: String
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
       description: Maximum number of returned results
-    - name: offset
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: Skip a number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: List attachments for an existing case
+    execution: false
+    name: argus-list-case-attachments
     outputs:
     - contextPath: Argus.Attachments.responseCode
       description: API response metadata, response code of this request
@@ -3250,112 +3404,23 @@ script:
     - contextPath: Argus.Attachments.data.addedTime
       description: Attachment Added Time
       type: String
-    description: List attachments for an existing case
-  - name: argus-remove-case-tag-by-id
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of Argus case
-    - name: tag_id
+      isArray: false
+      name: case_id
       required: true
+      secret: false
+    - default: false
       description: ID of tag to remove
-    outputs:
-    - contextPath: Argus.Tags.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Tags.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Tags.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Tags.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Tags.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Tags.messages.message
-      description: Tag Messages Message
-      type: String
-    - contextPath: Argus.Tags.messages.messageTemplate
-      description: Tag Messages Message Template
-      type: String
-    - contextPath: Argus.Tags.messages.type
-      description: Tag Messages Type
-      type: String
-    - contextPath: Argus.Tags.messages.field
-      description: Tag Messages Field
-      type: String
-    - contextPath: Argus.Tags.messages.timestamp
-      description: Tag Messages Timestamp
-      type: Number
-    - contextPath: Argus.Tags.data.id
-      description: Tag ID
-      type: String
-    - contextPath: Argus.Tags.data.key
-      description: Tag Key
-      type: String
-    - contextPath: Argus.Tags.data.value
-      description: Tag Value
-      type: String
-    - contextPath: Argus.Tags.data.addedTimestamp
-      description: Tag Added Timestamp
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.id
-      description: Tag Added By User ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customerID
-      description: Tag Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customer.id
-      description: Tag Added By User Customer ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customer.name
-      description: Tag Added By User Customer Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.customer.shortName
-      description: Tag Added By User Customer Short Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.customer.domain.id
-      description: Tag Added By User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.customer.domain.name
-      description: Tag Added By User Customer Domain Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.domain.id
-      description: Tag Added By User Domain ID
-      type: Number
-    - contextPath: Argus.Tags.data.addedByUser.domain.name
-      description: Tag Added By User Domain Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.userName
-      description: Tag Added By User User Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.name
-      description: Tag Added By User Name
-      type: String
-    - contextPath: Argus.Tags.data.addedByUser.type
-      description: Tag Added By User Type
-      type: String
-    - contextPath: Argus.Tags.data.flags
-      description: Tag Flags
-      type: String
-    - contextPath: Argus.Tags.data.addedTime
-      description: Tag Added Time
-      type: String
+      isArray: false
+      name: tag_id
+      required: true
+      secret: false
+    deprecated: false
     description: Remove existing tag by tag ID
-  - name: argus-remove-case-tag-by-key-value
-    arguments:
-    - name: case_id
-      required: true
-      description: ID of Argus case
-    - name: key
-      required: true
-      description: Key of tag to remove
-    - name: value
-      required: true
-      description: Value of tag to remove
+    execution: false
+    name: argus-remove-case-tag-by-id
     outputs:
     - contextPath: Argus.Tags.responseCode
       description: API response metadata, response code of this request
@@ -3441,18 +3506,138 @@ script:
     - contextPath: Argus.Tags.data.addedTime
       description: Tag Added Time
       type: String
-    description: Remove existing tag with key, value matching
-  - name: argus-update-case
-    arguments:
-    - name: case_id
+  - arguments:
+    - default: false
+      description: ID of Argus case
+      isArray: false
+      name: case_id
       required: true
+      secret: false
+    - default: false
+      description: Key of tag to remove
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    - default: false
+      description: Value of tag to remove
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove existing tag with key, value matching
+    execution: false
+    name: argus-remove-case-tag-by-key-value
+    outputs:
+    - contextPath: Argus.Tags.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Tags.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Tags.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Tags.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Tags.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Tags.messages.message
+      description: Tag Messages Message
+      type: String
+    - contextPath: Argus.Tags.messages.messageTemplate
+      description: Tag Messages Message Template
+      type: String
+    - contextPath: Argus.Tags.messages.type
+      description: Tag Messages Type
+      type: String
+    - contextPath: Argus.Tags.messages.field
+      description: Tag Messages Field
+      type: String
+    - contextPath: Argus.Tags.messages.timestamp
+      description: Tag Messages Timestamp
+      type: Number
+    - contextPath: Argus.Tags.data.id
+      description: Tag ID
+      type: String
+    - contextPath: Argus.Tags.data.key
+      description: Tag Key
+      type: String
+    - contextPath: Argus.Tags.data.value
+      description: Tag Value
+      type: String
+    - contextPath: Argus.Tags.data.addedTimestamp
+      description: Tag Added Timestamp
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.id
+      description: Tag Added By User ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customerID
+      description: Tag Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customer.id
+      description: Tag Added By User Customer ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customer.name
+      description: Tag Added By User Customer Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.customer.shortName
+      description: Tag Added By User Customer Short Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.customer.domain.id
+      description: Tag Added By User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.customer.domain.name
+      description: Tag Added By User Customer Domain Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.domain.id
+      description: Tag Added By User Domain ID
+      type: Number
+    - contextPath: Argus.Tags.data.addedByUser.domain.name
+      description: Tag Added By User Domain Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.userName
+      description: Tag Added By User User Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.name
+      description: Tag Added By User Name
+      type: String
+    - contextPath: Argus.Tags.data.addedByUser.type
+      description: Tag Added By User Type
+      type: String
+    - contextPath: Argus.Tags.data.flags
+      description: Tag Flags
+      type: String
+    - contextPath: Argus.Tags.data.addedTime
+      description: Tag Added Time
+      type: String
+  - arguments:
+    - default: false
       description: ID of Argus case to update
-    - name: subject
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
       description: If set, change subject of case.
-    - name: description
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
       description: 'If set, change description of case. May use HTML, will be sanitized. '
-    - name: status
-      auto: PREDEFINED
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, change status of case '
+      isArray: false
+      name: status
       predefined:
       - pendingCustomer
       - pendingSoc
@@ -3460,17 +3645,26 @@ script:
       - pendingClose
       - workingSoc
       - workingCustomer
-      description: 'If set, change status of case '
-    - name: priority
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, change priority of case. '
+      isArray: false
+      name: priority
       predefined:
       - low
       - medium
       - high
       - critical
-      description: 'If set, change priority of case. '
-    - name: category
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'If set, assign given category to specified category (by category
+        shortname). Set value to empty string to unset category. '
+      isArray: false
+      name: category
       predefined:
       - network-testing
       - unauthorized-access
@@ -3497,38 +3691,74 @@ script:
       - phishing
       - argus-improvement
       - argus-bug
-      description: 'If set, assign given category to specified category (by category
-        shortname). Set value to empty string to unset category. '
-    - name: reporter
+      required: false
+      secret: false
+    - default: false
       description: 'If set, set given user as reporter for case (by ID or shortname).
         Shortname will be resolved in the current users domain. '
-    - name: assigned_user
+      isArray: false
+      name: reporter
+      required: false
+      secret: false
+    - default: false
       description: 'If set, assign given user to case (by ID or shortname). Shortname
         will be resolved in the current users domain. If blank, this will unset assignedUser. '
-    - name: assigned_tech
+      isArray: false
+      name: assigned_user
+      required: false
+      secret: false
+    - default: false
       description: If set, assign given technical user (solution engineer) to case
         (by ID or shortname). Shortname will be resolved in the current users domain.
         If blank, this will unset assignedTech.
-    - name: customer_reference
+      isArray: false
+      name: assigned_tech
+      required: false
+      secret: false
+    - default: false
       description: 'If set, change customer reference for case. '
-    - name: comment
+      isArray: false
+      name: customer_reference
+      required: false
+      secret: false
+    - default: false
       description: 'If set, add comment to case. May use HTML, will be sanitized. '
-    - name: origin_email_address
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
       description: If update is made from an email, specify origin email address here
-    - name: has_events
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: origin_email_address
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'f set, update the hasEvents flag for this case, signalling that
         this case may have events associated to it. '
-    - name: internal_comment
-      auto: PREDEFINED
+      isArray: false
+      name: has_events
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: If true, add comment as internal. (default false)
-      defaultValue: "false"
+      isArray: false
+      name: internal_comment
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Request changes to basic fields of an existing case.
+    execution: false
+    name: argus-update-case
     outputs:
     - contextPath: Argus.Case.responseCode
       description: API response metadata, response code of this request
@@ -3923,15 +4153,23 @@ script:
     - contextPath: Argus.Case.data.publishedTime
       description: Case Published Time
       type: String
-    description: Request changes to basic fields of an existing case.
-  - name: argus-get-attachment
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of Argus case
-    - name: attachment_id
+      isArray: false
+      name: case_id
       required: true
+      secret: false
+    - default: false
       description: ID of attachement
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specific attachment metadata
+    execution: false
+    name: argus-get-attachment
     outputs:
     - contextPath: Argus.Attachment.responseCode
       description: API response metadata, response code of this request
@@ -4023,17 +4261,23 @@ script:
     - contextPath: Argus.Attachment.data.addedTime
       description: Attachment Added Time
       type: String
-    description: Fetch specific attachment metadata
-  - name: argus-download-attachment
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of Argus case
-    - name: attachment_id
+      isArray: false
+      name: case_id
       required: true
-      description: 'ID of attachment to download. '
-    - name: file_name
-      description: Filename of attachment, will otherwise be the ID.
+      secret: false
+    - default: false
+      description: ID of attachment to download
+      isArray: false
+      name: attachment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Download specific attachment contents.
+    execution: false
+    name: argus-download-attachment
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -4065,286 +4309,29 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-    description: Download specific attachment contents.
-  - name: argus-get-events-for-case
-    arguments:
-    - name: case_id
-      required: true
+  - arguments:
+    - default: false
       description: ID of Argus case
-    - name: limit
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
       description: Maximum number of returned results (default 25)
-    - name: offset
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: Skip a number of results
-    outputs:
-    - contextPath: Argus.Events.responseCode
-      description: API response metadata, response code of this request
-      type: Number
-    - contextPath: Argus.Events.limit
-      description: API response metadata, limit of results this request ran with
-      type: Number
-    - contextPath: Argus.Events.offset
-      description: API response metadata, the offset into the result-set of this query
-      type: Number
-    - contextPath: Argus.Events.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Events.size
-      description: API response metadata, the number of results returned in this request
-      type: Number
-    - contextPath: Argus.Events.messages.message
-      description: Event Messages Message
-      type: String
-    - contextPath: Argus.Events.messages.messageTemplate
-      description: Event Messages Message Template
-      type: String
-    - contextPath: Argus.Events.messages.type
-      description: Event Messages Type
-      type: String
-    - contextPath: Argus.Events.messages.field
-      description: Event Messages Field
-      type: String
-    - contextPath: Argus.Events.messages.timestamp
-      description: Event Messages Timestamp
-      type: Number
-    - contextPath: Argus.Events.data.customerInfo.id
-      description: Event Customer Info ID
-      type: Number
-    - contextPath: Argus.Events.data.customerInfo.name
-      description: Event Customer Info Name
-      type: String
-    - contextPath: Argus.Events.data.customerInfo.shortName
-      description: Event Customer Info Short Name
-      type: String
-    - contextPath: Argus.Events.data.customerInfo.domain.id
-      description: Event Customer Info Domain ID
-      type: Number
-    - contextPath: Argus.Events.data.customerInfo.domain.name
-      description: Event Customer Info Domain Name
-      type: String
-    - contextPath: Argus.Events.data.properties.additionalProp1
-      description: Event Properties Additional Prop 1
-      type: String
-    - contextPath: Argus.Events.data.properties.additionalProp2
-      description: Event Properties Additional Prop 2
-      type: String
-    - contextPath: Argus.Events.data.properties.additionalProp3
-      description: Event Properties Additional Prop 3
-      type: String
-    - contextPath: Argus.Events.data.comments.timestamp
-      description: Event Comments Timestamp
-      type: Number
-    - contextPath: Argus.Events.data.comments.user.id
-      description: Event Comments User ID
-      type: Number
-    - contextPath: Argus.Events.data.comments.user.customerID
-      description: Event Comments User Customer ID
-      type: Number
-    - contextPath: Argus.Events.data.comments.user.customer.id
-      description: Event Comments User Customer ID
-      type: Number
-    - contextPath: Argus.Events.data.comments.user.customer.name
-      description: Event Comments User Customer Name
-      type: String
-    - contextPath: Argus.Events.data.comments.user.customer.shortName
-      description: Event Comments User Customer Short Name
-      type: String
-    - contextPath: Argus.Events.data.comments.user.customer.domain.id
-      description: Event Comments User Customer Domain ID
-      type: Number
-    - contextPath: Argus.Events.data.comments.user.customer.domain.name
-      description: Event Comments User Customer Domain Name
-      type: String
-    - contextPath: Argus.Events.data.comments.user.domain.id
-      description: Event Comments User Domain ID
-      type: Number
-    - contextPath: Argus.Events.data.comments.user.domain.name
-      description: Event Comments User Domain Name
-      type: String
-    - contextPath: Argus.Events.data.comments.user.userName
-      description: Event Comments User User Name
-      type: String
-    - contextPath: Argus.Events.data.comments.user.name
-      description: Event Comments User Name
-      type: String
-    - contextPath: Argus.Events.data.comments.user.type
-      description: Event Comments User Type
-      type: String
-    - contextPath: Argus.Events.data.comments.comment
-      description: Event Comments Comment
-      type: String
-    - contextPath: Argus.Events.data.associatedCase.id
-      description: Event Associated Case ID
-      type: Number
-    - contextPath: Argus.Events.data.associatedCase.subject
-      description: Event Associated Case Subject
-      type: String
-    - contextPath: Argus.Events.data.associatedCase.categoryID
-      description: Event Associated Case Category ID
-      type: Number
-    - contextPath: Argus.Events.data.associatedCase.categoryName
-      description: Event Associated Case Category Name
-      type: String
-    - contextPath: Argus.Events.data.associatedCase.service
-      description: Event Associated Case Service
-      type: String
-    - contextPath: Argus.Events.data.associatedCase.status
-      description: Event Associated Case Status
-      type: String
-    - contextPath: Argus.Events.data.associatedCase.priority
-      description: Event Associated Case Priority
-      type: String
-    - contextPath: Argus.Events.data.location.shortName
-      description: Event Location Short Name
-      type: String
-    - contextPath: Argus.Events.data.location.name
-      description: Event Location Name
-      type: String
-    - contextPath: Argus.Events.data.location.timeZone
-      description: Event Location Time Zone
-      type: String
-    - contextPath: Argus.Events.data.location.id
-      description: Event Location ID
-      type: Number
-    - contextPath: Argus.Events.data.attackInfo.alarmID
-      description: Event Attack Info Alarm ID
-      type: Number
-    - contextPath: Argus.Events.data.attackInfo.alarmDescription
-      description: Event Attack Info Alarm Description
-      type: String
-    - contextPath: Argus.Events.data.attackInfo.attackCategoryID
-      description: Event Attack Info Attack Category ID
-      type: Number
-    - contextPath: Argus.Events.data.attackInfo.attackCategoryName
-      description: Event Attack Info Attack Category Name
-      type: String
-    - contextPath: Argus.Events.data.attackInfo.signature
-      description: Event Attack Info Signature
-      type: String
-    - contextPath: Argus.Events.data.domain.fqdn
-      description: Event Domain Fqdn
-      type: String
-    - contextPath: Argus.Events.data.uri
-      description: Event Uri
-      type: String
-    - contextPath: Argus.Events.data.count
-      description: API response metadata, total number of results this query has
-      type: Number
-    - contextPath: Argus.Events.data.source.port
-      description: Event Source Port
-      type: Number
-    - contextPath: Argus.Events.data.source.geoLocation.countryCode
-      description: Event Source Geo Location Country Code
-      type: String
-    - contextPath: Argus.Events.data.source.geoLocation.countryName
-      description: Event Source Geo Location Country Name
-      type: String
-    - contextPath: Argus.Events.data.source.geoLocation.locationName
-      description: Event Source Geo Location Location Name
-      type: String
-    - contextPath: Argus.Events.data.source.geoLocation.latitude
-      description: Event Source Geo Location Latitude
-      type: Number
-    - contextPath: Argus.Events.data.source.geoLocation.longitude
-      description: Event Source Geo Location Longitude
-      type: Number
-    - contextPath: Argus.Events.data.source.networkAddress.ipv6
-      description: Event Source Network Address Ipv 6
-      type: Boolean
-    - contextPath: Argus.Events.data.source.networkAddress.public
-      description: Event Source Network Address Public
-      type: Boolean
-    - contextPath: Argus.Events.data.source.networkAddress.maskBits
-      description: Event Source Network Address Mask Bits
-      type: Number
-    - contextPath: Argus.Events.data.source.networkAddress.multicast
-      description: Event Source Network Address Multicast
-      type: Boolean
-    - contextPath: Argus.Events.data.source.networkAddress.host
-      description: Event Source Network Address Host
-      type: Boolean
-    - contextPath: Argus.Events.data.source.networkAddress.address
-      description: Event Source Network Address Address
-      type: String
-    - contextPath: Argus.Events.data.destination.port
-      description: Event Destination Port
-      type: Number
-    - contextPath: Argus.Events.data.destination.geoLocation.countryCode
-      description: Event Destination Geo Location Country Code
-      type: String
-    - contextPath: Argus.Events.data.destination.geoLocation.countryName
-      description: Event Destination Geo Location Country Name
-      type: String
-    - contextPath: Argus.Events.data.destination.geoLocation.locationName
-      description: Event Destination Geo Location Location Name
-      type: String
-    - contextPath: Argus.Events.data.destination.geoLocation.latitude
-      description: Event Destination Geo Location Latitude
-      type: Number
-    - contextPath: Argus.Events.data.destination.geoLocation.longitude
-      description: Event Destination Geo Location Longitude
-      type: Number
-    - contextPath: Argus.Events.data.destination.networkAddress.ipv6
-      description: Event Destination Network Address Ipv 6
-      type: Boolean
-    - contextPath: Argus.Events.data.destination.networkAddress.public
-      description: Event Destination Network Address Public
-      type: Boolean
-    - contextPath: Argus.Events.data.destination.networkAddress.maskBits
-      description: Event Destination Network Address Mask Bits
-      type: Number
-    - contextPath: Argus.Events.data.destination.networkAddress.multicast
-      description: Event Destination Network Address Multicast
-      type: Boolean
-    - contextPath: Argus.Events.data.destination.networkAddress.host
-      description: Event Destination Network Address Host
-      type: Boolean
-    - contextPath: Argus.Events.data.destination.networkAddress.address
-      description: Event Destination Network Address Address
-      type: String
-    - contextPath: Argus.Events.data.protocol
-      description: Event Protocol
-      type: String
-    - contextPath: Argus.Events.data.timestamp
-      description: Event Timestamp
-      type: Number
-    - contextPath: Argus.Events.data.startTimestamp
-      description: Event Start Timestamp
-      type: Number
-    - contextPath: Argus.Events.data.endTimestamp
-      description: Event End Timestamp
-      type: Number
-    - contextPath: Argus.Events.data.lastUpdatedTimestamp
-      description: Event Last Updated Timestamp
-      type: Number
-    - contextPath: Argus.Events.data.flags
-      description: Event Flags
-      type: String
-    - contextPath: Argus.Events.data.detailedEventIDS
-      description: Event Detailed Event IDS
-      type: String
-    - contextPath: Argus.Events.data.severity
-      description: Event Severity
-      type: String
-    - contextPath: Argus.Events.data.id
-      description: Event ID
-      type: String
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Fetch events associated with specified case.
-  - name: argus-list-aggregated-events
-    arguments:
-    - name: customer_id
-      description: Limit to customerID.
-    - name: signature
-      description: Limit to signature.
-    - name: ip
-      description: Limit to ip/network.
-    - name: start_timestamp
-      description: Limit to events after this timestamp (default is last 24 hours).
-    - name: end_timestamp
-      description: Limit to events before this timestamp. Defaults to now.
-    - name: limit
-      description: Limit results (default 25).
-    - name: offset
-      description: Skip a number of results.
+    execution: false
+    name: argus-get-events-for-case
     outputs:
     - contextPath: Argus.Events.responseCode
       description: API response metadata, response code of this request
@@ -4598,102 +4585,557 @@ script:
     - contextPath: Argus.Events.data.id
       description: Event ID
       type: String
-    description: List aggregated events
-  - name: argus-find-aggregated-events
-    arguments:
-    - name: skip_future_events
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+  - arguments:
+    - default: false
+      description: Limit to customerID.
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
+      description: Limit to signature.
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
+      description: Limit to ip/network.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Limit to events after this timestamp (default is last 24 hours).
+      isArray: false
+      name: start_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Limit to events before this timestamp. Defaults to now.
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Limit results (default 25).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: List aggraget events
+    execution: false
+    name: argus-list-aggregated-events
+    outputs:
+    - contextPath: Argus.Events.responseCode
+      description: API response metadata, response code of this request
+      type: Number
+    - contextPath: Argus.Events.limit
+      description: API response metadata, limit of results this request ran with
+      type: Number
+    - contextPath: Argus.Events.offset
+      description: API response metadata, the offset into the result-set of this query
+      type: Number
+    - contextPath: Argus.Events.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Events.size
+      description: API response metadata, the number of results returned in this request
+      type: Number
+    - contextPath: Argus.Events.messages.message
+      description: Event Messages Message
+      type: String
+    - contextPath: Argus.Events.messages.messageTemplate
+      description: Event Messages Message Template
+      type: String
+    - contextPath: Argus.Events.messages.type
+      description: Event Messages Type
+      type: String
+    - contextPath: Argus.Events.messages.field
+      description: Event Messages Field
+      type: String
+    - contextPath: Argus.Events.messages.timestamp
+      description: Event Messages Timestamp
+      type: Number
+    - contextPath: Argus.Events.data.customerInfo.id
+      description: Event Customer Info ID
+      type: Number
+    - contextPath: Argus.Events.data.customerInfo.name
+      description: Event Customer Info Name
+      type: String
+    - contextPath: Argus.Events.data.customerInfo.shortName
+      description: Event Customer Info Short Name
+      type: String
+    - contextPath: Argus.Events.data.customerInfo.domain.id
+      description: Event Customer Info Domain ID
+      type: Number
+    - contextPath: Argus.Events.data.customerInfo.domain.name
+      description: Event Customer Info Domain Name
+      type: String
+    - contextPath: Argus.Events.data.properties.additionalProp1
+      description: Event Properties Additional Prop 1
+      type: String
+    - contextPath: Argus.Events.data.properties.additionalProp2
+      description: Event Properties Additional Prop 2
+      type: String
+    - contextPath: Argus.Events.data.properties.additionalProp3
+      description: Event Properties Additional Prop 3
+      type: String
+    - contextPath: Argus.Events.data.comments.timestamp
+      description: Event Comments Timestamp
+      type: Number
+    - contextPath: Argus.Events.data.comments.user.id
+      description: Event Comments User ID
+      type: Number
+    - contextPath: Argus.Events.data.comments.user.customerID
+      description: Event Comments User Customer ID
+      type: Number
+    - contextPath: Argus.Events.data.comments.user.customer.id
+      description: Event Comments User Customer ID
+      type: Number
+    - contextPath: Argus.Events.data.comments.user.customer.name
+      description: Event Comments User Customer Name
+      type: String
+    - contextPath: Argus.Events.data.comments.user.customer.shortName
+      description: Event Comments User Customer Short Name
+      type: String
+    - contextPath: Argus.Events.data.comments.user.customer.domain.id
+      description: Event Comments User Customer Domain ID
+      type: Number
+    - contextPath: Argus.Events.data.comments.user.customer.domain.name
+      description: Event Comments User Customer Domain Name
+      type: String
+    - contextPath: Argus.Events.data.comments.user.domain.id
+      description: Event Comments User Domain ID
+      type: Number
+    - contextPath: Argus.Events.data.comments.user.domain.name
+      description: Event Comments User Domain Name
+      type: String
+    - contextPath: Argus.Events.data.comments.user.userName
+      description: Event Comments User User Name
+      type: String
+    - contextPath: Argus.Events.data.comments.user.name
+      description: Event Comments User Name
+      type: String
+    - contextPath: Argus.Events.data.comments.user.type
+      description: Event Comments User Type
+      type: String
+    - contextPath: Argus.Events.data.comments.comment
+      description: Event Comments Comment
+      type: String
+    - contextPath: Argus.Events.data.associatedCase.id
+      description: Event Associated Case ID
+      type: Number
+    - contextPath: Argus.Events.data.associatedCase.subject
+      description: Event Associated Case Subject
+      type: String
+    - contextPath: Argus.Events.data.associatedCase.categoryID
+      description: Event Associated Case Category ID
+      type: Number
+    - contextPath: Argus.Events.data.associatedCase.categoryName
+      description: Event Associated Case Category Name
+      type: String
+    - contextPath: Argus.Events.data.associatedCase.service
+      description: Event Associated Case Service
+      type: String
+    - contextPath: Argus.Events.data.associatedCase.status
+      description: Event Associated Case Status
+      type: String
+    - contextPath: Argus.Events.data.associatedCase.priority
+      description: Event Associated Case Priority
+      type: String
+    - contextPath: Argus.Events.data.location.shortName
+      description: Event Location Short Name
+      type: String
+    - contextPath: Argus.Events.data.location.name
+      description: Event Location Name
+      type: String
+    - contextPath: Argus.Events.data.location.timeZone
+      description: Event Location Time Zone
+      type: String
+    - contextPath: Argus.Events.data.location.id
+      description: Event Location ID
+      type: Number
+    - contextPath: Argus.Events.data.attackInfo.alarmID
+      description: Event Attack Info Alarm ID
+      type: Number
+    - contextPath: Argus.Events.data.attackInfo.alarmDescription
+      description: Event Attack Info Alarm Description
+      type: String
+    - contextPath: Argus.Events.data.attackInfo.attackCategoryID
+      description: Event Attack Info Attack Category ID
+      type: Number
+    - contextPath: Argus.Events.data.attackInfo.attackCategoryName
+      description: Event Attack Info Attack Category Name
+      type: String
+    - contextPath: Argus.Events.data.attackInfo.signature
+      description: Event Attack Info Signature
+      type: String
+    - contextPath: Argus.Events.data.domain.fqdn
+      description: Event Domain Fqdn
+      type: String
+    - contextPath: Argus.Events.data.uri
+      description: Event Uri
+      type: String
+    - contextPath: Argus.Events.data.count
+      description: API response metadata, total number of results this query has
+      type: Number
+    - contextPath: Argus.Events.data.source.port
+      description: Event Source Port
+      type: Number
+    - contextPath: Argus.Events.data.source.geoLocation.countryCode
+      description: Event Source Geo Location Country Code
+      type: String
+    - contextPath: Argus.Events.data.source.geoLocation.countryName
+      description: Event Source Geo Location Country Name
+      type: String
+    - contextPath: Argus.Events.data.source.geoLocation.locationName
+      description: Event Source Geo Location Location Name
+      type: String
+    - contextPath: Argus.Events.data.source.geoLocation.latitude
+      description: Event Source Geo Location Latitude
+      type: Number
+    - contextPath: Argus.Events.data.source.geoLocation.longitude
+      description: Event Source Geo Location Longitude
+      type: Number
+    - contextPath: Argus.Events.data.source.networkAddress.ipv6
+      description: Event Source Network Address Ipv 6
+      type: Boolean
+    - contextPath: Argus.Events.data.source.networkAddress.public
+      description: Event Source Network Address Public
+      type: Boolean
+    - contextPath: Argus.Events.data.source.networkAddress.maskBits
+      description: Event Source Network Address Mask Bits
+      type: Number
+    - contextPath: Argus.Events.data.source.networkAddress.multicast
+      description: Event Source Network Address Multicast
+      type: Boolean
+    - contextPath: Argus.Events.data.source.networkAddress.host
+      description: Event Source Network Address Host
+      type: Boolean
+    - contextPath: Argus.Events.data.source.networkAddress.address
+      description: Event Source Network Address Address
+      type: String
+    - contextPath: Argus.Events.data.destination.port
+      description: Event Destination Port
+      type: Number
+    - contextPath: Argus.Events.data.destination.geoLocation.countryCode
+      description: Event Destination Geo Location Country Code
+      type: String
+    - contextPath: Argus.Events.data.destination.geoLocation.countryName
+      description: Event Destination Geo Location Country Name
+      type: String
+    - contextPath: Argus.Events.data.destination.geoLocation.locationName
+      description: Event Destination Geo Location Location Name
+      type: String
+    - contextPath: Argus.Events.data.destination.geoLocation.latitude
+      description: Event Destination Geo Location Latitude
+      type: Number
+    - contextPath: Argus.Events.data.destination.geoLocation.longitude
+      description: Event Destination Geo Location Longitude
+      type: Number
+    - contextPath: Argus.Events.data.destination.networkAddress.ipv6
+      description: Event Destination Network Address Ipv 6
+      type: Boolean
+    - contextPath: Argus.Events.data.destination.networkAddress.public
+      description: Event Destination Network Address Public
+      type: Boolean
+    - contextPath: Argus.Events.data.destination.networkAddress.maskBits
+      description: Event Destination Network Address Mask Bits
+      type: Number
+    - contextPath: Argus.Events.data.destination.networkAddress.multicast
+      description: Event Destination Network Address Multicast
+      type: Boolean
+    - contextPath: Argus.Events.data.destination.networkAddress.host
+      description: Event Destination Network Address Host
+      type: Boolean
+    - contextPath: Argus.Events.data.destination.networkAddress.address
+      description: Event Destination Network Address Address
+      type: String
+    - contextPath: Argus.Events.data.protocol
+      description: Event Protocol
+      type: String
+    - contextPath: Argus.Events.data.timestamp
+      description: Event Timestamp
+      type: Number
+    - contextPath: Argus.Events.data.startTimestamp
+      description: Event Start Timestamp
+      type: Number
+    - contextPath: Argus.Events.data.endTimestamp
+      description: Event End Timestamp
+      type: Number
+    - contextPath: Argus.Events.data.lastUpdatedTimestamp
+      description: Event Last Updated Timestamp
+      type: Number
+    - contextPath: Argus.Events.data.flags
+      description: Event Flags
+      type: String
+    - contextPath: Argus.Events.data.detailedEventIDS
+      description: Event Detailed Event IDS
+      type: String
+    - contextPath: Argus.Events.data.severity
+      description: Event Severity
+      type: String
+    - contextPath: Argus.Events.data.id
+      description: Event ID
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: Skip future events
-    - name: exclude
-      auto: PREDEFINED
+      isArray: false
+      name: skip_future_events
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Exclude parameter
-    - name: event_identifier
+      isArray: false
+      name: exclude
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: location_id
+      isArray: false
+      name: event_identifier
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: severity
+      isArray: false
+      name: location_id
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: customer
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: alarm_id
+      isArray: false
+      name: customer
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: attack_category_id
+      isArray: false
+      name: alarm_id
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: source_geo_country
+      isArray: false
+      name: attack_category_id
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: destination_geo_country
+      isArray: false
+      name: source_geo_country
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: geo_country
+      isArray: false
+      name: destination_geo_country
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: properties
+      isArray: false
+      name: geo_country
+      required: false
+      secret: false
+    - default: false
       description: '(as dict: key,value)'
-    - name: exact_match_properties
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Exact matching flag
-    - name: sub_criteria
-      description: (as list)
-    - name: signature
-      description: (as list)
-    - name: last_updated_timestamp
-      description: Last updated timestamp
-    - name: index_start_time
-      description: Index start time
-    - name: index_end_time
-      description: Index end time
-    - name: destination_ip
-      description: (as list)
-    - name: source_ip
-      description: (as list)
-    - name: ip
-      description: (as list)
-    - name: destination_port
-      description: (as list)
-    - name: source_port
-      description: (as list)
-    - name: port
-      description: (as lst)
-    - name: min_severity
-      description: Minimum severity
-    - name: max_severity
-      description: Maximum severity
-    - name: limit
-      description: Limit results (default 25)
-    - name: offset
-      description: Skip number of results
-    - name: include_deleted
-      auto: PREDEFINED
+      isArray: false
+      name: exact_match_properties
       predefined:
-      - "true"
-      - "false"
-      description: Include deleted events
-    - name: min_count
-      description: Minimum count
-    - name: associated_case_id
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: (as list)
-    - name: source_ip_min_bits
+      isArray: false
+      name: sub_criteria
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
+      description: Last updated timestamp
+      isArray: false
+      name: last_updated_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Index start time
+      isArray: false
+      name: index_start_time
+      required: false
+      secret: false
+    - default: false
+      description: Index end time
+      isArray: false
+      name: index_end_time
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: destination_port
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: (as lst)
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: Minimum severity
+      isArray: false
+      name: min_severity
+      required: false
+      secret: false
+    - default: false
+      description: Maximum severity
+      isArray: false
+      name: max_severity
+      required: false
+      secret: false
+    - default: false
+      description: Limit results (default 25)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Include deleted events
+      isArray: false
+      name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Minimum count
+      isArray: false
+      name: min_count
+      required: false
+      secret: false
+    - default: false
+      description: (as list)
+      isArray: false
+      name: associated_case_id
+      required: false
+      secret: false
+    - default: false
       description: Source IP minimum bits
-    - name: destination_ip_min_bits
+      isArray: false
+      name: source_ip_min_bits
+      required: false
+      secret: false
+    - default: false
       description: Destination IP minimum bits
-    - name: start_timestamp
+      isArray: false
+      name: destination_ip_min_bits
+      required: false
+      secret: false
+    - default: false
       description: Start timestamp
-    - name: end_timestamp
+      isArray: false
+      name: start_timestamp
+      required: false
+      secret: false
+    - default: false
       description: End timestamp
-    - name: sort_by
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
       description: Order results by these properties (prefix with - to sort descending)
         (as list)
-    - name: include_flags
+      isArray: false
+      name: sort_by
+      required: false
+      secret: false
+    - default: false
       description: Search objects with these flags set  (as list)
-    - name: exclude_flags
+      isArray: false
+      name: include_flags
+      required: false
+      secret: false
+    - default: false
       description: Exclude objects with these flags set (as list)
+      isArray: false
+      name: exclude_flags
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Search for aggregated events (OSB! advanced method: look in API
+      doc)'
+    execution: false
+    name: argus-find-aggregated-events
     outputs:
     - contextPath: Argus.Events.responseCode
       description: API response metadata, response code of this request
@@ -4947,27 +5389,40 @@ script:
     - contextPath: Argus.Events.data.id
       description: Event ID
       type: String
-    description: 'Search for aggregated events (OSB! advanced method: look in API
-      doc)'
-  - name: argus-get-payload
-    arguments:
-    - name: type
-      required: true
-      auto: PREDEFINED
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Event type.
+      isArray: false
+      name: type
       predefined:
       - NIDS
       - AGGR
       - AGGRATTACK
-      description: Event type.
-    - name: timestamp
       required: true
+      secret: false
+    - default: false
       description: Timestamp of event
-    - name: customer_id
+      isArray: false
+      name: timestamp
       required: true
+      secret: false
+    - default: false
       description: ID of customer
-    - name: event_id
+      isArray: false
+      name: customer_id
       required: true
+      secret: false
+    - default: false
       description: ID of related event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specified event payload
+    execution: false
+    name: argus-get-payload
     outputs:
     - contextPath: Argus.Payload.responseCode
       description: API response metadata, response code of this request
@@ -5008,46 +5463,74 @@ script:
     - contextPath: Argus.Payload.data.payload
       description: Payload Payload
       type: String
-    description: Fetch specified event payload
-  - name: argus-get-pcap
-    arguments:
-    - name: type
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - NIDS
-      - AGGR
-      - AGGRATTACK
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: Event type.
-    - name: timestamp
-      required: true
-      description: Timestamp of event
-    - name: customer_id
-      required: true
-      description: ID of customer
-    - name: event_id
-      required: true
-      description: ID of related event
-    description: Fetch specified event payload as PCAP.
-  - name: argus-get-event
-    arguments:
-    - name: type
-      required: true
-      auto: PREDEFINED
+      isArray: false
+      name: type
       predefined:
       - NIDS
       - AGGR
       - AGGRATTACK
-      description: Type of event
-    - name: timestamp
       required: true
+      secret: false
+    - default: false
       description: Timestamp of event
-    - name: customer_id
+      isArray: false
+      name: timestamp
       required: true
+      secret: false
+    - default: false
+      description: ID of customer
+      isArray: false
+      name: customer_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of related event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specified event payload as PCAP.
+    execution: false
+    name: argus-get-pcap
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of event
+      isArray: false
+      name: type
+      predefined:
+      - NIDS
+      - AGGR
+      - AGGRATTACK
+      required: true
+      secret: false
+    - default: false
+      description: Timestamp of event
+      isArray: false
+      name: timestamp
+      required: true
+      secret: false
+    - default: false
       description: Customer ID related to event
-    - name: event_id
+      isArray: false
+      name: customer_id
       required: true
+      secret: false
+    - default: false
       description: ID of event
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch specified event.
+    execution: false
+    name: argus-get-event
     outputs:
     - contextPath: Argus.Event.responseCode
       description: API response metadata, response code of this request
@@ -5118,23 +5601,53 @@ script:
     - contextPath: Argus.Event.data.encodedFlags
       description: Event Encoded Flags
       type: String
-    description: Fetch specified event.
-  - name: argus-list-nids-events
-    arguments:
-    - name: customer_id
+  - arguments:
+    - default: false
       description: Limit to customerID
-    - name: signature
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - default: false
       description: Limit to signature
-    - name: ip
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
       description: Limit to ip/network
-    - name: start_timestamp
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
       description: Limit to events after this timestamp (default is last 24 hours).
-    - name: end_timestamp
+      isArray: false
+      name: start_timestamp
+      required: false
+      secret: false
+    - default: false
       description: 'Limit to events before this timestamp (default: now).'
-    - name: limit
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
       description: 'Limit results (default: 25).'
-    - name: offset
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: Skip a number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Simple search for NIDS events.
+    execution: false
+    name: argus-list-nids-events
     outputs:
     - contextPath: Argus.NIDS.responseCode
       description: API response metadata, response code of this request
@@ -5385,96 +5898,238 @@ script:
     - contextPath: Argus.NIDS.data.id
       description: NIDS ID
       type: String
-    description: Simple search for NIDS events.
-  - name: argus-find-nids-events
-    arguments:
-    - name: skip_future_events
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+  - arguments:
+    - auto: PREDEFINED
+      default: false
       description: Skip future evnts
-    - name: exclude
-      auto: PREDEFINED
+      isArray: false
+      name: skip_future_events
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Exclude
-    - name: event_identifier
+      isArray: false
+      name: exclude
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: location_id
+      isArray: false
+      name: event_identifier
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: severity
+      isArray: false
+      name: location_id
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: customer
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: alarm_id
+      isArray: false
+      name: customer
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: attack_category_id
+      isArray: false
+      name: alarm_id
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: source_geo_country
+      isArray: false
+      name: attack_category_id
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: destination_geo_country
+      isArray: false
+      name: source_geo_country
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: geo_country
+      isArray: false
+      name: destination_geo_country
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: properties
+      isArray: false
+      name: geo_country
+      required: false
+      secret: false
+    - default: false
       description: As [key,value,key,value, ...] l
-    - name: exact_match_properties
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Use exact matching
-    - name: sensor_id
-      description: (as comma-separated list)
-    - name: sub_criteria
-      description: (as comma-separated list)
-    - name: signature
-      description: (as comma-separated list)
-    - name: last_updated_timestamp
-      description: Last updated timestamp
-    - name: index_start_time
-      description: Index start time
-    - name: index_end_time
-      description: Index end time
-    - name: destination_ip
-      description: (as comma-separated list)
-    - name: source_ip
-      description: (as comma-separated list)
-    - name: ip
-      description: (as comma-separated list)
-    - name: destination_port
-      description: (as comma-separated list)
-    - name: source_port
-      description: (as comma-separated list)
-    - name: port
-      description: source_port
-    - name: min_severity
-      description: Minimum severity
-    - name: max_severity
-      description: Maximum severity
-    - name: limit
-      description: Limit number of results (default 25).
-    - name: offset
-      description: Skip a number of results
-    - name: include_deleted
-      auto: PREDEFINED
+      isArray: false
+      name: exact_match_properties
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: sensor_id
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: sub_criteria
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: signature
+      required: false
+      secret: false
+    - default: false
+      description: Last updated timestamp
+      isArray: false
+      name: last_updated_timestamp
+      required: false
+      secret: false
+    - default: false
+      description: Index start time
+      isArray: false
+      name: index_start_time
+      required: false
+      secret: false
+    - default: false
+      description: Index end time
+      isArray: false
+      name: index_end_time
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: source_ip
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: destination_port
+      required: false
+      secret: false
+    - default: false
+      description: (as comma-separated list)
+      isArray: false
+      name: source_port
+      required: false
+      secret: false
+    - default: false
+      description: source_port
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: Minimum severity
+      isArray: false
+      name: min_severity
+      required: false
+      secret: false
+    - default: false
+      description: Maximum severity
+      isArray: false
+      name: max_severity
+      required: false
+      secret: false
+    - default: false
+      description: Limit number of results (default 25).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Skip a number of results
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Inclide deleted events
-    - name: start_timestamp
+      isArray: false
+      name: include_deleted
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: 'Search objects from this timestamp (default: -24hours).'
-    - name: end_timestamp
+      isArray: false
+      name: start_timestamp
+      required: false
+      secret: false
+    - default: false
       description: 'Search objects until this timestamp  (default: now)'
-    - name: sort_by
+      isArray: false
+      name: end_timestamp
+      required: false
+      secret: false
+    - default: false
       description: Order results by these properties (prefix with - to sort descending)
         (as comma-separated list)
-    - name: include_flags
+      isArray: false
+      name: sort_by
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
-    - name: exclude_flags
+      isArray: false
+      name: include_flags
+      required: false
+      secret: false
+    - default: false
       description: (as comma-separated list)
+      isArray: false
+      name: exclude_flags
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for NIDS events.
+    execution: false
+    name: argus-find-nids-events
     outputs:
     - contextPath: Argus.NIDS.responseCode
       description: API response metadata, response code of this request
@@ -5725,44 +6380,81 @@ script:
     - contextPath: Argus.NIDS.data.id
       description: NIDS ID
       type: String
-    description: Search for NIDS events.
-  - name: argus-pdns-search-records
-    arguments:
-    - name: query
-      required: true
+  - arguments:
+    - default: false
       description: Lookup query
-    - name: aggregate_result
-      auto: PREDEFINED
-      predefined:
-      - "true"
-      - "false"
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: Whether aggregate results (default true) .
-    - name: include_anonymous_results
-      auto: PREDEFINED
+      isArray: false
+      name: aggregate_result
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'Whether include anonymous results (default true) '
-    - name: rr_class
+      isArray: false
+      name: include_anonymous_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
       description: Lookup with specified record classes (as comma-separated list).
-    - name: rr_type
+      isArray: false
+      name: rr_class
+      required: false
+      secret: false
+    - default: false
       description: Lookup with specified record types (as comma-separated list)
-    - name: customer_id
+      isArray: false
+      name: rr_type
+      required: false
+      secret: false
+    - default: false
       description: Lookup for specified customer IDs  (as comma-separated list)
-    - name: tlp
-      auto: PREDEFINED
+      isArray: false
+      name: customer_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Lookup with specified TLPs, public usage only TLP white allowed
+        (as comma-separated list)
+      isArray: false
+      name: tlp
       predefined:
       - white
       - green
       - amber
       - red
-      description: Lookup with specified TLPs, public usage only TLP white allowed
-        (as comma-separated list)
-    - name: limit
+      required: false
+      secret: false
+    - default: false
       description: Max number of results to be returned, default unset means default
         limit 25 will be used, 0 means unlimited.
-    - name: offset
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
       description: Number of results to be skipped first (default 0).
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Search against PassiveDNS with criteria and return matching records.
+    execution: false
+    name: argus-pdns-search-records
     outputs:
     - contextPath: Argus.PDNS.responseCode
       description: API response metadata, response code of this request
@@ -5845,12 +6537,17 @@ script:
     - contextPath: Argus.PDNS.data.rrtype
       description: PDNS Rrtype
       type: String
-    description: Search against PassiveDNS with criteria and return matching records.
-  - name: argus-fetch-observations-for-domain
-    arguments:
-    - name: fqdn
-      required: true
+  - arguments:
+    - default: false
       description: Domain to fetch observations for
+      isArray: false
+      name: fqdn
+      required: true
+      secret: false
+    deprecated: false
+    description: Look up reputation observations for the given domain
+    execution: false
+    name: argus-fetch-observations-for-domain
     outputs:
     - contextPath: Argus.ObservationsDomain.responseCode
       description: API response metadata, response code of this request
@@ -5894,12 +6591,17 @@ script:
     - contextPath: Argus.ObservationsDomain.data.value
       description: Observations Domain Value
       type: Number
-    description: Look up reputation observations for the given domain
-  - name: argus-fetch-observations-for-ip
-    arguments:
-    - name: ip
-      required: true
+  - arguments:
+    - default: false
       description: IP address to fetch observations for
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Look up reputation observations for the given IP
+    execution: false
+    name: argus-fetch-observations-for-ip
     outputs:
     - contextPath: Argus.ObservationsIP.responseCode
       description: API response metadata, response code of this request
@@ -5988,91 +6690,15 @@ script:
     - contextPath: Argus.ObservationsIP.data.address.address
       description: Observations IP Address Address
       type: String
-    description: Look up reputation observations for the given IP
-  - name: get-remote-data
-    arguments:
-    - name: id
-      description: Argus Case ID
-    - name: lastUpdate
-      description: Time or timestamp case was last updated.
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes.
-  - name: update-remote-system
-    arguments: []
-    description: Updates the remote system with incident changes.
-  - name: argus-download-attachment-by-filename
-    arguments:
-    - name: case_id
-      required: true
-      description: Case ID
-    - name: file_name
-      required: true
-      description: Filename
-    outputs:
-    - contextPath: File.Size
-      description: The size of the file.
-      type: Number
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: The name of the file.
-      type: String
-    - contextPath: File.SSDeep
-      description: The SSDeep hash of the file.
-      type: String
-    - contextPath: File.EntryID
-      description: The entry ID of the file.
-      type: String
-    - contextPath: File.Info
-      description: File information.
-      type: String
-    - contextPath: File.Type
-      description: The file type.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.Extension
-      description: The file extension.
-      type: String
-    description: Downloads case attachment by best-effort search of filename.
-  - name: argus-print-case-comments
-    arguments:
-    - name: case_id
-      required: true
-      description: Case ID
-    - name: sort_by
-      auto: PREDEFINED
-      predefined:
-      - ascending
-      - descending
-      description: Sort ordering. Default is ascending
-    description: Print case comments as notes
-  - name: argus-print-case-metadata-by-id
-    arguments:
-    - name: case_id
-      required: true
-      description: Case ID
-    - name: skip_redirect
-      description: If true, skip automatic redirect (for merged cases)
-    description: Print case metadata as HTML. Does not add to context.
-  - name: argus-download-case-attachments
-    arguments:
-    - name: case_id
-      required: true
-      description: Case ID
-    description: Download all attachments related to Argus Case.
-  dockerimage: demisto/argus-toolbelt:2.0.0.17621
+  dockerimage: demisto/argus-toolbelt:1.0.0.15350
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
-  ismappable: false
-  isremotesyncin: true
-  isremotesyncout: true
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0

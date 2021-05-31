@@ -15,9 +15,3 @@ ignore=PB111
 
 [file:playbook-QRadar_Indicator_Hunting_V2.yml]
 ignore=PB111
-
-[file:QRadar_v2.yml]
-ignore=BA108,BA109
-
-[file:QRadar_v3.yml]
-ignore=BA108,BA109

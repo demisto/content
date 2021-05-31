@@ -1,5 +1,4 @@
 Fetch offenses as incidents and search QRadar.
-Supports API versions until 10.0.
 This integration was integrated and tested with version 7.3.2 of QRadar.
 
 

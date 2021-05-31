@@ -243,4 +243,3 @@ inputs:
 outputs: []
 tests:
 - No tests - Need to add
-deprecated: true

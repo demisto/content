@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 import urllib3
 from CommonServerPython import *
@@ -113,7 +113,7 @@ def start_search_job(client: Client, args: dict) -> CommandResults:
     )
 
 
-def get_search_job_result(client: Client, args: Dict) -> List[CommandResults]:
+def get_search_job_result(client: Client, args: Dict) -> CommandResults:
     """Get the search job result.
 
     Args:
@@ -123,44 +123,39 @@ def get_search_job_result(client: Client, args: Dict) -> List[CommandResults]:
     Returns:
         CommandResults.
     """
-    job_ids = argToList((args.get('job_id')))
+    job_id = str(args.get('job_id'))
     limit = int(args.get('limit', '20'))
     verbose = args.get('verbose', 'true') == 'true'
+    response = client.get_search_job_result_request(job_id)
+    if 'error' in response:
+        raise Exception(f"{str(response.get('error'))}. Job ID might have expired.")
 
-    command_results: list = []
-    for job_id in job_ids:
-        response = client.get_search_job_result_request(job_id)
-        if 'error' in response:
-            raise Exception(f"{str(response.get('error'))}. Job ID might have expired.")
-
-        outputs = response
-        outputs.update({'job_id': job_id})
-        if not response.get('complete'):
-            human_readable = f'job ID: {job_id} is still in progress.'
-            outputs.update({'status': 'in progress'})
+    outputs = response
+    outputs.update({'job_id': job_id})
+    if not response.get('complete'):
+        human_readable = f'job ID: {job_id} is still in progress.'
+        outputs.update({'status': 'in progress'})
+    else:
+        if response.get('totalMatches'):
+            headers = ['status', 'job_id', 'category', 'totalFiles', 'scannedEvents']
+            human_readable = tableToMarkdown(name="Forensic search metadata:", t=response, headers=headers,
+                                             removeNull=True)
+            if verbose:
+                human_readable += tableToMarkdown(name="Forensic search results:",
+                                                  t=response.get('streamResults', [])[:limit], removeNull=True)
+            if 'streamResults' in outputs:
+                outputs['streamResults'] = outputs.get('streamResults', [])[:limit]  # limit the outputs to the context
         else:
-            if response.get('totalMatches'):
-                headers = ['status', 'job_id', 'category', 'totalFiles', 'scannedEvents']
-                human_readable = tableToMarkdown(name="Forensic search metadata:", t=response, headers=headers,
-                                                 removeNull=True)
-                if verbose:
-                    human_readable += tableToMarkdown(name="Forensic search results:",
-                                                      t=response.get('streamResults', [])[:limit], removeNull=True)
-                if 'streamResults' in outputs:
-                    outputs['streamResults'] = outputs.get('streamResults', [])[:limit]  # limit the outputs to the context
-            else:
-                human_readable = f'No matches found for the given job ID: {job_id}.'
-                response.update({'status': 'completed'})
+            human_readable = f'No matches found for the given job ID: {job_id}.'
+            response.update({'status': 'completed'})
 
-        command_result = CommandResults(
-            outputs_prefix='AnomaliEnterprise.ForensicSearch',
-            outputs_key_field='job_id',
-            outputs=response,
-            readable_output=human_readable,
-            raw_response=response
-        )
-        command_results.append(command_result)
-    return command_results
+    return CommandResults(
+        outputs_prefix='AnomaliEnterprise.ForensicSearch',
+        outputs_key_field='job_id',
+        outputs=response,
+        readable_output=human_readable,
+        raw_response=response
+    )
 
 
 def dga_domain_status(client: Client, args: dict) -> CommandResults:

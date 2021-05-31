@@ -32,11 +32,11 @@ comment: |-
 enabled: true
 args:
 - name: first
-  description: First argument to compare.
+  description: first argument to compare
   required: true
   default: true
 - name: second
-  description: Second argument to compare.
+  description: second argument to compare
   required: true
 outputs:
 - contextPath: "yes"

@@ -1,11 +1,11 @@
 {
     "name": "Tidy",
     "description": "Tidy integration handle endpoints environment installation.",
-    "support": "xsoar",
-    "currentVersion": "1.0.3",
-    "author": "Cortex XSOAR",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Hod Alpert & Gal Rabin & Eli Sharf & Bar Levy",
     "url": "",
-    "email": "https://www.paloaltonetworks.com/cortex",
+    "email": "grabin@paloaltonetworks.com",
     "created": "2020-09-29T18:29:50Z",
     "categories": [],
     "tags": [

@@ -1,14 +1,11 @@
 {
-  "name": "ReversingLabs TitaniumCloud",
+  "name": "ReversingLabs Titanium Cloud",
   "description": "ReversingLabs Data provides malware status of the sample",
-  "support": "partner",
-  "currentVersion": "1.2.0",
-  "author": "ReversingLabs",
-  "url": "https://www.reversinglabs.com/products/malware-analysis-platform",
-  "email": "support@reversinglabs.com",
-  "githubUser": [
-        "MislavReversingLabs"
-    ],
+  "support": "xsoar",
+  "currentVersion": "1.0.1",
+  "author": "Cortex XSOAR",
+  "url": "https://www.paloaltonetworks.com/cortex",
+  "email": "",
   "created": "2020-04-14T00:00:00Z",
   "categories": [
     "Data Enrichment & Threat Intelligence"

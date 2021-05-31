@@ -408,7 +408,6 @@ exampleDemistoUrls = {
     "warRoom": "https://test-address:8443/#/WarRoom/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
-exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
 
@@ -815,19 +814,6 @@ def demistoUrls():
     return exampleDemistoUrls
 
 
-def getAutoFocusApiKey():
-    """Retrieves the AutoFocus API Key related to this Cortex XSOAR License.
-    You can use this API Key in all AutoFocus integrations and Feeds.
-    This command is not available on tenants.
-
-
-    Returns:
-      str: String containing the API Key
-
-    """
-    return exampleAutoFocusApiKey
-
-
 def dt(obj=None, trnsfrm=None):
     """Extracts field from object using DT language syntax
 
@@ -1002,8 +988,7 @@ def createIndicators(indicators_batch):
     return ""
 
 
-def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
-                     populateFields=None):
+def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None):
     """Searches for indicators according to given query
 
     Args:
@@ -1014,7 +999,6 @@ def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='
       todate (str): The end date to search until to (Default value = '')
       value (str): The indicator value to search (Default value = '')
       searchAfter (str): Use the last searchIndicators() outputs for search batch (Default value = None)
-      populateFields (str): Comma separated fields to filter (e.g. "value,type")
 
     Returns:
       dict: Object contains the search results

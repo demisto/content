@@ -22,8 +22,6 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
-  - us-gov-east-1
-  - us-gov-west-1
   required: false
   type: 15
 - display: Role Arn
@@ -692,7 +690,7 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
-  dockerimage: demisto/boto3py3:1.0.0.19032
+  dockerimage: demisto/boto3py3:1.0.0.14975
   isfetch: false
   runonce: false
   subtype: python3

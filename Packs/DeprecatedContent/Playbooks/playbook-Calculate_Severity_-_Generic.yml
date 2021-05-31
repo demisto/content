@@ -755,4 +755,3 @@ inputs:
 outputs: []
 tests:
 - no test
-deprecated: true

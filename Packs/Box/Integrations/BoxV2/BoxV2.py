@@ -246,7 +246,7 @@ class Client(BaseClient):
         """
         params = {
             'grant_type': 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-            'assertion': self._create_jwt_assertion(),
+            'assertion': self._create_jwt_assertion().decode("utf-8"),
             'client_id': self.client_id,
             'client_secret': self.client_secret
         }

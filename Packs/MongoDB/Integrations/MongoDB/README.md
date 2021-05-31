@@ -30,7 +30,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 6. mongodb-list-collections
 7. mongodb-create-collection
 8. mongodb-drop-collection
-9. mongodb-pipeline-query
 ### 1. mongodb-get-entry-by-id
 ---
 Get an entry from database by ID
@@ -65,7 +64,7 @@ Get an entry from database by ID
         {
             "test": true, 
             "_id": "5e444002d661d4fc62442f39"
-        } 
+        }, 
     ]
 }
 ```
@@ -77,7 +76,7 @@ Get an entry from database by ID
 
 ### 2. mongodb-query
 ---
-Searches for items by using the specified JSON query. Search by regex is supported.
+Searches items by query
 ##### Required Permissions
 `find` permission.
 ##### Base Command
@@ -88,7 +87,7 @@ Searches for items by using the specified JSON query. Search by regex is support
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | collection | Name of the collection do query from. | Required | 
-| query | A JSON query to search for in the collection, in the format of: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Supports search by regex using the following query=`"{ "field": { "$regex": "search_option" } }"`. For example: query=`"{ "year": { "$regex": "2.*" } }"` - will query all entries such that their "year" field contains the number 2, query=`"{ "color": { "$regex": "Re.*", "$options": "i" } }"`: case insensitive search - will query all entries at the collection, where their "color" field contains the string "Re".| Required |
+| query | A JSON query to search in collection. | Required | 
 | sort | Sorting order for the query results. Use the format "field1:asc,field2:desc". | Optional|
 
 
@@ -326,76 +325,6 @@ There is no context output for this command.
 
 ##### Human Readable Output
 ### MongoDB: Collection 'collectionToDelete` has been dropped.
-
-### mongodb-pipeline-query
-***
-Searches for items by the specified JSON pipleline query.
-
-
-#### Base Command
-
-`mongodb-pipeline-query`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| collection | Name of the collection to query. | Required | 
-| pipeline | A JSON pipeline query to search by in the collection. Pipeline query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]. | Required | 
-| limit | Limits the number of results returned from MongoDB. Default is 50. | Optional | 
-| offset | Offset to the first result returned from MongoDB. Default is 0. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MongoDB.Entry._id | String | The ID of entry from the query. | 
-| MongoDB.Entry.collection | String | The collection of which the entry belongs to. | 
-
-
-#### Command Example
-```!mongodb-pipeline-query collection=test_collection pipeline="[{\"$match\": {\"title\": \"test_title\"}}]"```
-
-#### Context Example
-```json
-{
-    "MongoDB": {
-        "Entry": [
-            {
-                "_id": "602e624e8be6cb93eb795695",
-                "collection": "test_collection",
-                "color": "red",
-                "title": "test_title",
-                "year": "2019"
-            },
-            {
-                "_id": "602e62598be6cb93eb795697",
-                "collection": "test_collection",
-                "color": "green",
-                "title": "test_title",
-                "year": "2020"
-            },
-            {
-                "_id": "602e62698be6cb93eb795699",
-                "collection": "test_collection",
-                "color": "yellow",
-                "title": "test_title",
-                "year": "2018"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Total of 3 entries were found in MongoDB collection `test_collection` with pipeline: [{"$match": {"title": "test_title"}}]:
->|_id|
->|---|
->| 602e624e8be6cb93eb795695 |
->| 602e62598be6cb93eb795697 |
->| 602e62698be6cb93eb795699 |
-
 
 ## Additional Information
 ---

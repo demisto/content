@@ -26,17 +26,14 @@ def get_dbot_score_data(indicator, indicator_type, source, score):
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
     indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
-    sources = entry.get('moduleToFeedMap', {})
-    if entry.get('manualScore'):
-        sources[entry.get('setBy')] = {}
-    elif not sources:
-        sources[None] = {}
-    for source, data in sources.items():
+    sources = entry.get('sourceBrands', [])
+    sources = sources if sources else [None]
+    for source in sources:
         if not source:
             source = DEFAULT_SOURCE
-        dbot_score = get_dbot_score_data(indicator, indicator_type, source, data.get('score', entry["score"]))
+        dbot_score = get_dbot_score_data(indicator, indicator_type, source, entry["score"])
         command_results = CommandResults(
-            readable_output=tableToMarkdown('Indicator DBot Score: {}'.format(indicator), dbot_score),
+            readable_output=tableToMarkdown('Indicator DBot Score', dbot_score),
             outputs={CONTEXT_PATH: dbot_score}
         ).to_context()
         context_entry_results = command_results.pop('EntryContext')[CONTEXT_PATH]
@@ -45,29 +42,25 @@ def iterate_indicator_entry(indicator, entry):
 
 def main():
     try:
-        # To prevent the split from succeeding.
-        indicators = argToList(demisto.args()['indicator'], separator='NoSeparatorWillBeFound')
-        for indicator in indicators:
-            resp = demisto.executeCommand("getIndicator", {'value': indicator})
+        indicator = demisto.args()['indicator']
+        resp = demisto.executeCommand("getIndicator", {'value': indicator})
 
-            if isError(resp) or not resp:
-                demisto.results(resp)
-                continue
+        if isError(resp) or not resp:
+            demisto.results(resp)
+            return
 
-            data = resp[0].get("Contents")
+        data = resp[0].get("Contents")
 
-            if not data:
-                demisto.results("No results found for indicator {}.".format(indicator))
-                continue
-
-            dbot_scores = []
-            for entry in data:
-                for dbot_score, results in iterate_indicator_entry(indicator, entry):
-                    demisto.results(results)
-                    dbot_scores.append(dbot_score)
-
-            dbot_scores = dbot_scores if len(dbot_scores) > 1 or not dbot_scores else dbot_scores[0]
-            appendContext(CONTEXT_PATH, dbot_scores)
+        if not data:
+            demisto.results("No results.")
+            return
+        dbot_scores = []
+        for entry in data:
+            for dbot_score, results in iterate_indicator_entry(indicator, entry):
+                demisto.results(results)
+                dbot_scores.append(dbot_score)
+        dbot_scores = dbot_scores if len(dbot_scores) > 1 or not dbot_scores else dbot_scores[0]
+        appendContext(CONTEXT_PATH, dbot_scores)
 
     except Exception as error:
         return_error(str(error), error)

@@ -1,5 +1,5 @@
 {
-  "name": "Nmap",
+  "name": "nmap",
   "description": "Run nmap scans with the given parameters",
   "support": "xsoar",
   "currentVersion": "1.0.0",

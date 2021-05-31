@@ -34,9 +34,8 @@ commands:
             echo "Host 10.0.*
               StrictHostKeyChecking no
               LogLevel ERROR
-              ProxyJump content-build@content-build-lb.demisto.works  # disable-secrets-detection
+              ProxyJump ec2-user@content-build-lb.demisto.works  # disable-secrets-detection
              Host content-build-lb.demisto.works
-              Port 43567
               UserKnownHostsFile /dev/null
               StrictHostKeyChecking no
               LogLevel ERROR" >> ~/.ssh/config
@@ -48,7 +47,27 @@ commands:
                 echo "Skipping - instance was not created"
                 exit 0
             fi
-            ./Tests/scripts/open_ssh_tunnel.sh
+            # Generating the ips and ports with the following form: <instance-ip> <tunnel-port>
+            IPS_AND_PORTS=$(cat ./env_results.json | jq ".[] | select(.Role==\"$INSTANCE_ROLE\")" | jq -r '[.InstanceDNS, .TunnelPort] | @tsv' | sed "s/\"//g")
+            # Handling the ip & port pairs line by line
+            echo $IPS_AND_PORTS | grep -o -E "[0-9\.]+ [0-9]{4}" | while read IP_AND_PORT;
+            do
+              # Capturing the IP
+              IP=$(echo $IP_AND_PORT | grep -o -E "10\.0\.[0-9]{1,3}\.[0-9]{1,3}")
+              # Capturing the port
+              PORT=$(echo $IP_AND_PORT | grep -o -E "[0-9]{4}")
+              echo "Opening a tunnel for ip $IP with port $PORT"
+              ssh -4 -o "ServerAliveInterval=15" -f -N "ec2-user@content-build-lb.demisto.works" -L "$PORT:$IP:443"  # disable-secrets-detection
+              echo "Waiting for tunnel to be established"
+              until nc -z 127.0.0.1 $PORT -v; do
+                if [ $COUNT -ge << parameters.timeout >> ]; then
+                  echo "ssh tunnel set up timeout on instance with ip $IP";
+                  exit 1;
+                fi;
+                ((COUNT++))
+                sleep 1
+              done
+            done
 
 parameters:
   non_ami_run:
@@ -159,11 +178,7 @@ references:
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
         echo 'export DEMISTO_README_VALIDATION=true' >> $BASH_ENV
-        echo 'export ENV_RESULTS_PATH=/home/circleci/project/artifacts/env_results.json' >> $BASH_ENV
-        echo 'export GCS_PRODUCTION_BUCKET="marketplace-dist"' >> $BASH_ENV
         echo 'source /home/circleci/project/.circleci/content_release_vars.sh' >> $BASH_ENV
-        chmod +x .circleci/gitlab-ci-env-variables.sh
-        ./.circleci/gitlab-ci-env-variables.sh
         if [ -n "${NIGHTLY_PARAMETER}" ];
         then
             echo 'export NIGHTLY=true' >> $BASH_ENV
@@ -202,6 +217,7 @@ references:
         mkdir -p $CIRCLE_ARTIFACTS/logs
 
         chmod +x ./Tests/scripts/*
+        chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
         if [ ! -e "venv" ]; then
           echo "installing venv"
@@ -232,7 +248,14 @@ references:
     run:
       name: Download Configuration
       when: always
-      command: ./Tests/scripts/download_demisto_conf.sh
+      command: |
+        if ./Tests/scripts/is_ami.sh ;
+          then
+            ./Tests/scripts/download_demisto_conf.sh
+
+          else
+            ./Tests/lastest_server_build_scripts/download_demisto_conf.sh
+        fi
 
   create_instance: &create_instance
     run:
@@ -257,48 +280,13 @@ references:
             else
               export IFRA_ENV_TYPE=Content-Env # disable-secrets-detection
             fi
-            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile $ENV_RESULTS_PATH
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile ./env_results.json
 
           else
             . ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
-            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile $ENV_RESULTS_PATH
+            python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -custombuild true -circleurl $SERVER_DOWNLOAD_LINK -circleToken $SERVER_CI_TOKEN -timetolive $TTL -outfile ./env_results.json
         fi
 
-  trigger_private_build: &trigger_private_build
-    unless:
-      condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
-      steps:
-        run:
-          name: Trigger Private Repo Build
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
-              then
-                echo "Skipping - not running in contribution instance"
-                exit 0
-            fi
-            python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
-
-  get_private_build_status: &get_private_build_status
-    unless:
-      condition:
-        or:
-          - << pipeline.parameters.force_pack_upload >>
-          - << pipeline.parameters.bucket_upload >>
-      steps:
-        run:
-          name: Get Private Build Status
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]
-              then
-                echo "Skipping - not running in contribution instance"
-                exit 0
-            fi
-            python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
 
   create_artifact: &create_artifact
     run:
@@ -307,18 +295,17 @@ references:
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8 --content_version $CONTENT_VERSION
 
-        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
+        GCS_PATH=$(mktemp)
+        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
         echo "successfully activated google cloud service account"
 
         FEATURE_BRANCH_NAME="v4.5.0"
         successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
         gcloud auth revoke --all
+        rm $GCS_PATH
 
         python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
-
-        zip -j $CIRCLE_ARTIFACTS/uploadable_packs.zip $CIRCLE_ARTIFACTS/uploadable_packs/* || ((($? > 0)) && echo "failed to zip the uploadable packs, ignoring the failure" && exit 0)
-        rm -rf $CIRCLE_ARTIFACTS/uploadable_packs
-
 
   restore_cache: &restore_cache
     restore_cache:
@@ -333,7 +320,7 @@ references:
             echo "Skipping - not running in contribution instance"
             exit 0
         fi
-        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $ENV_RESULTS_PATH "$INSTANCE_ROLE" "$TIME_TO_LIVE"
+        python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
         zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
@@ -431,13 +418,16 @@ references:
             exit 0
         fi
 
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+        GCS_PATH=$(mktemp)
+        echo "$GCS_MARKET_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
         echo "successfully activated google cloud service account"
 
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
         gcloud auth revoke --all &> /dev/null
+        rm $GCS_PATH
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
@@ -456,7 +446,6 @@ references:
             # new release notes summary generator in packs format
             python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM --output $CIRCLE_ARTIFACTS/packs-release-notes.md
         fi
-        cp content-descriptor.json $ARTIFACTS_FOLDER
 
   common_server_documentation: &common_server_documentation
     run:
@@ -514,7 +503,7 @@ references:
             name: Comment on the contribution Pull Request
             when: always
             command: |
-              SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' $ENV_RESULTS_PATH)
+              SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
@@ -625,7 +614,7 @@ references:
       name: Check If Instance Was Created
       when: always
       command: |
-        export TEMP=$(cat $CIRCLE_ARTIFACTS/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
+        export TEMP=$(cat ./Tests/filter_envs.json | jq ".\"$INSTANCE_ROLE\"")
         echo "$INSTANCE_ROLE filter=$TEMP"
         if [[ "$TEMP" == "true" || -n "${NIGHTLY}" ]];
           then
@@ -675,10 +664,8 @@ jobs:
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
-      - *trigger_private_build
       - *infrastructure_testing
       - *run_unit_testing_and_lint
-      - *get_private_build_status
       - store_test_results:
           path: ./unit-tests
       - run:
@@ -688,7 +675,7 @@ jobs:
             if [ -n "${BUCKET_UPLOAD}" ]; then
               ./Tests/scripts/slack_notifier.sh 'bucket_upload_flow' '' "$SLACK_CHANNEL"
             else
-              ./Tests/scripts/slack_notifier.sh 'unittests' $ENV_RESULTS_PATH
+              ./Tests/scripts/slack_notifier.sh 'unittests' ./env_results.json
             fi
           when: always
       - *store_artifacts
@@ -752,19 +739,6 @@ jobs:
                     exit 1
                   fi
       - run:
-          name: Validate landingPageSections.json
-          when: always
-          command: |
-            # Download index.zip
-            INDEX_PATH=$(mktemp)
-            gsutil cp gs://marketplace-dist/content/packs/index.zip $INDEX_PATH
-            echo "successfully downloaded index.zip into $INDEX_PATH"
-
-            UNZIP_PATH=$(mktemp -d)
-            unzip $INDEX_PATH -d $UNZIP_PATH
-
-            python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
-      - run:
           name: Slack Notifier
           shell: /bin/bash
           command: |
@@ -813,6 +787,7 @@ jobs:
                     exit 0
                   fi
                   ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET"
+                  echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
             - run:
                 name: Zip Content Packs From GCS
                 command: |
@@ -821,8 +796,11 @@ jobs:
                     exit 0
                   fi
 
+                  GCS_PATH=$(mktemp)
                   ZIP_FOLDER=$(mktemp -d)
-                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_MARKET_KEY
+                  echo $GCS_MARKET_KEY > $GCS_PATH
+                  python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
+                  rm $GCS_PATH
                 when: always
             - run:
                 name: Store Artifacts to GCS
@@ -994,7 +972,7 @@ jobs:
                 name: Slack Notifier
                 shell: /bin/bash
                 command: |
-                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
+                  ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
                 when: always
             - *destroy_instances
             - *store_artifacts
@@ -1035,7 +1013,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'test_playbooks' $ENV_RESULTS_PATH
+            ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
           when: always
       - *comment_on_contrib_pr
       - *destroy_instances
@@ -1056,13 +1034,17 @@ jobs:
             EXTRACT_FOLDER=$(mktemp -d)
             PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
             PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+            GCS_PATH=$(mktemp)
             CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+            CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+            echo $GCS_MARKET_KEY > $GCS_PATH
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
             if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-              STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+              STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
             fi
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BASE_PATH}"
+            rm $GCS_PATH
           when: on_success
       - *store_artifacts
 
@@ -1092,14 +1074,18 @@ jobs:
                   EXTRACT_FOLDER=$(mktemp -d)
                   PACK_ARTIFACTS=$CIRCLE_ARTIFACTS/content_packs.zip
                   PACKS_DEPENDENCIES=$CIRCLE_ARTIFACTS/packs_dependencies.json
+                  GCS_PATH=$(mktemp)
                   CIRCLE_BRANCH=${CIRCLE_BRANCH:-unknown}
+                  CREATE_INSTANCES_JOB_NUMBER=$(cat create_instances_build_num.txt)
+                  echo $GCS_MARKET_KEY > $GCS_PATH
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
                   if [[ $GCS_MARKET_BUCKET != "marketplace-dist" ]]; then
-                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CI_PIPELINE_ID/content/packs"
+                    STORAGE_BASE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
                   fi
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$STORAGE_BASE_PATH"
+                  rm $GCS_PATH
             - run:
                 name: Validate Premium Packs
                 shell: /bin/bash
@@ -1133,6 +1119,9 @@ jobs:
           name: Instance Test
           command: |
             ./Tests/scripts/instance_test.sh
+            export RETVAL=$?
+            cp ./Tests/failed_instances.txt $CIRCLE_ARTIFACTS/failed_instances.txt
+            exit $RETVAL
           when: always
       - *destroy_instances
       - *store_artifacts
@@ -1162,8 +1151,8 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'sdk_unittests' $ENV_RESULTS_PATH
-            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' $ENV_RESULTS_PATH
+            ./Tests/scripts/slack_notifier.sh 'sdk_unittests' ./env_results.json
+            ./Tests/scripts/slack_notifier.sh 'sdk_faild_steps' ./env_results.json
           when: always
 
   Demisto SDK Nightly - Run against Cortex XSOAR:
@@ -1185,7 +1174,7 @@ jobs:
           name: Set Environment Variables
           command: |
             echo "export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')" >> $BASH_ENV
-            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat $ENV_RESULTS_PATH | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
+            echo "export DEMISTO_BASE_URL=\"https://localhost:$(cat env_results.json | jq -r '.[0].TunnelPort')\"" >> $BASH_ENV
             echo "Server URL: $DEMISTO_BASE_URL"
       - run:
           name: Install SDK Master
@@ -1193,7 +1182,7 @@ jobs:
       - *wait_until_server_ready
       - run:
           name: Unlock HelloWorld integration and playbook
-          command: python3 Tests/sdknightly/unlock_entity.py integration "HelloWorld,HelloWorld Feed"
+          command: python3 Tests/sdknightly/unlock_entity.py integration HelloWorld
       - run:
           name: Create and upload incident type, incident field, mapper and a layout to Cortex XSOAR
           command: python3 Tests/sdknightly/create_entities_for_nightly_sdk.py HelloWorld --artifacts-folder $CIRCLE_ARTIFACTS
@@ -1222,7 +1211,7 @@ jobs:
           name: Slack Notifier
           shell: /bin/bash
           command: |
-            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' $ENV_RESULTS_PATH
+            ./Tests/scripts/slack_notifier.sh 'sdk_run_against_failed_steps' ./env_results.json
           when: always
 
   Install Packs in Server 6_0:

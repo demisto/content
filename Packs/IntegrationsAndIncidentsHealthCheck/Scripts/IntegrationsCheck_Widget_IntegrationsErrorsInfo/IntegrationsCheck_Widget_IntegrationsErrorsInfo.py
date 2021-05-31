@@ -9,10 +9,7 @@ def main():
     list_table = []
 
     if list_content:
-        try:
-            list_json = json.loads(list_content)
-        except ValueError:
-            list_json = {}
+        list_json = json.loads(list_content)
     else:
         list_json = None
 
@@ -28,7 +25,7 @@ def main():
         demisto.results({'total': len(list_table), 'data': list_table})
 
     else:
-        data = {"total": 1, "data": [{"Brand": "N/A", "Instance": "N/A", "Category": "N/A", "Information": "N/A"}]}
+        data = {"total": 1, "data": [{"Brand": "N\A", "Instance": "N\A", "Category": "N\A", "Information": "N\A"}]}
         demisto.results(data)
 
 

@@ -780,4 +780,3 @@ outputs: []
 tests:
 - No test - Deprecated playbook
 fromversion: 5.0.0
-deprecated: true

@@ -2,8 +2,7 @@ id: Account Enrichment
 version: -1
 name: Account Enrichment
 fromversion: 5.0.0
-description: Deprecated. Use the "Account Enrichment - Generic v2.1" playbook instead.\
-  \ Enrich the accounts under the Account context key with details from relevant integrations such as AD.
+description: Deprecated. We recommend using Account Enrichment - Generic playbook instead. Enrich the accounts under the Account context key with details from relevant integrations such as AD.
 starttaskid: "0"
 hidden: true
 tasks:
@@ -165,5 +164,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- no test
-deprecated: true
+- No tests - Deprecated playbook

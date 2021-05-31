@@ -1,4 +1,4 @@
-Deprecated. Enriches IP addresses using one or more integrations.
+Enriches IP addresses using one or more integrations.
 
 IP enrichment includes:
 * Resolve IP to Hostname (DNS)

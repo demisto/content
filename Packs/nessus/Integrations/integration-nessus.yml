@@ -733,87 +733,87 @@ script:
       description: The type of scan (local, remote, or agent).
     - contextPath: NessusScan.Policy
       description: The policy if the scan.
-    - contextPath: NessusScan.Endpoint.ID
+    - contextPath: Endpoint.ID
       description: The unique id of the host.
-    - contextPath: NessusScan.Endpoint.Index
+    - contextPath: Endpoint.Index
       description: The index for the host.
-    - contextPath: NessusScan.Endpoint.Hostname
+    - contextPath: Endpoint.Hostname
       description: The overall severity rating of the host.
-    - contextPath: NessusScan.Endpoint.Progress
+    - contextPath: Endpoint.Progress
       description: The scan progress of the host.
-    - contextPath: NessusScan.Endpoint.Critical
+    - contextPath: Endpoint.Critical
       description: The percentage of critical findings on the host.
-    - contextPath: NessusScan.Endpoint.High
+    - contextPath: Endpoint.High
       description: The percentage of high findings on the host.
-    - contextPath: NessusScan.Endpoint.Medium
+    - contextPath: Endpoint.Medium
       description: The percentage of medium findings on the host.
-    - contextPath: NessusScan.Endpoint.Low
+    - contextPath: Endpoint.Low
       description: The percentage of low findings on the host.
-    - contextPath: NessusScan.Endpoint.Info
+    - contextPath: Endpoint.Info
       description: The percentage of info findings on the host.
-    - contextPath: NessusScan.Endpoint.TotalChecksConsidered
+    - contextPath: Endpoint.TotalChecksConsidered
       description: The total number of checks considered on the host.
-    - contextPath: NessusScan.Endpoint.NumChecksConsidered
+    - contextPath: Endpoint.NumChecksConsidered
       description: The number of checks considered on the host.
-    - contextPath: NessusScan.Endpoint.ScanProgressTotal
+    - contextPath: Endpoint.ScanProgressTotal
       description: The total scan progress for the host.
-    - contextPath: NessusScan.Endpoint.ScanProgressCurrent
+    - contextPath: Endpoint.ScanProgressCurrent
       description: The current scan progress for the host.
-    - contextPath: NessusScan.Endpoint.Score
+    - contextPath: Endpoint.Score
       description: The overall score for the host.
-    - contextPath: NessusScan.Vulnerability.PluginID
+    - contextPath: Vulnerability.PluginID
       description: The unique id of the vulnerability plugin.
-    - contextPath: NessusScan.Vulnerability.PluginName
+    - contextPath: Vulnerability.PluginName
       description: The name of the vulnerability plugin.
-    - contextPath: NessusScan.Vulnerability.PluginFamily
+    - contextPath: Vulnerability.PluginFamily
       description: The parent family of the vulnerability plugin.
-    - contextPath: NessusScan.Vulnerability.Count
+    - contextPath: Vulnerability.Count
       description: The number of vulnerabilities found.
-    - contextPath: NessusScan.Vulnerability.VulnerabilityIndex
+    - contextPath: Vulnerability.VulnerabilityIndex
       description: The index of the vulnerability plugin.
-    - contextPath: NessusScan.Vulnerability.SeverityIndex
+    - contextPath: Vulnerability.SeverityIndex
       description: The severity index order of the plugin.
-    - contextPath: NessusScan.Note.Title
+    - contextPath: Note.Title
       description: The title of the note.
-    - contextPath: NessusScan.Note.Message
+    - contextPath: Note.Message
       description: The specific message of the note.
-    - contextPath: NessusScan.Note.Sevirity
+    - contextPath: Note.Sevirity
       description: The severity of the note.
-    - contextPath: NessusScan.Filter.Name
+    - contextPath: Filter.Name
       description: The short name of the filter.
-    - contextPath: NessusScan.Filter.ReadableName
+    - contextPath: Filter.ReadableName
       description: The long name of the filter.
-    - contextPath: NessusScan.Filter.Operators
+    - contextPath: Filter.Operators
       description: The comparison options for the filter.
-    - contextPath: NessusScan.Filter.Type
+    - contextPath: Filter.Type
       description: The input type for the filter.
-    - contextPath: NessusScan.Filter.ReadableRegest
+    - contextPath: Filter.ReadableRegest
       description: The input placeholder for the filter.
-    - contextPath: NessusScan.Filter.Regex
+    - contextPath: Filter.Regex
       description: The input regex values for the filter.
-    - contextPath: NessusScan.Filter.Options
+    - contextPath: Filter.Options
       description: Other input options for the filter.
-    - contextPath: NessusScan.History.ID
+    - contextPath: History.ID
       description: The unique id of the historical data.
-    - contextPath: NessusScan.History.UUID
+    - contextPath: History.UUID
       description: The uuid of the historical data.
-    - contextPath: NessusScan.History.OwnerID
+    - contextPath: History.OwnerID
       description: The unique id of the owner of the scan.
-    - contextPath: NessusScan.History.Status
+    - contextPath: History.Status
       description: The status of the historical data.
-    - contextPath: NessusScan.History.CreationDate
+    - contextPath: History.CreationDate
       description: The creation date for the historical data in unixtime.
-    - contextPath: NessusScan.History.LastModification_date
+    - contextPath: History.LastModification_date
       description: The last modification date for the historical data in unixtime.
-    - contextPath: NessusScan.Remediations.Remediations
+    - contextPath: Remediations.Remediations
       description: Remedy to vulnerabilites found during the scan.
-    - contextPath: NessusScan.Remediations.NumHosts
+    - contextPath: Remediations.NumHosts
       description: Number of hosts of Remediations
-    - contextPath: NessusScan.Remediations.NumCVEs
+    - contextPath: Remediations.NumCVEs
       description: Number of CVE's
-    - contextPath: NessusScan.Remediations.NumImpactedHosts
+    - contextPath: Remediations.NumImpactedHosts
       description: Number of impacted hosts
-    - contextPath: NessusScan.Remediations.NumRemediatedCVEs
+    - contextPath: Remediations.NumRemediatedCVEs
       description: Number of Remediated CVE's
     description: Returns details for the given scan
   - name: scan-details

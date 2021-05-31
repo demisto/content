@@ -427,4 +427,3 @@ outputs:
   description: Scan result for this hash - signature, etc.
 tests:
 - no test (new v2 playbook has an updated test)
-deprecated: true

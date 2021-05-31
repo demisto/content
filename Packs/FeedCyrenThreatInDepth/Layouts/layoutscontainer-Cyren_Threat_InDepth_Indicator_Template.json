@@ -122,17 +122,6 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 1,
-                                "fieldId": "cyrencountrycode",
-                                "height": 53,
-                                "id": "fd2cca60-4f6e-11eb-9734-39b78acb9fd7",
-                                "index": 2,
-                                "listId": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "cyrenipclass",
                                 "height": 53,
@@ -143,23 +132,12 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "cyrenipintensity",
                                 "height": 53,
                                 "id": "1053e5b0-4f6f-11eb-9734-39b78acb9fd7",
                                 "index": 1,
                                 "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
-                                "sectionItemType": "field",
-                                "startCol": 1
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "cyrencountryname",
-                                "height": 53,
-                                "id": "3a379770-66ce-11eb-964b-b5485262f529",
-                                "index": 3,
-                                "listId": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 1
                             },
@@ -177,11 +155,11 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 3,
-                                "fieldId": "cyrencityname",
+                                "fieldId": "cyrencountrycode",
                                 "height": 53,
-                                "id": "327e6f20-8629-11eb-b221-111177b1f67f",
-                                "index": 3,
-                                "listId": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
+                                "id": "fd2cca60-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -198,10 +176,10 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "cyrengeolocation",
+                                "fieldId": "cyrencountryname",
                                 "height": 53,
-                                "id": "3f26a350-8629-11eb-b221-111177b1f67f",
-                                "index": 2,
+                                "id": "3a379770-66ce-11eb-964b-b5485262f529",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 3
                             }
@@ -692,22 +670,11 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "cyrencountryname",
-                                "height": 22,
-                                "id": "4489a6a0-66ce-11eb-964b-b5485262f529",
-                                "index": 5,
-                                "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "cyrenipintensity",
                                 "height": 22,
                                 "id": "3d653100-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -717,26 +684,19 @@
                                 "fieldId": "cyrencountrycode",
                                 "height": 22,
                                 "id": "4225ed60-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 7,
+                                "index": 6,
                                 "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cyrencityname",
+                                "fieldId": "cyrencountryname",
                                 "height": 22,
-                                "id": "8be16e00-8629-11eb-b221-111177b1f67f",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "cyrengeolocation",
-                                "height": 22,
-                                "id": "8e9c6f50-8629-11eb-b221-111177b1f67f",
-                                "index": 9,
+                                "id": "4489a6a0-66ce-11eb-964b-b5485262f529",
+                                "index": 7,
+                                "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

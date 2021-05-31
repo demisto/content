@@ -14,7 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 MAX_API_COUNT: int = 100000
 BASE_URL = "https://api-feeds.cyren.com/v1/feed"
-VERSION = "1.5.0"
+VERSION = "1.4.0"
 BAD_IP_RISK_BOUNDARY = 80
 
 
@@ -60,12 +60,10 @@ class FeedSource(str, Enum):
 
 
 def get_relationship_value_type(relationship: Dict) -> Tuple[RelationshipIndicatorType, str, str]:
-    related_entity_type = relationship.get("related_entity_type", "")
-    relationship_value = relationship.get("related_entity_identifier", "")
-    if related_entity_type == "file":
-        return RelationshipIndicatorType.SHA256, relationship_value, FeedIndicatorType.File
-    elif related_entity_type == "ip":
-        return RelationshipIndicatorType.IP, relationship_value, FeedIndicatorType.IP
+    if "sha256_hash" in relationship:
+        return RelationshipIndicatorType.SHA256, relationship["sha256_hash"], FeedIndicatorType.File
+    elif "ip" in relationship:
+        return RelationshipIndicatorType.IP, relationship["ip"], FeedIndicatorType.IP
 
     return RelationshipIndicatorType.UNKNOWN, "", ""
 
@@ -197,7 +195,7 @@ class UrlFeedEntry(FeedEntryBase):
 
 class MalwareUrlFeedEntry(UrlFeedEntry):
     def get_relationship_score(self, primary_indicator: Dict, relationship: Dict) -> int:
-        if primary_indicator["score"] < 2 or not relationship.get("related_entity_type") == "file":
+        if primary_indicator["score"] < 2 or "sha256_hash" not in relationship:
             return super().get_relationship_score(primary_indicator, relationship)
 
         return primary_indicator["score"]
@@ -254,14 +252,6 @@ FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
 }
 
 
-FEED_TO_VERSION: Dict[str, str] = {
-    FeedName.IP_REPUTATION: "_v2",
-    FeedName.PHISHING_URLS: "_v2",
-    FeedName.MALWARE_URLS: "_v2",
-    FeedName.MALWARE_FILES: "_v2",
-}
-
-
 FEED_OPTION_TO_FEED: Dict[str, str] = {
     "IP Reputation": FeedName.IP_REPUTATION,
     "Phishing URLs": FeedName.PHISHING_URLS,
@@ -311,7 +301,7 @@ class Client(BaseClient):
 
     def _do_request(self, path: str, offset: int = -1, count: int = 0) -> requests.Response:
         params = self.PARAMS.copy()
-        params["feedId"] = f"{self.feed_name}{FEED_TO_VERSION[self.feed_name]}"
+        params["feedId"] = self.feed_name
         if offset > -1:
             params["offset"] = str(offset)
         if count > 0:

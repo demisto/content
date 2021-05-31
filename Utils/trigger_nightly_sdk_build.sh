@@ -1,78 +1,25 @@
 #!/usr/bin/env bash
 
+_branch=$1
+_circle_token=$2
 
-if [ "$#" -lt "1" ]; then
-  echo "Usage:
-  $0 -ct <token>
-  -ct, --ci-token             The ci token.
-  [-b, --branch]              The branch name. Default is the current branch.
-  [-g, --gitlab]              Flag to pass if triggering a build in GitLab
-  [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
-  "
-  exit 1
-fi
-_branch="$(git branch  --show-current)"
+trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
 
-while [[ "$#" -gt 0 ]]; do
-  case $1 in
 
-  -ct|--ci-token) _ci_token="$2"
-    shift
-    shift;;
-
-  -b|--branch) _branch="$2"
-    shift
-    shift;;
-
-  -ch|--slack-channel) _slack_channel="$2"
-    shift
-    shift;;
-
-  -g|--gitlab) _gitlab=true
-    shift
-    shift;;
-
-  *)    # unknown option.
-    shift;;
-  esac
-done
-
-if [ -z "$_ci_token" ]; then
-    echo "You must provide a ci token."
-    exit 1
-fi
-
-if [ -n "$_gitlab" ]; then
-
-  _variables="variables[DEMISTO_SDK_NIGHTLY]=true"
-
-  source Utils/gitlab_triggers/trigger_build_url.sh
-
-  curl --request POST \
-    --form token="${_ci_token}" \
-    --form ref="${_branch}" \
-    --form "${_variables}" \
-    --form "variables[SLACK_CHANNEL]=${_slack_channel}" \
-    "$BUILD_TRIGGER_URL"
-
-else
-  trigger_build_url="https://circleci.com/api/v2/project/github/demisto/content/pipeline"
-
-  post_data=$(cat <<-EOF
-  {
-    "branch": "${_branch}",
-    "parameters": {
-      "demisto_sdk_nightly": "true"
-    }
+post_data=$(cat <<EOF
+{
+  "branch": "${_branch}",
+  "parameters": {
+    "demisto_sdk_nightly": "true"
   }
-  EOF
-  )
+}
+EOF
+)
 
-  curl \
-  --header "Accept: application/json" \
-  --header "Content-Type: application/json" \
-  -k \
-  --data "${post_data}" \
-  --request POST ${trigger_build_url} \
-  --user "$_ci_token:"
-fi
+curl \
+--header "Accept: application/json" \
+--header "Content-Type: application/json" \
+-k \
+--data "${post_data}" \
+--request POST ${trigger_build_url} \
+--user "$_circle_token:"

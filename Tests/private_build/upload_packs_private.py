@@ -6,13 +6,12 @@ import uuid
 import glob
 import logging
 from typing import Any, Tuple, Union
-from Tests.Marketplace.marketplace_services import init_storage_client, Pack, load_json, \
-    get_content_git_client, get_recent_commits_data
-from Tests.Marketplace.marketplace_statistics import StatisticsHandler
+from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
+    GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
+    get_recent_commits_data
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
     upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
-from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -106,9 +105,8 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                 private_packs.append({
                     'id': pack_id,
                     'price': metadata.get('price'),
-                    'vendorId': metadata.get('vendorId', ""),
-                    'partnerId': metadata.get('partnerId', ""),
-                    'partnerName': metadata.get('partnerName', ""),
+                    'vendorId': metadata.get('vendorId'),
+                    'vendorName': metadata.get('vendorName'),
                     'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
@@ -183,7 +181,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        packs_dependencies_mapping: dict, private_bucket_name: str,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
-                                       remote_previous_commit_hash: str = '') \
+                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None) \
         -> Any:
     """
     The main logic flow for the create and upload process. Acts as a decision tree while consistently
@@ -198,6 +196,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     :param content_repo: The main content repository. demisto/content
     :param current_commit_hash: Current commit hash for the run. Used in the pack metadata file.
     :param remote_previous_commit_hash: Previous commit hash. Used for comparison.
+    :param packs_statistic_df: Dataframe object containing current pack analytics.
     :return: Updated pack.status value.
     """
     build_number = upload_config.ci_build_number
@@ -219,29 +218,31 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status = pack.collect_content_items()
+    task_status, pack_content_items = pack.collect_content_items()
     if not task_status:
         pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
         pack.cleanup()
         return
 
-    task_status = pack.upload_integration_images(storage_bucket)
+    task_status, integration_images = pack.upload_integration_images(storage_bucket)
     if not task_status:
         pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
         pack.cleanup()
         return
 
-    task_status = pack.upload_author_image(storage_bucket)
+    task_status, author_image = pack.upload_author_image(storage_bucket)
     if not task_status:
         pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
         pack.cleanup()
         return
 
-    task_status = pack.format_metadata(user_metadata=user_metadata,
+    task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
+                                       integration_images=integration_images, author_image=author_image,
                                        index_folder_path=index_folder_path,
                                        packs_dependencies_mapping=packs_dependencies_mapping,
                                        build_number=build_number, commit_hash=current_commit_hash,
-                                       pack_was_modified=pack_was_modified, statistics_handler=None)
+                                       packs_statistic_df=packs_statistic_df,
+                                       pack_was_modified=pack_was_modified)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -417,7 +418,6 @@ def main():
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
-    landing_page_sections = StatisticsHandler.get_landing_page_sections()
 
     logging.info(f"Packs artifact path is: {packs_artifacts_path}")
 
@@ -466,6 +466,12 @@ def main():
         logging.info("Skipping index update of priced packs")
         private_packs = []
 
+    # google cloud bigquery client initialized
+    packs_statistic_df = None
+    if not is_private_build:
+        bq_client = init_bigquery_client(service_account)
+        packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
     # starting iteration over packs
@@ -474,7 +480,8 @@ def main():
                                            packs_dependencies_mapping, private_bucket_name,
                                            private_storage_bucket=private_storage_bucket, content_repo=content_repo,
                                            current_commit_hash=current_commit_hash,
-                                           remote_previous_commit_hash=remote_previous_commit_hash)
+                                           remote_previous_commit_hash=remote_previous_commit_hash,
+                                           packs_statistic_df=packs_statistic_df)
     # upload core packs json to bucket
 
     if should_upload_core_packs(storage_bucket_name):
@@ -483,12 +490,12 @@ def main():
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
         upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
-                                private_packs, current_commit_hash, index_generation, is_private_build,
-                                landing_page_sections=landing_page_sections)
+                                private_packs,
+                                current_commit_hash, index_generation, is_private_build)
 
     else:
         upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
+                                current_commit_hash, index_generation)
 
     # upload id_set.json to bucket
     upload_id_set(default_storage_bucket, id_set_path)

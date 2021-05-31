@@ -9,19 +9,16 @@ For more information, please refer to the [Identity Lifecycle Management article
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Credentials | | False |
-| Workday Report URL | | True |
-| Fetch Limit \(Recommended less than 200\) | | False |
-| Fetch incidents | Whether or not to fetch events from Workday report. Enable only when all required configurations are set properly. | False |
-| Incident type | | False |
-| Trust any certificate \(not secure\) | | False |
-| Use system proxy settings | | False |
-| Mapper \(incoming\) | Used to map Workday report entries to XSOAR indicators format. | False |
-| Sync user profiles on first run | If checked, the first fetch won't trigger incidents but all of the User Profile indicators will be created. | False |
-| Fetch Samples | If checked, five sample events will be created. | False |
-| Dates Format in Workday Report | | False |
-| Deactivation date field | Select the field that determines when to trigger a termination incident for deactivated employees. | False |
-| Number of days before hire date to sync hires | Determines when employees are synced from Workday, i.e., when are the User Profile in XSOAR, and the users in the applications, created. Set to 0 to sync hires on their hire date. Leave empty to sync the hires immediately. | False |
-| Number of days before hire date to enable Active Directory account | Determines when to enable the Active Directory accounts for employees. Set to 0 to enable the Active Directory accounts on their hire date. Leave empty to enable the accounts immediately. Note that this is effective only when the employees are already synced to XSOAR, so you should set a number lower, or equal to, the value in the *Number of days before hire date to sync hires* parameter. | False |
+| credentials | Username | False |
+| report_url | Workday Report URL | True |
+| max_fetch | Fetch Limit \(Recommended less than 200\) | False |
+| isFetch | Fetch incidents | False |
+| incidentType | Incident type | False |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| mapper_in | Mapper \(incoming\) | False |
+| first_run | Sync user profiles on first run | False |
+| fetch_samples | Fetch Samples | False |
+| workday_date_format | Date Format in Workday Report | True |
 
-4. Click **Test** to validate the connection.
+4. Click **Test** to validate the URLs, token, and connection.

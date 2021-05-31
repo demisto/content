@@ -13,4 +13,5 @@ The playbooks included in this pack help you automate repetitive tasks associate
 - Check Whois to validate domains registrant and time of creation.
 
 
-_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/index)._
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks)_
+

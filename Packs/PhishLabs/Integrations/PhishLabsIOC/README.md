@@ -31,7 +31,6 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g.,<span> </span>https://ioc.phishlabs.com)</strong></li>
 <li><strong>Credentials</strong></li>
-<li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is: B - Usually reliable)</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li><strong>Fetch incidents</strong></li>

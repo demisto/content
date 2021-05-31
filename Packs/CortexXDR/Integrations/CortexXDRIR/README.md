@@ -67,7 +67,6 @@ You need to collect several pieces of information in order to configure the inte
     * __Sync Incident Owners__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
-    * __Incident Statuses to Fetch__
 4. Click __Test__ to validate the URLs, token, and connection.
 ## Fetched Incidents Data
 ---
@@ -159,7 +158,6 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 | sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). | Optional | 
 | page | Page number (for pagination). The default is 0 (the first page). | Optional | 
 | limit | Maximum number of incidents to return per page. The default and maximum is 100. | Optional | 
-| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_threat_handled, resolved_known_issue, resolved_false_positive, resolved_other, resolved_auto | Optional |
 
 
 ##### Context Output
@@ -887,15 +885,11 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 | PaloAltoNetworksXDR.Endpoint.endpoint_version | String | Endpoint version. | 
 | PaloAltoNetworksXDR.Endpoint.is_isolated | String | Whether the endpoint is isolated. | 
 | PaloAltoNetworksXDR.Endpoint.group_name | String | The name of the group to which the endpoint belongs. | 
-| Endpoint.Hostname | String | The endpoint's hostname. | 
-| Endpoint.OS | String | The endpoint's operation system. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.ID | String | The endpoint's ID. | 
-| Endpoint.Status | String | The endpoint's status. | 
-| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
-| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
-
+| Endpoint.Hostname | String | The hostname that is mapped to this endpoint. | 
+| Endpoint.ID | String | The unique ID within the tool retrieving the endpoint. | 
+| Endpoint.IPAddress | String | The IP address of the endpoint. | 
+| Endpoint.Domain | String | The domain of the endpoint. | 
+| Endpoint.OS | String | Endpoint OS. | 
 
 ##### Command Example
 ```!xdr-get-endpoints isolate="unisolated" first_seen_gte="3 month" page="0" limit="30" sort_order="asc"```
@@ -911,10 +905,7 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
             "IPAddress": [
                 "172.31.11.11"
             ],
-            "OS": "Windows",
-            "Status" : "Online",
-            "IsIsolated" : "No",
-            "Vendor": "Cortex XDR - IR"
+            "OS": "AGENT_OS_WINDOWS"
         },
         {
             "Domain": "WORKGROUP",
@@ -923,10 +914,7 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
             "IPAddress": [
                 "2.2.2.2"
             ],
-            "OS": "Windows",
-            "Status" : "Online",
-            "IsIsolated" : "No",
-            "Vendor": "Cortex XDR - IR"
+            "OS": "AGENT_OS_WINDOWS"
         }
     ],
     "PaloAltoNetworksXDR.Endpoint": [
@@ -1372,7 +1360,7 @@ Gets the policy name for a specific endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_id | The endpoint ID. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required | 
+| endpoint_id | The endpoint ID. Can be retrieved by running the ***xdr-get-endpoints*** command. | Required | 
 
 
 #### Context Output
@@ -1539,7 +1527,6 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | windows_file_paths | A comma-separated list of file paths on the Windows platform.  | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform.  | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform.  | Optional | 
-| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on, e.g.,"C:\Users\demisto\Desktop\CortexXSOAR.txt".  | Optional | 
 
 
 #### Context Output
@@ -1549,9 +1536,8 @@ Retrieve files from selected endpoints. You can retrieve up to 20 files, from no
 | PaloAltoNetworksXDR.retrievedFiles.actionId | unknown | ID of the action to retrieve files from selected endpoints. | 
 
 
-#### Command Examples
+#### Command Example
 ```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
-```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
 
 #### Context Example
 ```
@@ -2055,9 +2041,9 @@ Initiates a new endpoint script execution action using a script from the script 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required | 
-| script_uid | Unique identifier of the script. Can be retrieved by running the [xdr-get-scripts](#19-xdr-get-scripts) command. | Required | 
-| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"path":"test.txt"}. Can be retrieved by running the [xdr-get-script-metadata](#20-xdr-get-script-metadata) command. | Optional |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
+| script_uid | Unique identifier of the script. Can be retrieved by running the xdr-get-scripts command. | Required | 
+| parameters | Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"} | Optional |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
 
@@ -2108,7 +2094,7 @@ Initiates a new endpoint script execution action using provided snippet code.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required | 
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required | 
 | snippet_code | Section of a script you want to initiate on an endpoint (e.g. print("7")). | Required | 
 
 
@@ -2157,7 +2143,7 @@ Retrieves the status of a script execution action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
+| action_id | Action ID retrieved from the xdr-run-script command. | Required | 
 
 
 #### Context Output
@@ -2221,7 +2207,7 @@ Retrieves the results of a script execution action.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action_id | Action ID retrieved from the [xdr-run-script](#xdr-run-script) command. | Required | 
+| action_id | Action ID retrieved from the xdr-run-script command. | Required | 
 
 
 #### Context Output
@@ -2297,7 +2283,7 @@ Gets the files retrieved from a specific endpoint during a script execution.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | action_id | Action ID retrieved from the xdr-run-script command. | Required | 
-| endpoint_id | Endpoint ID. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
+| endpoint_id | Endpoint ID. Can be retrieved by running the xdr-get-endpoints command. | Required |
 
 #### Context Output
 
@@ -2330,7 +2316,7 @@ Initiates a new endpoint script execution of shell commands.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | commands | Comma-separated list of shell commands to execute. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
@@ -2382,7 +2368,7 @@ Initiates a new endpoint script execution to delete the specified file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | file_path | Path of the file to delete. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
@@ -2433,7 +2419,7 @@ Initiates a new endpoint script execution to check if the file exists.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | file_path | Path of the file to check for existence. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
@@ -2484,7 +2470,7 @@ Initiates a new endpoint script execution kill process.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the [xdr-get-endpoints](#8-xdr-get-endpoints) command. | Required |
+| endpoint_ids | Comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command. | Required |
 | process_name | Name of the process to kill. | Required |
 | timeout | The timeout in seconds for this execution. Default is 600. | Optional |
 
@@ -2518,171 +2504,3 @@ Initiates a new endpoint script execution kill process.
 >|action_id|endpoints_count|
 >|---|---|
 >| 3658 | 1 |
-
-
-
-### xdr-endpoint-scan
-***
-Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Do note that scanning all the endpoints may cause performance issues and latency.
-
-
-#### Base Command
-
-`xdr-endpoint-scan`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| endpoint_id_list | List of endpoint IDs. | Optional | 
-| dist_name | Name of the distribution list. | Optional | 
-| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
-| ip_list | List of IP addresses. | Optional | 
-| group_name | Name of the endpoint group. | Optional | 
-| platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
-| alias | Endpoint alias name. | Optional | 
-| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
-| hostname | Name of the host. | Optional | 
-| all | Whether to scan all of the endpoints or not. Default is false. Do note that scanning all the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.endpointScan.actionId | Number | The action ID of the scan request. | 
-| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Check if the scan aborted or not. | 
-
-
-#### Command Example
-```!xdr-endpoint-scan endpoint_id_list=12386310665d413a958926fce5b794b3```
-
-#### Context Example
-```json
-{
-    "PaloAltoNetworksXDR": {
-        "endpointScan": {
-            "aborted": true,
-            "actionId": 4205
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Endpoint scan
->|Action Id|
->|---|
->| 4205 |
-
-
-### xdr-endpoint-scan-abort
-***
-Cancel the scan of selected endpoints. A scan can only be aborted if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
-
-
-#### Base Command
-
-`xdr-endpoint-scan-abort`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| endpoint_id_list | List of endpoint IDs. | Optional | 
-| dist_name | Name of the distribution list. | Optional | 
-| gte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| gte_last_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_first_seen | Epoch timestamp in milliseconds. | Optional | 
-| lte_last_seen | Epoch timestamp in milliseconds. | Optional | 
-| ip_list | List of IP addresses. | Optional | 
-| group_name | Name of the endpoint group. | Optional | 
-| platform | Type of operating system. Possible values are: windows, linux, macos, android. | Optional | 
-| alias | Endpoint alias name. | Optional | 
-| isolate | Whether an endpoint has been isolated. Can be "isolated" or "unisolated". Possible values are: isolated, unisolated. | Optional | 
-| hostname | Name of the host. | Optional | 
-| all | Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency. Possible values are: true, false. Default is false. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PaloAltoNetworksXDR.endpointScan.actionId | Unknown | The action id of the abort scan request. | 
-| PaloAltoNetworksXDR.endpointScan.aborted | Boolean | Check if the scan aborted or not. | 
-
-
-#### Command Example
-```!xdr-endpoint-scan-abort endpoint_id_list=12386310665d413a958926fce5b794b3```
-
-#### Context Example
-```json
-{
-    "PaloAltoNetworksXDR": {
-        "endpointScan": {
-            "aborted": true,
-            "actionId": 4227
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Endpoint abort scan
->|Action Id|
->|---|
->| 4227 |
-
-
-#### Base Command
-
-`endpoint`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Endpoint ID. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Endpoint.Hostname | String | The endpoint's hostname. | 
-| Endpoint.OS | String | The endpoint's operation system. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.ID | String | The endpoint's ID. | 
-| Endpoint.Status | String | The endpoint's status. | 
-| Endpoint.IsIsolated | String | The endpoint's isolation status. | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
-| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
-
-#### Command Example
-```!endpoint id=15dbb9d5fe9f61eb46e829d986```
-
-#### Context Example
-```json
-{
-  "Endpoint":
-    {
-      "Hostname": "Hostname",
-      "ID": "15dbb9d5fe9f61eb46e829d986",
-      "IPAddress": "1.1.1.1",
-      "OS": "Windows",
-      "Status": "Online",
-      "Domain": "WORK",
-      "IsIsolated" : "No",
-      "Vendor": "Cortex XDR - IR"
-    }
-}
-```
-
-#### Human Readable Output
-
->### Endpoints
->|ID|IP|OS|Hostname|Status|Domain|IsIsolated|Vendor|
->|---|---|---|---|---|---|---|---|
->| 15dbb9d8f06b45fe9f61eb46e829d986 | 1.1.1.1 | Windows | Hostname | Online | WORK | No | Cortex XDR - IR |\n"
-

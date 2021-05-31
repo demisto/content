@@ -17,7 +17,7 @@
 <h2 id="configure-thinkst-canary-on-demisto">Configure Thinkst Canary on Demisto</h2>
 </div>
 <div class="cl-preview-section">
-<p>For information about how to get your Authentication Token, see the <a href="https://help.canary.tools/hc/en-gb/articles/360012727537-How-does-the-API-work-">Canary documentation</a>.</p>
+<p>For information about how to get your Authentication Token, see the <a href="https://help.canary.tools/knowledge_base/topics/forget-logging-in-what-apis-does-canary-support">Canary documentation</a>.</p>
 </div>
 <div class="cl-preview-section">
 <ol>

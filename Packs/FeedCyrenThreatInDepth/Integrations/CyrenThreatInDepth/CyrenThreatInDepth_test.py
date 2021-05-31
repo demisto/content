@@ -17,7 +17,7 @@ from CyrenThreatInDepth import (
 pytestmark = pytest.mark.usefixtures("clean_integration_context")
 
 API_TOKEN = "12345"
-VERSION = "1.5.0"
+VERSION = "1.4.0"
 
 
 def _load_file(file_name):
@@ -72,9 +72,9 @@ def _expected_headers():
 
 def _create_instance(requests_mock, feed, feed_data, offset_data, offset=0, count=2):
     expected_headers = _expected_headers()
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId={}_v2&offset={}&count={}".format(feed, offset, count),
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId={}&offset={}&count={}".format(feed, offset, count),
                       text=feed_data, request_headers=expected_headers)
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
                       json=offset_data, request_headers=expected_headers)
     client = _create_client(feed)
 
@@ -239,10 +239,10 @@ def test_fetch_indicators_rate_limiting(requests_mock, response_429):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10",
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10",
                       request_headers=_expected_headers(),
                       text=response_429, status_code=429)
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId=ip_reputation_v2", json=dict(startOffset=0, endOffset=0),
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId=ip_reputation", json=dict(startOffset=0, endOffset=0),
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
@@ -815,7 +815,7 @@ def test_test_module_server_error(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=500,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500,
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
@@ -835,7 +835,7 @@ def test_test_module_invalid_token(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=400,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
                       request_headers=_expected_headers(),
                       json=dict(statusCode=400,
                                 error="unable to parse claims from token: ..."))
@@ -857,7 +857,7 @@ def test_test_module_other_400(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=400,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
@@ -877,7 +877,7 @@ def test_test_module_404(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", status_code=404,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404,
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
@@ -897,7 +897,7 @@ def test_test_module_no_entries(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", text="",
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="",
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
@@ -917,7 +917,7 @@ def test_test_module_ok(requests_mock, ip_reputation):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation_v2&offset=0&count=10", text=ip_reputation,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation,
                       request_headers=_expected_headers())
     client = _create_client("ip_reputation")
 
@@ -994,7 +994,7 @@ def test_reset_offset_command(requests_mock, offset_data, context_data, offset, 
 
     set_integration_context(context_data)
     feed = "ip_reputation"
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
                       json=offset_data, request_headers=_expected_headers())
     client = _create_client(feed)
 
@@ -1039,7 +1039,7 @@ def test_get_offset_command(requests_mock, offset_data, context_data, expected_t
 
     set_integration_context(context_data)
     feed = "ip_reputation"
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}_v2".format(feed),
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
                       json=offset_data, request_headers=_expected_headers())
     client = _create_client(feed)
 

@@ -223,8 +223,7 @@ script:
     name: mirror-investigation
   - arguments:
     - default: true
-      description: "The message content. When mentioning another slack user, make\
-        \ sure to do so in the following format: <@user_name>."
+      description: "The message content. When mentioning another slack user, make sure to do so in the following format: <@user_name>."
       isArray: false
       name: message
       required: false
@@ -528,12 +527,7 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  - arguments: []
-    name: slack-get-integration-context
-    description: Returns the integration context as a file. Use this command for debug purposes only.
-    execution: false
-    hidden: true
-  dockerimage: demisto/slack:1.0.0.19258
+  dockerimage: demisto/slack:1.0.0.12666
   feed: false
   isfetch: false
   longRunning: true

@@ -13,10 +13,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: fe179079-6b2b-460b-875f-5306376a165f
+    taskid: 50799508-c9b1-4771-8b64-5d605a61cc61
     type: start
     task:
-      id: fe179079-6b2b-460b-875f-5306376a165f
+      id: 50799508-c9b1-4771-8b64-5d605a61cc61
       version: -1
       name: ""
       iscommand: false
@@ -37,14 +37,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a9e924e9-1d58-4ffd-88f2-69b39b16e4e8
+    taskid: e0318ac5-b242-49db-829e-b39325c938c7
     type: regular
     task:
-      id: a9e924e9-1d58-4ffd-88f2-69b39b16e4e8
+      id: e0318ac5-b242-49db-829e-b39325c938c7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -58,12 +56,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 185
         }
       }
     note: false
@@ -71,14 +71,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 41b11630-e3fd-48c1-86bb-64239f58e2dc
+    taskid: 3b00960a-e41a-48dc-8d38-6e54a7f31338
     type: regular
     task:
-      id: 41b11630-e3fd-48c1-86bb-64239f58e2dc
+      id: 3b00960a-e41a-48dc-8d38-6e54a7f31338
       version: -1
       name: ip
       description: Checks the reputation of an IP address.
@@ -90,15 +88,21 @@ tasks:
       '#none#':
       - "60"
     scriptarguments:
+      fullResponse: {}
       ip:
         simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1945
+          "y": 1770
         }
       }
     note: false
@@ -106,14 +110,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7f78395a-836d-4bb1-8f0c-350c0a799a75
+    taskid: 48798ea0-ddfa-4fb5-8a0a-82f1f122f51c
     type: condition
     task:
-      id: 7f78395a-836d-4bb1-8f0c-350c0a799a75
+      id: 48798ea0-ddfa-4fb5-8a0a-82f1f122f51c
       version: -1
       name: VerifyContext
       description: |-
@@ -152,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -160,14 +162,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 3031a30a-fa6e-4785-8217-5af45eeab2ca
+    taskid: 95b57616-52fd-47f2-803d-06b5ca8aa9c1
     type: regular
     task:
-      id: 3031a30a-fa6e-4785-8217-5af45eeab2ca
+      id: 95b57616-52fd-47f2-803d-06b5ca8aa9c1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -181,12 +181,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2820
+          "y": 2645
         }
       }
     note: false
@@ -194,14 +196,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: ddf0a5e6-3f9b-413e-820c-387a1f370056
+    taskid: 32746042-090b-437f-8a6e-981c8d11ff24
     type: regular
     task:
-      id: ddf0a5e6-3f9b-413e-820c-387a1f370056
+      id: 32746042-090b-437f-8a6e-981c8d11ff24
       version: -1
       name: VerifyContext
       description: |-
@@ -210,7 +210,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -220,6 +220,7 @@ tasks:
     scriptarguments:
       expectedValue:
         simple: demisto.com
+      fields: {}
       path:
         simple: DBotScore.Indicator
     separatecontext: false
@@ -227,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3170
         }
       }
     note: false
@@ -235,14 +236,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: dbaa10b4-9351-4670-8fd1-62f8464ecdc6
+    taskid: 275201e9-2809-4dd7-8a46-5887e2b30218
     type: regular
     task:
-      id: dbaa10b4-9351-4670-8fd1-62f8464ecdc6
+      id: 275201e9-2809-4dd7-8a46-5887e2b30218
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -256,12 +255,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 3520
+          "y": 3345
         }
       }
     note: false
@@ -269,14 +270,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5424d878-9508-42c8-8325-c736cddffad0
+    taskid: cc97747a-577d-4efd-802e-fa053eb0676e
     type: regular
     task:
-      id: 5424d878-9508-42c8-8325-c736cddffad0
+      id: cc97747a-577d-4efd-802e-fa053eb0676e
       version: -1
       name: domain
       description: Checks the reputation of a domain.
@@ -290,13 +289,19 @@ tasks:
     scriptarguments:
       domain:
         simple: demisto.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2995
+          "y": 2820
         }
       }
     note: false
@@ -304,14 +309,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3a41b0f2-76e6-40fe-89f8-d46e4d0a2642
+    taskid: eca0ab84-d372-4b2f-8fa5-0507ee280b00
     type: regular
     task:
-      id: 3a41b0f2-76e6-40fe-89f8-d46e4d0a2642
+      id: eca0ab84-d372-4b2f-8fa5-0507ee280b00
       version: -1
       name: file
       description: Checks the file reputation of the specified hash.
@@ -325,13 +328,17 @@ tasks:
     scriptarguments:
       file:
         simple: 7657fcb7d772448a6d8504e4b20168b8,d8c1df8a83ae7e3b33f8b766a72b75c2
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 3695
+          "y": 3520
         }
       }
     note: false
@@ -339,14 +346,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 8bc25f18-1ad0-44e9-881e-b22e626d57ad
+    taskid: e77d91d7-af12-4522-8618-ec80a85757b1
     type: condition
     task:
-      id: 8bc25f18-1ad0-44e9-881e-b22e626d57ad
+      id: e77d91d7-af12-4522-8618-ec80a85757b1
       version: -1
       name: VerifyContext
       description: |-
@@ -385,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 3870
         }
       }
     note: false
@@ -393,14 +398,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f0db5f57-e612-4109-827c-a0307ccb3c08
+    taskid: 8e2dde7b-ff7f-4fad-8661-99df143c08b8
     type: regular
     task:
-      id: f0db5f57-e612-4109-827c-a0307ccb3c08
+      id: 8e2dde7b-ff7f-4fad-8661-99df143c08b8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -414,12 +417,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4045
         }
       }
     note: false
@@ -427,14 +432,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8f86602d-c0cb-45e0-8f1c-5d0b1de99abc
+    taskid: e9843e14-1294-4aa1-8954-ad7021c5dee3
     type: regular
     task:
-      id: 8f86602d-c0cb-45e0-8f1c-5d0b1de99abc
+      id: e9843e14-1294-4aa1-8954-ad7021c5dee3
       version: -1
       name: url long demisto.com
       description: Checks the reputation of a URL.
@@ -448,15 +451,20 @@ tasks:
     scriptarguments:
       long:
         simple: "true"
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
         simple: www.demisto.com
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 8595
+          "y": 8420
         }
       }
     note: false
@@ -464,14 +472,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 8ec45471-846a-433c-8cd0-80e6992d1dad
+    taskid: 20fac48b-3573-4457-8723-15b99fda5c5a
     type: regular
     task:
-      id: 8ec45471-846a-433c-8cd0-80e6992d1dad
+      id: 20fac48b-3573-4457-8723-15b99fda5c5a
       version: -1
       name: VerifyContext
       description: |-
@@ -480,7 +486,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -490,6 +496,7 @@ tasks:
     scriptarguments:
       expectedValue:
         simple: www.demisto.com
+      fields: {}
       path:
         simple: DBotScore.Indicator
     separatecontext: false
@@ -497,7 +504,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8945
+          "y": 8770
         }
       }
     note: false
@@ -505,14 +512,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5eecfead-eed0-4a29-82e9-7368d9a3b3ae
+    taskid: 61973206-7388-4bcd-82ca-98020cd64151
     type: regular
     task:
-      id: 5eecfead-eed0-4a29-82e9-7368d9a3b3ae
+      id: 61973206-7388-4bcd-82ca-98020cd64151
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -526,12 +531,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 9120
+          "y": 8945
         }
       }
     note: false
@@ -539,14 +546,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: ba1335a4-c85b-424d-84f0-372bf356bea1
+    taskid: 58735554-764a-4e94-8783-90fe9cb63a69
     type: regular
     task:
-      id: ba1335a4-c85b-424d-84f0-372bf356bea1
+      id: 58735554-764a-4e94-8783-90fe9cb63a69
       version: -1
       name: file (second hash)
       description: Checks the file reputation of the specified hash.
@@ -560,13 +565,17 @@ tasks:
     scriptarguments:
       file:
         simple: d41d8cd98f00b204e9800998ecf8427e
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 5095
+          "x": 280,
+          "y": 4920
         }
       }
     note: false
@@ -574,14 +583,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a53f2e92-c4a1-4423-8009-058e5affd261
+    taskid: 5d6a6b67-061c-4b6a-845c-33bbbef00e51
     type: condition
     task:
-      id: a53f2e92-c4a1-4423-8009-058e5affd261
+      id: 5d6a6b67-061c-4b6a-845c-33bbbef00e51
       version: -1
       name: VerifyContext
       description: |-
@@ -619,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 5270
         }
       }
     note: false
@@ -627,14 +634,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: fdff5834-775b-48e9-8148-139adf12a77a
+    taskid: a1ef9112-c8b9-424d-8916-ca41a6f2d4b1
     type: regular
     task:
-      id: fdff5834-775b-48e9-8148-139adf12a77a
+      id: a1ef9112-c8b9-424d-8916-ca41a6f2d4b1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -648,12 +653,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 5445
         }
       }
     note: false
@@ -661,14 +668,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: d500ec4b-dd0b-49ca-802f-474556d6114d
+    taskid: 5fd0d8c5-a57d-4cb8-8f6c-37a171b13001
     type: regular
     task:
-      id: d500ec4b-dd0b-49ca-802f-474556d6114d
+      id: 5fd0d8c5-a57d-4cb8-8f6c-37a171b13001
       version: -1
       name: file long (second hash)
       description: Checks the file reputation of the specified hash.
@@ -684,13 +689,16 @@ tasks:
         simple: d41d8cd98f00b204e9800998ecf8427e
       long:
         simple: "true"
+      retries: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 5795
+          "y": 5620
         }
       }
     note: false
@@ -698,14 +706,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 094625b2-e92b-43a1-80fb-c7f95f65dbd5
+    taskid: 4a672159-6aeb-452b-814f-206d2d2163aa
     type: regular
     task:
-      id: 094625b2-e92b-43a1-80fb-c7f95f65dbd5
+      id: 4a672159-6aeb-452b-814f-206d2d2163aa
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -719,12 +725,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 6320
+          "y": 6145
         }
       }
     note: false
@@ -732,14 +740,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5388f66b-bfda-47d7-89bb-87e90b72f718
+    taskid: 474bbbc7-0414-4250-8d1f-3c92245c47f5
     type: condition
     task:
-      id: 5388f66b-bfda-47d7-89bb-87e90b72f718
+      id: 474bbbc7-0414-4250-8d1f-3c92245c47f5
       version: -1
       name: VerifyContext
       description: |-
@@ -772,7 +778,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 5970
         }
       }
     note: false
@@ -780,14 +786,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 845b7f04-9b41-4b7e-8271-ddd77701f4a7
+    taskid: 830982f7-6b67-43c2-8a80-3d956eb15c19
     type: regular
     task:
-      id: 845b7f04-9b41-4b7e-8271-ddd77701f4a7
+      id: 830982f7-6b67-43c2-8a80-3d956eb15c19
       version: -1
       name: file long
       description: Checks the file reputation of the specified hash.
@@ -803,13 +807,16 @@ tasks:
         simple: 7657fcb7d772448a6d8504e4b20168b8
       long:
         simple: "true"
+      retries: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4395
+          "y": 4220
         }
       }
     note: false
@@ -817,14 +824,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 20b39ace-8d03-4a45-8db5-c04611dab852
+    taskid: a7bc1f6b-642b-4681-8235-f6184f57c569
     type: condition
     task:
-      id: 20b39ace-8d03-4a45-8db5-c04611dab852
+      id: a7bc1f6b-642b-4681-8235-f6184f57c569
       version: -1
       name: VerifyContext
       description: |-
@@ -857,7 +862,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4570
         }
       }
     note: false
@@ -865,14 +870,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: fb15503b-1e09-4495-8ee7-d7b093bf15ab
+    taskid: 3997d8f4-daa5-4655-8ff2-f8f38d1e7e06
     type: regular
     task:
-      id: fb15503b-1e09-4495-8ee7-d7b093bf15ab
+      id: 3997d8f4-daa5-4655-8ff2-f8f38d1e7e06
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -886,12 +889,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4920
+          "y": 4745
         }
       }
     note: false
@@ -899,14 +904,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: b6fd465e-9d64-444b-8b48-1c231a54bba2
+    taskid: 5a14800e-e95c-4086-8c0a-1e3c8b354253
     type: regular
     task:
-      id: b6fd465e-9d64-444b-8b48-1c231a54bba2
+      id: 5a14800e-e95c-4086-8c0a-1e3c8b354253
       version: -1
       name: url coffedoesgood.com
       description: Checks the reputation of a URL.
@@ -918,17 +921,22 @@ tasks:
       '#none#':
       - "73"
     scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
       threshold:
         simple: "0"
       url:
         simple: http://coffeedoesgood.com
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 6495
+          "y": 6320
         }
       }
     note: false
@@ -936,14 +944,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 38d3900c-f463-49a8-8f3a-3a76aa365a87
+    taskid: cdbbe254-2686-4023-8d9c-e72bdb213fed
     type: regular
     task:
-      id: 38d3900c-f463-49a8-8f3a-3a76aa365a87
+      id: cdbbe254-2686-4023-8d9c-e72bdb213fed
       version: -1
       name: VerifyContext
       description: |-
@@ -952,7 +958,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -962,6 +968,7 @@ tasks:
     scriptarguments:
       expectedValue:
         simple: http://coffeedoesgood.com
+      fields: {}
       path:
         simple: DBotScore.Indicator
     separatecontext: false
@@ -969,7 +976,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 6670
         }
       }
     note: false
@@ -977,14 +984,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 1429c464-86b5-4f78-89b3-fdedb5fbe8f0
+    taskid: 80c23667-0079-46f8-860a-6382e3218cb9
     type: regular
     task:
-      id: 1429c464-86b5-4f78-89b3-fdedb5fbe8f0
+      id: 80c23667-0079-46f8-860a-6382e3218cb9
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -998,12 +1003,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 7020
+          "y": 6845
         }
       }
     note: false
@@ -1011,14 +1018,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 35f51254-9453-4432-8c98-77c56e8b0f5d
+    taskid: b571591a-0e2f-4002-8252-648379ad3ef8
     type: regular
     task:
-      id: 35f51254-9453-4432-8c98-77c56e8b0f5d
+      id: b571591a-0e2f-4002-8252-648379ad3ef8
       version: -1
       name: url long coffedoesgood.com
       description: Checks the reputation of a URL.
@@ -1032,17 +1037,21 @@ tasks:
     scriptarguments:
       long:
         simple: "true"
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
       threshold:
         simple: "0"
       url:
         simple: http://coffeedoesgood.com
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 7195
+          "y": 7020
         }
       }
     note: false
@@ -1050,14 +1059,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 1218461a-898a-4f18-8d91-5bfb98e44099
+    taskid: fca2c714-65e9-4ef3-86bb-d23a19f01981
     type: condition
     task:
-      id: 1218461a-898a-4f18-8d91-5bfb98e44099
+      id: fca2c714-65e9-4ef3-86bb-d23a19f01981
       version: -1
       name: VerifyContext
       description: |-
@@ -1104,7 +1111,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 7370
         }
       }
     note: false
@@ -1112,14 +1119,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: b82cb928-a2e9-41be-8604-abcb8b72ab25
+    taskid: b4bdd659-67a5-41bc-8773-847cea9ffa7d
     type: regular
     task:
-      id: b82cb928-a2e9-41be-8604-abcb8b72ab25
+      id: b4bdd659-67a5-41bc-8773-847cea9ffa7d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1133,6 +1138,47 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ffd797ed-568a-4cec-8b45-7b6e1e273bae
+    type: regular
+    task:
+      id: ffd797ed-568a-4cec-8b45-7b6e1e273bae
+      version: -1
+      name: url demisto.com
+      description: Checks the reputation of a URL.
+      script: VirusTotal|||url
+      type: regular
+      iscommand: true
+      brand: VirusTotal
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: www.demisto.com
+      wait: {}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -1146,49 +1192,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
-    taskid: b42fa8c2-7e9a-4972-896d-edb1985630d3
-    type: regular
-    task:
-      id: b42fa8c2-7e9a-4972-896d-edb1985630d3
-      version: -1
-      name: url demisto.com
-      description: Checks the reputation of a URL.
-      script: VirusTotal|||url
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "77"
-    scriptarguments:
-      url:
-        simple: www.demisto.com
-    continueonerror: true
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 7895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 00a78c12-e41f-495f-8f15-0ed1da4b5641
+    taskid: ba179d7f-d313-4d8c-8bd2-40ec6fa0d439
     type: regular
     task:
-      id: 00a78c12-e41f-495f-8f15-0ed1da4b5641
+      id: ba179d7f-d313-4d8c-8bd2-40ec6fa0d439
       version: -1
       name: VerifyContext
       description: |-
@@ -1197,7 +1206,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1207,6 +1216,7 @@ tasks:
     scriptarguments:
       expectedValue:
         simple: www.demisto.com
+      fields: {}
       path:
         simple: DBotScore.Indicator
     separatecontext: false
@@ -1214,7 +1224,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8245
+          "y": 8070
         }
       }
     note: false
@@ -1222,14 +1232,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 90d7b8af-a034-42e1-834a-6fc2aca6ea46
+    taskid: b84a2271-7bc0-4450-8422-a2751566e54c
     type: regular
     task:
-      id: 90d7b8af-a034-42e1-834a-6fc2aca6ea46
+      id: b84a2271-7bc0-4450-8422-a2751566e54c
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1243,12 +1251,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 8420
+          "y": 8245
         }
       }
     note: false
@@ -1256,14 +1266,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: ef536582-1e56-4c8a-8610-d1644d8e6ade
+    taskid: 70dbdcc2-fd20-4c52-85a2-2e061287c3c2
     type: regular
     task:
-      id: ef536582-1e56-4c8a-8610-d1644d8e6ade
+      id: 70dbdcc2-fd20-4c52-85a2-2e061287c3c2
       version: -1
       name: domain
       description: Checks the reputation of a domain.
@@ -1277,15 +1285,20 @@ tasks:
     scriptarguments:
       domain:
         simple: demisto.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
       threshold:
         simple: "0"
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 9295
+          "y": 9130
         }
       }
     note: false
@@ -1293,14 +1306,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 274b691d-949f-4b1b-8d7d-c89a4f70000c
+    taskid: c7518baa-2379-4154-8400-dc7dd51d50f0
     type: regular
     task:
-      id: 274b691d-949f-4b1b-8d7d-c89a4f70000c
+      id: c7518baa-2379-4154-8400-dc7dd51d50f0
       version: -1
       name: VerifyContext
       description: |-
@@ -1309,7 +1320,7 @@ tasks:
         - If matching object is an array: verify fields exists in each of the objects in the array
         - If matching object is not an array: verify fields exists in matching object
         - if 'expectedValue' is given: ensure that the given value is equal to the context path
-      script: VerifyContext
+      scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
@@ -1319,6 +1330,7 @@ tasks:
     scriptarguments:
       expectedValue:
         simple: demisto.com
+      fields: {}
       path:
         simple: DBotScore.Indicator
     separatecontext: false
@@ -1326,7 +1338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9645
+          "y": 9470
         }
       }
     note: false
@@ -1334,14 +1346,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 519dd7d5-4fc7-4c0d-8053-a61c6208ab8f
+    taskid: 694b84b7-179a-4ac2-800f-2d0f36557a49
     type: regular
     task:
-      id: 519dd7d5-4fc7-4c0d-8053-a61c6208ab8f
+      id: 694b84b7-179a-4ac2-800f-2d0f36557a49
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1355,12 +1365,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 9820
+          "y": 9645
         }
       }
     note: false
@@ -1368,14 +1380,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 09f773b2-5e83-46a4-8f16-87005adfb72f
+    taskid: 00558b47-686e-4a37-839b-f040b6f76d2c
     type: regular
     task:
-      id: 09f773b2-5e83-46a4-8f16-87005adfb72f
+      id: 00558b47-686e-4a37-839b-f040b6f76d2c
       version: -1
       name: Set
       description: Sets a value into the context with the given context key
@@ -1387,6 +1397,7 @@ tasks:
       '#none#':
       - "52"
     scriptarguments:
+      append: {}
       key:
         simple: File.SHA1
       value:
@@ -1404,14 +1415,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: f00a1c94-ab5c-4a66-8a30-fcfd8337e271
+    taskid: 93b82511-d806-4826-8e20-615c6a2d0071
     type: regular
     task:
-      id: f00a1c94-ab5c-4a66-8a30-fcfd8337e271
+      id: 93b82511-d806-4826-8e20-615c6a2d0071
       version: -1
       name: Set2
       description: Sets a value into the context with the given context key
@@ -1442,14 +1451,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 9da7c092-65f1-49b3-8f32-a075beac3e90
+    taskid: 9bee4073-8abc-4afc-857e-c029c784bc78
     type: regular
     task:
-      id: 9da7c092-65f1-49b3-8f32-a075beac3e90
+      id: 9bee4073-8abc-4afc-857e-c029c784bc78
       version: -1
       name: File (1 call)
       description: Checks the file reputation of the specified hash.
@@ -1471,8 +1478,11 @@ tasks:
               index:
                 value:
                   simple: "0"
+      long: {}
+      retries: {}
       threshold:
         simple: "1"
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1487,14 +1497,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 42fec6f9-b866-48e1-8d9c-32399537e60c
+    taskid: ea15656a-88dd-45b8-892a-72c65aae5005
     type: regular
     task:
-      id: 42fec6f9-b866-48e1-8d9c-32399537e60c
+      id: ea15656a-88dd-45b8-892a-72c65aae5005
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -1508,12 +1516,16 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1595
+          "y": 1420
         }
       }
     note: false
@@ -1521,14 +1533,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: a6e14649-a38e-4f37-8f29-c0bce4a2cf7f
+    taskid: ddfb94ac-289b-4646-810f-f8ce41e288e2
     type: condition
     task:
-      id: a6e14649-a38e-4f37-8f29-c0bce4a2cf7f
+      id: ddfb94ac-289b-4646-810f-f8ce41e288e2
       version: -1
       name: Exists
       description: Check if a given value exists in the context. Will return 'no'
@@ -1557,7 +1567,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1070
         }
       }
@@ -1566,14 +1576,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: e0fb97af-0825-432c-8885-d3c2e4ac5912
+    taskid: a7e9a553-1669-40c6-8301-b641984da72b
     type: condition
     task:
-      id: e0fb97af-0825-432c-8885-d3c2e4ac5912
+      id: a7e9a553-1669-40c6-8301-b641984da72b
       version: -1
       name: Exists2
       description: Check if a given value exists in the context. Will return 'no'
@@ -1584,7 +1592,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "95"
+      - "54"
     scriptarguments:
       value:
         complex:
@@ -1603,7 +1611,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1245
         }
       }
@@ -1612,14 +1620,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 1330510c-cafa-4e04-8d3a-43dc462e2754
+    taskid: a21a21d0-0476-43da-837b-79186688c3fc
     type: condition
     task:
-      id: 1330510c-cafa-4e04-8d3a-43dc462e2754
+      id: a21a21d0-0476-43da-837b-79186688c3fc
       version: -1
       name: Check for error
       type: condition
@@ -1651,14 +1657,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 9e3d4092-1c64-4a5f-8844-4b2acf1e5cfc
+    taskid: dd9573d3-785c-49e4-8300-e33d074df5c8
     type: condition
     task:
-      id: 9e3d4092-1c64-4a5f-8844-4b2acf1e5cfc
+      id: dd9573d3-785c-49e4-8300-e33d074df5c8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1682,8 +1686,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -1691,14 +1695,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: ad6b96fc-4b03-4657-87ad-4b5dfd16369c
+    taskid: 832084de-7b1b-4aee-86c6-f669182b289e
     type: condition
     task:
-      id: ad6b96fc-4b03-4657-87ad-4b5dfd16369c
+      id: 832084de-7b1b-4aee-86c6-f669182b289e
       version: -1
       name: Check for error
       type: condition
@@ -1722,7 +1724,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 1945
         }
       }
     note: false
@@ -1730,14 +1732,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 3049aa0c-3031-43f2-820b-1c42644d5d41
+    taskid: 6f990f61-99e4-46f4-89c5-d8fa02480087
     type: condition
     task:
-      id: 3049aa0c-3031-43f2-820b-1c42644d5d41
+      id: 6f990f61-99e4-46f4-89c5-d8fa02480087
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1762,7 +1762,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2295
+          "y": 2120
         }
       }
     note: false
@@ -1770,14 +1770,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 3db9d2ea-0e49-48fa-8172-c2a145b4985b
+    taskid: 0288da72-a580-492f-824e-99ee28e56596
     type: condition
     task:
-      id: 3db9d2ea-0e49-48fa-8172-c2a145b4985b
+      id: 0288da72-a580-492f-824e-99ee28e56596
       version: -1
       name: Check for error
       type: condition
@@ -1801,7 +1799,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3170
+          "y": 2995
         }
       }
     note: false
@@ -1809,14 +1807,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 06f8f547-be20-406e-84ce-db9f84ed25c9
+    taskid: 8042a0c6-3d19-4546-8447-4189e5f5ec20
     type: condition
     task:
-      id: 06f8f547-be20-406e-84ce-db9f84ed25c9
+      id: 8042a0c6-3d19-4546-8447-4189e5f5ec20
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1841,7 +1837,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3345
+          "y": 3170
         }
       }
     note: false
@@ -1849,14 +1845,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 1d89981c-514d-4567-863f-5d87bacc988d
+    taskid: 0197ff4f-6fe9-4f28-8f67-af892e26660e
     type: condition
     task:
-      id: 1d89981c-514d-4567-863f-5d87bacc988d
+      id: 0197ff4f-6fe9-4f28-8f67-af892e26660e
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1881,7 +1875,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4045
+          "y": 3870
         }
       }
     note: false
@@ -1889,14 +1883,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 79e9a1e7-16c1-4fbb-87e7-2eb131e825ff
+    taskid: 9b354b33-ec30-4f8e-85c7-46e952229432
     type: condition
     task:
-      id: 79e9a1e7-16c1-4fbb-87e7-2eb131e825ff
+      id: 9b354b33-ec30-4f8e-85c7-46e952229432
       version: -1
       name: Check for error
       type: condition
@@ -1920,7 +1912,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3870
+          "y": 3695
         }
       }
     note: false
@@ -1928,14 +1920,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: e63b18ff-73c4-4ef5-843c-5b539c455504
+    taskid: f679dd10-9fcf-4ccf-8f54-73789a812c24
     type: condition
     task:
-      id: e63b18ff-73c4-4ef5-843c-5b539c455504
+      id: f679dd10-9fcf-4ccf-8f54-73789a812c24
       version: -1
       name: Check for error
       type: condition
@@ -1959,7 +1949,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4570
+          "y": 4395
         }
       }
     note: false
@@ -1967,14 +1957,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: 2a39e194-d23c-470f-8224-e0af60190c31
+    taskid: 8d5719b8-64ba-46c7-8864-bba2d2cab5f1
     type: condition
     task:
-      id: 2a39e194-d23c-470f-8224-e0af60190c31
+      id: 8d5719b8-64ba-46c7-8864-bba2d2cab5f1
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -1999,7 +1987,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4745
+          "y": 4570
         }
       }
     note: false
@@ -2007,14 +1995,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: d95b11e9-96b2-4037-8a2c-bc8b96912350
+    taskid: 51f9613a-bd52-4ae3-8d05-802ea2d2100b
     type: condition
     task:
-      id: d95b11e9-96b2-4037-8a2c-bc8b96912350
+      id: 51f9613a-bd52-4ae3-8d05-802ea2d2100b
       version: -1
       name: Check for error
       type: condition
@@ -2038,7 +2024,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5095
         }
       }
     note: false
@@ -2046,14 +2032,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: ea41d985-fb5a-409c-8772-2520c7c3268b
+    taskid: c6e43259-324e-4019-816b-472a675654e7
     type: condition
     task:
-      id: ea41d985-fb5a-409c-8772-2520c7c3268b
+      id: c6e43259-324e-4019-816b-472a675654e7
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2078,7 +2062,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 5445
+          "y": 5270
         }
       }
     note: false
@@ -2086,14 +2070,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 8a7f5a57-3a09-4acf-8d4a-e32853c4e14f
+    taskid: 62560371-bcbf-4e21-862c-13052464b5b9
     type: condition
     task:
-      id: 8a7f5a57-3a09-4acf-8d4a-e32853c4e14f
+      id: 62560371-bcbf-4e21-862c-13052464b5b9
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2118,7 +2100,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6145
+          "y": 5970
         }
       }
     note: false
@@ -2126,14 +2108,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: b0a3d06c-9b8f-4ab6-81ab-e49e349f66cb
+    taskid: 05002938-013f-4c0e-8fb2-59212394da4e
     type: condition
     task:
-      id: b0a3d06c-9b8f-4ab6-81ab-e49e349f66cb
+      id: 05002938-013f-4c0e-8fb2-59212394da4e
       version: -1
       name: Check for error
       type: condition
@@ -2157,7 +2137,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 5795
         }
       }
     note: false
@@ -2165,14 +2145,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: b7cb1bc7-e2a6-45fa-82d3-3804a524b70e
+    taskid: 1a4a7ea3-2c1a-402e-8a88-4793532035cc
     type: condition
     task:
-      id: b7cb1bc7-e2a6-45fa-82d3-3804a524b70e
+      id: 1a4a7ea3-2c1a-402e-8a88-4793532035cc
       version: -1
       name: Check for error
       type: condition
@@ -2196,7 +2174,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6670
+          "y": 6495
         }
       }
     note: false
@@ -2204,14 +2182,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: 70de72de-1e7d-4079-8696-c2a07601dae3
+    taskid: 89574191-6775-4087-84fa-f4602a6fcd6b
     type: condition
     task:
-      id: 70de72de-1e7d-4079-8696-c2a07601dae3
+      id: 89574191-6775-4087-84fa-f4602a6fcd6b
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2236,7 +2212,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 6845
+          "y": 6670
         }
       }
     note: false
@@ -2244,14 +2220,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 55932705-af3d-4276-8571-7ab48acb7a15
+    taskid: cfc5df83-a8cc-4ffe-8eb0-21e27c015598
     type: condition
     task:
-      id: 55932705-af3d-4276-8571-7ab48acb7a15
+      id: cfc5df83-a8cc-4ffe-8eb0-21e27c015598
       version: -1
       name: Check for error
       type: condition
@@ -2275,7 +2249,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 7370
+          "y": 7195
         }
       }
     note: false
@@ -2283,14 +2257,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "76":
     id: "76"
-    taskid: 9fde7d12-eeb2-4e60-86d1-2306e814d8ad
+    taskid: b8638a64-b903-4cd7-8fcc-ac37377c44e8
     type: condition
     task:
-      id: 9fde7d12-eeb2-4e60-86d1-2306e814d8ad
+      id: b8638a64-b903-4cd7-8fcc-ac37377c44e8
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2315,7 +2287,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 7545
+          "y": 7370
         }
       }
     note: false
@@ -2323,14 +2295,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "77":
     id: "77"
-    taskid: f527209a-dc59-41b6-84e5-d7ee748d434a
+    taskid: 730c533d-a6be-4e04-8fc5-6b3ac15c7940
     type: condition
     task:
-      id: f527209a-dc59-41b6-84e5-d7ee748d434a
+      id: 730c533d-a6be-4e04-8fc5-6b3ac15c7940
       version: -1
       name: Check for error
       type: condition
@@ -2354,7 +2324,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8070
+          "y": 7895
         }
       }
     note: false
@@ -2362,14 +2332,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: 0e2680af-342e-4bc2-877b-827021a088ff
+    taskid: 4e2e6543-d1a9-461a-88b2-a110a4601094
     type: condition
     task:
-      id: 0e2680af-342e-4bc2-877b-827021a088ff
+      id: 4e2e6543-d1a9-461a-88b2-a110a4601094
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2394,7 +2362,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8245
+          "y": 8070
         }
       }
     note: false
@@ -2402,14 +2370,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "79":
     id: "79"
-    taskid: 12d59872-d531-4774-8015-4fe7cffd09f8
+    taskid: 691e3544-428d-42f9-849d-0fa3f2c7d338
     type: condition
     task:
-      id: 12d59872-d531-4774-8015-4fe7cffd09f8
+      id: 691e3544-428d-42f9-849d-0fa3f2c7d338
       version: -1
       name: Check for error
       type: condition
@@ -2433,7 +2399,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 8770
+          "y": 8595
         }
       }
     note: false
@@ -2441,14 +2407,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: 0f262f79-7f68-4f0b-87d4-0129edd5acff
+    taskid: 58ff3cf0-ade4-40ff-872f-41b82e705498
     type: condition
     task:
-      id: 0f262f79-7f68-4f0b-87d4-0129edd5acff
+      id: 58ff3cf0-ade4-40ff-872f-41b82e705498
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2473,7 +2437,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 8945
+          "y": 8770
         }
       }
     note: false
@@ -2481,14 +2445,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 58f2fc35-1a89-47c8-83a2-2bbbbfbc392d
+    taskid: c3d8a1ff-ba9b-48a7-8ff1-141fdb374618
     type: condition
     task:
-      id: 58f2fc35-1a89-47c8-83a2-2bbbbfbc392d
+      id: c3d8a1ff-ba9b-48a7-8ff1-141fdb374618
       version: -1
       name: Check for error
       type: condition
@@ -2512,7 +2474,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9470
+          "y": 9295
         }
       }
     note: false
@@ -2520,14 +2482,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 0cf0ae7e-ea27-46ca-8cbd-34ab26baf003
+    taskid: 9c620dca-be9a-4711-8b28-cbd459f3dc2a
     type: condition
     task:
-      id: 0cf0ae7e-ea27-46ca-8cbd-34ab26baf003
+      id: 9c620dca-be9a-4711-8b28-cbd459f3dc2a
       version: -1
       name: Check if error is API-RATE
       type: condition
@@ -2552,7 +2512,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 9645
+          "y": 9470
         }
       }
     note: false
@@ -2560,14 +2520,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 7afa9518-ce91-48f3-8f6e-0849642a565d
+    taskid: 6ea23def-6980-49e5-8056-20be1c94f893
     type: regular
     task:
-      id: 7afa9518-ce91-48f3-8f6e-0849642a565d
+      id: 6ea23def-6980-49e5-8056-20be1c94f893
       version: -1
       name: ip
       description: Checks the reputation of an IP address.
@@ -2579,14 +2537,20 @@ tasks:
       '#none#':
       - "84"
     scriptarguments:
+      fullResponse: {}
       ip:
         simple: 8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 2470
+          "y": 2295
         }
       }
     note: false
@@ -2594,14 +2558,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 6b0a8d55-1740-4fe5-829c-a2d54f987ca8
+    taskid: a7d9a0de-3599-4ebe-8fa8-79605e92e0bc
     type: condition
     task:
-      id: 6b0a8d55-1740-4fe5-829c-a2d54f987ca8
+      id: a7d9a0de-3599-4ebe-8fa8-79605e92e0bc
       version: -1
       name: Verify no duplicates
       type: condition
@@ -2634,7 +2596,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2645
+          "y": 2470
         }
       }
     note: false
@@ -2642,14 +2604,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: d478b0fe-ce84-4313-8fcc-4b20d742ef56
+    taskid: 699fdb8e-578d-4e1e-8afd-b1bba515cdae
     type: regular
     task:
-      id: d478b0fe-ce84-4313-8fcc-4b20d742ef56
+      id: 699fdb8e-578d-4e1e-8afd-b1bba515cdae
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -2668,7 +2628,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1770
+          "y": 1595
         }
       }
     note: false
@@ -2676,14 +2636,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: a0712c5b-bbe6-4d6c-86d5-79ff626fb8ee
+    taskid: 9ba54655-5d9a-4272-8375-670420b9426a
     type: regular
     task:
-      id: a0712c5b-bbe6-4d6c-86d5-79ff626fb8ee
+      id: 9ba54655-5d9a-4272-8375-670420b9426a
       version: -1
       name: ip_with_CSV
       description: Checks the reputation of an IP address.
@@ -2695,15 +2653,21 @@ tasks:
       '#none#':
       - "87"
     scriptarguments:
+      fullResponse: {}
       ip:
         simple: 103.225.52.112,8.8.8.8
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 10170
+          "y": 9930
         }
       }
     note: false
@@ -2711,14 +2675,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: b271e925-e897-451f-8e0f-a4a96951f2aa
+    taskid: 8e0a8a2d-9333-41f3-85dc-95f6a7e98a4d
     type: condition
     task:
-      id: b271e925-e897-451f-8e0f-a4a96951f2aa
+      id: 8e0a8a2d-9333-41f3-85dc-95f6a7e98a4d
       version: -1
       name: verify_ip_csv
       type: condition
@@ -2751,7 +2713,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10345
+          "y": 10080
         }
       }
     note: false
@@ -2759,14 +2721,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: fc261153-a3c7-4ae9-86dd-ca41a291ba5e
+    taskid: 30fd7953-3bd2-4c6c-8f97-038f5867ee52
     type: regular
     task:
-      id: fc261153-a3c7-4ae9-86dd-ca41a291ba5e
+      id: 30fd7953-3bd2-4c6c-8f97-038f5867ee52
       version: -1
       name: url_with_csv
       description: Checks the reputation of a URL.
@@ -2778,14 +2738,20 @@ tasks:
       '#none#':
       - "89"
     scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
       url:
         simple: https://demisto.com,https://mail.google.com/mail/u/0/?pli=1#inbox
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 10520
+          "y": 10240
         }
       }
     note: false
@@ -2793,14 +2759,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: 73dad18f-31f3-42c4-899e-b5c442b54c65
+    taskid: bb256988-65e9-4d4f-8552-516b7d2c8d01
     type: condition
     task:
-      id: 73dad18f-31f3-42c4-899e-b5c442b54c65
+      id: bb256988-65e9-4d4f-8552-516b7d2c8d01
       version: -1
       name: verify_url_csv
       type: condition
@@ -2833,7 +2797,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10695
+          "y": 10400
         }
       }
     note: false
@@ -2841,14 +2805,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: 75163d93-22a1-4b8e-8b62-8d8f2d432f8c
+    taskid: 03784f54-fb50-48b0-8f65-adc35ca53fa0
     type: regular
     task:
-      id: 75163d93-22a1-4b8e-8b62-8d8f2d432f8c
+      id: 03784f54-fb50-48b0-8f65-adc35ca53fa0
       version: -1
       name: domain_with_csv
       description: Checks the reputation of a domain.
@@ -2862,12 +2824,18 @@ tasks:
     scriptarguments:
       domain:
         simple: demisto.com,google.com
+      fullResponse: {}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 11045
+          "y": 10700
         }
       }
     note: false
@@ -2875,14 +2843,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: fa7d0175-2d89-45d1-80e0-dffd0bc5688c
+    taskid: 4145c462-6494-4d53-81d2-e8782c0fd62f
     type: condition
     task:
-      id: fa7d0175-2d89-45d1-80e0-dffd0bc5688c
+      id: 4145c462-6494-4d53-81d2-e8782c0fd62f
       version: -1
       name: verify_domain_csv
       type: condition
@@ -2915,7 +2881,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 11220
+          "y": 10880
         }
       }
     note: false
@@ -2923,14 +2889,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "92":
     id: "92"
-    taskid: 030644d7-854c-4fe9-8460-4cf8969ffa3b
+    taskid: cc352495-53bc-41ca-84b3-01eb1da84753
     type: regular
     task:
-      id: 030644d7-854c-4fe9-8460-4cf8969ffa3b
+      id: cc352495-53bc-41ca-84b3-01eb1da84753
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -2941,12 +2905,14 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
+      key: {}
+      keysToKeep: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 11395
+          "y": 11065
         }
       }
     note: false
@@ -2954,14 +2920,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "93":
     id: "93"
-    taskid: 6fc84dd0-d838-4d85-88a3-7f30aa4de4e0
+    taskid: cdfdf0f3-393b-4114-8039-2c52436b1f72
     type: regular
     task:
-      id: 6fc84dd0-d838-4d85-88a3-7f30aa4de4e0
+      id: cdfdf0f3-393b-4114-8039-2c52436b1f72
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -2980,7 +2944,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 9995
+          "y": 9790
         }
       }
     note: false
@@ -2988,14 +2952,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "94":
     id: "94"
-    taskid: 85978429-7db6-4b45-8674-af46651a9d90
+    taskid: 4952ffbe-a97e-4d57-8c4d-44abdc1b45f1
     type: regular
     task:
-      id: 85978429-7db6-4b45-8674-af46651a9d90
+      id: 4952ffbe-a97e-4d57-8c4d-44abdc1b45f1
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -3014,7 +2976,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10870
+          "y": 10550
         }
       }
     note: false
@@ -3022,49 +2984,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "95":
-    id: "95"
-    taskid: 9d4268b6-cfb7-45dc-8b5a-829223b771a1
-    type: condition
-    task:
-      id: 9d4268b6-cfb7-45dc-8b5a-829223b771a1
-      version: -1
-      name: Reliability Exists?
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
-      scriptName: Exists
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "54"
-    scriptarguments:
-      value:
-        simple: DBotScore.[0].Reliability
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11440,
+        "height": 11110,
         "width": 810,
         "x": 50,
         "y": 50

@@ -42,10 +42,10 @@ class TestPrivatePacks:
 
     def test_get_private_packs(self, mocker):
         import os
-        from Tests.Marketplace import marketplace_constants
+        from Tests.Marketplace import marketplace_services
         from Tests.private_build import upload_packs_private
 
-        mocker.patch('glob.glob', return_value=[os.path.join(marketplace_constants.CONTENT_ROOT_PATH,
+        mocker.patch('glob.glob', return_value=[os.path.join(marketplace_services.CONTENT_ROOT_PATH,
                                                              'Tests', 'Marketplace', 'Tests',
                                                              'test_data', 'metadata.json')])
 
@@ -53,9 +53,8 @@ class TestPrivatePacks:
 
         assert private_packs == [{'id': 'ImpossibleTraveler',
                                   'price': 100,
-                                  'vendorId': 'vendorId',
-                                  'partnerId': 'partnerId',
-                                  'partnerName': 'partnerName',
+                                  'vendorId': None,
+                                  'vendorName': None,
                                   'contentCommitHash': "",
                                   }]
 

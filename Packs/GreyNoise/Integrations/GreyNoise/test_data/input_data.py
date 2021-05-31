@@ -491,39 +491,3 @@ valid_ip_context_data_response = [
 get_ip_context_data_data = [
     ([valid_ip_context_data], valid_ip_context_data_response)
 ]
-
-valid_riot_response = {
-    "raw_data":
-        {
-            "ip": "8.8.8.8",
-            "riot": True,
-            "category": "public_dns",
-            "name": "Google Public DNS",
-            "description": "Google's global domain name system (DNS) resolution service.",
-            "explanation": "Public DNS services are used as alternatives to ISP's name servers. "
-                           "You may see devices on your network communicating with Google Public DNS over port "
-                           "53/TCP or 53/UDP to resolve DNS lookups.",
-            "last_updated": "2021-04-12T09:55:37Z",
-            "reference": "https://developers.google.com/speed/public-dns/docs/isp#alternative"
-        }
-}
-
-valid_riot_response_2 = {
-    "raw_data": {
-        "ip": "114.119.130.178",
-        "riot": False
-    }
-}
-invalid_riot_response = {
-    "raw_data":
-        {
-            "message": "IP provided is not a routable IPv4 address"
-        },
-    "error_message": "Invalid IP address: '{}'"
-}
-riot_command_response_data = [
-    ("positive", 200, {"ip": "8.8.8.8"}, valid_riot_response),
-    ("positive", 200, {"ip": "114.119.130.178"}, valid_riot_response_2),
-    ("negative", 400, {"ip": "123"}, invalid_riot_response),
-    ("negative", 400, {"ip": "abc"}, invalid_riot_response)
-]

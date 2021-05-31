@@ -1,4 +1,3 @@
-deprecated: true
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: PolySwarm
@@ -18,8 +17,8 @@ configuration:
   name: polyswarm_community
   required: true
   type: 0
-description: Deprecated. Use PolySwarm V2 instead.
-display: PolySwarm (Deprecated)
+description: Real-time threat intelligence from a crowd-sourced network of security experts and antivirus companies.
+display: PolySwarm
 name: PolySwarm
 script:
   commands:

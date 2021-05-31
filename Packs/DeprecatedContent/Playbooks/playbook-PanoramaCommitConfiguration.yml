@@ -483,4 +483,3 @@ inputs:
 outputs: []
 tests:
 - No test - Deprecated playbook
-deprecated: true

@@ -19,18 +19,6 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- defaultvalue: https://login.microsoftonline.com
-  display: Azure AD endpoint
-  hidden: false
-  name: azure_ad_endpoint
-  options:
-  - https://login.microsoftonline.com
-  - https://login.microsoftonline.us
-  - https://login.microsoftonline.de
-  - https://login.chinacloudapi.cn
-  required: false
-  type: 15
-  additionalinfo: Azure AD endpoint associated with a national cloud.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -478,7 +466,7 @@ script:
     description: Tests connectivity to the Azure Web Application Firewall.
     execution: false
     name: azure-waf-auth-test
-  dockerimage: demisto/crypto:1.0.0.17856
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false

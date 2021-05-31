@@ -18,8 +18,12 @@
     "breachScript": "",
     "editForm": true,
     "description": "",
-    "associatedTypes": null,
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Account",
+        "Email",
+        "Host"
+    ],
     "caseInsensitive": true,
     "columns": null,
     "placeholder": "",

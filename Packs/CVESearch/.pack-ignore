@@ -6,6 +6,3 @@ ignore=BA101
 
 [file:script-CveLatest.yml]
 ignore=BA101
-
-[file:README.md]
-ignore=RM104

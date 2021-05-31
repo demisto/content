@@ -70,7 +70,7 @@ def _calculate_dbot_score(severity: int) -> int:
     return dbot_score
 
 
-def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotScoreReliability) -> List[dict]:
+def _extract_analysis_info(res: dict, dbot_score_type: str) -> List[dict]:
     """
     Extract context data from http-response and create corresponding DBotScore.
     If response is empty, return empty context and a none for DBotScore object
@@ -92,7 +92,7 @@ def _extract_analysis_info(res: dict, dbot_score_type: str, reliability: DBotSco
                 indicator_value = result_content.get('key', '')
                 dbot_score: int = _calculate_dbot_score(result_content.get('severity', 0))
                 desc = 'Match found in iDefense database'
-                dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc, reliability)
+                dbot = Common.DBotScore(indicator_value, dbot_score_type, 'iDefense', dbot_score, desc)
                 last_published = result_content.get('last_published', '')
                 last_published_format = parse_date_string(last_published, DATE_FORMAT)
                 analysis_info = {
@@ -163,13 +163,12 @@ def test_module(client: Client) -> str:
         raise DemistoException(f"Error in API call - check the input parameters and the API Key. Error: {e}.")
 
 
-def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) -> List[CommandResults]:
+def ip_command(client: Client, args: dict) -> List[CommandResults]:
     """
 
     Args:
         client: iDefense client
         args: arguments obtained with the command representing the indicator value to search
-        reliability: reliability of the source
 
     Returns: CommandResults containing the indicator, the response and a readable output
 
@@ -177,7 +176,7 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) ->
     ips: list = argToList(args.get('ip'))
     _validate_args("IP", ips)
     res = client.threat_indicator_search(url_suffix='/ip', data={'key.values': ips})
-    analysis_results = _extract_analysis_info(res, DBotScoreType.IP, reliability)
+    analysis_results = _extract_analysis_info(res, DBotScoreType.IP)
     returned_ips = _check_returned_results(res)
     no_match_values = _check_no_match_values(ips, returned_ips)
     command_results = []
@@ -202,12 +201,12 @@ def ip_command(client: Client, args: dict, reliability: DBotScoreReliability) ->
     return command_results
 
 
-def url_command(client: Client, args: dict, reliability: DBotScoreReliability) -> List[CommandResults]:
+def url_command(client: Client, args: dict) -> List[CommandResults]:
     urls: list = argToList(args.get('url'))
     _validate_args("URL", urls)
 
     res = client.threat_indicator_search(url_suffix='/url', data={'key.values': urls})
-    analysis_results = _extract_analysis_info(res, DBotScoreType.URL, reliability)
+    analysis_results = _extract_analysis_info(res, DBotScoreType.URL)
     returned_urls = _check_returned_results(res)
     no_match_values = _check_no_match_values(urls, returned_urls)
     command_results = []
@@ -225,7 +224,7 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability) -
 
     for val in no_match_values:
         desc = "No results were found"
-        dbot = Common.DBotScore(val, DBotScoreType.URL, 'iDefense', 0, desc, reliability)
+        dbot = Common.DBotScore(val, DBotScoreType.URL, 'iDefense', 0, desc)
         indicator = Common.URL(val, dbot)
         readable_output = f"No results were found for url {val}"
         command_results.append(CommandResults(indicator=indicator, readable_output=readable_output))
@@ -233,12 +232,12 @@ def url_command(client: Client, args: dict, reliability: DBotScoreReliability) -
     return command_results
 
 
-def domain_command(client: Client, args: dict, reliability: DBotScoreReliability) -> List[CommandResults]:
+def domain_command(client: Client, args: dict) -> List[CommandResults]:
 
     domains: list = argToList(args.get('domain'))
 
     res = client.threat_indicator_search(url_suffix='/domain', data={'key.values': domains})
-    analysis_results = _extract_analysis_info(res, DBotScoreType.DOMAIN, reliability)
+    analysis_results = _extract_analysis_info(res, DBotScoreType.DOMAIN)
     returned_domains = _check_returned_results(res)
     no_match_values = _check_no_match_values(domains, returned_domains)
     command_results = []
@@ -256,7 +255,7 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
 
     for val in no_match_values:
         desc = "No results were found"
-        dbot = Common.DBotScore(val, DBotScoreType.DOMAIN, 'iDefense', 0, desc, reliability)
+        dbot = Common.DBotScore(val, DBotScoreType.DOMAIN, 'iDefense', 0, desc)
         indicator = Common.Domain(val, dbot)
         readable_output = f"No results were found for Domain {val}"
         command_results.append(CommandResults(indicator=indicator, readable_output=readable_output))
@@ -264,7 +263,7 @@ def domain_command(client: Client, args: dict, reliability: DBotScoreReliability
     return command_results
 
 
-def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) -> CommandResults:
+def uuid_command(client: Client, args: dict) -> CommandResults:
     """
     Search for indicator with the given uuid. When response return, checks which indicator found.
     Args:
@@ -292,13 +291,13 @@ def uuid_command(client: Client, args: dict, reliability: DBotScoreReliability) 
         indicator_type = res.get('type', '')
         # Create indicator by the uuid type returned
         if indicator_type.lower() == 'ip':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.IP, 'iDefense', dbot_score, desc, reliability)
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.IP, 'iDefense', dbot_score, desc)
             indicator = Common.IP(indicator_value, dbot)
         elif indicator_type.lower() == 'domain':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.DOMAIN, 'iDefense', dbot_score, desc, reliability)
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.DOMAIN, 'iDefense', dbot_score, desc)
             indicator = Common.Domain(indicator_value, dbot)
         elif indicator_type.lower() == 'url':
-            dbot = Common.DBotScore(indicator_value, DBotScoreType.URL, 'iDefense', dbot_score, desc, reliability)
+            dbot = Common.DBotScore(indicator_value, DBotScoreType.URL, 'iDefense', dbot_score, desc)
             indicator = Common.URL(indicator_value, dbot)
         last_published = res.get('last_published', '')
         last_published_format = parse_date_string(last_published, DATE_FORMAT)
@@ -319,12 +318,6 @@ def main():
     params = demisto.params()
     api_key = params.get('api_token', '')
     base_url = urljoin(params.get('url', ''))
-    reliability = params.get('integrationReliability', 'B - Usually reliable')
-
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        Exception("IDefense error: Please provide a valid value for the Source Reliability parameter")
 
     commands = {
         'url': url_command,
@@ -342,7 +335,7 @@ def main():
         if command == 'test-module':
             return_results(test_module(client))
         elif command in commands:
-            return_results(commands[command](client, demisto.args(), reliability))
+            return_results(commands[command](client, demisto.args()))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

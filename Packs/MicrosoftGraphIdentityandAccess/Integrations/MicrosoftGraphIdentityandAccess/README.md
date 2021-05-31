@@ -8,7 +8,6 @@ Use the Microsoft Graph Identity and Access integration to manage roles and memb
     | **Parameter** | **Required** |
     | --- | --- |
     | Application ID | True |
-    | Azure AD endpoint | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 

@@ -118,7 +118,7 @@ def test_get_categories(mocker):
     # zscaler-get-categories
     import Zscaler
     run_command_test(command_func=Zscaler.get_categories_command,
-                     args={'args': {'displayURL': 'true'}},
+                     args={'display_url': 'true'},
                      response_path='test_data/responses/categories2.json',
                      expected_result_path='test_data/results/get_categories.json',
                      mocker=mocker)
@@ -128,20 +128,9 @@ def test_get_categories_custom_only(mocker):
     # zscaler-get-categories
     import Zscaler
     run_command_test(command_func=Zscaler.get_categories_command,
-                     args={'args': {'displayURL': 'true', 'custom_only': True}},
+                     args={'display_url': 'true', 'custom_only': True},
                      response_path='test_data/responses/categories2.json',
                      expected_result_path='test_data/results/get_categories.json',
-                     mocker=mocker)
-
-
-@pytest.mark.parametrize('display_url, get_ids_and_names_only', [(False, True), (True, True)])
-def test_get_categories_ids_and_names_only(mocker, display_url, get_ids_and_names_only):
-    # zscaler-get-categories retrieve only categories IDs and names (without urls)
-    import Zscaler
-    run_command_test(command_func=Zscaler.get_categories_command,
-                     args={'args': {'displayURL': display_url, 'get_ids_and_names_only': get_ids_and_names_only}},
-                     response_path='test_data/responses/categories2_no_urls.json',
-                     expected_result_path='test_data/results/get_categories_no_urls.json',
                      mocker=mocker)
 
 
@@ -180,8 +169,6 @@ test_data = [
     ('https://madeup.fake.com/css?family=blah:1,2,3', 'true', ['madeup.fake.com/css?family=blah:1', '2', '3']),
     ('https://madeup.fake.com/css?family=blah:1,2,3', 'false', ['madeup.fake.com/css?family=blah:1,2,3'])
 ]
-
-
 # disable-secrets-detection-end
 
 

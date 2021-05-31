@@ -616,4 +616,3 @@ outputs:
   type: number
 tests:
 - No tests
-deprecated: true

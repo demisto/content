@@ -9,7 +9,6 @@ class IAMErrors(object):
     :return: None
     :rtype: ``None``
     """
-    BAD_REQUEST = 400, 'Bad request - failed to perform operation'
     USER_DOES_NOT_EXIST = 404, 'User does not exist'
     USER_ALREADY_EXISTS = 409, 'User already exists'
 

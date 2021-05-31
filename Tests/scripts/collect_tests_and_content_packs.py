@@ -14,7 +14,6 @@ from distutils.version import LooseVersion
 from typing import Dict, Tuple, Union, Optional
 
 import demisto_sdk.commands.common.tools as tools
-from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.scripts.utils import collect_helpers
@@ -127,11 +126,11 @@ _FAILED = False
 ID_SET = {}
 CONF: Union[TestConf, dict] = {}
 
-if os.path.isfile('./artifacts/id_set.json'):
-    with open('./artifacts/id_set.json', 'r') as conf_file:
+if os.path.isfile('./Tests/id_set.json'):
+    with open('./Tests/id_set.json', 'r') as conf_file:
         ID_SET = json.load(conf_file)
 
-if os.path.isfile('./artifacts/conf.json'):
+if os.path.isfile('./Tests/conf.json'):
     with open('./Tests/conf.json', 'r') as conf_file:
         CONF = TestConf(json.load(conf_file))
 
@@ -230,9 +229,9 @@ def collect_tests_and_content_packs(
 
         if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
-            logging.error(f'The playbook "{test_playbook_name}" does not appear in the conf.json file,'
-                          " which means no test with it will run. please update the conf.json file accordingly."
-                          )
+            logging.error("The playbook {} does not appear in the conf.json file,"
+                          " which means no test with it will run. please update the conf.json file accordingly"
+                          .format(test_playbook_name))
 
     ids_with_no_tests = update_missing_sets(catched_intergrations, catched_playbooks, catched_scripts,
                                             integration_ids, playbook_ids, script_ids)
@@ -248,12 +247,10 @@ def collect_tests_and_content_packs(
             test_playbook_pack = test_playbook_object.get('pack')
             if test_playbook_pack:
                 logging.info(
-                    f'Found test playbook "{test_playbook_id}" in pack "{test_playbook_pack}"'
-                    f' - adding to packs to install')
+                    f'Found test playbook {test_playbook_id} in pack {test_playbook_pack} - adding to packs to install')
                 packs_to_install.add(test_playbook_pack)
             else:
-                logging.warning(f'Found test playbook "{test_playbook_id}" without pack'
-                                f' - not adding to packs to install')
+                logging.warning(f'Found test playbook {test_playbook_id} without pack - not adding to packs to install')
 
     return test_ids, ids_with_no_tests, caught_missing_test, packs_to_install
 
@@ -307,7 +304,8 @@ def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
-    logging.critical(f'Could not find integration "{integration_id}" in the id_set')
+        else:
+            logging.critical(f'Could not find integration "{integration}" in the id_set')
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
@@ -342,11 +340,11 @@ def find_tests_and_content_packs_for_modified_files(modified_files, conf=deepcop
     playbook_names = set([])
     integration_ids = set([])
 
-    tests_set, caught_scripts, caught_playbooks, packs_to_install = collect_changed_ids(
+    tests_set, catched_scripts, catched_playbooks, packs_to_install = collect_changed_ids(
         integration_ids, playbook_names, script_names, modified_files, id_set)
 
     test_ids, missing_ids, caught_missing_test, test_packs_to_install = collect_tests_and_content_packs(
-        script_names, playbook_names, integration_ids, caught_scripts, caught_playbooks, tests_set, id_set, conf)
+        script_names, playbook_names, integration_ids, catched_scripts, catched_playbooks, tests_set, id_set, conf)
 
     packs_to_install.update(test_packs_to_install)
 
@@ -795,27 +793,6 @@ def extract_matching_object_from_id_set(obj_id, obj_set, server_version='0'):
     return None
 
 
-def get_packs_from_landing_page(branch_name: str) -> set:
-    """
-    Parses the changes made by the current branch to the landing page sections file into modified packs.
-    These modified packs will have the metadata files changed.
-    Args:
-        branch_name: The name of the branch to compare changes from origin/master
-
-    Returns:
-        A set of packs that needs to be updated.
-    """
-    with open(LANDING_PAGE_SECTIONS_JSON_PATH, 'r') as file:
-        landing_page_sections_content = json.load(file)
-    landing_page_sections_keys = landing_page_sections_content.keys()
-    change_string = tools.run_command(f'git diff origin/master...{branch_name} {LANDING_PAGE_SECTIONS_JSON_PATH}')
-    changed_packs = set()
-    for changed_group in re.findall(r'[-+][ ]+"(.*)"', change_string):
-        if changed_group not in landing_page_sections_keys:
-            changed_packs.add(changed_group)
-    return changed_packs
-
-
 def get_test_from_conf(branch_name, conf=deepcopy(CONF)):
     tests = set([])
     changed = set([])
@@ -1074,7 +1051,7 @@ def filter_installed_packs(packs_to_install: set) -> set:
         else:
             packs_that_should_be_installed.add(pack)
     if packs_that_should_not_be_installed:
-        logging.debug('The following packs should not be installed and therefore not collected: \n{} '.format(
+        logging.debug('The following packs are should not be installed and therefore not collected: \n{} '.format(
             '\n'.join(packs_that_should_not_be_installed)))
 
     return packs_that_should_be_installed
@@ -1104,17 +1081,8 @@ def get_test_list_and_content_packs_to_install(files_string,
                                                conf=deepcopy(CONF),
                                                id_set=deepcopy(ID_SET)):
     """Create a test list that should run"""
-    modified_files_instance = get_modified_files_for_testing(files_string)
-
-    modified_files_with_relevant_tests = modified_files_instance.modified_files
-    modified_tests_list = modified_files_instance.modified_tests
-    changed_common = modified_files_instance.changed_common_files
-    is_conf_json = modified_files_instance.is_conf_json
-    sample_tests = modified_files_instance.sample_tests
-    modified_packs = modified_files_instance.modified_metadata
-    is_reputations_json = modified_files_instance.is_reputations_json
-    is_indicator_json = modified_files_instance.is_indicator_json
-    is_landing_page_sections_json = modified_files_instance.is_landing_page_sections_json
+    (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
+     modified_packs, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
 
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
@@ -1153,9 +1121,6 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     if is_conf_json:
         tests = tests.union(get_test_from_conf(branch_name, conf))
-
-    if is_landing_page_sections_json:
-        packs_to_install |= get_packs_from_landing_page(branch_name)
 
     if changed_common:
         tests.add('TestCommonPython')
@@ -1219,9 +1184,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
         (string, string). The boundaries of the lowest from version (defaults to 0.0.0)
          and highest to version (defaults to 99.99.99)
     """
-    if all_modified_files_paths == {'Tests/Marketplace/landingPage_sections.json'}:
-        logging.debug('landingPage_sections.json is the only modified file, running only marketplace instances')
-        return '6.0.0', '99.99.99'
     modified_packs = modified_packs if modified_packs else set([])
     max_to_version = LooseVersion('0.0.0')
     min_from_version = LooseVersion('99.99.99')
@@ -1266,16 +1228,6 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
     return min_from_version.vstring, max_to_version.vstring
 
 
-def is_release_branch():
-    """
-    Checks for the current build's branch
-    Returns:
-        True if the branch name under the 'CI_COMMIT_BRANCH' env variable is a release branch, else False.
-    """
-    branch_name = os.getenv('CI_COMMIT_BRANCH', '')
-    return re.match(r'[0-9]{2}\.[0-9]{1,2}\.[0-9]', branch_name)
-
-
 def create_filter_envs_file(from_version: str, to_version: str, documentation_changes_only: bool = False):
     """
     Create a file containing all the envs we need to run for the CI
@@ -1300,15 +1252,8 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
             'Server 5.0': False,
             'Server 6.0': False,
         }
-    # Releases are only relevant for non marketplace server versions, therefore - there is no need to create marketplace
-    # server in release branches.
-    if is_release_branch():
-        marketplace_server_keys = {key for key in envs_to_test.keys() if key not in {'Server 5.5', 'Server 5.0'}}
-        for key in marketplace_server_keys:
-            envs_to_test[key] = False
-
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
-    with open("./artifacts/filter_envs.json", "w") as filter_envs_file:
+    with open("./Tests/filter_envs.json", "w") as filter_envs_file:
         json.dump(envs_to_test, filter_envs_file)
 
 
@@ -1366,11 +1311,11 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if not skip_save:
         logging.info("Creating filter_file.txt")
-        with open("./artifacts/filter_file.txt", "w") as filter_file:
+        with open("./Tests/filter_file.txt", "w") as filter_file:
             filter_file.write(tests_string)
         # content_packs_to_install.txt is not used in nightly build
         logging.info("Creating content_packs_to_install.txt")
-        with open("./artifacts/content_packs_to_install.txt", "w") as content_packs_to_install:
+        with open("./Tests/content_packs_to_install.txt", "w") as content_packs_to_install:
             content_packs_to_install.write(packs_to_install_string)
 
     if is_nightly:

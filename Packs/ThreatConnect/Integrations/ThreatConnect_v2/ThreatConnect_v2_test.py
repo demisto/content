@@ -171,16 +171,16 @@ FILE_INDICATOR = [{
     'confidence': 20,
     'threatAssessRating': 4.0,
     'threatAssessConfidence': 20.0,
-    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A'     # noqa: W504
-               + '40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
+    'webLink': 'https://sandbox.threatconnect.com/auth/indicators/details/file.xhtml?file=49456A' +     # noqa: W504
+               '40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229&owner=Demisto+Inc.',
     'sha256': '49456A40536940A1304A506D7278F6B19FC7F71BE545810F7CAFEAA35A086229',
     'type': 'File'
 }]
 FILE_CONTEXT = (
     {
-        'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && '    # noqa: W504
-        + 'val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && '     # noqa: W504
-        + 'val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [{
+        'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && ' +    # noqa: W504
+        'val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && ' +     # noqa: W504
+        'val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)': [{
             'Malicious': {
                 'Vendor': 'ThreatConnect',
                 'Description': ''
@@ -251,8 +251,7 @@ data_test_create_context = [
 def test_create_context(indicators, expected_output, params, mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
     output = create_context(indicators)
-    assert output == expected_output, f'expected_output({indicators})\n\treturns: ' \
-                                      f'{output}\n\tinstead: {expected_output}'
+    assert output == expected_output, f'expected_output({indicators})\n\treturns: {output}\n\tinstead: {expected_output}'
 
 
 data_test_create_context_debotscore = [
@@ -276,8 +275,7 @@ data_test_create_context_debotscore = [
 
 @ pytest.mark.parametrize('params, rate, expected_score', data_test_create_context_debotscore)
 def test_create_context_debotscore(params, rate, expected_score, mocker):
-    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect',
-                       'Reliability': 'B - Usually reliable'}
+    expected_output = {'Indicator': '88.88.88.88', 'Score': expected_score, 'Type': 'ip', 'Vendor': 'ThreatConnect'}
     indicator = deepcopy(IP_INDICATOR)
     indicator[0]['rating'] = float(rate)
     mocker.patch.object(demisto, 'params', return_value=params)
@@ -323,4 +321,3 @@ def test_create_context_debotscore_samilar_indicator(mocker):
     assert len(context['DBotScore']) == 1
     assert context['DBotScore'][0]['Indicator'] == '88.88.88.88'
     assert context['DBotScore'][0]['Score'] == 3
-    assert context['DBotScore'][0]['Reliability'] == 'B - Usually reliable'

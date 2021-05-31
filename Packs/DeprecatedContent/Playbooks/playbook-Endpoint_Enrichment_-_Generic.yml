@@ -838,4 +838,3 @@ outputs:
   type: string
 tests:
 - no test
-deprecated: true

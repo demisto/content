@@ -11,5 +11,5 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.4.18682
+dockerimage: demisto/python3:3.8.2.6920
 fromversion: 5.5.0

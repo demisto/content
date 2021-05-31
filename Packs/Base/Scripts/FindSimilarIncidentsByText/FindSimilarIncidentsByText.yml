@@ -108,7 +108,7 @@ timeout: '0'
 type: python
 dockerimage: demisto/machine-learning
 runas: DBotRole
-runonce: true
+runonce: false
 tests:
-- No test
+- Dedup - Generic v2 - Test
 fromversion: 5.0.0

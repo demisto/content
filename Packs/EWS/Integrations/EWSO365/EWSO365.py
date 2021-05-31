@@ -2,9 +2,6 @@ import random
 import string
 from typing import Dict
 
-import dateparser
-import chardet
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -14,6 +11,7 @@ import traceback
 import json
 import os
 import hashlib
+from datetime import timedelta
 from io import StringIO
 import logging
 import warnings
@@ -66,7 +64,6 @@ warnings.filterwarnings("ignore")
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 50
-FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"
@@ -1494,7 +1491,7 @@ def get_items_from_folder(
         "receivedBy",
         "author",
         "toRecipients",
-        "itemId",
+        "id",
     ]
     readable_output = tableToMarkdown(
         "Items in folder " + folder_path, items_result, headers=hm_headers
@@ -2063,12 +2060,10 @@ def parse_incident_from_item(item):
                                     and header.name != "Content-Type"
                             ):
                                 attached_email.add_header(header.name, header.value)
-                    attached_email_bytes = attached_email.as_bytes()
-                    chardet_detection = chardet.detect(attached_email_bytes)
-                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email_bytes.decode(encoding),
+                        attached_email.as_string(),
                     )
 
                 if file_result:
@@ -2198,20 +2193,15 @@ def fetch_last_emails(
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
-        tz = EWSTimeZone.timezone('UTC')
-        first_fetch_datetime = dateparser.parse(FETCH_TIME)
-        first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
-        qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
+        last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone("UTC")) - timedelta(
+            minutes=10
+        )
+        qs = qs.filter(last_modified_time__gte=last_10_min)
     qs = qs.filter().only(*[x.name for x in Message.FIELDS])
     qs = qs.filter().order_by("datetime_received")
 
-    result = []
-    for item in qs:
-        if isinstance(item, Message):
-            result.append(item)
-            if len(result) >= client.max_fetch:
-                break
-
+    result = qs.all()
+    result = [x for x in result if isinstance(x, Message)]
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
         result = [x for x in result if x.message_id not in exclude_ids]

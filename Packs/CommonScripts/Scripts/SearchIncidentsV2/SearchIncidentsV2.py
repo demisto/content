@@ -3,6 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
 
@@ -23,15 +24,7 @@ def is_valid_args(args: Dict):
     for _key, value in args.items():
         if _key in array_args:
             try:
-                if _key == 'id':
-                    if type(value) != int and type(value) != str:
-                        error_msg.append(
-                            f'Error while parsing the incident id with the value: {value}. The given type: '
-                            f'{type(value)} is not a valid type for an ID. The supported id types are: int and str')
-                    elif type(value) == str:
-                        _ = bytes(value, "utf-8").decode("unicode_escape")
-                else:
-                    _ = bytes(value, "utf-8").decode("unicode_escape")
+                _ = bytes(value, "utf-8").decode("unicode_escape")
             except UnicodeDecodeError as ex:
                 error_msg.append(f'Error while parsing the argument: "{_key}" '
                                  f'\nError:\n- "{str(ex)}"')

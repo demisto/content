@@ -1,5 +1,3 @@
-import shutil
-
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -109,9 +107,8 @@ def http_request(uri: str, method: str, headers: dict = {},
 
     json_result = json.loads(xml2json(result.text))
 
-    # handle raw response that does not contain the response key, e.g configuration export
-    if ('response' not in json_result or '@code' not in json_result['response']) and \
-            not json_result['response']['@status'] != 'success':
+    # handle raw response that doe not contain the response key, e.g xonfiguration export
+    if 'response' not in json_result or '@code' not in json_result['response']:
         return json_result
 
     # handle non success
@@ -291,30 +288,29 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
         # application always must be specified and the default should be any
         application = ['any']
 
-    # flake8: noqa
     rulename = rulename if rulename else ('demisto-' + (str(uuid.uuid4()))[:8])
     params = {
         'type': 'config',
         'action': api_action,
         'key': API_KEY,
         'element': add_argument_open(action, 'action', False)
-                   + add_argument_target(target, 'target')
-                   + add_argument_open(description, 'description', False)
-                   + add_argument_list(source, 'source', True, True)
-                   + add_argument_list(destination, 'destination', True, True)
-                   + add_argument_list(application, 'application', True)
-                   + add_argument_list(category, 'category', True)
-                   + add_argument_open(source_user, 'source-user', True)
-                   + add_argument_list(from_, 'from', True, True)  # default from will always be any
-                   + add_argument_list(to, 'to', True, True)  # default to will always be any
-                   + add_argument_list(service, 'service', True, True)
-                   + add_argument_yes_no(negate_source, 'negate-source')
-                   + add_argument_yes_no(negate_destination, 'negate-destination')
-                   + add_argument_yes_no(disable, 'disabled')
-                   + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
-                   + add_argument(log_forwarding, 'log-setting', False)
-                   + add_argument_list(tags, 'tag', True)
-                   + add_argument_profile_setting(profile_setting, 'profile-setting')
+                + add_argument_target(target, 'target')
+                + add_argument_open(description, 'description', False)
+                + add_argument_list(source, 'source', True, True)
+                + add_argument_list(destination, 'destination', True, True)
+                + add_argument_list(application, 'application', True)
+                + add_argument_list(category, 'category', True)
+                + add_argument_open(source_user, 'source-user', True)
+                + add_argument_list(from_, 'from', True, True)  # default from will always be any
+                + add_argument_list(to, 'to', True, True)  # default to will always be any
+                + add_argument_list(service, 'service', True, True)
+                + add_argument_yes_no(negate_source, 'negate-source')
+                + add_argument_yes_no(negate_destination, 'negate-destination')
+                + add_argument_yes_no(disable, 'disabled')
+                + add_argument_yes_no(disable_server_response_inspection, 'disable-server-response-inspection', True)
+                + add_argument(log_forwarding, 'log-setting', False)
+                + add_argument_list(tags, 'tag', True)
+                + add_argument_profile_setting(profile_setting, 'profile-setting')
     }
     if DEVICE_GROUP:
         if not PRE_POST:
@@ -4459,12 +4455,9 @@ def panorama_get_logs_command(args: dict):
 ''' Security Policy Match'''
 
 
-def build_policy_match_query(application: Optional[str] = None, category: Optional[str] = None,
-                             destination: Optional[str] = None,
-                             destination_port: Optional[str] = None, from_: Optional[str] = None,
-                             to_: Optional[str] = None,
-                             protocol: Optional[str] = None, source: Optional[str] = None,
-                             source_user: Optional[str] = None):
+def build_policy_match_query(application: Optional[str] = None, category: Optional[str] = None, destination: Optional[str] = None,
+                             destination_port: Optional[str] = None, from_: Optional[str] = None, to_: Optional[str] = None,
+                             protocol: Optional[str] = None, source: Optional[str] = None, source_user: Optional[str] = None):
     query = '<test><security-policy-match>'
     if from_:
         query += f'<from>{from_}</from>'
@@ -5120,6 +5113,8 @@ def panorama_content_update_install_status_command(args: dict):
     """
     Check jobID of content update install status
     """
+    if DEVICE_GROUP:
+        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args['job_id']
     result = panorama_content_update_install_status(target, job_id)
@@ -5337,6 +5332,8 @@ def panorama_install_panos_status_command(args: dict):
     """
     Check jobID of panos install status
     """
+    if DEVICE_GROUP:
+        raise Exception('PAN-OS installation status status is only supported on Firewall (not Panorama).')
     target = str(args['target']) if 'target' in args else None
     job_id = args['job_id']
     result = panorama_install_panos_status(target, job_id)
@@ -5740,15 +5737,16 @@ def apply_security_profile(xpath: str, profile_name: str) -> Dict:
 
 
 def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
+
     if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
-        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/" \
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"\
                 f"profiles/{profile_type}"
 
     else:  # firewall instance
-        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/" \
+        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
                 f"profiles/{profile_type}"
 
     apply_security_profile(xpath, profile_name)
@@ -5769,6 +5767,7 @@ def get_ssl_decryption_rules(xpath: str) -> Dict:
 
 
 def get_ssl_decryption_rules_command(pre_post: str):
+
     content = []
     if DEVICE_GROUP:
         if not pre_post:
@@ -5911,6 +5910,7 @@ def get_anti_spyware_best_practice() -> Dict:
 
 
 def get_anti_spyware_best_practice_command():
+
     result = get_anti_spyware_best_practice()
     spyware_profile = result.get('response', {}).get('result', {}).get('spyware').get('entry', [])
     strict_profile = next(item for item in spyware_profile if item['@name'] == 'strict')
@@ -5965,6 +5965,7 @@ def get_file_blocking_best_practice() -> Dict:
 
 
 def get_file_blocking_best_practice_command():
+
     results = get_file_blocking_best_practice()
     file_blocking_profile = results.get('response', {}).get('result', {}).get('file-blocking', {}).get('entry', [])
 
@@ -6002,6 +6003,7 @@ def get_antivirus_best_practice() -> Dict:
 
 
 def get_antivirus_best_practice_command():
+
     results = get_antivirus_best_practice()
     antivirus_profile = results.get('response', {}).get('result', {}).get('virus', {})
     strict_profile = antivirus_profile.get('entry', {})
@@ -6038,6 +6040,7 @@ def get_vulnerability_protection_best_practice() -> Dict:
 
 
 def get_vulnerability_protection_best_practice_command():
+
     results = get_vulnerability_protection_best_practice()
     vulnerability_protection = results.get('response', {}).get('result', {}).get('vulnerability', {}).get('entry', [])
     strict_profile = next(item for item in vulnerability_protection if item['@name'] == 'strict')
@@ -6113,6 +6116,7 @@ def prettify_wildfire_rules(rules: Dict) -> List:
 
 
 def get_wildfire_best_practice_command():
+
     result = get_wildfire_best_practice()
     wildfire_profile = result.get('response', {}).get('result', {}).get('wildfire-analysis', {})
     best_practice = wildfire_profile.get('entry', {}).get('rules', {}).get('entry', {})
@@ -6164,7 +6168,7 @@ def set_xpath_wildfire(template: str = None) -> str:
     """
     if template:
         xpath_wildfire = f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=" \
-                         f"'{template}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/wildfire"
+            f"'{template}']/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting/wildfire"
 
     else:
         xpath_wildfire = "/config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting"
@@ -6173,6 +6177,7 @@ def set_xpath_wildfire(template: str = None) -> str:
 
 @logger
 def get_wildfire_system_config(template: str) -> Dict:
+
     params = {
         'action': 'get',
         'type': 'config',
@@ -6190,7 +6195,7 @@ def get_wildfire_update_schedule(template: str) -> Dict:
         'action': 'get',
         'type': 'config',
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']"
-                 f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        f"/config/devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
         'key': API_KEY
     }
     result = http_request(URL, 'GET', params=params)
@@ -6199,6 +6204,7 @@ def get_wildfire_update_schedule(template: str) -> Dict:
 
 
 def get_wildfire_configuration_command(template: str):
+
     file_size = []
     result = get_wildfire_system_config(template)
     system_config = result.get('response', {}).get('result', {}).get('wildfire', {})
@@ -6242,7 +6248,7 @@ def enforce_wildfire_system_config(template: str) -> Dict:
         'action': 'set',
         'type': 'config',
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/"
-                 f"config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting",
+        f"config/devices/entry[@name='localhost.localdomain']/deviceconfig/setting",
         'key': API_KEY,
         'element': '<wildfire><file-size-limit><entry name="pe"><size-limit>10</size-limit></entry>'
                    '<entry name="apk"><size-limit>30</size-limit></entry><entry name="pdf">'
@@ -6264,7 +6270,7 @@ def enforce_wildfire_schedule(template: str) -> Dict:
         'action': 'set',
         'type': 'config',
         'xpath': f"/config/devices/entry[@name='localhost.localdomain']/template/entry[@name='{template}']/config/"
-                 f"devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
+        f"devices/entry[@name='localhost.localdomain']/deviceconfig/system/update-schedule/wildfire",
         'key': API_KEY,
         'element': '<recurring><every-min><action>download-and-install</action></every-min></recurring>'
     }
@@ -6275,6 +6281,7 @@ def enforce_wildfire_schedule(template: str) -> Dict:
 
 
 def enforce_wildfire_best_practice_command(template: str):
+
     enforce_wildfire_system_config(template)
     enforce_wildfire_schedule(template)
 
@@ -6285,6 +6292,7 @@ def enforce_wildfire_best_practice_command(template: str):
 
 @logger
 def url_filtering_block_default_categories(profile_name: str) -> Dict:
+
     params = {
         'action': 'set',
         'type': 'config',
@@ -6301,11 +6309,13 @@ def url_filtering_block_default_categories(profile_name: str) -> Dict:
 
 
 def url_filtering_block_default_categories_command(profile_name: str):
+
     url_filtering_block_default_categories(profile_name)
     return_results(f'The default categories to block has been set successfully to {profile_name}')
 
 
 def get_url_filtering_best_practice_command():
+
     best_practice = {
         '@name': 'best-practice', 'credential-enforcement': {
             'mode': {'disabled': False},
@@ -6397,6 +6407,7 @@ def create_antivirus_best_practice_profile_command(profile_name: str):
 
 @logger
 def create_anti_spyware_best_practice_profile(profile_name: str) -> Dict:
+
     params = {
         'action': 'set',
         'type': 'config',
@@ -6426,6 +6437,7 @@ def create_anti_spyware_best_practice_profile_command(profile_name: str):
 
 @logger
 def create_vulnerability_best_practice_profile(profile_name: str) -> Dict:
+
     params = {
         'action': 'set',
         'type': 'config',
@@ -6479,6 +6491,7 @@ def create_vulnerability_best_practice_profile_command(profile_name: str):
 
 @logger
 def create_url_filtering_best_practice_profile(profile_name: str) -> Dict:
+
     params = {
         'action': 'set',
         'type': 'config',
@@ -6599,273 +6612,6 @@ def create_wildfire_best_practice_profile_command(profile_name: str):
     return_results(f'The profile {profile_name} was created successfully.')
 
 
-def prettify_zones_config(zones_config: Union[List, Dict]) -> Union[List, Dict]:
-    pretty_zones_config = []
-    if isinstance(zones_config, dict):
-        return {
-            'Name': zones_config.get('@name'),
-            'Network': zones_config.get('network'),
-            'ZoneProtectionProfile': zones_config.get('zone-protection-profile'),
-            'EnableUserIdentification': zones_config.get('enable-user-identification', 'no'),
-            'LogSetting': zones_config.get('log-setting')
-        }
-
-    for zone in zones_config:
-        pretty_zones_config.append({
-            'Name': zone.get('@name'),
-            'Network': zone.get('network'),
-            'ZoneProtectionProfile': zone.get('zone-protection-profile'),
-            'EnableUserIdentification': zone.get('enable-user-identification', 'no'),
-            'LogSetting': zone.get('log-setting')
-        })
-
-    return pretty_zones_config
-
-
-def get_interfaces_from_zone_config(zone_config: Dict) -> List:
-    """Extract interfaces names from zone configuration"""
-    # a zone has several network options as listed bellow, a single zone my only have one network option
-    possible_zone_layers = ['layer2', 'layer3', 'tap', 'virtual-wire', 'tunnel']
-
-    for zone_layer in possible_zone_layers:
-        zone_network_info = zone_config.get('network', {}).get(zone_layer)
-
-        if zone_network_info:
-            interfaces = zone_network_info.get('member')
-            if interfaces:
-                if isinstance(interfaces, str):
-                    return [interfaces]
-
-                else:
-                    return interfaces
-
-    return []
-
-
-def prettify_user_interface_config(zone_config: Union[List, Dict]) -> Union[List, Dict]:
-    pretty_interface_config = []
-    if isinstance(zone_config, dict):
-        interfaces = get_interfaces_from_zone_config(zone_config)
-
-        for interface in interfaces:
-            pretty_interface_config.append({
-                'Name': interface,
-                'Zone': zone_config.get('@name'),
-                'EnableUserIdentification': zone_config.get('enable-user-identification', 'no')
-            })
-
-    else:
-        for zone in zone_config:
-            interfaces = get_interfaces_from_zone_config(zone)
-
-            if isinstance(interfaces, str):
-                interfaces = [interfaces]
-
-            for interface in interfaces:
-                pretty_interface_config.append({
-                    'Name': interface,
-                    'Zone': zone.get('@name'),
-                    'EnableUserIdentification': zone.get('enable-user-identification', 'no')
-                })
-
-    return pretty_interface_config
-
-
-def show_user_id_interface_config_request(args):
-    template = args.get('template') if args.get('template') else TEMPLATE
-    template_stack = args.get('template_stack')
-    vsys = args.get('vsys')
-
-    if VSYS and not vsys:
-        vsys = VSYS
-    elif not vsys:
-        vsys = 'vsys1'
-
-    # firewall instance xpath
-    if VSYS:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
-
-    # panorama instance xpath
-    elif not template_stack:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                "template/entry[@name=\'" + template + "\']/config/devices/entry[@name='localhost.localdomain']/" \
-                                                       "vsys/entry[@name=\'" + vsys + "\']/zone"
-    else:
-        xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                "/template-stack/entry[@name=\'" + template_stack + \
-                "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + "\']/zone"
-
-    params = {
-        'action': 'show',
-        'type': 'config',
-        'xpath': xpath,
-        'key': API_KEY
-    }
-    result = http_request(
-        URL,
-        'GET',
-        params=params,
-    )
-
-    return dict_safe_get(result, keys=['response', 'result', 'zone', 'entry'])
-
-
-def show_user_id_interface_config_command(args: dict):
-    raw_response = show_user_id_interface_config_request(args)
-
-    if raw_response:
-        formatted_results = prettify_user_interface_config(raw_response)
-        return_results(
-            CommandResults(
-                outputs_prefix="Panorama.UserInterfaces",
-                outputs_key_field='Name',
-                outputs=formatted_results,
-                readable_output=tableToMarkdown('User Interface Configuration:', formatted_results,
-                                                ['Name', 'Zone', 'EnableUserIdentification'],
-                                                removeNull=True),
-                raw_response=raw_response
-            )
-        )
-
-    else:
-        return_results("No results found")
-
-
-def show_zone_config_command(args):
-    raw_response = show_user_id_interface_config_request(args)
-
-    if raw_response:
-        formatted_results = prettify_zones_config(raw_response)
-        return_results(
-            CommandResults(
-                outputs_prefix="Panorama.Zone",
-                outputs_key_field='Name',
-                outputs=formatted_results,
-                readable_output=tableToMarkdown('Zone Configuration:', formatted_results,
-                                                ['Name', 'Network', 'EnableUserIdentification',
-                                                 'ZoneProtectionProfile', 'LogSetting'],
-                                                removeNull=True),
-                raw_response=raw_response
-            )
-        )
-
-    else:
-        return_results("No results found")
-
-
-def list_configured_user_id_agents_request(args, version):
-    template = args.get('template') if args.get('template') else TEMPLATE
-    template_stack = args.get('template_stack')
-    vsys = args.get('vsys')
-
-    if VSYS and not vsys:
-        vsys = VSYS
-    elif not vsys:
-        vsys = 'vsys1'
-
-    if VSYS:
-        if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/" \
-                    "vsys/entry[@name=\'" + vsys + "\']/user-id-agent"
-        else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']" \
-                    "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
-
-    elif template_stack:
-        if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
-                    "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
-                                                         "/vsys/entry[@name=\'" + vsys + "\']/user-id-agent"
-        else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template-stack" \
-                    "/entry[@name=\'" + template_stack + "\']/config/devices/entry[@name='localhost.localdomain']" \
-                                                         "/vsys/entry[@name=\'" + vsys + "\']/redistribution-agent"
-    else:
-        if version < 10:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
-                    "\']/user-id-agent"
-        else:
-            xpath = "/config/devices/entry[@name='localhost.localdomain']/template/entry[@name=\'" + template + \
-                    "\']/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name=\'" + vsys + \
-                    "\']/redistribution-agent"
-
-    params = {
-        'action': 'show',
-        'type': 'config',
-        'xpath': xpath,
-        'key': API_KEY
-    }
-    result = http_request(
-        URL,
-        'GET',
-        params=params,
-    )
-
-    if version < 10:
-        return dict_safe_get(result, keys=['response', 'result', 'user-id-agent', 'entry'])
-
-    else:
-        return dict_safe_get(result, keys=['response', 'result', 'redistribution-agent', 'entry'])
-
-
-def prettify_configured_user_id_agents(user_id_agents: Union[List, Dict]) -> Union[List, Dict]:
-    pretty_user_id_agents = []
-    if isinstance(user_id_agents, dict):
-        return {
-            'Name': user_id_agents['@name'],
-            'Host': dict_safe_get(user_id_agents, keys=['host-port', 'host']),
-            'Port': dict_safe_get(user_id_agents, keys=['host-port', 'port']),
-            'NtlmAuth': dict_safe_get(user_id_agents, keys=['host-port', 'ntlm-auth'], default_return_value='no'),
-            'LdapProxy': dict_safe_get(user_id_agents, keys=['host-port', 'ldap-proxy'], default_return_value='no'),
-            'CollectorName': dict_safe_get(user_id_agents, keys=['host-port', 'collectorname']),
-            'Secret': dict_safe_get(user_id_agents, keys=['host-port', 'secret']),
-            'EnableHipCollection': user_id_agents.get('enable-hip-collection', 'no'),
-            'IpUserMapping': user_id_agents.get('ip-user-mappings', 'no'),
-            'SerialNumber': user_id_agents.get('serial-number'),
-            'Disabled': user_id_agents.get('disabled', 'no')
-        }
-
-    for agent in user_id_agents:
-        pretty_user_id_agents.append({
-            'Name': agent['@name'],
-            'Host': dict_safe_get(agent, keys=['host-port', 'host']),
-            'Port': dict_safe_get(agent, keys=['host-port', 'port']),
-            'NtlmAuth': dict_safe_get(agent, keys=['host-port', 'ntlm-auth'], default_return_value='no'),
-            'LdapProxy': dict_safe_get(agent, keys=['host-port', 'ldap-proxy'], default_return_value='no'),
-            'CollectorName': dict_safe_get(agent, keys=['host-port', 'collectorname']),
-            'Secret': dict_safe_get(agent, keys=['host-port', 'secret']),
-            'EnableHipCollection': agent.get('enable-hip-collection', 'no'),
-            'IpUserMapping': agent.get('ip-user-mappings', 'no'),
-            'SerialNumber': agent.get('serial-number'),
-            'Disabled': agent.get('disabled', 'no')
-        })
-
-    return pretty_user_id_agents
-
-
-def list_configured_user_id_agents_command(args):
-    version = get_pan_os_major_version()
-    raw_response = list_configured_user_id_agents_request(args, version)
-    if raw_response:
-        formatted_results = prettify_configured_user_id_agents(raw_response)
-        headers = ['Name', 'Disabled', 'SerialNumber', 'Host', 'Port', 'CollectorName', 'LdapProxy', 'NtlmAuth',
-                   'IpUserMapping']
-
-        return_results(
-            CommandResults(
-                outputs_prefix='Panorama.UserIDAgents',
-                outputs_key_field='Name',
-                outputs=formatted_results,
-                readable_output=tableToMarkdown('User ID Agents:', formatted_results,
-                                                headers, removeNull=True),
-                raw_response=raw_response
-            )
-        )
-    else:
-        return_results("No results found")
-
-
 def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
     global URL, API_KEY, USE_SSL, USE_URL_FILTERING, VSYS, DEVICE_GROUP, XPATH_SECURITY_RULES, XPATH_OBJECTS, \
         XPATH_RULEBASE, TEMPLATE, PRE_POST
@@ -6928,87 +6674,6 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
                              DEVICE_GROUP + "\']/"
     else:
         XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'{VSYS}\']/"
-
-
-def panorama_upload_content_update_file_command(args: dict):
-    category = args.get('category')
-    entry_id = args.get('entryID')
-    file_path = demisto.getFilePath(entry_id)['path']
-    file_name = demisto.getFilePath(entry_id)['name']
-    shutil.copy(file_path, file_name)
-    with open(file_name, 'rb') as file:
-        params = {'type': 'import', 'category': category, 'key': API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={'file': file})
-        human_readble = tableToMarkdown("Results", t=response.get('response'))
-        content_upload_info = {
-            'Message': response['response']['msg'],
-            'Status': response['response']['@status']
-        }
-        results = CommandResults(raw_response=response,
-                                 readable_output=human_readble,
-                                 outputs_prefix="Panorama.Content.Upload",
-                                 outputs_key_field="Status",
-                                 outputs=content_upload_info)
-
-    shutil.rmtree(file_name, ignore_errors=True)
-    return results
-
-
-@logger
-def panorama_install_file_content_update(version: str, category: str, validity: str):
-    """
-    More information about the API endpoint of that request can see here:
-    https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/run-operational-mode-commands-api.html#idb894d5f5-091f-4e08-b051-4c22cc9c660d
-    """
-    if category == "content":
-        params = {
-            'type': 'op',
-            'cmd': (
-                f'<request><{category}><upgrade><install><skip-content-validity-check>{validity}'
-                f'</skip-content-validity-check><file>{version}</file></install></upgrade></{category}></request>'),
-            'key': API_KEY
-        }
-    else:
-        params = {
-            'type': 'op',
-            'cmd': (
-                f'<request><{category}><upgrade><install><file>{version}'
-                f'</file></install></upgrade></{category}></request>'), 'key': API_KEY
-        }
-    result = http_request(
-        URL,
-        'GET',
-        params=params
-    )
-    return result
-
-
-def panorama_install_file_content_update_command(args: dict):
-    version = args.get('version_name')
-    category = args.get('category')
-    validity = args['skip_validity_check']
-    result = panorama_install_file_content_update(version, category, validity)
-
-    if 'result' in result.get('response'):
-        # installation has been given a jobid
-        content_install_info = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending'
-        }
-        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
-        human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
-
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': human_readable,
-            'EntryContext': entry_context
-        })
-    else:
-        # no content install took place
-        return_results(result['response']['msg'])
 
 
 def main():
@@ -7361,21 +7026,6 @@ def main():
 
         elif demisto.command() == 'panorama-create-wildfire-best-practice-profile':
             create_wildfire_best_practice_profile_command(**args)
-
-        elif demisto.command() == 'panorama-show-user-id-interfaces-config':
-            show_user_id_interface_config_command(args)
-
-        elif demisto.command() == 'panorama-show-zones-config':
-            show_zone_config_command(args)
-
-        elif demisto.command() == 'panorama-list-configured-user-id-agents':
-            list_configured_user_id_agents_command(args)
-
-        elif demisto.command() == 'panorama-upload-content-update-file':
-            return_results(panorama_upload_content_update_file_command(args))
-
-        elif demisto.command() == 'panorama-install-file-content-update':
-            panorama_install_file_content_update_command(args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')

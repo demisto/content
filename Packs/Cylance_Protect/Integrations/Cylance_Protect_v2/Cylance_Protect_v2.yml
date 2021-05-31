@@ -265,12 +265,6 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the threat.
       type: string
-    - contextPath: File.Sha256
-      description: The SHA256 hash of the threat.
-      type: string
-    - contextPath: File.MD5
-      description: The SHA256 hash of the threat.
-      type: string
     - contextPath: File.SubClassification
       description: The Cylance threat sub-classification.
       type: string
@@ -658,9 +652,6 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash for the threat.
       type: string
-    - contextPath: File.Sha256
-      description: The SHA256 hash for the threat.
-      type: string
     - contextPath: File.Safelisted
       description: Identifies if the threat is on the Safe List.
       type: boolean
@@ -785,9 +776,6 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the threat.
       type: string
-    - contextPath: File.Sha256
-      description: The SHA256 hash of the threat.
-      type: string
     - contextPath: File.Name
       description: The name of the threat.
       type: string
@@ -833,9 +821,6 @@ script:
     name: cylance-protect-download-threat
     outputs:
     - contextPath: File.SHA256
-      description: SHA256 hash of the file.
-      type: string
-    - contextPath: File.Sha256
       description: SHA256 hash of the file.
       type: string
     - contextPath: File.Name
@@ -1014,7 +999,7 @@ script:
     - contextPath: Cylance.Device.Deleted
       description: A boolean to check if the device was deleted.
       type: boolean
-  dockerimage: demisto/pyjwt:1.0.0.19034
+  dockerimage: demisto/pyjwt:1.0.0.12779
   feed: false
   isfetch: true
   longRunning: false

@@ -1,8 +1,8 @@
 {
     "name": "Ransomware",
-    "description": "This pack is used to identify, investigate, and contain ransomware attacks.",
+    "description": "A pack used to investigate ransomware incidents.",
     "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,52 +14,5 @@
     "useCases": [
         "Ransomware"
     ],
-    "keywords": [],
-    "dependencies": {
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
-        "rasterize": {
-            "mandatory": true,
-            "display_name": "Rasterize"
-        },
-        "GmailSingleUser": {
-            "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
-        },
-        "MailSenderNew": {
-            "mandatory": false,
-            "display_name": "Mail Sender (New)"
-        },
-        "Gmail": {
-            "mandatory": false,
-            "display_name": "Gmail"
-        },
-        
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "EWS": {
-            "mandatory": false,
-            "display_name": "EWS"
-        },
-        "MicrosoftGraphMail": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail"
-        },
-        "MicrosoftGraphListener": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail Single User"
-        },
-        "Cryptocurrency": {
-            "mandatory": true,
-            "display_name": "Cryptocurrency"
-        },
-        "Active_Directory_Query": {
-            "mandatory": false,
-            "display_name": "Active Directory Query"
-        }
-    }
+    "keywords": []
 }

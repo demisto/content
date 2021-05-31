@@ -56,7 +56,7 @@ def main():
     fields_names_to_populate = ['tagField', 'emailsubject', 'emailbody', "emailbodyhtml"]
     fields_to_populate = [get_incidents_by_query_args.get(x, None) for x in fields_names_to_populate]
     fields_to_populate = [x for x in fields_to_populate if x is not None]
-    get_incidents_by_query_args['populateFields'] = ','.join(fields_to_populate)
+    get_incidents_by_query_args['populateFileds'] = ','.join(fields_to_populate)
     get_incidents_by_query_args = build_query_in_reepect_to_phishing_labels(get_incidents_by_query_args)
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
     if is_error(res):

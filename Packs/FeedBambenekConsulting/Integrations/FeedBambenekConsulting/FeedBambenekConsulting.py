@@ -20,12 +20,9 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
-            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
-            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
-                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None),
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
 
@@ -34,12 +31,9 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
-            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
-                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)$', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist-high.txt': {
@@ -47,12 +41,9 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.IP,
-            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
-            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
-                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'http://osint.bambenekconsulting.com/feeds/c2-dommasterlist-high.txt': {
@@ -60,13 +51,9 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
-            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
-                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None),
-
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga-feed.gz': {
@@ -74,12 +61,9 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
-            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
-                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)(\(|DGA)', None),
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             },
             'is_zipped_file': True
         },
@@ -88,12 +72,9 @@ def main():
                            'date_created',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relationship_name': EntityRelationship.Relationships.INDICATOR_OF,
-            'relationship_entity_b_type': 'STIX Malware',
             'mapping': {
                 'description': 'description',
-                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None),
-                'relationship_entity_b': ('description', r'.*used\s+by\s(.*?)\s', None)
+                'malwarefamily': ('description', r'.*used\s+by\s(.*?)\s', None)
             },
             'is_zipped_file': True
         },
@@ -105,11 +86,8 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relationship_entity_b_type': FeedIndicatorType.IP,
-            'relationship_name': EntityRelationship.Relationships.RESOLVED_FROM,
             'mapping': {
-                'ipaddress': 'ip',
-                'relationship_entity_b': 'ip'
+                'ipaddress': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/dga/c2-masterlist-high.txt': {
@@ -120,11 +98,8 @@ def main():
                            'description',
                            'info'],
             'indicator_type': FeedIndicatorType.Domain,
-            'relationship_name': EntityRelationship.Relationships.RESOLVED_FROM,
-            'relationship_entity_b_type': FeedIndicatorType.IP,
             'mapping': {
-                'ipaddress': 'ip',
-                'relationship_entity_b': 'ip'
+                'ipaddress': 'ip'
             }
         },
         'https://faf.bambenekconsulting.com/feeds/sinkhole/latest.csv': {
@@ -149,5 +124,5 @@ def main():
 
 from CSVFeedApiModule import *  # noqa: E402
 
-if __name__ in ('__builtin__', 'builtins', '__main__'):
+if __name__ == '__builtin__' or __name__ == 'builtins':
     main()

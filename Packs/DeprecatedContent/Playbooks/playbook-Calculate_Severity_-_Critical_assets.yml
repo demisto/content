@@ -473,4 +473,3 @@ outputs:
   type: string
 tests:
 - No test - Deprecated playbook
-deprecated: true

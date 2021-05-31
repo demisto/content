@@ -328,4 +328,3 @@ outputs:
   type: unknown
 tests:
 - No test (test is old and uses virustotal which has quota problems. The v2 playbook has a better test)
-deprecated: true

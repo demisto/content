@@ -1,5 +1,0 @@
-[file:README.md]
-ignore=RM104
-
-[file:Slack_IAM.yml]
-ignore=BA108,BA109

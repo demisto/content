@@ -26,15 +26,25 @@ name: Cisco Firepower
 script:
   commands:
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The number of items to return.
         The default is 50
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of the first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all security zone objects.
+    execution: false
     name: ciscofp-list-zones
     outputs:
     - contextPath: CiscoFP.Zone.ID
@@ -57,12 +67,21 @@ script:
       description: |-
         The number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         by default is 0
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves list of all port objects.
+    execution: false
     name: ciscofp-list-ports
     outputs:
     - contextPath: CiscoFP.Port.ID
@@ -83,12 +102,21 @@ script:
       description: |-
         The number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all URL category objects.
+    execution: false
     name: ciscofp-list-url-categories
     outputs:
     - contextPath: CiscoFP.Category.ID
@@ -98,18 +126,32 @@ script:
       description: Name of the category.
       type: String
   - arguments:
-    - description: Object ID.
+    - default: false
+      description: Object ID.
+      isArray: false
       name: object_id
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the network objects associated with the specified ID. If
       not supplied, retrieves a list of all network objects.
+    execution: false
     name: ciscofp-get-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
@@ -128,23 +170,39 @@ script:
       description: Description of the network object.
       type: String
   - arguments:
-    - description: The name of the new object.
+    - default: false
+      description: The name of the new object.
+      isArray: false
       name: name
       required: true
-    - description: CIDR
+      secret: false
+    - default: false
+      description: CIDR
+      isArray: false
       name: value
       required: true
-    - description: The object description.
+      secret: false
+    - default: false
+      description: The object description.
+      isArray: false
       name: description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Boolean indicating whether objects can be overridden. Can be "true"
         or "false". The default is "false".
+      isArray: false
       name: overridable
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a network object.
+    execution: false
     name: ciscofp-create-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
@@ -163,25 +221,44 @@ script:
       description: Description of the network object.
       type: String
   - arguments:
-    - description: ID of the object to update.
+    - default: false
+      description: ID of the object to update.
+      isArray: false
       name: id
       required: true
-    - description: The object name.
+      secret: false
+    - default: false
+      description: The object name.
+      isArray: false
       name: name
       required: true
-    - description: CIDR
+      secret: false
+    - default: false
+      description: CIDR
+      isArray: false
       name: value
       required: true
-    - description: The object description.
+      secret: false
+    - default: false
+      description: The object description.
+      isArray: false
       name: description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Boolean indicating whether the object can be overridden.
+      isArray: false
       name: overridable
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Updates the specified network object.
+    execution: false
     name: ciscofp-update-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
@@ -200,18 +277,32 @@ script:
       description: Description of the network object.
       type: String
   - arguments:
-    - description: ID of the object group for which to return groups and addresses.
+    - default: false
+      description: ID of the object group for which to return groups and addresses.
+      isArray: false
       name: id
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of the first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the groups of network objects and addresses associated
       with the specified ID. If not supplied, retrieves a list of all network objects.
+    execution: false
     name: ciscofp-get-network-groups-object
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
@@ -242,25 +333,46 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: The group name.
+    - default: false
+      description: The group name.
+      isArray: false
       name: name
       required: true
-    - description: A comma-separated list of object IDs to add to the group.
+      secret: false
+    - default: false
+      description: A comma-separated list of object IDs to add to the group.
+      isArray: false
       name: network_objects_id_list
-    - description: A comma-separated list of IP addresses or CIDR ranges to add the
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IP addresses or CIDR ranges to add the
         group.
+      isArray: false
       name: network_address_list
-    - description: The object description.
+      required: false
+      secret: false
+    - default: false
+      description: The object description.
+      isArray: false
       name: description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden. Can
         be "true" or "false". The default is "false".
+      isArray: false
       name: overridable
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a group of network objects.
+    execution: false
     name: ciscofp-create-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
@@ -291,28 +403,52 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: The ID of the group to update.
+    - default: false
+      description: The ID of the group to update.
+      isArray: false
       name: id
       required: true
-    - description: A comma-separated list of object IDs to add the group.
+      secret: false
+    - default: false
+      description: A comma-separated list of object IDs to add the group.
+      isArray: false
       name: network_objects_id_list
-    - description: A comma-separated list of IP addresses or CIDR ranges to add the
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IP addresses or CIDR ranges to add the
         group.
+      isArray: false
       name: network_address_list
-    - description: The new description for the object.
+      required: false
+      secret: false
+    - default: false
+      description: The new description for the object.
+      isArray: false
       name: description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden. Can
         be "true" or "false". The default is "false".
+      isArray: false
       name: overridable
       predefined:
       - 'true'
       - 'false'
-    - description: The group name.
+      required: false
+      secret: false
+    - default: false
+      description: The group name.
+      isArray: false
       name: name
       required: true
+      secret: false
+    deprecated: false
     description: Updates a group of network objects.
+    execution: false
     name: ciscofp-update-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
@@ -343,10 +479,15 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: ID of the object to delete.
+    - default: false
+      description: ID of the object to delete.
+      isArray: false
       name: id
       required: true
+      secret: false
+    deprecated: false
     description: Deletes a group of network objects.
+    execution: false
     name: ciscofp-delete-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
@@ -377,18 +518,32 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: ID of the object for which to retrieve host objects.
+    - default: false
+      description: ID of the object for which to retrieve host objects.
+      isArray: false
       name: object_id
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Number of items to return.
         The default is 50
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of the first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the groups of host objects associated with the specified
       ID. If no ID is passed, the input ID retrieves a list of all network objects.
+    execution: false
     name: ciscofp-get-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
@@ -407,23 +562,39 @@ script:
       description: A description of the host object.
       type: String
   - arguments:
-    - description: The name of the new object.
+    - default: false
+      description: The name of the new object.
+      isArray: false
       name: name
       required: true
-    - description: The IP address.
+      secret: false
+    - default: false
+      description: The IP address.
+      isArray: false
       name: value
       required: true
-    - description: A description of the new object.
+      secret: false
+    - default: false
+      description: A description of the new object.
+      isArray: false
       name: description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden. Can
         be "true" or "false". The default is "false".
+      isArray: false
       name: overridable
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a host object.
+    execution: false
     name: ciscofp-create-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
@@ -442,26 +613,45 @@ script:
       description: Description of the host object.
       type: String
   - arguments:
-    - description: ID of the object to update.
+    - default: false
+      description: ID of the object to update.
+      isArray: false
       name: id
       required: true
-    - description: Name of the object.
+      secret: false
+    - default: false
+      description: Name of the object.
+      isArray: false
       name: name
       required: true
-    - description: The IP address.
+      secret: false
+    - default: false
+      description: The IP address.
+      isArray: false
       name: value
       required: true
-    - description: Description of the object.
+      secret: false
+    - default: false
+      description: Description of the object.
+      isArray: false
       name: description
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Boolean indicating whether object values can be overridden. Can
         be "true" or "false". The default is "false".
+      isArray: false
       name: overridable
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Updates the specified host object.
+    execution: false
     name: ciscofp-update-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
@@ -480,10 +670,15 @@ script:
       description: Description of the host object.
       type: String
   - arguments:
-    - description: ID of the object to delete.
+    - default: false
+      description: ID of the object to delete.
+      isArray: false
       name: id
       required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified network object.
+    execution: false
     name: ciscofp-delete-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
@@ -502,10 +697,15 @@ script:
       description: Description of the network object.
       type: String
   - arguments:
-    - description: ID of the host object to delete.
+    - default: false
+      description: ID of the host object to delete.
+      isArray: false
       name: id
       required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified host object.
+    execution: false
     name: ciscofp-delete-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
@@ -524,18 +724,32 @@ script:
       description: Description of the host object.
       type: String
   - arguments:
-    - description: ID of the access policy.
+    - default: false
+      description: ID of the access policy.
+      isArray: false
       name: id
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the access control policy associated with the specified
       ID. If no access policy ID is passed, all access control policies are returned.
+    execution: false
     name: ciscofp-get-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
@@ -548,11 +762,16 @@ script:
       description: The default action ID of the policy.
       type: String
   - arguments:
-    - description: The name of the new access policy.
+    - default: false
+      description: The name of the new access policy.
+      isArray: false
       name: name
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The action to take. Can be "BLOCK", "TRUST", "PERMIT", or "NETWORK_DISCOVERY".
+      isArray: false
       name: action
       predefined:
       - BLOCK
@@ -560,7 +779,10 @@ script:
       - PERMIT
       - NETWORK_DISCOVERY
       required: true
+      secret: false
+    deprecated: false
     description: Creates an access control policy.
+    execution: false
     name: ciscofp-create-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
@@ -573,17 +795,28 @@ script:
       description: The default action ID of the policy.
       type: String
   - arguments:
-    - description: The access policy name.
+    - default: false
+      description: The access policy name.
+      isArray: false
       name: name
       required: true
-    - description: ID of the access policy.
+      secret: false
+    - default: false
+      description: ID of the access policy.
+      isArray: false
       name: id
       required: true
-    - description: ID of the default action.
+      secret: false
+    - default: false
+      description: ID of the default action.
+      isArray: false
       name: default_action_id
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The action to take. Can be "BLOCK", "TRUST", "PERMIT", or "NETWORK_DISCOVERY".
+      isArray: false
       name: action
       predefined:
       - BLOCK
@@ -591,7 +824,10 @@ script:
       - PERMIT
       - NETWORK_DISCOVERY
       required: true
+      secret: false
+    deprecated: false
     description: Updates the specified access control policy.
+    execution: false
     name: ciscofp-update-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
@@ -604,10 +840,15 @@ script:
       description: The default action ID of the policy.
       type: String
   - arguments:
-    - description: ID of the access policy.
+    - default: false
+      description: ID of the access policy.
+      isArray: false
       name: id
       required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified access control policy.
+    execution: false
     name: ciscofp-delete-access-policy
     outputs:
     - contextPath: CiscoFP.Policy.ID
@@ -620,15 +861,25 @@ script:
       description: The default action ID of the policy.
       type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all custom security group tag objects.
+    execution: false
     name: ciscofp-list-security-group-tags
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
@@ -641,15 +892,25 @@ script:
       description: The tag number.
       type: Number
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all ISE security group tag objects.
+    execution: false
     name: ciscofp-list-ise-security-group-tag
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
@@ -662,15 +923,25 @@ script:
       description: The tag number.
       type: Number
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all vlantag objects.
+    execution: false
     name: ciscofp-list-vlan-tags
     outputs:
     - contextPath: CiscoFP.VlanTags.ID
@@ -692,15 +963,25 @@ script:
       description: End tag number.
       type: Number
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all vlan group tag objects.
+    execution: false
     name: ciscofp-list-vlan-tags-group
     outputs:
     - contextPath: CiscoFP.VlanTagsGroup.Name
@@ -734,15 +1015,25 @@ script:
       description: End tag number.
       type: Number
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all application objects.
+    execution: false
     name: ciscofp-list-applications
     outputs:
     - contextPath: CiscoFP.Applications.Name
@@ -770,14 +1061,23 @@ script:
       description: AppCategory count.
       type: String
   - arguments:
-    - description: Policy ID.
+    - default: false
+      description: Policy ID.
+      isArray: false
       name: policy_id
       required: true
-    - description: Rule ID.
+      secret: false
+    - default: false
+      description: Rule ID.
+      isArray: false
       name: rule_id
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the access control rule associated with the specified policy
       ID and rule ID. If no rule ID is specified, retrieves a list of all access rules
       associated with the specified policy ID.
+    execution: false
     name: ciscofp-get-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
@@ -930,8 +1230,10 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
+      default: false
       description: The rule's traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR",
         "BLOCK_RESET", "BLOCK_INTERACTIVE", or "BLOCK_RESET_INTERACTIVE".
+      isArray: false
       name: action
       predefined:
       - ALLOW
@@ -942,69 +1244,123 @@ script:
       - BLOCK_INTERACTIVE
       - BLOCK_RESET_INTERACTIVE
       required: true
-    - description: The rule name.
+      secret: false
+    - default: false
+      description: The rule name.
+      isArray: false
       name: rule_name
       required: true
+      secret: false
     - auto: PREDEFINED
       default: true
       description: Boolean indicating whether to enable the access control rule.
+      isArray: false
       name: enabled
       predefined:
       - 'true'
       - 'false'
-    - description: A list of source zone object IDs. To get IDs use the ciscofp-list-zones
+      required: false
+      secret: false
+    - default: false
+      description: A list of source zone object IDs. To get IDs use the ciscofp-list-zones
         command.
       isArray: true
       name: source_zone_object_ids
-    - description: The policy ID in which to create the new rule.
+      required: false
+      secret: false
+    - default: false
+      description: The policy ID in which to create the new rule.
+      isArray: false
       name: policy_id
       required: true
-    - description: A list of destination zone object IDs. To get IDs, use the ciscofp-list-zones
+      secret: false
+    - default: false
+      description: A list of destination zone object IDs. To get IDs, use the ciscofp-list-zones
         command.
       isArray: true
       name: destination_zone_object_ids
-    - description: A list of vlan tag object IDs. To get IDs, use the ciscofp-list-vlan-tags
+      required: false
+      secret: false
+    - default: false
+      description: A list of vlan tag object IDs. To get IDs, use the ciscofp-list-vlan-tags
         command.
       isArray: true
       name: vlan_tag_object_ids
-    - description: A list of network object IDs. To get IDs, use the ciscofp-get-network-groups-object
+      required: false
+      secret: false
+    - default: false
+      description: A list of network object IDs. To get IDs, use the ciscofp-get-network-groups-object
         command.
       isArray: true
       name: source_network_object_ids
-    - description: A list of source IP addresses or CIDR ranges. To get the addresses
+      required: false
+      secret: false
+    - default: false
+      description: A list of source IP addresses or CIDR ranges. To get the addresses
         or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command,
         respectively.
       isArray: true
       name: source_network_addresses
-    - description: A list of destination IP addresses or CIDR ranges. To get the addresses
+      required: false
+      secret: false
+    - default: false
+      description: A list of destination IP addresses or CIDR ranges. To get the addresses
         or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command,
         respectively.
       isArray: true
       name: destination_network_object_ids
-    - description: A list of destination addresses.
+      required: false
+      secret: false
+    - default: false
+      description: A list of destination addresses.
       isArray: true
       name: destination_network_addresses
-    - description: A list of port object IDs. To get IDs,  use the ciscofp-get-network-object
+      required: false
+      secret: false
+    - default: false
+      description: A list of port object IDs. To get IDs,  use the ciscofp-get-network-object
         or ciscofp-get-host-object commands.
+      isArray: false
       name: source_port_object_ids
-    - description: A list of port object IDs. To get IDs, use the ciscofp-list-ports
+      required: false
+      secret: false
+    - default: false
+      description: A list of port object IDs. To get IDs, use the ciscofp-list-ports
         command.
+      isArray: false
       name: destination_port_object_ids
-    - description: A list of security group tag object IDs. To get IDs, use the ciscofp-list-security-group-tags
+      required: false
+      secret: false
+    - default: false
+      description: A list of security group tag object IDs. To get IDs, use the ciscofp-list-security-group-tags
         command.
+      isArray: false
       name: source_security_group_tag_object_ids
-    - description: A list of application object IDs. To get IDs, use the ciscofp-list-applications
+      required: false
+      secret: false
+    - default: false
+      description: A list of application object IDs. To get IDs, use the ciscofp-list-applications
         command.
       isArray: true
       name: application_object_ids
-    - description: A list of URL object IDs. To get IDs, use the ciscofp-list-url-categories
+      required: false
+      secret: false
+    - default: false
+      description: A list of URL object IDs. To get IDs, use the ciscofp-list-url-categories
         command.
       isArray: true
       name: url_object_ids
-    - description: A list of URL addresses.
+      required: false
+      secret: false
+    - default: false
+      description: A list of URL addresses.
       isArray: true
       name: url_addresses
+      required: false
+      secret: false
+    deprecated: false
     description: Creates an access control rule.
+    execution: false
     name: ciscofp-create-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
@@ -1157,19 +1513,24 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
+      default: false
       description: |-
         The method by which to update the rule. Can be "merge" or "override".
         If merge, will add the changes requested to the existing rule.
         If override, will override the fields with the inputs provided and will delete any fields that were not provided.
+      isArray: false
       name: update_strategy
       predefined:
       - merge
       - override
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The rule action that determines how the system handles matching
         traffic. Can be "ALLOW", "TRUST", "BLOCK", "MONITOR", "BLOCK_RESET", "BLOCK_INTERACTIVE",
         or "BLOCK_RESET_INTERACTIVE".
+      isArray: false
       name: action
       predefined:
       - ALLOW
@@ -1179,58 +1540,117 @@ script:
       - BLOCK_RESET
       - BLOCK_INTERACTIVE
       - BLOCK_RESET_INTERACTIVE
-    - description: The rule name.
+      required: false
+      secret: false
+    - default: false
+      description: The rule name.
+      isArray: false
       name: rule_name
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: true
       description: Boolean indicating whether to enable the rule. The default is "true".
+      isArray: false
       name: enabled
       predefined:
       - 'true'
       - 'false'
-    - description: A list of source zones object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of source zones object IDs.
       isArray: true
       name: source_zone_object_ids
-    - description: The policy ID for which to create the new rule.
+      required: false
+      secret: false
+    - default: false
+      description: The policy ID for which to create the new rule.
+      isArray: false
       name: policy_id
       required: true
-    - description: A list of destination zones object IDs.
+      secret: false
+    - default: false
+      description: A list of destination zones object IDs.
       isArray: true
       name: destination_zone_object_ids
-    - description: A list of vlan tag object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of vlan tag object IDs.
       isArray: true
       name: vlan_tag_object_ids
-    - description: A list of source network object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of source network object IDs.
       isArray: true
       name: source_network_object_ids
-    - description: A list of addresses.
+      required: false
+      secret: false
+    - default: false
+      description: A list of addresses.
       isArray: true
       name: source_network_addresses
-    - description: A list of destination network object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of destination network object IDs.
       isArray: true
       name: destination_network_object_ids
-    - description: A list of addresses.
+      required: false
+      secret: false
+    - default: false
+      description: A list of addresses.
       isArray: true
       name: destination_network_addresses
-    - description: A list of port object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of port object IDs.
+      isArray: false
       name: source_port_object_ids
-    - description: A list of port object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of port object IDs.
+      isArray: false
       name: destination_port_object_ids
-    - description: A list of security group tag object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of security group tag object IDs.
+      isArray: false
       name: source_security_group_tag_object_ids
-    - description: A list of application object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of application object IDs.
       isArray: true
       name: application_object_ids
-    - description: A list of URL object IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of URL object IDs.
       isArray: true
       name: url_object_ids
-    - description: A list of URL addresses.
+      required: false
+      secret: false
+    - default: false
+      description: A list of URL addresses.
       isArray: true
       name: url_addresses
-    - description: The ID of the rule to update.
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the rule to update.
+      isArray: false
       name: rule_id
       required: true
+      secret: false
+    deprecated: false
     description: Updates the specified access control rule.
+    execution: false
     name: ciscofp-update-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
@@ -1382,13 +1802,21 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: The policy ID.
+    - default: false
+      description: The policy ID.
+      isArray: false
       name: policy_id
       required: true
-    - description: The ID of the rule to delete.
+      secret: false
+    - default: false
+      description: The ID of the rule to delete.
+      isArray: false
       name: rule_id
       required: true
+      secret: false
+    deprecated: false
     description: Deletes the specified access control rule.
+    execution: false
     name: ciscofp-delete-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
@@ -1540,15 +1968,25 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all policy assignments to target devices.
+    execution: false
     name: ciscofp-list-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
@@ -1576,16 +2014,27 @@ script:
       description: The targets type.
       type: String
   - arguments:
-    - description: The policy ID.
+    - default: false
+      description: The policy ID.
+      isArray: false
       name: policy_id
       required: true
-    - description: A list of device IDs.
+      secret: false
+    - default: false
+      description: A list of device IDs.
       isArray: true
       name: device_ids
-    - description: A list of device group IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of device group IDs.
       isArray: true
       name: device_group_ids
+      required: false
+      secret: false
+    deprecated: false
     description: Creates policy assignments to target devices.
+    execution: false
     name: ciscofp-create-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
@@ -1613,13 +2062,27 @@ script:
       description: The targets type.
       type: String
   - arguments:
-    - description: The policy ID.
+    - default: false
+      description: The policy ID.
+      isArray: false
       name: policy_id
-    - description: A list of device IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of device IDs.
+      isArray: false
       name: device_ids
-    - description: A list of device group IDs.
+      required: false
+      secret: false
+    - default: false
+      description: A list of device group IDs.
+      isArray: false
       name: device_group_ids
+      required: false
+      secret: false
+    deprecated: false
     description: Updates the specified policy assignments to target devices.
+    execution: false
     name: ciscofp-update-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
@@ -1647,18 +2110,26 @@ script:
       description: The targets type.
       type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
-    - description: The container UUID.
-      name: container_uuid
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves a list of all devices with configuration changes that are
       ready to deploy.
+    execution: false
     name: ciscofp-get-deployable-devices
     outputs:
     - contextPath: CiscoFP.DeployableDevices.CanBeDeployed
@@ -1679,34 +2150,26 @@ script:
     - contextPath: CiscoFP.DeployableDevices.Version
       description: Device version.
       type: String
-    - contextPath: CiscoFP.PendingDeployment.ID
-      description: Device ID.
-      type: String
-    - contextPath: CiscoFP.PendingDeployment.Name
-      description: Device name.
-      type: String
-    - contextPath: CiscoFP.PendingDeployment.Type
-      description: Device type.
-      type: String
-    - contextPath: CiscoFP.PendingDeployment.Status
-      description: Device status.
-      type: String
-    - contextPath: CiscoFP.PendingDeployment.StartTime
-      description: Start time of the deployment.
-      type: String
-    - contextPath: CiscoFP.PendingDeployment.EndTime
-      description: End time of the deployment.
-      type: String
   - arguments:
-    - description: |-
+    - default: false
+      description: |-
         The maximum number of items to return.
         The default is 50.
+      isArray: false
       name: limit
-    - description: |-
+      required: false
+      secret: false
+    - default: false
+      description: |-
         Index of first item to return.
         The default is 0.
+      isArray: false
       name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves list of all device records.
+    execution: false
     name: ciscofp-get-device-records
     outputs:
     - contextPath: CiscoFP.DeviceRecords.DeviceGroupID
@@ -1726,30 +2189,43 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
+      default: false
       description: Boolean indicating whether to force deployment. Can be "true" or
         "false".
+      isArray: false
       name: force_deploy
       predefined:
       - 'true'
       - 'false'
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Boolean indicating whether to ignore warning. Can be "true" or
         "false".
+      isArray: false
       name: ignore_warning
       predefined:
       - 'true'
       - 'false'
       required: true
-    - description: A list of device IDs.
+      secret: false
+    - default: false
+      description: A list of device IDs.
       isArray: true
       name: device_ids
       required: true
-    - description: The version to deploy. To get versions, use the ciscofp-get-deployable-devices
+      secret: false
+    - default: false
+      description: The version to deploy. To get versions, use the ciscofp-get-deployable-devices
         command.
+      isArray: false
       name: version
       required: true
+      secret: false
+    deprecated: false
     description: Creates a request for deploying configuration changes to devices.
+    execution: false
     name: ciscofp-deploy-to-devices
     outputs:
     - contextPath: CiscoFP.Deploy.TaskID
@@ -1768,94 +2244,28 @@ script:
       description: The list of devices.
       type: String
   - arguments:
-    - description: The ID of the task for which to check the status.
+    - default: false
+      description: The ID of the task for which to check the status.
+      isArray: false
       name: task_id
       required: true
+      secret: false
+    deprecated: false
     description: Retrieves information about a previously submitted pending job or
       task with the specified ID. Used for deploying.
+    execution: false
     name: ciscofp-get-task-status
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
       type: String
-  - arguments:
-    - description: ID of the group. If not supplied, retrieves a list of all url objects.
-      name: id
-    description: Retrieves the groups of url objects and addresses associated with
-      the specified ID. If not supplied, retrieves a list of all url objects.
-    name: ciscofp-get-url-groups-object
-    outputs:
-    - contextPath: CiscoFP.URLGroups.ID
-      description: The group ID.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Name
-      description: The group Name.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Overridable
-      description: Boolean indicating whether objects can be overridden.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Description
-      description: The group description.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Addresses.Value
-      description: The group addresses.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Objects.Name
-      description: The group object name.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Objects.ID
-      description: The object ID.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Objects.Type
-      description: The object type.
-      type: string
-  - arguments:
-    - description: The ID of the group to update.
-      name: id
-      required: true
-    - description: A comma-separated list of object IDs to add the url.
-      name: url_objects_id_list
-    - description: A comma-separated list of url to add the group.
-      name: url_list
-    - description: The new description for the object.
-      name: description
-    - auto: PREDEFINED
-      defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden.
-      name: overridable
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The group name.
-      name: name
-      required: true
-    description: Updates the ID of a group of url objects.
-    name: ciscofp-update-url-groups-objects
-    outputs:
-    - contextPath: CiscoFP.URLGroups.Addresses.Type
-      description: The addresses type in the group object.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Addresses.Url
-      description: The addresses url in the group object.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Description
-      description: The group description.
-      type: string
-    - contextPath: CiscoFP.URLGroups.ID
-      description: The group ID.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Name
-      description: The group name.
-      type: string
-    - contextPath: CiscoFP.URLGroups.Objects
-      description: The group object information.
-      type: unknown
-    - contextPath: CiscoFP.URLGroups.Overridable
-      description: Boolean indicating whether objects can be overridden.
-      type: string
-  dockerimage: demisto/python3:3.9.4.19537
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0

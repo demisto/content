@@ -17,7 +17,7 @@ from threading import Timer
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-INTEGRATION_NAME = 'CrowdStrike Falcon'
+
 CLIENT_ID = demisto.params().get('client_id')
 SECRET = demisto.params().get('secret')
 # Remove trailing slash to prevent wrong URL path to service
@@ -94,16 +94,7 @@ SEARCH_DEVICE_KEY_MAP = {
     'os_version': 'OS',
     'mac_address': 'MacAddress',
     'first_seen': 'FirstSeen',
-    'last_seen': 'LastSeen',
-    'status': 'Status',
-}
-
-ENDPOINT_KEY_MAP = {
-    'device_id': 'ID',
-    'local_ip': 'IPAddress',
-    'os_version': 'OS',
-    'hostname': 'Hostname',
-    'status': 'Status',
+    'last_seen': 'LastSeen'
 }
 
 ''' SPLIT KEY DICTIONARY '''
@@ -1552,118 +1543,11 @@ def search_device_command():
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
     devices = raw_res.get('resources')
-
-    command_results = []
-    for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
-
-        entry = get_trasnformed_dict(single_device, SEARCH_DEVICE_KEY_MAP)
-        headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen', 'Status']
-
-        command_results.append(CommandResults(
-            outputs_prefix='CrowdStrike.Device',
-            outputs_key_field='ID',
-            outputs=entry,
-            readable_output=tableToMarkdown('Devices', entry, headers=headers, headerTransform=pascalToSpace),
-            raw_response=raw_res,
-            indicator=endpoint,
-        ))
-
-    return command_results
-
-
-def search_device_by_ip(raw_res, ip_address):
-    devices = raw_res.get('resources')
-    filtered_devices = []
-    for single_device in devices:
-        if single_device.get('local_ip') == ip_address:
-            filtered_devices.append(single_device)
-
-    if filtered_devices:
-        raw_res['resources'] = filtered_devices
-    else:
-        raw_res = None
-    return raw_res
-
-
-def generate_status_fields(endpoint_status):
-    status = ''
-    is_isolated = ''
-
-    if endpoint_status == 'normal':
-        status = 'Online'
-    elif endpoint_status == 'containment_pending':
-        is_isolated = 'Pending isolation'
-    elif endpoint_status == 'contained':
-        is_isolated = 'Yes'
-    elif endpoint_status == 'lift_containment_pending':
-        is_isolated = 'Pending unisolation'
-
-    return status, is_isolated
-
-
-def generate_endpoint_by_contex_standard(devices):
-    standard_endpoints = []
-    for single_device in devices:
-        status, is_isolated = generate_status_fields(single_device.get('status'))
-        endpoint = Common.Endpoint(
-            id=single_device.get('device_id'),
-            hostname=single_device.get('hostname'),
-            ip_address=single_device.get('local_ip'),
-            os=single_device.get('platform_name'),
-            os_version=single_device.get('os_version'),
-            status=status,
-            is_isolated=is_isolated,
-            mac_address=single_device.get('mac_address'),
-            vendor=INTEGRATION_NAME)
-        standard_endpoints.append(endpoint)
-    return standard_endpoints
-
-
-def get_endpoint_command():
-    args = demisto.args()
-    if 'id' in args.keys():
-        args['ids'] = args.get('id', '')
-
-    # handles the search by id or by hostname
-    raw_res = search_device()
-
-    if ip := args.get('ip'):
-        # there is no option to filter by ip in an api call, therefore we would filter the devices in the code
-        raw_res = search_device_by_ip(raw_res, ip)
-
-    if not ip and not args.get('id') and not args.get('hostname'):
-        # in order not to return all the devices
-        return create_entry_object(hr='Please add a filter argument - ip, hostname or id.')
-
-    if not raw_res:
-        return create_entry_object(hr='Could not find any devices.')
-    devices = raw_res.get('resources')
-
-    standard_endpoints = generate_endpoint_by_contex_standard(devices)
-
-    command_results = []
-    for endpoint in standard_endpoints:
-
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-        hr = tableToMarkdown('CrowdStrike Falcon Endpoint', endpoint_context)
-
-        command_results.append(CommandResults(
-            readable_output=hr,
-            raw_response=raw_res,
-            indicator=endpoint
-        ))
-    return command_results
+    entries = [get_trasnformed_dict(device, SEARCH_DEVICE_KEY_MAP) for device in devices]
+    headers = ['ID', 'Hostname', 'OS', 'MacAddress', 'LocalIP', 'ExternalIP', 'FirstSeen', 'LastSeen']
+    hr = tableToMarkdown('Devices', entries, headers=headers, headerTransform=pascalToSpace)
+    ec = {'CrowdStrike.Device(val.ID === obj.ID)': entries}
+    return create_entry_object(contents=raw_res, ec=ec, hr=hr)
 
 
 def get_behavior_command():
@@ -2495,7 +2379,7 @@ def main():
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
-            return_results(search_device_command())
+            demisto.results(search_device_command())
         elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
         elif command == 'cs-falcon-search-detection':
@@ -2564,8 +2448,6 @@ def main():
                     device_id=args.get('device_id')
                 )
             )
-        elif command == 'endpoint':
-            return_results(get_endpoint_command())
         # Log exceptions
     except Exception as e:
         return_error(str(e))

@@ -15,6 +15,3 @@ ignore=IF107
 
 [file:ExtraHop]
 ignore=PA116
-
-[file:ExtraHop_v2.yml]
-ignore=BA108,BA109

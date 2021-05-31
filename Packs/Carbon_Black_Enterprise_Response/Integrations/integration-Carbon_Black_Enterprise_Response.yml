@@ -132,16 +132,7 @@ script:
     function quarantineDevice(doQuarantine) {
         let result = getSensorByIdRequest(args.sensor);
         result.network_isolation_enabled = doQuarantine;
-        var filtered_sensor_object = {
-                                'network_isolation_enabled': result.network_isolation_enabled,
-                                'restart_queued': result.restart_queued,
-                                'uninstall': result.uninstall,
-                                'liveresponse_init': result.liveresponse_init,
-                                'group_id': result.group_id,
-                                'notes': result.notes,
-                                'event_log_flush_time': result.event_log_flush_time
-                            }
-        result = quarantineSensorRequest(args.sensor, filtered_sensor_object);
+        result = quarantineSensorRequest(args.sensor, result);
         if (result.StatusCode === 204) {
             let quarantinedStr = (doQuarantine) ? 'quarantined' : 'unquarantined';
             return {
@@ -875,7 +866,7 @@ script:
             {to: 'IPAddresses', from: ipAddressDQ},
             {to: 'IPAddress', from: 'network_adapters'},
             {to: 'Notes', from: 'notes'},
-            {to: 'Isolated', from: 'is_isolating'},
+            {to: 'Isolated', from: 'network_isolation_enabled'},
             {to: 'OS', from: 'os_environment_display_string'},
             {to: 'Uptime', from: 'sensor_uptime'},
             {to: 'LastUpdate', from: 'last_update'},

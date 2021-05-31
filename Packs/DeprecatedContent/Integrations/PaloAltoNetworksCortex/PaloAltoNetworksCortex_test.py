@@ -4,8 +4,6 @@ import demistomock as demisto
 from datetime import datetime, timedelta
 from pytest import raises
 from CommonServerPython import *
-from freezegun import freeze_time
-
 
 """ Helper functions """
 
@@ -23,7 +21,6 @@ def random_string(string_length=10) -> str:
     return ''.join(random.choice(letters) for i in range(string_length))
 
 
-@freeze_time("2021-2-21 21:00:00")
 def test_get_start_time(mocker):
     integration_context = {
         'stored': int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds()),
@@ -35,15 +32,15 @@ def test_get_start_time(mocker):
 
     five_minutes_start_time = get_start_time('minutes', 5)
     expected_response = datetime.now() - timedelta(minutes=5)
-    assert five_minutes_start_time == expected_response
+    assert five_minutes_start_time.replace(microsecond=0) == expected_response.replace(microsecond=0)
 
     ten_days_start_time = get_start_time('days', 10)
     expected_response = datetime.now() - timedelta(days=10)
-    assert ten_days_start_time == expected_response
+    assert ten_days_start_time.replace(microsecond=0) == expected_response.replace(microsecond=0)
 
     four_weeks_start_time = get_start_time('weeks', 4)
     expected_response = datetime.now() - timedelta(weeks=4)
-    assert four_weeks_start_time == expected_response
+    assert four_weeks_start_time.replace(microsecond=0) == expected_response.replace(microsecond=0)
 
 
 def test_process_incident_pairs():

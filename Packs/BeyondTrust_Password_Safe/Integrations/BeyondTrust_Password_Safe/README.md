@@ -1,8 +1,8 @@
 <!-- HTML_DOC -->
 <p>Unified password and session management for seamless accountability and control over privileged accounts. </p>
 <p>Each command is assigned a role. Users will not be able to run commands for which they are not assigned to the specific role for a command.</p>
-<h2>Fetch Credentials</h2>
-<p>For the fetch credentials function to work properly, you need to create a new asset, managed system, and managed account in BeyondTrust.</p>
+<h2>Fetch Incidents</h2>
+<p>For the fetch incidents function to work properly, you need to create a new asset, managed system, and managed account in BeyondTrust.</p>
 <ol>
 <li>In the BeyondTrust platform, create a new asset.</li>
 <li>Create a managed system.<br>The name of the system should be the name of the integration (service/platform) you want to use, which will make it easier to filter credentials.</li>

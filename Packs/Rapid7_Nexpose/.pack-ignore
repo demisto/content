@@ -12,6 +12,3 @@ ignore=BA101
 
 [file:Rapid7_Nexpose]
 ignore=PA116
-
-[file:Rapid7_Nexpose.yml]
-ignore=BA108,BA109

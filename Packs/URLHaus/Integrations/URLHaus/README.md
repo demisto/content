@@ -10,7 +10,6 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g.<span> </span>https://192.168.0.1)</strong></li>
-<li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy</strong></li>
 <li><strong>Blacklists appearances threshold</strong></li>

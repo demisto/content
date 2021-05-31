@@ -67,19 +67,17 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta
-    apps you wish to sync to XSOAR. Further information about IAM configuration is
-    detailed in the Help (the "?" icon).
-  defaultvalue: 'true'
+- defaultvalue: 'true'
   display: Query only application events configured in IAM Configuration
+  additionalinfo: Configure an "IAM - Configuration" incident to specify the Okta apps you wish to sync to XSOAR.
+    Further information about IAM configration is detailed in the Help (the "?" icon).
   name: auto_generate_query_filter
   required: false
   type: 8
-- additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the
-    "Query only application events configured in IAM Configuration" is unchecked to
-    use this parameter. See the Help (the "?" icon) to learn more about the filter
-    parameter.'
-  display: Fetch Query Filter (Okta system log events)
+- display: Fetch Query Filter (Okta system log events)
+  additionalinfo: 'Use a query filter expression in SCIM format. Note: make sure the "Query only application events
+    configured in IAM Configuration" is unchecked to use this parameter. See the Help (the "?" icon)
+    to learn more about the filter parameter.'
   name: fetch_query_filter
   required: false
   type: 0
@@ -104,13 +102,13 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party
+        integration will be active.
       isArray: false
       name: allow-enable
       predefined:
-      - 'true'
-      - 'false'
+        - 'true'
+        - 'false'
       required: false
       secret: false
     deprecated: false
@@ -119,8 +117,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -159,13 +156,13 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party
+        integration will be active.
       isArray: false
       name: allow-enable
       predefined:
-      - 'true'
-      - 'false'
+        - 'true'
+        - 'false'
       required: false
       secret: false
     deprecated: false
@@ -175,8 +172,7 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -218,8 +214,7 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -261,8 +256,7 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -395,32 +389,7 @@ script:
     - contextPath: Okta.IAMConfiguration.Instance
       description: An XSOAR IAM integration instance name.
       type: String
-  - arguments:
-    - default: false
-      description: ID of the user for which to get the information.
-      isArray: false
-      name: user_id
-      required: true
-      secret: false
-    deprecated: false
-    description: List all applications assigned to a user.
-    execution: false
-    name: okta-iam-list-user-applications
-    outputs:
-    - contextPath: Okta.Application.ID
-      description: ID of the application.
-      type: String
-    - contextPath: Okta.Application.Label
-      description: Label of the application.
-      type: String
-    - contextPath: Okta.Application.Name
-      description: Name of the application.
-      type: String
-    - contextPath: Okta.Application.Status
-      description: Status of the application.
-      type: String
-  dockerimage: demisto/python3:3.9.4.18682
-  feed: false
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: true
   longRunning: false
   longRunningPort: false

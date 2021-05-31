@@ -1,5 +1,2 @@
 [file:PANWComprehensiveInvestigation]
 ignore=PA116
-
-[file:layoutscontainer-PANW_Endpoint_Malware.json]
-ignore=BA101

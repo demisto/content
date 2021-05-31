@@ -20,7 +20,6 @@
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_6feb063f-66b1-45e5-89f0-1b6ff5142114" target="_self">Check file reputation by hash: intezer-analyze-by-hash</a></li>
-<li><a href="#h_353b4e58-45be-474d-b171-b8b803d216d0" target="_self">Check file reputation by latest report: intezer-get-latest-report</a></li>
 <li><a href="#h_9127d647-9bbd-43c7-b567-812e4138e652" target="_self"> Check file reputation by uploading a file: intezer-analyze-by-file </a></li>
 <li><a href="#h_89b3941d-6b65-4083-96b6-f67d0c2cb528" target="_self"> Check analysis status and results: intezer-get-analysis-result </a></li>
 </ol>
@@ -87,59 +86,10 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>Analysis created successfully: 59e2f081-45f3-4822-bf45-407670dcb4d7</p>
-<h3 id="h_353b4e58-45be-474d-b171-b8b803d216d0">2. Check file reputation by latest report</h3>
+<p>Analysis created successfully</p>
+<h3 id="h_9127d647-9bbd-43c7-b567-812e4138e652">2. Check the reputation of a file</h3>
 <hr>
-<p>Checks file reputation of the given hash, supports SHA256, SHA1, and MD5.</p>
-<h5>Base Command</h5>
-<p><code>intezer-get-latest-report</code></p>
-<h5>Input</h5>
-<table style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 154px;"><strong>Argument Name</strong></th>
-<th style="width: 502px;"><strong>Description</strong></th>
-<th style="width: 84px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 154px;">file_hash</td>
-<td style="width: 502px;">Hash of the file to query. Supports SHA256, MD5, and SHA1.</td>
-<td style="width: 84px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>Command Example</h5>
-<pre>intezer-get-latest-report file_hash="8cbf90aeab2c93b2819fcfd6262b2cdb"</pre>
-<h5>Context Example</h5>
-<pre>{
-    "DBotScore": {
-        "Vendor": "Intezer", 
-        "Indicator": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
-        "Score": 0, 
-        "Type": "hash"
-    }, 
-    "File": {
-        "ExistsInIntezer": true, 
-        "SHA256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
-        "Metadata": {
-            "analysis_id": "9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
-            "sub_verdict": "file_type_not_supported", 
-            "analysis_url": "https://analyze.intezer.com/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
-            "verdict": "not_supported", 
-            "sha256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
-            "is_private": true, 
-            "analysis_time": "Wed, 19 Jun 2019 07:48:12 GMT"
-        }
-    }
-}
-</pre>
-<h5>Human Readable Output</h5>
-<h3 id="h_9127d647-9bbd-43c7-b567-812e4138e652">3. Check file reputation by uploading it</h3>
-<hr>
-<p>Checks file reputation for an uploaded file. Maximum file size is 150 MB.</p>
+<p>Checks file reputation for an uploaded file. Maximum file size is 32 MB.</p>
 <h5>Base Command</h5>
 <p><code>intezer-analyze-by-file</code></p>
 <h5>Input</h5>
@@ -200,8 +150,8 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p>Analysis created successfully: 675515a1-62e9-4d55-880c-fd46a7963a56</p>
-<h3 id="h_89b3941d-6b65-4083-96b6-f67d0c2cb528">4. Check analysis status and results</h3>
+<p>Analysis created successfully</p>
+<h3 id="h_89b3941d-6b65-4083-96b6-f67d0c2cb528">3. Check analysis status and results</h3>
 <hr>
 <p>Checks the analysis status and gets the analysis result, supports file and endpoint analysis.</p>
 <h5>Base Command</h5>
@@ -307,7 +257,7 @@
         "Metadata": {
             "analysis_id": "9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
             "sub_verdict": "file_type_not_supported", 
-            "analysis_url": "https://analyze.intezer.com/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
+            "analysis_url": "https://analyze.intezer.com/#/analyses/9e3acdc3-b7ea-412b-88ae-7103eebc9398", 
             "verdict": "not_supported", 
             "sha256": "fa5953e0c34a4bbf69ac31f3a1360024101c1232bb45cccaad3611b682c92387", 
             "is_private": true, 

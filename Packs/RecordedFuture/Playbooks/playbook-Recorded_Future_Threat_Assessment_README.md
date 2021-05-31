@@ -1,7 +1,7 @@
 Threat Assessment using the Recorded Future SOAR Triage API and the context Phishing.
 
 ## Dependencies
-This playbook uses the following sub-playbooks, integrations, and scripts. Depends on the recorded futures indicator field; threat assessment.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 This playbook does not use any sub-playbooks.

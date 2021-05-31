@@ -8,7 +8,6 @@ from base64 import b64decode
 from typing import Callable, List, Generator
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 from multiprocessing import Process
-from werkzeug.datastructures import Headers
 
 from libtaxii.messages_11 import (
     TAXIIMessage,
@@ -33,7 +32,7 @@ from libtaxii.constants import (
     CB_STIX_XML_11
 )
 from cybox.core import Observable
-from requests.utils import requote_uri
+
 
 import functools
 import stix.core
@@ -80,12 +79,11 @@ class Handler:
 
 
 class TAXIIServer:
-    def __init__(self, url_scheme: str, host: str, port: int, collections: dict, certificate: str, private_key: str,
-                 http_server: bool, credentials: dict, service_address: Optional[str] = None):
+    def __init__(self, host: str, port: int, collections: dict, certificate: str, private_key: str,
+                 http_server: bool, credentials: dict):
         """
         Class for a TAXII Server configuration.
         Args:
-            url_scheme: The URL scheme (http / https)
             host: The server address.
             port: The server port.
             collections: The JSON string of collections of indicator queries.
@@ -94,14 +92,12 @@ class TAXIIServer:
             http_server: Whether to use HTTP server (not SSL).
             credentials: The user credentials.
         """
-        self.url_scheme = url_scheme
         self.host = host
         self.port = port
         self.collections = collections
         self.certificate = certificate
         self.private_key = private_key
         self.http_server = http_server
-        self.service_address = service_address
         self.auth = None
         if credentials:
             self.auth = (credentials.get('identifier', ''), credentials.get('password', ''))
@@ -121,12 +117,11 @@ class TAXIIServer:
             }
         ]
 
-    def get_discovery_service(self, taxii_message: DiscoveryRequest, request_headers: Headers) -> DiscoveryResponse:
+    def get_discovery_service(self, taxii_message: DiscoveryRequest) -> DiscoveryResponse:
         """
         Handle discovery request.
         Args:
             taxii_message: The discovery request message.
-            request_headers: The request headers
 
         Returns:
             The discovery response.
@@ -135,7 +130,8 @@ class TAXIIServer:
         if taxii_message.message_type != MSG_DISCOVERY_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
 
-        discovery_service_url = self.get_url(request_headers)
+        discovery_service_url = self.get_url()
+
         discovery_response = DiscoveryResponse(
             generate_message_id(),
             taxii_message.message_id
@@ -156,21 +152,17 @@ class TAXIIServer:
 
         return discovery_response
 
-    def get_collections(self,
-                        taxii_message: CollectionInformationRequest,
-                        request_headers: Headers,
-                        ) -> CollectionInformationResponse:
+    def get_collections(self, taxii_message: CollectionInformationRequest) -> CollectionInformationResponse:
         """
         Handle collection management request.
         Args:
             taxii_message: The collection request message.
-            request_headers: The request headers
 
         Returns:
             The collection management response.
         """
         taxii_feeds = list(self.collections.keys())
-        url = self.get_url(request_headers)
+        url = self.get_url()
 
         if taxii_message.message_type != MSG_COLLECTION_INFORMATION_REQUEST:
             raise ValueError('Invalid message, invalid Message Type')
@@ -289,26 +281,15 @@ class TAXIIServer:
             mimetype='application/xml'
         )
 
-    def get_url(self, request_headers: Headers) -> str:
+    def get_url(self):
         """
-        Args:
-            request_headers: The request headers
-
         Returns:
             The service URL according to the protocol.
         """
-        if self.service_address:
-            return self.service_address
-        if request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
-            # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
-            # and we should use the /instance/execute endpoint in the address
-            self.url_scheme = 'https'
-            calling_context = get_calling_context()
-            instance_name = calling_context.get('IntegrationInstance', '')
-            endpoint = requote_uri(os.path.join('/instance', 'execute', instance_name))
+        if self.http_server:
+            return f'{self.host}:{self.port}'
         else:
-            endpoint = f':{self.port}'
-        return f'{self.url_scheme}://{self.host}{endpoint}'
+            return self.host
 
 
 SERVER: TAXIIServer
@@ -618,6 +599,22 @@ def get_calling_context():
     return demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
 
 
+def get_https_hostname(host_name):
+    """
+    Get the host name for the https endpoint.
+    Args:
+        host_name:
+
+    Returns:
+        The host name in the format of host/instance/execute/instance_name
+    """
+    calling_context = get_calling_context()
+    instance_name = calling_context.get('IntegrationInstance', '')
+    host_name = os.path.join(host_name, 'instance', 'execute', instance_name)
+
+    return host_name
+
+
 def handle_long_running_error(error: str):
     """
     Handle errors in the long running process.
@@ -763,14 +760,14 @@ def find_indicators_loop(indicator_query: str):
     """
     iocs: List[dict] = []
     total_fetched = 0
+    next_page = 0
     last_found_len = PAGE_SIZE
-    search_indicators = IndicatorsSearcher()
-
     while last_found_len == PAGE_SIZE:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
+        next_page += 1
     return iocs
 
 
@@ -805,7 +802,7 @@ def taxii_discovery_service() -> Response:
     """
 
     try:
-        discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data), request.headers)
+        discovery_response = SERVER.get_discovery_service(get_message_from_xml(request.data))
     except Exception as e:
         error = f'Could not perform the discovery request: {str(e)}'
         handle_long_running_error(error)
@@ -823,7 +820,7 @@ def taxii_collection_management_service() -> Response:
     """
 
     try:
-        collection_response = SERVER.get_collections(get_message_from_xml(request.data), request.headers)
+        collection_response = SERVER.get_collections(get_message_from_xml(request.data))
     except Exception as e:
         error = f'Could not perform the collection management request: {str(e)}'
         handle_long_running_error(error)
@@ -889,7 +886,7 @@ def run_server(taxii_server: TAXIIServer, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        wsgi_server = WSGIServer(('0.0.0.0', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        wsgi_server = WSGIServer(('', taxii_server.port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=wsgi_server.serve_forever)
             server_process.start()
@@ -936,10 +933,10 @@ def main():
     host_name = server_link_parts.hostname
     if not http_server:
         scheme = 'https'
+        host_name = get_https_hostname(host_name)
 
-    service_address = params.get('service_address')
-    SERVER = TAXIIServer(scheme, str(host_name), port, collections,
-                         certificate, private_key, http_server, credentials, service_address)
+    SERVER = TAXIIServer(f'{scheme}://{host_name}', port, collections,
+                         certificate, private_key, http_server, credentials)
 
     demisto.debug(f'Command being called is {command}')
     commands = {

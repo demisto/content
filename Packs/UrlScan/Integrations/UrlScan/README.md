@@ -10,7 +10,6 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. https://urlscan.io/api/v1/ )</strong></li>
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
-<li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
@@ -331,30 +330,6 @@
 <tr>
 <td style="width: 267px;">URLScan.EffectiveURL </td>
 <td style="width: 454px;">Effective URL of the original URL</td>
-</tr>
-<tr>
-<td style="width: 267px;">URL.ASN </td>
-<td style="width: 454px;">The URL ASN.</td>
-</tr>
-<tr>
-<td style="width: 267px;">URL.FeedRelatedIndicators.value </td>
-<td style="width: 454px;">Indicators that are associated with the URL.</td>
-</tr>
-<tr>
-<td style="width: 267px;">URL.FeedRelatedIndicators.type </td>
-<td style="width: 454px;">The type of the indicators that are associated with the URL.</td>
-</tr>
-<tr>
-<td style="width: 267px;">URL.Geo.Country </td>
-<td style="width: 454px;">The URL country.</td>
-</tr>
-<tr>
-<td style="width: 267px;">URL.ASOwner </td>
-<td style="width: 454px;">The URL AS owner.</td>
-</tr>
-<tr>
-<td style="width: 267px;">URL.Tags </td>
-<td style="width: 454px;">Tags that are associated with the URL.</td>
 </tr>
 </tbody>
 </table>

@@ -1,5 +1,4 @@
 id: DocumentationTest
-fromversion: 5.5.0
 version: -1
 name: DocumentationTest
 starttaskid: "0"
@@ -56,7 +55,7 @@ tasks:
         simple: "yes"
       unsecure: {}
       url:
-        simple: https://github.com/demisto/content/raw/master/Packs/ipinfo/Integrations/ipinfo/ipinfo.yml
+        simple: https://github.com/demisto/content/raw/master/Packs/ipinfo/Integrations/integration-Ipinfo.yml
       username: {}
     separatecontext: false
     view: |-

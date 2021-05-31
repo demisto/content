@@ -1,7 +1,10 @@
 import demistomock as demisto
-from CommonServerUserPython import *
-
 from CommonServerPython import *
+from CommonServerUserPython import *
+"""" IMPORTS """
+import json
+import requests
+from datetime import datetime, timedelta
 
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
@@ -68,9 +71,9 @@ SERVICES = 'Service List'
 SCHEDULES = 'All Schedules'
 TRIGGER_EVENT = 'Trigger Event'
 RESOLVE_EVENT = 'Resolve Event'
-ACKNOWLEDGE_EVENT = 'Acknowledge Event'
+ACKNOLWEDGE_EVENT = 'Acknowledge Event'
 USERS_ON_CALL = 'Users On Call'
-INCIDENTS_LIST = 'PagerDuty Incidents'
+INCIDETS_LIST = 'PagerDuty Incidents'
 INCIDENT = 'PagerDuty Incident'
 CONTACT_METHODS = 'Contact Methods'
 USERS_ON_CALL_NOW = 'Users On Call Now'
@@ -82,9 +85,10 @@ SERVICES_HEADERS = ['ID', 'Name', 'Status', 'Created At', 'Integration']
 NOTIFICATION_RULES_HEADERS = ['ID', 'Type', 'Urgency', 'Notification timeout(minutes)']
 SCHEDULES_HEADERS = ['ID', 'Name', 'Today', 'Time Zone', 'Escalation Policy', 'Escalation Policy ID']
 USERS_ON_CALL_NOW_HEADERS = ['ID', 'Email', 'Name', 'Role', 'User Url', 'Time Zone']
-INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url', 'Incident key',
+INCIDENTS_HEADERS = ['ID', 'Title', 'Description', 'Status', 'Created On', 'Urgency', 'Html Url',
                      'Assigned To User', 'Service ID', 'Service Name', 'Escalation Policy', 'Last Status Change On',
                      'Last Status Change By', 'Number Of Escalations', 'Resolved By User', 'Resolve Reason']
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -130,7 +134,11 @@ def unicode_to_str_recur(obj):
 
 
 def test_module():
-    get_on_call_now_users_command()
+    try:
+        get_on_call_now_users_command()
+    except Exception as e:
+        return_error(e)
+
     demisto.results('ok')
 
 
@@ -231,8 +239,6 @@ def parse_incident_data(incidents):
         context['created_at'] = output['Created On'] = incident.get('created_at')
         context['urgency'] = output['Urgency'] = incident.get('urgency', '')
         output['Html Url'] = incident.get('html_url')
-        context['incident_key'] = incident.get('incident_key')
-        output['Incident key'] = incident.get('incident_key')
 
         if len(incident.get('assignments', [])) > 0:
             output['Assigned To User'] = incident['assignments'][0].get('assignee', {}).get('name')
@@ -427,10 +433,10 @@ def extract_users_contact_methods(user_contact_methods):
     contexts = []
     contact_methods = user_contact_methods.get('contact_methods')
     for contact_method in contact_methods:
-        output = {
-            'ID': contact_method.get('id'),
-            'Type': CONTACT_METHODS_TO_HUMAN_READABLE[contact_method.get('type', '')]
-        }
+        output = {}
+
+        output['ID'] = contact_method.get('id')
+        output['Type'] = CONTACT_METHODS_TO_HUMAN_READABLE[contact_method.get('type', '')]
 
         country_code = str(contact_method.get('country_code', ''))
         address = contact_method.get('address', '')
@@ -459,22 +465,23 @@ def extract_users_contact_methods(user_contact_methods):
     }
 
 
-def extract_users_notification_role(user_notification_role):
+def extract_users_notification_role(user_notication_role):
     """Extract the notification role of a given user."""
     outputs = []
-    notification_rules = user_notification_role.get('notification_rules')
+    notification_rules = user_notication_role.get('notification_rules')
     for notification_rule in notification_rules:
-        output = {
-            'ID': notification_rule.get('id'),
-            'Type': notification_rule.get('type', ''),
-            'Urgency': notification_rule.get('urgency'),
-            'Notification timeout(minutes)': notification_rule.get('start_delay_in_minutes')}
+        output = {}
+
+        output['ID'] = notification_rule.get('id')
+        output['Type'] = notification_rule.get('type', '')
+        output['Urgency'] = notification_rule.get('urgency')
+        output['Notification timeout(minutes)'] = notification_rule.get('start_delay_in_minutes')
 
         outputs.append(output)
 
     return {
         'Type': entryTypes['note'],
-        'Contents': user_notification_role,
+        'Contents': user_notication_role,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(NOTIFICATION_RULES, outputs, NOTIFICATION_RULES_HEADERS),
@@ -526,7 +533,7 @@ def configure_status(status='triggered,acknowledged'):
     return status_request
 
 
-def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None, incident_key=None):
+def get_incidents_command(since=None, until=None, status='triggered,acknowledged', sortBy=None):
     """Get incidents command."""
     param_dict = {}
     if since is not None:
@@ -535,12 +542,10 @@ def get_incidents_command(since=None, until=None, status='triggered,acknowledged
         param_dict['until'] = until
     if sortBy is not None:
         param_dict['sortBy'] = sortBy
-    if incident_key:
-        param_dict['incident_key'] = incident_key
 
     url = SERVER_URL + GET_INCIDENTS_SUFFIX + configure_status(status)
     res = http_request('GET', url, param_dict)
-    return extract_incidents_data(res.get('incidents', []), INCIDENTS_LIST)
+    return extract_incidents_data(res.get('incidents', []), INCIDETS_LIST)
 
 
 def submit_event_command(source, summary, severity, action, description='No description', group='',
@@ -548,7 +553,7 @@ def submit_event_command(source, summary, severity, action, description='No desc
     """Create new event."""
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
-                        'parameters or in the command to process this action.')
+                        'parmaters or in the command to process this action.')
 
     res = create_new_incident(source, summary, severity, action, description,
                               group, event_class, component, incident_key, serviceKey)
@@ -607,17 +612,16 @@ def get_users_contact_methods_command(UserID):
 def get_users_notification_command(UserID):
     """Get the notification rule of a given user"""
     url = SERVER_URL + USERS_NOTIFICATION_RULE.format(UserID)
-    user_notification_role = http_request('GET', url, {})
-    return extract_users_notification_role(user_notification_role)
+    user_notication_role = http_request('GET', url, {})
+    return extract_users_notification_role(user_notication_role)
 
 
 def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
-                        'parameters or in the command to process this action.')
+                        'parmaters or in the command to process this action.')
 
     action_response = resolve_or_ack_incident('resolve', incident_key, serviceKey)
-    time.sleep(3)  # wait until the incident will update
 
     res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
     _, contexts, _ = parse_incident_data(res.get('incidents', []))
@@ -630,17 +634,16 @@ def resolve_event(incident_key=None, serviceKey=SERVICE_KEY):
 def acknowledge_event(incident_key=None, serviceKey=SERVICE_KEY):
     if serviceKey is None:
         raise Exception('You must enter a ServiceKey at the integration '
-                        'parameters or in the command to process this action.')
+                        'parmaters or in the command to process this action.')
 
     action_response = resolve_or_ack_incident('acknowledge', incident_key, serviceKey)
-    time.sleep(3)  # wait until the incident will update
 
     res = http_request('GET', SERVER_URL + GET_INCIDENTS_SUFFIX, {'incident_key': incident_key})
     _, contexts, _ = parse_incident_data(res.get('incidents', []))
     if contexts[0]['Status'] != "acknowledged":
         raise Exception('Could not acknowledge incident, you may have created it with different Service Key')
 
-    return extract_new_event_data(ACKNOWLEDGE_EVENT, action_response)
+    return extract_new_event_data(ACKNOLWEDGE_EVENT, action_response)
 
 
 def get_incident_data():
@@ -665,8 +668,11 @@ def get_service_keys():
         services = res.get('services', [])
         for service in services:
             output = {}
-            context = {'ID': service.get('id'), 'Name': service.get('name'), 'Status': service.get('status'),
-                       'CreatedAt': service.get('created_at')}
+            context = {}
+            context['ID'] = output['ID'] = service.get('id')
+            context['Name'] = output['Name'] = service.get('name')
+            context['Status'] = output['Status'] = service.get('status')
+            context['CreatedAt'] = output['Created At'] = service.get('created_at')
 
             integration_list = []
             integration_string = ""
@@ -714,7 +720,7 @@ def get_service_keys():
 
 
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
             test_module()
@@ -742,8 +748,8 @@ def main():
             demisto.results(get_incident_data())
         elif demisto.command() == 'PagerDuty-get-service-keys':
             demisto.results(get_service_keys())
-    except Exception as err:
-        return_error(err)
+    except Exception as e:
+        return_error(e)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

@@ -601,26 +601,9 @@ function ConvertTo-Boolean
   }
 }
 
-<#
-.DESCRIPTION
-Creates a file from the given string data.
-
-.PARAMETER file_name
-The file name to use for the file in then entry result
-
-.PARAMETER data
-String data to use for the file
-
-.PARAMETER is_file_info
-If true will return an entry of  type: [EntryTypes]::entryInfoFile
-
-.OUTPUTS
-Entry object to return to the server. Use $demisto.Results(obj) to actually send the entry to the server.
-#>
-function FileResult([string]$file_name, [string]$data, [bool]$is_file_info) {
-    $file_type = [EntryTypes]::file
-    if ($is_file_info) {
-        $file_type = [EntryTypes]::entryInfoFile
+function FileResult([string]$file_name, [string]$data, [string]$file_type) {
+    if (!$file_type) {
+        $file_type = [EntryTypes]::file
     }
     $temp = $demisto.UniqueFile()
     Out-File -FilePath "$($demisto.Investigation().id)_$temp" -Encoding "utf8" -InputObject $data
@@ -628,7 +611,7 @@ function FileResult([string]$file_name, [string]$data, [bool]$is_file_info) {
     return @{
         "Contents" = ''
         "ContentsFormat" = [EntryFormats]::text.ToString()
-        "Type" = $file_type
+        "Type" = 3
         "File" = $file_name
         "FileID" = $temp
     }

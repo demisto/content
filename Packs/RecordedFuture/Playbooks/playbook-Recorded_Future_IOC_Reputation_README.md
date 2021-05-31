@@ -1,7 +1,7 @@
 Entity Reputation using sub-playbooks
 
 ## Dependencies
-This playbook uses the following sub-playbooks, integrations, and scripts. Depends on the recorded futures indicator field; risk rules.
+This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Recorded Future Domain Reputation

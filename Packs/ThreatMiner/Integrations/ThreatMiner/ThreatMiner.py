@@ -8,18 +8,21 @@ from CommonServerPython import *
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+THREAT_MINER_URL = demisto.params().get('threatminer_url')
+VERIFY_CERTIFICATES = False if demisto.params().get('insecure') else True
 DEFAULT_HEADERS = {
     "Content-Type": "application/json"
 }
+MAX_RETURNED_ARRAY_SIZE = 30
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url, verify_certificates, headers):
+def http_request(method, url, headers):
     try:
         res = requests.request(method,
                                url,
-                               verify=verify_certificates,
+                               verify=VERIFY_CERTIFICATES,
                                headers=headers)
 
         if res.status_code == 200:
@@ -40,20 +43,19 @@ def http_request(method, url, verify_certificates, headers):
         })
 
 
-def get_domain_report_from_threat_miner(domain_name, threat_miner_url, verify_certificates):
+def get_domain_report_from_threat_miner(domain_name):
     return {
-        'raw_whois': get_domain_whois_rawdata(domain_name, threat_miner_url, verify_certificates),
-        'raw_passive_dns': get_domain_passive_dns_rawdata(domain_name, threat_miner_url, verify_certificates),
-        'raw_sub_domains': get_domain_subdomains_rawdata(domain_name, threat_miner_url, verify_certificates),
-        'raw_domain_uris': get_domain_URI_rawdata(domain_name, threat_miner_url, verify_certificates),
-        'raw_domain_md5': get_domain_MD5_rawdata(domain_name, threat_miner_url, verify_certificates)
+        'raw_whois': get_domain_whois_rawdata(domain_name),
+        'raw_passive_dns': get_domain_passive_dns_rawdata(domain_name),
+        'raw_sub_domains': get_domain_subdomains_rawdata(domain_name),
+        'raw_domain_uris': get_domain_URI_rawdata(domain_name),
+        'raw_domain_md5': get_domain_MD5_rawdata(domain_name)
     }
 
 
-def get_domain_whois_rawdata(domain_name, threat_miner_url, verify_certificates):
+def get_domain_whois_rawdata(domain_name):
     threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 1)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     domain_whois = response.get('results', [])
     if len(domain_whois) == 0:
         return {}
@@ -61,10 +63,9 @@ def get_domain_whois_rawdata(domain_name, threat_miner_url, verify_certificates)
     return domain_whois[0]
 
 
-def get_domain_passive_dns_rawdata(domain_name, threat_miner_url, verify_certificates):
+def get_domain_passive_dns_rawdata(domain_name):
     threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 2)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     threatminer_results_as_array = response.get('results', [])
     if len(threatminer_results_as_array) == 0:
         return []
@@ -78,18 +79,16 @@ def get_domain_passive_dns(passive_dns, max_returned_array_size):
     return passive_dns['raw_passive_dns'][:max_returned_array_size]
 
 
-def get_domain_subdomains_rawdata(domain_name, threat_miner_url, verify_certificates):
+def get_domain_subdomains_rawdata(domain_name):
     threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 5)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     sub_domains_array = response.get('results', [])
     return sub_domains_array
 
 
-def get_domain_URI_rawdata(domain_name, threat_miner_url, verify_certificates):
+def get_domain_URI_rawdata(domain_name):
     threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 3)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     uris_full_result = response.get('results', [])
     return uris_full_result
 
@@ -110,10 +109,9 @@ def get_domain_URI(uris_raw_data, max_returned_array_size):
     return uris
 
 
-def get_domain_MD5_rawdata(domain_name, threat_miner_url, verify_certificates):
+def get_domain_MD5_rawdata(domain_name):
     threat_miner_domain_url_postfix = 'domain.php?q={}&rt={}'.format(domain_name, 4)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     md5s = response.get('results', [])
     return md5s
 
@@ -149,15 +147,13 @@ def create_domain_command_markdown(domain, context):
     return md
 
 
-def domain_command(**kwargs):
+def domain_command(max_returned_array_size):
     domain_name = demisto.args().get('domain')
-    threat_miner_raw_results = get_domain_report_from_threat_miner(domain_name, kwargs.get('threat_miner_url'),
-                                                                   kwargs.get('verify_certificates'))
+    threat_miner_raw_results = get_domain_report_from_threat_miner(domain_name)
 
     passive_dns = {}
     subdomains = {}
     md5s = {}
-    max_returned_array_size = kwargs.get('max_array_size')
     if max_returned_array_size == -1:
         passive_dnses = threat_miner_raw_results['raw_passive_dns']
         subdomains = threat_miner_raw_results['raw_sub_domains']
@@ -225,10 +221,9 @@ def domain_command(**kwargs):
     })
 
 
-def get_ip_whois_rawdata(ip_address, threat_miner_url, verify_certificates):
+def get_ip_whois_rawdata(ip_address):
     threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 1)
-    response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix,
-                            verify_certificates, DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_ip_url_postfix, DEFAULT_HEADERS)
     whois_rawdata = response.get('results', [])
     if len(whois_rawdata) > 0:
         return whois_rawdata[0]
@@ -247,17 +242,17 @@ def get_ip_whois(whois_rawdata, ip_address):
     return ip_whois_results
 
 
-def get_ip_passiveDNS_rawdata(ip_address, threat_miner_url, verify_certificates):
+def get_ip_passiveDNS_rawdata(ip_address):
     threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 2)
-    response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix, verify_certificates, DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_ip_url_postfix, DEFAULT_HEADERS)
     passiveDNSArray = response.get('results', [])
 
     return passiveDNSArray
 
 
-def get_ip_URI_rawdata(ip_address, threat_miner_url, verify_certificates):
+def get_ip_URI_rawdata(ip_address):
     threat_miner_ip_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 3)
-    response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix, verify_certificates, DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_ip_url_postfix, DEFAULT_HEADERS)
     uris_rawdata = response.get('results', [])
     return uris_rawdata
 
@@ -279,10 +274,9 @@ def get_ip_URI(threatminer_results_as_array, max_returned_array_size):
     return URIs
 
 
-def get_ip_MD5_rawdata(ip_address, threat_miner_url, verify_certificates):
+def get_ip_MD5_rawdata(ip_address):
     threat_miner_domain_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 4)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
 
     md5s = response.get('results', [])
 
@@ -291,10 +285,9 @@ def get_ip_MD5_rawdata(ip_address, threat_miner_url, verify_certificates):
     return md5s
 
 
-def get_ip_SSL_rawdata(ip_address, threat_miner_url, verify_certificates):
+def get_ip_SSL_rawdata(ip_address):
     threat_miner_domain_url_postfix = 'host.php?q={}&rt={}'.format(ip_address, 5)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
 
     ssls_raw_data = response.get('results', [])
     return ssls_raw_data
@@ -329,13 +322,13 @@ def create_ip_command_markdown(ip_address, context):
     return md
 
 
-def get_ip_report_from_threat_miner(ip_address, threat_miner_url, verify_certificates):
+def get_ip_report_from_threat_miner(ip_address):
     return {
-        'raw_whois': get_ip_whois_rawdata(ip_address, threat_miner_url, verify_certificates),
-        'raw_passive_dns': get_ip_passiveDNS_rawdata(ip_address, threat_miner_url, verify_certificates),
-        'raw_ip_md5': get_ip_MD5_rawdata(ip_address, threat_miner_url, verify_certificates),
-        'raw_ip_uris': get_ip_URI_rawdata(ip_address, threat_miner_url, verify_certificates),
-        'raw_ip_ssl': get_ip_SSL_rawdata(ip_address, threat_miner_url, verify_certificates)
+        'raw_whois': get_ip_whois_rawdata(ip_address),
+        'raw_passive_dns': get_ip_passiveDNS_rawdata(ip_address),
+        'raw_ip_md5': get_ip_MD5_rawdata(ip_address),
+        'raw_ip_uris': get_ip_URI_rawdata(ip_address),
+        'raw_ip_ssl': get_ip_SSL_rawdata(ip_address)
     }
 
 
@@ -350,17 +343,15 @@ def get_passive_dns(threat_miner_raw_results):
     return passive_dnses
 
 
-def ip_command(**kwargs):
+def ip_command(max_returned_array_size):
     ip_address = demisto.args().get('ip')
     if not is_ip_valid(ip_address):
         return_error('An invalid IP was specified')
-    threat_miner_raw_results = get_ip_report_from_threat_miner(ip_address, kwargs.get('threat_miner_url'),
-                                                               kwargs.get('verify_certificates'))
+    threat_miner_raw_results = get_ip_report_from_threat_miner(ip_address)
     passiveDnses = get_passive_dns(threat_miner_raw_results)
     md5s = {}
     ssls = {}
 
-    max_returned_array_size = kwargs.get('max_array_size')
     if max_returned_array_size == -1:
         passiveDns = passiveDnses
         md5s = threat_miner_raw_results['raw_ip_md5']
@@ -405,21 +396,20 @@ def ip_command(**kwargs):
          'ContentsFormat': formats['json']})
 
 
-def get_file_whois_rawdata(hashed_file, threat_miner_url, verify_certificates):
+def get_file_whois_rawdata(hashed_file):
     threat_miner_ip_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 1)
-    response = http_request('GET', threat_miner_url + threat_miner_ip_url_postfix, verify_certificates, DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_ip_url_postfix, DEFAULT_HEADERS)
     threatminer_results_as_array = response.get('results', [])
 
     if len(threatminer_results_as_array) == 0:
-        return {}
+        return threatminer_results_as_array
 
     return threatminer_results_as_array[0]
 
 
-def get_file_http_rawdata(hashed_file, threat_miner_url, verify_certificates):
+def get_file_http_rawdata(hashed_file):
     threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 2)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     file_http_raw_data = response.get('results', [])
     return file_http_raw_data
 
@@ -447,10 +437,9 @@ def get_file_http(file_http_raw_data, max_returned_array_size):
     return http_traffics_info
 
 
-def get_file_domains_and_ip_rawdata(hashed_file, threat_miner_url, verify_certificates):
+def get_file_domains_and_ip_rawdata(hashed_file):
     threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 3)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     domain_and_ip_raw_data = response.get('results', [])
     return domain_and_ip_raw_data
 
@@ -472,10 +461,9 @@ def get_file_domains_and_ip(domain_and_ip_raw_data, max_returned_array_size):
     return domains_and_ips
 
 
-def get_file_mutants_rawdata(hashed_file, threat_miner_url, verify_certificates):
+def get_file_mutants_rawdata(hashed_file):
     threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 4)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
     mutants_rawdata = response.get('results', [])
     return mutants_rawdata
 
@@ -490,10 +478,9 @@ def get_file_mutants(mutants_rawdata, max_returned_array_size):
     return file_mutants['mutants'][:max_returned_array_size]
 
 
-def get_file_registry_keys_rawdata(hashed_file, threat_miner_url, verify_certificates):
+def get_file_registry_keys_rawdata(hashed_file):
     threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 5)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
 
     threatminer_results_as_array = response.get('results', [])
     if len(threatminer_results_as_array) == 0:
@@ -510,10 +497,9 @@ def get_file_registry_keys(file_registry_keys, max_returned_array_size):
     return file_registry_keys['raw_file_registry']['registry_keys'][:max_returned_array_size]
 
 
-def get_file_AV_detection_rawdata(hashed_file, threat_miner_url, verify_certificates):
+def get_file_AV_detection_rawdata(hashed_file):
     threat_miner_domain_url_postfix = 'sample.php?q={}&rt={}'.format(hashed_file, 6)
-    response = http_request('GET', threat_miner_url + threat_miner_domain_url_postfix, verify_certificates,
-                            DEFAULT_HEADERS)
+    response = http_request('GET', THREAT_MINER_URL + threat_miner_domain_url_postfix, DEFAULT_HEADERS)
 
     raw_file_av_dectection = response.get('results', {})
     return raw_file_av_dectection
@@ -532,29 +518,27 @@ def get_file_AV_detection(raw_file_av_dectection):
     return av_detections
 
 
-def get_file_report_from_threat_miner(hashed_file, threat_miner_url, verify_certificates):
+def get_file_report_from_threat_miner(hashed_file):
     return {
-        'raw_whois': get_file_whois_rawdata(hashed_file, threat_miner_url, verify_certificates),
-        'raw_file_https': get_file_http_rawdata(hashed_file, threat_miner_url, verify_certificates),
-        'raw_file_domains': get_file_domains_and_ip_rawdata(hashed_file, threat_miner_url, verify_certificates),
-        'raw_file_mutants': get_file_mutants_rawdata(hashed_file, threat_miner_url, verify_certificates),
-        'raw_file_registry': get_file_registry_keys_rawdata(hashed_file, threat_miner_url, verify_certificates),
-        'raw_file_av': get_file_AV_detection_rawdata(hashed_file, threat_miner_url, verify_certificates)
+        'raw_whois': get_file_whois_rawdata(hashed_file),
+        'raw_file_https': get_file_http_rawdata(hashed_file),
+        'raw_file_domains': get_file_domains_and_ip_rawdata(hashed_file),
+        'raw_file_mutants': get_file_mutants_rawdata(hashed_file),
+        'raw_file_registry': get_file_registry_keys_rawdata(hashed_file),
+        'raw_file_av': get_file_AV_detection_rawdata(hashed_file)
     }
 
 
-def get_dbot_scores_context(threat_miner_raw_results, file_context, hashed_file, reliability):
+def get_dbot_scores_context(threat_miner_raw_results, file_context, hashed_file):
     amount_of_detections = len(threat_miner_raw_results.get('AV', ''))
-    dbot_scores = get_dbot_score_report(amount_of_detections, hashed_file, file_context, reliability)
+    dbot_scores = get_dbot_score_report(amount_of_detections, hashed_file, file_context)
     return dbot_scores
 
 
-def file_command(**kwargs):
+def file_command(max_returned_array_size):
     hashed_file = demisto.args().get('file')
-    threat_miner_raw_results = get_file_report_from_threat_miner(hashed_file, kwargs.get('threat_miner_url'),
-                                                                 kwargs.get('verify_certificates'))
+    threat_miner_raw_results = get_file_report_from_threat_miner(hashed_file)
 
-    max_returned_array_size = kwargs.get('max_array_size')
     threat_miner_context = {
         'MD5': threat_miner_raw_results['raw_whois'].get('md5', ''),
         'Architecture': threat_miner_raw_results['raw_whois'].get('architecture', ''),
@@ -582,7 +566,7 @@ def file_command(**kwargs):
         'Size': threat_miner_raw_results['raw_whois'].get('file_size', ''),
         'Analyzed': threat_miner_raw_results['raw_whois'].get('date_analysed', '')
     }
-    dbot_scores = get_dbot_scores_context(threat_miner_context, file_context, hashed_file, kwargs.get('reliability'))
+    dbot_scores = get_dbot_scores_context(threat_miner_context, file_context, hashed_file)
 
     context = {
         'ThreatMiner.File(val.MD5 && val.MD5 == obj.MD5)': threat_miner_context,
@@ -597,14 +581,13 @@ def file_command(**kwargs):
                             'ContentsFormat': formats['json']})
 
 
-def get_dbot_score_report(amount_of_detections, hashed_file, file_context, reliability):
+def get_dbot_score_report(amount_of_detections, hashed_file, file_context):
     dbot = {}
     dbot_score = get_dbot_score(amount_of_detections)
     dbot['Score'] = dbot_score
     dbot['Indicator'] = hashed_file
     dbot['Type'] = 'File'
     dbot['Vendor'] = 'ThreatMiner'
-    dbot['Reliability'] = reliability
 
     if dbot_score == 3:
         file_context['Malicious'] = {}
@@ -681,51 +664,34 @@ def delete_proxy_if_asked():
     ''' EXECUTION CODE '''
 
 
-def main():
-    try:
+try:
+    delete_proxy_if_asked()
+    demisto_command = demisto.command()
+    if demisto_command == 'test-module':
+        report = get_ip_whois_rawdata('8.8.8.8')
 
-        demisto_params = demisto.params()
-
-        params = {
-            'threat_miner_url': demisto_params.get('threatminer_url'),
-            'verify_certificates': False if demisto_params.get('insecure') else True,
-        }
-
-        reliability = demisto_params.get('integrationReliability')
-        reliability = reliability if reliability else DBotScoreReliability.C
-
-        if DBotScoreReliability.is_valid_type(reliability):
-            params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+        if 'asn' in report:
+            demisto.results('ok')
         else:
-            Exception("Please provide a valid value for the Source Reliability parameter.")
+            demisto.results('test failed')
 
-        delete_proxy_if_asked()
-        demisto_command = demisto.command()
-        if demisto_command == 'test-module':
-            report = get_ip_whois_rawdata('8.8.8.8', params['threat_miner_url'], params['verify_certificates'])
+    if demisto.params().get('limit_results').lower() == 'all':
+        max_array_size = -1
+    else:
+        max_array_size = int(demisto.params().get('limit_results', MAX_RETURNED_ARRAY_SIZE))
 
-            if 'asn' in report:
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+    if demisto_command == 'domain':
+        domain_command(max_array_size)
 
-        if demisto_params.get('limit_results').lower() == 'all':
-            params['max_array_size'] = -1
-        else:
-            params['max_array_size'] = int(demisto_params.get('limit_results', 30))
+    if demisto_command == 'ip':
+        ip_command(max_array_size)
 
-        if demisto_command == 'domain':
-            domain_command(**params)
+    if demisto_command == 'file':
+        file_command(max_array_size)
 
-        if demisto_command == 'ip':
-            ip_command(**params)
-
-        if demisto_command == 'file':
-            file_command(**params)
-
-    except Exception as e:
-        return_error('An error has occurred: %s' % (e.message))
-
-
-if __name__ in ['__main__', '__builtin__', 'builtins']:
-    main()
+except Exception as e:
+    demisto.results({
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': 'error has occured: %s' % (e.message, ),
+    })

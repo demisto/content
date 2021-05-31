@@ -6,19 +6,6 @@
         "ipRep": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Cyren City Name": {
-                    "complex": {
-                        "accessor": "geo_city",
-                        "filters": [
-
-                        ],
-                        "root": "payload.meta",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
                 "Cyren Country Code": {
                     "complex": {
                         "accessor": "country_code",
@@ -34,13 +21,31 @@
                 },
                 "Cyren Country Name": {
                     "complex": {
-                        "accessor": "geo_country",
+                        "accessor": "",
                         "filters": [
-
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "payload.meta.country_code"
+                                        }
+                                    },
+                                    "operator": "isExists",
+                                    "right": null
+                                }
+                            ]
                         ],
-                        "root": "payload.meta",
+                        "root": "payload.meta.country_code",
                         "transformers": [
+                            {
+                                "args": {
 
+                                },
+                                "operator": "CyrenCountryLookup"
+                            }
                         ]
                     },
                     "simple": ""
@@ -124,19 +129,6 @@
                                 },
                                 "operator": "MapValuesTransformer"
                             }
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Cyren Geo Location": {
-                    "complex": {
-                        "accessor": "geo_location",
-                        "filters": [
-
-                        ],
-                        "root": "payload.meta",
-                        "transformers": [
-
                         ]
                     },
                     "simple": ""

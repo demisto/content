@@ -37,8 +37,6 @@ config = Config(
 
 
 def parse_resource_ids(resource_id):
-    if not resource_id:
-        return None
     id_list = resource_id.replace(" ", "")
     resourceIds = id_list.split(",")
     return resourceIds
@@ -98,8 +96,8 @@ def aws_session(service='dynamodb', region=None, roleArn=None, roleSessionName=N
     if kwargs and not AWS_ACCESS_KEY_ID:
 
         if not AWS_ACCESS_KEY_ID:
-            sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE,
-                                      region_name=AWS_DEFAULT_REGION)
+            sts_client = boto3.client(
+                'sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
                 client = boto3.client(
@@ -309,7 +307,7 @@ def create_table_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
@@ -323,7 +321,7 @@ def create_table_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
             "ProvisionedThroughput": {
@@ -682,7 +680,7 @@ def get_item_command(args):
     kwargs = {
         "TableName": args.get("table_name", None),
         "Key": json.loads(args.get("key", "{}")),
-        "AttributesToGet": parse_resource_ids(args.get("attributes_to_get", "")),
+        "AttributesToGet": [parse_resource_ids(args.get("attributes_to_get", ""))],
         "ConsistentRead": True if args.get("consistent_read", "") == "true" else None,
         "ReturnConsumedCapacity": args.get("return_consumed_capacity", None),
         "ProjectionExpression": args.get("projection_expression", None),
@@ -860,7 +858,7 @@ def query_command(args):
         "TableName": args.get("table_name", None),
         "IndexName": args.get("index_name", None),
         "Select": args.get("select", None),
-        "AttributesToGet": parse_resource_ids(args.get("attributes_to_get", "")),
+        "AttributesToGet": [parse_resource_ids(args.get("attributes_to_get", ""))],
         "ConsistentRead": True if args.get("consistent_read", "") == "true" else None,
         "KeyConditions": json.loads(args.get("key_conditions", "{}")),
         "QueryFilter": json.loads(args.get("query_filter", "{}")),
@@ -910,7 +908,7 @@ def restore_table_from_backup_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
             "ProvisionedThroughput": {
@@ -929,7 +927,7 @@ def restore_table_from_backup_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
@@ -979,7 +977,7 @@ def restore_table_to_point_in_time_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
             "ProvisionedThroughput": {
@@ -998,7 +996,7 @@ def restore_table_to_point_in_time_command(args):
             }],
             "Projection": {
                 "ProjectionType": args.get("projection_projection_type", None),
-                "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
             },
 
@@ -1037,7 +1035,7 @@ def scan_command(args):
     kwargs = {
         "TableName": args.get("table_name", None),
         "IndexName": args.get("index_name", None),
-        "AttributesToGet": parse_resource_ids(args.get("attributes_to_get", "")),
+        "AttributesToGet": [parse_resource_ids(args.get("attributes_to_get", ""))],
         "Select": args.get("select", None),
         "ScanFilter": json.loads(args.get("scan_filter", "{}")),
         "ConditionalOperator": args.get("conditional_operator", None),
@@ -1206,7 +1204,7 @@ def untag_resource_command(args):
     )
     kwargs = {
         "ResourceArn": args.get("resource_arn", None),
-        "TagKeys": parse_resource_ids(args.get("tag_keys", ""))
+        "TagKeys": [parse_resource_ids(args.get("tag_keys", ""))]
     }
     kwargs = remove_empty_elements(kwargs)
     if args.get('raw_json') is not None and not kwargs:
@@ -1217,7 +1215,7 @@ def untag_resource_command(args):
     response = client.untag_resource(**kwargs)
     response = json.dumps(response, default=datetime_to_string)
     response = json.loads(response)
-    outputs = {'AWS-DynamoDB.ConsumedCapacity': response.get('ConsumedCapacity')}
+    outputs = {'AWS-DynamoDB.ConsumedCapacity': response['ConsumedCapacity']}
     del response['ResponseMetadata']
     table_header = 'AWS DynamoDB UntagResource'
     human_readable = aws_table_to_markdown(response, table_header)
@@ -1432,7 +1430,7 @@ def update_table_command(args):
                 }],
                 "Projection": {
                     "ProjectionType": args.get("projection_projection_type", None),
-                    "NonKeyAttributes": parse_resource_ids(args.get("projection_non_key_attributes", "")),
+                    "NonKeyAttributes": [parse_resource_ids(args.get("projection_non_key_attributes", ""))],
 
                 },
                 "ProvisionedThroughput": {

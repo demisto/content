@@ -6,7 +6,7 @@ script: >
   var res = executeCommand("getEntry", {"id":args.responseEntryId});
 
 
-  if (res[0].Type==entryTypes.note || res[0].Type==entryTypes.file) {
+  if (res[0].Type==entryTypes.note) {
       text = res[0].Contents;
       text = text.replace(/<br\/?>/gi,'\n')
                   .replace(/\n/g,'__NL__')
@@ -32,5 +32,3 @@ args:
   description: Entry ID where EmailAskUser will complete when user replies
 scripttarget: 0
 fromversion: 5.0.0
-tests:
-  - No test

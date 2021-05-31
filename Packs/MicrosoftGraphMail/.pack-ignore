@@ -1,5 +1,2 @@
 [file:MicrosoftGraphMail.yml]
 ignore=IN126
-
-[file:playbook-MicrosoftGraphMail-Test.yml]
-ignore=auto-test

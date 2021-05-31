@@ -819,7 +819,7 @@ def main():
     # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
-    refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
+    refresh_token = (demisto.getIntegrationContext().get('current_refresh_token') or refresh_token)
 
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,

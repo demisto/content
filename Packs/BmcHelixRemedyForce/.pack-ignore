@@ -1,5 +1,2 @@
 [file:BMCHelixRemedyforce.yml]
 ignore=IN135
-
-[file:README.md]
-ignore=RM104

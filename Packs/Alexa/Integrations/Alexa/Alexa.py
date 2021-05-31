@@ -9,16 +9,22 @@ import re
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+"""GLOBAL VARIABLES/CONSTANTS"""
+THRESHOLD = int(demisto.params().get('threshold'))
+BENIGN = int(demisto.params().get('benign'), 0)
+USE_SSL = not demisto.params().get('insecure', False)
+PROXIES = handle_proxy()
+
 """COMMAND FUNCTIONS"""
 
 
-def alexa_fallback_command(domain, use_ssl, proxies):
+def alexa_fallback_command(domain):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, '
                       'like Gecko) Chrome/85.0.4183.121 Safari/537.36'
     }
     resp = requests.request('GET', 'https://www.alexa.com/minisiteinfo/{}'.format(domain),
-                            headers=headers, verify=use_ssl, proxies=proxies)
+                            headers=headers, verify=USE_SSL, proxies=PROXIES)
     try:
         x = re.search(r"style=\"margin-bottom:-2px;\"\/>\s(\d{0,3},)?(\d{3},)?\d{0,3}<\/a>", resp.content)
         raw_result = x.group()  # type:ignore
@@ -30,23 +36,23 @@ def alexa_fallback_command(domain, use_ssl, proxies):
     return formatted_result
 
 
-def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliability):
+def alexa_domain_command():
+    domain = demisto.args().get('domain')
     try:
         resp = requests.request('GET',
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
-                                verify=use_ssl, proxies=proxies)
+                                verify=USE_SSL, proxies=PROXIES)
         root = ET.fromstring(str(resp.content))
         rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
-        rank = alexa_fallback_command(domain, use_ssl, proxies)
-
-    if 0 < int(rank) <= benign:
+        rank = alexa_fallback_command(domain)
+    if int(rank) <= BENIGN and int(rank) > 0:
         dbot_score = 1
         dbot_score_text = 'good'
-    elif int(rank) > threshold:
+    elif int(rank) > THRESHOLD:
         dbot_score = 2
         dbot_score_text = 'suspicious'
-    elif (int(rank) < threshold) and rank != '-1':
+    elif (int(rank) < THRESHOLD) and rank != '-1':
         dbot_score = 0
         dbot_score_text = 'unknown'
     else:
@@ -61,8 +67,7 @@ def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliabilit
             'Vendor': 'Alexa Rank Indicator',
             'Domain': domain,
             'Indicator': domain,
-            'Type': 'domain',
-            "Reliability": reliability
+            'Type': 'domain'
         },
         'Alexa.Domain(val.Name && val.Name == obj.Domain.Name)': {
             'Name': domain,
@@ -72,7 +77,7 @@ def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliabilit
     }
     hr_string = ('The Alexa rank of {} is {} and has been marked as {}. '
                  'The benign threshold is {} while the suspicious '
-                 'threshold is {}.'.format(domain, rank, dbot_score_text, benign, threshold))
+                 'threshold is {}.'.format(domain, rank, dbot_score_text, BENIGN, THRESHOLD))
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
@@ -82,16 +87,16 @@ def alexa_domain_command(domain, use_ssl, proxies, threshold, benign, reliabilit
     })
 
 
-def test_module_command(use_ssl, proxies):
+def test_module_command():
     domain = 'google.com'
     try:
         resp = requests.request('GET',
                                 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain),
-                                verify=use_ssl, proxies=proxies)
+                                verify=USE_SSL, proxies=PROXIES)
         root = ET.fromstring(str(resp.content))
         rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
-        rank = alexa_fallback_command(domain, use_ssl, proxies)
+        rank = alexa_fallback_command(domain)
     if rank == '1':
         result = 'ok'
     else:
@@ -101,27 +106,11 @@ def test_module_command(use_ssl, proxies):
 
 """EXECUTION BLOCK"""
 try:
-    params = demisto.params()
-
-    instance_params = {
-        'threshold': int(params.get('threshold', 2000000)),
-        'benign': int(params.get('benign', 0)),
-        'use_ssl': not params.get('insecure', False),
-        'proxies': handle_proxy()
-    }
-    reliability = params.get('integrationReliability', DBotScoreReliability.A)
-
-    if DBotScoreReliability.is_valid_type(reliability):
-        instance_params['reliability'] = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
-
     if demisto.command() == 'test-module':
-        test_result = test_module_command(instance_params['use_ssl'], instance_params['proxies'])
+        test_result = test_module_command()
         demisto.results(test_result)
     if demisto.command() == 'domain':
-        domain = demisto.args().get('domain')
-        alexa_domain_command(domain, **instance_params)
+        alexa_domain_command()
 except Exception as e:
     LOG(e)
     LOG.print_log(False)

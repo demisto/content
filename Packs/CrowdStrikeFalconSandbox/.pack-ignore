@@ -1,5 +1,2 @@
 [file:playbook-Detonate_URL_-_CrowdStrike.yml]
 ignore=BA101
-
-[file:README.md]
-ignore=RM104

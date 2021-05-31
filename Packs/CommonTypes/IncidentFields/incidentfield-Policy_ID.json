@@ -6,8 +6,7 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-        "Tripwire File Change",
-		"Carbon Black Endpoint Standard"
+        "Tripwire File Change"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

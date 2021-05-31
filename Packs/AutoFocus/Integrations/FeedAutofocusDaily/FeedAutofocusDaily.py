@@ -1,10 +1,10 @@
-from typing import List, Tuple, Optional
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 # IMPORTS
 import requests
-from CommonServerUserPython import *
-
-from CommonServerPython import *
+from typing import List, Tuple, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -237,19 +237,17 @@ def main():
     params = demisto.params()
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
+    client = Client(api_key=params.get('api_key'),
+                    insecure=params.get('insecure'))
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
-
+    # Switch case
     commands = {
         'test-module': module_test_command,
         'autofocus-daily-get-indicators': get_indicators_command
     }
     try:
-        auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
-        client = Client(api_key=auto_focus_key_retriever.key,
-                        insecure=params.get('insecure'))
-
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators_command(client, feed_tags, tlp_color)
             # we submit the indicators in batches

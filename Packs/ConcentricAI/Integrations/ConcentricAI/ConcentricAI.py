@@ -23,7 +23,7 @@ VERIFY_CERT: bool
 PROXY: bool
 TENANT_ID: str
 USERNAME: str
-QUERY_HEADERS = None
+QUERY_HEADERS: dict
 COOKIE: str
 LAST_FETCH = None
 RISK_RULES: dict
@@ -77,7 +77,7 @@ def initialise_scrolls_and_rules():
 
 def initialize_global_values():
 
-    global URL, MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS,\
+    global URL, MAX_INCIDENTS_TO_FETCH, COOKIE, AUTH_HEADERS, QUERY_HEADERS,\
         CLIENT_ID, CLIENT_SECRET, AUTH_HEADERS, DOMAIN, AUTHORIZATION
 
     CLIENT_ID = demisto.getParam('client_id')
@@ -105,6 +105,7 @@ This is the client class that will have all the client login calls.
 
 
 class LoginClient(BaseClient):
+
     def fetch_api_token(self):
         res = self._http_request(
             method='GET',
@@ -133,7 +134,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull incidents', e)
@@ -149,7 +149,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull risk-rules', e)
@@ -173,7 +172,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file-information', e)
@@ -189,7 +187,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file sharing details', e)
@@ -206,7 +203,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull users-overview', e)
@@ -227,7 +223,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull users-overview', e)
@@ -245,7 +240,6 @@ class QueryClient(BaseClient):
         except Exception as e:
             if str(e) == 'Error in API call [401] - Unauthorized\n':
                 fetch_token(loginClient)
-                self._headers = QUERY_HEADERS
                 res = callAPI(self, payload, loginClient)
             else:
                 raise Exception('Failed to pull file-names', e)
@@ -262,7 +256,7 @@ def convert_to_demisto_severity(severity: str) -> int:
     }[severity]
 
 
-def arg_to_int(arg, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     if arg is None:
         if required is True:
             raise ValueError(f'Missing "{arg_name}"')
@@ -277,14 +271,11 @@ def arg_to_int(arg, arg_name: str, required: bool = False) -> Optional[int]:
 
 
 def fetch_token(client: LoginClient):
-    try:
-        token = client.fetch_api_token()
-        global COOKIE
-        COOKIE = 'accessToken=' + token
-        global QUERY_HEADERS
-        QUERY_HEADERS = get_headers_for_query()
-    except Exception as e:
-        raise Exception('Failed to fetch token', e)
+    token = client.fetch_api_token()
+    global COOKIE
+    COOKIE = 'accessToken=' + token
+    global QUERY_HEADERS
+    QUERY_HEADERS = get_headers_for_query()
 
 
 def get_rule_names(risk_id: List, risk_rules: dict):
@@ -427,16 +418,12 @@ def transform_file_permissions(answer):
 
 
 def test_module(client: LoginClient):
-    try:
-        token = client.fetch_api_token()
-        if token:
-            return 'ok'
-    except Exception as e:
-        raise Exception('Test Failure', e)
+    token = client.fetch_api_token()
+    if token:
+        return 'ok'
 
 
-def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int],
-                    max_results: int, fetch_time):
+def fetch_incidents(loginClient: LoginClient, queryClient: QueryClient, last_run: Dict[str, int], max_results: int, fetch_time):
     global SCROLL_ID_INCIDENT
     last_fetch = last_run.get('last_fetch', None)
     scroll_id = last_run.get('scroll_id', None)
@@ -604,7 +591,7 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
         results.append(target)
 
     if results == []:
-        return_results(f'No Results found for this user while executing {demisto.command()} command')
+        return_error(f'No Results found for this user while executing {demisto.command()} command')
 
     readable_output = tableToMarkdown('Users Details', results)
     return CommandResults(
@@ -616,6 +603,7 @@ def get_user_details(loginClient: LoginClient, queryClient: QueryClient, user: s
 
 
 def main() -> None:
+
     initialize_global_values()
     headers = AUTH_HEADERS
     base_url = urljoin(demisto.params()['url'])
@@ -627,11 +615,8 @@ def main() -> None:
         verify=verify_certificate,
         headers=headers,
         proxy=proxy)
-
+    fetch_token(loginClient)
     global QUERY_HEADERS
-    if QUERY_HEADERS is None:
-        fetch_token(loginClient)
-
     queryClient = QueryClient(
         base_url=base_url,
         headers=QUERY_HEADERS,

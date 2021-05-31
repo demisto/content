@@ -650,4 +650,3 @@ inputs:
 outputs: []
 tests:
 - No tests
-deprecated: true

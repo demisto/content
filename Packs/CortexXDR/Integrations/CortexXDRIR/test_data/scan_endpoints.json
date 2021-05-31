@@ -11,8 +11,7 @@
         "platform":"windows",
         "alias":"123",
         "isolate":"true",
-        "hostname":"123",
-        "all":"false"
+        "hostname":"123"
   },
     "api_response": {
     "reply":

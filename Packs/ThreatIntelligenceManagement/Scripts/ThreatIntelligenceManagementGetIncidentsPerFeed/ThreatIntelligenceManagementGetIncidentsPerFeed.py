@@ -55,8 +55,7 @@ def get_feeds_for_incident(incident_id: int) -> set:
         List of feeds that have indicators in the given incident.
     """
     indicator_query = f'sourceBrands:*Feed* and incident.id:{incident_id}'
-    search_indicators = IndicatorsSearcher()
-    fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query).get('iocs')
+    fetched_iocs = demisto.searchIndicators(query=indicator_query).get('iocs')
     feeds = set()
     for indicator in fetched_iocs:
         source_brands = indicator.get('sourceBrands')

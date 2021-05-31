@@ -13,8 +13,7 @@ configuration:
   required: false
   type: 8
   defaultvalue: 'true'
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -38,8 +37,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -106,7 +104,7 @@ script:
     description: Retrieves a limited number of the indicators.
     execution: false
     name: unit42-get-indicators
-  dockerimage: demisto/taxii2:1.0.0.13859
+  dockerimage: demisto/taxii2:1.0.0.12410
   feed: true
   isfetch: false
   longRunning: false

@@ -9,6 +9,3 @@ ignore=BA101
 
 [file:playbook-Display_Results_-_GVault.yml]
 ignore=BA101
-
-[file:README.md]
-ignore=RM104

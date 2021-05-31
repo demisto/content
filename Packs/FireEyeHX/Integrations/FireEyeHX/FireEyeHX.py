@@ -13,7 +13,6 @@ import time
 import json
 import os
 import re
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -1212,7 +1211,7 @@ def get_alert():
         'Contents': alert,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': u'{}\n{}'.format(alert_table, event_table),
+        'HumanReadable': '{}\n{}'.format(alert_table, event_table),
         'EntryContext': {
             "FireEyeHX.Alerts(obj._id==val._id)": alert
         }
@@ -2351,14 +2350,11 @@ def fetch_incidents():
 
     last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
-    fetch_limit = int(demisto.params().get('fetch_limit') or '100')
-
     if last_run and last_run.get('min_id'):
         # get all alerts with id greater than min_id
         alerts = get_all_alerts(
             min_id=last_run.get('min_id'),
-            sort='_id+ascending',
-            limit=fetch_limit
+            sort='_id+ascending'
         )
         # results are sorted in ascending order - the last alert holds the greatest id
         min_id = alerts[-1].get('_id') if alerts else None
@@ -2366,7 +2362,7 @@ def fetch_incidents():
         # get the last 100 alerts
         alerts = get_all_alerts(
             sort='_id+descending',
-            limit=fetch_limit
+            limit=100
         )
         # results are sorted in descending order - the first alert holds the greatest id
         min_id = alerts[0].get('_id') if alerts else None
@@ -2396,7 +2392,7 @@ def parse_alert_to_incident(alert):
     if isinstance(event_values, dict):
         indicator = event_values.get(event_indicator, '')
 
-    incident_name = u'{event_type_parsed}: {indicator}'.format(
+    incident_name = '{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
         indicator=indicator
     )

@@ -1,9 +1,5 @@
 Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.
 This integration was integrated and tested with version v2 of EWS Extension Online Powershell v2
-
-**Note:** This integration does not replace the **O365 - EWS - Extension** integration, but an additional EWS extension integration
-which utilizes the [EXO v2 module](https://docs.microsoft.com/en-us/powershell/exchange/exchange-online-powershell-v2?view=exchange-ps).
-
 ## Configure EWS Extension Online Powershell v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

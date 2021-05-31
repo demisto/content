@@ -22,8 +22,6 @@ configuration:
   - sa-east-1
   - eu-north-1
   - eu-west-3
-  - us-gov-east-1
-  - us-gov-west-1
   required: false
   type: 15
 - display: Role Arn
@@ -575,7 +573,7 @@ script:
     - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
-  dockerimage: demisto/boto3:2.0.0.19034
+  dockerimage: demisto/boto3:2.0.0.13676
   feed: false
   isfetch: false
   longRunning: false

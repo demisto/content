@@ -56,7 +56,6 @@ The integration supports only Application permission type, and does not support 
 | scope | Scope (Required for using Cortex XSOAR Azure app) | False |
 | app_secret | Application Secret (Required for using self deployed Azure app) | False |
 | tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
-| azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -100,9 +99,3 @@ We can see that according to the [HTTP request](https://docs.microsoft.com/en-us
  - The resource is ***/applications***
  
 So in order to list all the applications using the integration, we would run the command: `!msgraph-api resource=/applications http_method=GET`
-
-## Notes
-- In order to limit the number of results returned from Microsoft Graph API, the default value of the *odata* command argument is `$top=10`.
-Some of the Graph APIs do not support the `top` resource, and in that case the following error message will be returned: `This resource does not support custom page sizes. Please retry without a page size argument.`
-In this case, you can modify the *odata* command argument to not include the `top` resource.
-For example, run the command with the *odata* command argument set to `$count=true` to include a count of the total number of items in a collection alongside the page of data values returned from Microsoft Graph.

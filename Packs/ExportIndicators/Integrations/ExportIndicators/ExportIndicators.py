@@ -308,14 +308,13 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int, total_fetc
     iocs: List[dict] = []
     if not last_found_len:
         last_found_len = total_fetched
-    search_indicators = IndicatorsSearcher(page=next_page)
-
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = search_indicators.search_indicators_by_version(query=indicator_query, size=PAGE_SIZE).get('iocs')
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
-    return iocs, search_indicators.page
+        next_page += 1
+    return iocs, next_page
 
 
 def ip_groups_to_cidrs(ip_range_groups: list):
@@ -432,9 +431,8 @@ def panos_url_formatting(iocs: list, drop_invalids: bool, strip_port: bool):
 def create_json_out_format(iocs: list):
     formatted_indicators = []  # type:List
     for indicator_data in iocs:
-        if indicator_data.get("value"):
-            json_format_indicator = json_format_single_indicator(indicator_data)
-            formatted_indicators.append(json_format_indicator)
+        json_format_indicator = json_format_single_indicator(indicator_data)
+        formatted_indicators.append(json_format_indicator)
 
     return {CTX_VALUES_KEY: json.dumps(formatted_indicators)}
 
@@ -465,7 +463,7 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
     num_of_returned_indicators = 0
 
     for indicator in iocs:
-        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob'] and indicator.get('value'):
+        if indicator.get('indicator_type') in ['URL', 'Domain', 'DomainGlob']:
             indicator_proxysg_category = indicator.get('proxysgcategory')
             # if a ProxySG Category is set and it is in the category_attribute list or that the attribute list is empty
             # than list add the indicator to it's category list
@@ -494,8 +492,6 @@ def create_proxysg_out_format(iocs: list, category_attribute: list, category_def
 def create_mwg_out_format(iocs: list, mwg_type: str) -> dict:
     formatted_indicators = []  # type:List
     for indicator in iocs:
-        if not indicator.get('value'):
-            continue
         value = "\"" + indicator.get('value') + "\""
         sources = indicator.get('sourceBrands')
         if sources:
@@ -868,7 +864,7 @@ def run_long_running(params, is_test=False):
         else:
             demisto.debug('Starting HTTP Server')
 
-        server = WSGIServer(('0.0.0.0', port), APP, **ssl_args, log=DEMISTO_LOGGER)
+        server = WSGIServer(('', port), APP, **ssl_args, log=DEMISTO_LOGGER)
         if is_test:
             server_process = Process(target=server.serve_forever)
             server_process.start()

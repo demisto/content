@@ -9,6 +9,3 @@ ignore=auto-test
 
 [file:PcapAnalysis]
 ignore=PA116
-
-[file:layoutscontainer-PCAP_Analysis.json]
-ignore=BA101

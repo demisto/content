@@ -42,39 +42,6 @@ script:
       description: type of the analysis
       type: string
   - arguments:
-    - default: false
-      description: Hash of the file to query. Supports SHA256, MD5 and SHA1
-      isArray: false
-      name: file_hash
-      required: true
-      secret: false
-    deprecated: false
-    description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
-    execution: false
-    name: intezer-get-latest-report
-    outputs:
-      - contextPath: File.SHA256
-        description: Hash SHA256
-        type: string
-      - contextPath: File.Malicious.Vendor
-        description: For malicious files, the vendor that made the decision
-        type: string
-      - contextPath: DBotScore.Indicator
-        description: The indicator we tested
-        type: string
-      - contextPath: DBotScore.Type
-        description: The type of the indicator
-        type: string
-      - contextPath: DBotScore.Vendor
-        description: Vendor used to calculate the score
-        type: string
-      - contextPath: DBotScore.Score
-        description: The actual score
-        type: number
-      - contextPath: File.Metadata
-        description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metedata will be retuned only for supported files.
-        type: Unknown
-  - arguments:
     - default: true
       description: The file entry id to upload
       isArray: false
@@ -82,7 +49,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Checks file reputation for uploaded file (up to 150MB)
+    description: Checks file reputation for uploaded file (up to 32MB)
     execution: false
     name: intezer-analyze-by-file
     outputs:
@@ -148,7 +115,7 @@ script:
     - contextPath: Endpoint.Metadata
       description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
       type: Unknown
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.8.3.8715
   isfetch: false
   runonce: false
   script: '-'

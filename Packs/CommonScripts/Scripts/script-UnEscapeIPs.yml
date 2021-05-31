@@ -36,7 +36,7 @@ comment: |-
 enabled: true
 args:
 - name: input
-  description: IP(s) to unescape.
+  description: ip(s) to unescape
   isArray: true
 scripttarget: 0
 runonce: false

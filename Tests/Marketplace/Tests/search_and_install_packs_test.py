@@ -2,7 +2,7 @@ import demisto_client
 import pytest
 import timeout_decorator
 import Tests.Marketplace.search_and_install_packs as script
-from Tests.Marketplace.marketplace_constants import GCPConfig
+from Tests.Marketplace.marketplace_services import GCPConfig
 from google.cloud.storage import Blob
 import json
 

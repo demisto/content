@@ -1,4 +1,2 @@
 [file:playbook-feodoteackerhash_test.yml]
 ignore=auto-test
-[file:playbook-feodotrackeripblock_test.yml]
-ignore=auto-test

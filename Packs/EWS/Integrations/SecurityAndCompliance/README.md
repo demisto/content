@@ -1007,9 +1007,6 @@ Gets compliance search action from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocation | String | Security and compliance search action public folder locations to include. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.PublicFolderLocationExclusion | String | Security and compliance search action public folder locations to exclude. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Location | String | Security and compliance search action result location. |
-| O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.ItemCount | String | Security and compliance search action result item count. |
-| O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.TotalSize | String | Security and compliance search action result total size. |
-| O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.FailedCount | String | Security and compliance search action result failed count. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Sender | String | Security and compliance search action result mail sender. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Subject | String | Security and compliance search action result subject. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Results.Type | String | Security and compliance search action result type. |
@@ -1024,6 +1021,7 @@ Gets compliance search action from the Security & Compliance Center.
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.SharePointLocationExclusion | String | Security and compliance search action SharePoint locations to exclude. |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.Status | String | Security and compliance search action status. Either "Started" or "Completed". |
 | O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId | String | Security and compliance search action Tenant ID. |
+
 
 #### Command Example
 ```!o365-sc-get-search-action search_action_name="example_Preview"```

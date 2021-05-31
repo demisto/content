@@ -92,11 +92,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Create relationships
-  name: create_relationships
-  required: false
-  type: 8
 description: Gets a list of bad IPs from Feodo Tracker.
 display: Feodo Tracker IP Blocklist Feed
 name: Feodo Tracker IP Blocklist Feed
@@ -114,7 +109,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: feodotracker-ipblocklist-get-indicators
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
   longRunning: false

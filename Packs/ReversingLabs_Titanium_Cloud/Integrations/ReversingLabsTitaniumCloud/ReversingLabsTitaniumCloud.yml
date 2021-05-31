@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 8
 description: ReversingLabs Data provides malware status of the sample
-display: ReversingLabs TitaniumCloud
+display: ReversingLabs Titanium Cloud
 name: ReversingLabs Titanium Cloud
 script:
   commands:

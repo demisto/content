@@ -153,36 +153,6 @@ script:
     - contextPath: CrowdStrike.Device.PolicyType
       description: The policy type of the device.
       type: String
-    - contextPath: CrowdStrike.Device.Status
-      description: The device status.
-      type: String
-    - contextPath: Endpoint.Hostname
-      description: The endpoint's hostname.
-      type: String
-    - contextPath: Endpoint.OS
-      description: The endpoint's operation system.
-      type: String
-    - contextPath: Endpoint.IPAddress
-      description: The endpoint's IP address.
-      type: String
-    - contextPath: Endpoint.ID
-      description: The endpoint's ID.
-      type: String
-    - contextPath: Endpoint.Status
-      description: The endpoint's status.
-      type: String
-    - contextPath: Endpoint.IsIsolated
-      description: The endpoint's isolation status.
-      type: String
-    - contextPath: Endpoint.MACAddress
-      description: The endpoint's MAC address.
-      type: String
-    - contextPath: Endpoint.Vendor
-      description: The integration name of the endpoint vendor.
-      type: String
-    - contextPath: Endpoint.OSVersion
-      description: The endpoint's operation system version.
-      type: String
   - arguments:
     - default: false
       description: The ID of the behavior.
@@ -2091,58 +2061,7 @@ script:
     - contextPath: CrowdStrike.Incidents.fine_score
       description: The incident score.
       type: Number
-  - arguments:
-    - default: false
-      description: The endpoint ID.
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: true
-      description: The endpoint IP address.
-      isArray: false
-      name: ip
-      required: false
-      secret: false
-    - default: false
-      description: The endpoint hostname.
-      isArray: false
-      name: hostname
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns information about an endpoint.
-    execution: false
-    name: endpoint
-    outputs:
-    - contextPath: Endpoint.Hostname
-      description: The endpoint's hostname.
-      type: String
-    - contextPath: Endpoint.OS
-      description: The endpoint's operation system.
-      type: String
-    - contextPath: Endpoint.IPAddress
-      description: The endpoint's IP address.
-      type: String
-    - contextPath: Endpoint.ID
-      description: The endpoint's ID.
-      type: String
-    - contextPath: Endpoint.Status
-      description: The endpoint's status.
-      type: String
-    - contextPath: Endpoint.IsIsolated
-      description: The endpoint's isolation status.
-      type: String
-    - contextPath: Endpoint.MACAddress
-      description: The endpoint's MAC address.
-      type: String
-    - contextPath: Endpoint.Vendor
-      description: The integration name of the endpoint vendor.
-      type: String
-    - contextPath: Endpoint.OSVersion
-      description: The endpoint's operation system version.
-      type: String
-  dockerimage: demisto/python3:3.9.4.18682
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false

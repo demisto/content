@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 ''' IMPORTS '''
 
 import requests
@@ -76,19 +77,9 @@ def analyze_by_hash_command():
     handle_analyze_by_hash_response(response, file_hash)
 
 
-def get_latest_result_command():
-    file_hash = demisto.getArg('file_hash')
-    response = make_get_latest_report_request(file_hash)
-    handle_get_latest_result_response(response, file_hash)
-
-
 def make_analyze_by_hash_request(file_hash):
     data = {'hash': file_hash}
     return SESSION.post(BASE_URL + '/analyze-by-hash', json=data, verify=USE_SSL)
-
-
-def make_get_latest_report_request(file_hash):
-    return SESSION.get(f'{BASE_URL}/files/{file_hash}', verify=USE_SSL)
 
 
 def handle_analyze_by_hash_response(response, file_hash):
@@ -111,27 +102,6 @@ def handle_analyze_by_hash_response(response, file_hash):
     handle_analyze_response(response)
 
 
-def handle_get_latest_result_response(response, file_hash):
-    if response.status_code == 404:
-        dbot = {
-            'Vendor': 'Intezer',
-            'Type': 'hash',
-            'Indicator': file_hash,
-            'Score': 0
-        }
-        hr = f'Hash {file_hash} does not exist on Intezer genome database'
-        ec = {'DBotScore': dbot}
-        return_outputs(hr, ec)
-        return
-
-    elif response.status_code == 400:
-        return_error('File hash is not valid.\nIntezer file hash reputation supports only SHA-256, '
-                     'SHA-1 and MD5 hash formats.\n')
-
-    analysis_result = response.json()
-    enrich_dbot_and_display_file_analysis_results(analysis_result['result'])
-
-
 def analyze_by_uploaded_file_command():
     response = make_analyze_by_file_request(demisto.getArg('file_entry_id'))
     handle_analyze_response(response)
@@ -152,7 +122,7 @@ def handle_analyze_response(response):
 
     context_json = {'Intezer.Analysis(obj.ID === val.ID)': {'ID': analysis_id, 'Status': 'Created', 'type': 'File'}}
 
-    return_outputs('Analysis created successfully: {}'.format(analysis_id), context_json, response)
+    return_outputs('Analysis created successfully', context_json, response)
 
 
 def check_analysis_status_and_get_results_command():
@@ -259,6 +229,7 @@ def enrich_dbot_and_display_endpoint_analysis_results(result, indicator_name=Non
 
 ''' EXECUTION CODE '''
 
+
 try:
     SESSION = get_session()
 except Exception as e:
@@ -274,8 +245,6 @@ def main():
             analyze_by_hash_command()
         elif demisto.command() == 'intezer-analyze-by-file':
             analyze_by_uploaded_file_command()
-        elif demisto.command() == 'intezer-get-latest-report':
-            get_latest_result_command()
         elif demisto.command() == 'intezer-get-analysis-result':
             check_analysis_status_and_get_results_command()
     except Exception as e:

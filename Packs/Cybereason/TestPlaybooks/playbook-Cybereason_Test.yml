@@ -382,20 +382,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
-              simple: Process.Name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Process.User
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Process.CreationTime
+              simple: Process
             iscontext: true
     view: |-
       {

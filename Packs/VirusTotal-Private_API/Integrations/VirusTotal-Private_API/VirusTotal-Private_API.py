@@ -642,8 +642,10 @@ def get_url_reports_with_retries(urls, all_info, retries_left, scan_finish_time_
 
     for url in urls:
         response = get_url_report(url, all_info)
+        if response.get('response_code', None) == -1:
+            return_error("Invalid url provided: {}.".format(url))
 
-        if is_url_response_complete(response) or response.get('response_code', None) == -1:
+        if is_url_response_complete(response):
             requests_responses_dict[url] = response
 
     urls_scanned_count = len(requests_responses_dict)
@@ -688,10 +690,6 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     2. url entry context.
     3. dbot entry context.
     """
-    if demisto.get(response, 'response_code') == -1:
-        md = '### Invalid URL: the url {} is invalid.'.format(url)
-        return md, {}, {}
-
     positives = demisto.get(response, 'positives')
     md = ''
     md += '## VirusTotal URL report for: ' + url + '\n'

@@ -1,5 +1,0 @@
-[file:README.md]
-ignore=RM104
-
-[file:PassiveTotal_v2.yml]
-ignore=BA108,BA109

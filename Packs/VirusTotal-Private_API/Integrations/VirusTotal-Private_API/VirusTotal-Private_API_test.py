@@ -156,22 +156,3 @@ def test_empty_hash_communication_response(mocker):
 
     assert results['HumanReadable'] == 'No communication results were found for hash ' \
                                        'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
-
-
-def test_get_url_report_invalid_url(mocker, requests_mock):
-    """
-    Given:
-        - The get-url-report command.
-    When:
-        - Mocking a response for an invalid url.
-    Then:
-        - Validate that a message indicating an invalid url was queried is returned in the md message.
-    """
-    mocker.patch.object(demisto, 'args', return_value={'resource': 'hts://invalid_url.nfs.cv'})
-    requests_mock.get('https://www.virustotal.com/vtapi/v2/url/report',
-                      [{'json': load_test_data('./test_data/get_url_report_invalid_url.json'),
-                       'status_code': 200}])
-
-    vt = importlib.import_module("VirusTotal-Private_API")
-    output = vt.get_url_report_command()
-    assert 'Invalid URL' in output[0]['HumanReadable']

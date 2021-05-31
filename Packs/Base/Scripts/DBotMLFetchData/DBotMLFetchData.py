@@ -46,12 +46,12 @@ EMAIL_HTML_FIELD = 'emailbodyhtml'
 EMAIL_HEADERS_FIELD = 'emailheaders'
 EMAIL_ATTACHMENT_FIELD = 'attachment'
 
-GLOVE_50_PATH = '/ml/glove_50_top_20k.p'
-GLOVE_100_PATH = '/ml/glove_100_top_20k.p'
-FASTTEXT_PATH = '/ml/fasttext_top_20k.p'
-DOMAIN_TO_RANK_PATH = '/ml/domain_to_rank.p'
-WORD_TO_NGRAM_PATH = '/ml/word_to_ngram.p'
-WORD_TO_REGEX_PATH = '/ml/word_to_regex.p'
+GLOVE_50_PATH = '/var/glove_50_top_20k.p'
+GLOVE_100_PATH = '/var/glove_100_top_20k.p'
+FASTTEXT_PATH = '/var/fasttext_top_20k.p'
+DOMAIN_TO_RANK_PATH = '/var/domain_to_rank.p'
+WORD_TO_NGRAM_PATH = '/var/word_to_ngram.p'
+WORD_TO_REGEX_PATH = '/var/word_to_regex.p'
 
 EMBEDDING_DICT_GLOVE_50 = None
 EMBEDDING_DICT_GLOVE_100 = None
@@ -114,8 +114,7 @@ LABEL_FIELDS_BLACKLIST = {EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIEL
                           'reminder', 'roles', 'runStatus', 'severity', 'sla', 'sortValues', 'sourceBrand',
                           'sourceInstance', 'status', 'timetoassignment', 'type', 'urlsslverification', 'version',
                           "index", 'allRead', 'allReadWrite', 'dbotCurrentDirtyFields', 'dbotDirtyFields',
-                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite',
-                          'dbottextsuggestionhighlighted'}
+                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite'}
 LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test',
                          'fp', 'tp', 'resolve', 'credentials', 'spear', 'malware', 'whaling', 'catphishing',
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']

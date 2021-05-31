@@ -116,8 +116,6 @@ def domain_command():
         hr += 'Latest reference collected on: ' + timestamps.get('lastSeen') + '\n'
         hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/idn:' + domain + ')' + '\n'
         hr_table = []
-        community_notes = []
-        publications = []
         if detailed:
             evidence_details = risk['evidenceDetails']
             for detail in evidence_details:
@@ -126,10 +124,6 @@ def domain_command():
                     'Evidence Summary': detail.get('evidenceString'),
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
-                })
-                community_notes.append({
-                    'note': detail.get('evidenceString'),
-                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', hr_table,
                                   ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
@@ -145,22 +139,12 @@ def domain_command():
             if raw_sighting['url']:
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
-
-            publications.append({
-                'timestamp': raw_sighting.get('published'),
-                'link': raw_sighting.get('url'),
-                'source': raw_sighting.get('source'),
-                'title': raw_sighting.get('title')
-            })
         if sightings_table:
             hr += tableToMarkdown('References collected for this domain', sightings_table,
                                   ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['domain']] = {
             'Name': domain,
-            'Tags': risk.get('criticalityLabel'),
-            'CommunityNotes': community_notes,
-            'Publications': publications,
             'RecordedFuture': {
                 'Criticality': risk.get('criticalityLabel'),
                 'FirstSeen': timestamps.get('firstSeen'),
@@ -230,8 +214,6 @@ def url_command():
         hr += 'Latest reference collected on: ' + timestamps.get('lastSeen') + '\n'
         hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/url:' + encoded_url + ')' + '\n'
         hr_table = []
-        community_notes = []
-        publications = []
         if detailed:
             evidence_details = risk['evidenceDetails']
             for detail in evidence_details:
@@ -240,10 +222,6 @@ def url_command():
                     'Evidence Summary': detail.get('evidenceString'),
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
-                })
-                community_notes.append({
-                    'note': detail.get('evidenceString'),
-                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', hr_table,
                                   ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
@@ -259,21 +237,12 @@ def url_command():
             if raw_sighting['url']:
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
-            publications.append({
-                'timestamp': raw_sighting.get('published'),
-                'link': raw_sighting.get('url'),
-                'source': raw_sighting.get('source'),
-                'title': raw_sighting.get('title')
-            })
         if sightings_table:
             hr += tableToMarkdown('References collected for this URL', sightings_table,
                                   ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['url']] = {
             'Data': url,
-            'Tags': risk.get('criticalityLabel'),
-            'CommunityNotes': community_notes,
-            'Publications': publications,
             'RecordedFuture': {
                 'Criticality': risk.get('criticalityLabel'),
                 'FirstSeen': timestamps.get('firstSeen'),
@@ -343,8 +312,6 @@ def ip_command():
         hr += 'Latest reference collected on: ' + timestamps.get('lastSeen') + '\n'
         hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/ip:' + ip + ')' + '\n'
         evidence_table = []
-        community_notes = []
-        publications = []
         if detailed:
             evidence_details = risk['evidenceDetails']
             for detail in evidence_details:
@@ -353,10 +320,6 @@ def ip_command():
                     'Evidence Summary': detail.get('evidenceString'),
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
-                })
-                community_notes.append({
-                    'note': detail.get('evidenceString'),
-                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', evidence_table,
                                   ['Evidence Summary', 'Rule Criticality', 'Rule Triggered', 'Rule Triggered Time'])
@@ -372,21 +335,12 @@ def ip_command():
             if raw_sighting['url']:
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
-            publications.append({
-                'timestamp': raw_sighting.get('published'),
-                'link': raw_sighting.get('url'),
-                'source': raw_sighting.get('source'),
-                'title': raw_sighting.get('title')
-            })
         if sightings_table:
             hr += tableToMarkdown('References collected for this IP', sightings_table,
                                   ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
         ec = {}
         ec[outputPaths['ip']] = {
             'Address': ip,
-            'Tags': risk.get('criticalityLabel'),
-            'CommunityNotes': community_notes,
-            'Publications': publications,
             'RecordedFuture': {
                 'Criticality': risk.get('criticalityLabel'),
                 'FirstSeen': timestamps.get('firstSeen'),
@@ -457,8 +411,6 @@ def file_command():
         hr += 'Latest reference collected on: ' + timestamps.get('lastSeen') + '\n'
         hr += '[Intelligence Card](https://app.recordedfuture.com/live/sc/entity/hash:' + file + ')' + '\n'
         hr_table = []
-        community_notes = []
-        publications = []
         if detailed:
             evidence_details = risk['evidenceDetails']
             for detail in evidence_details:
@@ -467,10 +419,6 @@ def file_command():
                     'Evidence Summary': detail.get('evidenceString'),
                     'Rule Triggered': detail.get('rule'),
                     'Rule Triggered Time': detail.get('timestamp')
-                })
-                community_notes.append({
-                    'note': detail.get('evidenceString'),
-                    'timestamp': detail.get('timestamp')
                 })
             hr += tableToMarkdown('Triggered Risk Rules', hr_table,
                                   ['Rule Triggered', 'Rule Criticality', 'Evidence Summary', 'Rule Triggered Time'])
@@ -486,12 +434,6 @@ def file_command():
             if raw_sighting['url']:
                 sighting['URL'] = '[{}]({})'.format(raw_sighting['url'], raw_sighting['url'])
             sightings_table.append(sighting)
-            publications.append({
-                'timestamp': raw_sighting.get('published'),
-                'link': raw_sighting.get('url'),
-                'source': raw_sighting.get('source'),
-                'title': raw_sighting.get('title')
-            })
         if sightings_table:
             hr += tableToMarkdown('References collected for this hash', sightings_table,
                                   ['Title', 'Source', 'Type', 'URL', 'Fragment', 'Published'])
@@ -499,9 +441,6 @@ def file_command():
         ec = {}
         ec[outputPaths['file']] = {
             hash_type: file,
-            'Tags': risk.get('criticalityLabel'),
-            'CommunityNotes': community_notes,
-            'Publications': publications,
             'RecordedFuture': {
                 'Criticality': risk['criticalityLabel'],
                 'FirstSeen': timestamps['firstSeen'],

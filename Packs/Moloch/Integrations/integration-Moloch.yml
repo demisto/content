@@ -136,6 +136,7 @@ script:
             EntryContext: {'Moloch.Sessions': contexts},
             HumanReadable: tableToMarkdown('Moloch Sessions Search', outputs)
         };
+
         return entry;
     }
 
@@ -155,7 +156,11 @@ script:
                 args.date = -1;
             }
 
-            url = urlDict[command] + encodeToURLQuery(args);
+            if (command == 'moloch_sessions_json') {
+                url = urlDict[command] + encodeToURLQuery(args) + fields_to_req;
+            } else {
+                url = urlDict[command] + encodeToURLQuery(args);
+            }
 
             var res = sendRequest(url, urlDict[command]);
             if (!res || !res.Body) {

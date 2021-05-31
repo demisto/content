@@ -1125,13 +1125,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
         'v1',
         ['https://www.googleapis.com/auth/gmail.readonly'],
         command_args['userId'])
-    try:
-        result = service.users().messages().list(**command_args).execute()
-    except Exception as e:
-        if "Mail service not enabled" in str(e):
-            result = {}
-        else:
-            raise
+    result = service.users().messages().list(**command_args).execute()
 
     return [get_mail(user_id, mail['id'], 'full') for mail in result.get('messages', [])], q
 

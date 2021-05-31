@@ -68,22 +68,19 @@ class Client(BaseClient):
         )
 
     def activate_user(self, user_id):
-        query_params = {'sendEmail': 'false'}
         uri = f'users/{user_id}/lifecycle/activate'
         self._http_request(
             method="POST",
-            url_suffix=uri,
-            params=query_params
+            url_suffix=uri
         )
 
     def create_user(self, user_data):
-        # create a user in staged mode (not active)
         body = {
             'profile': user_data
         }
         uri = 'users'
         query_params = {
-            'activate': 'false',
+            'activate': 'true',
             'provider': 'true'
         }
         res = self._http_request(
@@ -129,18 +126,6 @@ class Client(BaseClient):
             url_suffix=uri,
             resp_type='response',
             ok_codes=(200, 404)
-        )
-        return res
-
-    def list_user_apps(self, user_id):
-        uri = 'apps'
-        query_params = {
-            'filter': f'user.id eq "{user_id}"'
-        }
-        res = self._http_request(
-            method='GET',
-            url_suffix=uri,
-            params=query_params
         )
         return res
 
@@ -259,8 +244,7 @@ def get_query_filter(context):
     for row in iam_configuration:
         application_ids.append(row['ApplicationID'])
 
-    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + \
-                   ') or (eventType eq "user.account.update_profile")'
+    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + ')'
 
     query_filter += query_suffix
 
@@ -434,7 +418,6 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
             else:
                 okta_profile = user_profile.map_object(mapper_out)
                 created_user = client.create_user(okta_profile)
-                client.activate_user(created_user.get('id'))
                 user_profile.set_result(
                     action=IAMActions.CREATE_USER,
                     success=True,
@@ -568,28 +551,6 @@ def list_apps_command(client, args):
     )
 
 
-def list_user_apps_command(client, args):
-    user_id = args.get('user_id')
-    applications = client.list_user_apps(user_id)
-    outputs = []
-
-    for app in applications:
-        outputs.append({
-            'ID': app.get('id'),
-            'Name': app.get('name'),
-            'Label': app.get('label'),
-            'Status': app.get('status')
-        })
-
-    title = 'Okta User Applications'
-    return CommandResults(
-        outputs=outputs,
-        outputs_prefix='Okta.Application',
-        outputs_key_field='ID',
-        readable_output=tableToMarkdown(title, outputs, headers=['ID', 'Name', 'Label', 'Status'])
-    )
-
-
 def get_configuration(context):
     iam_configuration = context.get('IAMConfiguration', [])
 
@@ -719,9 +680,6 @@ def main():
 
         elif command == 'okta-iam-list-applications':
             return_results(list_apps_command(client, args))
-
-        elif command == 'okta-iam-list-user-applications':
-            return_results(list_user_apps_command(client, args))
 
         elif command == 'okta-iam-get-configuration':
             return_results(get_configuration(context))

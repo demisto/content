@@ -1,4 +1,4 @@
-Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings.
+Use the Microsoft Teams integration to send messages and notifications to your team members.
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 ## Integration Architecture
@@ -133,7 +133,6 @@ Before you can create an instance of the Microsoft Teams integration in Demisto,
   - Group.ReadWrite.All
   - Calls.Initiate.All
   - Calls.InitiateGroupCall.All
-  - OnlineMeetings.ReadWrite.All
 
 5. Verify that all permissions were added, and click **Grant admin consent for Demisto**.
 6. When prompted to verify granting permissions, click **Yes**, and verify that permissions were successfully added.
@@ -404,54 +403,6 @@ There is no context output for this command.
 ##### Human Readable Output
 The channel "example channel" was created successfully
 
-### Create a meeting
-***
-Creates a Teams meeting.
-
-
-
-##### Base Command
-
-`microsoft-teams-create-meeting`
-
-##### Required Permissions
-`OnlineMeetings.ReadWrite.All`
-Besides setting up this permission, in order to create a meeting, the Azure admin needs to configure application access policy
-and grant users permissions to create meetings.
-The script *ConfigureAzureApplicationAccessPolicy* was created to support the needed commands.
-For more information:
-[Allow applications to access online meetings on behalf of a user](https://docs.microsoft.com/en-us/graph/cloud-communication-online-meeting-application-access-policy)
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subject | The meeting subject. | Required | 
-| member | The user who created the meeting. | Required | 
-| start_time | The meeting start time. For example, stare_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
-| end_time | The meeting end time. For example, end_time="2019-07-12T14:30:34.2444915-07:00". | Optional | 
-
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MicrosoftTeams.CreateMeeting.creationDateTime | String | Meeting creation time. | 
-| MicrosoftTeams.CreateMeeting.threadId | String | Meeting thread ID. | 
-| MicrosoftTeams.CreateMeeting.messageId | String | Meeting message ID. | 
-| MicrosoftTeams.CreateMeeting.id | String | Meeting ID. | 
-| MicrosoftTeams.CreateMeeting.joinWebUrl | String | The URL to join the meeting. | 
-| MicrosoftTeams.CreateMeeting.participantId | String | The participant ID. | 
-| MicrosoftTeams.CreateMeeting.participantDisplayName | String | The display name of the participant. | 
-
-
-#### Command Example
-``` !microsoft-teams-create-meeting member="example user" subject="Important meeting" ```
-
-#### Human Readable Output
-The meeting "Important meeting" was created successfully
-
 ## Running commands from Microsoft Teams
 You can run Cortex XSOAR commands, according to the user permissions, from Microsoft Teams in a mirrored investigation channel.
 
@@ -497,13 +448,6 @@ You can send the message `help` in order to see the supported commands:
 2. If you see the following error message: `Error in API call to Microsoft Teams: [403] - UnknownError`, then it means the AAD application has insufficient permissions.
 
 3. Since the integration works based on Docker port mapping, it can't function if the Docker is set to run with the host networking (`--network=host`). For more details, refer to the [Docker documentation](https://docs.docker.com/network/host/).
-
-4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
-
-   <img height="75" src="./doc_files/cache.png" />
-
-   Make sure to remove the bot from the team before clearing the integration cache, and add it back after done.
-
 
 ## Download Demisto Bot
 

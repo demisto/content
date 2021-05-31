@@ -1,8 +1,8 @@
 {
-  "name": "Jamf",
+  "name": "jamf",
   "description": "Jamf device management",
   "support": "xsoar",
-  "currentVersion": "1.0.1",
+  "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",
   "url": "https://www.paloaltonetworks.com/cortex",
   "email": "",

@@ -18,8 +18,11 @@
     "breachScript": "",
     "editForm": true,
     "description": "",
-    "associatedTypes": null,
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Domain",
+        "STIX Threat Actor"
+    ],
     "caseInsensitive": true,
     "columns": null,
     "placeholder": "",

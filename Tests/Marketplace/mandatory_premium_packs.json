@@ -1,4 +1,6 @@
 { "packs": ["HelloWorldPremium",
             "IAM",
             "IdentityLifecycleManagement-Enterprise",
-            "IdentityLifecycleManagement-LargeEnterprise"] }
+            "IdentityLifecycleManagement-LargeEnterprise",
+            "PassiveTotalPremium",
+            "RiskIQDigitalFootprintPremium"] }

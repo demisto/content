@@ -1,4 +1,4 @@
-Uploads a file to Intezer Analyze to analyze and enrich the file reputation. (up to 150 MB)
+Uploads a file to Intezer Analyze to analyze and enrich the file reputation. (up to 32mb)
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

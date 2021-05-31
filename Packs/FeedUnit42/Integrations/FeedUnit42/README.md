@@ -1,7 +1,5 @@
 Unit42 feed of published IOCs, which contains known malicious indicators.
 
-Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK indicators in your environment from the the STIX reports.
-
 ## Configure Unit42 Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,9 +12,9 @@ Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK 
 | feed | Fetch indicators | False |
 | feedReputation | Indicator Reputation | False |
 | feedReliability | Source Reliability | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp. | False |
-| feedExpirationPolicy | The feed’s expiration policy. | False |
-| feedExpirationInterval | The interval after which the feed expires. | False |
+| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
+| feedExpirationPolicy |  | False |
+| feedExpirationInterval |  | False |
 | feedFetchInterval | Feed Fetch Interval | False |
 | feedBypassExclusionList | Bypass exclusion list | False |
 | feedTags | Tags | False |

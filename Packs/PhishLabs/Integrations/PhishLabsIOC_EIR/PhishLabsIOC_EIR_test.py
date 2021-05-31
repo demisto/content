@@ -1,5 +1,4 @@
 import pytest
-from PhishLabsIOC_EIR import Client
 
 '''Globals'''
 INDICATORS_EC = [
@@ -19,17 +18,17 @@ INDICATORS_EC = [
     (
         'attach-phishlabs',
         {
-            "fileName": "test.pdf",
+            "fileName": "EECO_RFQ__453100Q.pdf",
             "mimeType": "application/pdf",
             "md5": "6680e7e593c8286ac51e332d8f72aeec",
-            "sha256": "1111111111111111111111111111111111111111111111111111",
+            "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
             "malicious": "false"
         },
         {
-            'fileName': "test.pdf",
+            'fileName': "EECO_RFQ__453100Q.pdf",
             'MimeType': "application/pdf",
             'MD5': "6680e7e593c8286ac51e332d8f72aeec",
-            'SHA256': "1111111111111111111111111111111111111111111111111111",
+            'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
             'Malicious': "false"
         }
     ),
@@ -58,7 +57,6 @@ INDICATORS_EC = [
 
 INDICATORS_DBOT_EC = [
     (
-        Client(base_url='http://test.com'),
         'url-ec',
         {
             "url": "https://google.com/",
@@ -68,7 +66,6 @@ INDICATORS_DBOT_EC = [
         (
             {
                 'Indicator': "https://google.com/",
-                'Reliability': 'B - Usually reliable',
                 'Type': 'URL',
                 'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
@@ -83,26 +80,24 @@ INDICATORS_DBOT_EC = [
         )
     ),
     (
-        Client(base_url='http://test.com'),
         'file-ec',
         {
-            "fileName": "test.pdf",
+            "fileName": "EECO_RFQ__453100Q.pdf",
             "mimeType": "application/pdf",
             "md5": "6680e7e593c8286ac51e332d8f72aeec",
-            "sha256": "1111111111111111111111111111111111111111111111111111",
+            "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
             "malicious": "false"
         },
         (
             {
-                'Indicator': "test.pdf",
-                'Reliability': 'B - Usually reliable',
+                'Indicator': "EECO_RFQ__453100Q.pdf",
                 'Type': 'File',
                 'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             },
             {
-                'Name': "test.pdf",
-                'SHA256': "1111111111111111111111111111111111111111111111111111",
+                'Name': "EECO_RFQ__453100Q.pdf",
+                'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                 'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
                     'Vendor': "PhishLabs IOC - EIR",
@@ -116,7 +111,6 @@ INDICATORS_DBOT_EC = [
 
 INDICATORS_TO_LIST_EC = [
     (
-        Client(base_url='http://test.com'),
         'url-ec',
         [
             {
@@ -162,21 +156,18 @@ INDICATORS_TO_LIST_EC = [
             [
                 {
                     'Indicator': "https://google.com/u/gI5Qk",
-                    'Reliability': 'B - Usually reliable',
                     'Type': 'URL',
                     'Vendor': "PhishLabs IOC - EIR",
                     'Score': 1
                 },
                 {
                     'Indicator': "https://google.com/api/track/v2/5",
-                    'Reliability': 'B - Usually reliable',
                     'Type': 'URL',
                     'Vendor': "PhishLabs IOC - EIR",
                     'Score': 1
                 },
                 {
                     'Indicator': "https://google.com/",
-                    'Reliability': 'B - Usually reliable',
                     'Type': 'URL',
                     'Vendor': "PhishLabs IOC - EIR",
                     'Score': 1
@@ -213,10 +204,10 @@ RAW_RESPONSE_TO_CONTEXT = [
                 ],
                 "attachments": [
                     {
-                        "fileName": "test.pdf",
+                        "fileName": "EECO_RFQ__453100Q.pdf",
                         "mimeType": "application/pdf",
                         "md5": "6680e7e593c8286ac51e332d8f72aeec",
-                        "sha256": "1111111111111111111111111111111111111111111111111111",
+                        "sha256": "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                         "malicious": "false"
                     }
                 ],
@@ -259,10 +250,10 @@ RAW_RESPONSE_TO_CONTEXT = [
                     ],
                     'Attachment': [
                         {
-                            'fileName': "test.pdf",
+                            'fileName': "EECO_RFQ__453100Q.pdf",
                             'MimeType': "application/pdf",
                             'MD5': "6680e7e593c8286ac51e332d8f72aeec",
-                            'SHA256': "1111111111111111111111111111111111111111111111111111",
+                            'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                             'Malicious': "false"
                         }
                     ]
@@ -278,8 +269,8 @@ RAW_RESPONSE_TO_CONTEXT = [
         ],
         [
             {
-                'Name': "test.pdf",
-                'SHA256': "1111111111111111111111111111111111111111111111111111",
+                'Name': "EECO_RFQ__453100Q.pdf",
+                'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                 'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
                     'Vendor': "PhishLabs IOC - EIR",
@@ -298,15 +289,13 @@ RAW_RESPONSE_TO_CONTEXT = [
         ],
         [
             {
-                'Indicator': "test.pdf",
-                'Reliability': 'B - Usually reliable',
+                'Indicator': "EECO_RFQ__453100Q.pdf",
                 'Type': 'File',
                 'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
             },
             {
                 'Indicator': "https://google.com/i5/resp",
-                'Reliability': 'B - Usually reliable',
                 'Type': "URL",
                 'Vendor': "PhishLabs IOC - EIR",
                 'Score': 1
@@ -326,22 +315,21 @@ class TestHelperFunctions:
                               type_ec=type_ec)
         assert result == test_outputs
 
-    @pytest.mark.parametrize(argnames='client, type_ec, test_inputs, test_outputs', argvalues=INDICATORS_DBOT_EC)
-    def test_indicator_dbot_ec(self, client, type_ec, test_inputs, test_outputs):
+    @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_DBOT_EC)
+    def test_indicator_dbot_ec(self, type_ec, test_inputs, test_outputs):
         from PhishLabsIOC_EIR import indicator_dbot_ec
-        result = indicator_dbot_ec(client=client, indicator=test_inputs,
+        result = indicator_dbot_ec(indicator=test_inputs,
                                    type_ec=type_ec)
         assert result == test_outputs
 
-    @pytest.mark.parametrize(argnames='client, type_ec, test_inputs, test_outputs', argvalues=INDICATORS_TO_LIST_EC)
-    def test_indicators_to_list_ec(self, client, type_ec, test_inputs, test_outputs):
+    @pytest.mark.parametrize(argnames='type_ec, test_inputs, test_outputs', argvalues=INDICATORS_TO_LIST_EC)
+    def test_indicators_to_list_ec(self, type_ec, test_inputs, test_outputs):
         from PhishLabsIOC_EIR import indicators_to_list_ec
-        result = indicators_to_list_ec(client=client, indicators=test_inputs,
+        result = indicators_to_list_ec(indicators=test_inputs,
                                        type_ec=type_ec)
         assert result == test_outputs
 
     def test_raw_response_to_context(self):
         from PhishLabsIOC_EIR import raw_response_to_context
-        client = Client(base_url='http://test.com')
-        result = raw_response_to_context(client=client, incidents=RAW_RESPONSE_TO_CONTEXT[0])
+        result = raw_response_to_context(incidents=RAW_RESPONSE_TO_CONTEXT[0])
         assert result == RAW_RESPONSE_TO_CONTEXT[1]

@@ -94,7 +94,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -151,7 +153,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -170,7 +174,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -189,7 +195,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -208,7 +216,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -514,7 +524,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-6f1661f0-ad44-11e9-a569-716c95c51bfe",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -532,7 +544,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -550,7 +564,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -627,7 +643,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
@@ -640,7 +657,9 @@
                     {
                         "h": 2,
                         "i": "1vduzkpmlh-c037a9b0-5412-11eb-830f-fbfa6e45cb4e",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -666,7 +685,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -678,8 +699,12 @@
                             ],
                             "lastId": "",
                             "pageSize": 100,
-                            "tags": [],
-                            "users": []
+                            "tags": [
+
+                            ],
+                            "users": [
+
+                            ]
                         },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
@@ -695,7 +720,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -815,42 +842,6 @@
                         "w": 2,
                         "x": 0,
                         "y": 9
-                    }
-                ],
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "lthdv5gwt9",
-                "name": "Similar Incidents",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 18,
-                        "hideName": true,
-                        "i": "lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "xdrsimilarincidents",
-                                "height": 106,
-                                "id": "e18d8a70-abfc-11eb-9d9c-cffd34bfbbb3",
-                                "index": 0,
-                                "listId": "lthdv5gwt9-d986a3c0-abfc-11eb-9d9c-cffd34bfbbb3",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "XDR Similar Incidents",
-                        "static": false,
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
                     }
                 ],
                 "type": "custom"

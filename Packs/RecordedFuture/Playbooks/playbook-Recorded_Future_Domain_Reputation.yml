@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 46eaf52b-f22e-4d99-8b97-f389db8f5d5c
+    taskid: 89ea0694-d9c9-4ddf-8fd0-135f159afb57
     type: start
     task:
-      id: 46eaf52b-f22e-4d99-8b97-f389db8f5d5c
+      id: 89ea0694-d9c9-4ddf-8fd0-135f159afb57
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 844d9fad-8cb7-4877-8d6e-cc55f81657d3
+    taskid: 3c6fe423-8215-4bd0-8bf5-c57c35889637
     type: condition
     task:
-      id: 844d9fad-8cb7-4877-8d6e-cc55f81657d3
+      id: 3c6fe423-8215-4bd0-8bf5-c57c35889637
       version: -1
       name: Is there a domain to get reputation of?
       description: Checks whether the playbook's input contains at least one domain
@@ -72,10 +72,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: a53e5ad6-3d5a-47fc-8afc-e4a1a66fe039
+    taskid: 9b1db93f-3933-43ee-89cd-df000c5047a2
     type: title
     task:
-      id: a53e5ad6-3d5a-47fc-8afc-e4a1a66fe039
+      id: 9b1db93f-3933-43ee-89cd-df000c5047a2
       version: -1
       name: Done
       type: title
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: ef521fa4-102a-472b-8ed9-2e9afde09347
+    taskid: 4729ec6c-7996-4e59-88c7-f9621b41d451
     type: condition
     task:
-      id: ef521fa4-102a-472b-8ed9-2e9afde09347
+      id: 4729ec6c-7996-4e59-88c7-f9621b41d451
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -157,10 +157,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: f70a438e-3494-4fa6-859a-a304ff7e553f
+    taskid: 53bddf1a-a9f2-454c-8837-81e27976c8a7
     type: regular
     task:
-      id: f70a438e-3494-4fa6-859a-a304ff7e553f
+      id: 53bddf1a-a9f2-454c-8837-81e27976c8a7
       version: -1
       name: Get domain reputation from Recorded Future
       description: Get a quick indication of the risk associated with a domain.
@@ -170,7 +170,7 @@ tasks:
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "30"
+      - "24"
     scriptarguments:
       domain:
         complex:
@@ -182,8 +182,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 690
+          "x": 410,
+          "y": 730
         }
       }
     note: false
@@ -193,10 +193,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: d402c8af-de3f-4ff0-8e3a-3bdfe2366d02
+    taskid: 8075d9ed-0723-4435-8018-09dc88e18081
     type: title
     task:
-      id: d402c8af-de3f-4ff0-8e3a-3bdfe2366d02
+      id: 8075d9ed-0723-4435-8018-09dc88e18081
       version: -1
       name: Get reputation using Recorded Future API
       type: title
@@ -219,153 +219,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "30":
-    id: "30"
-    taskid: 7843cabc-fd9a-4730-8427-5b2abdaebbe4
-    type: regular
-    task:
-      id: 7843cabc-fd9a-4730-8427-5b2abdaebbe4
-      version: -1
-      name: setIndicator
-      description: Change the properties of an indicator
-      script: Builtin|||setIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      accounttype: {}
-      actor: {}
-      admincountry: {}
-      adminemail: {}
-      adminname: {}
-      adminphone: {}
-      asn: {}
-      assignedrole: {}
-      assigneduser: {}
-      associatedfilenames: {}
-      associations: {}
-      biosversion: {}
-      campaign: {}
-      category: {}
-      creationdate: {}
-      customFields: {}
-      cvedescription: {}
-      cvemodified: {}
-      cvss: {}
-      description: {}
-      detectionengines: {}
-      devicemodel: {}
-      dhcpserver: {}
-      displayname: {}
-      dns: {}
-      domainname: {}
-      domainstatus: {}
-      emailaddress: {}
-      entryid: {}
-      expiration: {}
-      expirationdate: {}
-      feedrelatedindicators: {}
-      fileextension: {}
-      filetype: {}
-      firstseenbysource: {}
-      geocountry: {}
-      geolocation: {}
-      groups: {}
-      hostname: {}
-      id: {}
-      imphash: {}
-      indicatoridentification: {}
-      internal: {}
-      ipaddress: {}
-      lastseenbysource: {}
-      macaddress: {}
-      malwarefamily: {}
-      md5: {}
-      memory: {}
-      name: {}
-      namefield: {}
-      nameservers: {}
-      office365category: {}
-      office365expressroute: {}
-      office365required: {}
-      operatingsystem: {}
-      operatingsystemversion: {}
-      organization: {}
-      organizationalunitou: {}
-      osversion: {}
-      path: {}
-      port: {}
-      positivedetections: {}
-      processor: {}
-      processors: {}
-      published: {}
-      quarantined: {}
-      region: {}
-      registrantcountry: {}
-      registrantemail: {}
-      registrantname: {}
-      registrantphone: {}
-      registrarabuseemail: {}
-      registrarabusephone: {}
-      registrarname: {}
-      reportedby: {}
-      reputation: {}
-      riskrules:
-        simple: ${RecordedFuture.Domain.rules}
-      service: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signatureauthentihash: {}
-      signaturecopyright: {}
-      signaturedescription: {}
-      signaturefileversion: {}
-      signatureinternalname: {}
-      signed: {}
-      size: {}
-      sourceoriginalseverity: {}
-      ssdeep: {}
-      stixaliases: {}
-      stixdescription: {}
-      stixgoals: {}
-      stixid: {}
-      stixismalwarefamily: {}
-      stixkillchainphases: {}
-      stixmalwaretypes: {}
-      stixprimarymotivation: {}
-      stixresourcelevel: {}
-      stixroles: {}
-      stixsecondarymotivations: {}
-      stixsophistication: {}
-      stixthreatactortypes: {}
-      stixtooltypes: {}
-      stixtoolversion: {}
-      subdomains: {}
-      tags: {}
-      threatassessment: {}
-      threattypes: {}
-      trafficlightprotocol: {}
-      type: {}
-      updateddate: {}
-      username: {}
-      value:
-        simple: ${RecordedFuture.Domain.name}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -375,8 +228,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 895,
-        "width": 890,
+        "height": 880,
+        "width": 740,
         "x": 50,
         "y": 50
       }
@@ -446,6 +299,6 @@ outputs:
 - contextPath: RecordedFuture.Domain.ruleCount
   description: Number of triggered Recorded Future Domain Risk Rules
   type: number
-tests:
-- Recorded Future Test Playbook
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

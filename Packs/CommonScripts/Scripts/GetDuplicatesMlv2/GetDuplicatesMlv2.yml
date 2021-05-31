@@ -88,7 +88,7 @@ outputs:
   type: string
 scripttarget: 0
 runas: DBotWeakRole
-runonce: true
+runonce: false
 dockerimage: demisto/machine-learning
 tests:
-- No test
+- Dedup - Generic v2 - Test

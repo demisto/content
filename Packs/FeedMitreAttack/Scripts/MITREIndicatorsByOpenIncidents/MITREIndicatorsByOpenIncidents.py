@@ -8,9 +8,7 @@ def main():
         from_date = demisto.args().get('from', '')
         to_date = demisto.args().get('to', '')
         query = 'type:"MITRE ATT&CK" and investigationsCount:>0'
-        search_indicators = IndicatorsSearcher()
-
-        res = search_indicators.search_indicators_by_version(query=query, from_date=from_date, to_date=to_date)
+        res = demisto.searchIndicators(query=query, fromDate=from_date, toDate=to_date)
 
         indicators = []
         for ind in res.get('iocs', []):

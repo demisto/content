@@ -3,6 +3,7 @@ version: -1
 name: Detonate URL - WildFire v2.1
 fromversion: 5.0.0
 description: |-
+  Currently, webpage detonation is only supported in US cloud.
   Detonate a webpage or remote file using the WildFire integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
   The detonation supports the following file types:
   APK, JAR, DOC, DOCX, RTF, OOXLS, XLSX, PPT, PPTX, XML, PE32, PDF, DMG, PKG, RAR, 7Z, JS.
@@ -597,7 +598,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -734,27 +734,6 @@ outputs:
   type: number
 - contextPath: WildFire.Report.URL
   description: URL of the submission.
-  type: string
-- contextPath: WildFire.Report.detection_reasons
-  description: The detection reasons object.
-  type: unknown
-- contextPath: WildFire.Report.detection_reasons.description
-  description: Reason for the detection verdict.
-  type: string
-- contextPath: WildFire.Report.detection_reasons.name
-  description: Name of the detection.
-  type: string
-- contextPath: WildFire.Report.detection_reasons.type
-  description: Type of the detection.
-  type: string
-- contextPath: WildFire.Report.detection_reasons.verdict
-  description: Verdict of the detection.
-  type: string
-- contextPath: WildFire.Report.detection_reasons.artifacts
-  description: Artifacts for the detection reasons.
-  type: string
-- contextPath: WildFire.Report.iocs
-  description: Associated IOCs.
   type: string
 tests:
   - Detonate URL - WildFire v2.1 - Test

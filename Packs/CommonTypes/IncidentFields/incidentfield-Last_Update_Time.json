@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic",
-        "Carbon Black Endpoint Standard"
+        "Qradar Generic"
     ],
     "breachScript": "",
     "caseInsensitive": true,
