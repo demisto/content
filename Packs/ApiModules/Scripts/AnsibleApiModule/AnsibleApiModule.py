@@ -204,7 +204,7 @@ def generate_ansible_inventory(args: Dict[str, Any], int_params: Dict[str, Any],
                 new_host['ansible_winrm_transport'] = "ntlm"
                 new_host['ansible_winrm_server_cert_validation'] = "ignore"
 
-        inventory['all']['hosts'][host] = new_host
+            inventory['all']['hosts'][host] = new_host
 
     return inventory, sshkey
 
