@@ -14,8 +14,6 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S.%f %Z'
-
-MAX_PAGES_TO_GRAB = 5
 DEFAULT_MAX_INCIDENTS_TO_FETCH = 200
 CONNECTION_TIMEOUT = 30.0
 READ_TIMEOUT = 30.0
@@ -106,41 +104,36 @@ class Client(BaseClient):
         if domain:
             params['domain'] = domain
         http_responses = []
-        page_range = range(1, 2) if max_fetch else range(1, MAX_PAGES_TO_GRAB + 1)
-        for page_num in page_range:
-            # call API
-            params['page'] = str(page_num)
-            demisto.debug(f'getting action items, page num: {page_num}, domain={domain}')
-            http_response = self._http_request(
-                method='GET',
-                url_suffix='/actionitems/',
-                params=params,
-                resp_type='json',
-                ok_codes=VALID_STATUS_CODES,
-                timeout=(CONNECTION_TIMEOUT, READ_TIMEOUT),
-                retries=NUM_OF_RETRIES,
-                backoff_factor=BACKOFF_FACTOR,
-                raise_on_status=True
-            )
-            demisto.debug(f'after getting action items, page num: {page_num}, domain={domain}')
-            if 'results' not in http_response:
-                raise Exception('failed to read action items.\nError: got response without \'results\' key')
-            results = http_response['results']
-            for idx, action_item in enumerate(results):
-                technical_det = action_item.get('technical_details', {})
-                if technical_det is None:
-                    raise Exception(f'technical details is none. {json.dumps(action_item, indent=2)}')
-                if type(technical_det) is dict:
-                    formatted_technical_details = '\n'.join(
-                        [f'{k}: {v}' for k, v in technical_det.items()])
-                else:
-                    formatted_technical_details = technical_det
-                results[idx]['technical_details'] = formatted_technical_details
-                results[idx]['alert_type'] = ACTION_ITEM_TYPE_NAME
-            http_responses.append(results)
-            if not http_response.get('next') or max_fetch is not None:
-                # if max fetch is not none, there's a limit (< max_page_size) so don't fetch more pages
-                break
+        # call API
+        params['page'] = str(1)
+        demisto.debug(f'getting action items, page num: {page_num}, domain={domain}')
+        http_response = self._http_request(
+            method='GET',
+            url_suffix='/actionitems/',
+            params=params,
+            resp_type='json',
+            ok_codes=VALID_STATUS_CODES,
+            timeout=(CONNECTION_TIMEOUT, READ_TIMEOUT),
+            retries=NUM_OF_RETRIES,
+            backoff_factor=BACKOFF_FACTOR,
+            raise_on_status=True
+        )
+        demisto.debug(f'after getting action items, page num: {page_num}, domain={domain}')
+        if 'results' not in http_response:
+            raise Exception('failed to read action items.\nError: got response without \'results\' key')
+        results = http_response['results']
+        for idx, action_item in enumerate(results):
+            technical_det = action_item.get('technical_details', {})
+            if technical_det is None:
+                raise Exception(f'technical details is none. {json.dumps(action_item, indent=2)}')
+            if type(technical_det) is dict:
+                formatted_technical_details = '\n'.join(
+                    [f'{k}: {v}' for k, v in technical_det.items()])
+            else:
+                formatted_technical_details = technical_det
+            results[idx]['technical_details'] = formatted_technical_details
+            results[idx]['alert_type'] = ACTION_ITEM_TYPE_NAME
+        http_responses.append(results)
         demisto.debug(f'finished getting action items, number of pages: {len(http_responses)}, domain={domain}')
         final_results = []
         for response in http_responses:
@@ -409,8 +402,10 @@ def main() -> None:
                 max_fetch = DEFAULT_MAX_INCIDENTS_TO_FETCH
             try:
                 max_fetch = int(max_fetch)
+                if max_fetch > 500 or max_fetch < 1:
+                    raise ValueError()
             except ValueError:
-                raise ValueError('max_fetch must be an int')
+                raise ValueError('max_fetch must be an integer between 1 to 500')
             if max_fetch > DEFAULT_MAX_INCIDENTS_TO_FETCH:
                 max_fetch = DEFAULT_MAX_INCIDENTS_TO_FETCH
 
