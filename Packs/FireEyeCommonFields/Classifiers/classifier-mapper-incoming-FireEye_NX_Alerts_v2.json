@@ -4,9 +4,9 @@
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0",
-  "description": "Maps FireEye Central Management alerts.",
+  "description": "Maps FireEye Central Management NX alerts.",
   "mapping": {
-    "FireEye NX Alert": {
+    "FireEye NX Alert v2": {
       "dontMapEventToLabels": true,
       "internalMapping": {
         "FireEye Alert Acknowledgement": {
@@ -90,7 +90,7 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert Malware Name": {
+        "Malware Name": {
           "complex": {
             "accessor": "name",
             "filters": [],

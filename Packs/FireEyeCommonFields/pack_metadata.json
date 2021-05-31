@@ -9,5 +9,11 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+      "Malware": {
+            "mandatory": true,
+            "display_name": "Malware"
+        }
+    }
 }
