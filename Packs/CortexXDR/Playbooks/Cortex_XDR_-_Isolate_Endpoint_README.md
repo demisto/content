@@ -39,4 +39,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Isolate Endpoint](https://github.com/demisto/content/raw/ee07059dc8769d6f5652a4a07b668d63266cafaf/Packs/CortexXDR/doc_files/Cortex_XDR_-_Isolate_Endpoint_updated.png)
+![Cortex XDR - Isolate Endpoint](https://github.com/demisto/content/raw/ee07059dc8769d6f5652a4a07b668d63266cafaf/Packs/CortexXDR/doc_files/Cortex_XDR_-_Isolate_Endpoint.png)
