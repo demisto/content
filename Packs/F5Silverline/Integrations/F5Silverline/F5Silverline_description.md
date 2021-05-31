@@ -17,8 +17,8 @@ In order to fetch alerts, follow the instructions below:
 1. In Cortex XSOAR, install the F5 Silverline integration.
 2. In the F5 Silverline portal, go to **Config** > **Log Export** .
 3. Configure the F5 Silverline "Log Export". Follow the instructions here: https://support.f5silverline.com/hc/en-us/articles/214152048. The "Host" destination must support TLS+TCP communication. 
-4. In Cortex XSOAR, go **Settings** > **Integrations**.
-5. Search for Syslog (This integration is installed by  default).
+4. In Cortex XSOAR, go to **Settings** > **Integrations**.
+5. Search for Syslog. (This integration is installed by  default).
 6. Configure the Syslog instance with your log receiver details:
    * Click "Fetches incidents".
    * Set the Classifier to "F5 Silverline Classifier". 
