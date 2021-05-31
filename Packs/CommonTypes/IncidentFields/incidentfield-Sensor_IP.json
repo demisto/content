@@ -25,9 +25,7 @@
   "hidden": false,
   "associatedTypes": [
     "FireEye NX IPS Event",
-    "FireEye NX Alert",
-    "FireEye NX IPS Event v2",
-    "FireEye NX Alert v2"
+    "FireEye NX Alert"
   ],
   "associatedToAll": false,
   "unmapped": false,
