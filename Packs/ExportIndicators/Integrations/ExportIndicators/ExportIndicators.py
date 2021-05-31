@@ -797,7 +797,7 @@ def route_list_values() -> Response:
             prepend_str = params.get("prepend_string")
             if append_str:
                 append_str = append_str.replace("\\n", "\n")
-                values = values + f"\n{append_str}"
+                values = values + f"{append_str}"
             if prepend_str:
                 prepend_str = prepend_str.replace("\\n", "\n")
                 values = f"{prepend_str}\n" + values
