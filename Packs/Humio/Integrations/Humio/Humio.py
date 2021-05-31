@@ -307,7 +307,12 @@ def fetch_incidents(client, headers):
             ts = int(result.get("@timestamp", backup_ts))
             if ts > max_ts:
                 max_ts = ts
-        max_ts += 1
+
+        # Ensures that max_ts gets a reasonable value if no events were returned on first run
+        if (not response_data):
+            max_ts = backup_ts
+        else:
+            max_ts += 1
         demisto.setLastRun({"time": max_ts})
         return form_incindents(response_data)
     else:

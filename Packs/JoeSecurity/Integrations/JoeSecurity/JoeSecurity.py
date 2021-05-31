@@ -1,14 +1,15 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import time
 import shutil
 import requests
 from distutils.util import strtobool
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 ''' GLOBAL VARS '''
 BASE_URL = urljoin(demisto.params().get('url'), 'api/')
@@ -25,7 +26,6 @@ nothing_to_analyze_output = {
     'HumanReadable': 'We found nothing to analyze in your uploaded email'
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -33,7 +33,7 @@ def http_post(url_suffix, data=None, files=None, parse_json=True):
     data = {} if data is None else data
 
     LOG('running request with url=%s\n\tdata=%s\n\tfiles=%s' % (BASE_URL + url_suffix,
-        data, files, ))
+                                                                data, files,))
     data.setdefault('apikey', demisto.params()['api_key'])
 
     res = requests.post(BASE_URL + url_suffix, verify=USE_SSL, data=data, files=files)
@@ -46,9 +46,9 @@ def http_post(url_suffix, data=None, files=None, parse_json=True):
         if error_msg == nothing_to_analyze_message:
             return 'nothing_to_analyze'
 
-        LOG('result is: %s' % (res.json(), ))
+        LOG('result is: %s' % (res.json(),))
         error_msg = res.json()['errors'][0]['message']
-        raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg, ))
+        raise Exception('Your request failed with the following error: %s.\n%s' % (res.reason, error_msg,))
 
     if parse_json:
         return res.json()
@@ -129,12 +129,12 @@ def poll_webid(web_id):
 
     while (max_polls >= 0) and result['data']['status'] != 'finished':
         if result['data']['status'] != 'pending':
-            LOG('error while polling: result is %s' % (result, ))
+            LOG('error while polling: result is %s' % (result,))
         result = info_request(web_id)
         time.sleep(1)
         max_polls -= 1
 
-    LOG('reached max_polls #%d' % (max_polls, ))
+    LOG('reached max_polls #%d' % (max_polls,))
     if max_polls < 0:
         return analysis_to_entry('Polling timeout on Analysis #' + web_id, result['data'])
     else:
@@ -162,7 +162,7 @@ def analysis_info():
     ids = demisto.args().get('webid')
     if type(ids) in STRING_TYPES:
         ids = ids.split(',')
-    LOG('info: web_id = %s' % (ids, ))
+    LOG('info: web_id = %s' % (ids,))
     res = [info_request(webid)['data'] for webid in ids]
     return analysis_to_entry('Analyses:', res)
 
@@ -208,7 +208,7 @@ def analyse_url_request(url, should_wait, internet_access, comments='', systems=
     res = http_post('v2/analysis/submit', data=data)
 
     if 'errors' in res:
-        LOG('Error! in command analyse_url: url=%s' % (url, ))
+        LOG('Error! in command analyse_url: url=%s' % (url,))
         LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
         raise Exception('command failed to run.')
 
@@ -217,7 +217,7 @@ def analyse_url_request(url, should_wait, internet_access, comments='', systems=
 
     web_id = res['data']['webids'][0]
     result = info_request(web_id)
-    return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
+    return analysis_to_entry('Analysis #%s' % (web_id,), result['data'])
 
 
 def analyse_sample():
@@ -255,7 +255,10 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
 
     # removing backslashes from filename as the API does not like it
     # if given filename such as dir\file.xlsx - the sample will end with the name file.xlsx
-    filename = demisto.getFilePath(file_entry)['name'].replace('\\', '/')
+    filename = demisto.getFilePath(file_entry)['name']
+    if isinstance(filename, unicode):  # py2 way of checking if a var is of type unicode
+        filename = filename.encode('ascii', 'ignore')
+    filename.replace('\\', '/')
 
     with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
         res = http_post('v2/analysis/submit', data=data, files={'sample': (filename, f)})
@@ -264,7 +267,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
         return nothing_to_analyze_output
 
     if 'errors' in res:
-        LOG('Error! in command sample file: file_entry=%s' % (file_entry, ))
+        LOG('Error! in command sample file: file_entry=%s' % (file_entry,))
         LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
         raise Exception('command failed to run.')
 
@@ -275,7 +278,7 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
 
     web_id = res['data']['webids'][0]
     result = info_request(web_id)
-    return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
+    return analysis_to_entry('Analysis #%s' % (web_id,), result['data'])
 
 
 def analyse_sample_url_request(sample_url, should_wait, internet_access, comments, systems):
@@ -295,7 +298,7 @@ def analyse_sample_url_request(sample_url, should_wait, internet_access, comment
         return nothing_to_analyze_output
 
     if 'errors' in res:
-        LOG('Error! in command sample file: file url=%s' % (sample_url, ))
+        LOG('Error! in command sample file: file url=%s' % (sample_url,))
         LOG('got the following errors:\n' + '\n'.join(e['message'] for e in res['errors']))
         raise Exception('command failed to run.')
 
@@ -304,7 +307,7 @@ def analyse_sample_url_request(sample_url, should_wait, internet_access, comment
 
     web_id = res['data']['webids'][0]
     result = info_request(res['data']['webids'][0])
-    return analysis_to_entry('Analysis #%s' % (web_id, ), result['data'])
+    return analysis_to_entry('Analysis #%s' % (web_id,), result['data'])
 
 
 def download_report():
@@ -326,13 +329,13 @@ def download_request(webid, rsc_type):
 
     info = info_request(webid)
     if rsc_type == 'sample':
-        return fileResult('%s.dontrun' % (info.get('filename', webid), ), res)
+        return fileResult('%s.dontrun' % (info.get('filename', webid),), res)
     else:
-        return fileResult('%s_report.%s' % (info.get('filename', webid), rsc_type, ), res, entryTypes['entryInfoFile'])
+        return fileResult('%s_report.%s' % (info.get('filename', webid), rsc_type,), res, entryTypes['entryInfoFile'])
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 try:
     handle_proxy()
     if demisto.command() in ['test-module', 'joe-is-online']:
@@ -371,5 +374,5 @@ except Exception as e:
     demisto.results({
         'Type': entryTypes['error'],
         'ContentsFormat': formats['text'],
-        'Contents': 'error has occurred: %s' % (e.message, ),
+        'Contents': 'error has occurred: %s' % (e.message,),
     })

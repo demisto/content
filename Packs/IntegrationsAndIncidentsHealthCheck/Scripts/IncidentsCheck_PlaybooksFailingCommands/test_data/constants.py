@@ -150,8 +150,8 @@ INCIDENT_RESULT_NO_FAILED_COMMANDS_EXPECTED = {'params': {'layout': 'vertical'},
                                                'stats': [{'color': 'rgb(255, 23, 68)',
                                                           'data': [0],
                                                           'groups': None,
-                                                          'label': 'N\\A',
-                                                          'name': 'N\\A'}]}
+                                                          'label': 'N/A',
+                                                          'name': 'N/A'}]}
 
 INCIDENT_RESULT = [{'CustomFields': {'dbotpredictionprobability': 0,
                                      'detectionsla': {'accumulatedPause': 0,

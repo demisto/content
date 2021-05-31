@@ -1,0 +1,124 @@
+id: ValidateContent - Test
+version: -1
+name: ValidateContent - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98d7cbd0-538d-43cf-8cc9-d4841dc7ba39
+    type: start
+    task:
+      id: 98d7cbd0-538d-43cf-8cc9-d4841dc7ba39
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ca50af09-a810-4c50-8e58-f657d7b3b58e
+    type: regular
+    task:
+      id: ca50af09-a810-4c50-8e58-f657d7b3b58e
+      version: -1
+      name: Download unified integration
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: integration.yml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/demisto-sdk/master/demisto_sdk/tests/test_files/UnifiedIntegrations/Integrations/integration-Symantec_Messaging_Gateway.yml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 552b499e-6d57-4b7c-8457-ab929092b45f
+    type: regular
+    task:
+      id: 552b499e-6d57-4b7c-8457-ab929092b45f
+      version: -1
+      name: ValidateContent
+      description: Runs validation and linting on content items.
+      scriptName: ValidateContent
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      data: {}
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+      filename: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: ''

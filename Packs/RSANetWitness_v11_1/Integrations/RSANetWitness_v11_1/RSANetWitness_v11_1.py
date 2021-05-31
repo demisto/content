@@ -177,7 +177,8 @@ def http_request(method, url, body=None, headers=None, url_params=None):
         try:
             return response.json()
         except Exception as e:
-            LOG(e.message)
+            demisto.debug('Could not parse response as a JSON.\nResponse is: {}.'
+                          '\nError is: {}'.format(response.content, e.message))
             return None
     # bad request - NetWitness returns a common json structure for errors; a list of error objects
     error_lst = response.json().get('errors')
@@ -338,8 +339,13 @@ def get_all_incidents_from_beginning(since=None, until=None, limit=None, page_nu
         response_body = get_incidents_request(
             since=since,
             until=until,
-            page_number=page_number
+            page_number=page_number,
+            page_size=30,
         )
+
+        if not response_body:
+            break
+
         incidents = response_body.get('items')
         # clear incidents after last_fetched_id
         for inc in incidents:

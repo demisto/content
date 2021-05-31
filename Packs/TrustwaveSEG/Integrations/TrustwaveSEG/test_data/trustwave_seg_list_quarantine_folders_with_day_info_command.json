@@ -1,0 +1,27 @@
+[
+    {
+        "dayItems": [
+            {
+                "endTime": 1618952400,
+                "numFiles": 1,
+                "startTime": 1618866000
+            }
+        ],
+        "description": "An archive folder for all outbound messages.  By default, messages are kept for 3 months.",
+        "folderId": 1007,
+        "folderType": 1,
+        "iconIndex": 0,
+        "isDeleted": false,
+        "isFingerprintingEnabled": false,
+        "isPassThru": false,
+        "isPublishedInbound": false,
+        "isPublishedOutbound": false,
+        "isReadOnly": true,
+        "name": "Archive Out",
+        "numFiles": 0,
+        "parentId": 1,
+        "path": "A11F07EA-7569-4596-9BC5-B4A25D428BAE",
+        "retention": 93,
+        "securityDescription": ""
+    }
+]

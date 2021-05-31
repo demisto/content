@@ -1,0 +1,1 @@
+https://www.screenshotmachine.com/website-screenshot-api.php

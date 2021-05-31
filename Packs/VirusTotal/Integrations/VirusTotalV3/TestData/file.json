@@ -1,0 +1,103 @@
+{
+  "type": "file",
+  "id": ":sha256:",
+  "links": {
+    "self": "https://www.virustotal.com/api/v3/files/:sha256:"
+  },
+  "data": {
+    "relationships": {
+      "contacted_domains": {
+        "data": [
+          {
+            "type": "domain",
+            "id": "test.org"
+          }
+        ],
+        "links": {
+          "self": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3/relationships/contacted_domains?limit=20",
+          "related": "https://www.virustotal.com/api/v3/files/699ec052ecc898bdbdafea0027c4ab44c3d01ae011c17745dd2b7fbddaa077f3/contacted_domains"
+        }
+      }
+    },
+    "attributes": {
+      "first_seen_itw_date": 1075654056,
+      "first_submission_date": 1170892383,
+      "last_analysis_date": 1502355193,
+      "last_analysis_results": {
+        "AVG": {
+          "category": "undetected",
+          "engine_name": "AVG",
+          "engine_update": "20170810",
+          "engine_version": "8.0.1489.320",
+          "method": "blacklist",
+          "result": null
+        }
+      },
+      "last_analysis_stats": {
+        "harmless": 0,
+        "malicious": 0,
+        "suspicious": 0,
+        "timeout": 0,
+        "type-unsupported": 8,
+        "undetected": 59
+      },
+      "last_submission_date": 1502355193,
+      "magic": "data",
+      "md5": ":md5:",
+      "names": [
+        "zipnew.dat",
+        "327916-1502345099.zip",
+        "ac3plug.zip",
+        "IMG_6937.zip",
+        "DOC952.zip",
+        "20170801486960.zip"
+      ],
+      "nsrl_info": {
+        "filenames": [
+          "WINDOWS DIALUP.ZIP",
+          "kemsetup.ZIP",
+          "Data_Linux.zip",
+          "2003.zip",
+          "_6A271FB199E041FC82F4D282E68B01D6"
+        ],
+        "products": [
+          "Master Hacker Internet Terrorism (Core Publishing Inc.)",
+          "Read Rabbits Math Ages 6-9 (Smart Saver)",
+          "Neverwinter Nights Gold (Atari)",
+          "Limited Edition Print Workshop 2004 (ValuSoft)",
+          "Crysis (Electronic Arts Inc.)"
+        ]
+      },
+      "reputation": -889,
+      "sha1": ":sha1:",
+      "sha256": ":sha256:",
+      "size": 22,
+      "ssdeep": ":ssdeep:",
+      "tags": [
+        "software-collection",
+        "nsrl",
+        "attachment",
+        "trusted",
+        "via-tor"
+      ],
+      "times_submitted": 26471,
+      "total_votes": {
+        "harmless": 639,
+        "malicious": 958
+      },
+      "trid": [
+        {
+          "file_type": "ZIP compressed archive (empty)",
+          "probability": 100
+        }
+      ],
+      "trusted_verdict": {
+        "filename": "somefile.zip",
+        "link": "example.com/somefile.zip",
+        "organization": "Google",
+        "verdict": "goodware"
+      },
+      "type_description": "unknown"
+    }
+  }
+}

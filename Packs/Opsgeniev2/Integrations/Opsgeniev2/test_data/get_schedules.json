@@ -1,0 +1,31 @@
+{
+    "data": {
+        "description": "",
+        "enabled": true,
+        "id": "092748e8-c17d-4e53-99da-e84345f06a90",
+        "name": "Test_schedule",
+        "ownerTeam": {
+            "id": "1f8b92b4-37f1-4b50-9380-92250b3f3bc2",
+            "name": "Test"
+        },
+        "rotations": [
+            {
+                "id": "05e2a465-24dd-427b-b251-2e2298a9804e",
+                "length": 1,
+                "name": "Rot1",
+                "participants": [
+                    {
+                        "id": "7f072844-38a7-4de7-b2ff-2a51ffbabe7b",
+                        "type": "user",
+                        "username": "notreal@spaghetti.com"
+                    }
+                ],
+                "startDate": "2021-01-31T13:00:00Z",
+                "type": "weekly"
+            }
+        ],
+        "timezone": "Australia/Sydney"
+    },
+    "requestId": "a0eae61c-cdf3-4f55-8f1e-cae06af5576a",
+    "took": 0.003
+}

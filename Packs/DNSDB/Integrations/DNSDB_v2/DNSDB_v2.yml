@@ -60,17 +60,17 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX
+        timestamp, relative if negative)
     outputs:
     - contextPath: DNSDB.Record.RRName
       type: string
@@ -93,7 +93,8 @@ script:
     - contextPath: DNSDB.Record.RawRData
       type: string
       description: >
-        The hex-encoded raw record data value. This may be passed as a parameter to the
+        The hex-encoded raw record data value. This may be passed as a parameter to
+        the
         dnsdb_rdata_raw command.
     - contextPath: DNSDB.Record.Count
       type: number
@@ -129,23 +130,23 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: aggr
       description: Aggregate identical RRsets
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
     - name: offset
       description: How many rows to offset in the results.
     outputs:
@@ -201,23 +202,23 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: aggr
       description: Aggregate identical RRsets
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
     - name: max_count
       description: Stop when the summary count is reached
     outputs:
@@ -231,16 +232,20 @@ script:
         from a Lookup.
     - contextPath: DNSDB.Summary.TimeFirst
       type: date
-      description: The first time that the resource record was observed via passive DNS replication.
+      description: The first time that the resource record was observed via passive
+        DNS replication.
     - contextPath: DNSDB.Summary.TimeLast
       type: date
-      description: The most recent time that the resource record was observed via passive DNS replication.
+      description: The most recent time that the resource record was observed via
+        passive DNS replication.
     - contextPath: DNSDB.Summary.ZoneTimeFirst
       type: date
-      description: The first time that the resource record was observed in a zone file.
+      description: The first time that the resource record was observed in a zone
+        file.
     - contextPath: DNSDB.Summary.ZoneTimeLast
       type: date
-      description: The most recent time that the resource record was observed in a zone file.
+      description: The most recent time that the resource record was observed in a
+        zone file.
     description: Summarize RData records
   - name: dnsdb-rrset
     arguments:
@@ -255,23 +260,23 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: aggr
       description: Aggregate identical RRsets
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
     - name: offset
       description: How many rows to offset in the results.
     outputs:
@@ -325,23 +330,23 @@ script:
       description: Limit the number of returned records
       defaultValue: "50"
     - name: time_first_before
-      description: Filter results for entries seen for first time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_first_after
-      description: Filter results for entries seen for first time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for first time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_before
-      description: Filter results for entries seen for last time before (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time before (ISO or UNIX
+        timestamp, relative if negative)
     - name: time_last_after
-      description: Filter results for entries seen for last time after (ISO or UNIX timestamp,
-        relative if negative)
+      description: Filter results for entries seen for last time after (ISO or UNIX
+        timestamp, relative if negative)
     - name: aggr
       description: Aggregate identical RRsets
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
     - name: max_count
       description: Stop when the summary count is reached
     outputs:
@@ -355,16 +360,20 @@ script:
         from a Lookup.
     - contextPath: DNSDB.Summary.TimeFirst
       type: date
-      description: The first time that the resource record was observed via passive DNS replication.
+      description: The first time that the resource record was observed via passive
+        DNS replication.
     - contextPath: DNSDB.Summary.TimeLast
       type: date
-      description: The most recent time that the resource record was observed via passive DNS replication.
+      description: The most recent time that the resource record was observed via
+        passive DNS replication.
     - contextPath: DNSDB.Summary.ZoneTimeFirst
       type: date
-      description: The first time that the resource record was observed in a zone file.
+      description: The first time that the resource record was observed in a zone
+        file.
     - contextPath: DNSDB.Summary.ZoneTimeLast
       type: date
-      description: The most recent time that the resource record was observed in a zone file.
+      description: The most recent time that the resource record was observed in a
+        zone file.
     description: Lookup RRset records
   - name: dnsdb-rate-limit
     outputs:
@@ -421,6 +430,6 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.2.17246
   isfetch: false
 fromversion: 5.0.0

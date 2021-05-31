@@ -22,12 +22,13 @@ HELLOWORLD_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
 
 class Client(BaseClient):
 
-    def test_connect(self):
+    def test_connect(self, api_key):
         return self._http_request(
             method='GET',
             url_suffix='/info.php?',
             params={
-                'value': 'pulsedive.com'
+                'indicator': 'pulsedive.com',
+                'key': api_key
             }
         )
 
@@ -109,11 +110,11 @@ def convert_to_xsoar_severity(pulsedive_severity) -> int:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, api_key) -> str:
     """Tests API connectivity and authentication"""
 
     try:
-        client.test_connect()
+        client.test_connect(api_key)
     except DemistoException:
         return 'Could not connect to Pulsedive'
     return 'ok'
@@ -126,37 +127,60 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], api_key) -> List
 
     command_results: List[CommandResults] = []
     for ip in ips:
-        ip_data = client.get_ip_reputation(ip, api_key)
-        # remove the array
-        indicator_ip = ip_data['indicator']
-        reputation = ip_data['risk']
-        score = convert_to_xsoar_severity(reputation)
+        try:
+            ip_data = client.get_ip_reputation(ip, api_key)
+            indicator_ip = ip_data['indicator']
+            reputation = ip_data['risk']
+            score = convert_to_xsoar_severity(reputation)
 
-        # Create the DBotScore structure first using the Common.DBotScore class.
-        dbot_score = Common.DBotScore(
-            indicator=indicator_ip,
-            indicator_type=DBotScoreType.IP,
-            integration_name='Pulsedive',
-            score=score,
-            malicious_description=f'Pulsedive returned reputation {reputation}'
-        )
+            # Create the DBotScore structure first using the Common.DBotScore class.
+            dbot_score = Common.DBotScore(
+                indicator=indicator_ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name='Pulsedive',
+                score=score,
+                malicious_description=f'Pulsedive returned reputation {reputation}'
+            )
 
-        # Create the IP Standard Context structure using Common.IP and add
-        # dbot_score to it.
-        ip_standard_context = Common.IP(
-            ip=indicator_ip,
-            dbot_score=dbot_score
-        )
+            # Create the IP Standard Context structure using Common.IP and add
+            # dbot_score to it.
+            ip_standard_context = Common.IP(
+                ip=indicator_ip,
+                dbot_score=dbot_score
+            )
 
-        ip_data.pop('objects', None)
-        ip_data.pop('nir', None)
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown('IP Details:', ip_data),
-            outputs_prefix='Pulsedive.IP',
-            outputs_key_field='indicator',
-            outputs=ip_data,
-            indicator=ip_standard_context
-        ))
+            ip_data.pop('objects', None)
+            ip_data.pop('nir', None)
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown('IP Details:', ip_data),
+                outputs_prefix='Pulsedive.IP',
+                outputs_key_field='indicator',
+                outputs=ip_data,
+                indicator=ip_standard_context
+            ))
+        except DemistoException:
+            # Create the DBotScore structure first using the Common.DBotScore class.
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name='Pulsedive',
+                score=Common.DBotScore.NONE,
+                malicious_description='Pulsedive returned reputation None'
+            )
+
+            # Create the IP Standard Context structure using Common.IP and add
+            # dbot_score to it.
+            ip_standard_context = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score
+            )
+
+            command_results.append(CommandResults(
+                readable_output=str(ip) + ' not found in indicator data',
+                outputs_prefix='Pulsedive.IP',
+                outputs_key_field='indicator',
+                indicator=ip_standard_context
+            ))
 
     return command_results
 
@@ -168,46 +192,68 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], api_key) -> 
 
     command_results: List[CommandResults] = []
     for domain in domains:
-        domain_data = client.get_domain_reputation(domain, api_key)
-        indicator_domain = domain_data['indicator']
-        reputation = domain_data['risk']
-        score = convert_to_xsoar_severity(reputation)
+        try:
+            domain_data = client.get_domain_reputation(domain, api_key)
+            indicator_domain = domain_data['indicator']
+            reputation = domain_data['risk']
+            score = convert_to_xsoar_severity(reputation)
 
-        if 'creation_date' in domain_data:
-            domain_data['creation_date'] = parse_domain_date(domain_data['creation_date'])
-        if 'expiration_date' in domain_data:
-            domain_data['expiration_date'] = parse_domain_date(domain_data['expiration_date'])
-        if 'updated_date' in domain_data:
-            domain_data['updated_date'] = parse_domain_date(domain_data['updated_date'])
+            if 'creation_date' in domain_data:
+                domain_data['creation_date'] = parse_domain_date(domain_data['creation_date'])
+            if 'expiration_date' in domain_data:
+                domain_data['expiration_date'] = parse_domain_date(domain_data['expiration_date'])
+            if 'updated_date' in domain_data:
+                domain_data['updated_date'] = parse_domain_date(domain_data['updated_date'])
 
-        dbot_score = Common.DBotScore(
-            indicator=indicator_domain,
-            integration_name='Pulsedive',
-            indicator_type=DBotScoreType.DOMAIN,
-            score=score,
-            malicious_description=f'Pulsedive returned reputation {reputation}'
-        )
+            dbot_score = Common.DBotScore(
+                indicator=indicator_domain,
+                integration_name='Pulsedive',
+                indicator_type=DBotScoreType.DOMAIN,
+                score=score,
+                malicious_description='Pulsedive returned reputation {reputation}'
+            )
 
-        domain_standard_context = Common.Domain(
-            domain=indicator_domain,
-            # creation_date=domain_data.get('creation_date', None),
-            # expiration_date=domain_data.get('expiration_date', None),
-            # updated_date=domain_data.get('updated_date', None),
-            # organization=domain_data.get('org', None),
-            # name_servers=domain_data.get('name_servers', None),
-            # registrant_name=domain_data.get('name', None),
-            # registrant_country=domain_data.get('country', None),
-            # registrar_name=domain_data.get('registrar', None),
-            dbot_score=dbot_score
-        )
+            domain_standard_context = Common.Domain(
+                domain=indicator_domain,
+                # creation_date=domain_data.get('creation_date', None),
+                # expiration_date=domain_data.get('expiration_date', None),
+                # updated_date=domain_data.get('updated_date', None),
+                # organization=domain_data.get('org', None),
+                # name_servers=domain_data.get('name_servers', None),
+                # registrant_name=domain_data.get('name', None),
+                # registrant_country=domain_data.get('country', None),
+                # registrar_name=domain_data.get('registrar', None),
+                dbot_score=dbot_score
+            )
 
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown('Domain Details:', domain_data),
-            outputs_prefix='Pulsedive.Domain',
-            outputs_key_field='indicator',
-            outputs=domain_data,
-            indicator=domain_standard_context
-        ))
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown('Domain Details:', domain_data),
+                outputs_prefix='Pulsedive.Domain',
+                outputs_key_field='indicator',
+                outputs=domain_data,
+                indicator=domain_standard_context
+            ))
+        except DemistoException:
+            # Create the DBotScore structure first using the Common.DBotScore class.
+            dbot_score = Common.DBotScore(
+                indicator=domain,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name='Pulsedive',
+                score=Common.DBotScore.NONE,
+                malicious_description='Pulsedive returned reputation None'
+            )
+
+            domain_standard_context = Common.Domain(
+                domain=domain,
+                dbot_score=dbot_score
+            )
+
+            command_results.append(CommandResults(
+                readable_output=str(domain) + ' not found in indicator data',
+                outputs_prefix='Pulsedive.Domain',
+                outputs_key_field='indicator',
+                indicator=domain_standard_context
+            ))
 
     return command_results
 
@@ -220,33 +266,55 @@ def url_reputation_command(client: Client, args: Dict[str, Any], api_key) -> Lis
 
     command_results: List[CommandResults] = []
     for url in urls:
-        url_data = client.get_url_reputation(url, api_key)
-        indicator_url = url_data['indicator']
-        reputation = url_data['risk']
-        score = convert_to_xsoar_severity(reputation)
+        try:
+            url_data = client.get_url_reputation(url, api_key)
+            indicator_url = url_data['indicator']
+            reputation = url_data['risk']
+            score = convert_to_xsoar_severity(reputation)
 
-        dbot_score = Common.DBotScore(
-            indicator=str(indicator_url),
-            indicator_type=DBotScoreType.URL,
-            integration_name='Pulsedive',
-            score=score,
-            malicious_description=f'Pulsedive returned reputation {reputation}'
-        )
+            dbot_score = Common.DBotScore(
+                indicator=str(indicator_url),
+                indicator_type=DBotScoreType.URL,
+                integration_name='Pulsedive',
+                score=score,
+                malicious_description=f'Pulsedive returned reputation {reputation}'
+            )
 
-        url_standard_context = Common.URL(
-            url=indicator_url,
-            dbot_score=dbot_score
-        )
+            url_standard_context = Common.URL(
+                url=indicator_url,
+                dbot_score=dbot_score
+            )
 
-        url_data.pop('objects', None)
-        url_data.pop('nir', None)
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown('URL Details:', url_data),
-            outputs_prefix='Pulsedive.URL',
-            outputs_key_field='indicator',
-            outputs=url_data,
-            indicator=url_standard_context
-        ))
+            url_data.pop('objects', None)
+            url_data.pop('nir', None)
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown('URL Details:', url_data),
+                outputs_prefix='Pulsedive.URL',
+                outputs_key_field='indicator',
+                outputs=url_data,
+                indicator=url_standard_context
+            ))
+        except DemistoException:
+            # Create the DBotScore structure first using the Common.DBotScore class.
+            dbot_score = Common.DBotScore(
+                indicator=str(url),
+                indicator_type=DBotScoreType.URL,
+                integration_name='Pulsedive',
+                score=Common.DBotScore.NONE,
+                malicious_description='Pulsedive returned reputation None'
+            )
+
+            url_standard_context = Common.URL(
+                url=str(url),
+                dbot_score=dbot_score
+            )
+
+            command_results.append(CommandResults(
+                readable_output=str(url) + ' not found in indicator data',
+                outputs_prefix='Pulsedive.URL',
+                outputs_key_field='indicator',
+                indicator=url_standard_context
+            ))
 
     return command_results
 
@@ -262,13 +330,6 @@ def main() -> None:
     proxy = demisto.params().get('proxy', False)
     headers = {'User-Agent': 'XSOAR - Integration'}
 
-    # INTEGRATION DEVELOPER TIP
-    # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
-    # etc. to print information in the XSOAR server log. You can set the log
-    # level on the server configuration
-    # See: https://xsoar.pan.dev/docs/integrations/code-conventions#logging
-    # demisto.debug(f'Command being called is {demisto.command()}')
-
     try:
 
         client = Client(
@@ -279,18 +340,14 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client, api_key))
 
-        # Done
         elif demisto.command() == 'ip':
             return_results(ip_reputation_command(client, demisto.args(), api_key))
 
-        # Done
         elif demisto.command() == 'domain':
             return_results(domain_reputation_command(client, demisto.args(), api_key))
 
-        # WIP
         elif demisto.command() == 'url':
             return_results(url_reputation_command(client, demisto.args(), api_key))
 

@@ -64,7 +64,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}'
+      description: 'A JSON query to search for in the collection, in the format: `{"key": "value"}`. e.g {"_id": "mongodbid"}. Search by regex is supported, for more details refer to the Integration documentation.'
       isArray: false
       name: query
       required: true
@@ -90,7 +90,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches for items by the specified JSON query.
+    description: Searches for items by using the specified JSON query. Search by regex is supported.
     execution: false
     name: mongodb-query
     outputs:
@@ -216,7 +216,46 @@ script:
     description: Drops a collection from the database.
     execution: true
     name: mongodb-drop-collection
-  dockerimage: demisto/pymongo:1.0.0.12410
+  - arguments:
+    - default: false
+      description: Name of the collection to query.
+      isArray: false
+      name: collection
+      required: true
+      secret: false
+    - default: false
+      description: 'A JSON pipeline query to search by in the collection. Pipeline
+        query should by list of dictionaries. For example: [{"key1": "value1"}, {"key2": "value2"}]'
+      isArray: false
+      name: pipeline
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limits the number of results returned from MongoDB.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset to the first result returned from MongoDB.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for items by the specified JSON pipleline query.
+    execution: false
+    name: mongodb-pipeline-query
+    outputs:
+    - contextPath: MongoDB.Entry._id
+      description: The ID of entry from the query.
+      type: String
+    - contextPath: MongoDB.Entry.collection
+      description: The collection of which the entry belongs to.
+      type: String
+  dockerimage: demisto/pymongo:1.0.0.16066
   feed: false
   isfetch: false
   longRunning: false

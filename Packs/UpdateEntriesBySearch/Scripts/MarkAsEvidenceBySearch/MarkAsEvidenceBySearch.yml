@@ -1,0 +1,110 @@
+commonfields:
+  id: MarkAsEvidenceBySearch
+  version: -1
+name: MarkAsEvidenceBySearch
+script: ''
+type: python
+tags:
+- Utility
+comment: Search entries in the war room for the pattern text, and mark them as evidence.
+enabled: true
+args:
+- name: incident_id
+  description: The incident ID to search entries from. If not given, the current incident
+    is used.
+- name: tags
+  description: The list of tags to set
+- name: description
+  description: Evidence description
+- name: filter_categories
+  auto: PREDEFINED
+  predefined:
+  - commandAndResults
+  - playbookTaskResult
+  - playbookTaskStartAndDone
+  - playbookErrors
+  - justFound
+  - deleted
+  - incidentInfo
+  - chats
+  - evidence
+  - notes
+  - attachments
+  description: The list of categories of source entries
+  isArray: true
+- name: filter_tags
+  description: The tags to filter entries
+- name: filter_entry_formats
+  auto: PREDEFINED
+  predefined:
+  - html
+  - table
+  - json
+  - text
+  - dbotCommandResponse
+  - markdown
+  description: The list of entry format of source entries
+- name: filter_entry_types
+  auto: PREDEFINED
+  predefined:
+  - NOTE
+  - ERROR
+  description: The list of entry type of source entries
+- name: filter_options
+  auto: PREDEFINED
+  predefined:
+  - first_entry
+  - last_entry
+  - exclude_this_entry
+  description: The options to filter entries
+  isArray: true
+  defaultValue: exclude_this_entry
+- name: algorithm
+  auto: PREDEFINED
+  predefined:
+  - basic
+  - wildcard
+  - regex
+  description: The pattern matching algorithm
+  defaultValue: basic
+- name: pattern
+  required: true
+  description: The pattern text to search
+- name: exclude_pattern
+  description: The pattern text to exclude entries matched
+- name: node_paths
+  auto: PREDEFINED
+  predefined:
+  - Contents
+  description: The list of node path of entries to search from
+  defaultValue: Contents
+- name: case_insensitive
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: true if the pattern is matched in case-insensitive, false otherwise
+  defaultValue: "false"
+- name: dry_run
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: true if it only search the entries and doesn't update, false otherwise
+  defaultValue: "false"
+- name: summary
+  auto: PREDEFINED
+  predefined:
+  - quiet
+  - basic
+  - verbose
+  description: The flag to control the output  of results
+  defaultValue: basic
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.15759
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -70,15 +70,25 @@ def main() -> None:
 
         transport = RequestsHTTPTransport(**request_params)
         handle_proxy()
-        client = Client(transport=transport, fetch_schema_from_transport=True)
+        fetch_schema_from_transport = params.get('fetch_schema_from_transport', True)
+        if fetch_schema_from_transport is None:
+            fetch_schema_from_transport = True
+        client = Client(
+            transport=transport,
+            fetch_schema_from_transport=fetch_schema_from_transport,
+        )
 
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
+            with client as session:
+                session.fetch_schema()
             return_results('ok')
         elif command == 'graphql-query':
             return_results(execute_query(client, demisto.args()))
         elif command == 'graphql-mutation':
             return_results(execute_query(client, demisto.args()))
+        else:
+            raise NotImplementedError(f"Received an un-supported command: {command}")
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f'Failed to execute {command} command. Error: {str(e)}')

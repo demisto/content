@@ -765,7 +765,7 @@ tasks:
         simple: DEM
       projectName:
         simple: demistodev
-      reporter:
+      reporter_id:
         simple: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
       summary:
         simple: '"jira playbook test - delete"'
@@ -864,7 +864,7 @@ tasks:
       - "32"
     scriptarguments:
       attribute:
-        simple: admin@demistodev.com
+        simple: Meir Wahnon
       maxResults: {}
     separatecontext: false
     view: |-

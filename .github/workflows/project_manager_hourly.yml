@@ -1,4 +1,4 @@
-name: Manage Contribution Board - Hourly
+name: Manage Contribution Board - Daily
 on:
   schedule:
     - cron:  '0 * * * *'
@@ -20,4 +20,4 @@ jobs:
         run: |
           github-automation manage -c .github/project_conf/contributions.ini
         env:
-          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_BOARD_UPDATE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_BOARD_UPDATE_TOKEN }}	

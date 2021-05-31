@@ -1,0 +1,28 @@
+{
+	"pChunk": {
+		"KLCSP_ITERATOR_ARRAY": [
+			{
+				"type": "params",
+				"value": {
+					"id": 0,
+					"name": "Managed devices"
+				}
+			},
+			{
+				"type": "params",
+				"value": {
+					"id": 1,
+					"name": "Unassigned devices"
+				}
+			},
+			{
+				"type": "params",
+				"value": {
+					"id": 4,
+					"name": "WORKGROUP"
+				}
+			}
+		]
+	},
+	"PxgRetVal": 3
+}

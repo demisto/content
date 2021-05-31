@@ -1,0 +1,120 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "SailPoint IdentityNow Trigger Mapper",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "SailPoint IdentityNow Trigger Access Request Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "accessRequestDetails",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Account Aggregated Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "accountAggregatedDetails",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Attributes": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "attributes",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Changes": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "changes",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Identity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "identity",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Metadata": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "metadata",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Post Provisioning Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "postProvisioningDetails",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SailPoint IdentityNow Trigger Search Completed Details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "searchCompletedDetails",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "SailPoint IdentityNow Trigger Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

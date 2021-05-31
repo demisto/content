@@ -1,0 +1,98 @@
+{
+    "data": {
+        "flows": [{
+            "applicationId": 176,
+            "cipherSuite": {
+                "authAlgorithm": "N/A",
+                "encAlgorithm": "N/A",
+                "id": "N/A",
+                "keyExchange": "N/A",
+                "keyLength": "N/A",
+                "messageAuthCode": "N/A",
+                "name": "N/A",
+                "protocol": "N/A"
+            },
+            "flowCollectorId": 121,
+            "id": 876742,
+            "mplsLabel": -1,
+            "peer": {
+                "byteRate": 72782.975308642,
+                "bytes": 5895421,
+                "countryCode": "XR",
+                "finPackets": 0,
+                "hostGroupIds": [
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "natPort": -1,
+                "orientation": "server",
+                "packetRate": 58.962962962963,
+                "packets": 4776,
+                "percentBytes": 50,
+                "portProtocol": {
+                    "port": 514,
+                    "protocol": "UDP",
+                    "serviceId": 0
+                },
+                "rstPackets": 0,
+                "synAckPackets": 0,
+                "synPackets": 0,
+                "tlsVersion": "NONE",
+                "trustSecId": -1
+            },
+            "protocol": "UDP",
+            "serviceId": 73,
+            "statistics": {
+                "activeDuration": 1457000,
+                "byteCount": 11790842,
+                "byteRate": 145565.950617284,
+                "firstActiveTime": "2021-02-15T15:17:42.000+0000",
+                "flowTimeSinceStart": 241459,
+                "lastActiveTime": "2021-02-15T15:41:59.000+0000",
+                "numCombinedFlowRecords": 2,
+                "packetCount": 9552,
+                "packetRate": 117.925925925926,
+                "roundTripTime": 0,
+                "rttAverage": -1,
+                "rttMaximum": -1,
+                "rttMinimum": -1,
+                "serverResponseTime": 0,
+                "srtAverage": -1,
+                "srtMaximum": -1,
+                "srtMinimum": -1,
+                "subjectPeerRatio": 50,
+                "tcpConnections": 0,
+                "tcpRetransmissions": -1,
+                "tcpRetransmissionsRatio": -0.010469011725293133
+            },
+            "subject": {
+                "byteRate": 72782.975308642,
+                "bytes": 5895421,
+                "countryCode": "XR",
+                "finPackets": 0,
+                "hostGroupIds": [
+                    65534
+                ],
+                "ipAddress": "x.x.x.x",
+                "natPort": -1,
+                "orientation": "client",
+                "packetRate": 58.962962962963,
+                "packets": 4776,
+                "percentBytes": 50,
+                "portProtocol": {
+                    "port": 60248,
+                    "protocol": "UDP",
+                    "serviceId": 0
+                },
+                "rstPackets": 0,
+                "synAckPackets": 0,
+                "synPackets": 0,
+                "tlsVersion": "NONE",
+                "trustSecId": -1
+            },
+            "tenantId": 102,
+            "tlsVersion": "NONE",
+            "vlanId": -1
+        }]
+    }
+}
