@@ -3038,7 +3038,8 @@ def run_script_command(client: Client, args: Dict) -> CommandResults:
     script_uid = args.get('script_uid')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    if parameters := args.get('parameters'):
+    parameters = args.get('parameters')
+    if parameters:
         try:
             parameters = json.loads(parameters)
         except json.decoder.JSONDecodeError as e:
@@ -3143,19 +3144,23 @@ def run_script_delete_file_command(client: Client, args: Dict) -> CommandResults
     )
 
 
-def run_script_file_exists_command(client: Client, args: Dict) -> CommandResults:
+def run_script_file_exists_command(client: Client, args: Dict) -> List[CommandResults]:
     endpoint_ids = argToList(args.get('endpoint_ids'))
     timeout = arg_to_number(args.get('timeout', 600)) or 600
-    parameters = {'path': args.get('file_path')}
-    response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
-    reply = response.get('reply')
-    return CommandResults(
-        readable_output=tableToMarkdown('Run Script File Exists', reply),
-        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
-        outputs_key_field='action_id',
-        outputs=reply,
-        raw_response=response,
-    )
+    file_paths = argToList(args.get('file_path'))
+    all_response = []
+    for file_path in file_paths:
+        parameters = {'path': file_path}
+        response = client.run_script('414763381b5bfb7b05796c9fe690df46', endpoint_ids, parameters, timeout)
+        reply = response.get('reply')
+        all_response.append(CommandResults(
+            readable_output=tableToMarkdown('Run Script File Exists', reply),
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ScriptRun',
+            outputs_key_field='action_id',
+            outputs=reply,
+            raw_response=response,
+        ))
+    return all_response
 
 
 def run_script_kill_process_command(client: Client, args: Dict) -> CommandResults:
