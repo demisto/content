@@ -167,7 +167,7 @@ Displays incidents between the provided two Timestamps ts_from and ts_to. By def
 #### Human Readable Output
 
 >### Displaying all 2 incidents between 1610700720 and 1610700900
->|type|incident_id|name|description|username|user_id|assigned_to|visible_to|tid|rows_count|risk_level|detection_timestamp|loginspect_ip_dns|logpoint_name|status|comments|commentscount|query|repos|time_range|alert_obj_id|throttle_enabled|id|
+>|Type|Incident Id|Name|Description|Username|User Id|Assigned To|Visible To|Tid|Rows Count|Risk Level|Detection Timestamp|Loginspect Ip Dns|Logpoint Name|Status|Comments|Commentscount|Query|Repos|Time Range|Alert Obj Id|Throttle Enabled|Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Alert | 8a676c39450e099b3512961d71ec4f7d | Memory usages is greater than 50 percent |  | 5bebd9fdd8aaa42840edc853 |  | 5bebd9fdd8aaa42840edc853 |  |  | 5 | medium | 1610700740.2248185 | 127.0.0.1 | LogPoint | unresolved |  | 0 | "col_type"="filesystem" use>=50 | 127.0.0.1:5504 | 1610700000,<br/>1610700600 | 5fc8b1743dee69827459bc70 | false | 600157c44a2018070b627f6a |
 >| Alert | 8a676c39450e099b3512961d71ec4f7d | Memory usages is greater than 50 percent |  | 5bebd9fdd8aaa42840edc853 |  | 5bebd9fdd8aaa42840edc853 |  |  | 5 | medium | 1610700860.245085 | 127.0.0.1 | LogPoint | unresolved | {'title': 'admin', 'comment': 'Example Incident', 'time': 1610700910} | 0 | "col_type"="filesystem" use>=50 | 127.0.0.1:5504 | 1610700120,<br/>1610700720 | 5fc8b1743dee69827459bc70 | false | 6001583c4a2018070b627f6b |
@@ -410,7 +410,7 @@ Retrieves a Particular Incident's Data
 #### Human Readable Output
 
 >### Incident Data
->|msg|use|used|log_ts|_type_str|total|device_name|_offset|logpoint_name|repo_name|free|source_name|col_ts|_tz|norm_id|_identifier|collected_at|device_ip|_fromV550|_enrich_policy|_type_num|_type_ip|sig_id|col_type|object|_labels|
+>|Msg|Use|Used|Log Ts|Type Str|Total|Device Name|Offset|Logpoint Name|Repo Name|Free|source Name|col Ts|Tz|Norm Id|Identifier|Collected At|Device Ip|FromV550|Enrich Policy|Type Num|Type Ip|Sig Id|Col Type|Object|Labels|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-01-15_08:49:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5664 MB; free=1963 MB | 71.0 | 5664 | 1610700541 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 195673 | LogPoint | _logpoint | 1963 | /opt/immune/var/log/system_metrics/system_metrics.log | 1610700549 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
 >| 2021-01-15_08:47:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5662 MB; free=1965 MB | 71.0 | 5662 | 1610700421 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 101372 | LogPoint | _logpoint | 1965 | /opt/immune/var/log/system_metrics/system_metrics.log | 1610700428 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
@@ -491,7 +491,7 @@ Displays incident states data between the provided two Timestamps ts_from and ts
 #### Human Readable Output
 
 >### Displaying all 2 incident states data.
->|id|name|assigned_to|status|comments|
+>|Id|Name|Assigned To|Status|Comments|
 >|---|---|---|---|---|
 >| 5fdc788ecf35d7ae0f6b791b | Greater than 60 | 5fd9d95769d3a4ea5684fccf | unresolved | {'title': 'admin', 'comment': 'Example comment', 'time': 1610700740},<br/>{'title': 'admin', 'comment': 'Reassigned', 'time': 1610700745} |
 >| 5fdc788ecf35d7ae0f6b791c | Memory use greater than 50 | 5fd9d95769d3a4ea5684fccf | unresolved | {'title': 'admin', 'comment': 'Reassigned', 'time': 1610700745} |
@@ -762,7 +762,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Incident Users
->|id|name|usergroups|
+>|Id|Name|Usergroups|
 >|---|---|---|
 >| 5bebd9fdd8aaa42840edc853 | admin | {'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
 >| 5fd9d95769d3a4ea5684fccf | sbs | {'id': '5bebd9fdd8aaa42840edc850', 'name': 'User Account Administrator'},<br/>{'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
@@ -809,7 +809,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### User's Preference
->|timezone|date_format|hour_format|
+>|Timezone|Date Format|Hour Format|
 >|---|---|---|
 >| UTC | %Y/%m/%d | 24 Hour |
 
@@ -852,7 +852,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### LogPoints
->|name|ip|
+>|Name|Ip|
 >|---|---|
 >| LogPoint | 127.0.0.1 |
 
@@ -901,7 +901,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### LogPoint Repos
->|repo|address|
+>|Repo|Address|
 >|---|---|
 >| default | 127.0.0.1:5504/default |
 >| _logpoint | 127.0.0.1:5504/_logpoint |
@@ -925,7 +925,7 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | LogPoint.Devices.name | String | Device name | 
-| LogPoint.Devices.address | Unknown | Device IP address | 
+| LogPoint.Devices.address | String | Device IP address | 
 
 
 #### Command Example
@@ -956,7 +956,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Devices
->|name|address|
+>|Name|Address|
 >|---|---|
 >| localhost | 127.0.0.1/127.0.0.1 |
 >| localhost | 127.0.0.1/::1 |
@@ -965,7 +965,7 @@ There are no input arguments for this command.
 
 ### lp-get-livesearches
 ***
-Get live searches.
+Get live search results of the Alerts and Dashboards.
 
 
 #### Base Command
@@ -1029,7 +1029,7 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Live Searches
->|description|flush_on_trigger|generated_by|life_id|limit|query|query_info|searchname|tid|timerange_day|timerange_hour|timerange_minute|timerange_second|vid|
+>|Description|Flush On Trigger|Generated By|Life Id|Limit|Query|Query Info|Searchname|Tid|Timerange Day|Timerange Hour|Timerange Minute|Timerange Second|Vid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|  | false | alert | c4e38a6fe8226ec0975ee5ed935a733003bd1f11 | 25 | "use"> 86 col_type=filesystem  | fieldsToExtract: use,<br/>col_type<br/>aliases: <br/>success: true<br/>query_filter: "use"> 86 col_type=filesystem<br/>columns: <br/>query_type: simple<br/>lucene_query: (_num_use:{86 TO *} AND col_type:filesystem)<br/>grouping:  | Memory greater than 86 |  | 0 | 1 | 0 | 0 |  |
 
@@ -1133,7 +1133,7 @@ Gets LogPoint search result. Takes search_id as an argument.
 #### Human Readable Output
 
 >### Found 2 logs
->|_group|_type_ip|_type_num|_type_str|col_type|count()|
+>|Group|Type Ip|Type Num|Type Str|Col Type|Count()|
 >|---|---|---|---|---|---|
 >| office365 |  |  count() |  col_type count() | office365 | 312 |
 >| filesystem |  |  count() |  col_type count() | filesystem | 3658 |

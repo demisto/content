@@ -775,9 +775,9 @@ script:
       type: String
     - contextPath: LogPoint.Devices.address
       description: Device IP address
-      type: Unknown
+      type: String
   - deprecated: false
-    description: Get live searches.
+    description: Get live search results of the Alerts and Dashboards.
     execution: false
     name: lp-get-livesearches
     outputs:

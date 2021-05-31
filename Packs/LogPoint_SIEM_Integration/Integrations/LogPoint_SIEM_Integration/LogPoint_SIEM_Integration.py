@@ -430,7 +430,8 @@ def get_incidents_command(client, args):
         if not ts_to:
             ts_to = incidents[-1].get('detection_timestamp')
         display_title = f"Displaying all {len(incidents)} incidents between {ts_from} and {ts_to}"
-    markdown = tableToMarkdown(display_title, incidents, headers=table_header)
+    markdown = tableToMarkdown(display_title, incidents, headers=table_header,
+                               headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents',
@@ -450,7 +451,8 @@ def get_incident_data_command(client, args):
     table_header = []
     if incident_data and len(incident_data) > 0:
         table_header = list(incident_data[0].keys())
-    markdown = tableToMarkdown('Incident Data', incident_data, headers=table_header)
+    markdown = tableToMarkdown('Incident Data', incident_data, headers=table_header,
+                               headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents.data',
@@ -483,7 +485,8 @@ def get_incident_states_command(client, args):
                         f"get more."
     elif len(incident_states) <= limit and len(incident_states) != 0:
         display_title = f"Displaying all {len(incident_states)} incident states data."
-    markdown = tableToMarkdown(display_title, incident_states, headers=table_header)
+    markdown = tableToMarkdown(display_title, incident_states, headers=table_header,
+                               headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents.states',
@@ -578,7 +581,8 @@ def get_users_command(client):
     users = result.get('users')
     if users and len(users) > 0:
         table_header = list(users[0].keys())
-        markdown = tableToMarkdown('Incident Users', users, headers=table_header)
+        markdown = tableToMarkdown('Incident Users', users, headers=table_header,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'No users record found.'
     return CommandResults(
@@ -599,7 +603,8 @@ def get_users_preference_command(client):
     else:
         table_header = list(result.keys())
         display_title = "User's Preference"
-        markdown = tableToMarkdown(display_title, result, headers=table_header)
+        markdown = tableToMarkdown(display_title, result, headers=table_header,
+                                   headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.User.Preference',
@@ -615,7 +620,8 @@ def get_logpoints_command(client):
     if allowed_loginspects and len(allowed_loginspects) > 0:
         table_header = list(allowed_loginspects[0].keys())
         display_title = "LogPoints"
-        markdown = tableToMarkdown(display_title, allowed_loginspects, headers=table_header)
+        markdown = tableToMarkdown(display_title, allowed_loginspects, headers=table_header,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'No LogPoints found.'
     return CommandResults(
@@ -634,7 +640,8 @@ def get_repos_command(client):
     if allowed_repos and len(allowed_repos) > 0:
         table_header = list(allowed_repos[0].keys())
         display_title = "LogPoint Repos"
-        markdown = tableToMarkdown(display_title, allowed_repos, headers=table_header)
+        markdown = tableToMarkdown(display_title, allowed_repos, headers=table_header,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'No repos found.'
     return CommandResults(
@@ -659,8 +666,9 @@ def get_devices_command(client):
                     'name': value,
                     'address': key,
                 })
-        table_header = ['name', 'address']
-        markdown = tableToMarkdown(display_title, device_list, headers=table_header)
+        table_header = ['Name', 'Address']
+        markdown = tableToMarkdown(display_title, device_list, headers=table_header,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'Devices not found.'
     return CommandResults(
@@ -677,7 +685,8 @@ def get_livesearches_command(client):
     livesearches = result.get('livesearches')
     if livesearches and len(livesearches) > 0:
         display_title = "Live Searches"
-        markdown = tableToMarkdown(display_title, livesearches, headers=None)
+        markdown = tableToMarkdown(display_title, livesearches, headers=None,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'No Live Searches data found.'
     return CommandResults(
@@ -702,7 +711,13 @@ def get_searchid_command(client, args):
         raise DemistoException(result.get('message'))
     search_id = result.get('search_id')
     if search_id:
-        markdown = f"### Search Id: {search_id}"
+        del result['success']
+        if result.get('searchId'):
+            del result['searchId']
+        headers = result.keys()
+        display_title = f"Search Id: {search_id}"
+        markdown = tableToMarkdown(display_title, result, headers=headers,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'Could not get Search Id.'
     return CommandResults(
@@ -720,7 +735,8 @@ def search_logs_command(client, args):
     rows = search_result.get('rows', [])
     if rows and len(rows) > 0:
         display_title = f"Found {len(rows)} logs"
-        markdown = tableToMarkdown(display_title, rows, headers=None)
+        markdown = tableToMarkdown(display_title, rows, headers=None,
+                                   headerTransform=string_to_table_header)
     else:
         markdown = 'No results found for the given search parameters.'
     return CommandResults(
