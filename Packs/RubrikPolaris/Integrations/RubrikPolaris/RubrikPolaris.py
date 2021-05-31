@@ -578,6 +578,18 @@ def rubrik_cdm_cluster_location_command(client: Client, args: Dict[str, Any]) ->
                         "using the incident context.",
                 error=e)
 
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikpolariscdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
     operation_name_object_list = f"{OPERATION_NAME_PREFIX}CDMClusterLocationQuery"
 
     cdm_location_query = """query %s($filter: ClusterFilterInput) {
@@ -629,6 +641,18 @@ def rubrik_cdm_cluster_connection_state_command(client: Client, args: Dict[str, 
     if not clusterId:
         try:
             clusterId = incident.get("rubrikcdmclusterid")
+        except AttributeError as e:
+            # if still not found return an error message about it being
+            # required
+            return_error(
+                message="The objectName value is required. Either manually provide or run this command"
+                        " in a 'Rubrik Radar Anomaly' incident where it will automatically looked up "
+                        "using the incident context.",
+                error=e)
+
+    if not clusterId:
+        try:
+            clusterId = incident.get("rubrikpolariscdmclusterid")
         except AttributeError as e:
             # if still not found return an error message about it being
             # required
