@@ -396,8 +396,10 @@ def ticket_to_incident(ticket):
     incident = {}
     # Incident Title
     incident['name'] = 'Freshdesk Ticket: "{}"'.format(ticket.get('subject'))
-    # Incident update time - the ticket's update time
-    incident['update_time'] = ticket.get('updated_at')
+    # Incident update time - the ticket's update time - The API does not support filtering tickets by creation time
+    # but only by update time. The update time will be the creation time of the incidents and the incident id check will
+    # prevent duplications of incidents.
+    incident['occurred'] = ticket.get('updated_at')
     # The raw response from the service, providing full info regarding the item
     incident['rawJSON'] = json.dumps(ticket)
     return incident
@@ -810,7 +812,7 @@ def fetch_incidents():
     for ticket in tickets:
         incident = ticket_to_incident(ticket)
         incident_id = ticket.get('id')
-        incident_date = date_to_timestamp(incident.get('update_time'), '%Y-%m-%dT%H:%M:%SZ')
+        incident_date = date_to_timestamp(incident.get('occurred'), '%Y-%m-%dT%H:%M:%SZ')
         # Update last run and add incident if the incident is newer than last fetch and was not fetched before
         # The incident IDs are in incremental order.
         if incident_date >= last_fetch and incident_id > last_incident_id:
