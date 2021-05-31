@@ -273,7 +273,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         # If we force upload we don't want to update the commit in the index.json file,
         # this is to be able to identify all changed packs in the next upload
         commit = previous_commit_hash
-        logging.info('Force upload flow - Index commit hash shuould not be changed')
+        logging.info('Force upload flow - Index commit hash should not be changed')
     else:
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
@@ -305,11 +305,8 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         if is_private or current_index_generation == index_generation:
             # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
             if storage_bucket:
-                index_json_path_storage = os.path.join(GCPConfig.STORAGE_BASE_PATH, f'{GCPConfig.INDEX_NAME}.json')
-                storage_blob = storage_bucket.blob(index_json_path_storage)
-                storage_blob.upload_from_filename(index_json_path)
-            index_blob.upload_from_filename(index_zip_path)
-            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+                index_blob.upload_from_filename(index_zip_path)
+                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
         else:
             logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.critical(f"Downloaded index generation: {index_generation}")
@@ -328,13 +325,15 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         shutil.rmtree(index_folder_path)
 
 
-def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folder_path: str):
+def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folder_path: str,
+                             artifacts_dir: Optional[str] = None):
     """Uploads corepacks.json file configuration to bucket. Corepacks file includes core packs for server installation.
 
      Args:
         storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
         build_number (str): circleCI build number.
         index_folder_path (str): The index folder path.
+        artifacts_dir: The CI artifacts directory to upload the index.json to.
 
     """
     core_packs_public_urls = []
@@ -369,17 +368,23 @@ def upload_core_packs_config(storage_bucket: Any, build_number: str, index_folde
         logging.critical(f"Missing core packs are: {missing_core_packs}")
         sys.exit(1)
 
-    # construct core pack data with public gcs urls
-    core_packs_data = {
-        'corePacks': core_packs_public_urls,
-        'buildNumber': build_number
-    }
-    # upload core pack json file to gcs
-    core_packs_config_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, GCPConfig.CORE_PACK_FILE_NAME)
-    blob = storage_bucket.blob(core_packs_config_path)
-    blob.upload_from_string(json.dumps(core_packs_data, indent=4))
+    corepacks_json_path = os.path.join(index_folder_path, f'{GCPConfig.CORE_PACK_FILE_NAME}')
+    with open(corepacks_json_path, 'w+') as corepacks_file:
+        # construct core pack data with public gcs urls
+        core_packs_data = {
+            'corePacks': core_packs_public_urls,
+            'buildNumber': build_number
+        }
+        json.dump(core_packs_data, corepacks_file, indent=4)
 
-    logging.success(f"Finished uploading {GCPConfig.CORE_PACK_FILE_NAME} to storage.")
+    if artifacts_dir:
+        # Store corepacks.json in CircleCI artifacts
+        shutil.copyfile(
+            os.path.join(index_folder_path, f'{GCPConfig.CORE_PACK_FILE_NAME}'),
+            os.path.join(artifacts_dir, f'{GCPConfig.CORE_PACK_FILE_NAME}'),
+        )
+
+    logging.success(f"Finished coping {GCPConfig.CORE_PACK_FILE_NAME} to artifacts.")
 
 
 def upload_id_set(storage_bucket: Any, id_set_local_path: str = None):
@@ -1093,7 +1098,8 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     # upload core packs json to bucket
-    upload_core_packs_config(storage_bucket, build_number, index_folder_path)
+    upload_core_packs_config(storage_bucket, build_number, index_folder_path,
+                             artifacts_dir=os.path.dirname(packs_artifacts_path))
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
@@ -1104,9 +1110,6 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket,
                             )
-
-    # upload id_set.json to bucket
-    upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
