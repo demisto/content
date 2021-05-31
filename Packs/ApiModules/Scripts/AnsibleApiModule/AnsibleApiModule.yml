@@ -12,5 +12,5 @@ comment: Common Ansible code that will be appended to each Ansible integration
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/ansible-runner:1.0.0.20435
 fromversion: 6.0.0 
