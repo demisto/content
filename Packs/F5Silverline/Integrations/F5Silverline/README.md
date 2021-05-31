@@ -18,7 +18,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### f5-silverline-ip-objects-list
 ***
-Get a dynamic list of threatening IP addresses by the given list type. The list type can be one of allowlist or denylist.
+Gets a dynamic list of threatening IP addresses by the given list type. 
 
 
 #### Base Command
@@ -28,8 +28,8 @@ Get a dynamic list of threatening IP addresses by the given list type. The list 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal. | Required | 
-| object_id | A comma separated list of IP object IDs. If this argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match the given list_type will be displayed. Note - In case you don't know what is the object ID, you should run this command without object_id arguemnt to get all the IDs. | Optional | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required | 
+| object_id | A comma-separated list of IP object IDs. If this argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match the given list_type will be displayed. IF you don't the object ID, run this command without the object_id argument to get all the IDs. | Optional | 
 | page_number | Page number to return. The first page number is 1. | Optional | 
 | page_size | Number of results in a page. | Optional | 
 
@@ -45,7 +45,7 @@ Get a dynamic list of threatening IP addresses by the given list type. The list 
 | F5Silverline.IPObjectList.attributes.duration | String | The duration \(in seconds\) of a particular threatening IP address object where list type is 'denylist'. | 
 | F5Silverline.IPObjectList.attributes.expires_at | String | The expiration date \(timestamp\) of a particular threatening IP address object. | 
 | F5Silverline.IPObjectList.attributes.list_target | String | The list target of a particular threatening IP address object. | 
-| F5Silverline.IPObjectList.links.self | String | The F5 Silverline url link of a particular threatening IP address object. | 
+| F5Silverline.IPObjectList.links.self | String | The F5 Silverline URL link of a particular threatening IP address object. | 
 | F5Silverline.IPObjectList.meta.note | String | The note of a particular threatening IP address object. | 
 | F5Silverline.IPObjectList.meta.tags | Unknown | The tags of a particular threatening IP address object. | 
 | F5Silverline.IPObjectList.meta.created_at | String | The creation date \(timestamp\) of a particular threatening IP address object. | 
@@ -137,7 +137,7 @@ Get a dynamic list of threatening IP addresses by the given list type. The list 
 
 ### f5-silverline-ip-object-add
 ***
-Add a new particular threatening IP address object by its IP address.
+Adds a new particular threatening IP address object by its IP address.
 
 
 #### Base Command
@@ -147,13 +147,13 @@ Add a new particular threatening IP address object by its IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal. | Required | 
-| list_target | This argument can be supplied to target either the proxy or routed denylist. If list_target is not specified it will assume both proxy and routed are requested (i.e proxy-routed). The allowed values for list_target are proxy or routed or proxy-routed. This argument limits the denylist type but is ignored for the other list types. Possible values are: proxy, routed, proxy-routed. | Optional | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be allowlist or denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required | 
+| list_target | This argument can be supplied to target either the proxy or routed denylist. If list_target is not specifiedm it will assume both proxy and routed are requested (i.e.,proxy-routed). The allowed values for list_target are proxy or routed or proxy-routed. This argument limits the denylist type but is ignored for the other list types. Possible values are: proxy, routed, proxy-routed. | Optional | 
 | IP | The IP address of a new particular threatening IP address object. | Required | 
 | mask | The mask address of a new particular threatening IP address object. Default is 32. | Optional | 
 | duration | The duration (in seconds) of a new particular threatening IP address object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object will never expire. This feature has been removed for allowlist. | Optional | 
-| note | The note of a new particular threatening IP address object. Defaut is empty. | Optional | 
-| tags | A Comma separated list of tags of a new particular threatening IP address object. Defaut is empty. | Optional | 
+| note | The note of a new particular threatening IP address object. Default is empty. | Optional | 
+| tags | A comma-separated list of tags of a new particular threatening IP address object. Default is empty. | Optional | 
 
 
 #### Context Output
@@ -169,7 +169,7 @@ There is no context output for this command.
 
 ### f5-silverline-ip-object-delete
 ***
-Delete an exising particular threatening IP address object by its object ID.
+Deletes an existing particular threatening IP address object by its object ID.
 
 
 #### Base Command
@@ -179,8 +179,8 @@ Delete an exising particular threatening IP address object by its object ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note- Allowlists named DDOS IP Allowlists in F5 Silveline portal. | Required | 
-| object_id | The ojbect ID of a particular threatening IP address object that should be deleted. | Required | 
+| list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required | 
+| object_id | The object ID of a particular threatening IP address object that should be deleted. | Required | 
 
 
 #### Context Output
@@ -205,23 +205,23 @@ There is no context output for this command.
 | iRule logs | F5 Silverline iRule Events |  
 
 
-As F5 Silverline API does not support fetch incidents for now, we retrieve alerts via log collector.   
-In order to fetch alerts you should follow the instructions below:
-1. In your Cortex XSOAR install F5 Silverline integration.
-2. In F5 Silverline portal, go to **Config** > **Log Export** .
-3. F5 Silverline "Log Export" should be configured with a "Host" destination that supports TLS+TCP communication.
-4. Follow the instructions here: https://support.f5silverline.com/hc/en-us/articles/214152048
-5. In your Cortex XSOAR go to Syslog integration (installed by  default).
+As F5 Silverline API does not support fetch incidents for now, we retrieve alerts via a log collector.   
+In order to fetch alerts, follow the instructions below:
+1. In Cortex XSOAR, install the F5 Silverline integration.
+2. In the F5 Silverline portal, go to **Config** > **Log Export** .
+3. Configure the F5 Silverline "Log Export". Follow the instructions here: https://support.f5silverline.com/hc/en-us/articles/214152048. The "Host" destination must support TLS+TCP communication. 
+4. In Cortex XSOAR, go to **Settings** > **Integrations**.
+5. Search for Syslog. (This integration is installed by  default).
 6. Configure the Syslog instance with your log receiver details:
-   * Click on "Fetches incidents".
+   * Click "Fetches incidents".
    * Set the Classifier to "F5 Silverline Classifier". 
    * Set the Mapper to "F5 Silverline Mapper".
-   * IP address - specify the IP of your log receiver host.
+   * IP address - specify the IP address of your log receiver host.
    * Port - specify the port of your log receiver host.
    * Protocol - choose TCP or UDP.
    * Format - specify to 'Auto'.
-7. Once the log receiver is configured it should forward the logs in TCP or UDP toward Cortex XSOAR - Syslog integration.
-If everything goes as expected you should be able to ses that incidents were successfully pulled. 
 
-* After incidents are being created you can go to incidents page and sort them by their type.
+Once the log receiver is configured it will forward the logs in TCP or UDP to Cortex XSOAR - Syslog integration and you will see that incidents were successfully pulled.
+
+* After incidents are created, you can go to the incidents page and sort them by their type.
 * You can go to an incident info tab (by clicking on an incident) and see all of the incident fields (under the Case Details header). 
