@@ -1756,6 +1756,7 @@ def main():
 
     ''' EXECUTION '''
     try:
+        support_multithreading()
         handle_proxy()
         command: str = demisto.command()
         LOG(f'Command being called is {command}')

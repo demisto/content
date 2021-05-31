@@ -19,6 +19,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+from threading import Lock
 
 import demistomock as demisto
 import warnings
@@ -7662,3 +7663,19 @@ class AutoFocusKeyRetriever:
             except ValueError as err:
                 raise DemistoException('AutoFocus API Key is only available on the main account for TIM customers. ' + str(err))
         self.key = api_key
+
+
+def support_multithreading():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+    """
+    class MultithreadedDemisto(Demisto):
+        lock = Lock()
+        def __do(self, cmd):
+            try:
+                if self.lock.acquire(timeout=60):
+                    super().__do(cmd)
+            finally:
+                self.lock.release()
+
+    global demisto
+    demisto = MultithreadedDemisto(demisto.callingContext)
