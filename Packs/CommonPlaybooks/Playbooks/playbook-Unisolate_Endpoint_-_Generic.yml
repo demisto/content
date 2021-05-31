@@ -279,5 +279,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- no tests
+- Isolate and unisolate endpoint - test
 fromversion: 5.5.0

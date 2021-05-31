@@ -329,5 +329,5 @@ outputs:
   description: Whether the sensor is isolated.
   type: unknown
 tests:
-- no tests
+- Isolate and unisolate endpoint - test
 fromversion: 5.5.0

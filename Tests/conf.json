@@ -3314,6 +3314,16 @@
             "timeout": 1000
         },
         {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Get endpoint details - Generic - test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "Isolate and unisolate endpoint - test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "VirusTotal - Premium (API v3)",
             "playbookID": "VirusTotal Premium v3 TestPlaybook",
             "fromversion": "5.5.0"

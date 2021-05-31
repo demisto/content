@@ -675,5 +675,5 @@ outputs:
   description: The integration name of the endpoint vendor.
   type: string
 tests:
-- no tests
+- Get endpoint details - Generic - test
 fromversion: 5.5.0
