@@ -1,6 +1,7 @@
 import json
 import io
 import dateparser
+from datetime import datetime, timedelta,date
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 def util_load_json(path):
@@ -22,7 +23,7 @@ def test_fetch_incidents(requests_mock):
         verify=False,
         proxy=False)
     last_run = {
-        'last_fetch': dateparser.parse(str(1621860339000)).strftime(DATE_FORMAT) # Mon, May 24, 2021 12:45 PM Pacific
+        'last_fetch': datetime.strptime(dateparser.parse(str(1621860339000)).strftime(DATE_FORMAT),DATE_FORMAT) # Mon, May 24, 2021 12:45 PM Pacific
     }
     integration_response = fetch_incidents(
         client=client,
