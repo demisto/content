@@ -251,6 +251,7 @@ def check_whitelist_command():
 
     if not port:
         port = 'Any'
+    # is_ip_ignored key determines whether the ip is whitelisted or not.
     context = {
         'Address': str(ip),
         'Port': str(port),

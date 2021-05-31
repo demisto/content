@@ -26,3 +26,29 @@ def test_fetch_incidents(mocker, requests_mock):
     fetch_incidents_command()
 
     assert demisto.setLastRun.call_args[0][0]['time'] == '2020-07-01-04:58:19'
+
+
+def test_ip_whitelist_commands(mocker):
+    """
+    Given: An ip to put in the whitelist
+    When:  Running check_whitelist_command, whitelist_ip_command, check_whitelist_command in that order.
+    Then:  The ip should not be ignored (in the whitelist) before running the whitelist_ip_command but after running
+    whitelist_ip_command it should be ignored (in the whitelist).
+    """
+    import ThinkstCanary
+    ip_to_whitelist = "1.2.3.4"
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value={'ip': ip_to_whitelist})
+    mocker.patch.object(ThinkstCanary, 'check_whitelist', return_value={'is_ip_ignored': False,
+                                                                        'is_whitelist_enabled': True})
+    ThinkstCanary.check_whitelist_command()
+    assert demisto.results.call_args_list[0][0][0].get('HumanReadable') == 'The IP address 1.2.3.4:Any is not ' \
+                                                                           'Whitelisted'
+    mocker.patch.object(ThinkstCanary, 'whitelist_ip', return_value={'message': 'Whitelist added',
+                                                                     'result': 'success'})
+    mocker.patch.object(ThinkstCanary, 'check_whitelist', return_value={'is_ip_ignored': True,
+                                                                        'is_whitelist_enabled': True})
+    ThinkstCanary.whitelist_ip_command()
+    ThinkstCanary.check_whitelist_command()
+    assert demisto.results.call_args_list[2][0][0].get('HumanReadable') == 'The IP address 1.2.3.4:Any is Whitelisted'
