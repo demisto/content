@@ -1,16 +1,17 @@
-# type: ignore
-
+import copy
 import logging
 import warnings
-from typing import Union, List, Any, Tuple, Dict
+from typing import Any, Dict, List, Tuple, Union
 from urllib.parse import urlparse
 
+import demistomock as demisto  # noqa: F401
 import requests
-from pymisp import ExpandedPyMISP, PyMISPError, MISPObject
+from CommonServerPython import *  # noqa: F401
+from pymisp import ExpandedPyMISP, MISPObject, PyMISPError
 from pymisp.tools import EMailObject, GenericObjectGenerator
-import copy
 
-from CommonServerPython import *
+# type: ignore
+
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
@@ -19,6 +20,7 @@ def warn(*args):
     """
     Do nothing with warnings
     """
+    print(warn)
     pass
 
 
