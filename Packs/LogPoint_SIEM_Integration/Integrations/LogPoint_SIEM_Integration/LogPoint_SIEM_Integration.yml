@@ -860,6 +860,7 @@ script:
 tests:
 - LogPoint SIEM Integration - Test Playbook 1
 - LogPoint SIEM Integration - Test Playbook 2
+- LogPoint SIEM Integration - Test Playbook 3
 defaultmapperin: LogPoint-mapper
 defaultclassifier: null
 fromversion: 6.0.0
