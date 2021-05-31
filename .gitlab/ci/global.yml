@@ -208,7 +208,7 @@
     - section_end "Update Tests"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
+      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]]; then
         echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
       else
         echo "Run flake8 on all excluding Packs (Integrations and Scripts) - they will be handled in linting"
