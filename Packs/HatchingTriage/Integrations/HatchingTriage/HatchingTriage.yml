@@ -275,9 +275,21 @@ script:
     description: Get the static analysis of a sample
     name: triage-get-static-report
     outputs:
-      - contextPath: Triage.sample.reports.static.analysis.reported
-        description: Date the sample was submitted
+      - contextPath: Triage.sample.reports.static
+        description: Static report results
         type: Unknown
+      - contextPath: DBotScore.Indicator
+        description: Triage analysis target
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type - File or URL
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The integration used to generate the indicator
+        type: String
+      - contextPath: DBotScore.Score
+        description: Analysis verdict as score from 1 to 10
+        type: Number
   - arguments:
     - default: false
       isArray: false
@@ -299,6 +311,18 @@ script:
       - contextPath: Triage.sample.reports.triage
         description: Triage report of the submitted sample
         type: Unknown
+      - contextPath: DBotScore.Indicator
+        description: Triage analysis target
+        type: String
+      - contextPath: DBotScore.Type
+        description: The indicator type - File or URL
+        type: String
+      - contextPath: DBotScore.Vendor
+        description: The integration used to generate the indicator
+        type: String
+      - contextPath: DBotScore.Score
+        description: Analysis verdict as score from 1 to 10
+        type: Number
   - arguments:
     - default: false
       isArray: false
