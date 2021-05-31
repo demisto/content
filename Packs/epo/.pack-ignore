@@ -9,3 +9,12 @@ ignore=RM102
 
 [file:README.md]
 ignore=RM104
+
+[file:playbook-McAfee_ePO_Endpoint_Compliance_v2.yml]
+ignore=BA110
+
+[file:playbook-McAfee_ePO_Endpoint_Connectivity_Diagnostics_v2.yml]
+ignore=BA110
+
+[file:playbook-McAfee_ePO_Repository_Compliance_v2.yml]
+ignore=BA110
