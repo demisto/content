@@ -79,28 +79,29 @@ def format_JSON_for_fetch_incidents(ls_anomaly):
 
 def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_username, plugin_id, action, time_frame):
 
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get('last_fetch')
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
-        last_fetch = int(last_fetch)
-    latest_created_time = int(last_fetch)
+        last_fetch = last_fetch
+    latest_created_time = last_fetch
     incidents = []
     alerts = client.fetch_anomaly(apiKey=apiKey, api_username=api_username,
                                   plugin_id=plugin_id, action=action, time_frame=time_frame)
-    for dic in alerts['data']:
+    for dic in alerts.get('data'):
         for key in dic.keys():
             if key == 'time_seen':
-                incident_created_time = dic['time_seen']
+                incident_occurred_time = dic['time_seen']
+                incident_created_time = dateparser.parse(str(int(dic['action_time'])*1000),settings={'TIMEZONE': 'UTC'})
                 if last_fetch:
-                    if int(incident_created_time) <= last_fetch:
+                    if incident_created_time <= last_fetch:
                         continue
                 incident_name = "Linkshadow-entityAnomaly"
                 formatted_JSON = format_JSON_for_fetch_incidents(dic)
 
                 incident = {
                     'name': incident_name,
-                    'occurred': timestamp_to_datestring(incident_created_time),
+                    'occurred': timestamp_to_datestring(incident_occurred_time),
                     'rawJSON': formatted_JSON,
                     'CustomFields': {  # Map specific XSOAR Custom Fields
                         'sip': formatted_JSON['sip'],
@@ -115,12 +116,12 @@ def fetch_incidents(client, max_alerts, last_run, first_fetch_time, apiKey, api_
                 }
                 incidents.append(incident)
                 # Update last run and add incident if the incident is newer than last fetch
-                # if incident_created_time > latest_created_time:
-                #     latest_created_time = incident_created_time
+                if incident_created_time > latest_created_time:
+                    latest_created_time = incident_created_time
                 # print (max_alerts)
                 if len(incidents) >= max_alerts:
                     break
-    next_run = {'last_fetch': latest_created_time}
+    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
@@ -144,17 +145,10 @@ def fetch_entity_anomalies(client, args, arg):
         time_frame=time_frame
     )
 
-    alert = []
-    for dic in alerts.get('data'):
-        alert.append(dic)
-
-    if len(alert) == 0:
-        alert = [{"message": "Linkshadow Anomaly already acknowledged!!"}]
-
     return CommandResults(
         outputs_prefix='Linkshadow.data',
         outputs_key_field='GlobalID',
-        outputs=alert
+        outputs=alerts.get('data') or [{"message": "Linkshadow Anomaly already acknowledged!!"}]
     )
 
 
@@ -169,7 +163,7 @@ def main():
     action = demisto.params().get("action")
     time_frame = demisto.params().get("time_frame")
     first_fetch = demisto.params().get('first_fetch', '1 days')
-    first_fetch_time = date_to_timestamp(dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}))
+    first_fetch_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
     proxy = demisto.params().get('proxy', False)
     demisto.debug('Command being called is {demisto.command()}')
     try:
@@ -201,7 +195,7 @@ def main():
         elif demisto.command() == 'Linkshadow-fetch-entity-anomalies':
             return_results(fetch_entity_anomalies(client, demisto.params(), demisto.args()))
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc(e))  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command', e)
 
 
