@@ -4,6 +4,7 @@ from TestsInput.markdown import MOCK_MULTI_LEVEL_DICT, EXPECTED_MD_MULTI_DICT, M
 from TestsInput.markdown import EXPECTED_MD_MULTI_LIST, MOCK_MULTI_LEVEL_LIST_ID_NAMES, EXPECTED_MD_MULTI_LIST_ID_NAMES
 from TestsInput.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MOCK_ANSIBLELESS_DICT, EXPECTED_ANSIBLELESS_DICT
 
+
 def test_dict2md_simple_lists():
     """
     Scenario: Given a simple single level dict or list, dict2md should output a dot point list equivalent
