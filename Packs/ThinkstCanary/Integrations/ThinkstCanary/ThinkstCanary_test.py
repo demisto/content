@@ -49,7 +49,7 @@ def test_check_whitelist_commands_whitelisted(mocker):
     """
     Given: An already whitelisted IP to check
     When:  Inserting IP to whitelist (whitelist_ip_command) and checking if it is whitelisted (check_whitelist_command).
-    Then:  The IP should be ignored (in the whitelist).
+    Then:  The IP should be ignored (in the whitelist), and an appropriate message to the user should be prompted.
     """
     import ThinkstCanary
     ip_to_whitelist = "1.2.3.4"
