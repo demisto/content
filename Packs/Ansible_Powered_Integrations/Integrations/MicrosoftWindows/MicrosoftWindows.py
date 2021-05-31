@@ -22,6 +22,7 @@ def main() -> None:
     ssh_agent_setup.setup()
 
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 

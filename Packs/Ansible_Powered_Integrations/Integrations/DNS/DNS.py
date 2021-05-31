@@ -22,15 +22,16 @@ def main() -> None:
     ssh_agent_setup.setup()
 
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'dns-nsupdate':
+        elif command == 'dns-nsupdate':
             return_results(generic_ansible('dns', 'nsupdate', args, int_params))
     # Log exceptions and return errors
     except Exception as e:

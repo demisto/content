@@ -20,19 +20,20 @@ def main() -> None:
 
     # SSH Key integration requires ssh_agent to be running in the background
     ssh_agent_setup.setup()
-    
+
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'ali-instance':
+        elif command == 'ali-instance':
             return_results(generic_ansible('alibabacloud', 'ali_instance', args, int_params))
-        elif demisto.command() == 'ali-instance-info':
+        elif command == 'ali-instance-info':
             return_results(generic_ansible('alibabacloud', 'ali_instance_info', args, int_params))
     # Log exceptions and return errors
     except Exception as e:

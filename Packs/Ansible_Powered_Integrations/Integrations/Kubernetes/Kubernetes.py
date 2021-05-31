@@ -22,21 +22,22 @@ def main() -> None:
     ssh_agent_setup.setup()
 
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'k8s-k8s':
+        elif command == 'k8s-k8s':
             return_results(generic_ansible('kubernetes', 'k8s', args, int_params))
-        elif demisto.command() == 'k8s-info':
+        elif command == 'k8s-info':
             return_results(generic_ansible('kubernetes', 'k8s_info', args, int_params))
-        elif demisto.command() == 'k8s-scale':
+        elif command == 'k8s-scale':
             return_results(generic_ansible('kubernetes', 'k8s_scale', args, int_params))
-        elif demisto.command() == 'k8s-service':
+        elif command == 'k8s-service':
             return_results(generic_ansible('kubernetes', 'k8s_service', args, int_params))
     # Log exceptions and return errors
     except Exception as e:

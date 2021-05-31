@@ -22,25 +22,26 @@ def main() -> None:
     ssh_agent_setup.setup()
 
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'acme-account':
+        elif command == 'acme-account':
             return_results(generic_ansible('acme', 'acme_account', args, int_params))
-        elif demisto.command() == 'acme-account-info':
+        elif command == 'acme-account-info':
             return_results(generic_ansible('acme', 'acme_account_info', args, int_params))
-        elif demisto.command() == 'acme-certificate':
+        elif command == 'acme-certificate':
             return_results(generic_ansible('acme', 'acme_certificate', args, int_params))
-        elif demisto.command() == 'acme-certificate-revoke':
+        elif command == 'acme-certificate-revoke':
             return_results(generic_ansible('acme', 'acme_certificate_revoke', args, int_params))
-        elif demisto.command() == 'acme-challenge-cert-helper':
+        elif command == 'acme-challenge-cert-helper':
             return_results(generic_ansible('acme', 'acme_challenge_cert_helper', args, int_params))
-        elif demisto.command() == 'acme-inspect':
+        elif command == 'acme-inspect':
             return_results(generic_ansible('acme', 'acme_inspect', args, int_params))
     # Log exceptions and return errors
     except Exception as e:

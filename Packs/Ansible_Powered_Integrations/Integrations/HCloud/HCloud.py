@@ -22,47 +22,48 @@ def main() -> None:
     ssh_agent_setup.setup()
 
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'hcloud-datacenter-info':
+        elif command == 'hcloud-datacenter-info':
             return_results(generic_ansible('hcloud', 'hcloud_datacenter_info', args, int_params))
-        elif demisto.command() == 'hcloud-floating-ip-info':
+        elif command == 'hcloud-floating-ip-info':
             return_results(generic_ansible('hcloud', 'hcloud_floating_ip_info', args, int_params))
-        elif demisto.command() == 'hcloud-image-info':
+        elif command == 'hcloud-image-info':
             return_results(generic_ansible('hcloud', 'hcloud_image_info', args, int_params))
-        elif demisto.command() == 'hcloud-location-info':
+        elif command == 'hcloud-location-info':
             return_results(generic_ansible('hcloud', 'hcloud_location_info', args, int_params))
-        elif demisto.command() == 'hcloud-network':
+        elif command == 'hcloud-network':
             return_results(generic_ansible('hcloud', 'hcloud_network', args, int_params))
-        elif demisto.command() == 'hcloud-network-info':
+        elif command == 'hcloud-network-info':
             return_results(generic_ansible('hcloud', 'hcloud_network_info', args, int_params))
-        elif demisto.command() == 'hcloud-rdns':
+        elif command == 'hcloud-rdns':
             return_results(generic_ansible('hcloud', 'hcloud_rdns', args, int_params))
-        elif demisto.command() == 'hcloud-route':
+        elif command == 'hcloud-route':
             return_results(generic_ansible('hcloud', 'hcloud_route', args, int_params))
-        elif demisto.command() == 'hcloud-server':
+        elif command == 'hcloud-server':
             return_results(generic_ansible('hcloud', 'hcloud_server', args, int_params))
-        elif demisto.command() == 'hcloud-server-info':
+        elif command == 'hcloud-server-info':
             return_results(generic_ansible('hcloud', 'hcloud_server_info', args, int_params))
-        elif demisto.command() == 'hcloud-server-network':
+        elif command == 'hcloud-server-network':
             return_results(generic_ansible('hcloud', 'hcloud_server_network', args, int_params))
-        elif demisto.command() == 'hcloud-server-type-info':
+        elif command == 'hcloud-server-type-info':
             return_results(generic_ansible('hcloud', 'hcloud_server_type_info', args, int_params))
-        elif demisto.command() == 'hcloud-ssh-key':
+        elif command == 'hcloud-ssh-key':
             return_results(generic_ansible('hcloud', 'hcloud_ssh_key', args, int_params))
-        elif demisto.command() == 'hcloud-ssh-key-info':
+        elif command == 'hcloud-ssh-key-info':
             return_results(generic_ansible('hcloud', 'hcloud_ssh_key_info', args, int_params))
-        elif demisto.command() == 'hcloud-subnetwork':
+        elif command == 'hcloud-subnetwork':
             return_results(generic_ansible('hcloud', 'hcloud_subnetwork', args, int_params))
-        elif demisto.command() == 'hcloud-volume':
+        elif command == 'hcloud-volume':
             return_results(generic_ansible('hcloud', 'hcloud_volume', args, int_params))
-        elif demisto.command() == 'hcloud-volume-info':
+        elif command == 'hcloud-volume-info':
             return_results(generic_ansible('hcloud', 'hcloud_volume_info', args, int_params))
     # Log exceptions and return errors
     except Exception as e:

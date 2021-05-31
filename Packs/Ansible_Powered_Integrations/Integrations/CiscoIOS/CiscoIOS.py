@@ -22,59 +22,60 @@ def main() -> None:
     ssh_agent_setup.setup()
 
     # Common Inputs
+    command = demisto.command()
     args = demisto.args()
     int_params = demisto.params()
 
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')
-        elif demisto.command() == 'ios-banner':
+        elif command == 'ios-banner':
             return_results(generic_ansible('ciscoios', 'ios_banner', args, int_params))
-        elif demisto.command() == 'ios-bgp':
+        elif command == 'ios-bgp':
             return_results(generic_ansible('ciscoios', 'ios_bgp', args, int_params))
-        elif demisto.command() == 'ios-command':
+        elif command == 'ios-command':
             return_results(generic_ansible('ciscoios', 'ios_command', args, int_params))
-        elif demisto.command() == 'ios-config':
+        elif command == 'ios-config':
             return_results(generic_ansible('ciscoios', 'ios_config', args, int_params))
-        elif demisto.command() == 'ios-facts':
+        elif command == 'ios-facts':
             return_results(generic_ansible('ciscoios', 'ios_facts', args, int_params))
-        elif demisto.command() == 'ios-interfaces':
+        elif command == 'ios-interfaces':
             return_results(generic_ansible('ciscoios', 'ios_interfaces', args, int_params))
-        elif demisto.command() == 'ios-l2-interfaces':
+        elif command == 'ios-l2-interfaces':
             return_results(generic_ansible('ciscoios', 'ios_l2_interfaces', args, int_params))
-        elif demisto.command() == 'ios-l3-interfaces':
+        elif command == 'ios-l3-interfaces':
             return_results(generic_ansible('ciscoios', 'ios_l3_interfaces', args, int_params))
-        elif demisto.command() == 'ios-lacp':
+        elif command == 'ios-lacp':
             return_results(generic_ansible('ciscoios', 'ios_lacp', args, int_params))
-        elif demisto.command() == 'ios-lacp-interfaces':
+        elif command == 'ios-lacp-interfaces':
             return_results(generic_ansible('ciscoios', 'ios_lacp_interfaces', args, int_params))
-        elif demisto.command() == 'ios-lag-interfaces':
+        elif command == 'ios-lag-interfaces':
             return_results(generic_ansible('ciscoios', 'ios_lag_interfaces', args, int_params))
-        elif demisto.command() == 'ios-linkagg':
+        elif command == 'ios-linkagg':
             return_results(generic_ansible('ciscoios', 'ios_linkagg', args, int_params))
-        elif demisto.command() == 'ios-lldp':
+        elif command == 'ios-lldp':
             return_results(generic_ansible('ciscoios', 'ios_lldp', args, int_params))
-        elif demisto.command() == 'ios-lldp-global':
+        elif command == 'ios-lldp-global':
             return_results(generic_ansible('ciscoios', 'ios_lldp_global', args, int_params))
-        elif demisto.command() == 'ios-lldp-interfaces':
+        elif command == 'ios-lldp-interfaces':
             return_results(generic_ansible('ciscoios', 'ios_lldp_interfaces', args, int_params))
-        elif demisto.command() == 'ios-logging':
+        elif command == 'ios-logging':
             return_results(generic_ansible('ciscoios', 'ios_logging', args, int_params))
-        elif demisto.command() == 'ios-ntp':
+        elif command == 'ios-ntp':
             return_results(generic_ansible('ciscoios', 'ios_ntp', args, int_params))
-        elif demisto.command() == 'ios-ping':
+        elif command == 'ios-ping':
             return_results(generic_ansible('ciscoios', 'ios_ping', args, int_params))
-        elif demisto.command() == 'ios-static-route':
+        elif command == 'ios-static-route':
             return_results(generic_ansible('ciscoios', 'ios_static_route', args, int_params))
-        elif demisto.command() == 'ios-system':
+        elif command == 'ios-system':
             return_results(generic_ansible('ciscoios', 'ios_system', args, int_params))
-        elif demisto.command() == 'ios-user':
+        elif command == 'ios-user':
             return_results(generic_ansible('ciscoios', 'ios_user', args, int_params))
-        elif demisto.command() == 'ios-vlans':
+        elif command == 'ios-vlans':
             return_results(generic_ansible('ciscoios', 'ios_vlans', args, int_params))
-        elif demisto.command() == 'ios-vrf':
+        elif command == 'ios-vrf':
             return_results(generic_ansible('ciscoios', 'ios_vrf', args, int_params))
     # Log exceptions and return errors
     except Exception as e:
