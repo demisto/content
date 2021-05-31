@@ -4,7 +4,7 @@
   "id": "FireEye Central Management - Classifier",
   "description": "Classifies FireEye NX Alerts.",
   "keyTypeMap": {
-    "WEB_MPS": "FireEye NX Alert v2"
+    "WEB_MPS": "FireEye NX Alert"
   },
   "transformer": {
     "complex": null,

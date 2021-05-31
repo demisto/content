@@ -1,12 +1,12 @@
 {
-  "name": "FireEye NX Alerts v2 - Mapper",
-  "id": "FireEye NX Alerts v2 - Mapper",
+  "name": "FireEye NX Alerts - Mapper v2",
+  "id": "FireEye NX Alerts - Mapper v2",
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0",
   "description": "Maps FireEye NX alerts.",
   "mapping": {
-    "FireEye NX Alert v2": {
+    "FireEye NX Alert": {
       "dontMapEventToLabels": true,
       "internalMapping": {
         "Alert Acknowledgement": {
@@ -45,7 +45,7 @@
           },
           "simple": ""
         },
-        "FireEye Alert Sensor IP": {
+        "Sensor IP": {
           "complex": {
             "accessor": "",
             "filters": [],
@@ -54,11 +54,29 @@
           },
           "simple": ""
         },
-        "FireEye Alert Sensor Name": {
+        "Sensor Name": {
           "complex": {
             "accessor": "",
             "filters": [],
             "root": "sensor",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Event Type": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "eventType",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Event ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "eventId",
             "transformers": []
           },
           "simple": ""
@@ -81,11 +99,29 @@
           },
           "simple": ""
         },
-        "FireEye NX Alert ID": {
+        "Alert ID": {
           "complex": {
             "accessor": "",
             "filters": [],
             "root": "id",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Alert Name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "name",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Vendor Product": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "product",
             "transformers": []
           },
           "simple": ""
@@ -95,6 +131,96 @@
             "accessor": "name",
             "filters": [],
             "root": "explanation.malwareDetected.malware",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "MD5": {
+          "complex": {
+            "accessor": "md5Sum",
+            "filters": [],
+            "root": "explanation.malwareDetected.malware",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "SHA256": {
+          "complex": {
+            "accessor": "sha256",
+            "filters": [],
+            "root": "explanation.malwareDetected.malware",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "File Name": {
+          "complex": {
+            "accessor": "original",
+            "filters": [],
+            "root": "explanation.malwareDetected.malware",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "File Type": {
+          "complex": {
+            "accessor": "type",
+            "filters": [],
+            "root": "explanation.malwareDetected.malware",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "PID": {
+          "complex": {
+            "accessor": "pid",
+            "filters": [],
+            "root": "explanation.osChanges.file_informational.processinfo",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Parent Process ID": {
+          "complex": {
+            "accessor": "ppid",
+            "filters": [],
+            "root": "explanation.osChanges.file_informational.processinfo",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "OS Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "explanation.osChanges.os",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "OS Architecture": {
+          "complex": {
+            "accessor": "arch",
+            "filters": [],
+            "root": "explanation.osChanges.os",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "OS Version": {
+          "complex": {
+            "accessor": "version",
+            "filters": [],
+            "root": "explanation.osChanges.os",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "OS Service Pack": {
+          "complex": {
+            "accessor": "sp",
+            "filters": [],
+            "root": "explanation.osChanges.os",
             "transformers": []
           },
           "simple": ""

@@ -14,6 +14,10 @@
       "Malware": {
             "mandatory": true,
             "display_name": "Malware"
+        },
+      "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
         }
     }
 }
