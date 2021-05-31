@@ -95,16 +95,10 @@ def handle_filters():
     """
     Handle filters associated with samples
     """
-    id_found = False
-    id_list = ['sha256', 'md5', 'sha1', 'id']
     params = {'api_key': API_KEY}
     for k in demisto.args():
         if demisto.getArg(k):
-            if not id_found and k in id_list:
-                params['q'] = demisto.getArg(k)
-                id_found = True
-            else:
-                params[k] = demisto.getArg(k)
+            params[k] = demisto.getArg(k)
     return params
 
 
@@ -388,6 +382,8 @@ def calc_score(score):
     """
     Convert threatgrid score to dbot score
     """
+    if not score:
+        return 0
     dbot_score = 1
     if score >= 95:
         dbot_score = 3
@@ -447,7 +443,7 @@ def get_video_by_id():
             'HumanReadable': '### ThreatGrid Sample Run Video File -\n'
                              + 'Your sample run video file download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.json(),
+            'Contents': ec,
             'ContentsFormat': formats['json']
         },
         fileResult(sample_id + '.webm', r.content)
@@ -867,13 +863,14 @@ def append_to_analysis_iocs_arrays(iocs, dbots, k):
     """
     Helper for appending analysis item to ioc an dbot arrays
     """
-    iocs.append(ioc_to_readable(k))
-    dbots.append({
-        'Vendor': 'ThreatGrid',
-        'Type': 'IOC',
-        'Indicator': k['ioc'],
-        'Score': calc_score(k['severity'])
-    })
+    if k and k.get('ioc'):
+        iocs.append(ioc_to_readable(k))
+        dbots.append({
+            'Vendor': 'Threat Grid',
+            'Type': 'IOC',
+            'Indicator': k.get('ioc'),
+            'Score': calc_score(k.get('severity'))
+        })
 
 
 def apply_search_filters():

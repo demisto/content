@@ -58,7 +58,20 @@ script:
       required: true
     description: Get's the domains listed in a destination list
     name: umbrella-get-destination-domains
-  dockerimage: demisto/python3:3.8.6.12176
+  - arguments:
+    - description: Optional organization ID. If not provided, will use the one provided
+        in the integration configuration.
+      name: orgId
+    - description: Destination list ID
+      name: destId
+      required: true
+    - description: 'List of entry IDs to remove from destination list (Format: 1234,1235)'
+      isArray: true
+      name: domainIds
+      required: true
+    description: Removes domains to given destination list
+    name: umbrella-remove-domain
+  dockerimage: demisto/python3:3.9.1.15759
   runonce: false
   script: ''
   subtype: python3

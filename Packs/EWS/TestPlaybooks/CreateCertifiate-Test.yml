@@ -1,0 +1,207 @@
+id: CreateCertificate-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: CreateCertificate-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0efd97a-f952-4030-8be0-ea134333e901
+    type: start
+    task:
+      id: e0efd97a-f952-4030-8be0-ea134333e901
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: afce03dd-087a-41f0-8f47-d0b2179cfaf1
+    type: regular
+    task:
+      id: afce03dd-087a-41f0-8f47-d0b2179cfaf1
+      version: -1
+      name: Run CreateCertificate
+      description: Creates a public key (.cer file), a private key (.pfx) file, and
+        a Base64 encoded private key to use to authenticate the EWS Extension Online
+        Powershell v2 integration.
+      scriptName: CreateCertificate
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      country: {}
+      days: {}
+      friendly_name: {}
+      password:
+        simple: '{TOMMED}+qtTn9YVF+vXSKulr9EZU1MKLAt7+GDej8bqtlU2js4O2WY2mvvs4xsL2qYTqhxOYMouRqK6Kz4OFvuXgLEqEg=='
+      state_or_province: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "2":
+    id: "2"
+    taskid: 0b212f8f-0e37-49d4-8c5d-18710ea4b33c
+    type: condition
+    task:
+      id: 0b212f8f-0e37-49d4-8c5d-18710ea4b33c
+      version: -1
+      name: Check File exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Certificate
+                accessor: PrivateKey
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Certificate
+                accessor: PrivateKey
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Certificate
+                accessor: PrivateKeyBase64
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "3":
+    id: "3"
+    taskid: 010820f0-39ca-4a53-897e-f6727f233a1c
+    type: regular
+    task:
+      id: 010820f0-39ca-4a53-897e-f6727f233a1c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "4":
+    id: "4"
+    taskid: 40c81cfb-fe38-4a8f-8adf-cd7448c85fa2
+    type: title
+    task:
+      id: 40c81cfb-fe38-4a8f-8adf-cd7448c85fa2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

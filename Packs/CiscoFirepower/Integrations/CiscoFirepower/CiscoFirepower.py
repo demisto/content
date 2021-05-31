@@ -1,7 +1,9 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, Union
+from typing import Dict, List, Tuple, Union
+
 import urllib3
 
 # Disable insecure warnings
@@ -42,9 +44,10 @@ class Client(BaseClient):
         suffix = 'assignment/policyassignments'
         return self._http_request('GET', suffix, params=params)
 
-    def get_deployable_devices(self, limit: int, offset: int) -> Dict:
+    def get_deployable_devices(self, limit: int, offset: int, container_uuid: str) -> Dict:
         params = {'expanded': 'true', 'limit': limit, 'offset': offset}
-        suffix = 'deployment/deployabledevices'
+        end_suffix = '/' + container_uuid + '/deployments' if container_uuid else ''
+        suffix = f'deployment/deployabledevices{end_suffix}'
         return self._http_request('GET', suffix, params=params)
 
     def get_device_records(self, limit: int, offset: int) -> Dict:
@@ -96,6 +99,11 @@ class Client(BaseClient):
         suffix = f'object/networkgroups{end_suffix}'
         return self._http_request('GET', suffix)
 
+    def get_url_groups_objects(self, limit: int, offset: int, object_id: str) -> Dict:
+        end_suffix = f'/{object_id}' if object_id else f'?expanded=true&limit={limit}&offset={offset}'
+        suffix = f'object/urlgroups{end_suffix}'
+        return self._http_request('GET', suffix)
+
     def create_network_groups_objects(
             self, name: str, ids: str, values: str, description: str, overridable: bool) -> Dict:
         objects = [{'id': curr_id} for curr_id in argToList(ids)]
@@ -112,6 +120,15 @@ class Client(BaseClient):
         data = assign_params(name=name, id=group_id, objects=objects, literals=values,
                              description=description, overridable=overridable)
         suffix = f'object/networkgroups/{group_id}'
+        return self._http_request('PUT', suffix, json_data=data)
+
+    def update_url_groups_objects(
+            self, name: str, ids: str, values: str, group_id: str, description: str, overridable: bool) -> Dict:
+        objects = [{'id': curr_id} for curr_id in argToList(ids)]
+        values = [{'url': curr_value} for curr_value in argToList(values)]
+        data = assign_params(name=name, id=group_id, objects=objects, literals=values,
+                             description=description, overridable=overridable)
+        suffix = f'object/urlgroups/{group_id}'
         return self._http_request('PUT', suffix, json_data=data)
 
     def delete_network_groups_objects(self, object_id: str) -> Dict:
@@ -388,6 +405,36 @@ def raw_response_to_context_network_groups(items: Union[Dict, List]) -> Union[Di
         'Addresses': [
             {
                 'Value': obj.get('value'),
+                'Type': obj.get('type')
+            } for obj in items.get('literals', [])
+        ]
+    }
+
+
+def raw_response_to_context_url_groups(items: Union[Dict, List]) -> Union[Dict, List]:
+    """Receives raw response and returns Context entry to url groups command
+    :type items: ``list`` or ``dict``
+    :param items:  list of dict or dict of data from http request
+    :return: ``list`` or ``dict``
+    :rtype: context entry`
+    """
+    if isinstance(items, list):
+        return [raw_response_to_context_url_groups(item) for item in items]
+    return {
+        'Name': items.get('name'),
+        'ID': items.get('id'),
+        'Overridable': items.get('overridable'),
+        'Description': items.get('description'),
+        'Objects': [
+            {
+                'Name': obj.get('name'),
+                'ID': obj.get('id'),
+                'Type': obj.get('type')
+            } for obj in items.get('objects', [])
+        ],
+        'Addresses': [
+            {
+                'Url': obj.get('url'),
                 'Type': obj.get('type')
             } for obj in items.get('literals', [])
         ]
@@ -807,7 +854,30 @@ def get_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str,
         human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete the object.')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not get the network groups.')
+
+
+def get_url_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    object_id = args.get('id', '')
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
+    raw_response = client.get_url_groups_objects(limit, offset, object_id)
+    items: Union[List, Dict] = raw_response.get('items')    # type:ignore
+    if items or 'id' in raw_response:
+        title = f'{INTEGRATION_NAME} - List of url groups object:'
+        if 'id' in raw_response:
+            title = f'{INTEGRATION_NAME} - url group object:'
+            items = raw_response
+        context_entry = raw_response_to_context_url_groups(items)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.URLGroups(val.ID && val.ID === obj.ID)': context_entry
+        }
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
+        entry_white_list_count = switch_list_to_list_counter(context_entry)
+        human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
+        return human_readable, context, raw_response
+    else:
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not get the URL groups.')
 
 
 def create_network_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -845,6 +915,29 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Tuple[s
         context_entry = raw_response_to_context_network_groups(raw_response)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.NetworkGroups(val.ID && val.ID === obj.ID)': context_entry
+        }
+
+        presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
+        entry_white_list_count = switch_list_to_list_counter(context_entry)
+        human_readable = tableToMarkdown(title, entry_white_list_count, headers=presented_output)
+        return human_readable, context, raw_response
+    else:
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not update the group, Missing value or ID.')
+
+
+def update_url_groups_objects_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    group_id: str = args.get('id')   # type:ignore
+    name: str = args.get('name')    # type:ignore
+    ids = args.get('url_objects_id_list', '')
+    values = args.get('url_list', '')
+    description = args.get('description', '')
+    overridable = args.get('overridable', '')
+    if ids or values:
+        raw_response = client.update_url_groups_objects(name, ids, values, group_id, description, overridable)
+        title = f'{INTEGRATION_NAME} - url group has been updated.'
+        context_entry = raw_response_to_context_url_groups(raw_response)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.UrlGroups(val.ID && val.ID === obj.ID)': context_entry
         }
 
         presented_output = ['ID', 'Name', 'Overridable', 'Description', 'Addresses', 'Objects']
@@ -1273,8 +1366,27 @@ def update_policy_assignments_command(client: Client, args: Dict) -> Tuple[str, 
 def get_deployable_devices_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     limit = args.get('limit', 50)
     offset = args.get('offset', 0)
-    raw_response = client.get_deployable_devices(limit, offset)
+    container_uuid = args.get('container_uuid', '')
+    raw_response = client.get_deployable_devices(limit, offset, container_uuid)
     items = raw_response.get('items')
+    if container_uuid:
+        if items:
+            context_entry = [{
+                'EndTime': item.get('endTime', ''),
+                'ID': item.get('id', ''),
+                'Name': item.get('name', ''),
+                'StartTime': item.get('startTime', ''),
+                'Status': item.get('status', ''),
+                'Type': item.get('type', '')
+            } for item in items
+            ]
+        title = f'{INTEGRATION_NAME} - List of devices status pending deployment:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.PendingDeployment(val.ID && val.ID === obj.ID)': context_entry
+        }
+        presented_output = ['EndTime', 'ID', 'Name', 'StartTime', 'Status', 'Type']
+        human_readable = tableToMarkdown(title, context_entry, headers=presented_output)
+        return human_readable, context, raw_response
     if items:
         context_entry = [{
             'CanBeDeployed': item.get('canBeDeployed', ''),
@@ -1416,6 +1528,11 @@ def main():  # pragma: no cover
             return_outputs(*update_network_groups_objects_command(client, demisto.args()))
         elif demisto.command() == 'ciscofp-delete-network-groups-objects':
             return_outputs(*delete_network_groups_objects_command(client, demisto.args()))
+
+        elif demisto.command() == 'ciscofp-get-url-groups-object':
+            return_outputs(*get_url_groups_objects_command(client, demisto.args()))
+        elif demisto.command() == 'ciscofp-update-url-groups-objects':
+            return_outputs(*update_url_groups_objects_command(client, demisto.args()))
 
         elif demisto.command() == 'ciscofp-get-access-policy':
             return_outputs(*get_access_policy_command(client, demisto.args()))

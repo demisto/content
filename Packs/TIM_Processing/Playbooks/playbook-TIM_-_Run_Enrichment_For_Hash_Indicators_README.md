@@ -46,10 +46,10 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
-| EnrichBadIndicators | Enter a value of True to enrich indicators whose reputation from the feed is bad. |  | Optional |
-| EnrichGoodIndicators | Enter a value of True to enrich indicators whose reputation from the feed is good. |  | Optional |
-| EnrichSuspiciousIndicators | Enter a value of True to enrich indicators whose reputation from the feed is suspicious. |  | Optional |
-| EnrichUnknownIndicators | Enter a value of True to enrich indicators whose reputation from the feed is unknown. |  | Optional |
+| EnrichBadIndicators | Enter a value of true to enrich indicators whose reputation from the feed is bad. |  | Optional |
+| EnrichGoodIndicators | Enter a value of true to enrich indicators whose reputation from the feed is good. |  | Optional |
+| EnrichSuspiciousIndicators | Enter a value of true to enrich indicators whose reputation from the feed is suspicious. |  | Optional |
+| EnrichUnknownIndicators | Enter a value of true to enrich indicators whose reputation from the feed is unknown. |  | Optional |
 
 ## Playbook Outputs
 ---

@@ -13,27 +13,27 @@ args:
   secret: false
 - default: false
   description: Subject of the email.
-  isArray: false
+  isArray: true
   name: emailSubject
   required: false
   secret: false
 - default: false
   description: Body of the email.
-  isArray: false
+  isArray: true
   name: emailBody
   required: false
   secret: false
 - default: false
   description: HTML body of the email. Only use this field if the emailBody argument
     is empty.
-  isArray: false
+  isArray: true
   name: emailBodyHTML
   required: false
   secret: false
 - default: false
   defaultValue: '20'
-  description: 'Maximum number of positive/negative words to return for the model
-    decision. Default is 20.'
+  description: Maximum number of positive/negative words to return for the model decision.
+    Default is 20.
   isArray: false
   name: topWordsLimit
   required: false
@@ -71,7 +71,6 @@ args:
   name: labelProbabilityThreshold
   required: false
   secret: false
-  deprecated: true
 - default: false
   description: The confidence threshold. The model will provide predictions only if
     their confidence is above this threshold.
@@ -166,7 +165,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.16162
+dockerimage: demisto/ml:1.0.0.20341
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test

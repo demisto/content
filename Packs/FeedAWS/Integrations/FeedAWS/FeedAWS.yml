@@ -75,7 +75,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -143,7 +144,7 @@ script:
     description: Fetches indicators from the feed.
     execution: false
     name: aws-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.12410
+  dockerimage: demisto/jmespath:1.0.0.19143
   feed: true
   isfetch: false
   longRunning: false
@@ -155,3 +156,5 @@ script:
 fromversion: 5.5.0
 defaultclassifier: AWS Feed Classifier
 defaultmapperin: AWS Feed Mapper
+tests:
+- No tests (auto formatted)

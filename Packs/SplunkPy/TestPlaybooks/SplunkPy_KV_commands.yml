@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -230
+          "x": 255,
+          "y": 50
         }
       }
     note: false
@@ -56,8 +56,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 255,
+          "y": 545
         }
       }
     note: false
@@ -91,8 +91,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 340
+          "x": 255,
+          "y": 720
         }
       }
     note: false
@@ -115,21 +115,22 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "23"
     scriptarguments:
       app_name: {}
       kv_store_collection_name:
         simple: test_playbook
       kv_store_data:
-        simple: '{"src": "88.88.88.88", "t": 9, "description": "description with speciàl טסט. 你好"}'
+        simple: '{"src": "88.88.88.88", "t": 9, "description": "description with speciàl
+          טסט. 你好"}'
       indicator_path:
         simple: 'src'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 500
+          "x": 255,
+          "y": 895
         }
       }
     note: false
@@ -145,7 +146,8 @@ tasks:
       id: 02fe4e0e-b8b5-4996-8012-5bebc8aaeb4d
       version: -1
       name: data_list
-      description: Lists all of the data within a specific KV store collection or collections
+      description: Lists all of the data within a specific KV store collection or
+        collections
       script: 'splunk-kv-store-collection-data-list'
       type: regular
       iscommand: true
@@ -162,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 660
+          "x": 255,
+          "y": 1245
         }
       }
     note: false
@@ -191,7 +193,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: ${Splunk.KVstoreData.test_playbook.src}
@@ -199,7 +201,7 @@ tasks:
           right:
             value:
               simple: 88.88.88.88
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               simple: ${Splunk.KVstoreData.test_playbook.t}
@@ -207,11 +209,27 @@ tasks:
           right:
             value:
               simple: "9"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Splunk.KVstoreData.test_playbook.src}
+            iscontext: true
+          right:
+            value:
+              simple: 99.99.99.99
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${Splunk.KVstoreData.test_playbook.src}
+            iscontext: true
+          right:
+            value:
+              simple: 10.10.10.10
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 820
+          "x": 255,
+          "y": 1420
         }
       }
     note: false
@@ -247,8 +265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 980
+          "x": 367.5,
+          "y": 1595
         }
       }
     note: false
@@ -283,8 +301,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1130
+          "x": 367.5,
+          "y": 1770
         }
       }
     note: false
@@ -331,8 +349,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1570
+          "x": 367.5,
+          "y": 2295
         }
       }
     note: false
@@ -348,7 +366,8 @@ tasks:
       id: e351ca10-b20a-440c-8c95-71d481d3ef1a
       version: -1
       name: delete_data_by_query
-      description: Delete specific object in store. Search can be basic key value or use a full query.
+      description: Delete specific object in store. Search can be basic key value
+        or use a full query.
       script: 'splunk-kv-store-collection-delete-entry'
       type: regular
       iscommand: true
@@ -370,8 +389,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1280
+          "x": 367.5,
+          "y": 1945
         }
       }
     note: false
@@ -387,7 +406,8 @@ tasks:
       id: 5b285dd8-2e02-4e7f-8e78-75bf555c368a
       version: -1
       name: search_entry
-      description: Search for specific object in store. Search can be basic key value or use a full query.
+      description: Search for specific object in store. Search can be basic key value
+        or use a full query.
       script: 'splunk-kv-store-collection-search-entry'
       type: regular
       iscommand: true
@@ -408,8 +428,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1425
+          "x": 367.5,
+          "y": 2120
         }
       }
     note: false
@@ -444,8 +464,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1710
+          "x": 480,
+          "y": 2470
         }
       }
     note: false
@@ -461,7 +481,8 @@ tasks:
       id: 1a74f787-11db-4b70-85fa-139b4451440b
       version: -1
       name: collection_data_delete
-      description: Delete all of the data within a specific KV store collection or collections.
+      description: Delete all of the data within a specific KV store collection or
+        collections.
       script: 'splunk-kv-store-collection-data-delete'
       type: regular
       iscommand: true
@@ -477,8 +498,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1870
+          "x": 480,
+          "y": 2645
         }
       }
     note: false
@@ -494,7 +515,8 @@ tasks:
       id: f6ba1a1c-294b-4388-8e24-8b286cea228d
       version: -1
       name: get_data_list
-      description: Lists all of the data within a specific KV store collection or collections
+      description: Lists all of the data within a specific KV store collection or
+        collections
       script: 'splunk-kv-store-collection-data-list'
       type: regular
       iscommand: true
@@ -511,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2030
+          "x": 480,
+          "y": 2820
         }
       }
     note: false
@@ -548,8 +570,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2190
+          "x": 480,
+          "y": 2995
         }
       }
     note: false
@@ -579,8 +601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2360
+          "x": 490,
+          "y": 3170
         }
       }
     note: false
@@ -612,8 +634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2530
+          "x": 490,
+          "y": 3345
         }
       }
     note: false
@@ -632,12 +654,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2700
+          "x": 490,
+          "y": 3520
         }
       }
     note: false
@@ -672,8 +695,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 255,
+          "y": 370
         }
       }
     note: false
@@ -701,8 +724,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 2685
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -737,8 +760,45 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -95
+          "x": 255,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 86cfa0e5-a948-4c8b-8eb9-bec0c85d86cc
+    type: regular
+    task:
+      id: 86cfa0e5-a948-4c8b-8eb9-bec0c85d86cc
+      version: -1
+      name: splunk-kv-store-collection-add-entries
+      description: Adds objects to a KV store utilizing the batch-save API.
+      script: 'splunk-kv-store-collection-add-entries'
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      indicator_path:
+        simple: src
+      kv_store_collection_name:
+        simple: test_playbook
+      kv_store_data:
+        simple: '[{"src": "99.99.99.99", "t": 10, "description": "some desc for 99.99.99.99"},
+          {"src": "10.10.10.10", "t": 11, "description": "some desc for 10.10.10.10"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 255,
+          "y": 1070
         }
       }
     note: false
@@ -751,10 +811,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3010,
-        "width": 940,
-        "x": -110,
-        "y": -230
+        "height": 3535,
+        "width": 820,
+        "x": 50,
+        "y": 50
       }
     }
   }

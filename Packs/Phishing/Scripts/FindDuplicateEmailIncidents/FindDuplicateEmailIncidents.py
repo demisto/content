@@ -31,7 +31,7 @@ MIN_TEXT_LENGTH = 50
 DEFAULT_ARGS = {
     'limit': '1000',
     'incidentTypes': 'Phishing',
-    'exsitingIncidentsLookback': '100 days ago',
+    'existingIncidentsLookback': '100 days ago',
 }
 FROM_POLICY_TEXT_ONLY = 'TextOnly'
 FROM_POLICY_EXACT = 'Exact'
@@ -48,10 +48,10 @@ def get_existing_incidents(input_args, current_incident_type):
     global DEFAULT_ARGS
     get_incidents_args = {}
     get_incidents_args['limit'] = input_args.get('limit', DEFAULT_ARGS['limit'])
-    if 'exsitingIncidentsLookback' in input_args:
-        get_incidents_args['fromDate'] = input_args['exsitingIncidentsLookback']
-    elif 'exsitingIncidentsLookback' in DEFAULT_ARGS:
-        get_incidents_args['fromDate'] = DEFAULT_ARGS['exsitingIncidentsLookback']
+    if 'existingIncidentsLookback' in input_args:
+        get_incidents_args['fromDate'] = input_args['existingIncidentsLookback']
+    elif 'existingIncidentsLookback' in DEFAULT_ARGS:
+        get_incidents_args['fromDate'] = DEFAULT_ARGS['existingIncidentsLookback']
     status_scope = input_args.get('statusScope', 'All')
     query_components = []
     if 'query' in input_args:
@@ -73,8 +73,12 @@ def get_existing_incidents(input_args, current_incident_type):
         get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
 
     fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
-              'name', 'status']
-    get_incidents_args['populateFields'] = ','.join(fields)
+              'name', 'status', 'emailto', 'emailcc', 'emailbcc']
+
+    if 'populateFields' in input_args and input_args['populateFields'] is not None:
+        get_incidents_args['populateFields'] = ','.join([','.join(fields), input_args['populateFields']])
+    else:
+        get_incidents_args['populateFields'] = ','.join(fields)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))

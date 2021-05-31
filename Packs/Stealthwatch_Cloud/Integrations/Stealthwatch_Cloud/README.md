@@ -1,8 +1,8 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <hr>
-<p>Use the Cisco Stealthwatch Cloud integration to manage threats to your networks.</p>
-<p>This integration was integrated and tested with Cisco Stealthwatch Cloud v1.0.0.</p>
+<p>Use the Cisco Secure Cloud Analytics (Stealthwatch Cloud) integration to manage threats to your networks.</p>
+<p>This integration was integrated and tested with Cisco Secure Cloud Analytics (Stealthwatch Cloud) v1.0.0.</p>
 <h2>Use cases</h2>
 <hr>
 <ol>
@@ -10,7 +10,7 @@
 <li>Block domains (Blacklist)</li>
 <li>Update alerts</li>
 </ol>
-<h2>Configure Stealthwatch Cloud on Demisto</h2>
+<h2>Configure Cisco Secure Cloud Analytics (Stealthwatch Cloud) on Demisto</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

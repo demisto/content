@@ -1,0 +1,18 @@
+.instance-test-rule:
+  rules:
+    - if: '$INSTANCE_TESTS'
+
+test_instances:
+  extends:
+    - .default-job-settings
+    - .instance-test-rule
+  needs: [ "create-instances" ]
+  stage: run-instances
+  dependencies:
+    - create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    - !reference [.open-ssh-tunnel]
+    - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
+    - ./Tests/scripts/instance_test.sh
+    - python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS $CIRCLE_ARTIFACTS/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
