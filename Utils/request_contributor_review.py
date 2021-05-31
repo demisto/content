@@ -172,17 +172,17 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True,
                                                      verify_ssl=verify_ssl)
 
                 # Notify contributors by emailing them on support email:
-                if (reviewers_emails := pack_metadata.get(
-                        PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github and not notified_by_email:
-                    reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
-                                                                                 str) else reviewers_emails
-                    send_email_to_reviewers(
-                        reviewers_emails=reviewers_emails,
-                        api_token=email_api_token,
-                        pack_name=pack,
-                        pr_number=pr_number,
-                        modified_files=modified_files
-                    )
+                # if (reviewers_emails := pack_metadata.get(
+                #         PACK_METADATA_SUPPORT_EMAIL_FIELD)) and not notified_by_github and not notified_by_email:
+                #     reviewers_emails = reviewers_emails.split(',') if isinstance(reviewers_emails,
+                #                                                                  str) else reviewers_emails
+                #     send_email_to_reviewers(
+                #         reviewers_emails=reviewers_emails,
+                #         api_token=email_api_token,
+                #         pack_name=pack,
+                #         pr_number=pr_number,
+                #         modified_files=modified_files
+                #     )
 
         elif pack_metadata.get('support') == XSOAR_SUPPORT:
             print(f"Skipping check of {pack} pack supported by {XSOAR_SUPPORT}")
