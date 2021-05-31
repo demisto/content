@@ -1,0 +1,518 @@
+{
+ "id": "RiskIQAsset Indicator",
+ "group": "indicator",
+ "name": "RiskIQAsset Indicator",
+ "description": "RiskIQAsset Indicator Layout",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "indicatorsDetails": {
+  "tabs": [
+   {
+    "id": "default-main",
+    "name": "Info",
+    "sections": [
+     {
+      "h": 6,
+      "i": "default-main-comments",
+      "moved": false,
+      "name": "Comments",
+      "static": false,
+      "type": "comments",
+      "w": 1,
+      "x": 2,
+      "y": 3
+     },
+     {
+      "h": 2,
+      "hideName": true,
+      "i": "default-main-relatedIncidents",
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "type": "relatedIncidents",
+      "w": 2,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "indicatortype",
+        "height": 22,
+        "id": "indicator-type",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "modified",
+        "height": 22,
+        "id": "indicator-modified",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "expiration",
+        "height": 22,
+        "id": "indicator-expiration",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "timestamp",
+        "height": 22,
+        "id": "indicator-timestamp",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassettype",
+        "height": 22,
+        "id": "142e5440-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "riskiqassetinventorystatus",
+        "height": 22,
+        "id": "1faed150-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 5,
+        "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetpriority",
+        "height": 22,
+        "id": "22c909a0-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "riskiqassetconfidence",
+        "height": 22,
+        "id": "33934930-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 7,
+        "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "riskiqassetenterpriseasset",
+        "height": 22,
+        "id": "388c0580-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 8,
+        "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetbrands",
+        "height": 22,
+        "id": "2ad8c9f0-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 9,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetorganizations",
+        "height": 22,
+        "id": "25959720-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 10,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassettags",
+        "height": 22,
+        "id": "2e213e30-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 11,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetfirstseen",
+        "height": 22,
+        "id": "4648de00-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 12,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetlastseen",
+        "height": 22,
+        "id": "484a7a60-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 13,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetaddedtoinventory",
+        "height": 22,
+        "id": "4dbad7b0-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 14,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetlastupdated",
+        "height": 22,
+        "id": "5145ac20-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 15,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetuuid",
+        "height": 22,
+        "id": "54ac7dd0-c126-11ea-9f37-d5a9baaa8e60",
+        "index": 16,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Basic Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 1
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "default-main-indicatorTimeline",
+      "moved": false,
+      "name": "Timeline",
+      "static": false,
+      "type": "indicatorTimeline",
+      "w": 1,
+      "x": 2,
+      "y": 1
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-reputationStatus",
+      "moved": false,
+      "name": "Reputation Status",
+      "static": false,
+      "type": "reputationStatus",
+      "w": 1,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 1,
+      "hideName": true,
+      "i": "default-main-expirationStatus",
+      "moved": false,
+      "name": "Expiration Status",
+      "static": false,
+      "type": "expirationStatus",
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "default-main-reputationSources",
+      "moved": false,
+      "name": "Reputation",
+      "static": false,
+      "type": "reputationSources",
+      "w": 1,
+      "x": 1,
+      "y": 1
+     },
+     {
+      "h": 3,
+      "i": "default-main-sources",
+      "moved": false,
+      "name": "Sources Data",
+      "static": false,
+      "type": "sources",
+      "w": 2,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 1,
+      "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "firstseen",
+        "height": 22,
+        "id": "indicator-first-seen",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "lastseen",
+        "height": 22,
+        "id": "indicator-last-seen",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Related Incidents",
+      "static": false,
+      "w": 2,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "displayType": "CARD",
+      "h": 1,
+      "hideName": false,
+      "i": "default-main-524d42a0-c5bc-11ea-afb7-838ba15c4ca0",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "riskiqassetcves",
+        "height": 22,
+        "id": "6bd1b350-c5bc-11ea-afb7-838ba15c4ca0",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "CVE(s) Detected",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "hidden": false,
+    "id": "2xme51g6kg",
+    "name": "Digital Footprint Enrichment",
+    "sections": [
+     {
+      "description": "",
+      "h": 4,
+      "hideName": false,
+      "i": "2xme51g6kg-a0e328d0-c080-11ea-bbe1-7badf5560c5c",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Detailed Information",
+      "query": "RiskIQDigitalFootprintAssetDetailsWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "hidden": false,
+    "id": "urlijzepfw",
+    "name": "PassiveTotal Enrichment",
+    "sections": [
+     {
+      "h": 3,
+      "i": "urlijzepfw-38d82780-c117-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Components",
+      "query": "RiskIQPassiveTotalComponentsWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 3
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-48a9fd50-c117-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Web Trackers",
+      "query": "RiskIQPassiveTotalTrackersWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-4a728850-c117-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Host Pairs - Parents",
+      "query": "RiskIQPassiveTotalHostPairsParentsWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 12
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-4bb1bf10-c117-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Host Pairs - Children",
+      "query": "RiskIQPassiveTotalHostPairsChildrenWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 15
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-4e763640-c117-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Passive DNS",
+      "query": "RiskIQPassiveTotalPDNSWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 9
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-81c700a0-c118-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "SSL - Email As Issuer Email Address",
+      "query": "RiskIQPassiveTotalSSLForIssuerEmailWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 18
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-83911240-c118-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "SSL - Email As Subject Email Address",
+      "query": "RiskIQPassiveTotalSSLForSubjectEmailWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 21
+     },
+     {
+      "h": 3,
+      "i": "urlijzepfw-3cb8f940-c119-11ea-a04b-bb042fc8b912",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Whois",
+      "query": "RiskIQPassiveTotalWhoisWidgetScript",
+      "queryType": "script",
+      "static": false,
+      "type": "dynamicIndicator",
+      "w": 3,
+      "x": 0,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   }
+  ]
+ }
+}
