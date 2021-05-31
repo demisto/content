@@ -146,9 +146,9 @@ def download_packs_from_gcp(storage_bucket, gcp_path, destination_path, circle_b
     """
     zipped_packs = []
     src_path = "gs://marketplace-dist-dev/" + gcp_path
-    gs_cmd = f"gsutil -m cp -r {src_path} {destination_path}"
+    # gs_cmd = f"gsutil -m cp -r {src_path} {destination_path}"
     try:
-        subprocess.Popen(gs_cmd)
+        subprocess.Popen(["/scripts/cp_gcp_dir.sh", src_path, destination_path])
     except Exception as e:
         logging.critical(f"Failed to run gsutil command, Error:{e}")
         sys.exit(1)
