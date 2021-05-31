@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import demistomock as demisto  # noqa: F401
 import requests
 from bs4 import BeautifulSoup
