@@ -47,7 +47,7 @@ def test_check_whitelist_command_not_whitelisted(mocker):
 
 def test_check_whitelist_commands_whitelisted(mocker):
     """
-    Given: An IP to check
+    Given: An already whitelisted IP to check
     When:  Inserting IP to whitelist (whitelist_ip_command) and checking if it is whitelisted (check_whitelist_command).
     Then:  The IP should be ignored (in the whitelist).
     """
