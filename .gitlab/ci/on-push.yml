@@ -84,8 +84,6 @@ create-instances:
     - .push-rule
   needs: ["create-instances"]
   stage: run-instances
-  # variables:
-  #   DESTROY_INSTANCES: "true"
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
