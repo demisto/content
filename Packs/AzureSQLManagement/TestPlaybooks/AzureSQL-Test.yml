@@ -767,14 +767,6 @@ tasks:
   "19":
     id: "19"
     taskid: c4b60585-276b-4d7e-897c-e1c371b11ff6
-    type: condition
-    task:
-      id: c4b60585-276b-4d7e-897c-e1c371b11ff6
-      version: -1
-      name: Check retention days equals 0
-      type: condition
-      iscommand: false
-      brand: ""
     nexttasks:
       "yes":
       - "6"
