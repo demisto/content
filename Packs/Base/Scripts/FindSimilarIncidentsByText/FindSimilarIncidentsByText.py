@@ -2,7 +2,7 @@
 import dateutil.parser
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-
+from six import string_types
 from CommonServerPython import *
 
 INCIDENT_TEXT_FIELD = 'incident_text_for_tfidf'
@@ -31,7 +31,7 @@ def get_texts_from_incident(incident, text_fields):
     # custom fields + incident fields
     custom_fields = incident.get('CustomFields') or {}
     for field_name, field_value in (custom_fields.items() | incident.items()):
-        if field_name in text_fields and isinstance(field_value, str):
+        if field_name in text_fields and isinstance(field_value, string_types):
             texts.append(field_value)
 
     return " ".join(texts)
