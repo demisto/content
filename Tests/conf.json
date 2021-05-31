@@ -131,6 +131,18 @@
             ]
         },
         {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
+            "integrations": "GraphQL",
+            "fromversion": "5.0.0",
+            "instance_names": "no_fetch_schema",
+            "playbookID": "GraphQL - Test"
+        },
+        {
             "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
             "instance_names": "azure_nsg_prod",
@@ -1939,6 +1951,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "AWS - SQS",
+            "playbookID": "AWS - SQS Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "AbuseIPDB",
             "playbookID": "AbuseIPDB Test"
         },
@@ -2177,6 +2194,11 @@
             "playbookID": "Active Directory - ad-get-user limit check"
         },
         {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja",
+            "playbookID": "active directory search user with parentheses test"
+        },
+        {
             "integrations": "mysql",
             "playbookID": "MySQL Test"
         },
@@ -2305,6 +2327,19 @@
             "instance_names": [
                 "non_https_cert",
                 "instance_execute"
+            ]
+        },
+        {
+            "integrations": [
+                "TAXII Server",
+                "TAXIIFeed"
+            ],
+            "playbookID": "TAXII_Feed_Test",
+            "fromversion": "5.5.0",
+            "timeout": 300,
+            "instance_names": [
+                "https_cert",
+                "local_https"
             ]
         },
         {
@@ -3405,11 +3440,12 @@
         "PAN-OS - Block IP - Static Address Group Test": "Issue 37021",
         "PAN-OS - Block IP - Custom Block Rule Test": "Issue 37023",
         "Centreon-Test-Playbook": "Issue 37022",
-        "AWS-securityhub Test": "Issue 29796",
-        "McAfeeWebGatewayTest": "Issue 37020",
         "PAN-OS - Block URL - Custom URL Category Test": "Issue 37024",
         "Service Desk Plus - Generic Polling Test": "Issue 30798",
-        "Pwned v2 test": "Issue 26601"
+        "Pwned v2 test": "Issue 26601",
+        "TestEmailRepIOPlaybook": "Issue 33219",
+        "get_original_email_-_ews-_test": "Issue 27571",
+        "PANW Threat Vault - Signature Search - Test": "Issue 30930"
     },
     "skipped_integrations": {
         
