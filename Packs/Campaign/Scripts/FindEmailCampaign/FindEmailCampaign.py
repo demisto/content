@@ -70,9 +70,8 @@ STATUS_DICT = {
     3: "Archive",
 }
 
-
-INVALID_KEY_WARNING = 'Warning: the fields {fields} was not found in the phishing incidents. Please make sure that '\
-                      'you\'ve specified the machine-name of the fields. The machine name can be found in the '\
+INVALID_KEY_WARNING = 'Warning: the fields {fields} was not found in the phishing incidents. Please make sure that ' \
+                      'you\'ve specified the machine-name of the fields. The machine name can be found in the ' \
                       'settings of the incident field you are trying to search.'
 
 INCIDENTS_CONTEXT_TD = 'incidents(obj.id == val.id)'
@@ -370,16 +369,43 @@ def create_email_summary_hr(incidents_df, fields_to_display):
     return context, hr_email_summary
 
 
+def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
+    """
+    convert the output of tableToMarkdown to be vertical.
+    Args:
+        horizontal_md_table: original tableToMarkdown output
+
+    Returns: md string with rotated table
+    """
+    lines = horizontal_md_table.split('\n')
+    title = lines[0]
+    headers_list = lines[1][1:-1].split('|')
+    content_list = lines[3][1:-1].split('|')
+
+    new_table = title
+    new_table += '\n| | |'
+    new_table += '\n|---|---|'
+    for header, content in zip(headers_list, content_list):
+        new_table += f"\n|**{header}**|{content}|"
+
+    return new_table
+
+
 def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
     context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
+
+    vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
+    demisto.executeCommand('setIncident', {'emailcampaignsummary': f"{vertical_hr_campaign_details}\n{hr_email_summary}"})
     return return_outputs_custom(hr, context, tag='campaign_details')
 
 
 def return_no_mututal_indicators_found_entry():
     hr = '### Mutual Indicators' + '\n'
     hr += 'No mutual indicators were found.'
+
+    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
     return_outputs_custom(hr, add_context_key(create_context_for_indicators()), tag='indicators')
 
 
@@ -410,6 +436,8 @@ def return_indicator_entry(incidents_df):
 
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
+
+    demisto.executeCommand('setIncident', {'emailcampaignmutualindicators': hr})
     return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)), tag='indicators')
     return indicators_df
 
@@ -475,9 +503,14 @@ def draw_canvas(incidents, indicators):
                                                                     'indicators': filtered_indicators,
                                                                     'overrideUserCanvas': 'true'
                                                                     })
+
         if not is_error(res):
             res[-1]['Tags'] = ['canvas']
-            demisto.results(res)
+        try:
+            demisto.executeCommand('setIncident', {'emailcampaigncanvas': res[-1].get('HumanReadable')})
+        except Exception:
+            pass
+        demisto.results(res)
     except Exception:
         pass
 
