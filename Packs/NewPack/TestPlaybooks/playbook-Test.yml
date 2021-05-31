@@ -264,47 +264,6 @@ tasks:
       }
     note: false
     timertriggers: []
-  "11":
-    id: "11"
-    taskid: 02406255-50d6-4081-8aab-a6cd322b56ac
-    type: regular
-    task:
-      id: 02406255-50d6-4081-8aab-a6cd322b56ac
-      version: -1
-      name: FindSimilarIncidents
-      scriptName: FindSimilarIncidents
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      filterQuery: {}
-      hoursBack: {}
-      ignoreClosedIncidents: {}
-      incidentFieldsAppliedCondition: {}
-      maxNumberOfIncidents: {}
-      maxResults: {}
-      similarContextKeys: {}
-      similarCustomFields: {}
-      similarIncidentFields: {}
-      similarIncidentKeys:
-        simple: name
-      similarLabelsKeys: {}
-      skipMissingValues: {}
-      timeField:
-        simple: occurred
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
   "12":
     id: "12"
     taskid: 75cff374-ae9b-4ab3-8887-764d4f9ff34f
